@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: lizlooney@google.com (Liz Looney)
+
+     Contains definitions common to multiple App Inventor build.xml files.
+     ====================================================================== -->
+<project name="CommonDefinitions">
+  <description>
+    Definitions common to multiple App Inventor build.xml files."
+  </description>
+
+  <!-- =====================================================================
+       Define output directories.
+       ===================================================================== -->
+  <!-- appinventor.dir is the root directory of the appinventor world -->
+  <dirname property="appinventor.dir" file="${ant.file.CommonDefinitions}" />
+
+  <!-- build.dir is the grandparent directory for output files that were
+       created by another project. This directory is the same for each project.
+       For example, if a project needs CommonUtils.jar, which is built by the
+       common project, the ai.javac
+       task's classpath would include this entry:
+       <pathelement location="${build.dir}/common/CommonUtils.jar"/>
+       -->
+  <property name="build.dir" location="${appinventor.dir}/build" />
+
+  <!-- public.build.dir is the directory for output files that will be used
+       by another project. This directory is different for each project. For
+       example, when the common project builds CommonUtils.jar, which is used by
+       the appengine project, the jar task's destFile attribute looks like this:
+       <jar destfile="${public.build.dir}/CommonUtils.jar">
+       -->
+  <property name="public.build.dir" location="${build.dir}/${ant.project.name}" />
+
+  <!-- local.build.dir is the directory for output files that will not be used
+       by another project. This directory is different for each project. For
+       example, when the components project builds AnnotationProcessors.jar,
+       which is not used by any other project, the jar tasks's destFile
+       attribute looks like this:
+       <jar destfile="${local.build.dir}/AnnotationProcessors.jar"
+       -->
+  <property name="local.build.dir" location="${basedir}/build" />
+
+  <!-- class.dir is the directory for class files created by javac. This
+       directory is different for each project. Most projects create a separate
+       subdirectory for each target that produces class files. For example,
+       when the common project builds CommonUtils, the ai.javac task's destdir
+       attribute looks like this:
+       <property name="CommonUtils-class.dir" location="${class.dir}/CommonUtils" />
+       <mkdir dir="${CommonUtils-class.dir}" />
+       <ai.javac destdir="${CommonUtils-class.dir}">
+       -->
+  <property name="class.dir" location="${local.build.dir}/classes" />
+
+  <!-- reports.dir is the directory for testing reports created by junitreport. This
+       directory is different for each project. 
+       -->
+  <property name="reports.dir" location="${basedir}/reports"/>
+
+  <!-- =====================================================================
+       Define src.dir and tests.dir relative to the including file's base directory.
+       ===================================================================== -->
+  <property name="src.dir" location="${basedir}/src" />
+  <property name="tests.dir" location="${basedir}/tests" />
+
+  <!-- ====================================================================
+       Pull in definition of propertyregex task from Ant Contrib jar
+       ===================================================================== -->
+  <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+    <classpath>
+      <pathelement location="${appinventor.dir}/lib/ant-contrib/ant-contrib-1.0b3.jar"/>
+    </classpath>
+  </taskdef>
+
+  <!-- =====================================================================
+       Define task ai.javac as the default compilation task for AI.  It sets
+       includeantruntime to false to override broken default behavior
+       (http://goo.gl/XM29h), and it sets srcdir and sourcepath.
+       Invocations of the task must specify includes. If -Ddebug=true is
+       specified on the command line, debug compilation will be done with
+       debuglevel="lines,vars,source".
+       ===================================================================== -->
+  <!-- sets debug.compile to true if -Ddebug=true is specified on the command
+       line and false otherwise -->
+  <condition property="debug.compile" else="false">
+    <isset property="debug" />
+  </condition>
+  <presetdef name="ai.javac">
+    <javac sourcepath=""
+           srcdir="${src.dir}"
+           includeantruntime="false" 
+           debug="${debug.compile}"
+           debuglevel="lines,vars,source"
+           />
+  </presetdef>
+
+  <!-- =====================================================================
+       Define task ai.javactests as the compilation task for building the
+       test classes. The test classes include debug information so we can
+       see the line numbers of test failures.
+       ===================================================================== -->
+  <presetdef name="ai.javactests">
+    <ai.javac srcdir="${tests.dir}"
+              debug="true"/>
+  </presetdef>
+
+  <!-- =====================================================================
+       Define task ai.javac5 as the compilation task for building the blocks
+       editor and all of its dependencies.
+       ===================================================================== -->
+  <presetdef name="ai.javac5">
+    <ai.javac source="5"
+              target="5"/>
+  </presetdef>
+
+  <!-- =====================================================================
+
+       Define task ai.dojunit as the default testing task for AI.  It
+       compiles all the specified tests, builds them into a library,
+       runs them with junit, and then generates a report. It sets
+       haltonfailure to no so that the tests will continue to run even
+       after a failure, and so that a report wil be generated.
+
+       Depends on having the following properties and paths defined:
+
+         aij-testingtarget: the name of the target that uses this
+        macro.  It is assumed that there will be a path set with the
+        name of libsFor${aij-testingtarget}.path which represents
+        which libaries are needed to compile the tests, and one called
+        ${aij-testingtarget}.path as the libraries needed to run the
+        tests.
+   
+          aij-dir: the package and subdirectory containing the tests,
+        e.g.  ${appinventor.pkg}/server
+
+          tests.dir (automatically set by this file)
+
+       This macro compiles and runs all the specified tests by default, but it also
+       supports compiling and running a single test. Just specify the test name on the
+       command line like this:
+       ant -Dtest_name=com.google.appinventor.common.utils.StringUtilsTest CommonUtilsTests
+
+       =====================================================================
+       -->
+  <macrodef name="ai.dojunit">
+    <attribute name="aij-testingtarget" />
+    <attribute name="aij-dir" />
+    <sequential>
+      <local name="classdir" />
+      <property name="classdir" location="${class.dir}/@{aij-testingtarget}" />
+      <mkdir dir="${classdir}" />
+
+      <!-- if the user specified a particular test name, set the property test_name.class
+         to its last component -->
+      <propertyregex property="test_name.class"
+        input="${test_name}"
+        regexp="(.*\.)*(.*)"
+        select="\2" />
+
+      <ai.javactests destdir="${classdir}" >
+        <include name="@{aij-dir}/**/${test_name.class}.java" if="test_name" />
+        <include name="@{aij-dir}/**/*.java" unless="test_name" />
+        <classpath refid="libsFor@{aij-testingtarget}.path"/>
+      </ai.javactests>
+
+      <jar basedir="${classdir}"
+           destfile="${local.build.dir}/@{aij-testingtarget}.jar" />
+
+      <junit printsummary="yes"
+             fork="yes"
+             haltonfailure="no"
+             maxmemory="925m"
+             showoutput="no">
+        <classpath refid="@{aij-testingtarget}.path"/>
+        <formatter type="xml"/>
+        <!-- If the ant command line sets the test_name property (see above)
+             then we just run that one test. -->
+        <test name="${test_name}" todir="${reports.dir}/raw/" if="test_name"/>
+        <!-- otherwise, we run all the tests -->
+        <batchtest todir="${reports.dir}/raw/" unless="test_name">
+          <fileset dir="${tests.dir}">
+            <include name="@{aij-dir}/**/*Test.java" />
+          </fileset>
+        </batchtest>
+      </junit>
+      <junitreport todir="${reports.dir}">
+        <fileset dir="${reports.dir}/raw/">
+          <include name="TEST-*.xml"/>
+        </fileset>
+        <report format="frames" todir="${reports.dir}/html"/>
+      </junitreport>
+      <echo message="Please see the report at file://${reports.dir}/html/index.html"/>
+    </sequential>
+  </macrodef>
+
+  <!-- ====================================================================
+       Define property for external libraries directory.
+       ==================================================================== -->
+  <property name="lib.dir" location="${appinventor.dir}/lib" />
+
+  <!-- =====================================================================
+       Add the animal sniffer ant tasks
+       ===================================================================== -->
+
+  <typedef uri="antlib:org.codehaus.mojo.animal_sniffer">
+    <classpath path="${lib.dir}/animal_sniffer/animal-sniffer-ant-tasks-1.7.jar"/>
+  </typedef>
+
+  <!-- ====================================================================
+       Define standard targets.
+       ==================================================================== -->
+  <!-- clean -->
+  <target name="clean"
+          description="Remove generated directories and files for the specific project">
+    <delete dir="${public.build.dir}" />
+    <delete dir="${local.build.dir}" />
+    <delete dir="${class.dir}" />
+    <delete dir="${reports.dir}" />
+  </target>
+
+  <!-- init -->
+  <target name="init"
+          description="Create required output directories">
+    <mkdir dir="${public.build.dir}" />
+    <mkdir dir="${local.build.dir}" />
+    <mkdir dir="${class.dir}" />
+    <mkdir dir="${reports.dir}" />
+    <mkdir dir="${reports.dir}/raw/"/>
+    <mkdir dir="${reports.dir}/html/"/>
+  </target>
+
+  <!-- targets that build dependencies -->
+
+  <!-- ====================================================================
+       blockseditor_BlocksEditor builds:
+       - build/blockseditor/BlocksEditor.jar
+       ==================================================================== -->
+  
+  <target name="blockseditor_BlocksEditor">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockseditor"
+         target="BlocksEditor"/>
+  </target>
+
+  <!-- ====================================================================
+       blockslib_OpenBlocks builds:
+       - build/blockslib/OpenBlocks.jar
+       ==================================================================== -->
+  
+  <target name="blockslib_OpenBlocks">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockslib"
+         target="OpenBlocks"/>
+  </target>
+
+  <!-- ====================================================================
+       buildserver_StarterApp builds:
+       - build/buildserver/AppInventorPhoneApp.apk
+       ==================================================================== -->
+  
+  <target name="buildserver_StarterApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/buildserver"
+         target="StarterApp"/>
+  </target>
+
+  <!-- ====================================================================
+       common_BlocksEditorHttpConstants builds:
+       - build/common/BlocksEditorHttpConstants.jar
+       - build/common/BlocksEditorHttpConstants-gwt.jar
+       ==================================================================== -->
+  
+  <target name="common_BlocksEditorHttpConstants">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
+         target="BlocksEditorHttpConstants"/>
+  </target>
+
+  <!-- ====================================================================
+       common_CommonUtils builds:
+       - build/common/CommonUtils.jar
+       - build/common/CommonUtils-gwt.jar
+       ==================================================================== -->
+  
+  <target name="common_CommonUtils">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
+         target="CommonUtils"/>
+  </target>
+
+  <!-- ====================================================================
+       common_CommonTestUtils builds:
+       - build/common/CommonTestUtils.jar
+       ==================================================================== -->
+  
+  <target name="common_CommonTestUtils">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
+         target="CommonTestUtils"/>
+  </target>
+
+  <!-- ====================================================================
+       components_AndroidRuntime builds:
+       - build/components/AndroidRuntime.jar
+       ==================================================================== -->
+  
+  <target name="components_AndroidRuntime">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="AndroidRuntime"/>
+  </target>
+
+  <!-- ====================================================================
+       components_CommonConstants builds:
+       - build/components/CommonConstants.jar
+       - build/components/CommonConstants-gwt.jar
+       ==================================================================== -->
+  
+  <target name="components_CommonConstants">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="CommonConstants"/>
+  </target>
+
+  <!-- ====================================================================
+       components_ComponentList builds:
+       - build/components/simple_components.txt
+       - build/components/simple_components_permissions.json
+       ==================================================================== -->
+  
+  <target name="components_ComponentList">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="ComponentList"/>
+  </target>
+
+  <!-- ====================================================================
+       components_JsonComponentDescription builds:
+       - build/components/simple_components.json
+       ==================================================================== -->
+  
+  <target name="components_JsonComponentDescription">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="JsonComponentDescription"/>
+  </target>
+
+  <!-- ====================================================================
+       components_XmlComponentDescription builds:
+       - build/components/ya_lang_def.xml
+       ==================================================================== -->
+  
+  <target name="components_XmlComponentDescription">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/components"
+         target="XmlComponentDescription"/>
+  </target>
+
+</project>

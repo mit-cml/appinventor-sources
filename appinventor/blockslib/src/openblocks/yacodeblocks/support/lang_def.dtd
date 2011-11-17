@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+    Document   : lang_def.dtd
+    Description:
+        This defines all the blocks in Young Android. It was copied originally from
+        third_party/java/openblocks/slcodeblocks/v20090424/support/lang_def.dtd
+-->
+
+<!-- BreedToShapeMappings is a STARLOGO TNG specific definition -->
+
+<!ELEMENT BlockLangDef ( BlockConnectorShapes, BlockColors, BlockGenuses, BlockFamilies?, BlockDrawerSets?, Pages?, TrashCan?, MiniMap?, BreedShapeMappings?)>
+
+<!--This defines a mapping between block connector shape type to number-->
+<!ELEMENT BlockConnectorShapes (BlockConnectorShape*)>
+<!ELEMENT BlockConnectorShape EMPTY>
+<!ATTLIST BlockConnectorShape shape-type CDATA #REQUIRED>
+<!ATTLIST BlockConnectorShape shape-number CDATA #REQUIRED>
+
+<!--This defines a mapping from color names to values-->
+<!ELEMENT BlockColors (BlockColor*)>
+<!ELEMENT BlockColor EMPTY>
+<!ATTLIST BlockColor name CDATA #REQUIRED>
+<!ATTLIST BlockColor rgb-value CDATA #REQUIRED>
+
+<!ELEMENT BlockGenuses (BlockGenus*)>
+<!--This defines a single block genus-->
+<!ELEMENT BlockGenus (description?, BlockConnectors?,Stubs?, Images?, LangSpecProperties?)>
+<!ATTLIST BlockGenus name CDATA #REQUIRED>
+<!ATTLIST BlockGenus initlabel CDATA #REQUIRED>
+<!-- the kind of a genus can affect the rendering of a block.  relevant kinds are: 
+    - command: performs an operation and may take in more than one input 
+    - data: returns primitive values such as number, string, boolean
+    - function: takes in an input and performs an operation to produce an ouput
+-->
+<!ATTLIST BlockGenus kind CDATA #REQUIRED>
+<!ATTLIST BlockGenus label-filter (none|string|number|variableName) "none">
+<!ATTLIST BlockGenus color CDATA #REQUIRED>
+<!ATTLIST BlockGenus editable-label (yes|no) "no">
+<!ATTLIST BlockGenus is-empty-label-allowed (yes|no) "no">
+<!ATTLIST BlockGenus label-unique (yes|no) "no">
+<!ATTLIST BlockGenus is-label-value (yes|no) "no">
+<!ATTLIST BlockGenus label-prefix CDATA #IMPLIED>
+<!ATTLIST BlockGenus label-suffix CDATA #IMPLIED>
+<!ATTLIST BlockGenus decorator CDATA #IMPLIED>
+<!ATTLIST BlockGenus page-label-enabled (yes|no) "no">
+<!--is-starter and is-terminator only apply to blocks of kind: command -->
+<!ATTLIST BlockGenus is-starter (yes|no) "no">
+<!ATTLIST BlockGenus is-terminator (yes|no) "no">
+
+
+<!--This defines a block description and the description of its block arguments-->
+<!ELEMENT arg EMPTY>
+<!ATTLIST arg n CDATA #REQUIRED name CDATA #IMPLIED>
+
+<!ELEMENT description (text, arg-description*)>
+<!ELEMENT text (#PCDATA|note|em|i|br|arg)*>
+<!ELEMENT arg-description (#PCDATA|em|i|arg)*>
+<!ATTLIST arg-description n CDATA #IMPLIED name CDATA #IMPLIED  doc-name CDATA #IMPLIED>
+<!ELEMENT note (#PCDATA|arg|i)*>
+<!ELEMENT em (#PCDATA)>
+<!ELEMENT i (#PCDATA)>
+<!ELEMENT br (#PCDATA)>
+
+<!--BlockConnectors are where blocks get connected-->
+<!ELEMENT BlockConnectors (BlockConnector*)>
+<!ELEMENT BlockConnector (DefaultArg?)>
+<!ATTLIST BlockConnector label CDATA #IMPLIED>
+<!ATTLIST BlockConnector label-editable (yes|no) "no">
+<!-- Order matters with socket connectors and at most one plug is allowed (no multiple return types) -->
+<!ATTLIST BlockConnector connector-kind (plug|socket) #REQUIRED>
+<!-- for connector-type use the shape-type values specified in block connectors-->
+<!ATTLIST BlockConnector connector-type CDATA #REQUIRED>  
+<!ATTLIST BlockConnector position-type (single|mirror|bottom) "single">
+<!ATTLIST BlockConnector is-expandable (yes|no) "no">
+<!ATTLIST BlockConnector is-indented (yes|no) "no">
+
+<!ELEMENT DefaultArg EMPTY>
+<!ATTLIST DefaultArg genus-name CDATA #REQUIRED> 
+<!ATTLIST DefaultArg label CDATA #IMPLIED>
+
+<!ELEMENT Stubs (Stub*)>
+<!--This defines a stub of a block, so that the block can exist as a single entity and have mini-references to it-->
+<!ELEMENT Stub  (LangSpecProperties)>
+<!ATTLIST Stub scope CDATA #IMPLIED>
+<!ATTLIST Stub stub-genus (getter|setter|caller|agent|inc) #REQUIRED>
+
+<!-- Defines the images that are drawn on the block itself. 
+     Note: For now, only one image is enabled and wrap-text and image-editable have no effect.
+     Note: make sure FileLocation specified is relative to workspace directory -->
+<!ELEMENT Images (Image)>
+<!ELEMENT Image (FileLocation)>
+<!ATTLIST Image wrap-text (yes|no) "no">
+<!ATTLIST Image image-editable (yes|no) "no">
+<!ATTLIST Image block-location (center|east|west|north|south|southeast|southwest|northeast|northwest) "center">
+<!ATTLIST Image width CDATA #IMPLIED>
+<!ATTLIST Image height CDATA #IMPLIED>
+<!ELEMENT FileLocation (#PCDATA)>
+
+
+<!ELEMENT LangSpecProperties (LangSpecProperty*)>
+<!ELEMENT LangSpecProperty (#PCDATA)>
+<!ATTLIST LangSpecProperty key CDATA #REQUIRED>
+<!ATTLIST LangSpecProperty value CDATA #REQUIRED>
+
+<!--This defines a BlockGenus Family-->
+<!ELEMENT BlockFamilies (BlockFamily*)>
+<!ELEMENT BlockFamily (FamilyMember*)>
+<!ELEMENT FamilyMember (#PCDATA)>
+
+<!-- Defines BlockDrawerSets and their Block Drawer content-->
+<!ELEMENT BlockDrawerSets (BlockDrawerSet*)>
+<!ELEMENT BlockDrawerSet (BlockDrawer*)>
+<!ATTLIST BlockDrawerSet type (bar|stack) "bar">
+<!ATTLIST BlockDrawerSet name CDATA #REQUIRED>
+<!ATTLIST BlockDrawerSet location (east|west|north|south|northeast|southeast|southwest|northwest) "west">
+<!-- window-per-drawer specifies if each drawer should be its own draggable window.  otherwise, all the drawers 
+	are contained within one draggable window and only one drawer can be opened at once. 
+	Whether or not the window is draggable depends if drawer-draggable is set to "yes." --> 
+<!ATTLIST BlockDrawerSet window-per-drawer (yes|no) "yes">
+<!ATTLIST BlockDrawerSet drawer-draggable (yes|no) "yes">
+
+<!--This defines BlockDrawers and their content-->
+<!ELEMENT BlockDrawer ( (BlockGenusMember | Separator | NextLine)* )>
+<!ATTLIST BlockDrawer name CDATA #REQUIRED>
+<!ATTLIST BlockDrawer type (default|factory|page|custom) "default">
+<!ATTLIST BlockDrawer is-open (yes|no) "no">
+<!ATTLIST BlockDrawer button-color CDATA #REQUIRED>
+<!ELEMENT BlockGenusMember (#PCDATA)>
+<!ELEMENT Separator EMPTY>
+<!ELEMENT NextLine EMPTY>
+
+<!-- Defines Pages dividing the Block Canvas and the optional PageDrawers associated with them
+     Each Page can have only one PageDrawer.  
+     For now, every page must have a drawer or no pages can have drawers.
+     The block canvas need not contain any pages.  You may choose to have
+     a blank canvas instead of a canvas of pages.
+-->
+<!ELEMENT Pages (Page*)>
+<!-- 
+	 drawer-with-page auto generates a new drawer for each new page created by a user 
+     and creates an empty drawer for each page that does not specify a page drawer 
+-->
+<!ATTLIST Pages drawer-with-page (yes|no) "no">
+<!ELEMENT Page (PageDrawer?)>
+<!ATTLIST Page page-name CDATA #REQUIRED>
+<!ATTLIST Page page-width CDATA #REQUIRED>
+<!ATTLIST Page page-height CDATA #IMPLIED>
+<!ATTLIST Page page-drawer CDATA #IMPLIED>
+<!ATTLIST Page page-color CDATA #IMPLIED>
+<!ATTLIST Page page-shape CDATA #IMPLIED>
+
+<!ELEMENT PageDrawer (BlockGenusMember*)>
+
+<!-- If specified a trash can will appear on the workspace.
+	For both of its child elements, a location for the images should be specified relative to the working directory.
+	The open trash image appears when a user drags a block over the trashcan.  The closed trash image is the default 
+	image during steady state. 
+     -->
+<!ELEMENT TrashCan (OpenTrashImage, ClosedTrashImage)>
+<!ELEMENT OpenTrashImage (#PCDATA)>
+<!ELEMENT ClosedTrashImage (#PCDATA)>
+
+<!-- By default, a minimap will always appear in the upper right corner
+  	 of the block canvas, unless enabled is set to "no." 
+  	 -->
+<!ELEMENT MiniMap EMPTY>
+<!ATTLIST MiniMap enabled (yes|no) "yes">
+
+<!-- By default, typeblocking will be enabled, such that when the user types onto the canvas
+	 blocks will fly out that match the entered text.
+  	 -->
+<!ELEMENT Typeblocking EMPTY>
+<!ATTLIST Typeblocking enabled (yes|no) "yes">
+
+
+<!-- STARLOGO TNG DEFINITIONS -->
+<!ELEMENT BreedShapeMappings (BtoSMapping+)>
+<!ELEMENT BtoSMapping (BreedName, BreedShape)> 
+<!ELEMENT BreedName (#PCDATA)>
+<!ELEMENT BreedShape (#PCDATA)>

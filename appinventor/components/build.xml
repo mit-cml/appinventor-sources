@@ -1,0 +1,343 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+
+     App Inventor component libraries
+     ====================================================================== -->
+
+<project name="components" default="all">
+  <description>
+    App Inventor component libraries
+  </description>
+
+  <target name="all"
+          depends="CommonConstants,AndroidRuntime,
+                   JsonComponentDescription,XmlComponentDescription,
+                   ComponentList">
+  </target>
+
+  <target name="tests"
+          depends="CommonTests,AndroidRuntimeTests">
+  </target>
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+
+  <!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+  <property name="components.pkg" value="com/google/appinventor/components" />
+
+  <!-- =====================================================================
+       CommonConstants: library of constants used across App Inventor
+       ===================================================================== -->
+  <target name="CommonConstants"
+          description="Generate library of constants used across App Inventor"
+          depends="init">
+    <property name="CommonConstants-class.dir" location="${class.dir}/CommonConstants" />
+    <mkdir dir="${CommonConstants-class.dir}" />
+
+    <ai.javac destdir="${CommonConstants-class.dir}">
+      <include name="${components.pkg}/common/*.java" />
+      <exclude name="${components.pkg}/common/HtmlEntities.java" />
+    </ai.javac>
+
+    <jar destfile="${public.build.dir}/CommonConstants.jar">
+      <fileset dir="${CommonConstants-class.dir}"/>
+    </jar>
+
+    <jar destfile="${public.build.dir}/CommonConstants-gwt.jar">
+      <fileset dir="${CommonConstants-class.dir}"/>
+      <!-- Source files needed for GWT compilation: -->
+      <fileset dir="${src.dir}">
+        <include name="${components.pkg}/common/*.java" />
+        <exclude name="${components.pkg}/common/HtmlEntities.java" />
+        <include name="${components.pkg}/CommonConstants.gwt.xml" />
+      </fileset>
+    </jar>
+  </target>
+
+  <!-- =====================================================================
+       HtmlEntities: library containing utility class for working with
+           HTML entities.
+       ===================================================================== -->
+  <target name="HtmlEntities"
+          description="Generate library containing utility class for working with HTML entities"
+          depends="init">
+    <property name="HtmlEntities-class.dir" location="${class.dir}/HtmlEntities" />
+    <mkdir dir="${HtmlEntities-class.dir}" />
+
+    <ai.javac destdir="${HtmlEntities-class.dir}">
+      <include name="${components.pkg}/common/HtmlEntities.java" />
+    </ai.javac>
+
+    <jar destfile="${local.build.dir}/HtmlEntities.jar">
+      <fileset dir="${HtmlEntities-class.dir}"/>
+    </jar>
+  </target>
+
+  <!-- =====================================================================
+       CommonTests: build and run the common tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForCommonTests.path"> 
+    <pathelement location="${local.build.dir}/HtmlEntities.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+  </path>
+
+  <path id="CommonTests.path">
+    <path refid="libsForCommonTests.path"/>
+    <pathelement location="${local.build.dir}/CommonTests.jar" />
+  </path>
+
+  <target name="CommonTests" 
+          depends="HtmlEntities" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="CommonTests"
+                aij-dir="${components.pkg}/common" >
+    </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       AndroidRuntime: library providing runtime support for components
+       ===================================================================== -->
+  <target name="AndroidRuntime"
+          description="Generate runtime library implementing components"
+          depends="CommonConstants,HtmlEntities">
+    <property name="AndroidRuntime-class.dir" location="${class.dir}/AndroidRuntime" />
+    <mkdir dir="${AndroidRuntime-class.dir}" />
+
+    <ai.javac destdir="${AndroidRuntime-class.dir}">
+      <include name="${components.pkg}/annotations/*.java" />
+      <include name="${components.pkg}/runtime/**/*.java" />
+      <classpath>
+        <pathelement location="${local.build.dir}/HtmlEntities.jar" />
+        <pathelement location="${public.build.dir}/CommonConstants.jar" />
+        <pathelement location="${lib.dir}/android/2.2/android.jar" />
+        <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+        <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+      </classpath>
+    </ai.javac>
+
+    <jar basedir="${AndroidRuntime-class.dir}"
+         destfile="${public.build.dir}/AndroidRuntime.jar">
+      <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
+      <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
+    </jar>
+  </target>
+
+  <!-- =====================================================================
+       AndroidRuntimeTests: build and run the AndroidRuntime tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForAndroidRuntimeTests.path"> 
+    <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
+    <pathelement location="${public.build.dir}/CommonConstants.jar" />
+    <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
+    <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
+    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
+    <pathelement location="${lib.dir}/powermock/javassist-3.15.0-GA.jar" />
+    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
+    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+    <!-- android.jar must go last on the classpath list 
+         so that its junit (or other) stubs don't override the real ones -->
+    <pathelement location="${lib.dir}/android/2.2/android.jar" />
+  </path>
+
+  <path id="AndroidRuntimeTests.path">
+    <path refid="libsForAndroidRuntimeTests.path"/>
+    <pathelement location="${local.build.dir}/AndroidRuntimeTests.jar" />
+  </path>
+
+  <target name="AndroidRuntimeTests" 
+          depends="AndroidRuntime" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="AndroidRuntimeTests"
+                aij-dir="${components.pkg}/runtime" >
+    </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       Define task ai.apt for running the annotation processor.
+
+       This is based on the "ai.javac" task instead of the "apt" task
+       in order to inherit our changes to the java task and because the
+       apt task does not offer any useful additional tags.
+       ===================================================================== -->
+  <macrodef name="ai.apt">
+    <attribute name="apt-classdir" />
+    <attribute name="apt-processor" />
+    <attribute name="apt-target" />
+    <sequential>
+      <mkdir dir="@{apt-classdir}" />
+      <!-- if any classes are not up-to-date, we need to delete all the classes. Otherwise, javac
+      will only process the java files whose classes are not up-to-date and we'll end up with only
+      partial results -->
+      <uptodate property="target.uptodate" targetfile="@{apt-target}">
+        <srcfiles dir="${src.dir}" includes="${components.pkg}/runtime/*.java"/>
+      </uptodate>
+      <delete>
+        <fileset dir="@{apt-classdir}">
+          <include name="**/*.class" unless="target.uptodate"/>
+        </fileset>
+      </delete>
+      <ai.javac destdir="@{apt-classdir}">
+        <include name="${components.pkg}/runtime/*.java" />
+        <classpath>
+          <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
+          <pathelement location="${local.build.dir}/HtmlEntities.jar" />
+          <pathelement location="${public.build.dir}/CommonConstants.jar" />
+          <pathelement location="${lib.dir}/android/2.2/android.jar" />
+          <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+          <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+          <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+        </classpath>
+        <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
+        <compilerarg line="-processor @{apt-processor}" />
+      </ai.javac>
+    </sequential>
+  </macrodef>
+
+  <!-- =====================================================================
+       ComponentProcessingLib: common library for annotation processors that
+                               run over the components.
+       ===================================================================== -->
+  <target name="ComponentProcessingLib"
+          description="Generate library for component annotation processors"
+          depends="CommonConstants">
+    <property name="ComponentProcessingLib-class.dir"
+              location="${class.dir}/ComponentProcessingLib" />
+    <mkdir dir="${ComponentProcessingLib-class.dir}" />
+
+    <ai.javac destdir="${ComponentProcessingLib-class.dir}">
+      <include name="${components.pkg}/scripts/ComponentProcessor.java" />
+      <include name="${components.pkg}/annotations/*.java" />
+      <classpath>
+        <pathelement location="${public.build.dir}/CommonConstants.jar" />
+        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+      </classpath>
+    </ai.javac>
+
+    <jar basedir="${ComponentProcessingLib-class.dir}"
+         destfile="${local.build.dir}/ComponentProcessingLib.jar" />
+  </target>
+
+  <!-- =====================================================================
+       AnnotationProcessors: plugins for processing component annotations
+       Note that AnnotationProcessors.jar, produced here, will contain all
+       of its dependencies including guava. This makes it much easier to
+       specify the -processorpath option in ai.apt.
+       ===================================================================== -->
+  <target name="AnnotationProcessors"
+          description="Create plugins for annotation processing"
+          depends="ComponentProcessingLib,CommonConstants,HtmlEntities">
+
+    <property name="AnnotationProcessors-class.dir"
+              location="${class.dir}/AnnotationProcessors" />
+    <mkdir dir="${AnnotationProcessors-class.dir}" />
+
+    <ai.javac destdir="${AnnotationProcessors-class.dir}">
+      <include name="${components.pkg}/scripts/*.java" />
+      <classpath>
+        <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
+        <pathelement location="${local.build.dir}/HtmlEntities.jar" />
+        <pathelement location="${public.build.dir}/CommonConstants.jar" />
+        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+      </classpath>
+    </ai.javac>
+
+    <copy todir="${AnnotationProcessors-class.dir}">
+      <fileset dir="${src.dir}">
+        <include name="${components.pkg}/scripts/templates/*" />
+      </fileset>
+    </copy>
+
+    <jar basedir="${AnnotationProcessors-class.dir}"
+         destfile="${local.build.dir}/AnnotationProcessors.jar" >
+      <zipfileset src="${local.build.dir}/ComponentProcessingLib.jar"/>
+      <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
+      <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
+      <zipfileset src="${lib.dir}/guava/guava-r09.jar" />
+    </jar>
+
+  </target>
+
+  <!-- =====================================================================
+       JsonComponentDescription: create simple_components.json.
+       ===================================================================== -->
+  <target name="JsonComponentDescription"
+          description="Make simple_components.json."
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="JsonComponentDescription-class.dir"
+              location="${class.dir}/JsonComponentDescription" />
+    <ai.apt apt-classdir="${JsonComponentDescription-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.ComponentDescriptorGenerator"
+            apt-target="${JsonComponentDescription-class.dir}/simple_components.json"/>
+
+    <copy file="${JsonComponentDescription-class.dir}/simple_components.json"
+          todir="${public.build.dir}"/>
+  </target>
+
+  <!-- =====================================================================
+       XmlComponentDescription: create lang_def.xml for Blocks Editor.
+       ===================================================================== -->
+  <target name="XmlComponentDescription"
+          description="Make ya_lang_def.xml file for Blocks Editor."
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="XmlComponentDescription-class.dir"
+              location="${class.dir}/XmlComponentDescription" />
+    <mkdir dir="${XmlComponentDescription-class.dir}" />
+
+    <ai.apt apt-classdir="${XmlComponentDescription-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.LangDefXmlGenerator"
+            apt-target="${XmlComponentDescription-class.dir}/ya_lang_def.xml"/>
+
+    <copy file="${XmlComponentDescription-class.dir}/ya_lang_def.xml"
+          todir="${public.build.dir}"/>
+  </target>
+
+  <!-- =====================================================================
+       ComponentList: create simple_components.txt and
+                      simple_components_permissions.json
+       ===================================================================== -->
+  <target name="ComponentList"
+          description="Make simple_components.txt and simple_components_permissions.json."
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
+    <mkdir dir="${ComponentList-class.dir}" />
+
+    <ai.apt apt-classdir="${ComponentList-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.ComponentListGenerator"
+            apt-target="${ComponentList-class.dir}/simple_components.txt"/>
+
+    <copy file="${ComponentList-class.dir}/simple_components.txt"
+          todir="${public.build.dir}"/>
+    <copy file="${ComponentList-class.dir}/simple_components_permissions.json"
+          todir="${public.build.dir}"/>
+  </target>
+
+  <!-- =====================================================================
+       ComponentDocumentation: create component documentation for source
+       ===================================================================== -->
+  <target name="ComponentDocumentation"
+          description="Make component documentation from source annotations."
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+    <property name="ComponentDocumentation-class.dir"
+              location="${class.dir}/ComponentDocumentation" />
+    <mkdir dir="${ComponentDocumentation-class.dir}" />
+
+    <ai.apt apt-classdir="${ComponentDocumentation-class.dir}"
+            apt-processor="com.google.appinventor.components.scripts.DocumentationGenerator"
+            apt-target="${ComponentDocumentation-class.dir}/component-doc.html"/>
+
+    <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
+          todir="${local.build.dir}"/>
+  </target>
+
+</project>

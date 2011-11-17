@@ -1,0 +1,724 @@
+/*
+ * Copyright 2007 Google Inc. All Rights Reserved.
+ */
+
+/*
+Droid Sans has a bug in the size of its descenders:
+they get cut off in Windows.
+@import url("http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold");
+*/
+
+body, html {
+  height: 100%;
+}
+
+body {
+  background-color: white;
+/* TODO(opensource): Change to commented version below once we're ready */
+  background-image: url(images/watermark.png);
+/*  background-image: url(images/background.gif); */
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+/*
+ * Context menus
+ */
+
+.ode-ContextMenu {
+  background-color:#f7f9f2;
+  border: 1px solid #a4c639;
+}
+
+.ode-ContextMenuItem,
+.ode-CurrentColor {
+  color: #555;
+  cursor: pointer;
+  padding-top: 3px;
+  padding-left: 9px;
+  padding-bottom: 3px;
+  font-size: small;
+}
+
+.ode-ContextMenuItem {
+  padding-left: 8px;
+}
+
+.ode-CurrentColor {
+  padding-left: 0px;
+}
+
+.ode-ContextMenuItem-selected {
+ background-color: #DDDDDD;
+}
+
+.ode-ContextMenuItem-disabled {
+  color: #999;
+}
+
+.ode-Box-content {
+  font-size: 13px;
+  background-color: #f7f9f2;
+  /* TODO(opensource): Delete the background-image line below once we're ready */
+  background-image: url(images/watermark.png);
+  color: #555;
+  border-left: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
+  border-right: 1px solid #d2d2d2;
+}
+
+.ode-Box-header {
+  background: #d2e0a6;
+  height: 31px;
+  border: 1px solid;
+  border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
+}
+
+.ode-Box-header-caption,
+.ode-Box-header-caption-highlighted {
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-size: 13px;
+  font-weight: bold;
+  padding-top: 7px;
+  padding-left: 9px;
+}
+
+.ode-Box-header-caption {
+  color: #555;
+}
+
+.ode-Box-header-caption-highlighted {
+  color: red; /* too strong, but use red for now */
+}
+
+.ode-Box-body {
+}
+
+.ode-Box-body-padding {
+  padding: 5px;
+}
+
+.ode-BoxResizeControl {
+  background-color: darkgray !important;
+  /* Override glass panel to 90% opacity (= 10% transparency) */
+  filter: alpha(opacity = 90) !important; /* IE */
+  opacity: 0.9 !important; /* non-IE */
+  padding: 10px;
+}
+
+/*
+ * MessagesOutputBox
+ */
+
+.ode-MessagesOutput {
+  background-color: white;
+  font-size: small;
+}
+
+/*
+ * MotdBox
+ */
+
+.ode-Motd {
+  background-color: #f7f9f2;
+  font-size: small;
+  color: #555;
+}
+
+/*
+ * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
+ */
+
+.ode-ProjectNameLabel {
+  font-weight: bold;
+  font-size: small;
+  color: #555;
+  cursor: pointer;
+}
+
+.ode-ProjectTable {
+  padding: 0px;
+  margin: 0px;
+  border: 1px;
+}
+
+.ode-ProjectTable td {
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: small;
+  color: #555;
+  text-align: left;
+  margin: 0px;
+}
+
+.ode-ProjectRowHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: #fff6c3;
+  border-collapse: collapse;
+}
+
+.ode-ProjectRowUnHighlighted {
+  border-bottom: 1px solid #ddd;
+  background-color: white
+}
+
+.ode-ProjectHeaderRow {
+  background: url(images/toolbarBG.png) repeat;
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
+}
+
+.ode-ProjectHeaderLabel {
+  color: #112abb;
+  font-size: 11px;
+  font-family: Arial, sans-serif;
+  cursor: pointer;
+}
+
+.ode-CheckpointProjectTable {
+  border: 1px solid darkgray;
+}
+
+/*
+ * TopPanel
+ */
+
+
+.ode-TopPanel {
+  height: 60px;
+}
+
+.ode-TopPanelAccount {
+  font-size: 12px;
+  color: #b5b5b5;
+  padding: 4px 8px 4px 0;
+}
+
+.ode-TopPanelAccount a {
+  color: #a4c639;
+}
+
+.ode-TopPanelAccount .linkdivider {
+  color: #dedede;
+ }
+
+.ode-TopPanelMiddleLinks .gwt-Label,
+.ode-TopPanelMiddleLinks .gwt-Anchor {
+  cursor: pointer;
+  color: #888;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-size: 15px;
+  margin-right: 15px;
+  text-decoration: none;
+}
+
+.ode-TopPanelWarningLabel {
+  color: #FF0000;
+  font-family: 'Droid Sans', arial, sans-serif;
+}
+
+/*
+ * StatusPanel
+ */
+
+.ode-StatusPanel {
+  font-size: 12px;
+  color: #888;
+  padding: 15px 4px 4px 4px;
+}
+
+.ode-StatusPanel a {
+  color: #888;
+}
+
+/*
+ * Non-visible component panel
+ */
+
+.ya-NonVisibleComponentsHeader {
+  font-size: 13px;
+  font-weight: bold;
+  color: #555;
+  font-family: 'Droid Sans', arial, sans-serif;
+  padding: 5px;
+}
+
+.ode-SimpleUiDesignerNonVisibleComponents .ode-Icon,
+.ode-SimpleUiDesignerNonVisibleComponents .ode-Icon-selected {
+  display: inline-table;
+}
+
+.ode-SimpleUiDesignerNonVisibleComponents .gwt-Label {
+  font-size: 12px;
+  color: #555;
+}
+
+.ode-Icon, .ode-Icon-selected {
+  font-size: small;
+  padding: 2px 4px 2px 4px;
+}
+
+.ode-Icon-selected {
+  padding: 0 2px 0 2px;
+  border: 2px solid #a4c639;
+}
+
+.gwt-TabBarItem {
+  color: black;
+  font-size: small;
+  border: 2px solid transparent;
+}
+
+.gwt-TabBarItem-selected {
+  border: 2px solid #a4c639;
+}
+
+.gwt-RadioButton {
+  font-size: small;
+}
+
+.gwt-VerticalSplitPanel, gwt-HorizontalSplitPanel {
+  background: white;
+}
+
+.gwt-Tree .gwt-TreeItem span * {
+  margin: 0 2px;
+}
+
+.gwt-Tree .gwt-TreeItem {
+  font-size: 12px;
+  color: #555;
+  cursor: default;
+}
+
+.gwt-Tree .gwt-TreeItem span {
+  padding: 6px 0px 2px 0px;
+}
+
+.gwt-Tree .gwt-TreeItem-selected span {
+  background-color: #d2e0a6;
+}
+
+/* Young Android Toolbar */
+
+.ya-Toolbar {
+  background-color: #a4c639;
+}
+
+.ya-Toolbar .ya-ProjectName {
+  color: white;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-weight: bold;
+  font-size: 15px;
+  padding-top: 9px;
+  padding-left: 9px;
+}
+
+.ode-TextButton {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background-color: #eee;
+  color: #555;
+  border: 1px solid #999;
+}
+
+.ode-TextButton[disabled] {
+  color: #999 !important;
+  border: 1px solid #999 !important;
+}
+
+.ode-TextButton:hover {
+  color: black;
+  border: 1px solid black;
+}
+
+.ya-Toolbar .ode-TextButton {
+  font-size: 12.5px;
+  font-family: 'Droid Sans', arial, sans-serif;
+}
+
+.ode-PanelButtons .ode-TextButton {
+  font-size: 12px;
+  font-family: 'Droid Sans', arial, sans-serif;
+}
+
+/* Palette */
+
+.gwt-StackPanelItem div {
+  border-top: 1px solid #d2d2d2;;
+  border-bottom: 1px solid #d2d2d2;;
+  background-color: #eef2e0;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  height: 14px;
+  color: #555;
+  padding: 9px 10px;
+}
+
+.gwt-StackPanelItem-selected div {
+  font-weight: bold;
+}
+
+.gwt-StackPanelContent {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-top: 10px;
+}
+
+.ode-SimplePaletteItem {
+  background-color: #f7f9f2; /* needed on Firefox */
+  height: 15px;
+  cursor: pointer;
+  padding-bottom: 10px;
+}
+
+.ode-SimplePaletteItem-caption {
+  font-size: 12px;
+  color: #555;
+}
+
+.gwt-SimplePanel {
+  border: 1px solid #67A7E3;
+  background-color: white;
+}
+
+.ode-ExplorerContent {
+  height: 100%;
+  padding: 0 1ex;
+  border-left: 1px solid #D6E9F8;
+  border-right: 1px solid #D6E9F8;
+  font-size: small;
+}
+
+.ode-CollapsiblePanelExpanded {
+  background-color: #D6E9F8;
+}
+
+.ode-CollapsiblePanelCollapsedLeft {
+  background-color: #D6E9F8;
+  margin-right: 2px;
+}
+
+.ode-CollapsiblePanelCollapsedBottom {
+  background-color: #D6E9F8;
+  margin-top: 2px;
+}
+
+.ode-CollapsiblePanelTitle {
+  background-color: #D6E9F8;
+  color: black;
+  font-size: small;
+  margin-bottom: 2px;
+}
+
+.ode-HeaderPanel {
+  width: 100%;
+  border: 1px solid #D6E9F8;
+  background-color: white;
+}
+
+.ode-HeaderPanelTitleBar {
+  background-color: #D6E9F8;
+  color: black;
+  font-size: small;
+}
+
+.ode-PropertiesPanel {
+  background-color: #f7f9f2;
+  padding-left: 9px;
+  padding-right: 9px;
+  padding-bottom: 9px;
+}
+
+.ode-PropertiesPanel td {
+  color: #555;
+  font-size: 12px;
+}
+
+.ode-PropertiesComponentName {
+  background-color: #eef2e0;
+  color: #555;
+  font-size: 13px;
+  font-family: 'Droid Sans', arial, sans-serif;
+  border-bottom: 1px solid #d2d2d2;
+  padding: 9px 9px 8px 10px;
+}
+
+.ode-PropertyLabel {
+  padding-top: 10px;
+  padding-left: 2px;
+  padding-bottom: 1px;
+}
+
+.ode-PropertyEditor {
+}
+
+.ode-MultipleChoicePropertyEditor {
+  min-width: 150px;
+  background-color: white;
+  font-size: small;
+  color: black;
+  border: 1px solid gray;
+  padding: 2px;
+}
+
+.ode-ColorChoicePropertyEditor {
+  background-color: white;
+  font-size: small;
+  border: 1px solid darkgray;
+  cursor: hand;
+}
+
+.ode-SimpleFormDesigner {
+  padding: 2px;
+}
+
+.ode-SimpleFormDesigner .gwt-CheckBox {
+  font-size: 12px;
+}
+
+.ode-SimpleMockForm {
+  background-color: #d2e0a6;
+  border: 2px solid black;
+}
+
+.ode-SimpleMockForm-selected {
+  border: 2px solid #a4c639;
+}
+
+.ode-SimpleMockFormTitleBar {
+  background-color: dimgray;
+  border-bottom: 1px solid lightgray;
+}
+
+.ode-SimpleMockFormPhoneBar {
+  background-color: #E6E6E6;
+}
+
+.ode-SimpleMockFormTitle {
+  color: white;
+  font-family: sans-serif;
+  font-size: 90%;
+}
+
+.ode-SimpleMockContainer {
+  background-color: transparent;
+  border: 2px solid black;
+}
+
+.ode-SimpleMockContainer-selected {
+  border: 2px solid #a4c639;
+}
+
+.ode-SimpleMockComponent {
+  font-family: sans-serif;
+  font-weight: normal;
+  font-size: 12px;
+  border: 2px solid transparent;
+}
+
+.ode-SimpleMockComponent-disabled {
+  color: gray;
+}
+
+.ode-SimpleMockComponent-selected {
+  border: 2px solid #a4c639;
+}
+
+.ode-SimpleMockContainer-centerContents {
+    text-align: center;
+}
+
+.ode-SimpleMockButton {
+  /* When updating this color also update MockButtonBase.setBackgroundColorProperty() */
+  background-color: #E8E8E8;
+}
+
+/* Component Help */
+
+.ode-ComponentHelpPopup {
+  background-color: white;
+  border-left: 4px solid #A4C639;
+  border-right: 4px solid #A4C639;
+  border-bottom: 4px solid #A4C639;
+  width: 30%;
+}
+
+.ode-ComponentHelpPopup-TitleBar {
+  background-color: #a4c639;
+  color: white;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+
+.ode-ComponentHelpPopup-Body {
+  padding: 10px;
+  color: #555;
+  font-size: 12px;
+}
+
+.ode-ComponentHelpPopup-Link {
+  padding: 0px 10px 10px 10px;
+  font-size: 12px;
+
+}
+.ode-ComponentHelpPopup-Link a {
+  color: #a4c639;
+}
+
+.compiler-ErrorMarker {
+  color: red;
+}
+
+.compiler-WarningMarker {
+  color: orange;
+}
+
+.centered {
+  text-align: center;
+  align: center;
+}
+
+.hsplitter, .vsplitter {
+  background-color: #D6E9F8;
+}
+
+.ode-RpcStatusMessage .popupMiddleCenterInner {
+  font-weight: bold;
+  font-size: small;
+  padding: 2px 2px 0px 2px;
+}
+
+.ode-RpcStatusMessage .popupMiddleLeft,
+.ode-RpcStatusMessage .popupMiddleCenter,
+.ode-RpcStatusMessage .popupMiddleRight,
+.ode-RpcStatusMessage .popupBottomCenter {
+  background-color: #FFF1A8;
+}
+
+.ode-RpcStatusMessage .popupBottomLeft {
+  width: 4px;
+  height: 4px;
+  background: url(images/rpcMessageCorners.png) no-repeat 0px -4px;
+}
+
+.ode-RpcStatusMessage .popupBottomRight {
+  width: 4px;
+  height: 4px;
+  background: url(images/rpcMessageCorners.png) no-repeat -4px -4px;
+}
+
+.ode-ErrorMessage {
+  background-color: red;
+  font-weight: bold;
+  padding: 2px;
+}
+
+.ode-InfoMessage {
+  background-color: #FFF1A8;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 2px;
+}
+
+.ode-GroupedList .Header {
+  margin-top: 3px;
+}
+
+.ode-GroupedList .Header td {
+  padding: 2px 5px;
+  font-weight: bold;
+  background: #eee;
+}
+
+.ode-GroupedList .HeaderDescription {
+  font-weight: normal;
+  font-size: x-small;
+  font-style: italic;
+}
+
+.ode-GroupedList .Item td {
+  padding: 2px 10px;
+}
+
+.ode-PixelsLabel {
+  padding-left: 4px;
+  font-size: small;
+}
+
+/* All dialog boxes */
+/* would pop more with a white border around their normal green border */
+
+.ode-DialogBox {
+  background-color: white;
+  border-left: 4px solid #A4C639;
+  border-right: 4px solid #A4C639;
+  border-bottom: 4px solid #A4C639;
+}
+
+.ode-DialogBox .dialogTop {
+  background-color: #A4C639;
+}
+
+.ode-DialogBox .Caption {
+  background-color: #A4C639;
+  color: white;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 5px 10px;
+}
+
+.ode-DialogBox .dialogContent {
+  padding: 5px 10px;
+}
+
+.ode-DialogBox .dialogContent td {
+  padding: 2px 10px;
+  font-size: 12px;
+  color: #555;
+}
+
+.ode-DialogBox .gwt-Button {
+  margin: 10px;
+}
+
+/* Settings dialog boxes */
+
+.ode-Settings {
+  min-width: 320px;
+  min-height: 160px;
+}
+
+/* AndroidServlet */
+
+.ode-Android-banner {
+  text-align: large;
+  font-weight: bold;
+}
+
+.ode-Android-header {
+  font-size: small;
+  text-align: right;
+}
+
+.ode-Android-caption {
+  background-color: #A4C639;
+  color: white;
+  font-size: medium;
+}
+
+.ode-Android-body {
+  font-size: medium;
+}
+
+.ode-Android-footer {
+  height: 12px;
+  font-size: x-small;
+  text-align: center;
+  background-color: #D6E9F8;
+  color: black;
+  padding: 4px;
+}

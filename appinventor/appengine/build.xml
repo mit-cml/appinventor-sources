@@ -1,0 +1,392 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: kerr@google.com (Debby Wallach)
+     Author: lizlooney@google.com (Liz Looney)
+
+     App Inventor appengine app
+     ====================================================================== -->
+
+<project name="appengine" default="all">
+  <description>
+    Appengine server and client code
+  </description>
+  <condition property="XstartOnFirstThread" value="-XstartOnFirstThread">
+    <os family="mac"/>
+  </condition>
+  <condition property="XstartOnFirstThread" value="">
+    <not><os family="mac"/></not>
+  </condition>
+
+  <target name="all"
+          depends="AiServerLib,AiClientLib,AiRebindLib,YaClientApp,Keystore,WarLibs">
+  </target>
+
+  <target name="tests"
+          depends="AiClientLibTests,AiSharedLibTests,AiServerLibTests">
+  </target>
+
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+
+  <property name="gwt.sdk" location="${lib.dir}/gwt/2.3.0" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.5.3" />
+
+  <property name="build.war.dir" location="${local.build.dir}/war" />
+
+  <!-- =====================================================================
+       Copy static files to <build>/war, from war and elsewhere
+       ===================================================================== -->
+  <target name="CopyToBuildWar"
+          description="Create and populate build/war directory structure"
+          depends="init">
+    <mkdir dir="${build.war.dir}" />
+    <copy todir="${build.war.dir}/">
+      <fileset dir="war"/>
+      <fileset dir="src/${appinventor.pkg}">
+        <!-- canvas is a special case (see MockCanvas.java) -->
+        <include name="images/canvas.png" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- =====================================================================
+       Create the keystore that is used by AiServerLib to encrypt user and
+       project IDs.
+       CheckKeystore checks whether the keystore has already been created.
+       ===================================================================== -->
+  <target name="CheckKeystore">
+    <!-- If build/war/keystore/1 exists, set keystore.present to true.
+         Otherwise, set keystore.present to false -->
+    <available file="${build.war.dir}/keystore/1" property="keystore.present"/>
+  </target>
+
+  <target name="Keystore"
+          description="Generate the key used by .../server/encryption/KeyczarEncryptor"
+          depends="CheckKeystore,CopyToBuildWar"
+          unless="keystore.present">
+    <echo message="Using KeyczarTool to generate keystore"/>
+    <mkdir dir="${build.war.dir}/keystore"/>
+    <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="create --location=${build.war.dir}/keystore --purpose=crypt"/>
+    </java>
+    <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="addkey --location=${build.war.dir}/keystore"/>
+    </java>
+    <java failonerror="true" fork="true" jar="${lib.dir}/keyczar/KeyczarTool.jar">
+      <arg line="promote --location=${build.war.dir}/keystore --version=1"/>
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       Copy jars needed by AiSharedLib and AiServerLib, that are either
+       external or built by other projects, to <build>/war/WEB-INF/lib.
+       ===================================================================== -->
+  <target name="MakeWarLibsDir"
+          description="Creates build/war/WEB-INF/lib"
+          depends="init">
+    <mkdir dir="${build.war.dir}/WEB-INF/lib" />
+  </target>
+  <target name="WarLibs"
+          description="Copy libs to build/war/WEB-INF/lib"
+          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants">
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/BlocksEditorHttpConstants.jar"/>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonUtils.jar"/>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/components/CommonConstants.jar"/>
+    <!-- external libs -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-r09.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/guava/guava-r09-gwt.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/json/json.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/keyczar/keyczar-0.66-080111-java-1.6.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-1.7.1.jar" />  <!-- for keyczar -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
+    <!-- gwt libs -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
+    <!-- Add any additional server libs that need to be copied -->
+    <copy todir="${build.war.dir}/WEB-INF/lib" flatten="true">
+      <fileset dir="${appengine.sdk}/lib/user" includes="**/*.jar"/>
+    </copy>
+  </target>
+
+  <!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+  <property name="appinventor.pkg" value="com/google/appinventor" />
+
+
+  <!-- =====================================================================
+       AiServer library
+       ===================================================================== -->
+  <target name="AiServerLib"
+          description="App Inventor Server library"
+          depends="init,WarLibs,AiSharedLib,blockseditor_BlocksEditor,buildserver_StarterApp">
+    <property name="AiServerLib-class.dir" location="${class.dir}/AiServerLib" />
+    <mkdir dir="${AiServerLib-class.dir}" />
+
+    <ai.javac destdir="${AiServerLib-class.dir}" >
+      <include name="${appinventor.pkg}/server/**/*.java" />
+      <classpath>
+        <!-- jars that we put in <build>/war/WEB-INF/lib -->
+        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar"/>
+        <!-- gwt lib needed only at compile time for javax.servlet.http.HttpServlet* -->
+        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+      </classpath>
+    </ai.javac>
+
+    <!-- copy resources that need to be packed into AiServerLib.jar -->
+    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
+          file="${build.dir}/blockseditor/BlocksEditor.jar"/>
+    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
+          file="${build.dir}/buildserver/AppInventorPhoneApp.apk"/>
+
+    <jar basedir="${AiServerLib-class.dir}"
+         destfile="${local.build.dir}/AiServerLib.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${local.build.dir}/AiServerLib.jar"/>
+  </target>
+
+  <!-- =====================================================================
+       AiServerLibTests: build and run the AiServerLib tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForAiServerLibTests.path"> 
+    <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${local.build.dir}/AiSharedLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils.jar" />
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
+    <pathelement location="${lib.dir}/keyczar/KeyczarTool.jar" />
+    <pathelement location="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
+    <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
+    <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
+    <pathelement location="${lib.dir}/powermock/javassist-3.15.0-GA.jar" />
+    <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
+    <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
+    <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
+    <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+    <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
+    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-labs.jar"/>
+    <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
+    <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
+    <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
+  </path>
+
+  <path id="AiServerLibTests.path">
+    <path refid="libsForAiServerLibTests.path"/>
+    <pathelement location="${local.build.dir}/AiServerLibTests.jar" />
+  </path>
+
+  <target name="AiServerLibTests" 
+          depends="AiServerLib,common_CommonTestUtils,common_CommonUtils,Keystore" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="AiServerLibTests"
+                aij-dir="${appinventor.pkg}/server" >
+    </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       AiShared library
+       ===================================================================== -->
+  <target name="AiSharedLib"
+          description="App Inventor Shared library"
+          depends="init,WarLibs">
+          
+    <property name="AiSharedLib-class.dir" location="${class.dir}/AiSharedLib" />
+    <mkdir dir="${AiSharedLib-class.dir}" />
+
+    <ai.javac destdir="${AiSharedLib-class.dir}" >
+      <include name="${appinventor.pkg}/shared/**/*.java" />
+      <classpath>
+        <!-- jars that we put in <build>/war/WEB-INF/lib -->
+        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar"/>
+      </classpath>
+    </ai.javac>
+
+    <jar basedir="${AiSharedLib-class.dir}"
+         destfile="${local.build.dir}/AiSharedLib.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${local.build.dir}/AiSharedLib.jar"/>
+
+  </target>
+
+  <!-- =====================================================================
+       AiSharedLibTests: build and run the AiSharedLib tests and generate the output results
+       ===================================================================== -->
+
+  <!-- requires AiServerLib for files in /server/properties/json -->
+  <path id="libsForAiSharedLibTests.path"> 
+    <pathelement location="${local.build.dir}/AiSharedLib.jar" />
+    <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
+  </path>
+
+  <path id="AiSharedLibTests.path">
+    <path refid="libsForAiSharedLibTests.path"/>
+    <pathelement location="${local.build.dir}/AiSharedLibTests.jar" />
+  </path>
+
+  <target name="AiSharedLibTests" 
+          depends="AiSharedLib,AiServerLib" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="AiSharedLibTests"
+                aij-dir="${appinventor.pkg}/shared" >
+    </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       Rebind library
+       ===================================================================== -->
+  <target name="AiRebindLib"
+          description="App Inventor Rebind library"
+          depends="init">
+
+    <property name="AiRebindLib-class.dir" location="${class.dir}/AiRebindLib" />
+    <mkdir dir="${AiRebindLib-class.dir}" />
+
+    <ai.javac destdir="${AiRebindLib-class.dir}" >
+      <include name="${appinventor.pkg}/rebind/**/*.java" />
+      <classpath>
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+      </classpath>
+    </ai.javac>
+
+    <jar destfile="${local.build.dir}/AiRebindLib.jar">
+      <fileset dir="${AiRebindLib-class.dir}"/>
+      <fileset dir="${src.dir}">
+        <include name="**/AiRebindLib.gwt.xml" />
+      </fileset>
+    </jar>
+
+  </target>
+
+  <!-- =====================================================================
+       AiClient library
+       ===================================================================== -->
+  <target name="AiClientLib"
+          description="App Inventor Client library - compile java source to bytecode"
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,components_JsonComponentDescription">
+    <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
+    <ai.javac encoding="utf-8"
+              destdir="${build.war.dir}/WEB-INF/classes"
+              source="1.5" target="1.5" nowarn="true"
+              debug="true" debuglevel="lines,vars,source">
+      <include name="${appinventor.pkg}/client/**/*.java" />
+      <include name="${appinventor.pkg}/shared/**/*.java" />
+      <classpath>
+        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants.jar" />
+        <!-- external libs -->
+        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-r1057.jar" />
+        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+      </classpath>
+    </ai.javac>
+    <copy todir="${build.war.dir}/WEB-INF/classes/com/google/appinventor"
+          file="${build.dir}/components/simple_components.json" />
+    <copy todir="${build.war.dir}/WEB-INF/classes">
+      <fileset dir="src" excludes="**/*.java"/>
+    </copy>
+  </target>
+
+  <!-- =====================================================================
+       YaClientApp GWT application
+       CheckYaClientApp - checks whether it is already up-to-date.
+       ===================================================================== -->
+  <target name="CheckYaClientApp"
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
+    <!-- If ode.nocache.js is up-to-date, set YaClientApp.uptodate to true.
+         Otherwise, set YaClientApp.uptodate to false -->
+    <uptodate property="YaClientApp.uptodate"
+              targetfile="${build.war.dir}/ode/ode.nocache.js">
+      <srcfiles dir="${build.war.dir}/WEB-INF/classes"/>
+      <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
+      <srcfiles file="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
+      <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
+      <srcfiles file="${build.dir}/components/CommonConstants-gwt.jar" />
+    </uptodate>
+  </target>
+
+  <target name="YaClientApp"
+          description="GWT compile to JavaScript"
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp,CopyToBuildWar"
+          unless="YaClientApp.uptodate">
+    <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
+      <classpath>
+        <pathelement location="src"/>
+        <pathelement location="${build.war.dir}/WEB-INF/classes"/>
+        <pathelement location="${local.build.dir}/AiRebindLib.jar" />
+        <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
+        <!-- external libs -->
+        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+        <pathelement location="${lib.dir}/guava/guava-r09-gwt.jar" />
+        <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-r1057.jar" />
+        <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <!-- gwt libs -->
+        <pathelement location="${gwt.sdk}/gwt-dev.jar"/>
+        <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA.jar" />
+        <pathelement location="${gwt.sdk}/validation-api-1.0.0.GA-sources.jar" />
+      </classpath>
+      <jvmarg value="-Xss2M"/>  <!-- increase if you see a StackOverflowError -->
+      <jvmarg value="-Xmx1G"/>
+      <jvmarg line="${XstartOnFirstThread}"/>
+      <arg line="-war"/>
+      <arg value="${build.war.dir}"/>
+      <!-- Additional arguments like:
+      <arg line="-style detailed -logLevel WARN"/>
+       -->
+      <arg value="com.google.appinventor.YaClient"/>
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       AiClientLibTests: build and run the AiClientLib tests and generate the output results
+       ===================================================================== -->
+
+  <!-- requires AiServerLib for files in /server/properties/json -->
+  <path id="libsForAiClientLibTests.path"> 
+    <pathelement location="${build.war.dir}/WEB-INF/classes"/>
+    <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${gwt.sdk}/gwt-user.jar"/>
+  </path>
+
+  <path id="AiClientLibTests.path">
+    <path refid="libsForAiClientLibTests.path"/>
+    <pathelement location="${local.build.dir}/AiSharedLib.jar" />
+    <pathelement location="${local.build.dir}/AiClientLibTests.jar" />
+  </path>
+
+  <target name="AiClientLibTests" 
+          depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants"
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="AiClientLibTests"
+                aij-dir="${appinventor.pkg}/client" >
+    </ai.dojunit>
+  </target>
+
+</project>

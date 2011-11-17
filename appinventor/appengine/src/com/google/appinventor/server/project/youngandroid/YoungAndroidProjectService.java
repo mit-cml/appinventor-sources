@@ -1,0 +1,458 @@
+// Copyright 2008 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.server.project.youngandroid;
+
+import com.google.appengine.api.utils.SystemProperty;
+import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.FileExporterImpl;
+import com.google.appinventor.server.Server;
+import com.google.appinventor.server.encryption.EncryptionException;
+import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.project.CommonProjectService;
+import com.google.appinventor.server.project.utils.Security;
+import com.google.appinventor.server.properties.json.ServerJsonParser;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.shared.properties.json.JSONParser;
+import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.NewProjectParameters;
+import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.RawFile;
+import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceFolderNode;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.settings.Settings;
+import com.google.appinventor.shared.settings.SettingsConstants;
+import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Provides support for Young Android projects.
+ *
+ * @author lizlooney@google.com (Liz Looney)
+ * @author markf@google.com (Mark Friedman)
+ */
+public final class YoungAndroidProjectService extends CommonProjectService {
+
+  // Project folder prefixes
+  public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
+  protected static final String ASSETS_FOLDER = "assets";
+  static final String PROJECT_DIRECTORY = "youngandroidproject";
+
+  // TODO(user) Source these from a common constants library.
+  private static final String FORM_PROPERTIES_EXTENSION =
+      YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
+  private static final String CODEBLOCKS_SOURCE_EXTENSION =
+      YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+
+  public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
+      "project.properties";
+
+  // Maximum size of a generated apk file, in megabytes.
+  private static final Flag<Float> maxApkSizeMegs = Flag.createFlag("max.apk.size.megs", 10f);
+
+  private static final JSONParser JSON_PARSER = new ServerJsonParser();
+
+  // Build folder path
+  private static final String BUILD_FOLDER = "build";
+
+  public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
+
+  private static final String KEYSTORE_FILE_NAME = YoungAndroidProjectService.PROJECT_DIRECTORY +
+                                                   "/" + PROJECT_KEYSTORE_LOCATION;
+
+  // host[:port] to use for connecting to the build server
+  private static final Flag<String> buildServerHost =
+      Flag.createFlag("build.server.host", "localhost:9990");
+
+  public YoungAndroidProjectService(StorageIo storageIo) {
+    super(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, storageIo);
+  }
+
+  /**
+   * Returns project settings that can be used when creating a new project.
+   */
+  public static String getProjectSettings(String startupFormName, String icon) {
+    icon = Strings.nullToEmpty(icon);
+    return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
+        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_STARTUP_FORM + "\":\"" +
+        startupFormName + "\"," +
+        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" +
+        icon + "\"}}";
+  }
+
+  /**
+   * Returns the contents of the project properties file for a new Young Android
+   * project.
+   */
+  public static String getProjectPropertiesFileContents(String projectName, String qualifiedName) {
+    return "main=" + qualifiedName + "\n" +
+        "name=" + projectName + '\n' +
+        "assets=../" + ASSETS_FOLDER + "\n" +
+        "source=../" + SRC_FOLDER + "\n" +
+        "build=../build\n";
+  }
+
+  private static String getFormPropertiesFileName(String qualifiedName) {
+    return packageNameToPath(qualifiedName) + FORM_PROPERTIES_EXTENSION;
+  }
+
+  /**
+   * Returns the contents of a new Young Android form file.
+   * @param qualifiedName the qualified name of the form.
+   * @return the contents of a new Young Android form file.
+   */
+  @VisibleForTesting
+  public static String getInitialFormPropertiesFileContents(String qualifiedName) {
+    final int lastDotPos = qualifiedName.lastIndexOf('.');
+    String formName = qualifiedName.substring(lastDotPos + 1);
+    // The initial Uuid is set to zero here since (as far as we know) we can't get random numbers
+    // in ode.shared.  This shouldn't actually matter since all Uuid's are random int's anyway (and
+    // 0 was randomly chosen, I promise).  The TODO(user) in MockComponent.java indicates that
+    // there will someday be assurance that these random Uuid's are unique.  Once that happens
+    // this will be perfectly acceptable.  Until that happens, choosing 0 is just as safe as
+    // allowing a random number to be chosen when the MockComponent is first created.
+    return "#|\n$JSON\n" +
+        "{\"YaVersion\":\"" + YaVersion.YOUNG_ANDROID_VERSION + "\",\"Source\":\"Form\"," +
+        "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
+        "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
+        "\"Title\":\"" + formName + "\"}}\n|#";
+  }
+
+  /**
+   * Returns the name of the codeblocks source file given a qualified form name
+   */
+  private static String getCodeblocksSourceFileName(String qualifiedName) {
+    return packageNameToPath(qualifiedName) + CODEBLOCKS_SOURCE_EXTENSION;
+  }
+
+  /**
+   * Returns the initial contents of a Young Android codeblocks file.
+   */
+  private static String getInitialCodeblocksSourceFileContents(String qualifiedName) {
+    return "";
+  }
+
+  private static String packageNameToPath(String packageName) {
+    return SRC_FOLDER + '/' + packageName.replace('.', '/');
+  }
+
+  public static String getSourceDirectory(String qualifiedName) {
+    return StorageUtil.dirname(packageNameToPath(qualifiedName));
+  }
+
+  // CommonProjectService implementation
+
+  /**
+   * {@inheritDoc}
+   *
+   * {@code params} needs to be an instance of
+   * {@link NewYoungAndroidProjectParameters}.
+   */
+  @Override
+  public long newProject(String userId, String projectName, NewProjectParameters params) {
+    NewYoungAndroidProjectParameters youngAndroidParams = (NewYoungAndroidProjectParameters) params;
+    String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
+
+    String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
+    String propertiesFileContents = getProjectPropertiesFileContents(projectName,
+        qualifiedFormName);
+
+    String formFileName = getFormPropertiesFileName(qualifiedFormName);
+    String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
+
+    String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+    String codeblocksFileContents = getInitialCodeblocksSourceFileContents(qualifiedFormName);
+
+    Project project = new Project(projectName);
+    project.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
+    // Project history not supported in legacy ode new project wizard
+    project.addTextFile(new TextFile(propertiesFileName, propertiesFileContents));
+    project.addTextFile(new TextFile(formFileName, formFileContents));
+    project.addTextFile(new TextFile(codeblocksFileName, codeblocksFileContents));
+
+    // Create new project
+    return storageIo.createProject(userId, project, getProjectSettings(qualifiedFormName, ""));
+  }
+
+  @Override
+  public long copyProject(String userId, long oldProjectId, String newName) {
+    String oldName = storageIo.getProjectName(userId, oldProjectId);
+    String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
+    String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
+    Settings oldSettings = new Settings(JSON_PARSER, oldProjectSettings);
+    String oldStartupFormName = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_STARTUP_FORM);
+    String icon = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON);
+    // oldStartupFormName usually contains the old project name as the final package segment,
+    // surrounded by dots. Replace the old name with the new name.
+    String newStartupFormName = StringUtils.replaceLastOccurrence(oldStartupFormName,
+        "." + oldName + ".", "." + newName + ".");
+
+    Project newProject = new Project(newName);
+    newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
+    newProject.setProjectHistory(oldProjectHistory);
+
+    // Get the old project's source files and add them to new project, modifying where necessary.
+    for (String oldSourceFileName : storageIo.getProjectSourceFiles(userId, oldProjectId)) {
+      String newSourceFileName;
+
+      String newContents = null;
+      if (oldSourceFileName.equals(PROJECT_PROPERTIES_FILE_NAME)) {
+        // This is the project properties file. The name of the file doesn't contain the old
+        // project name.
+        newSourceFileName = oldSourceFileName;
+        // For the contents of the project properties file, generate the file with the new name and
+        // startup form.
+        // we generated above.
+        newContents = getProjectPropertiesFileContents(newName, newStartupFormName);
+      } else {
+        // This is some file other than the project properties file.
+        // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
+        // Replace the old name with the new name.
+        newSourceFileName = StringUtils.replaceLastOccurrence(oldSourceFileName,
+            "/" + oldName + "/", "/" + newName + "/");
+      }
+
+      if (newContents != null) {
+        // We've determined (above) that the contents of the file must change for the new project.
+        // Use newContents when adding the file to the new project.
+        newProject.addTextFile(new TextFile(newSourceFileName, newContents));
+      } else {
+        // If we get here, we know that the contents of the file can just be copied from the old
+        // project. Since it might be a binary file, we copy it as a raw file (that works for both
+        // text and binary files).
+        byte[] contents = storageIo.downloadRawFile(userId, oldProjectId, oldSourceFileName);
+        newProject.addRawFile(new RawFile(newSourceFileName, contents));
+      }
+    }
+
+    // Create the new project and return the new project's id.
+    return storageIo.createProject(userId, newProject,
+        getProjectSettings(newStartupFormName, icon));
+  }
+
+  @Override
+  public ProjectRootNode getRootNode(String userId, long projectId) {
+    // Create root, assets, and source nodes (they are mocked nodes as they don't really
+    // have to exist like this on the file system)
+    ProjectRootNode rootNode =
+        new YoungAndroidProjectNode(storageIo.getProjectName(userId, projectId),
+                                    projectId);
+    ProjectNode assetsNode = new YoungAndroidAssetsFolder(ASSETS_FOLDER);
+    ProjectNode sourcesNode = new YoungAndroidSourceFolderNode(SRC_FOLDER);
+
+    rootNode.addChild(assetsNode);
+    rootNode.addChild(sourcesNode);
+
+    // Sources contains nested folders that are interpreted as packages
+    Map<String, ProjectNode> packagesMap = Maps.newHashMap();
+
+    // Retrieve project information
+    for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+      if (fileId.startsWith(ASSETS_FOLDER + '/')) {
+        // Assets is a flat folder
+        assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
+
+      } else if (fileId.startsWith(SRC_FOLDER + '/')) {
+        // We only send form (.scm) nodes to the ODE client.
+        // We don't send codeblocks source (.blk) nodes.
+        if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
+          YoungAndroidFormNode formNode = new YoungAndroidFormNode(fileId);
+          String packageName = StorageUtil.getPackageName(formNode.getQualifiedName());
+          ProjectNode packageNode = packagesMap.get(packageName);
+          if (packageNode == null) {
+            packageNode = new YoungAndroidPackageNode(packageName, packageNameToPath(packageName));
+            packagesMap.put(packageName, packageNode);
+            sourcesNode.addChild(packageNode);
+          }
+          packageNode.addChild(formNode);
+        }
+      }
+    }
+
+    return rootNode;
+  }
+
+  @Override
+  public long addFile(String userId, long projectId, String fileId) {
+    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
+      // If the file to be added is a new form, add a new form file and a new codeblocks file.
+      String qualifiedFormName = YoungAndroidFormNode.getQualifiedName(fileId);
+      String formFileName = getFormPropertiesFileName(qualifiedFormName);
+      String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+
+      List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+      if (!sourceFiles.contains(formFileName) &&
+          !sourceFiles.contains(codeblocksFileName)) {
+
+        String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
+        storageIo.addSourceFilesToProject(userId, projectId, false, formFileName);
+        storageIo.uploadFile(projectId, formFileName, userId, formFileContents,
+            StorageUtil.DEFAULT_CHARSET);
+
+        String codeblocksFileContents = getInitialCodeblocksSourceFileContents(qualifiedFormName);
+        storageIo.addSourceFilesToProject(userId, projectId, false, codeblocksFileName);
+        return storageIo.uploadFile(projectId, codeblocksFileName, userId, codeblocksFileContents,
+            StorageUtil.DEFAULT_CHARSET);
+      } else {
+        throw new IllegalStateException("One or more files to be added already exists.");
+      }
+
+    } else {
+      return super.addFile(userId, projectId, fileId);
+    }
+  }
+
+  /**
+   * Make a request to the Build Server to build a project.  The Build Server will asynchronously
+   * post the results of the build via the {@link com.google.appinventor.server.ReceiveBuildServlet}
+   * A later call will need to be made by the client in order to get those results.
+   *
+   * @param user the User that owns the {@code projectId}.
+   * @param projectId  project id to be built
+   * @param projectSettings  project settings
+   * @param target  build target (optional, implementation dependent)
+   *
+   * @return an RpcResult reflecting the call to the Build Server
+   */
+  @Override
+  public RpcResult build(User user, long projectId, String projectSettings, String target) {
+    String userId = user.getUserId();
+    String projectName = storageIo.getProjectName(userId, projectId);
+    String outputFileDir = BUILD_FOLDER + '/' + target;
+    // Delete the existing build output files, if any, so that future attempts to get it won't get
+    // old versions.
+    List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
+    for (String buildOutputFile : buildOutputFiles) {
+      storageIo.deleteFile(userId, projectId, buildOutputFile);
+    }
+    try {
+      URL buildServerUrl =
+          new URL(getBuildServerUrlStr(user.getUserEmail(),
+                                       userId,
+                                       projectId,
+                                       outputFileDir));
+      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
+      connection.setDoOutput(true);
+      connection.setRequestMethod("POST");
+
+      BufferedOutputStream bufferedOutputStream =
+          new BufferedOutputStream(connection.getOutputStream());
+      FileExporter fileExporter = new FileExporterImpl();
+      ProjectSourceZip zipFile =
+          fileExporter.exportProjectSourceZip(userId, projectId, false,
+                                              /* includeAndroidKeystore */ true,
+                                              projectName + ".zip");
+      bufferedOutputStream.write(zipFile.getContent());
+      bufferedOutputStream.flush();
+      bufferedOutputStream.close();
+
+      if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+        return new RpcResult(false, "",
+                             "ResponseCode: " +
+                             connection.getResponseCode() + " " + connection.getResponseMessage());
+      }
+    } catch (MalformedURLException e) {
+      return new RpcResult(false, "", e.getMessage());
+    } catch (IOException e) {
+      return new RpcResult(false, "", e.getMessage());
+    } catch (EncryptionException e) {
+      return new RpcResult(false, "", e.getMessage());
+    }
+    return new RpcResult(true, "Building " + projectName, "");
+  }
+
+  // Note that this is a function rather than just a constant because we assume it will get
+  // a little more complicated when we want to get the URL from an App Engine config file or
+  // command line argument.
+  private String getBuildServerUrlStr(String userName, String userId,
+                                      long projectId, String fileName)
+      throws UnsupportedEncodingException, EncryptionException {
+    return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
+           + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+           + "&callback="
+           + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
+                               + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
+                               + Security.encryptUserAndProjectId(userId, projectId)
+                               + "/" + fileName,
+                               "UTF-8");
+  }
+
+  private String getCurrentHost() {
+    if (Server.isProductionServer()) {
+      String applicationId = SystemProperty.applicationId.get();
+      return applicationId + ".appspot.com";
+    } else {
+      // TODO(user): Figure out how to make this more generic
+      return "localhost:8888";
+    }
+  }
+
+  /**
+   * Check if there are any build results available for the given user's project
+   *
+   * @param user the User that owns the {@code projectId}.
+   * @param projectId  project id to be built
+   * @param target  build target (optional, implementation dependent)
+   * @return an RpcResult reflecting the call to the Build Server. The following values may be in
+   *         RpcResult.result:
+   *            0:  Build is done and was successful
+   *            1:  Build is done and was unsuccessful
+   *            2:  Yail generation failed
+   *           -1:  Build is not yet done.
+   */
+  @Override
+  public RpcResult getBuildResult(User user, long projectId, String target) {
+    String userId = user.getUserId();
+    String buildOutputFileName = BUILD_FOLDER + '/' + target + '/' + "build.out";
+    List<String> outputFiles = storageIo.getProjectOutputFiles(userId, projectId);
+    RpcResult buildResult = new RpcResult(-1, "", ""); // Build not finished yet
+    for (String outputFile : outputFiles) {
+      if (buildOutputFileName.equals(outputFile)) {
+        String outputStr = storageIo.downloadFile(userId, projectId, outputFile, "UTF-8");
+        try {
+          JSONObject buildResultJsonObj = new JSONObject(outputStr);
+          buildResult = new RpcResult(buildResultJsonObj.getInt("result"),
+                                      buildResultJsonObj.getString("output"),
+                                      buildResultJsonObj.getString("error"),
+                                      outputStr);
+        } catch (JSONException e) {
+          buildResult = new RpcResult(1, "", "");
+        }
+        break;
+      }
+    }
+    return buildResult;
+  }
+}

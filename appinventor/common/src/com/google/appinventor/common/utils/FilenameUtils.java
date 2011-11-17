@@ -1,0 +1,32 @@
+// Copyright 2009 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.common.utils;
+
+import com.google.common.base.Preconditions;
+
+/**
+ * Helper class for working with filenames.
+ *
+ */
+public class FilenameUtils {
+
+  private FilenameUtils() {
+  }
+
+  /**
+   * Returns the extension of a filename.
+   *
+   * @param filename  filename to get extension of
+   * @return  extension of filename
+   */
+  public static String getExtension(String filename) {
+    Preconditions.checkNotNull(filename);
+
+    // Separate filename from rest of pathname
+    filename = filename.substring(filename.lastIndexOf('/') + 1);
+
+    // Extract extension
+    int index = filename.lastIndexOf('.');
+    return index == -1 ? "" : filename.substring(index + 1);
+  }
+}

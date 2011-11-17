@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: markf@google.com (Mark Friedman)
+
+     App Inventor build server
+     ====================================================================== -->
+
+<project name="buildserver" default="all">
+  <description>
+    App Inventor build server
+  </description>  
+  
+  <!-- Project Libraries -->
+  
+  <target name="all"
+          depends="BuildServer">
+  </target>
+
+  <target name="tests"
+          depends="BuildServerTests">
+  </target>
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+
+  <!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+  <property name="buildserver.pkg" value="com/google/appinventor/buildserver" />
+
+  <property name="local.lib.dir" location="lib" />
+  <property name="run.dir" location="${local.build.dir}/run" />
+  <property name="run.lib.dir" location="${run.dir}/lib" />
+
+
+  <!-- =====================================================================
+       Targets
+       ===================================================================== -->
+
+  <!-- =====================================================================
+       BuildServer: produces build/run/lib/BuildServer.jar
+       Note that BuildServer depends on CopyToRunLibDir, which copies all
+       the jars needed to compile the build server classes.
+       ===================================================================== -->
+  <target name="BuildServer"
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_ComponentList">
+    <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
+    <mkdir dir="${BuildServer-class.dir}" />
+
+    <ai.javac encoding="utf-8" destdir="${BuildServer-class.dir}" debug="on">
+      <include name="${buildserver.pkg}/**/*.java" />
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar"/>
+      </classpath>
+    </ai.javac>
+
+    <!-- Copy files that will be loaded as resources -->
+    <property name="classes.files.dir" location="${BuildServer-class.dir}/files" />
+    <copy todir="${classes.files.dir}" flatten="true">
+      <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
+      <fileset dir="${build.dir}/components"
+               includes="AndroidRuntime.jar,simple_components.txt,simple_components_permissions.json"/>
+    </copy>
+    <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
+    <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
+    <copy todir="${classes.tools.dir}">
+      <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
+    </copy>
+    <chmod dir="${classes.tools.dir}" includes="*/aapt" perm="ugo+rx"/>
+
+    <!-- jar up the classes and resource files -->
+    <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">
+      <fileset dir="${BuildServer-class.dir}" />
+    </jar>
+  </target>
+  
+  <!-- =====================================================================
+       CopyToRunLibDir: creates the build/run/lib directory and copies jars
+                        needed to compile the build server classes
+       ===================================================================== -->
+  <target name="CopyToRunLibDir"
+          depends="init,blockslib_OpenBlocks,common_CommonUtils">
+    <mkdir dir="${run.lib.dir}" />
+    <copy todir="${run.lib.dir}" flatten="true">
+      <fileset dir="${local.lib.dir}" includes="*.jar"/>
+      <fileset dir="${build.dir}" includes="blockslib/OpenBlocks.jar" />
+      <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
+      <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-r09.jar"/>
+      <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
+      <fileset dir="${lib.dir}" includes="json/json.jar" />
+    </copy>
+  </target>
+
+  <!-- =====================================================================
+       GenStarterAppSrcZip
+       ===================================================================== -->
+  <target name="GenStarterAppSrcZip"
+          depends="init">
+    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
+         AppInventorPhoneApp.apk (i.e. the stem cell app) you should put that file in the
+         ${appinventor.dir}/aiphoneapp directory and add 'android.keystore' to the includes
+         list below.
+      -->
+    <zip destfile="${local.build.dir}/aiphoneapp.zip" basedir="${appinventor.dir}/aiphoneapp" filesonly="true"
+         includes="src/**/*,youngandroidproject/*" />
+  </target>
+
+  <!-- =====================================================================
+       CheckStarterApp: Sets the StarterApp.uptodate property to true if
+                        the starter app needs to be rebuilt. This can happen
+                        if the starter app source files have changed, or if
+                        any of the build server jars have changed.
+       ===================================================================== -->
+  <target name="CheckStarterApp"
+          depends="GenStarterAppSrcZip,BuildServer">
+    <uptodate property="StarterApp.uptodate" targetfile="${public.build.dir}/AppInventorPhoneApp.apk">
+      <srcfiles file="${local.build.dir}/aiphoneapp.zip"/>
+      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       StarterApp: builds ../build/buildserver/AppInventorPhoneApp.apk
+       ===================================================================== -->
+  <target name="StarterApp"
+          depends="CheckStarterApp"
+          unless="StarterApp.uptodate">
+    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--inputZipFile" />
+      <arg value="${local.build.dir}/aiphoneapp.zip" />
+      <arg value="--userName" />
+      <arg value="App Inventor" />
+      <arg value="--isForStemCellApp" />
+      <arg value="--outputDir" />
+      <arg value="${public.build.dir}" />
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       RunLocalBuildServer: Runs the build server
+       ===================================================================== -->
+  <target name="RunLocalBuildServer"
+          depends="BuildServer">
+    <java classname="com.google.appinventor.buildserver.BuildServer" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       RunMain:
+       Use a command like the following to build a single APK from a ZIP:
+       ant RunMain -Dzip.file=$HOME/MyDownloads/ImageUpload.zip \
+       -Duser.name=$USER -Doutput.dir=.
+       ===================================================================== -->
+  <target name="RunMain"
+          depends="BuildServer">
+    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--inputZipFile" />
+      <arg value="${zip.file}" />
+      <arg value="--userName" />
+      <arg value="${user.name}" />
+      <arg value="--outputDir" />
+      <arg value="${output.dir}" />
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       BuildDeploymentTar: produces ../build/buildserver/BuildServer.tar
+       ===================================================================== -->
+  <target name="BuildDeploymentTar"
+          depends="BuildServer">
+    <tar destfile="${public.build.dir}/BuildServer.tar">
+      <fileset dir="${run.dir}" includes="lib/*.jar" />
+    </tar>
+  </target>
+
+  <!-- =====================================================================
+       BuildServerTests: build and run the BuildServer tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForBuildServerTests.path"> 
+    <fileset dir="${run.lib.dir}" includes="*.jar"/>
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
+    <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/json/json.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+  </path>
+
+  <path id="BuildServerTests.path">
+    <path refid="libsForBuildServerTests.path"/>
+    <pathelement location="${local.build.dir}/BuildServerTests.jar" />
+  </path>
+
+  <target name="BuildServerTests" 
+          depends="common_CommonTestUtils,components_AndroidRuntime,BuildServer" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="BuildServerTests"
+                aij-dir="${buildserver.pkg}/" >
+    </ai.dojunit>
+  </target>
+
+</project>

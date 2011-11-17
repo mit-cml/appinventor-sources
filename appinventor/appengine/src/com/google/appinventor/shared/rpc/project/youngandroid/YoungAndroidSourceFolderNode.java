@@ -1,0 +1,29 @@
+// Copyright 2008 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.shared.rpc.project.youngandroid;
+
+import com.google.appinventor.shared.rpc.project.SourceFolderNode;
+
+/**
+ * Young Android source folder node in project tree.
+ *
+ */
+public final class YoungAndroidSourceFolderNode extends SourceFolderNode {
+
+  // For serialization
+  private static final long serialVersionUID = -1036164488317207599L;
+
+  /**
+   * Serialization constructor.
+   */
+  public YoungAndroidSourceFolderNode() {
+    super(null, null);
+  }
+
+  /**
+   * Creates a new source folder node.
+   */
+  public YoungAndroidSourceFolderNode(String fileId) {
+    super("Sources", fileId);
+  }
+}

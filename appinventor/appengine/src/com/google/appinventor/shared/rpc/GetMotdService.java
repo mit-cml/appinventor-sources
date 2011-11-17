@@ -1,0 +1,26 @@
+// Copyright 2010 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.shared.rpc;
+
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.gwt.user.client.rpc.RemoteService;
+import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+
+/**
+ * Interface for the service providing the MOTD.
+ *
+ * @author kerr@google.com (Debby Wallach)
+ */
+@RemoteServiceRelativePath(ServerLayout.GET_MOTD_SERVICE)
+public interface GetMotdService extends RemoteService {
+
+  /**
+   * Get MOTD.
+   */
+  Motd getMotd();
+
+  /**
+   * @return the interval to use, in seconds, between motd update checks
+   */
+  int getCheckInterval();
+}

@@ -1,0 +1,138 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: lizlooney@google.com (Liz Looney)
+
+     App Inventor common libraries
+     ====================================================================== -->
+
+<project name="common" default="all">
+  <description>
+    App Inventor common libraries
+  </description>
+
+  <target name="all"
+          depends="CommonUtils,BlocksEditorHttpConstants,CommonTestUtils">
+  </target>
+
+  <target name="tests"
+          depends="CommonUtilsTests">
+  </target>
+
+  <!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+  <import file="../build-common.xml" />
+
+  <!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+  <property name="common.pkg" value="com/google/appinventor/common" />
+
+  <!-- =====================================================================
+       CommonUtils: library containing utility classes.
+       ===================================================================== -->
+  <target name="CommonUtils"
+          description="Generate library containing utility classes"
+          depends="init">
+    <property name="CommonUtils-class.dir" location="${class.dir}/CommonUtils" />
+    <mkdir dir="${CommonUtils-class.dir}" />
+
+    <ai.javac destdir="${CommonUtils-class.dir}">
+      <include name="${common.pkg}/utils/*.java" />
+      <classpath>
+        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+      </classpath>
+    </ai.javac>
+
+    <jar destfile="${public.build.dir}/CommonUtils.jar">
+      <fileset dir="${CommonUtils-class.dir}"/>
+    </jar>
+
+    <jar destfile="${public.build.dir}/CommonUtils-gwt.jar">
+      <fileset dir="${CommonUtils-class.dir}"/>
+      <fileset dir="${src.dir}">
+        <include name="${common.pkg}/utils/*.java"/>
+        <include name="${common.pkg}/CommonUtils.gwt.xml" />
+      </fileset>
+  </jar>
+
+  </target>
+
+  <!-- =====================================================================
+       CommonUtilsTests: build and run the CommonUtils tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForCommonUtilsTests.path"> 
+    <pathelement location="${public.build.dir}/CommonUtils.jar" />
+    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+  </path>
+
+  <path id="CommonUtilsTests.path">
+    <path refid="libsForCommonUtilsTests.path"/>
+    <pathelement location="${local.build.dir}/CommonUtilsTests.jar" />
+  </path>
+
+  <target name="CommonUtilsTests" 
+          depends="CommonUtils" 
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="CommonUtilsTests"
+                aij-dir="${common.pkg}/utils" >
+    </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       BlocksEditorHttpConstants: library of constants for blocks editor
+           http server.
+
+       In order to ensure that the blocks editor can run on Java 5, we compile
+       with ai.javac5.
+       ===================================================================== -->
+  <target name="BlocksEditorHttpConstants"
+          description="Generate library of constants for blocks editor http server"
+          depends="init">
+    <property name="BlocksEditorHttpConstants-class.dir" location="${class.dir}/BlocksEditorHttpConstants" />
+    <mkdir dir="${BlocksEditorHttpConstants-class.dir}" />
+
+    <ai.javac5 destdir="${BlocksEditorHttpConstants-class.dir}">
+      <include name="${common.pkg}/jsonp/JsonpConstants.java" />
+      <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java" />
+    </ai.javac5>
+
+    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants.jar">
+      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
+    </jar>
+
+    <jar destfile="${public.build.dir}/BlocksEditorHttpConstants-gwt.jar">
+      <fileset dir="${BlocksEditorHttpConstants-class.dir}"/>
+      <fileset dir="${src.dir}">
+        <include name="${common.pkg}/jsonp/JsonpConstants.java"/>
+        <include name="${common.pkg}/youngandroid/YaHttpServerConstants.java"/>
+        <include name="${common.pkg}/BlocksEditorHttpConstants.gwt.xml" />
+      </fileset>
+    </jar>
+
+  </target>
+
+  <!-- =====================================================================
+       CommonTestUtils: library containing utility class for testing
+       ===================================================================== -->
+  <target name="CommonTestUtils"
+          description="Generate library containing utility class for testing"
+          depends="init">
+    <property name="CommonTestUtils-class.dir" location="${class.dir}/CommonTestUtils" />
+    <mkdir dir="${CommonTestUtils-class.dir}" />
+
+    <ai.javac destdir="${CommonTestUtils-class.dir}">
+      <include name="${common.pkg}/testutils/*.java" />
+    </ai.javac>
+
+    <jar destfile="${public.build.dir}/CommonTestUtils.jar">
+      <fileset dir="${CommonTestUtils-class.dir}"/>
+    </jar>
+
+  </target>
+
+</project>

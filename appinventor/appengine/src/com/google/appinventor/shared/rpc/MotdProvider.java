@@ -1,0 +1,39 @@
+// Copyright 2010 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.shared.rpc;
+
+/**
+ * Data Transfer Object representing motd.
+ *
+ * @author kerr@google.com (Debby Wallach)
+ */
+public interface MotdProvider {
+
+  /**
+   * Returns the motd object.
+   *
+   * @return motd object
+   */
+  Motd getMotd();
+
+  /**
+   * Returns the id.
+   *
+   * @return id
+   */
+  public long getId();
+
+  /**
+   * Returns the caption.
+   *
+   * @return caption
+   */
+  public String getCaption();
+
+  /**
+   * Returns the content.
+   *
+   * @return content
+   */
+  public String getContent();
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+  <application></application>
+  <version>1</version>
+
+  <!-- Configure serving/caching of GWT files -->
+  <static-files>
+    <include path="**" />
+
+    <!-- The following line requires App Engine 1.3.2 SDK -->
+    <include path="**.nocache.*" expiration="0s" />
+
+    <include path="**.cache.*" expiration="365d" />
+    <exclude path="**.gwt.rpc" />
+
+    <!-- don't serve the key file as a static file! -->
+    <exclude path="/keystore/**" />
+
+    <!-- don't serve the whitelist as a static file! -->
+    <exclude path="/whitelist" />
+
+  </static-files>
+
+  <!-- Configuration and flags -->
+  <system-properties>
+    <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>
+
+    <!-- note that the file: is necessary as part of the value for this property, because
+         the log4j configuration is looking for a URL -->
+    <property name="log4j.configuration" value="file:WEB-INF/log4j.properties"/>
+
+    <!-- set to true if users should not be allowed to access the App
+    Inventor server unless they are listed in the appengine/war/whitelist file -->
+    <property name="use.whitelist" value="false"/>
+
+    <!-- set to true if users need to accept a Terms of Service the first time
+      they access App Inventor -->
+    <property name="require.tos" value="true" />
+
+    <!-- host[:port] to use for connecting to the build server -->
+    <property name="build.server.host" value="localhost:9990" />
+
+    <!-- set to 0 to disable checking for a MOTD -->
+    <property name="motd.check.interval.secs" value="300" />
+
+  </system-properties>
+
+  <!-- Enable concurrency in the app engine server -->
+  <threadsafe>true</threadsafe>
+</appengine-web-app>

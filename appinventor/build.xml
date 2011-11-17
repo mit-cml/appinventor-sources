@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: lizlooney@google.com (Liz Looney)
+
+     App Inventor common libraries
+     ====================================================================== -->
+
+<project name="AllProjects" default="all">
+  <description>
+    App Inventor
+  </description>
+
+  <target name="all">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+  </target>
+
+  <target name="tests">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
+    <mkdir dir="reports"/>
+    <junitreport todir="reports">
+      <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="blockseditor/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="blockslib/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="buildserver/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="common/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="components/reports/raw" includes="TEST-*.xml"/>
+      <report format="frames" todir="reports/html"/>
+    </junitreport>
+    <echo message="Please see the report at file://${basedir}/reports/html/index.html"/>
+  </target>
+
+  <target name="javadoc">
+    <mkdir dir="build/javadoc"/>
+    <javadoc destdir="build/javadoc">
+      <sourcepath>
+        <pathelement location="appengine/src" />
+        <pathelement location="blockseditor/src" />
+        <pathelement location="blockslib/src" />
+        <pathelement location="buildserver/src" />
+        <pathelement location="common/src" />
+        <pathelement location="components/src" />
+      </sourcepath>
+      <classpath>
+        <pathelement location="lib/android/2.2/android.jar" />
+        <pathelement location="lib/android/tools/ddmlib.jar"/>
+        <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
+        <pathelement location="lib/guava/guava-r09.jar" />
+        <pathelement location="lib/guava/guava-r09-gwt.jar" /> <!-- for javax.annotation.Nullable -->
+        <pathelement location="lib/gwt_dragdrop/gwt-dnd-r1057.jar" />
+        <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="lib/json/json.jar" />
+        <pathelement location="lib/kawa/kawa-1.11-modified.jar" />
+        <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
+        <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
+        <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
+        <pathelement location="lib/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+        <fileset dir="buildserver/lib" includes="**/*.jar"/>
+        <!-- gwt libs -->
+        <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
+        <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
+        <!-- app engine libs -->
+        <pathelement location="lib/appengine/appengine-java-sdk-1.5.3/lib/user/appengine-api-1.0-sdk-1.5.3.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.5.3/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+      </classpath>
+      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the
+           classpath above,so our javadoc will link appropriate online javadoc for libraries we
+           depend on. -->
+    </javadoc>
+  </target>
+
+  <target name="clean">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <delete dir="build"/>
+    <delete dir="reports"/>
+  </target>
+
+</project>

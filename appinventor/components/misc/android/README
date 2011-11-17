@@ -1,0 +1,5 @@
+We need the file package-list (which must have that exact title) to generate the
+external Javadoc references to the Android Javadoc pages at http://d.android.com/reference.
+This is necessary because the standard URL "http://d.android.com/reference/package-list"
+doesn't work.  We obtained the file by removing the JavaScript from
+"http://developer.android.com/reference/lists.js".

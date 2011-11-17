@@ -1,0 +1,200 @@
+// Copyright 2008 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.client.wizards;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.utils.Uploader;
+import com.google.appinventor.client.youngandroid.CodeblocksManager;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.FolderNode;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.FileUpload;
+import com.google.gwt.user.client.ui.VerticalPanel;
+
+/**
+ * Wizard for uploading individual files.
+ *
+ */
+public class FileUploadWizard extends Wizard {
+  /**
+   * Interface for callback to execute after a file is uploaded.
+   */
+  public static interface FileUploadedCallback {
+    /**
+     * Will be invoked after a file is uploaded.
+     *
+     * @param folderNode the upload destination folder
+     * @param fileNode the file just uploaded
+     */
+    void onFileUploaded(FolderNode folderNode, FileNode fileNode);
+  }
+
+  /**
+   * Creates a new file upload wizard.
+   *
+   * @param folderNode the upload destination folder
+   */
+  public FileUploadWizard(FolderNode folderNode) {
+    this(folderNode, null);
+  }
+
+  /**
+   * Creates a new file upload wizard.
+   *
+   * @param folderNode the upload destination folder
+   * @param fileUploadedCallback callback to be executed after upload
+   */
+  public FileUploadWizard(final FolderNode folderNode,
+      final FileUploadedCallback fileUploadedCallback) {
+    super(MESSAGES.fileUploadWizardCaption(), true, false);
+
+    // Initialize UI
+    final FileUpload upload = new FileUpload();
+    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+    setStylePrimaryName("ode-DialogBox");
+    VerticalPanel panel = new VerticalPanel();
+    panel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+    panel.add(upload);
+    addPage(panel);
+
+    // Create finish command (upload a file)
+    initFinishCommand(new Command() {
+      @Override
+      public void execute() {
+        String uploadFilename = upload.getFilename();
+        if (!uploadFilename.isEmpty()) {
+          final String filename = makeValidFilename(uploadFilename);
+
+          if (fileAlreadyExists(folderNode, filename)) {
+            if (!confirmOverwrite(folderNode, filename)) {
+              return;
+            }
+          }
+
+          ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
+
+          // Use the folderNode's project id and file id in the upload URL so that the file is
+          // uploaded into that project and that folder in our back-end storage.
+          String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET +  "/file/" +
+              folderNode.getProjectId() + "/" + folderNode.getFileId() + "/" + filename;
+          Uploader.getInstance().upload(upload, uploadUrl,
+              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+                @Override
+                public void onSuccess(UploadResponse uploadResponse) {
+                  switch (uploadResponse.getStatus()) {
+                    case SUCCESS:
+                      ErrorReporter.hide();
+                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                          fileUploadedCallback);
+                      break;
+                    case FILE_TOO_LARGE:
+                      ErrorReporter.reportError(MESSAGES.fileTooLargeError());
+                      break;
+                    default:
+                      ErrorReporter.reportError(MESSAGES.fileUploadError());
+                      break;
+                  }
+                }
+              });
+        } else {
+          Window.alert(MESSAGES.noFileSelected());
+          new FileUploadWizard(folderNode, fileUploadedCallback).show();
+        }
+      }
+    });
+  }
+
+  @Override
+  public void show() {
+    super.show();
+    int width = 320;
+    int height = 40;
+    this.center();
+
+    setPixelSize(width, height);
+    super.setPagePanelHeight(40);
+  }
+
+  private String makeValidFilename(String uploadFilename) {
+    // Strip leading path off filename.
+    // We need to support both Unix ('/') and Windows ('\\') separators.
+    String filename = uploadFilename.substring(
+        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    // We need to strip out whitespace from the filename.
+    filename = filename.replaceAll("\\s", "");
+    return filename;
+  }
+
+  private boolean fileAlreadyExists(FolderNode folderNode, String filename) {
+    String fileId = folderNode.getFileId() + "/" + filename;
+    for (ProjectNode child : folderNode.getChildren()) {
+      if (fileId.equals(child.getFileId())) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private boolean confirmOverwrite(FolderNode folderNode, String filename) {
+    return Window.confirm(MESSAGES.confirmOverwrite(filename));
+  }
+
+  private void onUploadSuccess(final FolderNode folderNode, final String filename,
+      long modificationDate, final FileUploadedCallback fileUploadedCallback) {
+    Ode.getInstance().updateModificationDate(folderNode.getProjectId(), modificationDate);
+    final String uploadedFileId = folderNode.getFileId() + "/" + filename;
+
+    // If the uploaded file is in the assets folder, tell codeblocks about it.
+    if (folderNode instanceof YoungAndroidAssetsFolder) {
+      AsyncCallback<Void> callback = new AsyncCallback<Void>() {
+        @Override
+        public void onFailure(Throwable caught) {
+          OdeLog.wlog(caught.getMessage());
+          finishUpload(folderNode, filename, fileUploadedCallback);
+        }
+
+        @Override
+        public void onSuccess(Void result) {
+          OdeLog.log("Either blocks editor is closed or blocks editor was "
+              + "successfully notified about asset " + uploadedFileId);
+          finishUpload(folderNode, filename, fileUploadedCallback);
+        }
+      };
+      OdeLog.log("Notifying blocks editor about asset with id: " + uploadedFileId);
+      CodeblocksManager.getCodeblocksManager().addAsset(uploadedFileId, callback);
+    } else {
+      finishUpload(folderNode, filename, fileUploadedCallback);
+    }
+  }
+
+  private void finishUpload(FolderNode folderNode, String filename,
+      FileUploadedCallback fileUploadedCallback) {
+    String uploadedFileId = folderNode.getFileId() + "/" + filename;
+    FileNode uploadedFileNode;
+    if (folderNode instanceof YoungAndroidAssetsFolder) {
+      uploadedFileNode = new YoungAndroidAssetNode(filename, uploadedFileId);
+    } else {
+      uploadedFileNode = new FileNode(filename, uploadedFileId);
+    }
+
+    Project project = Ode.getInstance().getProjectManager().getProject(folderNode);
+    uploadedFileNode = (FileNode) project.addNode(folderNode, uploadedFileNode);
+
+    if (fileUploadedCallback != null) {
+      fileUploadedCallback.onFileUploaded(folderNode, uploadedFileNode);
+    }
+  }
+}
