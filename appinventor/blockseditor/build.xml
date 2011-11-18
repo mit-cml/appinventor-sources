@@ -127,6 +127,8 @@
       <zipfileset src="${lib.dir}/android/tools/ddmlib.jar"/>
     </jar>
 
+    <!-- These are not the comments you're looking for.  This is for testing -->
+    
     <signjar keystore="${local.build.dir}/blockseditor.keystore"
              storepass="googleai"
              signedjar="${public.build.dir}/BlocksEditor.jar"
