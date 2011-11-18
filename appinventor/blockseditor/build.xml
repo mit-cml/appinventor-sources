@@ -101,9 +101,12 @@
 
   <target name="KeyStore" depends="init,check-KeyStore" unless="KeyStore.present"
       description="Generates the key store that is used to sign BlocksEditor.jar">
+    <!-- If you want the certificate info for the blocks editor jar to be a better
+         match for your organization edit the dname below.  See http://ant.apache.org/manual/Tasks/genkey.html
+         for more info on how to do that -->
     <genkey keystore="${local.build.dir}/blockseditor.keystore" alias="simple"
-            dname="CN=corp.google.com, OU=Engineering, O=Google, L=Mountain View, ST=CA, C=US"
-            storepass="googleai" keypass="googleai"/>
+            dname="CN=example.com, OU=Organization, O=Example, L=Any Town, ST=CA, C=US"
+            storepass="aipass" keypass="aipass"/>
   </target>
 
   <!-- =====================================================================
@@ -130,7 +133,7 @@
     <!-- These are not the comments you're looking for.  This is for testing -->
     
     <signjar keystore="${local.build.dir}/blockseditor.keystore"
-             storepass="googleai"
+             storepass="aipass"
              signedjar="${public.build.dir}/BlocksEditor.jar"
              jar="${local.build.dir}/UnsignedBlocksEditor.jar"
              alias="simple" />
