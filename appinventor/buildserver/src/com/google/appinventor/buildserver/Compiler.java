@@ -44,10 +44,6 @@ import javax.imageio.ImageIO;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class Compiler {
-  // Maximum ram that can be used by a child processes, in MB.
-  // TODO(user): maybe make this into a command line flag
-  private static final Integer childProcessRamMb = 1024;
-
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
@@ -120,6 +116,9 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForRepl;
+  // Maximum ram that can be used by a child processes, in MB.
+  private final int childProcessRamMb;
+
 
   /*
    * Generate the set of Android permissions needed by this project.
@@ -266,15 +265,17 @@ public final class Compiler {
    * @param userErrors stream to write user-visible error messages
    * @param isForRepl {@code true}, if this compilation is for the special REPL app
    * @param keystoreFilePath
+   * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, String keystoreFilePath) {
+                                boolean isForRepl, String keystoreFilePath, int childProcessRam) {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl);
+    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
+                                     childProcessRam);
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -383,16 +384,18 @@ public final class Compiler {
    * @param err  stderr stream for compiler messages
    * @param userErrors stream to write user-visible error messages
    * @param isForRepl {@code true}, if this compilation is for the special REPL app
+   * @param childProcessMaxRam  maximum RAM for child processes, in MBs.
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-      PrintStream userErrors, boolean isForRepl) {
+           PrintStream userErrors, boolean isForRepl, int childProcessMaxRam) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
     this.isForRepl = isForRepl;
+    this.childProcessRamMb = childProcessMaxRam;
   }
 
   /*

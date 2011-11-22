@@ -35,6 +35,9 @@ public final class Main {
             usage = "the directory in which to put the output of the build")
     File outputDir;
 
+    @Option(name = "--childProcessRamMb",
+            usage = "Maximum ram that can be used by a child processes, in MB.")
+    int childProcessRamMb = 2048;
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -72,7 +75,8 @@ public final class Main {
     Result result = projectBuilder.build(commandLineOptions.userName,
                                          zip,
                                          commandLineOptions.outputDir,
-                                         commandLineOptions.isForStemCellApp);
+                                         commandLineOptions.isForStemCellApp,
+                                         commandLineOptions.childProcessRamMb);
     System.exit(result.getResult());
   }
 

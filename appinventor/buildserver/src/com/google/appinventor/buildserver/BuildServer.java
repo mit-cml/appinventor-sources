@@ -9,6 +9,7 @@ import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.kohsuke.args4j.Option;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -40,6 +41,14 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
+
+  static class CommandLineOptions {
+    @Option(name = "--childProcessRamMb",
+            usage = "Maximum ram that can be used by a child processes, in MB.")
+    int childProcessRamMb = 2048;
+  }
+
+  private static CommandLineOptions commandLineOptions = new CommandLineOptions();
 
   private static final MediaType APK_MEDIA_TYPE =
       new MediaType("application", "vnd.android.package-archive",
@@ -226,7 +235,8 @@ public class BuildServer {
     ProjectBuilder projectBuilder = new ProjectBuilder();
     outputDir = Files.createTempDir();
     outputDir.deleteOnExit(); // Just in case
-    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false);
+    Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
+                                              commandLineOptions.childProcessRamMb);
     String buildOutput = buildResult.getOutput();
     System.out.println("Build output: " + buildOutput);
     String buildError = buildResult.getError();

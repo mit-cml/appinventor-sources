@@ -16,12 +16,13 @@ public class CompilerTest extends TestCase {
 
   public void testGeneratePermissions() throws Exception {
     Set<String> noComponents = Sets.newHashSet();
-    Compiler compiler = new Compiler(null, noComponents, System.out, System.err, System.err, false);
+    Compiler compiler = new Compiler(null, noComponents, System.out, System.err, System.err, false,
+                                     2048);
     assertTrue("Permissions for no components not empty. (It should be empty!)",
         compiler.generatePermissions().isEmpty());
 
     Set<String> componentTypes = Sets.newHashSet("LocationSensor");
-    compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false);
+    compiler = new Compiler(null, componentTypes, System.out, System.err, System.err, false, 2048);
     Set<String> permissions = compiler.generatePermissions();
     assertEquals(4, permissions.size());
     assertTrue(permissions.contains(
