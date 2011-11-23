@@ -3,7 +3,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.Ode;
+
 import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -28,7 +28,7 @@ public class TopPanel extends Composite {
           MESSAGES.reportBugLink() + "</a>");
   private final HTML signOutLink =
       new HTML("<a href='" + ServerLayout.ODE_LOGOUT_URL + "'>" + MESSAGES.signOutLink() + "</a>");
-  private String learnUrl = Ode.APP_INVENTOR_URL + "/learn/";
+  private String learnUrl = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
   private VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   private HTML divider() {

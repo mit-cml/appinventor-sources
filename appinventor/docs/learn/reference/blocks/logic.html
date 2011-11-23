@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="App Inventor for Android" name="description">
+    <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords">
+    <title>
+      Logic Blocks - App Inventor for Android
+    </title>
+    <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico">
+    <link href="/static/images/appinventor-16.png" rel="icon" type="image/png">
+    <link href="/static/css/appinventor.css" rel="stylesheet">
+    <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+</script>
+    <script>
+  var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+    </script>
+    <link href="test.css" rel="stylesheet">
+    <style>
+img.c2 {border-width:0}
+    div.c1 {clear:both;}
+    </style>
+  </head>
+  <body>
+    <div id="aiac">
+      <div class="main-container">
+        <div class="header">
+          <div class="header-title">
+            <a href="/about/"><img alt="" src="/static/images/appinventor_logo.gif"></a>
+          </div>
+          <form action="http://www.google.com/cse" id="cse-search-box">
+            <input name="cx" type="hidden" value="011848991959401852367:xnrcbhk2zus"> <input name=
+            "ie" type="hidden" value="UTF-8">
+            <div class="header-search">
+              <div class="header-search-query">
+                <input class="textbox" name="q" type="text">
+              </div>
+              <div class="header-search-button">
+                <input name="sa" src="/static/images/search-button.png" type="image">
+              </div>
+            </div>
+          </form><script src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"
+         >
+</script>
+          <div class="header-login">
+            <div class="header-login-greeting">
+              Learn about App Inventor
+            </div>
+          </div>
+        </div>
+        <div class="customhr customhr-green"></div>
+        <div id="navigation">
+          <div id="navigation-links">
+            <div class="navigation-link-option" id="navigation-link-home">
+              <a href="/about/">About</a>
+            </div>
+            <div class="navigation-link-option navigation-link-active" id="navigation-link-learn">
+              <a href="/learn/">Learn</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-forum">
+              <a href="/forum/">Forum</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-myappinventor">
+              <a href="http://appinventor.googlelabs.com/ode/Ya.html" target="_blank">My
+              Projects</a>
+            </div>
+          </div>
+          <div id="navigation-breadcrumb">
+            <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Logic
+            Blocks &gt;
+          </div>
+          <div class="c1"></div>
+        </div>
+        <div class="customhr customhr-gray"></div>
+        <div class="content">
+          <div class="content-body">
+            <div class="learn-page">
+              <h2>
+                Logic Blocks
+              </h2>
+              <ul>
+                <li>
+                  <a href="#true">true</a>
+                </li>
+                <li>
+                  <a href="#false">false</a>
+                </li>
+                <li>
+                  <a href="#not">not</a>
+                </li>
+                <li>
+                  <a href="#equals">=</a>
+                </li>
+                <li>
+                  <a href="#and">and</a>
+                </li>
+                <li>
+                  <a href="#or">or</a>
+                </li>
+              </ul>
+              <h3 id="true">
+                true
+              </h3><img alt="" src="images/true.png">
+              <p>
+                This block represents the constant value <code>true</code>. Use it for setting
+                boolean property values of components, or as the value of a variable that
+                represents a condition.
+              </p>
+              <h3 id="false">
+                false
+              </h3><img alt="" src="images/false.png">
+              <p>
+                This block represents the constant value <code>false</code>. Use it for setting
+                boolean property values of components, or as the value of a variable that
+                represents a condition.
+              </p>
+              <h3 id="not">
+                not
+              </h3><img alt="" src="images/not.png">
+              <p>
+                This block performs logical negation, returning false if the input is true, and
+                true if the input is false.
+              </p>
+              <h3 id="equals">
+                equals
+              </h3><img alt="" src="images/equals.png">
+              <p>
+                This block tests whether its arguments are equal.
+              </p>
+              <ul>
+                <li>Two numbers are equal if they are numerically equal, for example, 1 is equal to
+                1.0.
+                </li>
+                <li>Two text blocks are equal if they have the same characters in the same order,
+                with the same case. For example, <code>banana</code> is not equal to
+                <code>Banana</code>.
+                </li>
+                <li>Numbers and text are equal if the number is numerically equal to a number that
+                would be printed with that text. For example, 12.0 is equal to the result of
+                joining the first character of <code>1A</code> to the last character of
+                <code>Teafor2</code>.
+                </li>
+                <li>Two lists are equal if they have the same number of elements and the
+                corresponding elements are equal.
+                </li>
+              </ul>
+              <h3 id="and">
+                and
+              </h3><img alt="" src="images/and.png">
+              <p>
+                This block tests whether all of a set of logical conditions are true. The result is
+                true if and only if all the tested conditions are true. When you plug a condition
+                into the <code>test</code> socket, another socket appears so you can add another
+                condition. The conditions are tested left to right, and the testing stops as soon
+                as one of the conditions is false. If there are no conditions to test, then the
+                result if true. You can consider this to be a logician's joke.
+              </p>
+              <h3 id="or">
+                or
+              </h3><img alt="" src="images/or.png">
+              <p>
+                This block tests whether any of a set of logical conditions are true. The result is
+                true if one or more of the tested conditions are true. When you plug a condition
+                into the <code>test</code> socket, another socket appears so you can add another
+                condition. The conditions are tested left to right, and the testing stops as soon
+                as one of the conditions is true. If there are no conditions to test, then the
+                result is false.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="footer-legal">
+            <p>
+              <a href="http://creativecommons.org/licenses/by/3.0/" rel="license"><img alt=
+              "Creative Commons License" class="c2" src=
+              "http://i.creativecommons.org/l/by/3.0/88x31.png"></a><br>
+              This work is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/"
+              rel="license">Creative Commons Attribution 3.0 Unported License</a> .
+            </p>
+            <p>
+              ©2011 Google<br>
+              <a href="/about/index.html">About</a> | <a href="/about/privacy.html">Privacy</a> |
+              <a href="/about/termsofservice.html">Terms</a>
+            </p>
+          </div>
+          <div class="footer-lastupdate">
+            <script>
+  if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

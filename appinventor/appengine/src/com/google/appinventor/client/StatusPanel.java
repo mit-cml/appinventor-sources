@@ -3,7 +3,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.Ode;
+
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -25,11 +25,11 @@ public class StatusPanel extends Composite {
 
   private String AppInventorFooter =
     "&copy;2010 Google" +
-    " - <a href='" + Ode.APP_INVENTOR_URL + "/about/'" +
+    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/'" +
     " target=_blank>" + MESSAGES.aboutLink() + "</a>" +
-    " - <a href='" + Ode.APP_INVENTOR_URL + "/about/privacy.html'" +
+    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/privacy.html'" +
     " target=_blank>" + MESSAGES.privacyLink() + "</a>" +
-    " - <a href='" + Ode.APP_INVENTOR_URL + "/about/termsofservice.html'" +
+    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
     " target=_blank>" + MESSAGES.termsLink() + "</a>";
 
   /**

@@ -51,6 +51,7 @@
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
+      <fileset dir="${docs.dir}" />
     </copy>
   </target>
 

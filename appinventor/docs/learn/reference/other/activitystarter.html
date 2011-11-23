@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="App Inventor for Android" name="description">
+    <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords">
+    <title>
+      Activity Starter - App Inventor for Android
+    </title>
+    <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico">
+    <link href="/static/images/appinventor-16.png" rel="icon" type="image/png">
+    <link href="/static/css/appinventor.css" rel="stylesheet">
+    <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+</script>
+    <script>
+  var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+    </script>
+    <style>
+img.c2 {border-width:0}
+    div.c1 {clear:both;}
+    </style>
+  </head>
+  <body>
+    <div id="aiac">
+      <div class="main-container">
+        <div class="header">
+          <div class="header-title">
+            <a href="/about/"><img alt="" src="/static/images/appinventor_logo.gif"></a>
+          </div>
+          <form action="http://www.google.com/cse" id="cse-search-box">
+            <input name="cx" type="hidden" value="011848991959401852367:xnrcbhk2zus"> <input name=
+            "ie" type="hidden" value="UTF-8">
+            <div class="header-search">
+              <div class="header-search-query">
+                <input class="textbox" name="q" type="text">
+              </div>
+              <div class="header-search-button">
+                <input name="sa" src="/static/images/search-button.png" type="image">
+              </div>
+            </div>
+          </form><script src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"
+         >
+</script>
+          <div class="header-login">
+            <div class="header-login-greeting">
+              Learn about App Inventor
+            </div>
+          </div>
+        </div>
+        <div class="customhr customhr-green"></div>
+        <div id="navigation">
+          <div id="navigation-links">
+            <div class="navigation-link-option" id="navigation-link-home">
+              <a href="/about/">About</a>
+            </div>
+            <div class="navigation-link-option navigation-link-active" id="navigation-link-learn">
+              <a href="/learn/">Learn</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-forum">
+              <a href="/forum/">Forum</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-myappinventor">
+              <a href="http://appinventor.googlelabs.com/ode/Ya.html" target="_blank">My
+              Projects</a>
+            </div>
+          </div>
+          <div id="navigation-breadcrumb">
+            <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt;
+            Activity Starter &gt;
+          </div>
+          <div class="c1"></div>
+        </div>
+        <div class="customhr customhr-gray"></div>
+        <div class="content">
+          <div class="content-body">
+            <div class="learn-page">
+              <h1>
+                Using the Activity Starter Component
+              </h1>
+              <p>
+                The activity starter component lets you combine applications by having one
+                application start up other applications. Activity Starter is mostly for advanced
+                developers, but it's a key way to extend the App Inventor, because it means lets
+                you take advantage of applications written by others, and created with other
+                development frameworks.
+              </p>
+              <p>
+                The apps you start can be App Inventor apps created by you or others; apps like
+                Camera and Maps that are pre-installed on the device; or any app at all, created
+                using App Inventor or not, as long as you have the necessary information to supply
+                to the activity starter.
+              </p>
+              <p>
+                You can also start an application and get back a result from it to use in further
+                processing, provided that the application is designed to a result. Presently, you
+                can get back text results only.
+              </p>
+              <p>
+                To start another application, you must supply certain control information to the
+                Android operating system. You do this by setting various properties of Activity
+                Starter before calling the <code>StartActivity</code> method. This section gives
+                some examples.
+              </p>
+              <h2>
+                Starting Another App Inventor Application
+              </h2>
+              <p>
+                You can start another app that was created with App Inventor if you know its
+                package name and class name. If you have the source code of the app, you can find
+                these names as follows:
+              </p>
+              <ol>
+                <li>Download the source code to your computer.
+                </li>
+                <li>Using a file explorer or unzip utility, find the file
+                <code>youngandroidproject/project.properties</code>.
+                </li>
+                <li>The first line will start with "<code>main=</code>". Everything after that is
+                the package and class name.
+                </li>
+              </ol>
+              <p>
+                For example, here is a first line you might see for an App named HelloPurr.:
+              </p>
+              <p>
+                <code>main=com.gmail.Simpson.Homer.HelloPurr.Screen1</code>
+              </p>
+              <p>
+                The <code>gmail.Simpson.Homer</code> part of the name comes from the App Inventor
+                user account, such as, <code><a href=
+                "mailto:Homer.Simpson@gmail.com">Homer.Simpson@gmail.com</a></code>.
+              </p>
+              <p>
+                To start this app, you would use an activity starter component with these
+                properties:
+              </p><code>ActivityPackage: com.gmail.Simpson.Homer.HelloPurr</code><br>
+              <code>ActivityClass: com.gmail.Simpson.Homer.HelloPurr.Screen1</code>
+              <p>
+                Invoking the activity starter's <code>StartActivity</code> method will start
+                HelloPurr. When HelloPurr finishes (if it does), the original app's
+                <code>ActivityStarter.AfterActivity</code> method will be invoked.
+              </p>
+              <p>
+                <em>Note:</em> If you are going to start another App Inventor app, make sure you
+                use the correct package name. For example, if someone posts the source code (zip
+                file) for an app, and you repackage that app, you'll end up with a different
+                package name than he had. In cases of doubt, start the activity by hand and run
+                "adb logcat" to view the Android system log and see what was actually started, as
+                explained below in "Figuring out how to set the properties".
+              </p>
+              <h2>
+                Starting a Builtin Phone Application
+              </h2>
+              <p>
+                Apps that come with the phone can be invokd using package names and class names, as
+                above. These apps can also launch response to an <em>intent</em>, which is the
+                Android operating system's way of specifying something to do without necessarily
+                designating a particular app. You can find information about intents (written for
+                advanced developers) in the <a href=
+                "http://developer.android.com/guide/topics/intents/intents-filters.html">Android
+                system documentation</a>.
+              </p>
+              <p>
+                Some apps can take extra information when they are launched. For example, maps can
+                take geographic information that specifies which map to display. Another example is
+                launching a Web search with extra information that specifies the text to search
+                for. You must consult documentation about the particular app to learn what this
+                extra information is and how to specify it. Generally, you specify the information
+                by setting the activity starter's properties just before the other app is launched.
+              </p>
+              <p>
+                Here are some examples:
+              </p>
+              <h3>
+                Start the Camera
+              </h3>
+              <p>
+                To launch the Android Camera app, use an activity starter with these properties:
+              </p>
+              <p>
+                <code>Action: android.intent.action.MAIN</code><br>
+                <code>ActivityPackage: com.google.android.camera</code><br>
+                <code>ActivityClass: com.android.camera.Camera</code>
+              </p>
+              <p>
+                This is pretty much what the App Inventor Camera component does, although it is
+                much more convenient to use the Camera component.
+              </p>
+              <h3>
+                Launch a Web search
+              </h3>
+              <p>
+                To launch a Web search for a particular query, such as "Homer Simpson", use an
+                activity starter with these properties:
+              </p><code>Action: android.intent.action.WEB_SEARCH</code><br>
+              <code>ExtraKey: query</code><br>
+              <code>ExtraValue: Homer Simpson</code><br>
+              <code>ActivityPackage: com.google.android.providers.enhancedgooglesearch</code><br>
+              <code>ActivityClass:
+              com.google.android.providers.enhancedgooglesearch.Launcher</code>
+              <h3>
+                Open the browser to a Web page
+              </h3>Use these activity starter properties to open a specific web page:
+              <p>
+                <code>Action: android.intent.action.VIEW</code><br>
+                <code>DataUri: <a href="http://news.google.com">http://news.google.com</a></code>
+              </p>
+              <h3>
+                Start the mailer with pre-addressed message
+              </h3>
+              <p>
+                To start the Android mailer application, use the action
+                <code>android.intent.action.VIEW</code>. You can use Activity starter's
+                <code>DataUri</code> property to specify the recipient, the message subject, and
+                body of the message. In each case, starting the activity will bring up the Android
+                mailer, and you can complete the message and then press "Send".
+              </p>
+              <p>
+                For example, if you specify:
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>DataUri: mailto:santa@northpole.com</code>
+              <p>
+                then starting the activity will bring up the mailer, with the addressee filed in.
+              </p>
+              <p>
+                If you specify:
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>DataUri: mailto:santa@northpole.com?subject=Please Santa&amp;Bring me a
+              pony</code>
+              <p>
+                then starting the activity will bring up the mailer, with the addressee, the
+                subject, and the body filled in. You can use the mailer to edit these before
+                sending the message, if you prefer.
+              </p>
+              <p>
+                You can find the complete rules for encoding messages in the DataURI at <a href=
+                "http://www.ianr.unl.edu/internet/mailto.html">http://www.ianr.unl.edu/internet/mailto.html</a>.
+              </p>
+              <h3>
+                Show a map for a location
+              </h3>
+              <p>
+                If you know the latitude and a longitude of a location, you can show a map using an
+                activity starter with these properties to show a map of the area:
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>DataUri: geo:37.8,-122.23?z=23</code>
+              <p>
+                The format of the DataURI is specific to the app. In this example, the URI
+                specifies a z (zoom) of 23, which is the largest zoom value. Zoom value is optional
+                and ranges from 1 (the entire Earth) to 23.
+              </p>
+              <p>
+                If you know the zip code, you can set the activity starter properties as follows:
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>DataUri: geo:0,0&amp;q=94043</code>
+              <p>
+                If you have a street address, you can use a DataUri that encodes the address with a
+                scheme called <a href="http://www.w3schools.com/TAGS/ref_urlencode.asp">URL
+                encoding</a>:
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>DataUri: geo:0,0&amp;q=5000% 20MacArthurBlvd%20Oakland%2CCA</code>
+              <p>
+                Generally in URI encoding the only characters you have to replace are spaces
+                (<code>%20</code>) and punctuation marks, such as comma (<code>%2C</code>) and
+                period (<code>%2E</code>).
+              </p>
+              <h3>
+                Play a YouTube video
+              </h3>
+              <p>
+                You'll need to know the URI of the YouTube video. Then set the Activity Starter
+                properties as
+              </p><code>Action: android.intent.action.VIEW</code><br>
+              <code>ActivityPackage: com.google.android.youtube</code><br>
+              <code>ActivityClass: com.google.android.youtube.PlayerActivity</code>
+              <p>
+                and set the Data URI to the URI of the video to be played, for example:
+              </p>
+              <p>
+                <code>DataUri: http://www.youtube.com/watch?v=8ADwPLSFeY8</code>
+              </p>
+              <h3>
+                Figuring out how to set the properties
+              </h3>
+              <p>
+                If you can't find documentation for the activities you want to start, one way to
+                figure out how to set the properties is to start up the activity manually and look
+                at what appears in the Android System Log. For example, if you use YouTube to play
+                a video, you'll see in the log:
+              </p>
+              <p>
+                <code>I/ActivityManager( 86): Starting activity: Intent {
+                act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE]
+                dat=http://www.youtube.com/watch?v=8ADwPLSFeY8 flg=0x3800000
+                cmp=com.google.android.youtube/.PlayerActivity }</code>
+              </p>
+              <p>
+                If you can find the "cmp=" string, then the ActivityPackage is the part before the
+                slash, and the ActivityClass is is the entire "cmp=" part, without the slash
+                character. As in the YouTube example, there may also be "dat=" information that can
+                specify with the DataUri property.
+              </p>
+              <h2>
+                Starting arbitrary apps
+              </h2>
+              <p>
+                You can use the Activity Starter to start any activity at all if you know the
+                package name and class name, or the appropriate intent. Some developers document
+                these intents for the benefit of other Android developers. For hints on starting
+                other apps using intents, see the <a href=
+                "http://developer.android.com/reference/android/content/Intent.html">Android API
+                documentation</a> and <a href="http://www.openintents.org/en/node/35">OpenIntent's
+                list of Intents</a>.
+              </p>
+              <p>
+                If you have an app on your phone and you don't have the source code, you might
+                still be able figure out the package name and class name (and sometimes the intent)
+                by launching the app and inspecting the Android system log, as indicated above.
+              </p>
+              <h2>
+                Getting values back from the apps you start
+              </h2>
+              <p>
+                Some apps are constructed to return a value to to access the result to access the
+                result depends on the design of the activity being started. Currently, App Inventor
+                can get back text results only.
+              </p>
+              <h3>
+                Returning results from App Inventor Apps
+              </h3>
+              <p>
+                You can create App Inventor activities that return a (text) result to their
+                callers, so they can be used as subroutines. To return a result, invoke the command
+                <code>close screen with result</code> (located in the Control drawer). Your
+                subroutine will will terminate, and the argument of <code>close screen with
+                result</code> will become available to the activity starter that started it, passed
+                as an argument to the <code>AfterActivity</code> event.
+              </p>
+              <p>
+                More specifically, suppose there is a <code>SubroutineApp</code> designed to be
+                started with an activity starter and return a value, and a <code>CallerApp</code>
+                that uses an ActivityStarter to call <code>SubroutineApp</code>. To return the
+                result, <code>SubroutineApp</code> executes <code>close screen with result</code>,
+                giving it as argument the result that should be returned to the caller.
+              </p>
+              <p>
+                On the caller side, <code>CallerApp</code> sets up its Activity Starter with the
+                correct package name and class name for starting <code>SubroutineApp</code>. It
+                must also set the <code>ActivityStarter.ResultName</code> property to the special
+                text string <code>APP_INVENTOR_RESULT</code>. Then <code>CallerApp</code> starts
+                the <code>SubroutineApp</code> activity. When the subroutine finishes, the Activity
+                Starter's <code>AfterActivity</code> event triggers, and the <code>result</code>
+                argument to <code>AfteActivity</code> will be the result that was passed back from
+                <code>SubroutineApp</code>. That same information is available as the
+                ActivityStarter's <code>Result</code> property.
+              </p>
+              <h3>
+                Passing values to App Inventor Apps
+              </h3>
+              <p>
+                You can pass a text value to an App Inventor app that you start with the Activity
+                Starter. To do this, set the ActivityStarter's ExtraKey property to
+                <code>APP_INVENTOR_START</code> and the ExtraValue property to the text you want to
+                pass. The second app can retrieve that value by using the <code>get start
+                text</code> block from the Control drawer.
+              </p>
+              <p>
+                By passing and returning results, you can combine several App Inventor apps, both
+                apps you write, as well as apps you share with others.
+              </p>
+              <h3>
+                Returning results from arbitrary applications
+              </h3>
+              <p>
+                Getting values back from other applications is like getting values back from App
+                Inventor apps. In general, an app will return a result that is designated by a
+                name, where the result is designated by a name, and the expected name is specified
+                with the Activity Starter's <code>ResultName</code> property. The name to use for
+                App Inventor apps is <code>APP_INVENTOR_RESULT</code>, as described above. Other
+                applications, not created with App Inventor, will use other names, and you'll need
+                to know those names in order get values back from those applications. Here you'll
+                need documentation about the app you want to use as a subroutine. Some developers
+                provide this information, or sometimes you'll have access to the source code.
+              </p>
+              <p>
+                Not all Android apps use the <code>Result</code> and <code>ResultName</code>
+                mechanism. For example, some apps return information via the properties
+                <code>ResultType</code> and <code>ResultUri</code>. Again, you'll need to have
+                information from the app developer to know which of these to use.
+              </p>
+              <p>
+                <em>For advanced developers:</em> More specifically (with reference to the Android
+                developer documentation) an app can be designed to return an <em>intent</em>. The
+                Activity starter uses the specified <code>ResultName</code> to access
+                <code>intent.getStringExtra(resultName)</code> to produce the result. The values
+                for <code>ResultType</code> and <code>ResultUri</code> come from
+                <code>intent.getType()</code> and <code>intent.getType()</code>.
+              </p>
+              <h3>
+                Example: Picking files from the SD Card
+              </h3>
+              <p>
+                Here's an example that illustrates using a third-party application:
+              </p>
+              <p>
+                <a href="http://www.lysesoft.com/products/andexplorer">AndExplorer from
+                Lysesoft</a> is an application that lets you pick files for your SD card. You can
+                call AndExplorer with an activity starter to add a file picking capability to your
+                application. You'll need to have AndExplorer installed on your phone. You can get
+                it from the Android Market.
+              </p>
+              <p>
+                To start AndExplorer to pick a file, use an ActivityStarter with:
+              </p>
+              <p>
+                <code>Action: android.intent.action.PICK</code><br>
+                <code>dataType: vnd.android.cursor.dir/lysesoft.andexplorer.file</code><br>
+                <code>dataURI: file:///sdcard</code>
+              </p>
+              <p>
+                When you start the activity and pick a file, the resulting file name will be
+                available as <code>ResultUri</code>. Also, <code>ResultType</code> will give the
+                type of the file, for example, image/jpeg or audio/mpeg. Using this, you can write
+                an app that lets you pick a file from the SD card and either displays the image or
+                plays the music track as appropriate.
+              </p>
+              <h3>
+                Is the application available?
+              </h3>If your app calls other apps as activities, you'll want to check that those
+              other apps are available on your user's phone before trying to start them. You can
+              check this using the Activity Starter method <code>ResolveActivity</code>, which
+              returns the name of the Activity that would be started, given the package or intent
+              information you've provided. If this name is blank, then the required application is
+              not present, and you can warn your user.
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="footer-legal">
+            <p>
+              <a href="http://creativecommons.org/licenses/by/3.0/" rel="license"><img alt=
+              "Creative Commons License" class="c2" src=
+              "http://i.creativecommons.org/l/by/3.0/88x31.png"></a><br>
+              This work is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/"
+              rel="license">Creative Commons Attribution 3.0 Unported License</a> .
+            </p>
+            <p>
+              ©2011 Google<br>
+              <a href="/about/index.html">About</a> | <a href="/about/privacy.html">Privacy</a> |
+              <a href="/about/termsofservice.html">Terms</a>
+            </p>
+          </div>
+          <div class="footer-lastupdate">
+            <script>
+  if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

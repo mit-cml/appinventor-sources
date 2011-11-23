@@ -81,7 +81,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       // TODO(user) - update the URL for the appinventor user FAQ in the following warning.
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
           Ode.getInstance().getUser().getUserEmail(),
-          "<a href=\"" + Ode.APP_INVENTOR_URL +
+          "<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
           "/learn/userfaq.html\" target=\"_blank\">",
           "</a>"));
       warningLabel.setWordWrap(true);

@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="App Inventor for Android" name="description">
+    <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords">
+    <title>
+      Troubleshooting - App Inventor for Android
+    </title>
+    <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico">
+    <link href="/static/images/appinventor-16.png" rel="icon" type="image/png">
+    <link href="/static/css/appinventor.css" rel="stylesheet">
+    <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+</script>
+    <script>
+  var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+    </script>
+    <style>
+img.c2 {border-width:0}
+    div.c1 {clear:both;}
+    </style>
+  </head>
+  <body>
+    <div id="aiac">
+      <div class="main-container">
+        <div class="header">
+          <div class="header-title">
+            <a href="/about/"><img alt="" src="/static/images/appinventor_logo.gif"></a>
+          </div>
+          <form action="http://www.google.com/cse" id="cse-search-box">
+            <input name="cx" type="hidden" value="011848991959401852367:xnrcbhk2zus"> <input name=
+            "ie" type="hidden" value="UTF-8">
+            <div class="header-search">
+              <div class="header-search-query">
+                <input class="textbox" name="q" type="text">
+              </div>
+              <div class="header-search-button">
+                <input name="sa" src="/static/images/search-button.png" type="image">
+              </div>
+            </div>
+          </form><script src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"
+         >
+</script>
+          <div class="header-login">
+            <div class="header-login-greeting">
+              Learn about App Inventor
+            </div>
+          </div>
+        </div>
+        <div class="customhr customhr-green"></div>
+        <div id="navigation">
+          <div id="navigation-links">
+            <div class="navigation-link-option" id="navigation-link-home">
+              <a href="/about/">About</a>
+            </div>
+            <div class="navigation-link-option navigation-link-active" id="navigation-link-learn">
+              <a href="/learn/">Learn</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-forum">
+              <a href="/forum/">Forum</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-myappinventor">
+              <a href="http://appinventor.googlelabs.com/ode/Ya.html" target="_blank">My
+              Projects</a>
+            </div>
+          </div>
+          <div id="navigation-breadcrumb">
+            <a href="/learn/">Learn</a> &gt; Troubleshooting &gt;
+          </div>
+          <div class="c1"></div>
+        </div>
+        <div class="customhr customhr-gray"></div>
+        <div class="content">
+          <div class="content-body">
+            <div class="learn-page">
+              <h1>
+                Troubleshooting
+              </h1>
+              <p>
+                This page describes some of the more common issues experienced with App Inventor.
+                New issues will be added as they surface. For the most up-to-date help, visit the
+                <a href="http:/forum">App Inventor Forum</a> to learn from other users.
+              </p>
+              <h2>
+                Troubleshooting Topics
+              </h2><br>
+              <a href="#Java">Running Java and Java Web Start</a><br>
+              <a href="#Devicedrivers">Installing device drivers</a><br>
+              <a href="#Connecting">Connecting to the App Inventor website and designer</a><br>
+              <a href="#BlocksEditor">Using the Blocks Editor and loading projects</a><br>
+              <a href="#Phone">Connecting the phone</a><br>
+              <a href="#AppsPhone">Running apps on the phone</a><br>
+              <a href="#ImagesSounds">Working with sounds and images</a><br>
+              <a href="#justlost">I'm just lost!</a><br>
+              <br>
+              <h2>
+                <a name="Java">Running Java and Java Web Start</a>
+              </h2><br>
+              <b>I'm running on a Mac and I'm having various Java problems.</b>
+              <p>
+                If you are using a Mac, we recommend that you use JRE 1.6 (Java 6). Many Macs have
+                both Java 5 and Java 6 installed but are configured to use Java 5 by default. You
+                can change that default to Java 6 with the following steps:
+              </p>
+              <ol>
+                <li>In the Finder, open the Applications &gt; Utilities &gt; Java folder.
+                </li>
+                <li>Run Java Preferences.
+                </li>
+                <li>Select the General tab.
+                </li>
+                <li>You'll see two version lists — one for Java applets and one for Java
+                applications. In each list, drag the "Java SE 6" to the top of the list.
+                </li>
+              </ol>
+              <p>
+                If your Mac doesn't have 1.6 installed, Java 1.5 should work, but 1.6 is preferred.
+              </p><b>The Blocks Editor won't open: Java reports a "security exception".</b>
+              <p>
+                This error is probably not specific to App Inventor: there's a good chance you
+                can't run any Java programs from the browser. One common cause is that your Java
+                system is expecting to connect to the network via a proxy. Find the Java control
+                panel and try changing the network proxy settings. For example, if you're using a
+                proxy, try "direct connection".
+              </p><b>The Blocks Editor won't open: Java reports "unable to launch application".</b>
+              <p>
+                This can happen if the Java files are not being cached. Go to the Java control
+                panel under "network" and make sure that "Keep temporary files for fast access" is
+                checked. You can find instructions for opening the Java control panel at the end of
+                the App Inventor documentation on <a href=
+                "/learn/reference/other/testing.html">Testing and debugging</a>.
+              </p><b>I'm having various Java problems, and I'm running on Linux and OpenJDK.</b>
+              <p>
+                Use Sun Java rather than OpenJDK. App Inventor does not work well with OpenJDK.
+              </p>
+              <h2>
+                <a name="Devicedrivers">Installing device drivers</a>
+              </h2><br>
+              <b>I ran the App Inventor Setup installer on Windows, but the phone device drivers do
+              not install.</b>
+              <p>
+                There are multiple reasons for this, and we're trying to track them all down. The
+                <a href="http:/learn/setup/windows-drivers.html">Windows driver installation
+                instructions</a> in the App Inventor documentation contain our best advice, and
+                we'll keep those current as we get more information from users.
+              </p>
+              <p>
+                Note that the drivers included in with the App Inventor Setup software do not work
+                on all Android devices, and you may need to get drivers from the manufacturers. See
+                the <a href="http:/learn/setup/windows-drivers.html">Windows driver installation
+                instructions</a> for advice, and check the <a href="http:/forum">App Inventor
+                Forum</a> to see if others have had similar issues with the version of Windows and
+                the particular device you are using.
+              </p>
+              <p>
+                Also, the driver issues around App Inventor are the same as for the Android SDK in
+                general, so doing a Web search for driver issues around the Android SDK may also be
+                worthwhile. It also might be worthwhile to search the <a href=
+                "https://groups.google.com/group/android-beginners">Android Beginners Google
+                Group</a> and the <a href=
+                "https://groups.google.com/group/android-developers">Android Developers Google
+                Group.</a>
+              </p>
+              <h2>
+                <a name="Connecting">Connecting to the App Inventor website and designer</a>
+              </h2><br>
+              <b>I see a blank screen when I go to appinventor.googlelabs.com</b>
+              <p>
+                Try refreshing the browser page. If that doesn't work, check if the address bar
+                says "appinventor.googlelabs.com/ode". If so, remove the trailing "/ode" and try
+                again. If that doesn't work, sign out of your Google account and try again.
+              </p><b>I downloaded the App Inventor Setup Installer and ran it, but the designer
+              doesn't start up and I don't see any program to run to start it.</b>
+              <p>
+                It's not supposed to start. App Inventor is a Web application that runs from a
+                browser. You run it by browsing to the App Inventor website (<a href=
+                "http://appinventor.googlelabs.com">http://appinventor.googlelabs.com</a>), as
+                described in the documentation under Getting Started. The App Inventor Setup
+                Installer software is something you need to install beforehand to let your computer
+                communicate with the phone when you do start using App Inventor.
+              </p>
+              <h2>
+                <a name="BlocksEditor">Using the Blocks Editor and loading projects</a>
+              </h2><b>I get the error message "The Blocks Editor does not have any project
+              information ..."</b><br>
+              or<br>
+              <b>When I open the blocks editor, the screen is blank.</b>
+              <p>
+                This probably means that there is a communication problem between the browser and
+                the Blocks Editor, and does not reflect issues with the phone. One way to verify
+                this is to drag a new component onto the designer and see if a drawer for that
+                component appears in the Blocks Editor. If not, it's a browser communication
+                problem. This problem is commonly caused by firewalls. If your computer is running
+                a firewall, turn it off. This issue arises with Firefox if you are using the
+                "noscript Application Boundaries Enforcer extension"(ABE)
+                (http://noscript.net/abe/). You should turn the extension off: Open the options for
+                noscript, go under the Advanced tag and uncheck the "Enable ABE" box.
+              </p><b>My Blocks vanished from the Blocks Editor</b>
+              <p>
+                They may have scrolled off the window. Try moving the scrollbars. Also try to find
+                the blocks in the "map" at the upper right of the screen
+              </p><b>When I click "Open the Blocks Editor", something seems to download, but then
+              nothing happens.</b>
+              <p>
+                The thing that was downloaded is a <code>.jnlp</code> file that tells the browser
+                how to start the Blocks Editor. Most likely, your browser isn't set up to launch
+                <code>.jnlp</code> files automatically, so you'll need to launch it manually; often
+                clicking on the downloaded file works, but it depends on the browser. Some browsers
+                will allow you to set the preferences to automatically launch the file in the
+                future.
+              </p><b>When I try to open the Blocks Editor, I get a message about locating the Setup
+              software. What's going on?</b>
+              <p>
+                When the Blocks Editor starts, it attempts to find the directory containing the
+                software installed with the App Inventor Setup Installer. If App Inventor cannot
+                locate the directory automatically, it asks you to enter the correct pathname. It
+                will remember that pathname for future sessions.
+              </p><b>The Blocks Editor behaves badly on Linux.</b>
+              <p>
+                Examples of bad behavior include not being able to get project definitions for the
+                phone, missing built-in blocks or drawers, and other strange things. Make sure you
+                are using Sun's Java and not OpenJDK. App Inventor currently doesn't work correctly
+                with OpenJDK on Linux. You will need to switch your selected Java installation to
+                Sun's Java. Also, if you are using Firefox, make sure that it is set up to use the
+                proper version of the <code>javaws</code> program when opening <code>.jnlp</code>
+                (Java Web Start) files.
+              </p><b>The Blocks Editor keeps telling me to unplug and plug in the phone. When I do
+              that, it just keeps displaying the same error.</b>
+              <p>
+                This happens when the Blocks editor cannot communicate with the phone. Check that
+                the phone has USB debugging enabled.
+              </p>
+              <p>
+                If enabling USB debugging does not solve the problem and you are using Windows,
+                then most likely the drivers did not install. Check the <a href=
+                "http:/learn/setup/setupwindows.html">setup information for Windows</a> and the
+                <a href="http:/learn/setup/windows-drivers.html">Windows driver installation
+                instructions</a>. Perhaps your device is one that needs a driver from the device
+                manufacturer.
+              </p>
+              <p>
+                If you're using Linux, it is possible that the system is not configured to
+                recognize the device. The following actions might help:
+              </p>
+              <ol>
+                <li>Open a shell prompt.
+                </li>
+                <li>Become root (sudo su -)
+                </li>
+                <li>Create/edit the file <code>/etc/udev/rules.d/51-android.rules</code>
+                </li>
+                <li>Cut-and-paste the following into that file:
+                  <p>
+                    <code>SUBSYSTEMS=="usb", ATTRS{idVendor}=="22b8", ATTRS{idProduct}=="41db",
+                    MODE="0666"</code>
+                  </p>
+                  <p>
+                    Modify the idVendor code and idProduct values to match your device (<a href=
+                    "http://www.linux-usb.org/usb.ids">list of codes</a>)
+                  </p>
+                </li>
+                <li>Save the file.
+                </li>
+                <li>Restart udev (reload udev)
+                </li>
+                <li>Revert to your local user account (exit)
+                </li>
+                <li>Finally, a cold reboot might be required
+                </li>
+              </ol><b>The Blocks Editor won't connect to the phone or media files don't show up on
+              the phone.</b>
+              <p>
+                There are several possible causes for this, depending on the model phone you are
+                using. Causes include (1) the settings on your phone and (2) interference from
+                other applications running on your phone or your laptop. Take a look at the
+                <a href="/learn/connectionissues.html">connectivity troubleshooting page</a> for
+                some things to try.
+              </p><b>I'm using Firefox and I get a message about being unable to access project
+              definitions.</b>
+              <p>
+                If you are using Firefox and have the "noscript" extension installed, you'll need
+                to disable it or else you'll see errors saying that the system cannot access your
+                project definitions. Other tools and system configurations that restrict access to
+                your computer (e.g., firewalls) may also interfere with App Inventor. You should
+                check for these if you encounter errors about reading definitions or connecting to
+                the phone.
+              </p>
+              <h2>
+                <a name="Phone">Connecting the phone</a>
+              </h2><br>
+              <b>I click Connect to Phone in the Blocks Editor and nothing happens.</b>
+              <p>
+                First of all, make sure to wait long enough. It can take over a minute for the
+                phone to connect. If nothing still seems to happen, unplug and plug in the phone
+                and try again. Also try closing the Blocks Editor and restarting it.
+              </p>
+              <p>
+                Also check that the phone really is connected by the USB cable and that USB
+                debugging is turned on: the phone should show both the USB icon and the USB
+                debugging enabled icon. For Windows, check that the phone driver is installed. Look
+                again at the <a href="http:/learn/setup/setupwindows.html">setup information for
+                Windows</a> and the <a href="http:/learn/setup/windows-drivers.html">Windows driver
+                installation instructions</a>.
+              </p>
+              <p>
+                If none of this helps, try restarting the Blocks Editor, only this time running
+                with the Java console open (see <a href=
+                "reference/other/testing.html">Testing</a>). App Inventor writes messages to the
+                Java console when it tries to connect to the phone, and some of these may help, at
+                least for reporting problems.
+              </p><b>I can start the Blocks Editor, but then I get an error when I click "Connect
+              to Phone".</b>
+              <p>
+                One cause for this error is if your computer cannot communicate with the phone over
+                the USB connection, even though the driver is installed correctly. If your computer
+                has a firewall, check to see whether it is turned on, and, if so, which ports and
+                applications it is blocking. It might also be the case that some other program
+                running on your computer has grabbed the port that App Inventor uses to talk to the
+                phone, generally port 8700. Try to check that. (For example, on GNU/Linux or Mac OS
+                X, in a terminal window, do "netstat -a" to see what ports are being used.)
+              </p>
+              <h2>
+                <a name="AppsPhone">Running apps on the phone</a>
+              </h2><br>
+              <b>I was developing an app and it crashed on the phone.</b>
+              <p>
+                Try clicking the button in the Blocks Editor that says either "Connect to Phone" or
+                "Restart Phone App". If that doesn't work, unplugging and reconnecting the phone to
+                continue work, but there can be all sorts of reasons for this. Ask for help from
+                other users in the <a href="https://appinventor.googlelabs.com/forum">App Inventor
+                Forum</a>.
+              </p><b>My phone doesn't seem to match what's in my program.</b>
+              <p>
+                First try clicking the button in the Blocks Editor that says either "Connect to
+                Phone" or "Restart Phone App" (the button will be labelled with one or the other).
+                If that doesn't work, try unplugging and plugging it back in. Followed by clicking
+                on the "Connect to Device" button. Finally, please try closing and restarting the
+                Blocks Editor.
+              </p><b>I was developing an app and I unplugged the phone, and the app disappeared
+              from the phone.</b>
+              <p>
+                It's supposed to disappear. If you want to use the app when the phone is
+                disconnected, you'll need to package it and download it to the phone. If you are
+                developing, and the phone accidentally becomes disconnected, you can continue work
+                by plugging the phone back in and pressing "Connect to Phone" in the Blocks Editor.
+                Once the phone reconnects, you're app should appear again.
+              </p><b>The code size for the apps I create is very large. Even the simplest apps have
+              apk files that are larger than a Megabyte.</b>
+              <p>
+                App Inventor apk files are in fact very large. We're working to reduce their size.
+              </p>
+              <h2>
+                <a name="ImagesSounds">Working with sounds and images</a>
+              </h2><br>
+              <b>I set the image property of a button (or other component) to an image file, but
+              nothing shows on the phone</b>
+              <p>
+                There are several possible causes for this, so there are several things to try:
+              </p>
+              <ul>
+                <li>Make sure your phone has an SD card and that the SD card is not full. App
+                Inventor uses the SD card for temporary storage of images, and the phone needs to
+                have an SD card in order to run App Inventor.
+                </li>
+                <li>Make sure your phone's USB connection mode is <em>not</em> mounting the SD
+                card. For example, on the Droid, you should set the connection mode to "charge
+                only".
+                </li>
+                <li>Try unplugging the phone and plugging it back in. Followed by clicking on the
+                "Connect to Device" button.
+                </li>
+                <li>If that doesn't work, close the Blocks Editor and refresh the browser window.
+                Now restart the Blocks Editor, reconnect the phone, and see if that works.
+                </li>
+                <li>If that doesn't work, try packaging and downloading the app. Start up the
+                downloaded app, not connected to the Blocks Editor, and see if the image appears on
+                the phone. If the image does appear, then you'll have to continue developing
+                without the image showing on the phone. You'll see your app in its full glory only
+                after you've packaged and downloaded it, not while you're developing the app live.
+                Please ask about this in the <a href="http://appinventor.googlelabs.com/forum">App
+                Inventor Forum</a>.
+                </li>
+                <li>If your image does not appear in the packaged app either, then you should
+                suspect that there is something wrong with the image file. Perhaps it is not really
+                an image file: Try examining the file with some graphics software. Perhaps it's not
+                an image in a format that App Inventor can process: App Inventor can handle JPG,
+                PNG, or GIF. Maybe the file is too large: try using graphics software to cut its
+                size down to less than 300K.
+                </li>
+                <li>If none of these things work, try asking for help in the <a href=
+                "appinventor.googlelabs.com/forum">Getting Set Up and Connecting Your Phone</a>
+                User Discussion Forum.
+                </li>
+                <li>Tip: You can sometimes see complaints about the phone running out of storage by
+                using the Android Debug Bridge to examine the Android system log.
+                </li>
+              </ul><b>I set the source property of a Sound or Player component, but there's no
+              sound when I tell the phone to play.</b>
+              <p>
+                If you are working with the phone connected to the computer, make sure the phone
+                really is connected. Try using "Do it" on a few blocks, including the block that
+                tells the component to play. Also make sure the phone's media volume is not turned
+                down!
+              </p>
+              <p>
+                If this doesn't help, try some of same things as with images, above. Watch out for
+                running out of storage. (See <a href="reference/other/media.html">Media</a> for
+                information on media in App Inventor.) And make sure the audio file is a format the
+                Android (and hence App Inventor) knows about. MP3 and PCM/WAV files should be OK,
+                but there may be issues with other formats. See <a href=
+                "http://developer.android.com/guide/appendix/media-formats.html">developer.android.com/guide/appendix/media-formats.html</a>
+                for a list of supported media formats. Warning: Not all WAV files are PCM/WAV.
+              </p>
+              <h2>
+                <a name="justlost">I'm just lost!</a>
+              </h2>
+              <p>
+                Ask other users for help on the <a href=
+                "http://appinventor.googlelabs.com/forum">App Inventor Forum</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="footer-legal">
+            <p>
+              <a href="http://creativecommons.org/licenses/by/3.0/" rel="license"><img alt=
+              "Creative Commons License" class="c2" src=
+              "http://i.creativecommons.org/l/by/3.0/88x31.png"></a><br>
+              This work is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/"
+              rel="license">Creative Commons Attribution 3.0 Unported License</a> .
+            </p>
+            <p>
+              ©2011 Google<br>
+              <a href="/about/index.html">About</a> | <a href="/about/privacy.html">Privacy</a> |
+              <a href="/about/termsofservice.html">Terms</a>
+            </p>
+          </div>
+          <div class="footer-lastupdate">
+            <script>
+  if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

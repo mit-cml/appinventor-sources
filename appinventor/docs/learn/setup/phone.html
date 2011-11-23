@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="App Inventor for Android" name="description">
+    <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords">
+    <title>
+      Set Up Your Phone - App Inventor for Android
+    </title>
+    <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico">
+    <link href="/static/images/appinventor-16.png" rel="icon" type="image/png">
+    <link href="/static/css/appinventor.css" rel="stylesheet">
+    <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+</script>
+    <script>
+  var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+    </script>
+    <style>
+img.c4 {border-width:0}
+    div.c3 {display:none}
+    div.c2 {text-align: left;}
+    div.c1 {clear:both;}
+    </style>
+  </head>
+  <body>
+    <div id="aiac">
+      <div class="main-container">
+        <div class="header">
+          <div class="header-title">
+            <a href="/about/"><img alt="" src="/static/images/appinventor_logo.gif"></a>
+          </div>
+          <form action="http://www.google.com/cse" id="cse-search-box">
+            <input name="cx" type="hidden" value="011848991959401852367:xnrcbhk2zus"> <input name=
+            "ie" type="hidden" value="UTF-8">
+            <div class="header-search">
+              <div class="header-search-query">
+                <input class="textbox" name="q" type="text">
+              </div>
+              <div class="header-search-button">
+                <input name="sa" src="/static/images/search-button.png" type="image">
+              </div>
+            </div>
+          </form><script src="http://www.google.com/cse/brand?form=cse-search-box&amp;lang=en"
+         >
+</script>
+          <div class="header-login">
+            <div class="header-login-greeting">
+              Learn about App Inventor
+            </div>
+          </div>
+        </div>
+        <div class="customhr customhr-green"></div>
+        <div id="navigation">
+          <div id="navigation-links">
+            <div class="navigation-link-option" id="navigation-link-home">
+              <a href="/about/">About</a>
+            </div>
+            <div class="navigation-link-option navigation-link-active" id="navigation-link-learn">
+              <a href="/learn/">Learn</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-forum">
+              <a href="/forum/">Forum</a>
+            </div>
+            <div class="navigation-link-option" id="navigation-link-myappinventor">
+              <a href="http://appinventor.googlelabs.com/ode/Ya.html" target="_blank">My
+              Projects</a>
+            </div>
+          </div>
+          <div id="navigation-breadcrumb">
+            <a href="/learn/">Learn</a> &gt; <a href="/learn/setup/">Set Up</a> &gt; Set Up Your
+            Phone &gt;
+          </div>
+          <div class="c1"></div>
+        </div>
+        <div class="customhr customhr-gray"></div>
+        <div class="content">
+          <div class="content-body">
+            <div class="learn-page">
+              <script>
+function toggleShowHide(elementId) {
+              var element = document.getElementById(elementId);
+              if (element) {
+              if (element.style.display == "none")
+              element.style.display = "inline";
+              else
+              element.style.display = "none";
+              }
+              }
+              </script>
+              <h1>
+                Set up your Android phone
+              </h1>
+              <p>
+                In this section, we'll make sure your phone is ready for you to use with App
+                Inventor. This involves checking a few settings and making sure they're set the
+                right way, then connecting the phone to your computer with a USB cable. If you have
+                a Windows machine, then you may also need to install a driver for the phone.
+              </p>
+              <h2>
+                Compatible phones
+              </h2>
+              <p>
+                There are hundreds of different Android phone models, and new ones are appearing
+                all the time. Even <i>we</i> don't know about all of them. Here are a few of the
+                phones that are being used successfully with App Inventor:
+              </p>
+              <ul>
+                <li>Google: Nexus One, Nexus S
+                </li>
+                <li>Motorola: Droid, Droid X, Droid Incredible
+                </li>
+                <li>T-Mobile: G1
+                </li>
+                <li>HTC: Incredible, Hero, Desire, …
+                </li>
+              </ul>Note, however, that some of these phones will require the installation of
+              drivers to work with Windows computers.
+              <p>
+                Whichever model you have, your phone must have an SD card installed, or else it
+                won't work with App Inventor.
+              </p>
+              <p>
+                Even if your Android phone isn't on this list, it's still likely to work with App
+                Inventor, but we can't say for sure. Follow the instructions on this page, and if
+                you have any problems, see the <a href="../troubleshooting.html">troubleshooting
+                page</a>, or search the <a href="http://appinventor.googlelabs.com/forum">App
+                Inventor User Forum</a> under "Getting set up and connecting your phone" for advice
+                from others who may be using the same phone.
+              </p><a name="settings"></a>
+              <h2>
+                Check your settings
+              </h2>
+              <p>
+                To get your phone ready to work with App Inventor, follow these steps:
+              </p>
+              <ol>
+                <li>Tap the Home button to go to your phone's Home screen.
+                </li>
+                <li>Tap the Menu button, then Settings, then Applications.
+                </li>
+                <li>If your phone has an Unknown sources setting, make sure it is checked.
+                  <div class="c2">
+                    <img alt="" src="StartingAssets/unknownsources.png" width="200">
+                  </div>
+                </li>
+                <li>Tap Development.
+                </li>
+                <li>Make sure both USB Debugging and Stay Awake are checked.
+                  <div class="c2">
+                    <img alt="" src="StartingAssets/usbdebugging.png" width="200">
+                  </div>
+                </li>
+              </ol>
+              <p>
+                If your phone is on the lock screen, unlock it as you would to get ready to run an
+                app. Now get your USB cable and connect the phone to the computer. Two status
+                messages appear on the phone in the notifications area at the top of the screen:
+              </p>
+              <ul>
+                <li>USB Connected means the phone is connected to the computer.
+                </li>
+                <li>USB Debugging Connected allows the App Inventor on the computer to control the
+                phone.
+                </li>
+              </ul>
+              <h2>
+                Details for various phone models
+              </h2>If your phone model is listed below, click on the name of the phone for
+              additional set up information:
+              <p onclick="toggleShowHide('hiddenNexusOne')" onmouseout=
+              "this.style.backgroundColor='white'" onmouseover="this.style.backgroundColor='#ffc'">
+                <b>+</b> Nexus One, Nexus S
+              </p>
+              <div class="c3" id="hiddenNexusOne">
+                If you have a Nexus One or Nexus S, you'll see a notification reading Turn on USB
+                Storage. Make sure you <b>don't</b> tap this button. If you do, you can tap it
+                again to turn USB storage off.
+              </div>
+              <p onclick="toggleShowHide('hiddenDroidX')" onmouseout=
+              "this.style.backgroundColor='white'" onmouseover="this.style.backgroundColor='#ffc'">
+                <b>+</b> Droid X
+              </p>
+              <div class="c3" id="hiddenDroidX">
+                If you have a Droid X, follow these additional steps:
+                <ul>
+                  <li>Pull down the notification panel from the top of the screen.
+                  </li>
+                  <li>Tap USB Connected.
+                  </li>
+                  <li>Tap Charge Only
+                  </li>
+                </ul>
+              </div>
+              <h2>
+                Next Steps
+              </h2><a href="/learn/setup/hellopurr/hellopurrphonepart1.html">Start building apps
+              with your Android phone.</a>
+              <blockquote class="notice">
+                Something not working right? Visit the <a href=
+                "../troubleshooting.html">troubleshooting page</a>, or check the <a href=
+                "http://appinventor.googlelabs.com/forum">App Inventor User Forum</a> for help.
+              </blockquote>
+            </div>
+          </div>
+        </div>
+        <div class="footer">
+          <div class="footer-legal">
+            <p>
+              <a href="http://creativecommons.org/licenses/by/3.0/" rel="license"><img alt=
+              "Creative Commons License" class="c4" src=
+              "http://i.creativecommons.org/l/by/3.0/88x31.png"></a><br>
+              This work is licensed under a <a href="http://creativecommons.org/licenses/by/3.0/"
+              rel="license">Creative Commons Attribution 3.0 Unported License</a> .
+            </p>
+            <p>
+              ©2011 Google<br>
+              <a href="/about/index.html">About</a> | <a href="/about/privacy.html">Privacy</a> |
+              <a href="/about/termsofservice.html">Terms</a>
+            </p>
+          </div>
+          <div class="footer-lastupdate">
+            <script>
+  if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -77,9 +77,9 @@ public class Ode implements EntryPoint {
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
   /**
-   * The base URL for App Inventor.
+   * The base URL for App Inventor documentation.
    */
-  public static final String APP_INVENTOR_URL = "http://www.appinventorbeta.com";
+  public static final String APP_INVENTOR_DOCS_URL = "";
 
   // Version information
   private static final Version VERSION = GWT.create(Version.class);
