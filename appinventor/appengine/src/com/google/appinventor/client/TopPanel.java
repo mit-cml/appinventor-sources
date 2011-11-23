@@ -105,7 +105,7 @@ public class TopPanel extends Composite {
 
     // TODO(user) Remove the expermental warning label below when ready.
     Label warning = new Label("This is an experimental version of App Inventor. "
-                              + "IT IS NOT YET READY FOR GENERAL USE!");
+                              + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE!");
     warning.setStyleName("ode-TopPanelWarningLabel");
     middleLinks.add(warning);
 
