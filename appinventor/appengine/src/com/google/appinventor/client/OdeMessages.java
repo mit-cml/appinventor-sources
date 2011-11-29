@@ -290,6 +290,16 @@ public interface OdeMessages extends Messages {
   @Description("Default value for Text property")
   String textPropertyValue(String componentName);
 
+  // Used in editor/simple/components/MockVisibleComponent.java
+
+  @DefaultMessage("Width")
+  @Description("Caption for the width property")
+  String widthPropertyCaption();  
+
+  @DefaultMessage("Height")
+  @Description("Caption for the height property")
+  String heightPropertyCaption();  
+
   // Used in editor/simple/components/MockTextBoxBase.java
 
   @DefaultMessage("Hint for {0}")

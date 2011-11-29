@@ -2,6 +2,7 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
@@ -67,9 +68,9 @@ public abstract class MockVisibleComponent extends MockComponent {
   }
 
   protected void addWidthHeightProperties() {
-    addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, null,
+    addProperty(PROPERTY_NAME_WIDTH, "" + LENGTH_PREFERRED, MESSAGES.widthPropertyCaption(),
         new YoungAndroidLengthPropertyEditor());
-    addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, null,
+    addProperty(PROPERTY_NAME_HEIGHT, "" + LENGTH_PREFERRED, MESSAGES.heightPropertyCaption(),
         new YoungAndroidLengthPropertyEditor());
   }
 
