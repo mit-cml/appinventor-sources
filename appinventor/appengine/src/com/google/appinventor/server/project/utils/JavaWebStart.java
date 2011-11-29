@@ -64,7 +64,7 @@ public final class JavaWebStart {
         .append("<jnlp spec=\"1.0+\" codebase=\"").append(codebase).append("\">\n")
         .append("   <information>\n")
         .append("      <title>").append(title).append("</title>\n")
-        .append("      <vendor>Google</vendor>\n")
+        .append("      <vendor>MIT Center for Mobile Learning</vendor>\n")
         .append("      <description>").append(description).append("</description>\n")
         .append("   </information>\n")
         .append("   <security>\n")
