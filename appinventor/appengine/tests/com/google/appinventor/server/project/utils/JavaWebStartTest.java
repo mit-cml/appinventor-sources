@@ -52,7 +52,7 @@ public class JavaWebStartTest extends TestCase {
         "<jnlp spec=\"1.0+\" codebase=\"http://www.somedomain.com:80/webstart/\">\n" +
         "   <information>\n" +
         "      <title>Some Title</title>\n" +
-        "      <vendorMIT Center for Mobile Learning</vendor>\n" +
+        "      <vendor>MIT Center for Mobile Learning</vendor>\n" +
         "      <description>Some Description</description>\n" +
         "   </information>\n" +
         "   <security>\n" +
