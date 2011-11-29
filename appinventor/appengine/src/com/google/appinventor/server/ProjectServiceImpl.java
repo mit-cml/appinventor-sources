@@ -143,7 +143,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    */
   @Override
   public void storeProjectSettings(long projectId, String settings) {
-    storageIo.storeProjectSettings(userInfoProvider.getUserId(), projectId, settings);
+    String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).storeProjectSettings(userId, projectId, settings);
   }
 
   /**
@@ -250,17 +251,16 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Invokes a build command for the project on the back-end.
    *
    * @param projectId  project ID
-   * @param projectSettings  project settings
    * @param target  build target (optional, implementation dependent)
    *
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String projectSettings, String target) {
+  public RpcResult build(long projectId, String target) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-        userInfoProvider.getUser(), projectId, projectSettings, target);
+        userInfoProvider.getUser(), projectId, target);
   }
 
   /**

@@ -45,6 +45,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -52,6 +53,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * Provides support for Young Android projects.
@@ -99,11 +101,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   /**
    * Returns project settings that can be used when creating a new project.
    */
-  public static String getProjectSettings(String startupFormName, String icon) {
+  public static String getProjectSettings(String icon) {
     icon = Strings.nullToEmpty(icon);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
-        "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_STARTUP_FORM + "\":\"" +
-        startupFormName + "\"," +
         "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" +
         icon + "\"}}";
   }
@@ -111,13 +111,22 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   /**
    * Returns the contents of the project properties file for a new Young Android
    * project.
+   *
+   * @param projectName the name of the project
+   * @param qualifiedName the qualified name of Screen1 in the project
+   * @param icon the name of the asset to use as the application icon
    */
-  public static String getProjectPropertiesFileContents(String projectName, String qualifiedName) {
-    return "main=" + qualifiedName + "\n" +
+  public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
+      String icon) {
+    String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
         "source=../" + SRC_FOLDER + "\n" +
         "build=../build\n";
+    if (icon != null && !icon.isEmpty()) {
+      contents += "icon=" + icon + "\n";
+    }
+    return contents;
   }
 
   private static String getFormPropertiesFileName(String qualifiedName) {
@@ -170,6 +179,40 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   // CommonProjectService implementation
 
+  @Override
+  public void storeProjectSettings(String userId, long projectId, String projectSettings) {
+    super.storeProjectSettings(userId, projectId, projectSettings);
+
+    // If the icon has been changed, update the project properties file.
+    // Extract the new icon from the projectSettings parameter.
+    Settings settings = new Settings(JSON_PARSER, projectSettings);
+    String newIcon = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON));
+
+    // Extract the old icon from the project.properties file from storageIo.
+    String projectProperties = storageIo.downloadFile(userId, projectId,
+        PROJECT_PROPERTIES_FILE_NAME, StorageUtil.DEFAULT_CHARSET);
+    Properties properties = new Properties();
+    try {
+      properties.load(new StringReader(projectProperties));
+    } catch (IOException e) {
+      // Since we are reading from a String, I don't think this exception can actually happen.
+      e.printStackTrace();
+      return;
+    }
+    String oldIcon = Strings.nullToEmpty(properties.getProperty("icon"));
+
+    if (!newIcon.equals(oldIcon)) {
+      // Recreate the project.properties and upload it to storageIo.
+      String projectName = properties.getProperty("name");
+      String qualifiedName = properties.getProperty("main");
+      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon);
+      storageIo.uploadFile(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
+          newContent, StorageUtil.DEFAULT_CHARSET);
+    }
+  }
+
   /**
    * {@inheritDoc}
    *
@@ -183,7 +226,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
-        qualifiedFormName);
+        qualifiedFormName, null);
 
     String formFileName = getFormPropertiesFileName(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -199,7 +242,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(codeblocksFileName, codeblocksFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings(qualifiedFormName, ""));
+    return storageIo.createProject(userId, project, getProjectSettings(""));
   }
 
   @Override
@@ -208,16 +251,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String oldProjectSettings = storageIo.loadProjectSettings(userId, oldProjectId);
     String oldProjectHistory = storageIo.getProjectHistory(userId, oldProjectId);
     Settings oldSettings = new Settings(JSON_PARSER, oldProjectSettings);
-    String oldStartupFormName = oldSettings.getSetting(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_STARTUP_FORM);
     String icon = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON);
-    // oldStartupFormName usually contains the old project name as the final package segment,
-    // surrounded by dots. Replace the old name with the new name.
-    String newStartupFormName = StringUtils.replaceLastOccurrence(oldStartupFormName,
-        "." + oldName + ".", "." + newName + ".");
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -232,10 +268,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // This is the project properties file. The name of the file doesn't contain the old
         // project name.
         newSourceFileName = oldSourceFileName;
-        // For the contents of the project properties file, generate the file with the new name and
-        // startup form.
-        // we generated above.
-        newContents = getProjectPropertiesFileContents(newName, newStartupFormName);
+        // For the contents of the project properties file, generate the file with the new project
+        // name and qualified name.
+        String qualifiedFormName = StringUtils.getQualifiedFormName(
+            storageIo.getUser(userId).getUserEmail(), newName);
+        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -258,8 +295,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject,
-        getProjectSettings(newStartupFormName, icon));
+    return storageIo.createProject(userId, newProject, getProjectSettings(icon));
   }
 
   @Override
@@ -341,13 +377,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param projectSettings  project settings
    * @param target  build target (optional, implementation dependent)
    *
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String projectSettings, String target) {
+  public RpcResult build(User user, long projectId, String target) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;

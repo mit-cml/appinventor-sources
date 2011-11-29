@@ -12,9 +12,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.UserProject;
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Function;
@@ -66,12 +64,9 @@ public final class FileImporterImpl implements FileImporter {
 
     // As we process the ZipEntry for each file, we'll adjust the directory structure so that it is
     // appropriate for this user.
-    // Here we get the information (such as the project package) that we'll need to do that.
-    String projectPackage = getProjectPackage(userId, projectName);
-    // TODO(user): Replace with common logic in YoungAndroidProjectService
-    NewYoungAndroidProjectParameters youngAndroidParams = new NewYoungAndroidProjectParameters(
-        projectPackage);
-    String qualifiedFormName = youngAndroidParams.getQualifiedFormName();
+    // Here we get the information (such as the qualified form name) that we'll need to do that.
+    String qualifiedFormName = StringUtils.getQualifiedFormName(
+        storageIo.getUser(userId).getUserEmail(), projectName);
     String srcDirectory = YoungAndroidProjectService.getSourceDirectory(qualifiedFormName);
 
     ZipInputStream zin = new ZipInputStream(uploadedFileStream);
@@ -98,7 +93,7 @@ public final class FileImporterImpl implements FileImporter {
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
             String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-                projectName, qualifiedFormName);
+                projectName, qualifiedFormName, null);
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
@@ -146,7 +141,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(qualifiedFormName, null);
+    String settings = YoungAndroidProjectService.getProjectSettings(null);
     long projectId = storageIo.createProject(userId, project, settings);
     return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
         storageIo.getProjectType(userId, projectId),
@@ -187,11 +182,6 @@ public final class FileImporterImpl implements FileImporter {
       storageIo.addSourceFilesToProject(userId, projectId, false, fileName);
     }
     return storageIo.uploadRawFile(projectId, fileName, userId, content);
-  }
-
-  private String getProjectPackage(String userId, String projectName) {
-    User user = storageIo.getUser(userId);
-    return StringUtils.userToPackageName(user.getUserEmail()) + "." + projectName;
   }
 
   @Override

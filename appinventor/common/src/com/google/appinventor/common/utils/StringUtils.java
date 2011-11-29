@@ -154,6 +154,29 @@ public final class StringUtils {
   }
 
   /**
+   * Return the package for project, given the user's email address and the project name.
+   *
+   * @param userEmail the user's email address
+   * @param projectName the project name
+   * @return  package name
+   */
+  public static String getProjectPackage(String userEmail, String projectName) {
+    return userToPackageName(userEmail) + "." + projectName;
+  }
+
+  /**
+   * Return the qualified name of Screen1 in a project, given the user's email address and the
+   * project name.
+   *
+   * @param userEmail the user's email address
+   * @param projectName the project name
+   * @return  qualified form name
+   */
+  public static String getQualifiedFormName(String userEmail, String projectName) {
+    return getProjectPackage(userEmail, projectName) + ".Screen1";
+  }
+
+  /**
    * Returns a new String resulting from replacing the last occurrence of
    * target in string with replacement. If target does not occur in string,
    * string is returned.

@@ -14,7 +14,6 @@ import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.SaveBlocksCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
-import com.google.appinventor.client.explorer.commands.YoungAndroidCheckStartupFormCommand;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
@@ -103,8 +102,7 @@ public class DesignToolbar extends Toolbar {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new YoungAndroidCheckStartupFormCommand(
-                new CopyYoungAndroidProjectCommand(false)));
+            new CopyYoungAndroidProjectCommand(false));
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_AS_YA, projectRootNode);
       }
     }
@@ -116,8 +114,7 @@ public class DesignToolbar extends Toolbar {
       ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new YoungAndroidCheckStartupFormCommand(
-                new CopyYoungAndroidProjectCommand(true)));
+            new CopyYoungAndroidProjectCommand(true));
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_CHECKPOINT_YA, projectRootNode);
       }
     }
@@ -141,11 +138,10 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new YoungAndroidCheckStartupFormCommand(
-                new SaveBlocksCommand(
-                    new BuildCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new ShowBarcodeCommand(target))))));
+            new SaveBlocksCommand(
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new ShowBarcodeCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -165,11 +161,10 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new YoungAndroidCheckStartupFormCommand(
-                new SaveBlocksCommand(
-                    new BuildCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadProjectOutputCommand(target))))));
+            new SaveBlocksCommand(
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new DownloadProjectOutputCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
@@ -190,11 +185,10 @@ public class DesignToolbar extends Toolbar {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new EnsurePhoneConnectedCommand(
             new SaveAllEditorsCommand(
-                new YoungAndroidCheckStartupFormCommand(
-                    new SaveBlocksCommand(
-                        new BuildCommand(target,
-                            new WaitForBuildResultCommand(target,
-                                new DownloadToPhoneCommand(target)))))));
+                new SaveBlocksCommand(
+                    new BuildCommand(target,
+                        new WaitForBuildResultCommand(target,
+                            new DownloadToPhoneCommand(target))))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_TO_PHONE_YA, projectRootNode,
             new Command() {

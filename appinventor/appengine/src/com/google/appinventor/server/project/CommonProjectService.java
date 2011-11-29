@@ -5,7 +5,6 @@ package com.google.appinventor.server.project;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -25,6 +24,17 @@ public abstract class CommonProjectService {
   protected CommonProjectService(String projectType, StorageIo storageIo) {
     this.projectType = projectType;
     this.storageIo = storageIo;
+  }
+
+  /**
+   * Stores the project settings.
+   *
+   * @param userId the user id
+   * @param projectId  project ID
+   * @param settings  project settings
+   */
+  public void storeProjectSettings(String userId, long projectId, String settings) {
+    storageIo.storeProjectSettings(userId, projectId, settings);
   }
 
   /**
@@ -67,21 +77,6 @@ public abstract class CommonProjectService {
    * @return  root node of project
    */
   public abstract ProjectRootNode getRootNode(String userId, long projectId);
-
-  /**
-   * Returns the children for a given project node.
-   *
-   * <p>This method only needs to be implemented by projects supporting lazy-
-   * loading.
-   * @param projectId  project ID as received by {@link
-   *                   com.google.appinventor.shared.rpc.project.ProjectService#getProjects()}
-   * @param parentFileId  file ID of parent project node
-   *
-   * @return  children for the given project node
-   */
-  public List<ProjectNode> getChildren(long projectId, String parentFileId) {
-    throw new UnsupportedOperationException("Lazy folder loading not supported");
-  }
 
   /**
    * Adds a file to the given project.
@@ -169,12 +164,11 @@ public abstract class CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
-   * @param projectSettings  project settings
    * @param target  build target (optional, implementation dependent)
    *
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String projectSettings, String target);
+  public abstract RpcResult build(User user, long projectId, String target);
 
   /**
    * Gets the result of a build command for the project.

@@ -83,9 +83,6 @@ public class BuildCommand extends ChainableCommand {
       }
     };
 
-    // NOTE(lizlooney) - The project settings are passed as a parameter to the build method because
-    // retrieving the project settings from storage can be unreliable.
-    String projectSettings = getProject(node).getSettings().encodeSettings();
-    ode.getProjectService().build(node.getProjectId(), projectSettings, target, callback);
+    ode.getProjectService().build(node.getProjectId(), target, callback);
   }
 }

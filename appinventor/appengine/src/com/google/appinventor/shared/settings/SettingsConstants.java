@@ -25,7 +25,6 @@ public class SettingsConstants {
   public static final String PROJECT_YOUNG_ANDROID_SETTINGS = "SimpleSettings";
 
   // Project settings
-  public static final String YOUNG_ANDROID_SETTINGS_STARTUP_FORM = "StartupForm";
   public static final String YOUNG_ANDROID_SETTINGS_ICON = "Icon";
   public static final String YOUNG_ANDROID_SETTINGS_SHOW_HIDDEN_COMPONENTS = "ShowHiddenComponents";
 }

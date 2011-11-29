@@ -316,7 +316,7 @@ public class ProjectServiceTest {
     Map<String, String> expectedYaFiles2 = new HashMap<String, String>();
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.blk", "");
     expectedYaFiles2.put("youngandroidproject/project.properties",
-        "main=com.domain.noname.Project2.Screen1\n" +
+        "main=appinventor.ai_noname1.Project2.Screen1\n" +
         "name=Project2\n" +
         "assets=../assets\n" +
         "source=../src\n" +
@@ -456,14 +456,14 @@ public class ProjectServiceTest {
         YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, PROJECT1_NAME, params).getProjectId();
 
     String loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
-    assertEquals(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+    assertEquals(
         "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
-        "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_STARTUP_FORM +
-        "\":\"com.domain.noname.Project1." + YOUNG_ANDROID_FORM_NAME + "\",\"" +
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"\"}}",
+        "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"\"}}",
         loadedSettings);
 
-    String storedSettings = "{a: 1, b: c}";
+    String storedSettings =
+        "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
+        "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"KittyIcon.png\"}}";
     projectServiceImpl.storeProjectSettings(projectId, storedSettings);
     loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
     assertEquals(storedSettings, loadedSettings);

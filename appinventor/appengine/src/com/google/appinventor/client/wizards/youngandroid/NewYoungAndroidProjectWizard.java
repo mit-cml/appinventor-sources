@@ -63,9 +63,8 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
         String projectName = projectNameTextBox.getText();
 
         if (TextValidators.checkNewProjectName(projectName)) {
-          String packageName =
-              StringUtils.userToPackageName(Ode.getInstance().getUser().getUserEmail())
-              + "." + projectName;
+          String packageName = StringUtils.getProjectPackage(
+              Ode.getInstance().getUser().getUserEmail(), projectName);
           NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
               packageName);
           NewProjectCommand callbackCommand = new NewProjectCommand() {

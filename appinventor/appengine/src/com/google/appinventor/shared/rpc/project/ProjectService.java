@@ -142,12 +142,11 @@ public interface ProjectService extends RemoteService {
    * Invokes a build command for the project on the back-end.
    *
    * @param projectId  project ID
-   * @param projectSettings  project settings
    * @param target  build target (optional, implementation dependent)
    *
    * @return  results of invoking the build command
    */
-  RpcResult build(long projectId, String projectSettings, String target);
+  RpcResult build(long projectId, String target);
 
   /**
    * Gets the result of a build command for the project from the back-end.
