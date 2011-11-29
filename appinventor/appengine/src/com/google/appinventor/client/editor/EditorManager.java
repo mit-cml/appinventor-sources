@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Manager class for opened project editors.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public final class EditorManager {
   // Map of project IDs to open project editors

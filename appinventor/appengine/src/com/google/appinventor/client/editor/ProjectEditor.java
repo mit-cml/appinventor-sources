@@ -25,6 +25,7 @@ import java.util.Map;
  * FileEditors open in a DeckPanel with a TabBar used to control which widget
  * in the DeckPanel is visible.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class ProjectEditor extends Composite {
 

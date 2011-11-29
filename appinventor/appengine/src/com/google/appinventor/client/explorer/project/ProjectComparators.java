@@ -8,6 +8,7 @@ import java.util.Comparator;
 /**
  * Comparators for {@link Project}.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public final class ProjectComparators {
   private ProjectComparators() {

@@ -6,6 +6,7 @@ package com.google.appinventor.client.jsonp;
  * Listener interface for receiving notification from a {@link JsonpConnection}
  * concerning the connectivity with the server.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public interface ConnectivityListener {
 

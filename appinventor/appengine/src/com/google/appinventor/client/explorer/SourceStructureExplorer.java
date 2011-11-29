@@ -28,6 +28,7 @@ import java.util.Iterator;
  * this explorer is shared by all it's clients. That means that clients (most
  * likely editors) need to update its content upon activation.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public class SourceStructureExplorer extends Composite {
   // UI elements

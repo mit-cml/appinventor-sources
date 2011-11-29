@@ -34,6 +34,7 @@ import java.util.Map;
  *
  * <p> The project name and date created will be shown in the table.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public class ProjectList extends Composite implements ProjectManagerEventListener {
   private enum SortField {

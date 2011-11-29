@@ -9,6 +9,7 @@ import com.google.gwt.user.client.ui.Composite;
 /**
  * Abstract superclass for all file editors.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public abstract class FileEditor extends Composite {
 

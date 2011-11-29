@@ -5,6 +5,7 @@ package com.google.appinventor.client.explorer;
 /**
  * Defines an interface for an item in the source structure explorer.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public interface SourceStructureExplorerItem {
   /**

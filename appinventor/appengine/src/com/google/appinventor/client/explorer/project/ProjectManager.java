@@ -16,6 +16,7 @@ import java.util.Map;
 /**
  * This class manages projects.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public final class ProjectManager {
   // Map to find the project from a project ID.

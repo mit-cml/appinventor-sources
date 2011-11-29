@@ -7,6 +7,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 /**
  * Property editor for integer values.
  *
+ * @author lizlooney@google.com (Liz Looney)
  */
 public class IntegerPropertyEditor extends TextPropertyEditor {
 
