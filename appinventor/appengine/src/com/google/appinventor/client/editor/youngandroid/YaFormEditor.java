@@ -173,13 +173,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public String getTabText() {
-    return StorageUtil.trimOffExtension(StorageUtil.basename(getFileId()));
+    return getFormName();
   }
 
   @Override
   public void onShow() {
-    // When this editor is shown, update the "current" project and file IDs.
-    Ode.getInstance().setCurrentYoungAndroidProjectAndFileIds(getProjectId(), getFileId());
+    // When this editor is shown, update the "current" editor.
+    Ode.getInstance().setCurrentYaFormEditor(this);
 
     loadDesigner();
 
@@ -194,8 +194,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     unloadDesigner();
 
-    // When an editor is detached, clear the "current" project and file IDs.
-    Ode.getInstance().setCurrentYoungAndroidProjectAndFileIds(0, null);
+    // When an editor is detached, clear the "current" editor.
+    Ode.getInstance().setCurrentYaFormEditor(null);
 
     super.onHide();
   }
@@ -259,7 +259,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public boolean isScreen1() {
-    return StorageUtil.basename(getFileId()).equals("Screen1.scm");
+    return isScreen1(getFormName());
   }
 
   // FormChangeListener implementation
@@ -337,6 +337,31 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    */
   public MockForm getForm() {
     return form;
+  }
+
+  /**
+   * Returns the form node associated with this YaFormEditor.
+   *
+   * @return a YoungAndroidFormNode
+   */
+  public YoungAndroidFormNode getFormNode() {
+    return formNode;
+  }
+
+  /**
+   * Returns the form name associated with this YaFormEditor.
+   *
+   * @return the form name
+   */
+  public String getFormName() {
+    return StorageUtil.trimOffExtension(StorageUtil.basename(getFileId()));
+  }
+
+  /**
+   * Returns true if the given formName is Screen1, false otherwise.
+   */
+  public static boolean isScreen1(String formName) {
+    return formName.equals("Screen1");
   }
 
   // private methods

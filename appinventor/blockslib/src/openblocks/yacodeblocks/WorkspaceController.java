@@ -137,6 +137,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   // phone status icon.
   private boolean projectLoaded = false;
   private String currentProjectName = "";
+  private String currentFormName = "";
 
   public WorkspaceController(boolean isFromProductionServer) {
     this.isFromProductionServer = isFromProductionServer;
@@ -953,6 +954,14 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
 
   private void doLoadFormProperties(JSONObject properties) {
     if (properties != null) {
+      try {
+        currentFormName = properties.getJSONObject("Properties").getString("$Name");
+      } catch (JSONException e) {
+        currentFormName = "";
+        FeedbackReporter.showSystemErrorMessage("Loading failure: Form properties failed to load." +
+            NO_SAVE_WARNING);
+      }
+
       if (!cbm.syncFromJson(properties)) {
         FeedbackReporter.showSystemErrorMessage("Loading failure: Form properties failed to load." +
             NO_SAVE_WARNING);
@@ -1221,11 +1230,17 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
 
   private void setProjectName(String projectName) {
     currentProjectName = projectName;
+
+    // Show both project and form names in the title bar and header pane.
+    String projectAndFormNames = currentProjectName;
+    if (currentProjectName.length() > 0 && currentFormName.length() > 0) {
+      projectAndFormNames += " - " + currentFormName;
+    }
     if (topFrame != null) {
-      topFrame.setTitle("App Inventor for Android Blocks Editor: " + projectName);
+      topFrame.setTitle("App Inventor for Android Blocks Editor: " + projectAndFormNames);
     }
     if (headerPane != null) {
-      headerPane.setProjectName(projectName);
+      headerPane.setHeaderText(projectAndFormNames);
     }
   }
 

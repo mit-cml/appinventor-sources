@@ -5,6 +5,9 @@ package com.google.appinventor.client.explorer.commands;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -13,13 +16,12 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNo
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DialogBox;
@@ -181,8 +183,27 @@ public final class AddFormCommand extends ChainableCommand {
           YoungAndroidFormNode newFormNode = new YoungAndroidFormNode(formFileId);
           Project project = Ode.getInstance().getProjectManager().getProject(projectRootNode);
           project.addNode(packageNode, newFormNode);
+          final String fileId = newFormNode.getFileId();
 
-          executeNextCommand(projectRootNode);
+          // Select the new form editor. We need to do this later because the form editor isn't
+          // added to the project editor until the form file is completely loaded.
+          Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+            @Override
+            public void execute() {
+              ProjectEditor projectEditor = ViewerBox.getViewerBox().show(projectRootNode);
+              FileEditor fileEditor = projectEditor.getFileEditor(fileId);
+              if (fileEditor != null) {
+                projectEditor.selectFileEditor(fileEditor);
+
+                executeNextCommand(projectRootNode);
+
+              } else {
+                // The form editor is still not there. Try again later.
+                Scheduler.get().scheduleDeferred(this);
+              }
+            }
+          });
+
         }
 
         @Override
@@ -200,7 +221,7 @@ public final class AddFormCommand extends ChainableCommand {
     public void show() {
       super.show();
 
-      DeferredCommand.addCommand(new Command() {
+      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
         @Override
         public void execute() {
           newNameTextBox.setFocus(true);

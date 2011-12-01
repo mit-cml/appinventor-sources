@@ -222,6 +222,8 @@
         <BlockGenusMember>close-screen</BlockGenusMember>
         <BlockGenusMember>close-screen-with-result</BlockGenusMember>
         <BlockGenusMember>close-application</BlockGenusMember>
+        <BlockGenusMember>open-screen</BlockGenusMember>
+        <BlockGenusMember>open-screen-with-start-text</BlockGenusMember>
       </BlockDrawer>
 
       <BlockDrawer name="Colors" button-color="colors">

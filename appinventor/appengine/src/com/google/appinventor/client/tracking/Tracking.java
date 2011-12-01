@@ -44,6 +44,8 @@ public class Tracking {
       "Checkpoint-YA";
   public static final String PROJECT_ACTION_ADDFORM_YA = PROJECT_ACTION_PREFIX +
       "AddForm-YA";
+  public static final String PROJECT_ACTION_REMOVEFORM_YA = PROJECT_ACTION_PREFIX +
+      "RemoveForm-YA";
   public static final String PROJECT_SUBACTION_BUILD_YA = PROJECT_ACTION_PREFIX +
       "Build-Subcommand-YA";
 

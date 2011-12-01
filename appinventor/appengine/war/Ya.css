@@ -262,15 +262,30 @@ body {
   border: 2px solid #a4c639;
 }
 
-.gwt-TabBarItem {
-  color: black;
-  font-size: small;
-  border: 2px solid transparent;
+.gwt-TabBar {
+  margin: 5px 0px 5px 0px;
 }
 
-.gwt-TabBarItem-selected {
-  border: 2px solid #a4c639;
+.gwt-TabBar .gwt-TabBarFirst {
+   width: 0px;
 }
+
+.gwt-TabBar .gwt-TabBarItem {
+  margin: 0px 5px 0px 0px;
+  padding: 3px 6px 3px 6px;
+  cursor: pointer;
+  color: black;
+  font-size: 13px;
+  text-align: center;
+  background-color: #eef2e0;
+  border: 2px solid #d2e0a6;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+  cursor: default;
+  background-color: #a4c639;
+  border: 2px solid #a4c639;
+} 
 
 .gwt-RadioButton {
   font-size: small;

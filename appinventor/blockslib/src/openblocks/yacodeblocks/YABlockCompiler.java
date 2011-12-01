@@ -136,7 +136,7 @@ public class YABlockCompiler {
     // System.out.println("Generate yail returned: " + finalCode);
 
     if (forRepl) {
-      code = wrapForRepl(code, componentMap);
+      code = wrapForRepl(code, formName, componentMap);
     }
     String finalCode = code.toString();
     // Get rid of empty property assignments
@@ -146,12 +146,20 @@ public class YABlockCompiler {
     return finalCode;
   }
 
-  private static StringBuilder wrapForRepl(StringBuilder code,
+  private static StringBuilder wrapForRepl(StringBuilder code, String formName,
       HashMap<String, ArrayList<RenderableBlock>> componentMap) {
     StringBuilder replCode = new StringBuilder();
     replCode.append(YAIL_BEGIN)
-        .append(generateYailClearForm())
-        .append(code)
+        .append(generateYailClearForm());
+    if (!formName.equals("Screen1")) {
+      // If this form is not named Screen1, then the REPL won't be able to resolve any references
+      // to it or to any properties on the form itself (such as Title, BackgroundColor, etc) unless
+      // we tell it that "Screen1" has been renamed to formName.
+      // By generating a call to rename-component here, the REPL will rename "Screen1" to formName
+      // in the current environment. See rename-component in runtime.scm.
+      replCode.append(generateComponentRename("Screen1", formName));
+    }
+    replCode.append(code)
         .append(generateComponentIntialization(componentMap.keySet()))
         .append(YAIL_CLOSE_BLOCK);
     return replCode;

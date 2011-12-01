@@ -19,7 +19,7 @@ public class CHeader extends JPanel {
     private static final int LEFTNAV_WIDTH = 180;
     private static final int HEADER_HEIGHT = 40;
 
-    private JLabel projectLabel;
+    private JLabel headerLabel;
 
     public CHeader(JComponent[] buttonsLeft, JComponent[] buttonsRight) {
         super();
@@ -30,14 +30,14 @@ public class CHeader extends JPanel {
           {HEADER_HEIGHT}};
         this.setLayout(new TableLayout(size));
 
-        projectLabel = new JLabel("", JLabel.LEFT);
-        projectLabel.setOpaque(false);
-        projectLabel.setFont(new Font("Arial", Font.BOLD, 15));
-        projectLabel.setForeground(Color.WHITE);
-        projectLabel.setPreferredSize(new Dimension(LEFTNAV_WIDTH, HEADER_HEIGHT));
+        headerLabel = new JLabel("", JLabel.LEFT);
+        headerLabel.setOpaque(false);
+        headerLabel.setFont(new Font("Arial", Font.BOLD, 15));
+        headerLabel.setForeground(Color.WHITE);
+        headerLabel.setPreferredSize(new Dimension(LEFTNAV_WIDTH, HEADER_HEIGHT));
         // set left margin
-        projectLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
-        this.add(projectLabel, "0, 0, l, c");
+        headerLabel.setBorder(new EmptyBorder(0, 10, 0, 0));
+        this.add(headerLabel, "0, 0, l, c");
 
         JPanel buttonPane = new JPanel();
         buttonPane.setOpaque(false);
@@ -64,8 +64,8 @@ public class CHeader extends JPanel {
         this.add(buttonPane, "1, 0, f, c");
     }
 
-    public void setProjectName(String projectName) {
-      projectLabel.setText(projectName);
+    public void setHeaderText(String headerText) {
+      headerLabel.setText(headerText);
     }
 
     public void paint(Graphics g){

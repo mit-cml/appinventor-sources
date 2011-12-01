@@ -65,6 +65,16 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for adding a new screen")
   String addFormButton();
 
+  @DefaultMessage("Remove Screen")
+  @Description("Label of the button for removing a screen")
+  String removeFormButton();
+
+  @DefaultMessage("Deleting this screen will completely remove the screen from your project. " +
+      "All components and blocks associated with this screen will be deleted.\n" +
+      "There is no undo.\nAre you sure you want to delete {0}?")
+  @Description("Confirmation query for removing a screen")
+  String reallyDeleteForm(String formName);
+
   @DefaultMessage("Open the Blocks Editor")
   @Description("Label of the button for opening the blocks editor")
   String openBlocksEditorButton();
@@ -120,7 +130,7 @@ public interface OdeMessages extends Messages {
   String serverUnavailable();
 
   @DefaultMessage("The Blocks Editor should close automatically.\n" +
-  "Please press OK when the Blocks Editor is closed.")
+      "Please press OK when the Blocks Editor is closed.")
   @Description("Closing messsage with codeblocks open")
   String onClosingBrowserWithCodeblocksOpen();
 
@@ -269,9 +279,9 @@ public interface OdeMessages extends Messages {
   String renameTitle();
 
   @DefaultMessage("Component names can contain only letters, numbers, and underscores and " +
-  "must start with a letter")
+      "must start with a letter")
   @Description("Error message when component name contains non-alphanumeric characters besides _ " +
-  "or does not start with a letter")
+      "or does not start with a letter")
   String malformedComponentNameError();
 
   @DefaultMessage("Duplicate component name!")
@@ -279,7 +289,7 @@ public interface OdeMessages extends Messages {
   String duplicateComponentNameError();
 
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
-  "Blocks Editor. Are you sure you want to delete?")
+      "Blocks Editor. Are you sure you want to delete?")
   @Description("Confirmation query for removing a component")
   String reallyDeleteComponent();
 
@@ -294,11 +304,11 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Width")
   @Description("Caption for the width property")
-  String widthPropertyCaption();  
+  String widthPropertyCaption();
 
   @DefaultMessage("Height")
   @Description("Caption for the height property")
-  String heightPropertyCaption();  
+  String heightPropertyCaption();
 
   // Used in editor/simple/components/MockTextBoxBase.java
 
@@ -514,9 +524,9 @@ public interface OdeMessages extends Messages {
   String errorGeneratingYail(String formName);
 
   @DefaultMessage("There are errors in the blocks for this project. Click on the [Open the " +
-  "Blocks Editor] button. Then, retry packaging your project with the blocks editor open.")
+      "Blocks Editor] button. Then, retry packaging your project with the blocks editor open.")
   @Description("Alert displayed when an error occurs while generating YAIL for a form and " +
-  "codeblocks is not open.")
+      "codeblocks is not open.")
   String errorGeneratingYailPleaseOpenCodeblocks();
 
   // Used in explorer/commands/CommandRegistory.java

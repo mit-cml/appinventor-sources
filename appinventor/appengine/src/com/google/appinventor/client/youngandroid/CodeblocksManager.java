@@ -7,6 +7,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.jsonp.ConnectivityListener;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
@@ -16,8 +17,6 @@ import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.common.youngandroid.YaHttpServerConstants;
 import com.google.appinventor.shared.jsonp.JsonpConnectionInfo;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
@@ -176,24 +175,12 @@ public class CodeblocksManager implements ConnectivityListener {
               startingCodeblocks = false;
               updateCodeblocksButton();
 
-              // The user may have switched projects/files while codeblocks was starting.
-              // We want the current project/file now.
-              ProjectRootNode projectRootNode =
-                  Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-              if (projectRootNode != null) {
-                String fileId = Ode.getInstance().getCurrentYoungAndroidFileId();
-                if (fileId != null) {
-                  // Look through the project's source nodes to find the one with the matching
-                  // fileId.
-                  for (ProjectNode sourceNode : projectRootNode.getAllSourceNodes()) {
-                    if (sourceNode instanceof YoungAndroidFormNode &&
-                        fileId.equals(sourceNode.getFileId())) {
-                      // Found it!
-                      loadPropertiesAndBlocks((YoungAndroidFormNode) sourceNode, null);
-                      break;
-                    }
-                  }
-                }
+              // The user may have switched projects/forms while codeblocks was starting.
+              // We want the current project/form now.
+              YaFormEditor formEditor = Ode.getInstance().getCurrentYoungAndroidFormEditor();
+              if (formEditor != null) {
+                YoungAndroidFormNode formNode = formEditor.getFormNode();
+                loadPropertiesAndBlocks(formNode, null);
               }
             }
           }

@@ -4,6 +4,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.runtime.util.ReplCommController;
 
 import android.content.ComponentName;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -55,6 +56,28 @@ public class ReplForm extends Form {
     runOnUiThread(new Runnable() {
       public void run() {
         String message = "Switching forms is not currently supported during development.";
+        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
+      }
+    });
+  }
+
+  @Override
+  protected void closeForm(Intent resultIntent) {
+    // Switching forms is not allowed in REPL (yet?).
+    runOnUiThread(new Runnable() {
+      public void run() {
+        String message = "Closing forms is not currently supported during development.";
+        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
+      }
+    });
+  }
+
+  @Override
+  protected void closeApplicationFromBlocks() {
+    // Switching forms is not allowed in REPL (yet?).
+    runOnUiThread(new Runnable() {
+      public void run() {
+        String message = "Closing forms is not currently supported during development.";
         Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
       }
     });

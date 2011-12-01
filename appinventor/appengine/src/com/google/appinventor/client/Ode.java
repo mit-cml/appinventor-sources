@@ -13,6 +13,7 @@ import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
+import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
@@ -115,9 +116,8 @@ public class Ode implements EntryPoint {
   // Collection of editors
   private EditorManager editorManager;
 
-  // Currently active project and file (Young Android only)
-  private long currentYoungAndroidProjectId;
-  private String currentYoungAndroidFileId;
+  // Currently active form editor
+  private YaFormEditor currentYaFormEditor;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -240,9 +240,9 @@ public class Ode implements EntryPoint {
    * Switch to the Designer tab
    */
   public void switchToDesignView() {
-    // Only show designer if there is a current project.
-    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT PROJECT. *****
-    if (currentYoungAndroidProjectId != 0) {
+    // Only show designer if there is a current editor.
+    // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+    if (currentYaFormEditor != null) {
       deckPanel.showWidget(designTabIndex);
     }
   }
@@ -720,14 +720,12 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Set the current project and file ids (Young Android only).
+   * Set the current young android form editor.
    *
-   * @param projectId  The project id, can be 0.
-   * @param fileId  The file id, can be null.
+   * @param yaFormEditor  the form editor, can be null.
    */
-  public void setCurrentYoungAndroidProjectAndFileIds(long projectId, String fileId) {
-    currentYoungAndroidProjectId = projectId;
-    currentYoungAndroidFileId = fileId;
+  public void setCurrentYaFormEditor(YaFormEditor yaFormEditor) {
+    currentYaFormEditor = yaFormEditor;
 
     switchToDesignView();
 
@@ -742,24 +740,19 @@ public class Ode implements EntryPoint {
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
           changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
-          "" + projectId);
+          "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
   }
 
   /**
-   * Returns the project root node for the current project (Young Android only),
-   * or null if there is no current project or if the project manager doesn't
-   * recognize the current project.
+   * Returns the project root node for the current project, or null if there is no current project.
    *
    * @return  project root node corresponding to current project
    */
   public ProjectRootNode getCurrentYoungAndroidProjectRootNode() {
-    if (currentYoungAndroidProjectId != 0) {
-      Project project = getProjectManager().getProject(currentYoungAndroidProjectId);
-      if (project != null) {
-        return project.getRootNode();
-      }
+    if (currentYaFormEditor != null) {
+      return currentYaFormEditor.getFormNode().getProjectRoot();
     }
     return null;
   }
@@ -777,23 +770,24 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns the current project id (Young Android only), or 0 if there is no
-   * current project.
+   * Returns the current project id, or 0 if there is no current project.
    *
    * @return  the current project id
    */
   public long getCurrentYoungAndroidProjectId() {
-    return currentYoungAndroidProjectId;
+    if (currentYaFormEditor != null) {
+      return currentYaFormEditor.getProjectId();
+    }
+    return 0;
   }
 
   /**
-   * Returns the current file id (Young Android only), or null if there is no
-   * current file.
+   * Returns the current form editor, or null if there is no current form editor.
    *
-   * @return  the current file id
+   * @return  the current form editor
    */
-  public String getCurrentYoungAndroidFileId() {
-    return currentYoungAndroidFileId;
+  public YaFormEditor getCurrentYoungAndroidFormEditor() {
+    return currentYaFormEditor;
   }
 
   /**

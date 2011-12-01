@@ -370,6 +370,24 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
   }
 
+  @Override
+  public long deleteFile(String userId, long projectId, String fileId) {
+    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
+      // If the file to be deleted is a form, delete the form file and the codeblocks file.
+      String qualifiedFormName = YoungAndroidFormNode.getQualifiedName(fileId);
+      String formFileName = getFormPropertiesFileName(qualifiedFormName);
+      String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+      storageIo.deleteFile(userId, projectId, formFileName);
+      storageIo.deleteFile(userId, projectId, codeblocksFileName);
+      storageIo.removeSourceFilesFromProject(userId, projectId, true,
+          formFileName, codeblocksFileName);
+      return storageIo.getProjectDateModified(userId, projectId);
+
+    } else {
+      return super.deleteFile(userId, projectId, fileId);
+    }
+  }
+
   /**
    * Make a request to the Build Server to build a project.  The Build Server will asynchronously
    * post the results of the build via the {@link com.google.appinventor.server.ReceiveBuildServlet}

@@ -6,7 +6,7 @@ $Source $Yail
 
 (require <com.google.youngandroid.runtime>)
 ;;; Screen1
-(do-after-form-creation (set-and-coerce-property! Screen1 'Title "Screen1" 'text)
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
 )
 (init-runtime  #t)
 

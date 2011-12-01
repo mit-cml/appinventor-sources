@@ -3,7 +3,6 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.boxes.AssetListBox;
-import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.ProjectEditorFactory;
 import com.google.appinventor.client.explorer.project.Project;
@@ -13,8 +12,8 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.gwt.user.client.Command;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Project editor for Young Android projects.
@@ -66,17 +65,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     super.onHide();
   }
 
-  /**
-   * Returns a list of the YaFormEditors in this YaProjectEditor.
-   */
-  public List<YaFormEditor> getYaFormEditors() {
-    List<YaFormEditor> list = new ArrayList<YaFormEditor>();
-    for (FileEditor fileEditor : openFileEditors.values()) {
-      list.add((YaFormEditor) fileEditor);
-    }
-    return list;
-  }
-
   // ProjectChangeListener methods
 
   @Override
@@ -99,15 +87,36 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
   // Private methods
 
   private void addFormEditor(YoungAndroidFormNode formNode) {
-    final YaFormEditor yaFormEditor = new YaFormEditor(this, formNode);
-    yaFormEditor.loadFile(new Command() {
+    final YaFormEditor newFormEditor = new YaFormEditor(this, formNode);
+    newFormEditor.loadFile(new Command() {
       @Override
       public void execute() {
-        if (yaFormEditor.isScreen1()) {
-          insertFileEditor(yaFormEditor, 0);
-          selectFileEditor(yaFormEditor);
-        } else {
-          addFileEditor(yaFormEditor);
+        // Insert the editor so that Screen1 always comes first and others are in alphabetical
+        // order.
+        Comparator compareFormNames = new Comparator<String>() {
+          @Override
+          public int compare(String formName1, String formName2) {
+            if (YaFormEditor.isScreen1(formName1)) {
+              if (YaFormEditor.isScreen1(formName2)) {
+                return 0;
+              }
+              return -1;
+            }
+            if (YaFormEditor.isScreen1(formName2)) {
+              return 1;
+            }
+            return formName1.compareTo(formName2);
+          }
+        };
+        int pos = Collections.binarySearch(tabNames, newFormEditor.getTabText(), compareFormNames);
+        if (pos < 0) {
+          pos = -pos - 1;
+        }
+        insertFileEditor(newFormEditor, pos);
+
+        // Automatically select Screen1 when it is added.
+        if (newFormEditor.isScreen1()) {
+          selectFileEditor(newFormEditor);
         }
       }
     });

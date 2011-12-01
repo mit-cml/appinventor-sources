@@ -278,7 +278,7 @@ public final class MockForm extends MockContainer {
     }
 
     if (propertyName.equals(PROPERTY_NAME_ICON)) {
-      // The Icon property actually applies to the application and is only available on Screen1.
+      // The Icon property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
 
@@ -339,9 +339,14 @@ public final class MockForm extends MockContainer {
   }
 
   private void setIconProperty(String icon) {
-    editor.getProjectEditor().changeProjectSettingsProperty(
-        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
-        SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
+    // The Icon property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for icon (empty string). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
+    }
   }
 
   /**

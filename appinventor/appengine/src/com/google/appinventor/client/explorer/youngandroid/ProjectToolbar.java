@@ -131,8 +131,9 @@ public class ProjectToolbar extends Toolbar {
       final long projectId = project.getProjectId();
 
       Ode ode = Ode.getInstance();
+      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
       ode.getEditorManager().closeProjectEditor(projectId);
-      if (projectId == ode.getCurrentYoungAndroidProjectId()) {
+      if (isCurrentProject) {
         // If we're deleting the project that is currently open in the Designer and Codeblocks we
         // need to clear the ViewerBox and tell Codeblocks to clear its workspace first.  However,
         // even if that fails, we still want to complete the delete operation.

@@ -85,7 +85,14 @@ public class Form extends Activity
   // Keep track of the current form object.
   // activeForm always holds the Form that is currently handling event dispatching so runtime.scm
   // can lookup symbols in the correct environment.
+  // There is at least one case where an event can be fired when the activity is not the foreground
+  // activity: if a Clock component's TimerAlwaysFires property is true, the Clock component's
+  // Timer event will still fire, even when the activity is no longer in the foreground. For this
+  // reason, we cannot assume that the activeForm is the foreground activity.
   private static Form activeForm;
+
+  // applicationIsBeingClosed is set to true during closeApplication.
+  private static boolean applicationIsBeingClosed;
 
   private final Handler androidUIHandler = new Handler();
 
@@ -249,6 +256,14 @@ public class Form extends Activity
     super.onResume();
     Log.d(LOG_TAG, "Form " + formName + " got onResume");
     activeForm = this;
+
+    // If applicationIsBeingClosed is true, call closeApplication() immediately to continue
+    // unwinding through all forms of a multi-screen application.
+    if (applicationIsBeingClosed) {
+      closeApplication();
+      return;
+    }
+
     for (OnResumeListener onResumeListener : onResumeListeners) {
       onResumeListener.onResume();
     }
@@ -794,7 +809,7 @@ public class Form extends Activity
   // This is called from runtime.scm when a "close screen" block is executed.
   public static void finishActivity() {
     if (activeForm != null) {
-      activeForm.finish();
+      activeForm.closeForm(null);
     } else {
       throw new IllegalStateException("activeForm is null");
     }
@@ -805,25 +820,53 @@ public class Form extends Activity
     if (activeForm != null) {
       Intent resultIntent = new Intent();
       resultIntent.putExtra(RESULT_NAME, result);
-      activeForm.setResult(Activity.RESULT_OK, resultIntent);
-      activeForm.finish();
+      activeForm.closeForm(resultIntent);
     } else {
       throw new IllegalStateException("activeForm is null");
     }
   }
 
+  protected void closeForm(Intent resultIntent) {
+    if (resultIntent != null) {
+      setResult(Activity.RESULT_OK, resultIntent);
+    }
+    finish();
+  }
+
   // This is called from runtime.scm when a "close application" block is executed.
   public static void finishApplication() {
     if (activeForm != null) {
-      activeForm.finish();
+      activeForm.closeApplicationFromBlocks();
+    } else {
+      throw new IllegalStateException("activeForm is null");
+    }
+  }
+
+  protected void closeApplicationFromBlocks() {
+    closeApplication();
+  }
+
+  private void closeApplicationFromMenu() {
+    closeApplication();
+  }
+
+  private void closeApplication() {
+    // In a multi-screen application, only Screen1 can successfully call System.exit(0). Here, we
+    // set applicationIsBeingClosed to true. If this is not Screen1, when we call finish() below,
+    // the previous form's onResume method will be called. In onResume, we check
+    // applicationIsBeingClosed and call closeApplication again. The stack of forms will unwind
+    // until we get back to Screen1; then we'll call System.exit(0) below.
+    applicationIsBeingClosed = true;
+
+    finish();
+
+    if (formName.equals("Screen1")) {
       // I know that this is frowned upon in Android circles but I really think that it's
       // confusing to users if the exit button doesn't really stop everything, including other
       // forms in the app (when we support them), non-UI threads, etc.  We might need to be
       // careful about this is we ever support services that start up on boot (since it might
       // mean that the only way to restart that service) is to reboot but that's a long way off.
       System.exit(0);
-    } else {
-      throw new IllegalStateException("activeForm is null");
     }
   }
 
@@ -862,7 +905,9 @@ public class Form extends Activity
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Stop and exit",
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
-        finishApplication();
+        // We call closeApplication here, not finishApplication which is a static method and
+        // assumes that activeForm is the foreground activity.
+        closeApplicationFromMenu();
       }});
     alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Don't stop",
         new DialogInterface.OnClickListener() {
