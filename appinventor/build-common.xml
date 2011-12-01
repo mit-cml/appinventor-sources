@@ -173,6 +173,7 @@
              haltonfailure="no"
              maxmemory="925m"
              showoutput="no">
+        <jvmarg value="-XX:MaxPermSize=128m"/>
         <classpath refid="@{aij-testingtarget}.path"/>
         <formatter type="xml"/>
         <!-- If the ant command line sets the test_name property (see above)
