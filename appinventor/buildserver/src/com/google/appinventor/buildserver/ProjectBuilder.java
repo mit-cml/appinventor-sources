@@ -411,7 +411,7 @@ public final class ProjectBuilder {
       String codeblocksSource = Files.toString(new File(codeblocksSourcePath),
                                                Charset.forName(PathUtil.DEFAULT_CHARSET));
       String generatedYailString =
-          YailGenerator.generateYail(true, formPropertiesSource, codeblocksSource, yailPath);
+          YailGenerator.generateYail(formPropertiesSource, codeblocksSource, yailPath);
       File generatedYailFile = new File(yailPath);
       Files.write(generatedYailString, generatedYailFile, Charsets.UTF_8);
       return generatedYailFile;

@@ -26,11 +26,6 @@ public interface IWorkspaceController {
   }
 
   /**
-   * Returns true iff codeblocks came from a production server.
-   */
-  boolean isFromProductionServer();
-
-  /**
    * Returns true iff the workspace controller is loading blocks
    */
   boolean isLoadingBlocks();

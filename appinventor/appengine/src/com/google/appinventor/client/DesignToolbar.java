@@ -19,6 +19,7 @@ import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.collect.Lists;
@@ -45,8 +46,6 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_DOWNLOAD_TO_PHONE = "DownloadToPhone";
   private static final String WIDGET_NAME_OPEN_BLOCKS_EDITOR = "OpenBlocksEditor";
 
-  private static final boolean ALLOW_MULTIPLE_SCREENS = false;
-
   private boolean codeblocksButtonCancel = false;
 
   private Label projectName;
@@ -70,7 +69,7 @@ public class DesignToolbar extends Toolbar {
         new SaveAsAction()));
     addButton(new ToolbarItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
         new CheckpointAction()));
-    if (ALLOW_MULTIPLE_SCREENS) {
+    if (AppInventorFeatures.allowMultiScreenApplications()) {
       addButton(new ToolbarItem(WIDGET_NAME_ADDFORM, MESSAGES.addFormButton(),
           new AddFormAction()));
       addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
@@ -256,7 +255,7 @@ public class DesignToolbar extends Toolbar {
     setDropItemEnabled(WIDGET_NAME_DOWNLOAD, enabled);
     setDropItemEnabled(WIDGET_NAME_DOWNLOAD_TO_PHONE, enabled);
 
-    if (ALLOW_MULTIPLE_SCREENS) {
+    if (AppInventorFeatures.allowMultiScreenApplications()) {
       setButtonEnabled(WIDGET_NAME_ADDFORM, enabled);
       enabled = (formEditor != null && !formEditor.isScreen1());
       setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);

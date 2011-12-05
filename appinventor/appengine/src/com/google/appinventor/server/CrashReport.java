@@ -68,8 +68,7 @@ public final class CrashReport {
     StringBuilder s = new StringBuilder();
 
     // If the app is running on App Engine...
-    if (SystemProperty.environment.value() ==
-        SystemProperty.Environment.Value.Production) {
+    if (Server.isProductionServer()) {
       // the version ID of the runtime environment
       String version = SystemProperty.version.get();
       s.append("runtime.version").append("=").append(version).append("\n");

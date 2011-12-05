@@ -121,9 +121,17 @@ public interface OdeMessages extends Messages {
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
-  @DefaultMessage("Report a bug for an internal error?")
+  @DefaultMessage("An internal error has occurred. Report a bug?")
   @Description("Confirmation for reporting a bug after an internal error")
+  String internalErrorReportBug();
+
+  @DefaultMessage("An internal error has occurred.")
+  @Description("Alert after an internal error")
   String internalError();
+
+  @DefaultMessage("An internal error has occurred. Go look in the Debugging view.")
+  @Description("Alert after an internal error")
+  String internalErrorSeeDebuggingView();
 
   @DefaultMessage("The server is temporarily unavailable. Please try again later!")
   @Description("Error message if the server becomes completely unavailable.")

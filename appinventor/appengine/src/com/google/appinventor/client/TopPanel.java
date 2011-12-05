@@ -5,6 +5,7 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.boxes.MotdBox;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -92,7 +93,7 @@ public class TopPanel extends Composite {
     Anchor learn = new Anchor(MESSAGES.tabNameLearn(), learnUrl, "_blank");
     middleLinks.add(learn);
 
-    if (ode.hasDebuggingView()) {
+    if (AppInventorFeatures.hasDebuggingView()) {
       Label debugging = new Label(MESSAGES.tabNameDebugging());
       debugging.addClickHandler(new ClickHandler() {
           public void onClick(ClickEvent event) {

@@ -5,6 +5,7 @@ package com.google.appinventor.client.output;
 import com.google.appinventor.client.BugReport;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -81,9 +82,7 @@ public final class OdeLog extends Composite {
    * @return  logging availability
    */
   public static final boolean isLogAvailable() {
-    // TODO(markf,lizlooney): Some day we'll make the log show only for non-production
-    //return !Ode.isProduction();
-    return true;
+    return AppInventorFeatures.hasDebuggingView();
   }
 
   /**
@@ -92,8 +91,7 @@ public final class OdeLog extends Composite {
    * @param message  message to print
    */
   public static void log(String message) {
-    // Extra (normally unneeded) guarding helps the GWT compiler to remove any of the logging calls
-    if (isLogAvailable()) {
+    if (isLogAvailable() && !Ode.isWindowClosing()) {
       getOdeLog().println(StringUtils.escape(message));
     }
   }
@@ -104,8 +102,7 @@ public final class OdeLog extends Composite {
    * @param message  message to print
    */
   public static void wlog(String message) {
-    // Extra (normally unneeded) guarding helps the GWT compiler to remove any of the logging calls
-    if (isLogAvailable()) {
+    if (isLogAvailable() && !Ode.isWindowClosing()) {
       getOdeLog().wprintln(StringUtils.escape(message));
     }
   }
@@ -116,8 +113,7 @@ public final class OdeLog extends Composite {
    * @param message  message to print
    */
   public static void elog(String message) {
-    // Extra (normally unneeded) guarding helps the GWT compiler to remove any of the logging calls
-    if (isLogAvailable()) {
+    if (isLogAvailable() && !Ode.isWindowClosing()) {
       getOdeLog().eprintln(StringUtils.escape(message));
     }
   }
@@ -128,8 +124,7 @@ public final class OdeLog extends Composite {
    * @param throwable  exception thrown
    */
   public static void xlog(Throwable throwable) {
-    // Extra (normally unneeded) guarding helps the GWT compiler to remove any of the logging calls
-    if (isLogAvailable()) {
+    if (isLogAvailable() && !Ode.isWindowClosing()) {
       getOdeLog().eprintln(StringUtils.escape(throwable.toString()) + prepareStackTrace(throwable));
       // For this message, we don't escape. We want the bug report link to show as a link.
       getOdeLog().eprintln("File a <a href=\"" + BugReport.getBugReportLink(throwable)
@@ -172,31 +167,25 @@ public final class OdeLog extends Composite {
    * Prints a log message.
    */
   private void println(String message) {
-    if (!Ode.isWindowClosing()) {
-      text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-        "<span style=\"color:green\">[INFO] </span>" + message + "</div>");
-    }
+    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
+      "<span style=\"color:green\">[INFO] </span>" + message + "</div>");
   }
 
   /*
    * Prints a log warning message.
    */
   private void wprintln(String message) {
-    if (!Ode.isWindowClosing()) {
-      text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-          "<span style=\"color:orange\">[WARNING] </span>" + message +
-          "</div>");
-    }
+    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
+        "<span style=\"color:orange\">[WARNING] </span>" + message +
+        "</div>");
   }
 
   /*
    * Prints a log error message.
    */
   private void eprintln(String message) {
-    if (!Ode.isWindowClosing()) {
-      text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
-          "<span style=\"color:red\">[ERROR] </span>" + message + "</div>");
-    }
+    text.setHTML(text.getHTML() + "<div " + messageStyle + ">" +
+        "<span style=\"color:red\">[ERROR] </span>" + message + "</div>");
   }
 
   /*

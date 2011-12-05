@@ -46,9 +46,9 @@ public class Server {
 */
 
   /**
-   * Indicates whether this server instance is a production server.
+   * Indicates whether this server instance is running on app engine production
    *
-   * @return  true if this server instance is running in prod
+   * @return  true if this server instance is running on app engine production
    */
   public static boolean isProductionServer() {
     return SystemProperty.environment.value() == SystemProperty.Environment.Value.Production;

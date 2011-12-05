@@ -42,8 +42,6 @@ public class WorkspaceUtils {
   private static final String LANG_DEF_XML_PATH = "support/ya_lang_def.xml";
   private static final String GLOBALS = "Global Definitions";
 
-  private static boolean isFromProductionServer = true;
-
   private WorkspaceUtils() {
   }
 

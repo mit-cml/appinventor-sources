@@ -262,13 +262,13 @@ public abstract class Box extends FocusPanel {
 
     Images images = Ode.getImageBundle();
 
-    // do not expose this "Not implemented yet" in production
-    if (!Ode.isProduction() && removable) {
+    if (removable) {
       PushButton closeButton = Ode.createPushButton(images.boxClose(), MESSAGES.hdrClose(),
           new ClickHandler() {
             @Override
             public void onClick(ClickEvent event) {
-                Window.alert("Not implemented yet!");
+              // TODO(user) - remove the box
+              Window.alert("Not implemented yet!");
             }
           });
       headerContainer.add(closeButton, DockPanel.LINE_END);

@@ -97,7 +97,6 @@ public abstract class WebStartSupport {
     List<String> args = Lists.newArrayList();
     args.add(baseUrl);     // base URL for the WebStartFileServlet
     args.add(projectPath + '/');
-    args.add(Boolean.toString(Server.isProductionServer()));
 
     return JavaWebStart.generateJnlpFile(codebase, title, description,
         javaVersion, maxHeapSize, mainClass, Collections.singletonList(jar), args);

@@ -40,7 +40,7 @@ public class YABlockCompiler {
   private static final String YAIL_FALSE = "#f";
   private static final String YAIL_GET_COMPONENT = "(get-component ";
   private static final String YAIL_GET_PROPERTY = "(get-property ";
-  private static final String YAIL_INIT_RUNTIME = "init-runtime ";
+  private static final String YAIL_INIT_RUNTIME = "(init-runtime)";
   private static final String YAIL_INITIALIZE_COMPONENTS =
                                         "(call-Initialize-of-components";
   private static final String YAIL_LINE_FEED = "\n";
@@ -177,12 +177,7 @@ public class YABlockCompiler {
   }
 
   private static String genRuntimeInit() {
-    // TODO(markf): Replace the hard coded YAIL_TRUE with true of false depending on whether we're
-    // running on a development server.
-    // NOTE(lizlooney) - if this changes, YailGeneratorTool will need to be updated.
-    return YAIL_OPEN_BLOCK + YAIL_INIT_RUNTIME + YAIL_SPACER
-           + (WorkspaceControllerHolder.get().isFromProductionServer() ? YAIL_FALSE : YAIL_TRUE)
-           + YAIL_CLOSE_BLOCK;
+    return YAIL_INIT_RUNTIME;
   }
 
 

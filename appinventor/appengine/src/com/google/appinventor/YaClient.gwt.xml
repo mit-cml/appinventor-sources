@@ -95,43 +95,5 @@
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
 
-  <!-- YaVersions -->
-  <!-- TODO(opensource): Get rid of this Google-specific Versions code. Either
-       replace with some other way to distinguish development vs. prod or just
-       remove -->
-  <!--
-    || This module manages the different versions of ODE that can be built.
-    ||
-    || Currently we distinguish between developer and 'production' versions. The
-    || developer version is defined as being served from a corp machine
-    || (<hostname>.<office>.corp.google.com), all others are considered
-    || production versions.
-    ||
-  -->
-
-  <!-- Version Property (Developer vs Production) -->
-
-  <define-property name="ode.version" values="developer,production" />
-
-  <property-provider name="ode.version"><![CDATA[
-    // TODO(opensource): For now, always in developer mode so that we see the 
-    // developer messages. Eventually need a different way to distinguish developer 
-    // from prod, if we want to make that distinction at all.
-    //try {
-      // Check the URL to determine the version
-      // var re = new RegExp(".*\\.corp\\.google\\.com");
-      //if (location.host.match(re)) {
-        return "developer";
-      //}
-    //} catch(e) {
-      //alert("Unexpected exception in version detection, using production: " + e);
-    //}
-    //return "production";
-  ]]></property-provider>
-
-  <generate-with class="com.google.appinventor.rebind.VersionGenerator">
-    <when-type-assignable class="com.google.appinventor.client.Version" />
-  </generate-with>
-
   <extend-property name="locale" values="de"/>
 </module>

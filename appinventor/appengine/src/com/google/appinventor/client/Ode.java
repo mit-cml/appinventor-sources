@@ -29,6 +29,7 @@ import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -81,9 +82,6 @@ public class Ode implements EntryPoint {
    * The base URL for App Inventor documentation.
    */
   public static final String APP_INVENTOR_DOCS_URL = "";
-
-  // Version information
-  private static final Version VERSION = GWT.create(Version.class);
 
   // Global instance of the Ode object
   private static Ode instance;
@@ -212,17 +210,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Indicates whether the client is a production client which runs in a users
-   * browser (as opposed a development client which runs in an ODE developers
-   * browser).
-   *
-   * @return  {@code true} for production clients
-   */
-  public static boolean isProduction() {
-    return VERSION.isProduction();
-  }
-
-  /**
    * Returns true if we have received the window closing event.
    */
   public static boolean isWindowClosing() {
@@ -245,10 +232,6 @@ public class Ode implements EntryPoint {
     if (currentYaFormEditor != null) {
       deckPanel.showWidget(designTabIndex);
     }
-  }
-
-  public boolean hasDebuggingView() {
-    return !isProduction();
   }
 
   /**
@@ -367,14 +350,16 @@ public class Ode implements EntryPoint {
     GWT.setUncaughtExceptionHandler(new GWT.UncaughtExceptionHandler() {
       @Override
       public void onUncaughtException(Throwable e) {
-        if (isProduction()) {
-          if (Window.confirm(MESSAGES.internalError())) {
+        OdeLog.xlog(e);
+
+        if (AppInventorFeatures.sendBugReports()) {
+          if (Window.confirm(MESSAGES.internalErrorReportBug())) {
             Window.open(BugReport.getBugReportLink(e), "_blank", "");
           }
         } else {
-          Window.alert("There was an uncaught exception! Go look in the Developer Messages.");
+          Window.alert(AppInventorFeatures.hasDebuggingView() ?
+              MESSAGES.internalErrorSeeDebuggingView() : MESSAGES.internalError());
         }
-        OdeLog.xlog(e);
       }
     });
 
@@ -558,7 +543,7 @@ public class Ode implements EntryPoint {
     deckPanel.add(vertPanel);
 
     // Debugging tab
-    if (hasDebuggingView()) {
+    if (AppInventorFeatures.hasDebuggingView()) {
       ColumnLayout defaultLayout = new ColumnLayout("Default");
       Column column = defaultLayout.addColumn(100);
       column.add(MessagesOutputBox.class, 160, false);

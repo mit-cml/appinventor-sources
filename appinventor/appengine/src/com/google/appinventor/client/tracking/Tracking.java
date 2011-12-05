@@ -3,6 +3,7 @@
 package com.google.appinventor.client.tracking;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**
@@ -125,7 +126,7 @@ public class Tracking {
    * Indicates whether to track or not.
    */
   private static boolean trackingAvailable() {
-    return Ode.isProduction();
+    return AppInventorFeatures.trackClientEvents();
   }
 
   /*

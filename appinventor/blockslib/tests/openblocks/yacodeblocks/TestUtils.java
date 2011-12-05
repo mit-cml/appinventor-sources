@@ -80,7 +80,7 @@ public class TestUtils extends com.google.appinventor.common.testutils.TestUtils
     IWorkspaceController.Factory factory = new IWorkspaceController.Factory() {
       @Override
       public IWorkspaceController create() {
-        return new WorkspaceController(false);  // not from production server
+        return new WorkspaceController();
       }
     };
     WorkspaceControllerHolder.setFactory(factory, true);  // headless so tests can run on forge

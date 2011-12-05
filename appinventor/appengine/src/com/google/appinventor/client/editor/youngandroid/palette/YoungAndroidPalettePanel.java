@@ -25,6 +25,7 @@ import com.google.appinventor.client.widgets.properties.NonNegativeIntegerProper
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
+import com.google.appinventor.common.utils.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 import com.google.gwt.user.client.ui.Composite;
@@ -53,8 +54,6 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   private final StackPanel stackPalette;
   private final Map<ComponentCategory, VerticalPanel> categoryPanels;
 
-  private final boolean dontShowInternalCategory;
-
   /**
    * Creates a new component palette panel.
    *
@@ -63,15 +62,12 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
   public YoungAndroidPalettePanel(YaFormEditor editor) {
     this.editor = editor;
 
-    dontShowInternalCategory = Ode.isProduction();
-
     stackPalette = new StackPanel();
 
     categoryPanels = new HashMap<ComponentCategory, VerticalPanel>();
 
     for (ComponentCategory category : ComponentCategory.values()) {
-      if ((category != ComponentCategory.UNINITIALIZED) &&
-          !(dontShowInternalCategory && (category == ComponentCategory.INTERNAL))) {
+      if (showCategory(category)) {
         VerticalPanel categoryPanel = new VerticalPanel();
         categoryPanel.setWidth("100%");
         categoryPanels.put(category, categoryPanel);
@@ -81,6 +77,17 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
 
     stackPalette.setWidth("100%");
     initWidget(stackPalette);
+  }
+
+  private static boolean showCategory(ComponentCategory category) {
+    if (category == ComponentCategory.UNINITIALIZED) {
+      return false;
+    }
+    if (category == ComponentCategory.INTERNAL &&
+        !AppInventorFeatures.showInternalComponentsCategory()) {
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -104,8 +111,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       Boolean showOnPalette = COMPONENT_DATABASE.getShowOnPalette(component);
       Boolean nonVisible = COMPONENT_DATABASE.getNonVisible(component);
       ComponentCategory category = ComponentCategory.valueOf(categoryString);
-      if (showOnPalette && category != ComponentCategory.UNINITIALIZED &&
-          !(dontShowInternalCategory && (category == ComponentCategory.INTERNAL))) {
+      if (showOnPalette && showCategory(category)) {
         addPaletteItem(new SimplePaletteItem(
             new SimpleComponentDescriptor(component, editor, helpString,
                 categoryDocUrlString, showOnPalette, nonVisible),

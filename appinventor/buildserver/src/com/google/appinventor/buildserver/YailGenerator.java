@@ -48,7 +48,6 @@ public class YailGenerator implements IWorkspaceController {
 
   private static final Object generateYailLock = new Object();
 
-  private final boolean isFromProductionServer;
   private final Workspace workspace;
   private final ComponentBlockManager cbm;
   private final ProcedureBlockManager pbm;
@@ -62,7 +61,6 @@ public class YailGenerator implements IWorkspaceController {
    * Entry point for YailGenerator binary.
    * Command-line argumesnt:
    * <ol>
-   * <li>boolean indicating whether this is a production server</li>
    * <li>the path of a file containing the form properties source</li>
    * <li>the path of a file containing the codeblocks source</li>
    * <li>the yail path</li>
@@ -71,6 +69,11 @@ public class YailGenerator implements IWorkspaceController {
    * <p>The generated YAIL is printed to stdout.</p>
    */
   public static void main(String[] args) {
+    if (args.length != 3) {
+      System.err.println("YailGenerator error - expected exactly 3 command line arguments");
+      System.exit(-1);
+    }
+
     // Save the original System.out and System.err and redirect output from codeblocks.
     PrintStream saveSystemOut = System.out;
     System.setOut(new PrintStream(new ByteArrayOutputStream()));
@@ -78,15 +81,14 @@ public class YailGenerator implements IWorkspaceController {
     System.setErr(new PrintStream(new ByteArrayOutputStream()));
 
     try {
-      final boolean isFromProductionServer = Boolean.parseBoolean(args[0]);
-      String formPropertiesSource = Files.toString(new File(args[1]),
+      String formPropertiesSource = Files.toString(new File(args[0]),
           Charset.forName(DEFAULT_CHARSET));
-      String codeblocksSource = Files.toString(new File(args[2]),
+      String codeblocksSource = Files.toString(new File(args[1]),
           Charset.forName(DEFAULT_CHARSET));
-      String yailPath = args[3];
+      String yailPath = args[2];
 
       try {
-        String yail = generateYail(isFromProductionServer, formPropertiesSource, codeblocksSource,
+        String yail = generateYail(formPropertiesSource, codeblocksSource,
             yailPath);
         saveSystemOut.print(yail);
         System.exit(0);
@@ -101,7 +103,7 @@ public class YailGenerator implements IWorkspaceController {
     }
   }
 
-  public static String generateYail(final boolean isFromProductionServer,
+  public static String generateYail(
       String formPropertiesSource, String codeblocksSource, String yailPath)
       throws YailGenerationException {
     // Currently when YailGenerator is executed as a separate process, this method is called only
@@ -114,7 +116,7 @@ public class YailGenerator implements IWorkspaceController {
     IWorkspaceController.Factory factory = new IWorkspaceController.Factory() {
       @Override
       public IWorkspaceController create() {
-        return new YailGenerator(isFromProductionServer);
+        return new YailGenerator();
       }
     };
     WorkspaceControllerHolder.setFactory(factory, true);  // headless
@@ -124,8 +126,7 @@ public class YailGenerator implements IWorkspaceController {
         yailPath);
   }
 
-  private YailGenerator(boolean isFromProductionServer) {
-    this.isFromProductionServer = isFromProductionServer;
+  private YailGenerator() {
     workspace = Workspace.getInstance();
     cbm = new ComponentBlockManager(workspace, this);
     pbm = new ProcedureBlockManager(workspace);
@@ -238,11 +239,6 @@ public class YailGenerator implements IWorkspaceController {
   }
 
   // IWorkspaceController implementation
-
-  @Override
-  public boolean isFromProductionServer() {
-    return isFromProductionServer;
-  }
 
   @Override
   public boolean isLoadingBlocks() {

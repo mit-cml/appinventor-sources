@@ -2274,17 +2274,15 @@ list, use the make-yail-list constructor with no arguments.
 
 (define *ui-handler* #!null)
 (define *this-form* #!null)
-(define *is-dev-mode?* #f)
 
 
 ;;; This is called as part of the code that sets up the form in the phone application.
 ;;; It is not explicitly called when the Repl is started. But set-up-repl-environment
 ;;; makes the result of the set!'s available in the Repl code.
 
-(define (init-runtime is-dev-mode?)
+(define (init-runtime)
   (set-this-form)
-  (set! *ui-handler* (android.os.Handler))
-  (set! *is-dev-mode?* is-dev-mode?))
+  (set! *ui-handler* (android.os.Handler)))
 
 
 ;; Each time an event handler is executed, *this-form* must be set to the active

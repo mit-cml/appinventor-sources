@@ -465,7 +465,6 @@ public class YaHttpServerMain {
   public static void main(String[] args) throws IOException {
     String baseUrl = args[0];
     String path = args[1];
-    final boolean isFromProductionServer = Boolean.parseBoolean(args[2]);
     HttpServer server = new HttpServer();
 
     // Give the WorkspaceControllerHolder a factory that will create a WorkspaceController.
@@ -474,7 +473,7 @@ public class YaHttpServerMain {
     IWorkspaceController.Factory factory = new IWorkspaceController.Factory() {
       @Override
       public IWorkspaceController create() {
-        return new WorkspaceController(isFromProductionServer);
+        return new WorkspaceController();
       }
     };
     WorkspaceControllerHolder.setFactory(factory, false);  // not headless

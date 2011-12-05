@@ -117,9 +117,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
 
   private final AIDirectory aiDir;
 
-  // Was this launched via a JNLP file downloaded from a production server.
-  private final boolean isFromProductionServer;
-
   public static final String REPL_DO_IT = "Do It";
   public static final String REPL_DEFINE_IT = "Define It";
   // A BlockParser that knows its working for the Repl
@@ -139,8 +136,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   private String currentProjectName = "";
   private String currentFormName = "";
 
-  public WorkspaceController(boolean isFromProductionServer) {
-    this.isFromProductionServer = isFromProductionServer;
+  public WorkspaceController() {
     Workspace workspace = getWorkspaceInstance();
     initLookAndFeel();
 
@@ -297,17 +293,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
 
   public synchronized void setPhoneCommManager(PhoneCommManager phoneMgr) {
     pcm = phoneMgr;
-  }
-
-  /**
-   * Was this codeblocks launched via a JNLP file downloaded from a production server.
-   *
-   * @return whether this codeblacks was this launched via a JNLP file downloaded
-   * from a production server.
-   */
-  @Override
-  public boolean isFromProductionServer() {
-    return isFromProductionServer;
   }
 
   /*

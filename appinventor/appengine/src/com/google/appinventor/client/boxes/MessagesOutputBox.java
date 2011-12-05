@@ -27,7 +27,7 @@ public class MessagesOutputBox extends Box {
    * Creates new message output box.
    */
   private MessagesOutputBox() {
-    super(MESSAGES.messagesOutputBoxCaption(), 300, true, true);
+    super(MESSAGES.messagesOutputBoxCaption(), 500, true, false);
     setContent(MessagesOutput.getMessagesOutput());
   }
 }
