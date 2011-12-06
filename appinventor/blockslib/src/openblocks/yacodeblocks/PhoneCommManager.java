@@ -904,6 +904,9 @@ public class PhoneCommManager {
           }
         }
         // connect menu enabled/disabled
+        // Note: The device selector menu is created with the initial text
+        // "Loading a Project".  This changes to "Connect to Device" when the
+        //  menu is first activated.
         if (!phoneCommBusy
             && WorkspaceControllerHolder.get().haveProject()) {
           deviceSelector.setEnabled(true);

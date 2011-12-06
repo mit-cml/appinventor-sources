@@ -6,6 +6,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.Font;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -50,9 +51,13 @@ public class CDeviceSelector extends JMenuBar {
   
   public CDeviceSelector() {
     super();
-    menu = new JMenu("Connect to Device...");
+    // Button text starts out as "Loading initial project"
+    // Then changes to "Connect to Device" when the button is
+    // first enabled
+    menu = new JMenu("Loading initial project...");
     menu.setLayout(new BorderLayout());
     menu.setBackground(background);
+    menu.setFont(new Font("Arial", Font.PLAIN, 13));
     menu.setOpaque(true);
     resetConnections.setEnabled(true);
     resetConnections.addActionListener(new ActionListener() {
@@ -141,7 +146,8 @@ public class CDeviceSelector extends JMenuBar {
   }
   
   @Override
-  public void setEnabled(boolean enabled) {
+ public void setEnabled(boolean enabled) {
+    menu.setText("Connect to Device...");
     menu.setEnabled(enabled);
   }
 
