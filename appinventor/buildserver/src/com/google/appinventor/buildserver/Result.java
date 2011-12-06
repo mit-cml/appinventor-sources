@@ -30,7 +30,7 @@ public class Result {
    */
   public static final int SUCCESS = 0;
   public static final int YAIL_GENERATION_ERROR = 2;
-  
+
   private int result;
   private String output;
   private String error;
@@ -71,8 +71,6 @@ public class Result {
    * @param successful a flag indicating whether the call succeeded
    * @param output an output string
    * @param error an error string
-   *
-   * @return information about an call
    */
   public Result(boolean successful, String output, String error) {
     this.result = (successful ? SUCCESS : ~SUCCESS);
@@ -93,7 +91,7 @@ public class Result {
    * @param output the output string (possibly empty)
    * @param error the error string (possibly empty)
    *
-   * @result information about a successful call
+   * @return information about a successful call
    */
   public static Result createSuccessfulResult(String output, String error) {
     return new Result(SUCCESS, output, error);
@@ -109,7 +107,7 @@ public class Result {
    * @param output the output string (possibly empty)
    * @param error the error string
    *
-   * @result information about a failing call
+   * @return information about a failing call
    */
   public static Result createFailingResult(String output, String error) {
     return new Result(~SUCCESS, output, error);

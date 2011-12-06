@@ -21,7 +21,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
   </target>
 
-  <target name="RunLocalBuildServer"> 
+  <target name="RunLocalBuildServer">
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="RunLocalBuildServer"/>
   </target>
 
@@ -60,6 +60,8 @@
       <classpath>
         <pathelement location="lib/android/2.2/android.jar" />
         <pathelement location="lib/android/tools/ddmlib.jar"/>
+        <pathelement location="lib/android/tools/sdklib.jar"/>
+        <pathelement location="lib/args4j/args4j-2.0.18.jar" />
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
         <pathelement location="lib/guava/guava-r09.jar" />
         <pathelement location="lib/guava/guava-r09-gwt.jar" /> <!-- for javax.annotation.Nullable -->

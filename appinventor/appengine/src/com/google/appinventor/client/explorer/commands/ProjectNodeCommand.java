@@ -8,7 +8,7 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
  * Class for UI commands that can be added to the context menu of a
  * {@link ProjectNode}.
  *
- * The {@link com.google.appinventor.client.explorer.youngandroid.AssetsList} uses
+ * The {@link com.google.appinventor.client.explorer.youngandroid.AssetList} uses
  * ProjectNodeCommand in its context menu.
  *
  * @author lizlooney@google.com (Liz Looney)

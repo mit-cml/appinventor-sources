@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Registry of context menu commands.
  *
- * The {@link com.google.appinventor.client.explorer.youngandroid.AssetsList} uses the
+ * The {@link com.google.appinventor.client.explorer.youngandroid.AssetList} uses the
  * registry to populate its context menu.
  *
  */

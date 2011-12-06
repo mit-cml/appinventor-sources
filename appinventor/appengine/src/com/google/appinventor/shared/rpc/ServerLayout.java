@@ -91,7 +91,7 @@ public class ServerLayout {
   public static final String DOWNLOAD_PROJECT_SOURCE = "project-source";
 
   /**
-   * Relative path within {@link com.google.devtools.ode.server.DownloadServlet}
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading all of a user's projects' sources.
    */
   public static final String DOWNLOAD_ALL_PROJECTS_SOURCE = "all-projects-source";
@@ -143,7 +143,7 @@ public class ServerLayout {
 
   /**
    * Relative path of the {@link com.google.appinventor.server.ReceiveBuildServlet} within
-   * {@link ODE_BASEURL_NOAUTH}
+   * {@link #ODE_BASEURL_NOAUTH}
    */
   public static final String RECEIVE_BUILD_SERVLET = "receivebuild";
 
