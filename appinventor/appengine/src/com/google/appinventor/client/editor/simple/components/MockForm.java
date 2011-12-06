@@ -155,9 +155,6 @@ public final class MockForm extends MockContainer {
     resizePanels();
 
     initComponent(formWidget);
-
-    // Change form title to component name
-    changeProperty(PROPERTY_NAME_TITLE, getName());
   }
 
   /*

@@ -152,6 +152,7 @@ public class Form extends Activity
     // Default property values
     Scrollable(true); // frameLayout is created in Scrollable()
     BackgroundColor(Component.COLOR_WHITE);
+    Title("");
 
     // Get startup text if any before adding components
     Intent startIntent = getIntent();

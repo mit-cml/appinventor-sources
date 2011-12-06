@@ -269,9 +269,13 @@ public class YABlockCompiler {
       if (includeComments) {
         yailCode.append(YAIL_COMMENT_MAJOR + name + YAIL_LINE_FEED);
       }
-      yailCode.append(YAIL_DO_AFTER_FORM_CREATION);
-      getYailForComponentPropertiesHelper(formName, jsonToWalk, yailCode, name);
-      yailCode.append(YAIL_CLOSE_BLOCK);
+      StringBuilder yailForComponentProperties = new StringBuilder();
+      getYailForComponentPropertiesHelper(formName, jsonToWalk, yailForComponentProperties, name);
+      if (yailForComponentProperties.length() > 0) {
+        yailCode.append(YAIL_DO_AFTER_FORM_CREATION)
+            .append(yailForComponentProperties)
+            .append(YAIL_CLOSE_BLOCK);
+      }
     } catch (JSONException e) {
       FeedbackReporter.showSystemErrorMessage("Error generating component Yail for form "
           + jsonToWalk);
