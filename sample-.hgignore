@@ -1,0 +1,18 @@
+# You can copy and/or modify this file to create your own .hgignore file.
+# This keeps generated files from being added to source control management.
+^\.hgignore
+^appinventor/build/
+^appinventor/reports/
+^appinventor/appengine/build
+^appinventor/appengine/reports
+^appinventor/buildserver/build
+^appinventor/buildserver/reports
+^appinventor/blockseditor/build
+^appinventor/blockseditor/reports
+^appinventor/blockslib/build
+^appinventor/blockslib/reports
+^appinventor/common/build
+^appinventor/common/reports
+^appinventor/components/build
+^appinventor/components/reports
+
