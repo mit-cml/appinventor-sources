@@ -52,7 +52,7 @@ public class BuildData {
       getTimestamp();
     }
     if (date != null) {
-      return new SimpleDateFormat().format(date);
+      return new SimpleDateFormat("EEE, d MMM yyyy HH:mm z").format(date);
     }
     return "";
   }
