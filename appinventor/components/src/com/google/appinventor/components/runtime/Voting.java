@@ -63,7 +63,6 @@ import java.util.List;
  *
  * @author halabelson@google.com (Hal Abelson)
  */
-// TODO(halabelson): Figure out the right way to handle licensing and signing the Google CLA
 
 @DesignerComponent(version = YaVersion.VOTING_COMPONENT_VERSION,
     designerHelpDescription = "<p>The Voting component enables users to vote " +
@@ -153,13 +152,6 @@ public class Voting extends AndroidNonvisibleComponent implements Component {
   public String BallotQuestion() {
     return ballotQuestion;
   }
-
-// TODO(halabelson): Remove this after we get some use of the component
-// This should not be settable by the user.
-//   @SimpleProperty
-//   public void BallotQuestion(String ballotQuestion){
-//     this.ballotQuestion = ballotQuestion;
-//   }
 
   /**
    * The list of choices to vote.

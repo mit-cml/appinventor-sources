@@ -78,7 +78,6 @@ public class ShowBarcodeCommand extends ChainableCommand {
       Image barcodeImage = new Image(appInstallUrl);
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-      // TODO(user) - update the URL for the appinventor user FAQ in the following warning.
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
           Ode.getInstance().getUser().getUserEmail(),
           "<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +

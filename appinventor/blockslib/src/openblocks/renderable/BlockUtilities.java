@@ -123,7 +123,7 @@ public class BlockUtilities {
   public static boolean deleteBlockUserConfirm(RenderableBlock renderable, boolean confirm) {
     Long blockId = renderable.getBlockID();
     //  ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //  ====================focus coming in>>>>>>>>>>TODO
+    //  ====================focus coming in>>>>>>>>>>
     //  ====================>>>>>>>>>>>>>>>>>>>>>>>>>
 
     //Do not delete null block references.  Otherwise, get Block and RenderableBlock instances.
@@ -189,7 +189,7 @@ public class BlockUtilities {
      Long blockId = renderable.getBlockID();
 
      //  ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-     //  ====================focus coming in>>>>>>>>>>TODO
+     //  ====================focus coming in>>>>>>>>>>
      //  ====================>>>>>>>>>>>>>>>>>>>>>>>>>
 
      // Do not delete null block references.  Otherwise, get Block and RenderableBlock instances.
@@ -346,7 +346,7 @@ public class BlockUtilities {
      BlockStub.removeParentFromStubMap(blockId);
 
      //  <<<<<<<<<<<<<<<<<<<<<<<<<<==========================
-     //  <<<<<<<<<<<<<<<<<<<<<<<<<<focus changing, coming out TODO
+     //  <<<<<<<<<<<<<<<<<<<<<<<<<<focus changing, coming out 
      //  <<<<<<<<<<<<<<<<<<<<<<<<<<==========================
      //If the deleted block had a parent, give the parent the focus,
      //Otherwise, give the focus to the canvas (NOT BLOCK CANVAS)

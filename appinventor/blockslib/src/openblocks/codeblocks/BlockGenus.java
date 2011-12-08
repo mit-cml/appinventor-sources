@@ -694,21 +694,6 @@ public class BlockGenus {
         }
     }
 
-//    /**
-//     * Load the description of the specified genus
-//     * @param description NodeList of description information to load from
-//     * @param genus BlockGenus to load description information onto
-//     */
-//    private static void loadGenusDescription(NodeList description, BlockGenus genus){
-//        Pattern attrExtractor=Pattern.compile("\"(.*)\"");
-//        Matcher nameMatcher;
-//        Node argDescChild;
-//        for (int k = 0; k < description.getLength(); k++) {
-//            argDescChild=description.item(k);
-//            //TODO
-//        }
-//    }
-
     /**
      * Loads the images to be drawn on the visible block instances of this
      * @param images NodeList of image information to load from

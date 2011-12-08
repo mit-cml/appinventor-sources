@@ -18,7 +18,6 @@ public class LogoutServlet extends OdeServlet {
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
-    // TODO(user): change the redirect to be "/" once that works.
     res.sendRedirect(UserServiceFactory.getUserService().createLogoutURL("/"));
     res.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
   }

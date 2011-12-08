@@ -148,18 +148,6 @@ public class ServerLayout {
   public static final String RECEIVE_BUILD_SERVLET = "receivebuild";
 
   /**
-   * Absolute path prefix that defines where Focus lives
-   */
-  public static final String FOCUS_SERVER_BASE = "/c/";
-
-  /**
-   * Absolute path prefix that defines where Focus lives for Dasher.
-   */
-  // TODO(user): We don't really know if this is needed as long as we are
-  // not dasherized.
-  public static final String FOCUS_SERVER_BASE_DASHER = "/a/c/";
-
-  /**
    * Name of the form element to upload files.
    */
   public static final String UPLOAD_FILE_FORM_ELEMENT = "uploadFile";

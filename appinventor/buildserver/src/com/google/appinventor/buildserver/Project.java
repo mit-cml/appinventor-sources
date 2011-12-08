@@ -122,7 +122,6 @@ public final class Project {
         in.close();
       }
     } catch (IOException e) {
-      // TODO(user): error
       e.printStackTrace();
     }
   }

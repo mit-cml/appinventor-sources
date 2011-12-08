@@ -90,9 +90,7 @@ public class ComplaintDepartment {
     return compileErrors.size();
   }
 
-  // TODO(user) - the following comment is inaccurate and needs to be updated
-  /* Called from com.google.devtools.ode.server.project.youngandroid.YailGenerator
-   * at the end of compilation.
+  /* Called from build server after generating YAIL.
    *
    * @return the compile errors as an array of String
    */

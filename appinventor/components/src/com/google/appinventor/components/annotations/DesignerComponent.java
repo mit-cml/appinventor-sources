@@ -52,12 +52,11 @@ public @interface DesignerComponent {
    */
   boolean nonVisible() default false;
 
-  // TODO(user) - the following comment is no longer accurate and needs to be updated
   /**
    * The file name of the icon that represents the component in the palette.
    * This should be just the last part of the path name for the file. We'll
-   * look for the file in "com/google/devtools/ode/public/images/" for
-   * statically loaded resources, or in "images/" for dynamically loaded
+   * look for the file in "com/google/appinventor/images/" for
+   * statically loaded resources, or in "war/images/" for dynamically loaded
    * components
    *
    * @return The name of the icon file

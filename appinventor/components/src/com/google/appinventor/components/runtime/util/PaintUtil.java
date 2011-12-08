@@ -21,9 +21,8 @@ public class PaintUtil {
    *        respectively
    */
   public static void changePaint(Paint paint, int argb) {
-    // TODO(user): Discuss with Sharon whether the following two lines can
-    // be replaced by:
-    // paint.setColor(argb)
+    // TODO(user): can the following two lines can be replaced by:
+    // paint.setColor(argb)?
     paint.setColor(argb & 0x00FFFFFF);
     paint.setAlpha((argb >> 24) & 0xFF);
     paint.setXfermode(null);

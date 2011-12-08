@@ -891,9 +891,9 @@ public class YaBlockCompilerTest extends TestCase {
     assertTrue(true);
   }
 
-  //This test uses the new format for .blk files as of CL 12148076 which removes component blocks.
-  // TODO(sharon): Ball components have a bug with Ball.CollidingWith being a command with a plug.
-  // Disable the test until this gets fixed.
+  // TODO(sharon): Ball components used to have a bug with Ball.CollidingWith 
+  // being a command with a plug but it appears to be fixed.
+  // This test should probably be enabled now.
   public void disable_testComponentWithParent() throws CodeblocksException {
     initAndTestProject("level.blk", "level.scm");
     String yail = TestUtils.getController().testGetYail(properties);

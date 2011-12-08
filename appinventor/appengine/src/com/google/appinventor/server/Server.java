@@ -4,16 +4,12 @@ package com.google.appinventor.server;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appinventor.shared.rpc.ServerLayout;
-/*
-import com.google.gwt.gserver.SerializationPolicyProvider;
-import com.google.gwt.gserver.SystemResourceSerializationPolicyProvider;
-*/
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * TODO(user);
- * Leftover server-related methods. This will probably go away at some point.
+ * Useful server-related methods. Probably these should be moved elsewhere.
  *
  */
 public class Server {
@@ -28,22 +24,6 @@ public class Server {
   public static String getStartPage() {
     return System.getProperty(START_PAGE_KEY);
   }
-
-
-  /* TODO(user): What does this correspond to in App Engine world? */
-// Construct a serialization policy provider which knows where the resources are.
-/*
-  SerializationPolicyProvider serializationPolicyProvider =
-        new SystemResourceSerializationPolicyProvider(new String[][] {{
-            GoogleServletEngine.getContextpathFlag() + ServerLayout.ODE_BASEURL,
-            GWT_UI_MODULE + '/'}});
-
-    // Tell the services to use our serialization policy provider.
-    projectService.setSerializationPolicyProvider(serializationPolicyProvider);
-    helpService.setSerializationPolicyProvider(serializationPolicyProvider);
-    userInfoService.setSerializationPolicyProvider(serializationPolicyProvider);
-    launchService.setSerializationPolicyProvider(serializationPolicyProvider);
-*/
 
   /**
    * Indicates whether this server instance is running on app engine production

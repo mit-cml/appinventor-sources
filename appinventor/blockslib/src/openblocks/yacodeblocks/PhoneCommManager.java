@@ -645,7 +645,7 @@ public class PhoneCommManager {
         setSendingToPhone(false);
       }
     } else {
-      return true; // TODO(sharon): really? not false?
+      return true;
     }
   }
 

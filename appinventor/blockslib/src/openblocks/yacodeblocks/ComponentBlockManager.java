@@ -733,7 +733,6 @@ public class ComponentBlockManager implements WorkspaceListener {
         return false;
       }
     } catch (JSONException e) {
-      // TODO(user): remove stack trace or yield to ecatcher
       e.printStackTrace();
       return false;
     }

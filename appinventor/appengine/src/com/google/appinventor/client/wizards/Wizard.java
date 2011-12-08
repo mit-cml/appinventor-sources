@@ -71,10 +71,8 @@ public abstract class Wizard extends DialogBox {
    */
   protected Wizard(String title, boolean modal, boolean adaptiveSizing) {
     // Initialize UI
-    // Note that we don't use the built-in modality support because we always want the Codelab
-    // wizard to be focusable even when another, modal wizard is active. Therefore we will handle
-    // modality ourselves.
-    // TODO(lizlooney) - now that the codelab is gone, investigate using built-in modality support.
+    // TODO(lizlooney) - investigate using built-in modality support. The 
+    // reasons for not using it initially are no longer valid.
     super(false, false);
 
     this.modal = modal;

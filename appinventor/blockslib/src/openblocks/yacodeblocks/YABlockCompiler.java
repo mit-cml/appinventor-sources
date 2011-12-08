@@ -343,7 +343,6 @@ public class YABlockCompiler {
         }
       }
     } catch (JSONException e) {
-      // TODO(markf): remove stack trace or yield to ecatcher
       e.printStackTrace();
       return "";
     }

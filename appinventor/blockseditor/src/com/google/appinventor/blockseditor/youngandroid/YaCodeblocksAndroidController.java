@@ -219,8 +219,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
     }
   }
 
-  //TODO(markf): Maybe it's time to set this to false before checking in?
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   private static final String MOUNT_COMMAND = "mount";
 

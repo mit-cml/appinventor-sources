@@ -206,7 +206,7 @@ public class TypeBlockManager {
   }
   private void pasteStack(BlockNode node){
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>>
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
     if (node == null) return;
     WorkspaceWidget widget = null;
@@ -328,7 +328,7 @@ public class TypeBlockManager {
    */
   private void displayAutoCompletePanel(char character){
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>>
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
 
     // Only add autoCompletePanel to the canvas if its parent is not already the canvas.
@@ -371,7 +371,7 @@ public class TypeBlockManager {
     }
 
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>>
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
 
     //get focus block
@@ -399,7 +399,7 @@ public class TypeBlockManager {
     }
 
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>>
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
     if(!isNullBlockInstance(TypeBlockManager.manager.focusManager.getFocusBlockID())){
       Block parentBlock = Block.getBlock(TypeBlockManager.manager.focusManager.getFocusBlockID());
@@ -418,7 +418,7 @@ public class TypeBlockManager {
       return;
     }
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>>
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
     //get focus block
     Long parentBlockID = TypeBlockManager.manager.focusManager.getFocusBlockID();
@@ -603,7 +603,7 @@ public class TypeBlockManager {
     }
 
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
-    //        ====================focus coming in>>>>>>>>>> TODO
+    //        ====================focus coming in>>>>>>>>>> 
     //        ====================>>>>>>>>>>>>>>>>>>>>>>>>>
     //ignore default arguments
     block.ignoreDefaultArguments();

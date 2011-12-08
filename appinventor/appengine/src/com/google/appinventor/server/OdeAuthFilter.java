@@ -68,11 +68,6 @@ public class OdeAuthFilter implements Filter {
       return;   // if no principal, block the request
     }
 
-    // TODO(user): we need to check for trusted testers somewhere. We'll
-    // need a new mechanism for this since the old mechanism of using
-    // the Gaia service info is not available in App Engine. Probably we
-    // should store something in our DB. This test used to be done by the gaiaFilter.
-
     doMyFilter(httpRequest, httpResponse, chain);
   }
 

@@ -69,8 +69,6 @@ public class TestUtils extends com.google.appinventor.common.testutils.TestUtils
    */
   public static void setupWorkspace(String genusString, String props) throws LoadException,
       IOException, ParserConfigurationException, SAXException {
-    // TODO(sharon): rationalize the reset() calls in codeblocks. Maybe
-    // have a master reset also.
     FeedbackReporter.testingMode = true;
     AutoSaver.testingMode = true;
 

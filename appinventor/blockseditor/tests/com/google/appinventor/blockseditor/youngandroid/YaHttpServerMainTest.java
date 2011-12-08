@@ -79,9 +79,6 @@ public class YaHttpServerMainTest extends TestCase {
     server = new HttpServer();
     mockServerConn = EasyMock.createMock(YaHttpServerMain.ServerConnection.class);
     mockURLconn = EasyMock.createMock(HttpURLConnection.class);
-    // TODO(sharon): look into using @Mock (com.google.testing.easymock.Mock) to
-    // make mocking tests simpler and more robust. How does @Mock interact with
-    // setUp?
     codeblocksMock = EasyMock.createMock(WorkspaceController.class);
     YaHttpServerMain main =
         new YaHttpServerMain(server, baseUrl, savePortUrl, codeblocksMock, mockServerConn);
