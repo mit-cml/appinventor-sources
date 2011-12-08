@@ -63,8 +63,8 @@
         <pathelement location="lib/android/tools/sdklib.jar"/>
         <pathelement location="lib/args4j/args4j-2.0.18.jar" />
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
-        <pathelement location="lib/guava/guava-r09.jar" />
-        <pathelement location="lib/guava/guava-r09-gwt.jar" /> <!-- for javax.annotation.Nullable -->
+        <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
+        <pathelement location="lib/guava/guava-10.0.1.jar" />
         <pathelement location="lib/gwt_dragdrop/gwt-dnd-r1057.jar" />
         <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="lib/json/json.jar" />

@@ -83,7 +83,7 @@
        CommonTests: build and run the common tests and generate the output results
        ===================================================================== -->
 
-  <path id="libsForCommonTests.path"> 
+  <path id="libsForCommonTests.path">
     <pathelement location="${local.build.dir}/HtmlEntities.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
   </path>
@@ -93,8 +93,8 @@
     <pathelement location="${local.build.dir}/CommonTests.jar" />
   </path>
 
-  <target name="CommonTests" 
-          depends="HtmlEntities" 
+  <target name="CommonTests"
+          depends="HtmlEntities"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="CommonTests"
                 aij-dir="${components.pkg}/common" >
@@ -133,7 +133,7 @@
        AndroidRuntimeTests: build and run the AndroidRuntime tests and generate the output results
        ===================================================================== -->
 
-  <path id="libsForAndroidRuntimeTests.path"> 
+  <path id="libsForAndroidRuntimeTests.path">
     <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
     <pathelement location="${public.build.dir}/CommonConstants.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
@@ -145,7 +145,7 @@
     <pathelement location="${lib.dir}/powermock/javassist-3.15.0-GA.jar" />
     <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
-    <!-- android.jar must go last on the classpath list 
+    <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
     <pathelement location="${lib.dir}/android/2.2/android.jar" />
   </path>
@@ -155,8 +155,8 @@
     <pathelement location="${local.build.dir}/AndroidRuntimeTests.jar" />
   </path>
 
-  <target name="AndroidRuntimeTests" 
-          depends="AndroidRuntime" 
+  <target name="AndroidRuntimeTests"
+          depends="AndroidRuntime"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AndroidRuntimeTests"
                 aij-dir="${components.pkg}/runtime" >
@@ -194,7 +194,7 @@
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
           <pathelement location="${lib.dir}/android/2.2/android.jar" />
-          <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+          <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
         </classpath>
@@ -220,7 +220,7 @@
       <include name="${components.pkg}/annotations/*.java" />
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
-        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -248,7 +248,7 @@
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
-        <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -263,7 +263,7 @@
       <zipfileset src="${local.build.dir}/ComponentProcessingLib.jar"/>
       <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-r09.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-10.0.1.jar" />
     </jar>
 
   </target>

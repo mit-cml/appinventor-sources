@@ -10,10 +10,10 @@
 <project name="buildserver" default="all">
   <description>
     App Inventor build server
-  </description>  
-  
+  </description>
+
   <!-- Project Libraries -->
-  
+
   <target name="all"
           depends="BuildServer">
   </target>
@@ -80,7 +80,7 @@
       <fileset dir="${BuildServer-class.dir}" />
     </jar>
   </target>
-  
+
   <!-- =====================================================================
        CopyToRunLibDir: creates the build/run/lib directory and copies jars
                         needed to compile the build server classes
@@ -93,7 +93,7 @@
       <fileset dir="${build.dir}" includes="blockslib/OpenBlocks.jar" />
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
-      <fileset dir="${lib.dir}" includes="guava/guava-r09.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-10.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
     </copy>
@@ -197,12 +197,12 @@
        BuildServerTests: build and run the BuildServer tests and generate the output results
        ===================================================================== -->
 
-  <path id="libsForBuildServerTests.path"> 
+  <path id="libsForBuildServerTests.path">
     <fileset dir="${run.lib.dir}" includes="*.jar"/>
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/guava/guava-r09.jar" />
+    <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
   </path>
@@ -212,8 +212,8 @@
     <pathelement location="${local.build.dir}/BuildServerTests.jar" />
   </path>
 
-  <target name="BuildServerTests" 
-          depends="common_CommonTestUtils,components_AndroidRuntime,BuildServer" 
+  <target name="BuildServerTests"
+          depends="common_CommonTestUtils,components_AndroidRuntime,BuildServer"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="BuildServerTests"
                 aij-dir="${buildserver.pkg}/" >
