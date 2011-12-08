@@ -82,6 +82,7 @@
         <pathelement location="lib/appengine/appengine-java-sdk-1.5.3/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
       </classpath>
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
       <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the
            classpath above,so our javadoc will link appropriate online javadoc for libraries we
            depend on. -->

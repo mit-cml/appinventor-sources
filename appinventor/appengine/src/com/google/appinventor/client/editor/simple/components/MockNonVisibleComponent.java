@@ -8,25 +8,32 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * Class for components without a visual representation.
+ * Class for components without a visual representation, such as sensors.
  *
- * TODO(user) - the following information is no longer accurate and needs to be updated
- *
- * To add a new non-visual component:
- * - Put the image for the component's icon in com/google/appinventor/images/.
- * - In the @DesignerComponent annotation for the component's actual class (device)
- * implementation, include the key/value pairs:
- *
- *     nonVisible = true,
- *     iconName = "images/FILENAME"
- *
- * where FILENAME is the file name (last path element) of the icon image file.
- *
- * For good performance in fetching image files, also do this:
- *   - Add a @Source entry and corresponding method in
- *   com/google/appinventor/client/Images.java
- *   - Add the mapping from iconName to the Images method to
- *   SimpleComponentDescriptor.initBundledImages()
+ * <p>To add a new non-visual component:
+ * <ol>
+ *   <li> Put the image for the component's icon in {@code
+ *        appengine/src/com/google/appinventor/images/FILENAME}
+ *        (substituting the actual filename).
+ *   <li> In the class implementing the component (in the directory
+ *        {@code components/src/com/google/appinventor/components/runtime/}),
+ *        make sure the
+ *        {@link com.google.appinventor.components.annotations.DesignerComponent} annotation
+ *        includes the following key-value pairs:
+ *        <ul>
+ *            <li> nonVisible = true
+ *            <li> iconName = "images/FILENAME"
+ *       </ul>
+ *   <li> For good performance in fetching image files:
+ *        <ul>
+ *            <li> Add a {@link com.google.gwt.resources.client.ClientBundle.Source}
+ *                 annotation and corresponding method to
+ *                 {@code appengine/src/com/google/appinventor/client/Images.java}.
+ *            <li> Add a mapping from the name of the icon to this new method to the method
+ *                 {@code initBundledImages()} in {@code
+ *                 appengine/src/com/google/appinventor/client/editor/simple/palette/SimpleComponentDescriptor.java}.
+ *       </ul>
+ *   </ol>
  *
  * @author sharon@google.com (Sharon Perl)
  */
