@@ -64,16 +64,6 @@ import java.util.Set;
 //@UsesPermissions(permissionNames = "android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
-  /**
-   * When {@code true}, attempts to set the title of this Activity via
-   * {@link #setTitle(CharSequence)} will result in the new title being
-   * <i>appended</i> to the existing title.
-   * <p>
-   * This is useful for debugging, as {@code setTitle()} can be used
-   * like a debug print statement.
-   */
-  private static final boolean APPEND_TITLES = false;
-
   private static final String LOG_TAG = "Form";
 
   private static final String RESULT_NAME = "APP_INVENTOR_RESULT";
@@ -149,10 +139,7 @@ public class Form extends Activity
 
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
 
-    // Default property values
-    Scrollable(true); // frameLayout is created in Scrollable()
-    BackgroundColor(Component.COLOR_WHITE);
-    Title("");
+    defaultPropertyValues();
 
     // Get startup text if any before adding components
     Intent startIntent = getIntent();
@@ -169,6 +156,13 @@ public class Form extends Activity
     // before initialization finishes. Instead the compiler suppresses the invocation of the
     // event and leaves it up to the library implementation.
     Initialize();
+  }
+
+  private void defaultPropertyValues() {
+    Scrollable(true); // frameLayout is created in Scrollable()
+    BackgroundImage("");
+    BackgroundColor(Component.COLOR_WHITE);
+    Title("");
   }
 
   @Override
@@ -774,20 +768,6 @@ public class Form extends Activity
     ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
   }
 
-  @Override
-  public void setTitle(CharSequence newTitle) {
-    if (APPEND_TITLES) {
-      CharSequence oldTitle = super.getTitle();
-      if (oldTitle != null) {
-        super.setTitle(oldTitle + ", " + newTitle);
-      } else {
-        super.setTitle(newTitle);
-      }
-    } else {
-      super.setTitle(newTitle);
-    }
-  }
-
   /*
    * This is called from runtime.scm at the beginning of each event handler.
    * It allows runtime.scm to know which form environment should be used for
@@ -919,8 +899,11 @@ public class Form extends Activity
     alertDialog.show();
   }
 
+  // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();
+    // Set all screen properties to default values.
+    defaultPropertyValues();
     screenInitialized = false;
   }
 

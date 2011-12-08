@@ -98,7 +98,7 @@ public class TestUtils extends com.google.appinventor.common.testutils.TestUtils
 
     controller.loadFreshWorkspace("", langDefRoot);
     if (props != null) {
-      controller.loadProperties(props, null, null);
+      controller.loadProperties(props);
     }
   }
 

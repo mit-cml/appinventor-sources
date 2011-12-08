@@ -25,7 +25,7 @@ public final class AppInventorFeatures {
   public static boolean allowMultiScreenApplications() {
     // Set this to true if you want users to be able to create more than one screen in a single
     // project.
-    return false;
+    return true;
   }
 
   public static boolean showInternalComponentsCategory() {

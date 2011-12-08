@@ -341,26 +341,33 @@ public class PhoneCommManager {
   /**
    * Restarts and reinitializes the app on the phone, if we're connected, to
    * prepare for loading in new project definitions.
+   *
+   * @param clearAssets whether to clear assets
+   * @param resetPhone whether to reset the phone app
    */
-  public void prepareForNewProject() {
+  public void prepareForNewProject(boolean clearAssets, boolean resetPhone) {
     if (DEBUG) {
       System.out.println("Preparing phone for new project");
     }
-    downloadedProjectAssets.clear();
-
-    /* cancel outstanding tasks waiting for phone, if any. */
-    /* TODO(kerr): cancellation needs to be debugged.  disable for now
-     * try {
-     *  phoneSynchronizer.cancelAllAndWait();
-     * } catch (PhoneCommunicationException e) {
-     *  System.out.println(e.getMessage());
-     *  e.printStackTrace();
-     * }
-     */
-    if (!connectedToPhone()) {
-      return;
+    if (clearAssets) {
+      downloadedProjectAssets.clear();
     }
-    reinitPhoneApp();
+
+    if (resetPhone) {
+      /* cancel outstanding tasks waiting for phone, if any. */
+      /* TODO(kerr): cancellation needs to be debugged.  disable for now
+       * try {
+       *  phoneSynchronizer.cancelAllAndWait();
+       * } catch (PhoneCommunicationException e) {
+       *  System.out.println(e.getMessage());
+       *  e.printStackTrace();
+       * }
+       */
+      if (!connectedToPhone()) {
+        return;
+      }
+      reinitPhoneApp();
+    }
   }
 
   /**

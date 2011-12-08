@@ -203,8 +203,8 @@ public class YaHttpServerMainTest extends TestCase {
     expect(mockServerConn.getConnection(baseUrl + assetsPath)).andReturn(mockURLconn);
     expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_NO_CONTENT);
 
-    codeblocksMock.loadFreshWorkspace(codeblocksSourcePath, null);
-    codeblocksMock.loadProperties(formPropsString, assetFiles, projectName);
+    codeblocksMock.loadSourceAndProperties(codeblocksSourcePath, "",
+        formPropsString, assetFiles, projectName);
 
     EasyMock.replay(codeblocksMock, mockURLconn, mockServerConn);
 
@@ -248,7 +248,7 @@ public class YaHttpServerMainTest extends TestCase {
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
-    codeblocksMock.loadProperties(formPropsString, null, null);
+    codeblocksMock.loadProperties(formPropsString);
     EasyMock.replay(codeblocksMock, mockURLconn, mockServerConn);
 
     assertTrue(invokeLoadForm());
@@ -269,7 +269,7 @@ public class YaHttpServerMainTest extends TestCase {
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
-    codeblocksMock.loadProperties(formPropsString, null, null);
+    codeblocksMock.loadProperties(formPropsString);
     EasyMock.expectLastCall().andThrow(new LoadException("load failed"));
     EasyMock.replay(codeblocksMock, mockURLconn, mockServerConn);
 

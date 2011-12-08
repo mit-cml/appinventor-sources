@@ -268,7 +268,7 @@ public class YaHttpServerMain {
       }
       synchronized (workspaceControllerLock) {
         if (formProperties.length() > 0) {
-          workspaceController.loadProperties(formProperties, null, null);
+          workspaceController.loadProperties(formProperties);
         } else {
           FeedbackReporter.showSystemErrorMessage(EMPTY_PROPERTIES_ERROR_MESSAGE);
           workspaceController.loadFreshWorkspace("", null);
@@ -344,13 +344,9 @@ public class YaHttpServerMain {
     }
     try {
       synchronized (workspaceControllerLock) {
-        if (formProperties.length() > 0 && codeblocksSource.length() > 0) {
+        if (formProperties.length() > 0) {
           workspaceController.loadSourceAndProperties(codeblocksSourcePath, codeblocksSource,
               formProperties, assetFiles, projectName);
-        } else if (formProperties.length() > 0) {
-          System.out.println("Codeblocks source was empty.  Loading components, but no blocks.");
-          workspaceController.loadFreshWorkspace(codeblocksSourcePath, null);
-          workspaceController.loadProperties(formProperties, assetFiles, projectName);
         } else {
           System.out.println("Both source files are empty. Clearing workspace");
           workspaceController.loadFreshWorkspace("", null);

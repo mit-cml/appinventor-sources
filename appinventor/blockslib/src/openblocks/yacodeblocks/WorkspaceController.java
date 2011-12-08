@@ -462,7 +462,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
         try {
           autoSaver.clearHistory();
           autoSaver.stopListening();
-          doLoadFreshWorkspace(newCodeblocksSourceSavePath, languageDefinition, true);
+          doLoadFreshWorkspace(newCodeblocksSourceSavePath, languageDefinition, true, true);
         } finally {
           autoSaver.startListening();
         }
@@ -486,7 +486,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   // Reset the current workspace if necessary and then load an empty
   // workspace with newCodeblocksSourceSavePath as the save path.
   private void doLoadFreshWorkspace(final String newCodeblocksSourceSavePath,
-      final Element languageDefinition, boolean resetPhone) {
+      final Element languageDefinition, boolean clearAssets, boolean resetPhone) {
     // Reset the workspace if it has previously loaded.
     if (workspaceLoaded) {
       resetWorkspace();
@@ -511,9 +511,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     Workspace.getInstance().getFactoryManager().viewStaticDrawers();
     codeblocksSourceSavePath = newCodeblocksSourceSavePath;
 
-    if (resetPhone) {
-      pcm.prepareForNewProject();
-    }
+    pcm.prepareForNewProject(clearAssets, resetPhone);
 
     workspaceLoaded = true;
   }
@@ -751,33 +749,22 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
    *
    * @param formProperties a String representation of the JSON that represents
    * the components and their properties.
-   * @param assetFiles if non-null, a map containing names of asset files
-   *    as pairs <name on server, local file name>. may be null if no assets.
-   * @param newProjectName the name that will appear in the title bar or
-   * null if no name is to be displayed.
    */
-  public synchronized void loadProperties(final String formProperties,
-      final Map<String,String> assetFiles, final String newProjectName) throws LoadException {
+  public synchronized void loadProperties(final String formProperties) throws LoadException {
     final class LoadRunnable implements Runnable {
       public void run() {
         try {
           autoSaver.stopListening();
           projectLoaded = false;
           pcm.updateStatusIndicators();
-          if (assetFiles != null) {
-            doLoadAssets(assetFiles);
-          }
           doLoadFormProperties(WorkspaceUtils.parseFormProperties(formProperties));
-          if (newProjectName != null) {
-            setProjectName(newProjectName);
-          }
           projectLoaded = true;
           pcm.updateStatusIndicators();
         } finally {
           autoSaver.reset();
           autoSaver.saveFormProperties(formProperties);
           try {
-            CodeblocksSourceOutput blocksState = takeSnapshot(true);
+            takeSnapshot(true);
           } catch (SaveException e) {
             FeedbackReporter.showErrorMessageWithExit(AutoSaver.SAVE_FAILURE_MESSAGE);
           }
@@ -809,7 +796,8 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   }
 
   /**
-   * Loads a new project from its form properties and codeblocks source.
+   * Loads a new project, or a new form in the same project, from its form properties and
+   * codeblocks source.
    *
    * After the project has loaded the autosaver will be reset.
    *
@@ -819,15 +807,18 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
    *
    * @param newCodeblocksSourceSavePath the path that the ExternalController
    * should save the CodeblocksSource to.
-   * @param codeblocksSource
+   * @param codeblocksSource, can be empty but not null
    * @param formProperties
-   * @param projectName the name that will appear in the title bar or
-   * null if no name is to be displayed.
+   * @param assetFiles a map containing names of asset files
+   * @param projectName the name of the project
    */
   public synchronized void loadSourceAndProperties(final String newCodeblocksSourceSavePath,
       final String codeblocksSource, final String formProperties,
       final Map<String,String> assetFiles, final String projectName)
       throws LoadException {
+
+    final boolean differentProject = !projectName.equals(currentProjectName);
+
     final class LoadRunnable implements Runnable {
       public void run() {
         boolean blocksWereUpgraded = false;
@@ -838,13 +829,23 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
           componentRemovedOrRenamedDuringLoad = false;
           pcm.updateStatusIndicators();
           System.out.println("WorkspaceController: starting reload of workspace");
-          blocksWereUpgraded = doLoadCodeblocksSource(newCodeblocksSourceSavePath,
-              codeblocksSource, true);
+          boolean clearAssets = differentProject;
+          // We don't even need to reset the phone! How cool is that?
+          boolean resetPhone = false;
+          if (codeblocksSource.length() == 0) {
+            doLoadFreshWorkspace(newCodeblocksSourceSavePath, null, clearAssets, resetPhone);
+          } else {
+            blocksWereUpgraded = doLoadCodeblocksSource(newCodeblocksSourceSavePath,
+                codeblocksSource, clearAssets, resetPhone);
+          }
           System.out.println("WorkspaceController: loaded Codeblocks Source, starting JSON");
-          // now that we've loaded the source (which will reset the phone app)
-          // we can load assets for this project.
-          doLoadAssets(assetFiles);
+          if (differentProject) {
+            // If this is a different project, we need to load assets.
+            doLoadAssets(assetFiles);
+          }
           doLoadFormProperties(WorkspaceUtils.parseFormProperties(formProperties));
+          // We need to call setProjectName even if this is a different form in the same project
+          // because the title bar and header need to be updated.
           setProjectName(projectName);
           projectLoaded = true;
           pcm.updateStatusIndicators();
@@ -857,7 +858,15 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
           if (blocksWereUpgraded || componentRemovedOrRenamedDuringLoad) {
             autoSaver.workspaceChangedBySystem();
           } else {
-            autoSaver.onSnapshot(codeblocksSource);
+            if (codeblocksSource.length() == 0) {
+              try {
+                takeSnapshot(true);
+              } catch (SaveException e) {
+                FeedbackReporter.showErrorMessageWithExit(AutoSaver.SAVE_FAILURE_MESSAGE);
+              }
+            } else {
+              autoSaver.onSnapshot(codeblocksSource);
+            }
           }
         }
       }
@@ -894,11 +903,12 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
    * This method assumes that a Language Definition File has already been
    * specified for this project.
    * @param codeblocksSource
-   * @parpam resetPhone  if true, tells the phoneCommManager to restart the phone app
+   * @param clearAssets  if true, tells the phoneCommManager to clear assets
+   * @param resetPhone  if true, tells the phoneCommManager to restart the phone app
    * @return true if the blocks were upgraded
    */
   private boolean doLoadCodeblocksSource(final String newCodeblocksSourceSavePath,
-      String codeblocksSource, boolean resetPhone) throws LoadException {
+      String codeblocksSource, boolean clearAssets, boolean resetPhone) throws LoadException {
     //reset only if workspace actually exists
     if(workspaceLoaded) {
       resetWorkspace();
@@ -912,11 +922,12 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     }
     if (!cbm.loadComponents(blockSaveFile)) {
       // The project is not recoverable, so we clear the workspace
-      doLoadFreshWorkspace(newCodeblocksSourceSavePath, null, resetPhone);
+      doLoadFreshWorkspace(newCodeblocksSourceSavePath, null, clearAssets, resetPhone);
       throw new LoadException("An error occured while loading the project");
-    } else if (resetPhone) {
-      pcm.prepareForNewProject();
     }
+
+    pcm.prepareForNewProject(clearAssets, resetPhone);
+
     codeblocksSourceSavePath = newCodeblocksSourceSavePath;
     warnAboutBadBlocks();
     workspaceLoaded = true;
@@ -932,7 +943,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     // doLoadCodeblocksSource will reset the workspace. We need to save the current project name
     // now and then call setProjectName and set projectLoaded to true after.
     String projectName = currentProjectName;
-    doLoadCodeblocksSource(codeblocksSourceSavePath, codeblocksSource, false);
+    doLoadCodeblocksSource(codeblocksSourceSavePath, codeblocksSource, false, false);
     setProjectName(projectName);
     projectLoaded = true;
   }
@@ -1169,7 +1180,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
       public void run() {
         try {
           Element langDefRoot = WorkspaceUtils.loadLangDef();
-          doLoadFreshWorkspace("", langDefRoot, true);
+          doLoadFreshWorkspace("", langDefRoot, true, true);
           createAndShowGUI();
         } catch (Exception e) {
           FeedbackReporter.showErrorMessage("Can't find language definition. Unable to load.");
