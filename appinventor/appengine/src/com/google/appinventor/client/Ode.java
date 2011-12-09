@@ -98,8 +98,7 @@ public class Ode implements EntryPoint {
   // User settings
   private static UserSettings userSettings;
 
-  // How often to check for a new MOTD, in seconds? 0 => never.
-  public static int motdCheckIntervalSecs = 300;
+  private MotdFetcher motdFetcher;
 
   // User information
   private User user;
@@ -611,16 +610,16 @@ public class Ode implements EntryPoint {
 
       @Override
       public void onSuccess(Integer intervalSecs) {
-        motdCheckIntervalSecs = intervalSecs;
-        if (motdCheckIntervalSecs > 0) {
+        if (intervalSecs > 0) {
           topPanel.showMotd();
-          MotdFetcher fetcher = new MotdFetcher(motdCheckIntervalSecs);
-          fetcher.start();
+          motdFetcher = new MotdFetcher(intervalSecs);
+          motdFetcher.register((ExtendedServiceProxy<?>) projectService);
+          motdFetcher.register((ExtendedServiceProxy<?>) userInfoService);
         }
       }
     };
 
-    Ode.getInstance().getGetMotdService().getCheckInterval(callback);
+    getGetMotdService().getCheckInterval(callback);
   }
 
   /**
@@ -818,6 +817,11 @@ public class Ode implements EntryPoint {
   private void onClosing() {
     // At this point, we aren't allowed to do any UI.
     windowClosing = true;
+
+    if (motdFetcher != null) {
+      motdFetcher.unregister((ExtendedServiceProxy<?>) projectService);
+      motdFetcher.unregister((ExtendedServiceProxy<?>) userInfoService);
+    }
 
     // Unregister services with RPC status popup.
     rpcStatusPopup.unregister((ExtendedServiceProxy<?>) helpService);
