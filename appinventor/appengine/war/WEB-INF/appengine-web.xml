@@ -30,7 +30,7 @@
     <property name="log4j.configuration" value="file:WEB-INF/log4j.properties"/>
 
     <!-- set to true if users should not be allowed to access the App
-    Inventor server unless they are listed in the appengine/war/whitelist file -->
+         Inventor server unless they are listed in the appengine/war/whitelist file -->
     <property name="use.whitelist" value="false"/>
 
     <!-- set to true if users need to accept a Terms of Service the first time
@@ -40,8 +40,11 @@
     <!-- host[:port] to use for connecting to the build server -->
     <property name="build.server.host" value="localhost:9990" />
 
-    <!-- set to 0 to disable checking for a MOTD -->
-    <property name="motd.check.interval.secs" value="300" />
+    <!-- Interval is seconds between checking for a message of the day.
+         Set set to 0 to disable checking for a MOTD.  If you do enable
+         MOTD checking, make the interval long, because this check is
+	 resource expensive on App Engine -->
+    <property name="motd.check.interval.secs" value="0" />
 
   </system-properties>
 

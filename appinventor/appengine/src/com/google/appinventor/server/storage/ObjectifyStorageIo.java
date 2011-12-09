@@ -1114,9 +1114,9 @@ public class ObjectifyStorageIo implements  StorageIo {
             MotdData firstMotd = new MotdData();
             firstMotd.id = MOTD_ID;
             firstMotd.caption = "Hello!";
-            firstMotd.content = "Welcome to the prototype App Inventor on App Engine! " +
-            "The database is still experimental. Your projects could disappear at " +
-            "any time. Have a nice day :)";
+            firstMotd.content = "Welcome to the experimental App Inventor system from MIT. " +
+		"This is still a prototype.  It would be a good idea to frequently back up " +
+		"your projects to local storage.";
             datastore.put(firstMotd);
           }
         }
