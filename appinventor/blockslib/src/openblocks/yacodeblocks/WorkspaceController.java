@@ -807,7 +807,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
    *
    * @param newCodeblocksSourceSavePath the path that the ExternalController
    * should save the CodeblocksSource to.
-   * @param codeblocksSource, can be empty but not null
+   * @param codeblocksSource can be empty but not null
    * @param formProperties
    * @param assetFiles a map containing names of asset files
    * @param projectName the name of the project

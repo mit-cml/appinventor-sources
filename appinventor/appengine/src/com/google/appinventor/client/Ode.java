@@ -158,9 +158,6 @@ public class Ode implements EntryPoint {
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
 
-  // Cached SID cookie (to detect changes in login status)
-  private String cachedSidCookie;
-
   private boolean windowClosing;
 
   /**
@@ -367,9 +364,6 @@ public class Ode implements EntryPoint {
 
    // Initialize global Ode instance
     instance = this;
-
-    // Get session cookie.
-    cachedSidCookie = Cookies.getCookie("SID");
 
     // Get user information.
     OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
@@ -780,17 +774,6 @@ public class Ode implements EntryPoint {
    * @return user account information
    */
   public User getUser() {
-    // Need to track SID cookie value to detect logout or change of user from another browser
-    // window
-    String sidCookie = Cookies.getCookie("SID");
-    if (sidCookie == null) {
-      // Logged out
-      // TODO(user): log out of this instance as well
-    } else if (!sidCookie.equals(cachedSidCookie)) {
-      // User changed
-      // TODO(user): change to different user, redirect to login
-    }
-
     return user;
   }
 
