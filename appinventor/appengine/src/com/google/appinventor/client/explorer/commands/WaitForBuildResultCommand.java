@@ -90,13 +90,12 @@ public class WaitForBuildResultCommand extends ChainableCommand {
           executeNextCommand(node);
         } else if (result.getResult() == 1) {
           // General build error
-          ErrorReporter.reportError(getErrorMessage(result, MESSAGES.buildFailedError()));
+          ErrorReporter.reportError(MESSAGES.buildFailedError());
           executionFailedOrCanceled();
         } else if (result.getResult() == 2) {
           // Yail generation error
           String formName = extractFormName(result);
-          ErrorReporter.reportError(getErrorMessage(result,
-                                                    MESSAGES.errorGeneratingYail(formName)));
+          ErrorReporter.reportError(MESSAGES.errorGeneratingYail(formName));
           String formFileName = formName  + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
           YoungAndroidFormNode formNode =
               findFormNode((YoungAndroidProjectNode) node, formFileName);
@@ -157,10 +156,6 @@ public class WaitForBuildResultCommand extends ChainableCommand {
       }
     }
     return "Screen1";
-  }
-
-  private static String getErrorMessage(RpcResult result, String defaultErrorMessage) {
-    return (result.getError().isEmpty()) ? defaultErrorMessage : result.getError();
   }
 
   /**

@@ -129,8 +129,8 @@ public class RpcResult implements IsSerializable {
   }
 
   /**
-   * Returns the error String.  This is typically, but not necessarily,
-   * displayed to the user.
+   * Returns the error String.
+   * This is typically an exception message that may be confusing to the user.
    */
   public String getError() {
     return error;

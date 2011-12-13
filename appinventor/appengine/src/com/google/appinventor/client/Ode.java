@@ -548,7 +548,7 @@ public class Ode implements EntryPoint {
     if (AppInventorFeatures.hasDebuggingView()) {
       ColumnLayout defaultLayout = new ColumnLayout("Default");
       Column column = defaultLayout.addColumn(100);
-      column.add(MessagesOutputBox.class, 160, false);
+      column.add(MessagesOutputBox.class, 300, false);
       column.add(OdeLogBox.class, 300, false);
       final WorkAreaPanel debuggingTab = new WorkAreaPanel(new OdeBoxRegistry(), defaultLayout);
       debuggingTabIndex = deckPanel.getWidgetCount();

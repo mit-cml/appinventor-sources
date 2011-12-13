@@ -69,9 +69,7 @@ public class BuildCommand extends ChainableCommand {
         if (result.succeeded()) {
           executeNextCommand(node);
         } else {
-          ErrorReporter.reportError((result.getError().isEmpty())
-                                    ? MESSAGES.buildFailedError()
-                                    : result.getError());
+          ErrorReporter.reportError(MESSAGES.buildFailedError());
           executionFailedOrCanceled();
         }
       }
