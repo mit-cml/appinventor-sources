@@ -5,6 +5,7 @@ package com.google.appinventor.server;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.util.CsvParser;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,8 +27,37 @@ import java.util.regex.Pattern;
  * @author kerr@google.com (Debby Wallach)
  */
 public class Whitelist {
+  /**
+   * Class representing a case-insensitive email address.
+   */
+  private static class EmailAddress {
+    private final String email;
+
+    EmailAddress(String email) {
+      Preconditions.checkNotNull(email);
+      this.email = email;
+    }
+
+    @Override
+    public String toString() {
+      return email;
+    }
+
+    @Override
+    public boolean equals(Object other) {
+      boolean result = (other instanceof EmailAddress) &&
+          ((EmailAddress) other).email.equalsIgnoreCase(email);
+      return result;
+    }
+
+    @Override
+    public int hashCode() {
+      return email.toLowerCase().hashCode();
+    }
+  }
+
   private static final Logger LOG = Logger.getLogger(Whitelist.class.getName());
-  private static final boolean DEBUG = true;
+  private static final boolean DEBUG = false;
 
   // When running on appengine, the application is running in a way that
   // the rootPath should not be set to anything.  This flag needs to be
@@ -35,10 +65,10 @@ public class Whitelist {
   @VisibleForTesting
   public static final Flag<String> rootPath = Flag.createFlag("root.path", "");
 
-  String pathToWhitelist = rootPath.get() + "whitelist";
-  boolean validWhitelist = false;
+  private String pathToWhitelist = rootPath.get() + "whitelist";
+  private boolean validWhitelist;
 
-  private final Set<String> addresses = new HashSet<String>();
+  private final Set<EmailAddress> addresses = new HashSet<EmailAddress>();
 
   Whitelist() {
     validWhitelist = false;
@@ -48,7 +78,7 @@ public class Whitelist {
         LOG.severe("White file found with no entries.");
       } else {
         if (DEBUG) {
-          logSuccesses();
+          logWhitelistContents();
         }
         validWhitelist = true;
       }
@@ -59,38 +89,40 @@ public class Whitelist {
     } catch (IOException e) {
       LOG.severe("Unexpected whitelist error: " + e);
     }
-
   }
 
   // should throw something if not valid whitelist?
-  public Boolean isInWhitelist(LocalUser user) {
+  public boolean isInWhitelist(LocalUser user) {
     if (! validWhitelist) {
       // If we have not found a valid whitelist, default to using no
       // whitelist at all.
       return false;
     }
 
-    return addresses.contains(user.getUserEmail());
+    boolean found = addresses.contains(new EmailAddress(user.getUserEmail()));
+    if (!found) {
+      LOG.info("User with email address " + user.getUserEmail() +
+          " was not found in the whitelist");
+    }
+    return found;
   }
 
-  private void logSuccesses() {
-    final int INCR = 500;
-    final int num = addresses.size();
-    Iterator<String> iterator = addresses.iterator();
-    int i = 0;
-    String s = "";
-    while (iterator.hasNext()) {
-      s = s + iterator.next();
-      if (i == INCR) {
-        LOG.info("On whitelist: " + s);
-        i = 0;
-        s = "";
+  private void logWhitelistContents() {
+    LOG.info("Whitelist contains " + addresses.size() + " addresses.");
+    StringBuilder sb = new StringBuilder();
+    String delimiter = "";
+    for (EmailAddress address : addresses) {
+      sb.append(delimiter).append(address);
+      if (sb.length() > 70) {
+        LOG.info("On whitelist: " + sb);
+        sb = new StringBuilder();
+        delimiter = "";
       } else {
-        s += ",";
+        delimiter = ",";
       }
     }
-    if (s.length() > 0) {
-      LOG.info("On whitelist: " + s);
+    if (sb.length() > 0) {
+      LOG.info("On whitelist: " + sb);
     }
   }
 
@@ -101,28 +133,19 @@ public class Whitelist {
      * "emailaddress2"
      *
      */
-    final int expectedMinNumFields = 2; // for the case when each column is not just a single addr.
-    Pattern patternGooglemail = Pattern.compile("([^@]*)@googlemail\\.com");
     Pattern patternPlus = Pattern.compile("([^+]*)(\\+[^@]*)(@.*)");
-
-    Matcher matcher;
 
     while (parser.hasNext()) {
       List<String> line = parser.next();
-      String[] fields = line.toArray(new String[line.size()]);
-      String address = fields[0].trim();
+      String address = line.get(0).trim();
 
-      // Change googlemail.com to gmail.com (we expect this is necessary)
-      matcher = patternGooglemail.matcher(address);
-      if (matcher.matches()) {
-        address = matcher.group(1) + "@gmail.com";
-      }
       // Change foo+bar@gmail.com to foo@gmail.com
-      matcher = patternPlus.matcher(address);
+      Matcher matcher = patternPlus.matcher(address);
       if (matcher.matches()) {
         address = matcher.group(1) + matcher.group(3);
       }
-      addresses.add(address);
+
+      addresses.add(new EmailAddress(address));
     }
   }
 }

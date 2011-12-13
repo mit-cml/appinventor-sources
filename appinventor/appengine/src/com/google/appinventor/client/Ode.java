@@ -403,9 +403,18 @@ public class Ode implements EntryPoint {
       public void onFailure(Throwable caught) {
         if (caught instanceof StatusCodeException) {
           StatusCodeException e = (StatusCodeException) caught;
-          if (e.getStatusCode() == Response.SC_FORBIDDEN) { // forbidden => need tos accept
-            Window.open("/" + ServerLayout.YA_TOS_FORM, "_self", null);
-            return;
+          int statusCode = e.getStatusCode();
+          switch (statusCode) {
+            case Response.SC_UNAUTHORIZED:
+              // unauthorized => not on whitelist
+              // getEncodedResponse() gives us the message that we wrote in
+              // OdeAuthFilter.writeWhitelistErrorMessage().
+              Window.alert(e.getEncodedResponse());
+              return;
+            case Response.SC_FORBIDDEN:
+              // forbidden => need tos accept
+              Window.open("/" + ServerLayout.YA_TOS_FORM, "_self", null);
+              return;
           }
         }
         super.onFailure(caught);

@@ -93,6 +93,7 @@ public class OdeAuthFilterTest {
   public void testDoFilterShouldNotContinueFilterChainIfNotWhitelisted() throws Exception {
 
     final AtomicInteger isUserWhitelistedCounter = new AtomicInteger(0);
+    final AtomicInteger writeWhitelistErrorMessageCounter = new AtomicInteger(0);
 
     // Note the lack any expectation of a call to the doFilter method of the
     // internal mocked FilterChain that will be passed into the tested FilterChain, unlike the
@@ -114,12 +115,18 @@ public class OdeAuthFilterTest {
         isUserWhitelistedCounter.incrementAndGet();
         return false;
       }
+      @Override
+      void writeWhitelistErrorMessage(HttpServletResponse response) {
+        writeWhitelistErrorMessageCounter.incrementAndGet();
+      }
     };
 
     myAuthFilter.doMyFilter(mockServletRequest, mockServletResponse, mockFilterChain);
 
     // isUserWhitelisted should have been called once.
     assertEquals(1, isUserWhitelistedCounter.get());
+    // writeWhitelistErrorMessage should have been called once
+    assertEquals(1, writeWhitelistErrorMessageCounter.get());
     // getUserTosAccepted should not have been called.
     PowerMock.verifyAll();
   }

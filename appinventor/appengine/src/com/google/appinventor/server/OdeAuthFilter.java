@@ -12,6 +12,7 @@ import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.Filter;
@@ -45,6 +46,7 @@ public class OdeAuthFilter implements Filter {
   // Whether this server should use a whitelist to determine who can
   // access it. Value is specified in the <system-properties> section
   // of appengine-web.xml.
+  @VisibleForTesting
   static final Flag<Boolean> useWhitelist = Flag.createFlag("use.whitelist", false);
 
   private final LocalUser localUser = LocalUser.getInstance();
@@ -76,12 +78,14 @@ public class OdeAuthFilter implements Filter {
       throws IOException, ServletException {
     if (!setUser(request)) {
       // can't get the user info, so block further request processing
-      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+      response.setStatus(HttpServletResponse.SC_PRECONDITION_FAILED);
       return;
     }
     try {
       if (useWhitelist.get() && !isUserWhitelisted()) {
-        // TODO(user): might be nice to set an error response code here.
+        writeWhitelistErrorMessage(response);
+        // This indicates to the client side code that the user is not on the whitelist.
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         return;  // This blocks further processing of the request.
       }
       // If user hasn't accepted terms of service, redirect them,
@@ -103,6 +107,16 @@ public class OdeAuthFilter implements Filter {
   @VisibleForTesting
   boolean isUserWhitelisted() {
     return whitelist.isInWhitelist(localUser);
+  }
+
+  @VisibleForTesting
+  void writeWhitelistErrorMessage(HttpServletResponse response) throws IOException {
+    response.setContentType("text/plain; charset=utf-8");
+    PrintWriter out = response.getWriter();
+    out.print("You are attempting to connect to this App Inventor service with the login ID:\n\n" +
+        localUser.getUserEmail() + "\n\nThat ID has not been authorized to use this service.  " +
+        "If you believe that you were in fact given authorization, you should contact the " +
+        "service operator.");
   }
 
   @VisibleForTesting
@@ -136,7 +150,7 @@ public class OdeAuthFilter implements Filter {
   /*
    * Clears the user for the current thread.
    *
-   * <p>This method is called from {@link #doFilter} above.
+   * <p>This method is called from {@link #doMyFilter} above.
    *
    * <p>This method is called from {@link WebStartFileServlet}, a non-filtered
    * servlet.

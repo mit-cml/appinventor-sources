@@ -31,6 +31,7 @@ public class WhitelistTest {
     assertTrue(whitelist.isInWhitelist(makeUser("junk@google.com")));
     assertTrue(whitelist.isInWhitelist(makeUser("goo@gmail.com")));
     assertFalse(whitelist.isInWhitelist(makeUser("absolutelyNotHere@noway.com")));
+    assertTrue(whitelist.isInWhitelist(makeUser("LizLooney@google.com")));
   }
 
   @Test
