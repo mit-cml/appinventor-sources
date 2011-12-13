@@ -22,8 +22,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   private static final long serialVersionUID = -7316312435338169166L;
 
   /**
-   * Returns user information.  This also has the side effect of updating this
-   * user's last session authentication time in Megastore.
+   * Returns user information.
    *
    * @return  user information record
    */

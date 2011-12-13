@@ -16,9 +16,6 @@ import java.util.Set;
  * <li>Clients can be notified of all service calls by attaching
  * {@link RpcListener}s to the service proxy using the
  * {@link #addRpcListener(RpcListener)} method.
- * <li>Instead of using a service implementation on the server, a local
- * synchronous implementation can be substituted using the
- * {@link #setImplementation(RemoteService)} method.
  * </ol>
  *
  * @param <T> the synchronous service interface
@@ -26,37 +23,6 @@ import java.util.Set;
 public class ExtendedServiceProxy<T extends RemoteService> {
   // Listeners to be notified of RPC events
   private final Set<RpcListener> listeners = new HashSet<RpcListener>();
-
-  // Local service implementation to be substituted for calls to the server
-  private T implementation;
-
-  /**
-   * Returns the local service implementation that is substituted for calls to
-   * the server.
-   *
-   * @return the local service implementation that is substituted for calls to
-   *         the server, or null if none
-   */
-  public T getImplementation() {
-    return implementation;
-  }
-
-  /**
-   * Sets a local service implementation that is substituted for calls to the
-   * server. This is useful to provide a synchronous local implementation of a
-   * service interface while client code expects the asynchronous version.
-   *
-   * <p>Note that the methods in the implementation are not actually called
-   * asynchronously; the AsyncCallback onSuccess or onFailure callback is called
-   * before the method returns.
-   * TODO(lizlooney) - investigate whether they should actually be asynchronous.
-   *
-   * @param implementation the local service implementation that is substituted
-   *        for calls to the server, or {@code null} if none
-   */
-  public void setImplementation(T implementation) {
-    this.implementation = implementation;
-  }
 
   /**
    * Adds a listener that is notified of RPC events.

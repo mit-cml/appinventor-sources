@@ -149,29 +149,15 @@ public class ExtendedServiceProxyGenerator extends Generator {
         + (formalParams.isEmpty() ? "" : ", ") + "final " + callbackType + " callback" + ") {");
     out.println("    fireStart(\"" + method.getName() + "\"" + (actualParams.isEmpty() ? "" : ", ")
         + actualParams + ");");
-    out.println("    " + typeName + " impl = getImplementation();");
-    out.println("    if(impl != null) {");
-    out.println("      try {");
-
-    out.println("        "
-        + (hasReturnValue ? returnType.getParameterizedQualifiedSourceName() + " result = " : "")
-        + "impl." + method.getName() + "(" + actualParams + ");");
-    out.println("        " + outcome(method, "Success", (hasReturnValue ? "result" : "null")));
-
-    out.println("      } catch (Throwable caught) {");
+    out.println("    proxy." + method.getName() + "(" + actualParams
+        + (actualParams.isEmpty() ? "" : ", ") + "new " + callbackType + "() {");
+    out.println("      public void onSuccess(" + resultType + " result) {");
+    out.println("        " + outcome(method, "Success", "result"));
+    out.println("      }");
+    out.println("      public void onFailure(Throwable caught) {");
     out.println("        " + outcome(method, "Failure", "caught"));
     out.println("      }");
-    out.println("    } else {");
-    out.println("      proxy." + method.getName() + "(" + actualParams
-        + (actualParams.isEmpty() ? "" : ", ") + "new " + callbackType + "() {");
-    out.println("        public void onSuccess(" + resultType + " result) {");
-    out.println("          " + outcome(method, "Success", "result"));
-    out.println("        }");
-    out.println("        public void onFailure(Throwable caught) {");
-    out.println("          " + outcome(method, "Failure", "caught"));
-    out.println("        }");
-    out.println("      });");
-    out.println("    }");
+    out.println("    });");
     out.println("  }");
   }
 

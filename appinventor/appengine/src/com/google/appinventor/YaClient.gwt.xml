@@ -84,10 +84,9 @@
   <!--
     || GWT by default automatically generates code for remote services that provides the client with
     || an asynchronous proxy for server-side service implementations. The following configurations
-    || registers an extended proxy generator that generates proxies with two additional features:
+    || registers an extended proxy generator that generates proxies with one additional feature:
     ||
     ||   1) Attach RpCListeners to be notified of RPC events
-    ||   2) Substitute the RPC to the server with a client-side synchronous implementation.
     ||
     || See package com.google.appinventor.client.ExtendedServiceProxy for details.
   -->
