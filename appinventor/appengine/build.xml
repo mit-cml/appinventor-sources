@@ -45,14 +45,22 @@
           description="Create and populate build/war directory structure"
           depends="init">
     <mkdir dir="${build.war.dir}" />
+    <exec executable="hg" outputproperty="mercurial.version.id">
+        <arg line = "id -n -i " />
+    </exec>
+    <filter token="mercurial.version.id" value="${mercurial.version.id}" />
+    <copy todir="${build.war.dir}/WEB-INF/" file="war/WEB-INF/appengine-web.xml" filtering="true" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war"/>
+      <fileset dir="war" >
+        <exclude name="WEB-INF/appengine-web.xml" />
+      </fileset>
       <fileset dir="src/${appinventor.pkg}">
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${docs.dir}" />
     </copy>
+ 
   </target>
 
   <!-- =====================================================================

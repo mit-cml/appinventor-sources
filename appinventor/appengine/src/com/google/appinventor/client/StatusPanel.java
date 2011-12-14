@@ -15,12 +15,14 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class StatusPanel extends Composite {
-  private static Label buildTimeStamp = new Label();
+  private static Label buildId = new Label();
 
-  // Note that timestamp will be the real timestamp only
-  // when running the deploy jar.
-  public static void showBuildTimeStamp(String timestamp) {
-    buildTimeStamp.setText("Build: " + timestamp);
+  // This shows the id from mercurial hg id -n -i
+  public static void showMercurialBuildId(String id) {
+    String[] idAndVersion = id.split("\\s+");
+    if (idAndVersion.length == 2) {
+    buildId.setText("Version: " + idAndVersion[1] + " Id: " + idAndVersion[0]);
+    }
   }
 
   private String AppInventorFooter =
@@ -40,8 +42,8 @@ public class StatusPanel extends Composite {
     hpanel.setWidth("100%");
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
     hpanel.add(new HTML(AppInventorFooter));
-    hpanel.add(buildTimeStamp);
-    hpanel.setCellHorizontalAlignment(buildTimeStamp, HorizontalPanel.ALIGN_RIGHT);
+    hpanel.add(buildId);
+    hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
 
     initWidget(hpanel);
     setStyleName("ode-StatusPanel");

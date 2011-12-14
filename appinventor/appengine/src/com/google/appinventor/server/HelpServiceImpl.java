@@ -2,6 +2,7 @@
 
 package com.google.appinventor.server;
 
+
 import com.google.appinventor.server.util.BuildData;
 import com.google.appinventor.shared.rpc.help.HelpService;
 
@@ -21,9 +22,10 @@ public class HelpServiceImpl extends OdeRemoteServiceServlet implements HelpServ
   private static final Logger LOG = Logger.getLogger(HelpServiceImpl.class.getName());
 
   /*
-   * Provide the server deploy timestamp
+   * Provide the Mercurial Id from "hg id -i -n"
    */
-  public String getBuildTimeStamp() {
-   return BuildData.getTimestampAsString();
+  public String getMercurialBuildId() {
+   return BuildData.getMercurialId();
   }
+
 }

@@ -103,10 +103,6 @@ public class Ode implements EntryPoint {
   // User information
   private User user;
 
-  // Timestamp of the build, supplied by the BuildData class
-  // Warning: This is available only when running the deploy jar
-  private String buildTimeStamp;
-
   // Collection of projects
   private ProjectManager projectManager;
 
@@ -443,28 +439,27 @@ public class Ode implements EntryPoint {
 
   /*
    * If the server is running in production in Young Android mode,
-   * this gets the build timestamp, initializes the field buildTimeStamp,
+   * this gets the build id, initializes the field mercurialBuildId,
    * and adds it to the StatusPanel.  Otherwise, it has no effect.
+   ****
+
    */
   private void getBuildInfo() {
-    OdeAsyncCallback<String> buildTimeStampCallback =
+    // Id of the build, supplied by the BuildData class
+    OdeAsyncCallback<String> mercurialBuildIdCallback =
         new OdeAsyncCallback<String>(
             MESSAGES.serverUnavailable()) {
       @Override
       public void onSuccess(String result) {
-        buildTimeStamp = result;
-        onBuildInfoLoaded();
-      }
-
-      private void onBuildInfoLoaded() {
-        StatusPanel.showBuildTimeStamp(buildTimeStamp);
+        String mercurialBuildId = result;
+        StatusPanel.showMercurialBuildId(mercurialBuildId);
       }
     };
 
     // TODO(halabelson): see the TODO(forster) above:
-    // Getting the build timestamp adds another RPC call.
+    // Getting the build id adds another RPC call.
 
-    getHelpService().getBuildTimeStamp(buildTimeStampCallback);
+    getHelpService().getMercurialBuildId(mercurialBuildIdCallback);
   }
 
   /*

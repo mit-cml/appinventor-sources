@@ -13,7 +13,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface HelpServiceAsync {
 
   /**
-   * @see HelpService#getBuildTimeStamp()
+   * @see HelpService#getMercurialId()
    */
-  void getBuildTimeStamp(AsyncCallback<String> callback);
+  void getMercurialBuildId(AsyncCallback<String> callback);
 }
