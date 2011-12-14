@@ -17,8 +17,7 @@ public final class AppInventorFeatures {
   }
 
   public static boolean sendBugReports() {
-    // Set this to true if you want to prompt the user to report a bug after an internal error
-    // occurs.
+    // Set this to true if you want to prompt the user to report bugs.
     return false;
   }
 

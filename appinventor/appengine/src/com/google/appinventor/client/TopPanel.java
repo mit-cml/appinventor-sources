@@ -22,15 +22,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class TopPanel extends Composite {
-  // Various links for account, report bug, and sign out
+  private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
+
   private final HTML userEmail = new HTML();
-  private final HTML reportBugLink =
-      new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +
-          MESSAGES.reportBugLink() + "</a>");
-  private final HTML signOutLink =
-      new HTML("<a href='" + ServerLayout.ODE_LOGOUT_URL + "'>" + MESSAGES.signOutLink() + "</a>");
-  private String learnUrl = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
-  private VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
+  private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   private HTML divider() {
     return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
@@ -59,8 +54,16 @@ public class TopPanel extends Composite {
     account.setStyleName("ode-TopPanelAccount");
     account.add(userEmail);
     account.add(divider());
-    account.add(reportBugLink);
-    account.add(divider());
+    if (AppInventorFeatures.sendBugReports()) {
+      HTML reportBugLink =
+          new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +
+          makeSpacesNonBreakable(MESSAGES.reportBugLink()) + "</a>");
+      account.add(reportBugLink);
+      account.add(divider());
+    }
+    HTML signOutLink =
+        new HTML("<a href='" + ServerLayout.ODE_LOGOUT_URL + "'>" +
+        makeSpacesNonBreakable(MESSAGES.signOutLink()) + "</a>");
     account.add(signOutLink);
 
     rightPanel.add(account);
@@ -90,7 +93,7 @@ public class TopPanel extends Composite {
     );
     middleLinks.add(design);
 
-    Anchor learn = new Anchor(MESSAGES.tabNameLearn(), learnUrl, "_blank");
+    Anchor learn = new Anchor(MESSAGES.tabNameLearn(), LEARN_URL, "_blank");
     middleLinks.add(learn);
 
     if (AppInventorFeatures.hasDebuggingView()) {
@@ -154,5 +157,9 @@ public class TopPanel extends Composite {
    */
   public void showMotd() {
     addMotd(rightPanel);
+  }
+
+  private static String makeSpacesNonBreakable(String s) {
+    return s.replace(" ", "&nbsp;");
   }
 }

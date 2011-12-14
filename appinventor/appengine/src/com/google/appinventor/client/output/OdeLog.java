@@ -126,9 +126,11 @@ public final class OdeLog extends Composite {
   public static void xlog(Throwable throwable) {
     if (isLogAvailable() && !Ode.isWindowClosing()) {
       getOdeLog().eprintln(StringUtils.escape(throwable.toString()) + prepareStackTrace(throwable));
-      // For this message, we don't escape. We want the bug report link to show as a link.
-      getOdeLog().eprintln("File a <a href=\"" + BugReport.getBugReportLink(throwable)
-          + "\" target=\"_blank\">bug report</a> for this error.");
+      if (AppInventorFeatures.sendBugReports()) {
+        // For this message, we don't escape. We want the bug report link to show as a link.
+        getOdeLog().eprintln("File a <a href=\"" + BugReport.getBugReportLink(throwable)
+            + "\" target=\"_blank\">bug report</a> for this error.");
+      }
     }
   }
 
