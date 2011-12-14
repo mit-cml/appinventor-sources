@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -75,7 +76,7 @@ public class Whitelist {
     try {
       parseToAddresses(new CsvParser(new FileInputStream(pathToWhitelist)));
       if (addresses.size() == 0) {
-        LOG.severe("White file found with no entries.");
+        LOG.severe("Whitelist file contained no entries.");
       } else {
         if (DEBUG) {
           logWhitelistContents();
@@ -83,19 +84,18 @@ public class Whitelist {
         validWhitelist = true;
       }
     } catch (FileNotFoundException e) {
-      LOG.info("No whitelist found.");
+      LOG.severe("No whitelist found.");
     } catch (SecurityException e) {
-      LOG.severe("Whitelist found, but wrong permission... ignoring.");
+      LOG.severe("Whitelist found, but wrong permission.");
     } catch (IOException e) {
-      LOG.severe("Unexpected whitelist error: " + e);
+      LOG.log(Level.SEVERE, "Unexpected whitelist error", e);
     }
   }
 
   // should throw something if not valid whitelist?
   public boolean isInWhitelist(LocalUser user) {
     if (! validWhitelist) {
-      // If we have not found a valid whitelist, default to using no
-      // whitelist at all.
+      // If we have not loaded a valid whitelist, reject everyone.
       return false;
     }
 

@@ -84,7 +84,6 @@ public final class YoungAndroidWebStartSupport extends WebStartSupport {
     } catch (IllegalArgumentException e) {
       throw CrashReport.createAndLogError(LOG, req, null, e);
     } catch (EncryptionException e) {
-      e.printStackTrace();
       throw CrashReport.createAndLogError(LOG, req, null, e);
     } catch (IOException e) {
       throw CrashReport.createAndLogError(LOG, req, null, e);

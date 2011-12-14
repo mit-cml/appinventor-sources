@@ -6,6 +6,7 @@ import com.google.appinventor.server.util.BuildData;
 
 import com.google.appengine.api.utils.SystemProperty;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,9 +17,6 @@ public final class CrashReport {
    * Constant for 'information not available'
    */
   public static final String NOT_AVAILABLE = "n/a";
-
-  // Logging support
-  private static final Logger LOG = Logger.getLogger(CrashReport.class.getName());
 
   // Build information
   private static String buildData = BuildData.getTimestampAsString();
@@ -55,7 +53,8 @@ public final class CrashReport {
    */
   public static RuntimeException createAndLogError(Logger log, HttpServletRequest req,
       String extraInfo, RuntimeException exception) {
-    log.severe(exception.getMessage() + ": " + extraInfo + "\n" + extraExtraInfo(req));
+    log.log(Level.SEVERE, exception.getMessage() + ": " + extraInfo + "\n" + extraExtraInfo(req),
+        exception);
     return exception;
   }
 

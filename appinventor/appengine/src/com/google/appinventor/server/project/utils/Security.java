@@ -8,6 +8,7 @@ import com.google.appinventor.server.encryption.Encryptor;
 import com.google.appinventor.server.storage.StorageIo;
 
 import java.math.BigInteger;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -67,8 +68,7 @@ public class Security {
       String decryptedString = new String(encryptor.decrypt(unpadBytes(bigint.toByteArray())));
       return decryptedString.substring(ID_DIGITS);
     } catch (EncryptionException e) {  // COV_NF_LINE
-      LOG.severe("Decryption failed with error: " + e.getMessage());
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Decryption failed with error", e);
       return null;  // COV_NF_LINE
     } catch (NumberFormatException e) {
       return null;
@@ -92,8 +92,7 @@ public class Security {
       // The projectId is the first ID_DIGITS characters of the decrypted string
       return new BigInteger(decryptedString.substring(0, ID_DIGITS), 16).longValue();
     } catch (EncryptionException e) {  // COV_NF_LINE
-      LOG.severe("Decryption failed with error: " + e.getMessage());
-      e.printStackTrace();
+      LOG.log(Level.SEVERE, "Decryption failed with error", e);
       return StorageIo.INVALID_PROJECTID;  // COV_NF_LINE
     } catch (NumberFormatException e) {
       return StorageIo.INVALID_PROJECTID;

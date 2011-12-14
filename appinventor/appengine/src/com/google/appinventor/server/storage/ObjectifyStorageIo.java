@@ -40,6 +40,7 @@ import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -1157,7 +1158,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         break;
       } catch (ConcurrentModificationException ex) {
         job.onNonFatalError();
-        LOG.warning("Optimistic concurrency failure: " + ex);
+        LOG.log(Level.WARNING, "Optimistic concurrency failure", ex);
       } catch (ObjectifyException oe) {
         job.onNonFatalError();
       } finally {
