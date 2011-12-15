@@ -2,36 +2,32 @@
 
 package com.google.appinventor.server.util;
 
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * Utility class for dealing with If-Modified-Since and Last-Modified headers
- * for servlet requests and responses.
+ * Utility class for dealing with "If-Modified-Since" and
+ * "Last-Modified" headers for servlet requests and responses.
  *
  * @author sharon@google.com (Sharon Perl)
- *
  */
 public class ModifiedHeaders {
   // Object used to safely set cache headers in responses
   private static final CacheHeaders CACHE_HEADERS = new CacheHeadersImpl();
-  // length of time to cache responses
-
-  private static long buildDate = 0;
 
   /**
-   * Check the "If-Modified-Since" header in req (if it exists). If it exists
-   * and the date is after our build date then return true (=>not modified by
-   * this build). Otherwise, return false.
-   * @param req
-   * @return true iff we're sure that req is for a resource that wasn't
-   *   modified by our build.
+   * Compares the "If-Modified-Since" header in this request (ir present) to
+   * the last build date (if known) in order to determine whether the requested
+   * data has been modified since the prior request.
+   *
+   * @param req the request
+   * @return {@code true} iff we're sure that request is for a resource that
+   *         has not been modified since the prior request
    */
   public static boolean notModified(HttpServletRequest req) {
     long ifModDate = req.getDateHeader("If-Modified-Since");
-    if (buildDate > 0 && ifModDate > 0) {
-      if (ifModDate >= buildDate) {
+    if (BuildData.getTimestamp() > 0 && ifModDate > 0) {
+      if (ifModDate >= BuildData.getTimestamp()) {
         return true;
       }
     }
@@ -39,25 +35,18 @@ public class ModifiedHeaders {
   }
 
   /**
-   * If we know our build date, set the "Last-Modified" header in resp to be
-   * our build date. Sets cache control to be cacheable-private.
-   * @param resp
+   * Sets headers such that, if the last build time is known, it is included in
+   * the "Last-Modified" header and validation is required for reuse.  If the
+   * build time is not known, this makes the response uncacheable.
+   *
+   * @param resp the response
    */
   public static void setHeaders(HttpServletResponse resp) {
-    if (getBuildTimestamp() != 0) {
-      resp.setDateHeader("Last-Modified", buildDate);
-      // TODO(user): is setCacheablePrivate with a duration of 0 the
-      // same as setNotCacheable? I'm guessing it is (or that notCacheable
-      // will do). Check this. If we need setCacheablePrivate we'll need to
-      // implement it.
-      // CACHE_HEADERS.setCacheablePrivate(resp, new Duration(0), null);
+    if (BuildData.getTimestamp() == 0) {
       CACHE_HEADERS.setNotCacheable(resp);
+    } else {
+      resp.setDateHeader("Last-Modified", BuildData.getTimestamp());
+      CACHE_HEADERS.setCacheablePrivate(resp);
     }
-  }
-
-  private static long getBuildTimestamp() {
-    if (buildDate != 0) return buildDate;
-    buildDate = BuildData.getTimestamp();
-    return buildDate;
   }
 }
