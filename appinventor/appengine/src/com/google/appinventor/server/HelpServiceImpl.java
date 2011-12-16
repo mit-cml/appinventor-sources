@@ -27,5 +27,9 @@ public class HelpServiceImpl extends OdeRemoteServiceServlet implements HelpServ
   public String getMercurialBuildId() {
    return BuildData.getMercurialId();
   }
-
+  
+  @Override
+  public boolean isProductionServer() {
+    return Server.isProductionServer();
+  }
 }

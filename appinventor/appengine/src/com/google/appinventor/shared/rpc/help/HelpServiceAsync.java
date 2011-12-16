@@ -16,4 +16,9 @@ public interface HelpServiceAsync {
    * @see HelpService#getMercurialId()
    */
   void getMercurialBuildId(AsyncCallback<String> callback);
+  
+  /**
+   * @see HelpService#isProductionServer()
+   */
+  void isProductionServer(AsyncCallback<Boolean> callback);
 }

@@ -18,4 +18,10 @@ public interface HelpService extends RemoteService {
    * @return mercurial build id
    */
   String getMercurialBuildId();
+  
+  /**
+   * Returns true if this server instance is running on app engine production
+   * @return is production server running
+   */
+  boolean isProductionServer();
 }
