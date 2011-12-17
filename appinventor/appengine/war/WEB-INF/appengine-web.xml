@@ -46,10 +46,6 @@
 	 resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
 
-
-   <!-- ant will replace the pattern with the result of "hg -n -i" -->
-   <property name="mercurialBuildId" value="@mercurial.version.id@" />
-
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->

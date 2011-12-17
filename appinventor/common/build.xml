@@ -13,7 +13,7 @@
   </description>
 
   <target name="all"
-          depends="CommonUtils,BlocksEditorHttpConstants,CommonTestUtils">
+          depends="CommonUtils,CommonVersion,BlocksEditorHttpConstants,CommonTestUtils">
   </target>
 
   <target name="tests"
@@ -81,6 +81,43 @@
     <ai.dojunit aij-testingtarget="CommonUtilsTests"
                 aij-dir="${common.pkg}/utils" >
     </ai.dojunit>
+  </target>
+
+  <!-- =====================================================================
+       CommonVersion: library containing version classes.
+       ===================================================================== -->
+  <target name="CommonVersion"
+          description="Generate library containing version classes"
+          depends="init">
+    <property name="CommonVersion-class.dir" location="${class.dir}/CommonVersion" />
+    <mkdir dir="${CommonVersion-class.dir}" />
+
+    <exec executable="hg" outputproperty="mercurial.version.id">
+        <arg line = "id -n -i " />
+    </exec>
+    <filter token="mercurial.version.id" value="${mercurial.version.id}" />
+    <mkdir dir="${local.build.dir}/src/${common.pkg}/version/"/>
+    <copy tofile="${local.build.dir}/src/${common.pkg}/version/MercurialBuildId.java" file="MercurialBuildId.template" filtering="true" />
+
+    <ai.javac5 destdir="${CommonVersion-class.dir}" srcdir="${src.dir};${local.build.dir}/src">
+      <include name="${common.pkg}/version/*.java" />
+    </ai.javac5>
+
+    <jar destfile="${public.build.dir}/CommonVersion.jar">
+      <fileset dir="${CommonVersion-class.dir}"/>
+    </jar>
+
+    <jar destfile="${public.build.dir}/CommonVersion-gwt.jar">
+      <fileset dir="${CommonVersion-class.dir}"/>
+      <fileset dir="${src.dir}">
+        <include name="${common.pkg}/version/*.java"/>
+        <include name="${common.pkg}/CommonVersion.gwt.xml" />
+      </fileset>
+      <fileset dir="${local.build.dir}/src">
+        <include name="${common.pkg}/version/*.java"/>
+      </fileset>
+  </jar>
+
   </target>
 
   <!-- =====================================================================

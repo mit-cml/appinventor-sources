@@ -19,7 +19,7 @@ import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
-import com.google.appinventor.common.utils.AppInventorFeatures;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.collect.Lists;

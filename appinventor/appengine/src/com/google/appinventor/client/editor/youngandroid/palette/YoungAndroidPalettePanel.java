@@ -25,7 +25,7 @@ import com.google.appinventor.client.widgets.properties.NonNegativeIntegerProper
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
-import com.google.appinventor.common.utils.AppInventorFeatures;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 import com.google.gwt.user.client.ui.Composite;

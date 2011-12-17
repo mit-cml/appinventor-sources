@@ -4,9 +4,6 @@ package com.google.appinventor.server.util;
 
 import com.google.appengine.api.utils.SystemProperty;
 
-import com.google.appinventor.server.flags.Flag;
-
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -15,12 +12,12 @@ import java.util.Date;
  *
  * @author sharon@google.com (Sharon Perl)
  *
+ * @see com.google.appinventor.common.version.MercurialBuildId
  */
 public class BuildData {
 
   private static long timestamp = 0;
   private static Date date = null;
-  private static final Flag<String> mercurialBuildId = Flag.createFlag("mercurialBuildId", "");
 
   /**
    * Returns the timestamp for when the app was deployed (as a Unix time,
@@ -59,10 +56,5 @@ public class BuildData {
       return new SimpleDateFormat("EEE, d MMM yyyy HH:mm z").format(date);
     }
     return "";
-  }
-
-    // Get the id supplied by hg -n -i
-  public static String getMercurialId() {
-      return mercurialBuildId.get();
   }
 }

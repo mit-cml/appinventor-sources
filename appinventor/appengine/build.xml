@@ -45,22 +45,14 @@
           description="Create and populate build/war directory structure"
           depends="init">
     <mkdir dir="${build.war.dir}" />
-    <exec executable="hg" outputproperty="mercurial.version.id">
-        <arg line = "id -n -i " />
-    </exec>
-    <filter token="mercurial.version.id" value="${mercurial.version.id}" />
-    <copy todir="${build.war.dir}/WEB-INF/" file="war/WEB-INF/appengine-web.xml" filtering="true" />
     <copy todir="${build.war.dir}/">
-      <fileset dir="war" >
-        <exclude name="WEB-INF/appengine-web.xml" />
-      </fileset>
+      <fileset dir="war"/>
       <fileset dir="src/${appinventor.pkg}">
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
       <fileset dir="${docs.dir}" />
     </copy>
- 
   </target>
 
   <!-- =====================================================================
@@ -102,9 +94,10 @@
   </target>
   <target name="WarLibs"
           description="Copy libs to build/war/WEB-INF/lib"
-          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants">
+          depends="init,MakeWarLibsDir,common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants">
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/BlocksEditorHttpConstants.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonUtils.jar"/>
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/common/CommonVersion.jar"/>
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${build.dir}/components/CommonConstants.jar"/>
     <!-- external libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/commons-fileupload/commons-fileupload-1.2.2.jar" />
@@ -288,7 +281,7 @@
        ===================================================================== -->
   <target name="AiClientLib"
           description="App Inventor Client library - compile java source to bytecode"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,components_JsonComponentDescription">
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,components_JsonComponentDescription">
     <mkdir dir="${build.war.dir}/WEB-INF/classes"/>
     <ai.javac encoding="utf-8"
               destdir="${build.war.dir}/WEB-INF/classes"
@@ -299,6 +292,7 @@
       <classpath>
         <pathelement location="${build.dir}/common/BlocksEditorHttpConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
@@ -320,7 +314,7 @@
        CheckYaClientApp - checks whether it is already up-to-date.
        ===================================================================== -->
   <target name="CheckYaClientApp"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CopyToBuildWar">
     <!-- If ode.nocache.js is up-to-date, set YaClientApp.uptodate to true.
          Otherwise, set YaClientApp.uptodate to false -->
     <uptodate property="YaClientApp.uptodate"
@@ -329,13 +323,14 @@
       <srcfiles file="${local.build.dir}/AiRebindLib.jar" />
       <srcfiles file="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
       <srcfiles file="${build.dir}/common/CommonUtils-gwt.jar" />
+      <srcfiles file="${build.dir}/common/CommonVersion-gwt.jar" />
       <srcfiles file="${build.dir}/components/CommonConstants-gwt.jar" />
     </uptodate>
   </target>
 
   <target name="YaClientApp"
           description="GWT compile to JavaScript"
-          depends="common_BlocksEditorHttpConstants,common_CommonUtils,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp,CopyToBuildWar"
+          depends="common_BlocksEditorHttpConstants,common_CommonUtils,common_CommonVersion,components_CommonConstants,AiClientLib,AiRebindLib,CheckYaClientApp,CopyToBuildWar"
           unless="YaClientApp.uptodate">
     <java failonerror="true" fork="true" classname="com.google.gwt.dev.Compiler">
       <classpath>
@@ -344,6 +339,7 @@
         <pathelement location="${local.build.dir}/AiRebindLib.jar" />
         <pathelement location="${build.dir}/common/BlocksEditorHttpConstants-gwt.jar" />
         <pathelement location="${build.dir}/common/CommonUtils-gwt.jar" />
+        <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />

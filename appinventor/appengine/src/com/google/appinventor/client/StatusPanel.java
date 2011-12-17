@@ -3,6 +3,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.common.version.MercurialBuildId;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -15,16 +16,6 @@ import com.google.gwt.user.client.ui.Label;
  *
  */
 public class StatusPanel extends Composite {
-  private static Label buildId = new Label();
-
-  // This shows the id from mercurial hg id -n -i
-  public static void showMercurialBuildId(String id) {
-    String[] idAndVersion = id.split("\\s+");
-    if (idAndVersion.length == 2) {
-    buildId.setText("Version: " + idAndVersion[1] + " Id: " + idAndVersion[0]);
-    }
-  }
-
   private String AppInventorFooter =
     "&copy;2010 Google" +
     " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/'" +
@@ -42,8 +33,15 @@ public class StatusPanel extends Composite {
     hpanel.setWidth("100%");
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
     hpanel.add(new HTML(AppInventorFooter));
-    hpanel.add(buildId);
-    hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
+
+    // This shows the id from mercurial hg id -i -n
+    String version = MercurialBuildId.getVersion();
+    String id = MercurialBuildId.getId();
+    if (version != null && id != null) {
+      Label buildId = new Label(MESSAGES.mercurialBuildId(version, id));
+      hpanel.add(buildId);
+      hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
+    }
 
     initWidget(hpanel);
     setStyleName("ode-StatusPanel");

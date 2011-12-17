@@ -1,6 +1,6 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
-package com.google.appinventor.common.utils;
+package com.google.appinventor.common.version;
 
 /**
  * Class used to determine whether a new feature should be visible to the user.

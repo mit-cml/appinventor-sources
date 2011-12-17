@@ -1,9 +1,11 @@
 package openblocks.workspace;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
@@ -22,6 +24,7 @@ import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.ToolTipManager;
 
@@ -29,6 +32,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.google.appinventor.common.version.MercurialBuildId;
 import openblocks.renderable.BlockNote;
 import openblocks.renderable.BlockUtilities;
 import openblocks.renderable.RenderableBlock;
@@ -158,6 +162,18 @@ public class Workspace extends JLayeredPane
     explorerPanel.setLayout(new BorderLayout());
     explorerPanel.add(factory.getFactorySwitcher(), BorderLayout.NORTH);
     explorerPanel.add(factory.getJComponent(), BorderLayout.CENTER);
+
+    // Show the Mercurial build id using a non-editable JTextField instead of a JLabel, so the user
+    // can select and copy it.
+    JTextField mercurialBuildId = new JTextField("Version: " + MercurialBuildId.getVersion() +
+        " Id: " + MercurialBuildId.getId());
+    mercurialBuildId.setEditable(false);
+    mercurialBuildId.setBorder(null);
+    mercurialBuildId.setBackground(CGraphite.lightergreen);
+    mercurialBuildId.setForeground(Color.gray);
+    mercurialBuildId.setHorizontalAlignment(JTextField.CENTER);
+    mercurialBuildId.setFont(new Font("Arial", Font.PLAIN, 13));
+    explorerPanel.add(mercurialBuildId, BorderLayout.SOUTH);
 
     blockCanvasLayer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
         explorerPanel, blockCanvas.getJComponent());

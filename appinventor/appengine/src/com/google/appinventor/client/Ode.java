@@ -29,7 +29,7 @@ import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
-import com.google.appinventor.common.utils.AppInventorFeatures;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -302,19 +302,6 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Returns build label information to be used in bug reports.
-   *
-   * @return  build label information
-   */
-  public static String buildInformation() {
-    // TODO(user): need to retrieve CL information from service (this should be done together
-    //                 with the refactoring of the RPCs at startup,
-    //                 e.g. one RPC getStartupInformation() which returns user info, version info,
-    //                 settings, projects, etc.
-    return "n/a";
-  }
-
-  /**
    * Returns i18n compatible messages
    * @return messages
    */
@@ -391,8 +378,6 @@ public class Ode implements EntryPoint {
         initializeUi();
 
         topPanel.showUserEmail(user.getUserEmail());
-
-        getBuildInfo();
       }
 
       @Override
@@ -435,31 +420,6 @@ public class Ode implements EntryPoint {
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
     //History.fireCurrentHistoryState();
-  }
-
-  /*
-   * If the server is running in production in Young Android mode,
-   * this gets the build id, initializes the field mercurialBuildId,
-   * and adds it to the StatusPanel.  Otherwise, it has no effect.
-   ****
-
-   */
-  private void getBuildInfo() {
-    // Id of the build, supplied by the BuildData class
-    OdeAsyncCallback<String> mercurialBuildIdCallback =
-        new OdeAsyncCallback<String>(
-            MESSAGES.serverUnavailable()) {
-      @Override
-      public void onSuccess(String result) {
-        String mercurialBuildId = result;
-        StatusPanel.showMercurialBuildId(mercurialBuildId);
-      }
-    };
-
-    // TODO(halabelson): see the TODO(forster) above:
-    // Getting the build id adds another RPC call.
-
-    getHelpService().getMercurialBuildId(mercurialBuildIdCallback);
   }
 
   /*

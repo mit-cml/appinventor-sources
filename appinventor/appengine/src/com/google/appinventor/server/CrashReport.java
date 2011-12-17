@@ -2,6 +2,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.common.version.MercurialBuildId;
 import com.google.appinventor.server.util.BuildData;
 
 import com.google.appengine.api.utils.SystemProperty;
@@ -76,6 +77,7 @@ public final class CrashReport {
       s.append("application.version").append("=").append(version).append("\n");
     }
     s.append("build.version").append("=").append(buildData).append("\n");
+    s.append("mercurial.build.id").append("=").append(MercurialBuildId.MERCURIAL_BUILD_ID).append("\n");
     if (req != null) {
       s.append("request.details").append("=").append(req.toString()).append("\n");
     }

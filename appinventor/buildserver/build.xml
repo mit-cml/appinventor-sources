@@ -86,12 +86,13 @@
                         needed to compile the build server classes
        ===================================================================== -->
   <target name="CopyToRunLibDir"
-          depends="init,blockslib_OpenBlocks,common_CommonUtils">
+          depends="init,blockslib_OpenBlocks,common_CommonUtils,common_CommonVersion">
     <mkdir dir="${run.lib.dir}" />
     <copy todir="${run.lib.dir}" flatten="true">
       <fileset dir="${local.lib.dir}" includes="*.jar"/>
       <fileset dir="${build.dir}" includes="blockslib/OpenBlocks.jar" />
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
+      <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
       <fileset dir="${lib.dir}" includes="guava/guava-10.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>

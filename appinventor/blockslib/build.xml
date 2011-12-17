@@ -38,7 +38,8 @@
        OpenBlocks: library containing openblocks code
        ===================================================================== -->
 
-  <target name="OpenBlocks" depends="init,components_XmlComponentDescription"
+  <target name="OpenBlocks"
+          depends="init,components_XmlComponentDescription,common_CommonVersion"
           description="Generate library containing openblocks code">
     <property name="OpenBlocks-class.dir" location="${class.dir}/OpenBlocks" />
     <mkdir dir="${OpenBlocks-class.dir}" />
@@ -46,6 +47,7 @@
     <ai.javac5 destdir="${OpenBlocks-class.dir}">
       <include name="${openblocks.pkg}/**/*.java" />
       <classpath>
+        <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
       </classpath>
@@ -81,6 +83,7 @@
   <path id="libsForOpenBlocksTests.path"> 
     <pathelement location="${public.build.dir}/OpenBlocks.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />

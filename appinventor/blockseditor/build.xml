@@ -114,7 +114,7 @@
        point com.google.appinventor.blockseditor.youngandroid.YaHttpServerMain
        ===================================================================== -->
   <target name="BlocksEditor"
-          depends="init,blockslib_OpenBlocks,common_BlocksEditorHttpConstants,YoungAndroidLib,KeyStore"
+          depends="init,blockslib_OpenBlocks,common_BlocksEditorHttpConstants,common_CommonVersion,YoungAndroidLib,KeyStore"
           description="Generate complete signed jar for the blocks editor">
 
     <jar destfile="${local.build.dir}/UnsignedBlocksEditor.jar">
@@ -125,6 +125,7 @@
       <zipfileset src="${local.build.dir}/YoungAndroidLib.jar"/>
       <zipfileset src="${build.dir}/blockslib/OpenBlocks.jar"/>
       <zipfileset src="${build.dir}/common/BlocksEditorHttpConstants.jar"/>
+      <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
       <zipfileset src="${lib.dir}/android/tools/ddmlib.jar"/>

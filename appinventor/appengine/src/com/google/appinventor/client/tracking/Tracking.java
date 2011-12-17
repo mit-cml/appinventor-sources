@@ -3,7 +3,7 @@
 package com.google.appinventor.client.tracking;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.common.utils.AppInventorFeatures;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.core.client.JavaScriptObject;
 
 /**

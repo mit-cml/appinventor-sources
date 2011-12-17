@@ -1,0 +1,32 @@
+// Copyright 2011 Google Inc. All Rights Reserved.
+
+package com.google.appinventor.common.version;
+
+/**
+ * Class containing a constant for the Mercurial build id.
+ *
+ */
+public final class MercurialBuildId {
+
+  // The following value is set during the ant build.
+  public static final String MERCURIAL_BUILD_ID = "@mercurial.version.id@";
+
+  private MercurialBuildId() {
+  }
+
+  public static String getId() {
+    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
+    if (idAndVersion.length == 2) {
+      return idAndVersion[0];
+    }
+    return null;
+  }
+
+  public static String getVersion() {
+    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
+    if (idAndVersion.length == 2) {
+      return idAndVersion[1];
+    }
+    return null;
+  }
+}

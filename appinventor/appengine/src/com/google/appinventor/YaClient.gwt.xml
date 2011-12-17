@@ -21,6 +21,7 @@
   <inherits name="com.google.appinventor.components.CommonConstants" />
   <inherits name="com.google.appinventor.common.BlocksEditorHttpConstants" />
   <inherits name="com.google.appinventor.common.CommonUtils" />
+  <inherits name="com.google.appinventor.common.CommonVersion" />
   <inherits name="com.google.common.annotations.Annotations" />
   <inherits name="com.allen_sauer.gwt.dnd.gwt-dnd" />
 

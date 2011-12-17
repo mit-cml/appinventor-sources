@@ -1,5 +1,6 @@
 package com.google.appinventor.buildserver;
 
+import com.google.appinventor.common.version.MercurialBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -260,6 +261,8 @@ public class BuildServer {
     // it's run in a production environment.   For now, just kill the process
     SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:9990/");
     InetAddress localHost = InetAddress.getLocalHost();
+    System.out.println("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
+        " Id: " + MercurialBuildId.getId());
     System.out.println("Visit: http://" + localHost.getHostAddress() + ":9990/buildserver");
     System.out.println("Server running");
   }

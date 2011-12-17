@@ -5,7 +5,7 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.boxes.MotdBox;
-import com.google.appinventor.common.utils.AppInventorFeatures;
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
@@ -29,15 +29,15 @@ public class TopPanel extends Composite {
 
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
-  
+
   private static final String EXTRA_TEXT_IF_NOT_PRODUCTION = "This is an experimental version of "
       + " App Inventor. IT IS FOR TESTING ONLY, NOT FOR GENERAL USE!"
       + " Note: This App Inventor instance is not being hosted on AppEngine."
       + " As a result, it will not correctly save your projects when you log out."
       + " You'll have to download them if you want them saved.";
 
-  //TODO(user) Remove the expermental warning label below when ready.
-  private final Label warning = new Label("This is an experimental version of App Inventor. " 
+  // TODO(user) Remove the expermental warning label below when ready.
+  private final Label warning = new Label("This is an experimental version of App Inventor. "
       + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
 
   private HTML divider() {
@@ -136,7 +136,7 @@ public class TopPanel extends Composite {
     setStyleName("ode-TopPanel");
     setWidth("100%");
   }
-  
+
   private void setWarningLabelText() {
     AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
       @Override

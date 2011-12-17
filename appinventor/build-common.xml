@@ -292,6 +292,17 @@
   </target>
 
   <!-- ====================================================================
+       common_CommonVersion builds:
+       - build/common/CommonVersion.jar
+       - build/common/CommonVersion-gwt.jar
+       ==================================================================== -->
+  
+  <target name="common_CommonVersion">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/common"
+         target="CommonVersion"/>
+  </target>
+
+  <!-- ====================================================================
        common_CommonTestUtils builds:
        - build/common/CommonTestUtils.jar
        ==================================================================== -->
