@@ -43,7 +43,7 @@
     <!-- Interval is seconds between checking for a message of the day.
          Set set to 0 to disable checking for a MOTD.  If you do enable
          MOTD checking, make the interval long, because this check is
-	 resource expensive on App Engine -->
+         resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
 
   </system-properties>
