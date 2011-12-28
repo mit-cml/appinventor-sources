@@ -922,6 +922,8 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (useBlobstore) {
             fd.isBlob = true;
             fd.blobstorePath = uploadToBlobstore(content);
+            // If the content was previously stored in the datastore, clear it out.
+            fd.content = null;
           } else {
             fd.content = content;
           }
@@ -984,8 +986,11 @@ public class ObjectifyStorageIo implements  StorageIo {
     return blobstoreFile.getFullPath();
   }
 
-  private boolean useBlobstoreForFile(String fileName) {
-    return fileName.contains("assets/") || fileName.endsWith(".apk");
+  @VisibleForTesting
+  boolean useBlobstoreForFile(String fileName) {
+    return fileName.contains("assets/")
+           || fileName.endsWith(".apk")
+           || (fileName.contains("src/") && fileName.endsWith(".blk"));
   }
 
   @Override

@@ -16,7 +16,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 /**
- * Tests for {@link Objectifystorage}.
+ * Tests for {@link ObjectifyStorageIo}.
  *
  * @author sharon@google.com (Sharon Perl)
  */
@@ -44,6 +44,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final byte[] ASSET_FILE_CONTENT1 = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
   private static final String APK_FILE_NAME1 = "/ode/build/Android/HelloPurr.apk";
   private static final byte[] APK_FILE_CONTENT = { (byte) 0, (byte) 1, (byte) 32, (byte) 255};
+  private static final String BLOCK_FILE_NAME = "src/blocks.blk";
+  private static final byte[] BLOCK_FILE_CONTENT = {(byte) 0, (byte) 1, (byte) 32, (byte) 255};
 
   private ObjectifyStorageIo storage;
   private Project project;
@@ -382,27 +384,63 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, ASSET_FILE_NAME1);
     storage.uploadRawFile(projectId, ASSET_FILE_NAME1, USER_ID, ASSET_FILE_CONTENT1);
+    storage.addSourceFilesToProject(USER_ID, projectId, false, BLOCK_FILE_NAME);
+    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
     storage.addOutputFilesToProject(USER_ID, projectId, APK_FILE_NAME1);
     storage.uploadRawFile(projectId, APK_FILE_NAME1, USER_ID, APK_FILE_CONTENT);
 
     assertTrue(storage.getProjectSourceFiles(USER_ID, projectId).contains(ASSET_FILE_NAME1));
     assertTrue(storage.getProjectOutputFiles(USER_ID, projectId).contains(APK_FILE_NAME1));
-    assertTrue(java.util.Arrays.equals(ASSET_FILE_CONTENT1,
+    assertTrue(Arrays.equals(ASSET_FILE_CONTENT1,
         storage.downloadRawFile(USER_ID, projectId, ASSET_FILE_NAME1)));
-    assertTrue(java.util.Arrays.equals(APK_FILE_CONTENT,
+    assertTrue(Arrays.equals(APK_FILE_CONTENT,
         storage.downloadRawFile(USER_ID, projectId, APK_FILE_NAME1)));
-    ObjectifyStorageIo objstorage = (ObjectifyStorageIo) storage;
-    assertTrue(objstorage.isBlobFile(projectId, ASSET_FILE_NAME1));
-    assertTrue(objstorage.isBlobFile(projectId, APK_FILE_NAME1));
+    assertTrue(Arrays.equals(BLOCK_FILE_CONTENT,
+        storage.downloadRawFile(USER_ID, projectId, BLOCK_FILE_NAME)));
+    assertTrue(storage.isBlobFile(projectId, ASSET_FILE_NAME1));
+    assertTrue(storage.isBlobFile(projectId, APK_FILE_NAME1));
+    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
 
     storage.removeSourceFilesFromProject(USER_ID, projectId, false, ASSET_FILE_NAME1);
     storage.removeOutputFilesFromProject(USER_ID, projectId, APK_FILE_NAME1);
+    storage.removeSourceFilesFromProject(USER_ID, projectId, false, BLOCK_FILE_NAME);
     assertFalse(storage.getProjectSourceFiles(USER_ID, projectId).contains(ASSET_FILE_NAME1));
     assertFalse(storage.getProjectOutputFiles(USER_ID, projectId).contains(APK_FILE_NAME1));
+    assertFalse(storage.getProjectOutputFiles(USER_ID, projectId).contains(BLOCK_FILE_NAME));
     // TODO(sharon): would be good to check that blobrefs are deleted from blobstore too
 
     // TODO(sharon): should test large blob files (e.g., >2MB (chunk size), >4MB (row size));
   }
+
+  public void testOldBlockFilesInDatastoreStillWork() {
+    // Create new storage object that forces storage in the datastore
+    ObjectifyStorageIo oldStyleStorage = new ObjectifyStorageIo() {
+      @Override
+      boolean useBlobstoreForFile(String fileName) {
+        return false;
+      }
+    };
+
+    final String USER_ID = "1310";
+    oldStyleStorage.getUser(USER_ID);
+    long projectId = createProject(
+        USER_ID, PROJECT_NAME, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
+        FORM_QUALIFIED_NAME);
+    oldStyleStorage.addSourceFilesToProject(USER_ID, projectId, false, BLOCK_FILE_NAME);
+    oldStyleStorage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+    assertTrue(Arrays.equals(BLOCK_FILE_CONTENT,
+                                       oldStyleStorage.downloadRawFile(
+                                           USER_ID, projectId, BLOCK_FILE_NAME)));
+    assertFalse(oldStyleStorage.isBlobFile(projectId, BLOCK_FILE_NAME));
+
+    // Test that we can still get the content with an ordinary storage object
+    assertTrue(Arrays.equals(BLOCK_FILE_CONTENT,
+                                       storage.downloadRawFile(
+                                           USER_ID, projectId, BLOCK_FILE_NAME)));
+    // Test that ordinary storage objects will still store the data in blobstore
+    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
+ }
 
   public void testGetProject() {
     final String USER_ID = "1400";
@@ -463,9 +501,14 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   }
 
   private long createProject(String userId, String name, String type, String fileName) {
+    return createProject(userId, name, type, fileName, storage);
+  }
+
+  private long createProject(String userId, String name, String type, String fileName,
+                             ObjectifyStorageIo storageIo) {
     Project project = new Project(name);
     project.setProjectType(type);
     project.addTextFile(new TextFile(fileName, ""));
-    return storage.createProject(userId, project, SETTINGS);
+    return storageIo.createProject(userId, project, SETTINGS);
   }
 }
