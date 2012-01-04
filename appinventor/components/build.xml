@@ -338,6 +338,7 @@
 
     <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
           todir="${local.build.dir}"/>
+    <echo message="Please see the documentation at file://${local.build.dir}/component-doc.html"/>
   </target>
 
 </project>
