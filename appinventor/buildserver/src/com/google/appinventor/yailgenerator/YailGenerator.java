@@ -1,6 +1,6 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 
-package com.google.appinventor.buildserver;
+package com.google.appinventor.yailgenerator;
 
 import com.google.common.base.Joiner;
 import com.google.common.io.Files;

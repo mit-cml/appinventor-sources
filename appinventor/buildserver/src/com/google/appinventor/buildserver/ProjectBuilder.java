@@ -14,8 +14,6 @@ import com.google.common.io.Files;
 import com.google.common.io.InputSupplier;
 import com.google.common.io.Resources;
 
-import openblocks.yacodeblocks.YailGenerationException;
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -89,7 +87,7 @@ public final class ProjectBuilder {
    * @return the newly-created directory
    * @throws IllegalStateException if the directory could not be created
    */
-  public static File createNewTempDir() {
+  private static File createNewTempDir() {
     File baseDir = new File(System.getProperty("java.io.tmpdir"));
     String baseNamePrefix = System.currentTimeMillis() + "_" + Math.random() + "-";
 
@@ -128,6 +126,8 @@ public final class ProjectBuilder {
         } catch (YailGenerationException e) {
           // Note that we're using a special result code here for the case of a Yail gen error.
           return new Result(Result.YAIL_GENERATION_ERROR, "", e.getMessage(), e.getFormName());
+        } catch (Exception e) {
+          return Result.createFailingResult("", "Unexpected problems generating YAIL.");
         }
 
         File keyStoreFile = new File(projectRoot, KEYSTORE_FILE_NAME);
@@ -191,7 +191,8 @@ public final class ProjectBuilder {
     }
   }
 
-  private void genYailFilesIfNecessary(List<String> sourceFiles) throws YailGenerationException {
+  private void genYailFilesIfNecessary(List<String> sourceFiles)
+      throws IOException, YailGenerationException {
     // Filter out the files that aren't really source files (i.e. that don't end in .scm or .yail)
     Collection<String> formAndYailSourceFiles = Collections2.filter(
         sourceFiles,
@@ -401,25 +402,54 @@ public final class ProjectBuilder {
     return new Project(projectRoot.getAbsolutePath() + "/" + PROJECT_PROPERTIES_FILE_NAME);
   }
 
-  public File generateYail(String rootName) throws YailGenerationException {
+  private File generateYail(String rootName) throws IOException, YailGenerationException {
     String formPropertiesPath = rootName + FORM_PROPERTIES_EXTENSION;
     String codeblocksSourcePath = rootName + CODEBLOCKS_SOURCE_EXTENSION;
     String yailPath = rootName + YAIL_EXTENSION;
-    try {
-      String formPropertiesSource = Files.toString(new File(formPropertiesPath),
-                                                   Charset.forName(PathUtil.DEFAULT_CHARSET));
-      String codeblocksSource = Files.toString(new File(codeblocksSourcePath),
-                                               Charset.forName(PathUtil.DEFAULT_CHARSET));
-      String generatedYailString =
-          YailGenerator.generateYail(formPropertiesSource, codeblocksSource, yailPath);
+
+    String[] commandLine = {
+      System.getProperty("java.home") + "/bin/java",
+      "-mx1024M",
+      "-jar",
+      Compiler.getResource(Compiler.RUNTIME_FILES_DIR + "YailGenerator.jar"),
+      new File(formPropertiesPath).getAbsolutePath(),
+      new File(codeblocksSourcePath).getAbsolutePath(),
+      yailPath
+    };
+    StringBuffer out = new StringBuffer();
+    StringBuffer err = new StringBuffer();
+    int exitValue = Execution.execute(null, commandLine, out, err);
+    if (exitValue == 0) {
+      String generatedYailString = out.toString();
       File generatedYailFile = new File(yailPath);
       Files.write(generatedYailString, generatedYailFile, Charsets.UTF_8);
       return generatedYailFile;
-    } catch (Exception e) {
-      // Failed to generate yail for legitimate reasons, such as empty sockets.
+    } else {
       String formName = PathUtil.trimOffExtension(PathUtil.basename(formPropertiesPath));
-      throw new YailGenerationException("Unable to generate code for " + formName + ".", formName);
+      if (exitValue == 1) {
+        // Failed to generate yail for legitimate reasons, such as empty sockets.
+        throw new YailGenerationException("Unable to generate code for " + formName + ".", formName);
+      } else {
+        // Any other exit value is unexpected.
+        throw new RuntimeException("YailGenerator for form " + formName + " exited with code " + exitValue);
+      }
     }
   }
 
+  private static class YailGenerationException extends Exception {
+    // The name of the form being built when an error occurred
+    private final String formName;
+
+    YailGenerationException(String message, String formName) {
+      super(message);
+      this.formName = formName;
+    }
+
+    /**
+     * Return the name of the form that yail generation failed on.
+     */
+    String getFormName() {
+      return formName;
+    }
+  }
 }

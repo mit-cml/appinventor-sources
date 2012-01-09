@@ -12,12 +12,15 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import org.kohsuke.args4j.Option;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
@@ -123,11 +126,12 @@ public class BuildServer {
       // Note that if we decide we don't need a content-disposition header then we can change this
       // method to just return File and then just return outputZip without building a Response
       // object explicitly.
-      return Response.ok(outputZip)
+      FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
+      return Response.ok(outputZipDeleteOnClose)
           .header("Content-Disposition", "attachment; filename=\"" + outputZip.getName() + "\"")
           .build();
     } finally {
-      cleanUp();
+      cleanUp(inputZipFile);
     }
   }
 
@@ -169,9 +173,19 @@ public class BuildServer {
           connection.setReadTimeout(60000);
           BufferedOutputStream bufferedOutputStream =
               new BufferedOutputStream(connection.getOutputStream());
-          ByteStreams.copy(new FileInputStream(outputZip), bufferedOutputStream);
-          bufferedOutputStream.flush();
-          bufferedOutputStream.close();
+          try {
+            BufferedInputStream bufferedInputStream =
+                new BufferedInputStream(new FileInputStream(outputZip));
+            try {
+              ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
+              bufferedOutputStream.flush();
+            } finally {
+              bufferedInputStream.close();
+            }
+          } finally {
+            bufferedOutputStream.close();
+          }
+          outputZip.delete();
 
           if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             // TODO(user) Maybe do some retries
@@ -180,7 +194,7 @@ public class BuildServer {
         } catch (Exception e) {
           // TODO(user): Maybe send a failure callback
         } finally {
-          cleanUp();
+          cleanUp(inputZipFile);
         }
       }
     });
@@ -244,16 +258,29 @@ public class BuildServer {
     System.out.println("Build error output: " + buildError);
     outputApk = projectBuilder.getOutputApk();
     outputKeystore = projectBuilder.getOutputKeystore();
+    checkMemory();
     return buildResult;
   }
 
-  private void cleanUp() {
+  private void cleanUp(File inputZipFile) {
+    if (inputZipFile != null) {
+      inputZipFile.delete();
+    }
+    if (outputKeystore != null) {
+      outputKeystore.delete();
+    }
     if (outputApk != null) {
       outputApk.delete();
     }
     if (outputDir != null) {
       outputDir.delete();
     }
+  }
+
+  private static void checkMemory() {
+    MemoryMXBean mBean = ManagementFactory.getMemoryMXBean();
+    mBean.gc();
+    System.out.println("Used memory: " + mBean.getHeapMemoryUsage().getUsed() + " bytes");
   }
 
   public static void main(String[] args) throws IOException {
@@ -265,5 +292,19 @@ public class BuildServer {
         " Id: " + MercurialBuildId.getId());
     System.out.println("Visit: http://" + localHost.getHostAddress() + ":9990/buildserver");
     System.out.println("Server running");
+  }
+
+  private static class DeleteFileOnCloseFileInputStream extends FileInputStream {
+    private final File file;
+
+    DeleteFileOnCloseFileInputStream(File file) throws IOException {
+      super(file);
+      this.file = file;
+    }
+    @Override
+    public void close() throws IOException {
+      super.close();
+      file.delete();
+    }
   }
 }

@@ -29,6 +29,7 @@ public class Result {
    * other value indicates failure.
    */
   public static final int SUCCESS = 0;
+  public static final int GENERAL_FAILURE = 1;
   public static final int YAIL_GENERATION_ERROR = 2;
 
   private int result;
@@ -73,7 +74,7 @@ public class Result {
    * @param error an error string
    */
   public Result(boolean successful, String output, String error) {
-    this.result = (successful ? SUCCESS : ~SUCCESS);
+    this.result = (successful ? SUCCESS : GENERAL_FAILURE);
     this.output = output;
     this.error = error;
   }
@@ -110,7 +111,7 @@ public class Result {
    * @return information about a failing call
    */
   public static Result createFailingResult(String output, String error) {
-    return new Result(~SUCCESS, output, error);
+    return new Result(GENERAL_FAILURE, output, error);
   }
 
   /**
