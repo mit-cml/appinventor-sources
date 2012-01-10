@@ -24,6 +24,7 @@ import java.lang.management.MemoryMXBean;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -45,7 +46,6 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
-
   static class CommandLineOptions {
     @Option(name = "--childProcessRamMb",
             usage = "Maximum ram that can be used by a child processes, in MB.")
@@ -61,6 +61,8 @@ public class BuildServer {
   private static final MediaType ZIP_MEDIA_TYPE =
       new MediaType("application", "zip", ImmutableMap.of("charset", "utf-8"));
 
+  private static final AtomicInteger buildCount = new AtomicInteger(0);
+  
   // The built APK file for this build request, if any.
   private File outputApk;
 
@@ -160,9 +162,13 @@ public class BuildServer {
     Thread buildThread = new Thread(new Runnable() {
       @Override
       public void run() {
+    	int count = buildCount.incrementAndGet();
         try {
+          System.out.println("START NEW BUILD " + count);
+          checkMemory();
           buildAndCreateZip(userName, inputZipFile);
           // Send zip back to the callbackUrl
+          System.out.println("CallbackURL: " + callbackUrlStr);
           URL callbackUrl = new URL(callbackUrlStr);
           HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
           connection.setDoOutput(true);
@@ -178,6 +184,7 @@ public class BuildServer {
                 new BufferedInputStream(new FileInputStream(outputZip));
             try {
               ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
+              checkMemory();
               bufferedOutputStream.flush();
             } finally {
               bufferedInputStream.close();
@@ -188,13 +195,17 @@ public class BuildServer {
           outputZip.delete();
 
           if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+            System.out.println("Bad Response Code!: " + connection.getResponseCode());
             // TODO(user) Maybe do some retries
           }
 
         } catch (Exception e) {
           // TODO(user): Maybe send a failure callback
+          System.out.println("Exception: " + e.getMessage());
         } finally {
           cleanUp(inputZipFile);
+          checkMemory();
+          System.out.println("BUILD " + count + " FINISHED");
         }
       }
     });
@@ -280,7 +291,8 @@ public class BuildServer {
   private static void checkMemory() {
     MemoryMXBean mBean = ManagementFactory.getMemoryMXBean();
     mBean.gc();
-    System.out.println("Used memory: " + mBean.getHeapMemoryUsage().getUsed() + " bytes");
+    System.out.println("Build " + buildCount + " current used memory: " 
+        + mBean.getHeapMemoryUsage().getUsed() + " bytes");
   }
 
   public static void main(String[] args) throws IOException {
