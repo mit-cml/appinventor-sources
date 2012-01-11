@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?> 
+
+<!--
+###############################################################################
+#
+# @(#)notepad.jnlp	1.7 02/09/11
+#
+# JNLP File for Notepad Demo Application
+#
+# Launcher from Sun/Oracle Demo site, modified to use heap size 1024m
+###############################################################################
+ -->
+
+
+<jnlp spec="0.2 1.0"
+      codebase="http://java.sun.com/javase/technologies/desktop/javawebstart/apps"
+      href="notepad.jnlp">
+   <information> 
+      <title>Notepad App</title> 
+      <vendor>Sun Microsystems, Inc.</vendor>
+      <homepage href="http://java.sun.com/javase/technologies/desktop/javawebstart/demos.html"/>
+      <description>Notepad Demo Description</description>
+      <description kind="short">Notepad Demo Short Description</description>
+      <icon href="images/notepad.gif"/>
+   </information> 
+   <resources>
+      <j2se version="1.5+" max-heap-size="926m" initial-heap-size="926m" java-vm-args=""/>
+      <jar href="notepad.jar" main="true" download="eager"/>
+      <jar href="notepad.jar" main="true" download="eager"/>
+   </resources>
+   <application-desc main-class="Notepad"/>
+</jnlp> 
