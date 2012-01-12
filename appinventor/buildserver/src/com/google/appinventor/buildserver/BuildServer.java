@@ -10,6 +10,8 @@ import com.sun.jersey.api.container.grizzly.GrizzlyServerFactory;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
 import java.io.BufferedInputStream;
@@ -21,14 +23,22 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -46,13 +56,18 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
+
   static class CommandLineOptions {
     @Option(name = "--childProcessRamMb",
             usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
+
+    @Option(name = "--maxSimultaneousBuilds",
+            usage = "Maximum number of builds that can run in parallel. O means unlimited.")
+    int maxSimultaneousBuilds = 0;  // The default is unlimited.
   }
 
-  private static CommandLineOptions commandLineOptions = new CommandLineOptions();
+  private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
 
   private static final MediaType APK_MEDIA_TYPE =
       new MediaType("application", "vnd.android.package-archive",
@@ -62,7 +77,19 @@ public class BuildServer {
       new MediaType("application", "zip", ImmutableMap.of("charset", "utf-8"));
 
   private static final AtomicInteger buildCount = new AtomicInteger(0);
-  
+
+  // The number of build requests for this server run
+  private static final AtomicInteger asyncBuildRequests = new AtomicInteger(0);
+
+  // The number of rejected build requests for this server run
+  private static final AtomicInteger rejectedAsyncBuildRequests = new AtomicInteger(0);
+
+  // The build executor used to limit the number of simultaneous builds.
+  // NOTE(lizlooney) - the buildExecutor must be created after the command line options are
+  // processed in main(). If it is created here, the number of simultaneous builds will always be
+  // the default value, even if the --maxSimultaneousBuilds option is on the command line.
+  private static NonQueuingExecutor buildExecutor;
+
   // The built APK file for this build request, if any.
   private File outputApk;
 
@@ -74,6 +101,69 @@ public class BuildServer {
 
   // The zip file where we put all the build results for this request.
   private File outputZip;
+
+  @GET
+  @Path("health")
+  @Produces("text/html")
+  public Response health() throws IOException {
+    return Response.ok("ok").build();
+  }
+
+  @GET
+  @Path("vars")
+  @Produces("text/html")
+  public Response var() throws IOException {
+    Map<String, String> variables = new LinkedHashMap<String, String>();
+
+    // Runtime
+    RuntimeMXBean runtimeBean = ManagementFactory.getRuntimeMXBean();
+    DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.FULL);
+    variables.put("start-time", dateTimeFormat.format(new Date(runtimeBean.getStartTime())));
+    variables.put("uptime-in-ms", runtimeBean.getUptime() + "");
+    variables.put("vm-name", runtimeBean.getVmName());
+    variables.put("vm-vender", runtimeBean.getVmVendor());
+    variables.put("vm-version", runtimeBean.getVmVersion());
+
+    // OS
+    OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
+    variables.put("os-arch", osBean.getArch());
+    variables.put("os-name", osBean.getName());
+    variables.put("os-version", osBean.getVersion());
+    variables.put("num-processors", osBean.getAvailableProcessors() + "");
+    variables.put("load-average-past-1-min", osBean.getSystemLoadAverage() + "");
+
+    // Memory
+    Runtime runtime = Runtime.getRuntime();
+    MemoryMXBean memoryBean = ManagementFactory.getMemoryMXBean();
+    variables.put("total-memory", runtime.totalMemory() + "");
+    variables.put("free-memory", runtime.freeMemory() + "");
+    variables.put("max-memory", runtime.maxMemory() + "");
+    variables.put("used-heap", memoryBean.getHeapMemoryUsage().getUsed() + "");
+    variables.put("used-non-heap", memoryBean.getNonHeapMemoryUsage().getUsed() + "");
+
+    // Build requests
+    variables.put("count-async-build-requests", asyncBuildRequests.get() + "");
+    variables.put("rejected-async-build-requests", rejectedAsyncBuildRequests.get() + "");
+
+    // Build tasks
+    int max = buildExecutor.getMaxActiveTasks();
+    if (max == 0) {
+      variables.put("maximum-simultaneous-build-tasks", "unlimited");
+    } else {
+      variables.put("maximum-simultaneous-build-tasks", max + "");
+    }
+    variables.put("completed-build-tasks", buildExecutor.getCompletedTaskCount() + "");
+    variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
+
+    StringBuilder html = new StringBuilder();
+    html.append("<html><body><tt>");
+    for (Map.Entry<String, String> variable : variables.entrySet()) {
+      html.append("<b>").append(variable.getKey()).append("</b> ")
+          .append(variable.getValue()).append("<br>");
+    }
+    html.append("</tt></body></html>");
+    return Response.ok(html.toString()).build();
+  }
 
   /**
    * Build an APK file from the input zip file. The zip file needs to be a variant of the same
@@ -110,8 +200,8 @@ public class BuildServer {
    * the APK.  If there is no android.keystore file in the zip we will generate one and return it
    * in along with the APK file.
    *
-   * We'll respond to the requestor with a zip file containing the build.out and build.err files as
-   * well as the APK file if the build succeedeed and the android.keystore file if it was not
+   * We'll respond to the requester with a zip file containing the build.out and build.err files as
+   * well as the APK file if the build succeeded and the android.keystore file if it was not
    * provided in the input zip
    *
    * @param userName  The user name to be used in making the CN entry in the generated keystore
@@ -145,13 +235,16 @@ public class BuildServer {
    * top level (in which case we will use it to sign the APK).
    *
    * We'll use the callbackUrlStr to post back a zip file containing the build.out and build.err
-   * files as well as the APK file if the build succeedeed and the android.keystore file if it was
+   * files as well as the APK file if the build succeeded and the android.keystore file if it was
    * not provided in the input zip
+   *
+   * The status code returned here will be seen by the server in YoungAndroidProjectService.build
+   * as connection.getResponseCode().
    *
    * @param userName  The user name to be used in making the CN entry in the generated keystore.
    * @param callbackUrlStr An url to send the build results back to.
    * @param inputZipFile  The zip file representing the App Inventor source code.
-   * @return an "OK" {@link Response}.
+   * @return a status response, typically OK (200) or SERVICE_UNAVAILABLE (503).
    */
   @POST
   @Path("build-all-from-zip-async")
@@ -159,10 +252,11 @@ public class BuildServer {
                                            @QueryParam("callback") final String callbackUrlStr,
                                            final File inputZipFile)
       throws IOException {
-    Thread buildThread = new Thread(new Runnable() {
+    asyncBuildRequests.incrementAndGet();
+    Runnable buildTask = new Runnable() {
       @Override
       public void run() {
-    	int count = buildCount.incrementAndGet();
+        int count = buildCount.incrementAndGet();
         try {
           System.out.println("START NEW BUILD " + count);
           checkMemory();
@@ -173,7 +267,7 @@ public class BuildServer {
           HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
           connection.setDoOutput(true);
           connection.setRequestMethod("POST");
-          // Make sure we aren't misinterprested as form-url-encoded
+          // Make sure we aren't misinterpreted as form-url-encoded
           connection.addRequestProperty("Content-Type", "application/zip; charset=utf-8");
           connection.setConnectTimeout(60000);
           connection.setReadTimeout(60000);
@@ -208,8 +302,19 @@ public class BuildServer {
           System.out.println("BUILD " + count + " FINISHED");
         }
       }
-    });
-    buildThread.start();
+    };
+    try {
+      buildExecutor.execute(buildTask);
+    } catch (RejectedExecutionException e) {
+      // This request was rejected because all threads in the build executor are busy.
+      rejectedAsyncBuildRequests.incrementAndGet();
+      cleanUp(inputZipFile);
+      // Here, we use SERVICE_UNAVAILABLE (response code 503), which means (according to rfc2616,
+      // section 10) "The server is currently unable to handle the request due to a temporary
+      // overloading or maintenance of the server. The implication is that this is a temporary
+      // condition which will be alleviated after some delay."
+      return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+    }
 
     return Response.ok().build();
   }
@@ -291,18 +396,39 @@ public class BuildServer {
   private static void checkMemory() {
     MemoryMXBean mBean = ManagementFactory.getMemoryMXBean();
     mBean.gc();
-    System.out.println("Build " + buildCount + " current used memory: " 
+    System.out.println("Build " + buildCount + " current used memory: "
         + mBean.getHeapMemoryUsage().getUsed() + " bytes");
   }
 
   public static void main(String[] args) throws IOException {
     // TODO(markf): Eventually we'll figure out how to appropriately start and stop the server when
     // it's run in a production environment.   For now, just kill the process
+
+    CmdLineParser cmdLineParser = new CmdLineParser(commandLineOptions);
+    try {
+      cmdLineParser.parseArgument(args);
+    } catch (CmdLineException e) {
+      System.err.println(e.getMessage());
+      cmdLineParser.printUsage(System.err);
+      System.exit(1);
+    }
+
+    // Now that the command line options have been processed, we can create the buildExecutor.
+    buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
+
+    // TODO(lizlooney): permit port numbers other than 9990
     SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:9990/");
-    InetAddress localHost = InetAddress.getLocalHost();
+    String hostAddress = InetAddress.getLocalHost().getHostAddress();
     System.out.println("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
         " Id: " + MercurialBuildId.getId());
-    System.out.println("Visit: http://" + localHost.getHostAddress() + ":9990/buildserver");
+    System.out.println("Running at: http://" + hostAddress + ":9990/buildserver");
+    if (commandLineOptions.maxSimultaneousBuilds == 0) {
+      System.out.println("Maximum simultanous builds = unlimited!");
+    } else {
+      System.out.println("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
+    }
+    System.out.println("Visit: http://" + hostAddress + ":9990/buildserver/health for server health");
+    System.out.println("Visit: http://" + hostAddress + ":9990/buildserver/vars for server values");
     System.out.println("Server running");
   }
 

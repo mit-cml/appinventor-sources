@@ -10,6 +10,7 @@ import com.google.appinventor.client.output.MessagesOutput;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 
 import java.util.Date;
@@ -69,7 +70,19 @@ public class BuildCommand extends ChainableCommand {
         if (result.succeeded()) {
           executeNextCommand(node);
         } else {
-          ErrorReporter.reportError(MESSAGES.buildFailedError());
+          // The result is the HTTP response code from the build server.
+          int responseCode = result.getResult();
+          // TODO(lizlooney): if other error codes are returned from the build server, change the
+          // following if to a switch.
+          if (responseCode == Response.SC_SERVICE_UNAVAILABLE) {
+            // SC_SERVICE_UNAVAILABLE (response code 503), means that the build server is too busy
+            // at this time to accept this build request.
+            // We use ErrorReporter.reportInfo so that the message has yellow background instead of
+            // red background.
+            ErrorReporter.reportInfo(MESSAGES.buildServerBusyError());
+          } else {
+            ErrorReporter.reportError(MESSAGES.buildFailedError());
+          }
           executionFailedOrCanceled();
         }
       }

@@ -431,10 +431,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
 
-      if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-        return new RpcResult(false, "",
-                             "ResponseCode: " +
-                             connection.getResponseCode() + " " + connection.getResponseMessage());
+      int responseCode = connection.getResponseCode();
+      if (responseCode != HttpURLConnection.HTTP_OK) {
+        // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
+        // can provide an appropriate error message to the user.
+        // NOTE(lizlooney) - There is some weird bug/problem with HttpURLConnection. When the
+        // responseCode is 503, connection.getResponseMessage() returns "OK", but it should return
+        // "Service Unavailable". If I make the request with curl and look at the headers, they
+        // have the expected error message.
+        // For now, the moral of the story is: don't use connection.getResponseMessage().
+        return new RpcResult(responseCode, "",
+            "Build server responded with response code " + responseCode);
       }
     } catch (MalformedURLException e) {
       return new RpcResult(false, "", e.getMessage());

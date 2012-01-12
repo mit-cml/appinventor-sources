@@ -38,6 +38,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   private final String target;
   private static final int WAIT_INTERVAL_MILLIS = 10000;
   private final MessagesOutput messagesOutput;
+  private final String buildRequestTime;
 
   /**
    * Creates a new WaitForBuildResultCommand.
@@ -59,6 +60,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
     super(nextCommand);
     this.target = target;
     messagesOutput = MessagesOutput.getMessagesOutput();
+    buildRequestTime = DateTimeFormat.getMediumDateTimeFormat().format(new Date());
   }
 
   @Override
@@ -70,10 +72,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   public void execute(final ProjectNode node) {
     final Ode ode = Ode.getInstance();
     messagesOutput.clear();
-    messagesOutput.addMessages(
-        MESSAGES.buildRequestedMessage(node.getName(),
-        DateTimeFormat.getFormat(DateTimeFormat.PredefinedFormat.DATE_TIME_MEDIUM)
-            .format(new Date())));
+    messagesOutput.addMessages(MESSAGES.buildRequestedMessage(node.getName(), buildRequestTime));
 
     OdeAsyncCallback<RpcResult> callback =
         new OdeAsyncCallback<RpcResult>(

@@ -531,6 +531,11 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a build failed due to an error in the build pipeline.")
   String buildFailedError();
 
+  @DefaultMessage("The build server is currently busy. Please try again in a few minutes.")
+  @Description("Error message reported when the build server is temporarily too busy to accept " +
+      "a build request.")
+  String buildServerBusyError();
+
   @DefaultMessage("Unable to generate code for {0}.")
   @Description("Message displayed when an error occurs while generating YAIL for a form.")
   String errorGeneratingYail(String formName);
