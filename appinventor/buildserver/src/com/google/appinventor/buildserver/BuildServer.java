@@ -65,6 +65,10 @@ public class BuildServer {
     @Option(name = "--maxSimultaneousBuilds",
             usage = "Maximum number of builds that can run in parallel. O means unlimited.")
     int maxSimultaneousBuilds = 0;  // The default is unlimited.
+
+    @Option(name = "--port",
+            usage = "The port number to bind to on the local machine.")
+    int port = 9990;
   }
 
   private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -416,19 +420,21 @@ public class BuildServer {
     // Now that the command line options have been processed, we can create the buildExecutor.
     buildExecutor = new NonQueuingExecutor(commandLineOptions.maxSimultaneousBuilds);
 
-    // TODO(lizlooney): permit port numbers other than 9990
-    SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:9990/");
+    int port = commandLineOptions.port;
+    SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
     System.out.println("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
         " Id: " + MercurialBuildId.getId());
-    System.out.println("Running at: http://" + hostAddress + ":9990/buildserver");
+    System.out.println("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
       System.out.println("Maximum simultanous builds = unlimited!");
     } else {
       System.out.println("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
     }
-    System.out.println("Visit: http://" + hostAddress + ":9990/buildserver/health for server health");
-    System.out.println("Visit: http://" + hostAddress + ":9990/buildserver/vars for server values");
+    System.out.println("Visit: http://" + hostAddress + ":" + port +
+        "/buildserver/health for server health");
+    System.out.println("Visit: http://" + hostAddress + ":" + port +
+        "/buildserver/vars for server values");
     System.out.println("Server running");
   }
 
