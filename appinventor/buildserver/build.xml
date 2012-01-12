@@ -19,7 +19,7 @@
   </target>
 
   <target name="tests"
-          depends="BuildServerTests">
+          depends="BuildServerTests,YailGeneratorTests">
   </target>
 
   <!-- =====================================================================
@@ -75,6 +75,29 @@
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
     </jar>
+  </target>
+
+  <!-- =====================================================================
+       YailGeneratorTests: build and run the YailGenerator tests and generate the output results
+       ===================================================================== -->
+
+  <path id="libsForYailGeneratorTests.path">
+    <pathelement location="${local.build.dir}/YailGenerator.jar" />
+    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+  </path>
+
+  <path id="YailGeneratorTests.path">
+    <path refid="libsForYailGeneratorTests.path"/>
+    <pathelement location="${local.build.dir}/YailGeneratorTests.jar" />
+  </path>
+
+  <target name="YailGeneratorTests"
+          depends="common_CommonTestUtils"
+          description="build and run the test suite" >
+    <ai.dojunit aij-testingtarget="YailGeneratorTests"
+                aij-dir="${yailgenerator.pkg}/" >
+    </ai.dojunit>
   </target>
 
   <!-- =====================================================================
