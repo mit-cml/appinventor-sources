@@ -125,8 +125,8 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
       exporter.exportProjectSourceZip(USER_ID, projectId + 1, false, false, null);
       fail();
     } catch (Exception e) {
-      assertTrue(e instanceof UnauthorizedAccessException ||
-                 e.getCause() instanceof UnauthorizedAccessException);
+      assertTrue(e instanceof IllegalArgumentException ||
+                 e.getCause() instanceof IllegalArgumentException);
     }
   }
 

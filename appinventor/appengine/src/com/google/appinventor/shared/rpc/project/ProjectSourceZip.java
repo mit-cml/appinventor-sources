@@ -10,6 +10,7 @@ package com.google.appinventor.shared.rpc.project;
 public class ProjectSourceZip {
   private RawFile rawFile;
   private int fileCount;
+  private String metadata;
 
   /**
    * Creates new raw zip file.
@@ -20,6 +21,7 @@ public class ProjectSourceZip {
   public ProjectSourceZip(RawFile rawFile, int fileCount) {
     this.rawFile = rawFile;
     this.fileCount = fileCount;
+    this.metadata = "";
   }
 
   /**
@@ -67,5 +69,22 @@ public class ProjectSourceZip {
    */
   public int getFileCount() {
     return fileCount;
+  }
+
+  /**
+   * Sets metadata for this zip file
+   *
+   */
+  public void setMetadata(String metadata) {
+    this.metadata = metadata;
+  }
+
+  /**
+   * Returns metadata for this zip file
+   *
+   * @return metadata
+   */
+  public String getMetadata() {
+    return metadata;
   }
 }

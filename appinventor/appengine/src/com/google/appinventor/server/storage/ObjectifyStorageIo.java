@@ -11,6 +11,7 @@ import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
@@ -19,11 +20,14 @@ import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.user.User;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 import com.googlecode.objectify.Key;
@@ -31,6 +35,7 @@ import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +47,10 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.annotation.Nullable;
 
 /**
  * Implements the StorageIo interface using Objectify as the underlying data
@@ -61,6 +70,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
+
+  private static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
 
   // Use this class to define the work of a job that can be retried. The
   // "datastore" argument to run() is the Objectify object for this job
@@ -1087,6 +1098,140 @@ public class ObjectifyStorageIo implements  StorageIo {
         FileServiceFactory.getFileService().openReadChannel(blobstoreFile, false);
     InputStream blobstoreInputStream = Channels.newInputStream(blobstoreReadChannel);
     return ByteStreams.toByteArray(blobstoreInputStream);
+  }
+
+  /**
+   *  Exports project files as a zip archive
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param includeProjectHistory  whether or not to include the project history
+   * @param includeAndroidKeystore  whether or not to include the Android keystore
+   * @param zipName  the name of the zip file, if a specific one is desired
+
+   * @return  project with the content as requested by params.
+   */
+  public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
+                                                 final boolean includeProjectHistory,
+                                                 final boolean includeAndroidKeystore,
+                                                 @Nullable String zipName) throws IOException {
+    final Result<Integer> fileCount = new Result<Integer>();
+    fileCount.t = 0;
+    final Result<String> projectName = new Result<String>();
+    projectName.t = "";
+
+    ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
+    final ZipOutputStream out = new ZipOutputStream(zipFile);
+
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          try {
+            Key<ProjectData> projectKey = projectKey(projectId);
+            List<String> fileList = new ArrayList<String>();
+            for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+              if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
+                String fileName = fd.fileName;
+
+                if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+                  // Skip legacy remix history files that were previous stored with the project
+                  continue;
+                }
+                byte[] data;
+                if (fd.isBlob) {
+                  data = getBlobstoreBytes(fd.blobstorePath);
+                } else {
+                  data = fd.content;
+                }
+                out.putNextEntry(new ZipEntry(fileName));
+                out.write(data, 0, data.length);
+                out.closeEntry();
+                fileCount.t++;
+              }
+            }
+
+            if (fileCount.t == 0) {
+              out.close();
+              return;
+            }
+
+            ProjectData pd = datastore.find(projectKey(projectId));
+
+            if (includeProjectHistory) {
+              if (!Strings.isNullOrEmpty(pd.history)) {
+                byte[] data = pd.history.getBytes(StorageUtil.DEFAULT_CHARSET);
+                out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
+                out.write(data, 0, data.length);
+                out.closeEntry();
+                fileCount.t++;
+              }
+            }
+
+            projectName.t = pd.name;
+
+          } catch (IOException e) {
+            System.err.println("Unexpected io exception for userid " + userId +
+                               " projectId " + projectId);
+            throw CrashReport.createAndLogError(LOG, null,
+                                                collectProjectErrorInfo(projectId, null), e);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      System.err.println("Unexpected objectify exception for userid " + userId +
+          " projectId " + projectId);
+      CrashReport.createAndLogError(LOG, null,
+          collectProjectErrorInfo(projectId, null), e);
+      throw new IOException("Reflecting exception for userid " + userId +
+          " projectId " + projectId);
+    } catch (RuntimeException e) {
+      System.err.println("Unexpected runtime exception for userid " + userId +
+          " projectId " + projectId);
+      throw new IOException("Reflecting exception for userid " + userId +
+          " projectId " + projectId);
+    }
+
+    if (fileCount.t == 0) {
+      throw new IllegalArgumentException("No files to download");
+    }
+
+    if (includeAndroidKeystore) {
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+            @Override
+            public void run(Objectify datastore) {
+              try {
+                Key<UserData> userKey = userKey(userId);
+                for (UserFileData ufd : datastore.query(UserFileData.class).ancestor(userKey)) {
+                  if (ufd.fileName.equals(ANDROID_KEYSTORE_FILENAME) && (ufd.content.length > 0)) {
+                    out.putNextEntry(new ZipEntry(ANDROID_KEYSTORE_FILENAME));
+                    out.write(ufd.content, 0, ufd.content.length);
+                    out.closeEntry();
+                    fileCount.t++;
+                  }
+                }
+              } catch (IOException e) {
+                System.err.println("Unexpected io exception for userid " + userId +
+                                   " projectId " + projectId);
+                throw CrashReport.createAndLogError(LOG, null,
+                                                    collectProjectErrorInfo(projectId, null), e);
+              }
+            }
+          });
+      } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+      }
+    }
+
+    out.close();
+
+    if (zipName == null) {
+      zipName = projectName.t + ".zip";
+    }
+    ProjectSourceZip projectSourceZip =
+        new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);
+    projectSourceZip.setMetadata(projectName.t);
+    return projectSourceZip;
   }
 
   @Override

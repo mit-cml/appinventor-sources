@@ -3,6 +3,7 @@
 package com.google.appinventor.server;
 
 import com.google.common.base.Strings;
+import com.google.appinventor.server.storage.ObjectifyStorageIo;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -59,43 +60,81 @@ public final class FileExporterImpl implements FileExporter {
                                                  boolean includeAndroidKeystore,
                                                  @Nullable String zipName) throws IOException {
     // Download project source files as a zip.
-    List<String> files = storageIo.getProjectSourceFiles(userId, projectId);
-    return createZipDownloadable(userId, files, projectId,
-                                 includeProjectHistory, includeAndroidKeystore, zipName);
+    if (storageIo instanceof ObjectifyStorageIo) {
+      return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
+          includeProjectHistory, includeAndroidKeystore, zipName);
+    } else {
+      throw new IllegalArgumentException("Objectify only");
+    }
   }
 
   @Override
   public ProjectSourceZip exportAllProjectsSourceZip(String userId,
       String zipName) throws IOException {
     // Create a zip file for each project's sources.
-    List<ProjectSourceZip> projectSourceZips = new ArrayList<ProjectSourceZip>();
     List<Long> projectIds = storageIo.getProjects(userId);
     if (projectIds.size() == 0) {
       throw new IllegalArgumentException("No projects to download");
     }
-    for (Long projectId : projectIds) {
-      projectSourceZips.add(exportProjectSourceZip(
-          userId,
-          projectId,
-          false,   // includeProjectHistory
-          false,   // includeAndroidKeystore
-          null));  // zipName
-    }
 
-    // Create one big zip file containing each of the project sources zip files.
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     ZipOutputStream out = new ZipOutputStream(zipFile);
-    for (ProjectSourceZip projectSourceZip : projectSourceZips) {
-      byte[] data = projectSourceZip.getContent();
-      out.putNextEntry(new ZipEntry(projectSourceZip.getFileName()));
-      out.write(data, 0, data.length);
-      out.closeEntry();
+    int count = 0;
+    String metadata = "";
+    for (Long projectId : projectIds) {
+      try {
+        ProjectSourceZip projectSourceZip =
+            exportProjectSourceZip(userId, projectId, false, false, null);
+        byte[] data = projectSourceZip.getContent();
+        String name = projectSourceZip.getFileName();
+
+        // If necessary, rename duplicate projects
+        while (true) {
+          try {
+            out.putNextEntry(new ZipEntry(name));
+            break;
+          } catch (IOException e) {
+            name = "duplicate-" + name;
+          }
+        }
+        metadata += projectSourceZip.getMetadata() + "\n";
+
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        count++;
+      } catch (IllegalArgumentException e) {
+        System.err.println("No files found for userid: " + userId +
+            " for projectid: " + projectId);
+        continue;
+      } catch (IOException e) {
+        System.err.println("IOException while reading files found for userid: " +
+            userId + " for projectid: " + projectId);
+        continue;
+      }
     }
+    if (count == 0) {
+      throw new IllegalArgumentException("No files to download");
+    }
+
+    List<String> userFiles = storageIo.getUserFiles(userId);
+    if (userFiles.contains(ANDROID_KEYSTORE_FILENAME)) {
+      byte[] androidKeystoreBytes =
+          storageIo.downloadRawUserFile(userId, ANDROID_KEYSTORE_FILENAME);
+      if (androidKeystoreBytes.length > 0) {
+        out.putNextEntry(new ZipEntry(ANDROID_KEYSTORE_FILENAME));
+        out.write(androidKeystoreBytes, 0, androidKeystoreBytes.length);
+        out.closeEntry();
+        count++;
+      }
+    }
+
     out.close();
 
     // Package the big zip file up as a ProjectSourceZip and return it.
     byte[] content = zipFile.toByteArray();
-    return new ProjectSourceZip(zipName, content, projectSourceZips.size());
+    ProjectSourceZip projectSourceZip = new ProjectSourceZip(zipName, content, count);
+    projectSourceZip.setMetadata(metadata);
+    return projectSourceZip;
   }
 
   @Override
@@ -120,59 +159,5 @@ public final class FileExporterImpl implements FileExporter {
       }
     }
     return filteredFiles;
-  }
-
-  private ProjectSourceZip createZipDownloadable(String userId, List<String> files,
-      long projectId, boolean includeProjectHistory, boolean includeAndroidKeystore,
-      @Nullable String zipName) throws IOException {
-    if (files.size() == 0) {
-      throw new IllegalArgumentException("No files to download");
-    }
-
-    int fileCount = 0;
-    ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
-    ZipOutputStream out = new ZipOutputStream(zipFile);
-    for (String file : files) {
-      if (file.equals(REMIX_INFORMATION_FILE_PATH)) {
-        // Skip legacy remix history files that were previous stored with the project
-        continue;
-      }
-      byte[] data = storageIo.downloadRawFile(userId, projectId, file);
-      out.putNextEntry(new ZipEntry(file));
-      out.write(data, 0, data.length);
-      out.closeEntry();
-      fileCount++;
-    }
-    if (includeProjectHistory) {
-      String remixInfo = storageIo.getProjectHistory(userId, projectId);
-      if (!Strings.isNullOrEmpty(remixInfo)) {
-        byte[] data = remixInfo.getBytes(StorageUtil.DEFAULT_CHARSET);
-        out.putNextEntry(new ZipEntry(REMIX_INFORMATION_FILE_PATH));
-        out.write(data, 0, data.length);
-        out.closeEntry();
-        fileCount++;
-      }
-    }
-    if (includeAndroidKeystore) {
-      List<String> userFiles = storageIo.getUserFiles(userId);
-      if (userFiles.contains(ANDROID_KEYSTORE_FILENAME)) {
-        byte[] androidKeystoreBytes =
-            storageIo.downloadRawUserFile(userId, ANDROID_KEYSTORE_FILENAME);
-        if (androidKeystoreBytes.length > 0) {
-          out.putNextEntry(new ZipEntry(ANDROID_KEYSTORE_FILENAME));
-          out.write(androidKeystoreBytes, 0, androidKeystoreBytes.length);
-          out.closeEntry();
-          fileCount++;
-        }
-      }
-    }
-    out.close();
-
-    byte[] content = zipFile.toByteArray();
-    if (zipName == null) {
-      String projectName = storageIo.getProjectName(userId, projectId);
-      zipName = projectName + ".zip";
-    }
-    return new ProjectSourceZip(zipName, content, fileCount);
   }
 }

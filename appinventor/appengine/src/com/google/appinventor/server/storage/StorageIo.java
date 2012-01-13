@@ -4,9 +4,13 @@ package com.google.appinventor.server.storage;
 
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.user.User;
 
+import java.io.IOException;
 import java.util.List;
+
+import javax.annotation.Nullable;
 
 /**
  * Interface of methods to simplify access to the storage systems.
@@ -357,4 +361,20 @@ public interface StorageIo {
    * @return  motd
    */
   Motd getCurrentMotd();
+
+  /**
+   *  Exports project files as a zip archive
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param includeProjectHistory  whether or not to include the project history
+   * @param includeAndroidKeystore  whether or not to include the Android keystore
+   * @param zipName  the name of the zip file, if a specific one is desired
+
+   * @return  project with the content as requested by params.
+   */
+  ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
+                                          boolean includeProjectHistory,
+                                          boolean includeAndroidKeystore,
+                                          @Nullable String zipName) throws IOException;
+
 }
