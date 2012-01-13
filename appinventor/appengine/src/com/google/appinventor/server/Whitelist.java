@@ -66,7 +66,7 @@ public class Whitelist {
   @VisibleForTesting
   public static final Flag<String> rootPath = Flag.createFlag("root.path", "");
 
-  private String pathToWhitelist = rootPath.get() + "whitelist";
+  private String pathToWhitelist = rootPath.get() + "WEB-INF/whitelist";
   private boolean validWhitelist;
 
   private final Set<EmailAddress> addresses = new HashSet<EmailAddress>();
