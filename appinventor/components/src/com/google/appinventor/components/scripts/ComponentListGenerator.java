@@ -43,7 +43,6 @@ public final class ComponentListGenerator extends ComponentProcessor {
     }
 
     componentPermissions.append("\n]");
-    System.out.println("componentList is " + componentList);
 
     FileObject src = processingEnvironment.getFiler().createResource(
         StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, COMPONENT_LIST_OUTPUT_FILE_NAME);

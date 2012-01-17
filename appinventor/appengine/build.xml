@@ -136,7 +136,7 @@
       <include name="${appinventor.pkg}/server/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
-        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar"/>
+        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiServerLib.jar"/>
         <!-- gwt lib needed only at compile time for javax.servlet.http.HttpServlet* -->
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>

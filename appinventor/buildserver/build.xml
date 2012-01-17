@@ -113,7 +113,7 @@
     <ai.javac encoding="utf-8" destdir="${BuildServer-class.dir}" debug="on">
       <include name="${buildserver.pkg}/**/*.java" />
       <classpath>
-        <fileset dir="${run.lib.dir}" includes="*.jar"/>
+        <fileset dir="${run.lib.dir}" includes="*.jar" excludes="BuildServer.jar"/>
       </classpath>
     </ai.javac>
 

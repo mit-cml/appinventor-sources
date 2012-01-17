@@ -24,12 +24,13 @@ public class JSONUtilTest extends TestCase {
     checkSaveAndLoad("\u1e56\u00e9\u1e97 \u0167\u1e27\u00eb \u1e32\u01d0\u1e6b\u1e71\u1e99");
 
     // Here are some reported by customers:
-    checkSaveAndLoad("scandinavian letters æ, ø, å");
-    checkSaveAndLoad("Would be nice to have some äää");
-    checkSaveAndLoad("Need Å,Ä,Ö");
-    checkSaveAndLoad("We're løving åpp-inventör but dæspærätely need æøåöä");
+    checkSaveAndLoad("scandinavian letters \u00e6, \u00f8, \u00e5");
+    checkSaveAndLoad("Would be nice to have some \u00e4\u00e4\u00e4");
+    checkSaveAndLoad("Need \u00c5,\u00c4,\u00d6");
+    checkSaveAndLoad("We're l\u00f8ving \u00e5pp-invent\u00f6r but d\u00e6sp\u00e6r\u00e4tely " +
+        "need \u00e6\u00f8\u00e5\u00f6\u00e4");
     checkSaveAndLoad("Korean string \ud55c\uad6d\uc5b4");
-    checkSaveAndLoad("We need å, ä and ö!");
+    checkSaveAndLoad("We need \u00e5, \u00e4 and \u00f6!");
   }
 
   private void checkSaveAndLoad(String original) throws Exception {

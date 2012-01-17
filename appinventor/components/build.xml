@@ -166,9 +166,10 @@
   <!-- =====================================================================
        Define task ai.apt for running the annotation processor.
 
-       This is based on the "ai.javac" task instead of the "apt" task
-       in order to inherit our changes to the java task and because the
-       apt task does not offer any useful additional tags.
+       This is based on the "javac" task instead of the "apt" task because
+       the apt task does not offer any useful additional tags. We don't use
+       the "ai.javac" task here because it does dependancy checking that is
+       not appropriate for annotation processing.
        ===================================================================== -->
   <macrodef name="ai.apt">
     <attribute name="apt-classdir" />
@@ -176,18 +177,25 @@
     <attribute name="apt-target" />
     <sequential>
       <mkdir dir="@{apt-classdir}" />
-      <!-- if any classes are not up-to-date, we need to delete all the classes. Otherwise, javac
-      will only process the java files whose classes are not up-to-date and we'll end up with only
-      partial results -->
+      <!-- Look at all source files to determine whether the target is up-to-date. This will catch
+      changes to the Java files in the annotations, common, runtime, and scripts packages and .txt
+      files in scripts/templates. -->
       <uptodate property="target.uptodate" targetfile="@{apt-target}">
-        <srcfiles dir="${src.dir}" includes="${components.pkg}/runtime/*.java"/>
+        <srcfiles dir="${src.dir}" includes="${components.pkg}/**/*"/>
       </uptodate>
+      <!-- We need to delete all the classes before running javac below. Otherwise, javac will only
+      process the Java files whose classes are not up-to-date and we'll end up with only a subset
+      of the results. For example, if only Label.java was modified, our annotation processor code
+      will only be executed for Label.java and we'll only have results for Label.java. -->
       <delete>
         <fileset dir="@{apt-classdir}">
-          <include name="**/*.class" unless="target.uptodate"/>
+          <include name="**/*" unless="target.uptodate"/>
         </fileset>
       </delete>
-      <ai.javac destdir="@{apt-classdir}">
+      <javac destdir="@{apt-classdir}"
+             sourcepath=""
+             srcdir="${src.dir}"
+             includeantruntime="false">
         <include name="${components.pkg}/runtime/*.java" />
         <classpath>
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
@@ -200,7 +208,7 @@
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
-      </ai.javac>
+      </javac>
     </sequential>
   </macrodef>
 
@@ -292,8 +300,6 @@
           depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
     <property name="XmlComponentDescription-class.dir"
               location="${class.dir}/XmlComponentDescription" />
-    <mkdir dir="${XmlComponentDescription-class.dir}" />
-
     <ai.apt apt-classdir="${XmlComponentDescription-class.dir}"
             apt-processor="com.google.appinventor.components.scripts.LangDefXmlGenerator"
             apt-target="${XmlComponentDescription-class.dir}/ya_lang_def.xml"/>
