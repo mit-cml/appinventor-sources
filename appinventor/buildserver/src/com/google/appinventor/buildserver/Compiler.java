@@ -316,8 +316,8 @@ public final class Compiler {
     // kawa runtime every time.  We should probably only do that once and then copy all the
     // kawa runtime dx files into the generated classes.dex (which would only contain the
     // files compiled for this project).
-    // Aargh.  It turns out that there's no way to manipulate .dex files to do the above.  Dan
-    // Bornstein suggested an alternate approach of shipping the kawa runtime .dex file as
+    // Aargh.  It turns out that there's no way to manipulate .dex files to do the above.  An
+    // Android guy suggested an alternate approach of shipping the kawa runtime .dex file as
     // data with the application and then creating a new DexClassLoader using that .dex file
     // and with the original app class loader as the parent of the new one.
     File tmpDir = createDirectory(buildDir, "tmp");
