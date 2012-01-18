@@ -1150,24 +1150,19 @@ public class ObjectifyStorageIo implements  StorageIo {
               }
             }
 
-            if (fileCount.t == 0) {
-              out.close();
-              return;
-            }
-
-            ProjectData pd = datastore.find(projectKey(projectId));
-
-            if (includeProjectHistory) {
-              if (!Strings.isNullOrEmpty(pd.history)) {
-                byte[] data = pd.history.getBytes(StorageUtil.DEFAULT_CHARSET);
-                out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
-                out.write(data, 0, data.length);
-                out.closeEntry();
-                fileCount.t++;
+            if (fileCount.t > 0) {
+              ProjectData pd = datastore.find(projectKey(projectId));
+              if (includeProjectHistory) {
+                if (!Strings.isNullOrEmpty(pd.history)) {
+                  byte[] data = pd.history.getBytes(StorageUtil.DEFAULT_CHARSET);
+                  out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
+                  out.write(data, 0, data.length);
+                  out.closeEntry();
+                  fileCount.t++;
+                }
               }
+              projectName.t = pd.name;
             }
-
-            projectName.t = pd.name;
 
           } catch (IOException e) {
             System.err.println("Unexpected io exception for userid " + userId +
@@ -1192,6 +1187,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
 
     if (fileCount.t == 0) {
+      // can't close out since will get a ZipException due to the lack of files
       throw new IllegalArgumentException("No files to download");
     }
 
