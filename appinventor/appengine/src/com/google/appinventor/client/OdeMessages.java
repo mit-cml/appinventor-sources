@@ -536,6 +536,11 @@ public interface OdeMessages extends Messages {
       "a build request.")
   String buildServerBusyError();
 
+  @DefaultMessage("The build server is not compatible with this version of App Inventor.")
+  @Description("Error message reported when the build server is running a different version of " +
+      "the App Inventor code.")
+  String buildServerDifferentVersion();
+
   @DefaultMessage("Unable to generate code for {0}.")
   @Description("Message displayed when an error occurs while generating YAIL for a form.")
   String errorGeneratingYail(String formName);

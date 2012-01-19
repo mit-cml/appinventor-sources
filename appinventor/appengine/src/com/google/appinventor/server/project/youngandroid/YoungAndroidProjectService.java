@@ -4,6 +4,7 @@ package com.google.appinventor.server.project.youngandroid;
 
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.common.version.MercurialBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.FileExporterImpl;
@@ -39,12 +40,16 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import com.google.common.io.CharStreams;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -54,6 +59,7 @@ import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * Provides support for Young Android projects.
@@ -62,6 +68,8 @@ import java.util.Properties;
  * @author markf@google.com (Mark Friedman)
  */
 public final class YoungAndroidProjectService extends CommonProjectService {
+
+  private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
 
   // Project folder prefixes
   public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
@@ -440,8 +448,30 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // "Service Unavailable". If I make the request with curl and look at the headers, they
         // have the expected error message.
         // For now, the moral of the story is: don't use connection.getResponseMessage().
-        return new RpcResult(responseCode, "",
-            "Build server responded with response code " + responseCode);
+        String error = "Build server responded with response code " + responseCode + ".";
+        try {
+          String content = readContent(connection.getInputStream());
+          if (content != null && !content.isEmpty()) {
+            error += "\n" + content;
+          }
+        } catch (IOException e) {
+          // No content. That's ok.
+        }
+        try {
+          String errorContent = readContent(connection.getErrorStream());
+          if (errorContent != null && !errorContent.isEmpty()) {
+            error += "\n" + errorContent;
+          }
+        } catch (IOException e) {
+          // No error content. That's ok.
+        }
+        if (responseCode == HttpURLConnection.HTTP_CONFLICT) {
+          // The build server is not compatible with this App Inventor instance. Log this as severe
+          // so the owner of the app engine instance will know about it.
+          LOG.severe(error);
+        }
+
+        return new RpcResult(responseCode, "", StringUtils.escape(error));
       }
     } catch (MalformedURLException e) {
       return new RpcResult(false, "", e.getMessage());
@@ -461,6 +491,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       throws UnsupportedEncodingException, EncryptionException {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
+           + "&mercurialBuildId=" + URLEncoder.encode(MercurialBuildId.MERCURIAL_BUILD_ID, "UTF-8")
            + "&callback="
            + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
                                + ServerLayout.RECEIVE_BUILD_SERVLET + "/"
@@ -477,6 +508,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       // TODO(user): Figure out how to make this more generic
       return "localhost:8888";
     }
+  }
+
+  /*
+   * Reads the UTF-8 content from the given input stream.
+   */
+  private static String readContent(InputStream stream) throws IOException {
+    if (stream != null) {
+      BufferedReader reader = new BufferedReader(new InputStreamReader(stream, "UTF-8"));
+      try {
+        return CharStreams.toString(reader);
+      } finally {
+        reader.close();
+      }
+    }
+    return null;
   }
 
   /**

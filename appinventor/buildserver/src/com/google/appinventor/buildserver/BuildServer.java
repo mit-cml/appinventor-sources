@@ -34,6 +34,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
@@ -73,6 +74,9 @@ public class BuildServer {
 
   private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
 
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(BuildServer.class.getName());
+
   private static final MediaType APK_MEDIA_TYPE =
       new MediaType("application", "vnd.android.package-archive",
                     ImmutableMap.of("charset", "utf-8"));
@@ -108,14 +112,14 @@ public class BuildServer {
 
   @GET
   @Path("health")
-  @Produces("text/html")
+  @Produces(MediaType.TEXT_PLAIN)
   public Response health() throws IOException {
-    return Response.ok("ok").build();
+    return Response.ok("ok", MediaType.TEXT_PLAIN_TYPE).build();
   }
 
   @GET
   @Path("vars")
-  @Produces("text/html")
+  @Produces(MediaType.TEXT_HTML)
   public Response var() throws IOException {
     Map<String, String> variables = new LinkedHashMap<String, String>();
 
@@ -166,7 +170,7 @@ public class BuildServer {
           .append(variable.getValue()).append("<br>");
     }
     html.append("</tt></body></html>");
-    return Response.ok(html.toString()).build();
+    return Response.ok(html.toString(), MediaType.TEXT_HTML_TYPE).build();
   }
 
   /**
@@ -242,21 +246,50 @@ public class BuildServer {
    * files as well as the APK file if the build succeeded and the android.keystore file if it was
    * not provided in the input zip
    *
+   * Before building the app, we'll check that the mercurialBuildId parameter (if present) equals
+   * MercurialBuildId.MERCURIAL_BUILD_ID. If the values are different, we won't even try to build
+   * the app. This may seem too strict, but we need to make sure that when we build apps, we use
+   * the same version of the code that loads the .blk and .scm files, the same version of
+   * runtime.scm, and the same version of the App Inventor component classes.
+   *
    * The status code returned here will be seen by the server in YoungAndroidProjectService.build
    * as connection.getResponseCode().
    *
    * @param userName  The user name to be used in making the CN entry in the generated keystore.
+   * @param mercurialBuildId  The value of MercurialBuildId.MERCURIAL_BUILD_ID sent from
+   *     YoungAndroidProjectService.build.
    * @param callbackUrlStr An url to send the build results back to.
    * @param inputZipFile  The zip file representing the App Inventor source code.
    * @return a status response, typically OK (200) or SERVICE_UNAVAILABLE (503).
    */
   @POST
   @Path("build-all-from-zip-async")
+  @Produces(MediaType.TEXT_PLAIN)
   public Response buildAllFromZipFileAsync(@QueryParam("uname") final String userName,
-                                           @QueryParam("callback") final String callbackUrlStr,
-                                           final File inputZipFile)
-      throws IOException {
+      @QueryParam("callback") final String callbackUrlStr,
+      @QueryParam("mercurialBuildId") final String mercurialBuildId,
+      final File inputZipFile) throws IOException {
     asyncBuildRequests.incrementAndGet();
+
+    if (mercurialBuildId != null && !mercurialBuildId.isEmpty()) {
+      if (!mercurialBuildId.equals(MercurialBuildId.MERCURIAL_BUILD_ID)) {
+        // This build server is not compatible with the App Inventor instance. Log this as severe
+        // so the owner of the build server will know about it.
+        String errorMessage = "Build server version " + MercurialBuildId.MERCURIAL_BUILD_ID +
+            " is not compatible with App Inventor version " + mercurialBuildId + ".";
+        LOG.severe(errorMessage);
+        // This request was rejected because the mercurialBuildId parameter did not equal the
+        // expected value.
+        rejectedAsyncBuildRequests.incrementAndGet();
+        cleanUp(inputZipFile);
+        // Here, we use CONFLICT (response code 409), which means (according to rfc2616, section
+        // 10) "The request could not be completed due to a conflict with the current state of the
+        // resource."
+        return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN_TYPE)
+            .entity(errorMessage).build();
+      }
+    }
+
     Runnable buildTask = new Runnable() {
       @Override
       public void run() {
@@ -317,7 +350,8 @@ public class BuildServer {
       // section 10) "The server is currently unable to handle the request due to a temporary
       // overloading or maintenance of the server. The implication is that this is a temporary
       // condition which will be alleviated after some delay."
-      return Response.status(Response.Status.SERVICE_UNAVAILABLE).build();
+      return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN_TYPE)
+          .entity("The build server is currently at maximum capacity.").build();
     }
 
     return Response.ok().build();

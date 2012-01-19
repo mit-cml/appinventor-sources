@@ -72,16 +72,24 @@ public class BuildCommand extends ChainableCommand {
         } else {
           // The result is the HTTP response code from the build server.
           int responseCode = result.getResult();
-          // TODO(lizlooney): if other error codes are returned from the build server, change the
-          // following if to a switch.
-          if (responseCode == Response.SC_SERVICE_UNAVAILABLE) {
-            // SC_SERVICE_UNAVAILABLE (response code 503), means that the build server is too busy
-            // at this time to accept this build request.
-            // We use ErrorReporter.reportInfo so that the message has yellow background instead of
-            // red background.
-            ErrorReporter.reportInfo(MESSAGES.buildServerBusyError());
-          } else {
-            ErrorReporter.reportError(MESSAGES.buildFailedError());
+          switch (responseCode) {
+            case Response.SC_SERVICE_UNAVAILABLE:
+              // SC_SERVICE_UNAVAILABLE (response code 503), means that the build server is too busy
+              // at this time to accept this build request.
+              // We use ErrorReporter.reportInfo so that the message has yellow background instead of
+              // red background.
+              ErrorReporter.reportInfo(MESSAGES.buildServerBusyError());
+              break;
+            case Response.SC_CONFLICT:
+              // SC_CONFLICT (response code 409), means that the build server is running a
+              // different version of the App Inventor code.
+              // We use ErrorReporter.reportInfo so that the message has yellow background instead
+              // of red background.
+              ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());
+              break;
+            default:
+              ErrorReporter.reportError(MESSAGES.buildFailedError());
+              break;
           }
           executionFailedOrCanceled();
         }
