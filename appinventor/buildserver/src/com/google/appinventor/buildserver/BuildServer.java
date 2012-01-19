@@ -98,6 +98,9 @@ public class BuildServer {
   // the default value, even if the --maxSimultaneousBuilds option is on the command line.
   private static NonQueuingExecutor buildExecutor;
 
+  // The input zip file. It will be deleted in cleanUp.
+  private File inputZip;
+
   // The built APK file for this build request, if any.
   private File outputApk;
 
@@ -189,15 +192,22 @@ public class BuildServer {
   @Produces("application/vnd.android.package-archive;charset=utf-8")
   public Response buildFromZipFile(@QueryParam("uname") String userName, File zipFile)
       throws IOException {
-    build(userName, zipFile);
-    // Note that if we decide we don't need a content-disposition header then we can change this
-    // method to just return File and then just return outputApk without building a Response object
-    // explicitly.
-    Response response = Response.ok(outputApk)
-        .header("Content-Disposition", "attachment; filename=\"" + outputApk.getName() + "\"")
-        .build();
-    outputApk.deleteOnExit();  // Just in case
-    return response;
+    // Set the inputZip field so we can delete the input zip file later in cleanUp.
+    inputZip = zipFile;
+    inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
+
+    try {
+      build(userName, zipFile);
+      String attachedFilename = outputApk.getName();
+      FileInputStream outputApkDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputApk);
+      // Set the outputApk field to null so that it won't be deleted in cleanUp().
+      outputApk = null;
+      return Response.ok(outputApkDeleteOnClose)
+          .header("Content-Disposition", "attachment; filename=\"" + attachedFilename + "\"")
+          .build();
+    } finally {
+      cleanUp();
+    }
   }
 
   /**
@@ -221,17 +231,21 @@ public class BuildServer {
   @Produces("application/zip;charset=utf-8")
   public Response buildAllFromZipFile(@QueryParam("uname") String userName, File inputZipFile)
       throws IOException, JSONException {
+    // Set the inputZip field so we can delete the input zip file later in cleanUp.
+    inputZip = inputZipFile;
+    inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
+
     try {
       buildAndCreateZip(userName, inputZipFile);
-      // Note that if we decide we don't need a content-disposition header then we can change this
-      // method to just return File and then just return outputZip without building a Response
-      // object explicitly.
+      String attachedFilename = outputZip.getName();
       FileInputStream outputZipDeleteOnClose = new DeleteFileOnCloseFileInputStream(outputZip);
+      // Set the outputZip field to null so that it won't be deleted in cleanUp().
+      outputZip = null;
       return Response.ok(outputZipDeleteOnClose)
-          .header("Content-Disposition", "attachment; filename=\"" + outputZip.getName() + "\"")
+          .header("Content-Disposition", "attachment; filename=\"" + attachedFilename + "\"")
           .build();
     } finally {
-      cleanUp(inputZipFile);
+      cleanUp();
     }
   }
 
@@ -269,6 +283,10 @@ public class BuildServer {
       @QueryParam("callback") final String callbackUrlStr,
       @QueryParam("mercurialBuildId") final String mercurialBuildId,
       final File inputZipFile) throws IOException {
+    // Set the inputZip field so we can delete the input zip file later in cleanUp.
+    inputZip = inputZipFile;
+    inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
+
     asyncBuildRequests.incrementAndGet();
 
     if (mercurialBuildId != null && !mercurialBuildId.isEmpty()) {
@@ -281,7 +299,7 @@ public class BuildServer {
         // This request was rejected because the mercurialBuildId parameter did not equal the
         // expected value.
         rejectedAsyncBuildRequests.incrementAndGet();
-        cleanUp(inputZipFile);
+        cleanUp();
         // Here, we use CONFLICT (response code 409), which means (according to rfc2616, section
         // 10) "The request could not be completed due to a conflict with the current state of the
         // resource."
@@ -323,7 +341,6 @@ public class BuildServer {
           } finally {
             bufferedOutputStream.close();
           }
-          outputZip.delete();
 
           if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
             System.out.println("Bad Response Code!: " + connection.getResponseCode());
@@ -334,7 +351,7 @@ public class BuildServer {
           // TODO(user): Maybe send a failure callback
           System.out.println("Exception: " + e.getMessage());
         } finally {
-          cleanUp(inputZipFile);
+          cleanUp();
           checkMemory();
           System.out.println("BUILD " + count + " FINISHED");
         }
@@ -345,7 +362,7 @@ public class BuildServer {
     } catch (RejectedExecutionException e) {
       // This request was rejected because all threads in the build executor are busy.
       rejectedAsyncBuildRequests.incrementAndGet();
-      cleanUp(inputZipFile);
+      cleanUp();
       // Here, we use SERVICE_UNAVAILABLE (response code 503), which means (according to rfc2616,
       // section 10) "The server is currently unable to handle the request due to a temporary
       // overloading or maintenance of the server. The implication is that this is a temporary
@@ -362,6 +379,7 @@ public class BuildServer {
     Result buildResult = build(userName, inputZipFile);
     boolean buildSucceeded = buildResult.succeeded();
     outputZip = File.createTempFile(inputZipFile.getName(), ".zip");
+    outputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
     ZipOutputStream zipOutputStream =
         new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(outputZip)));
     if (buildSucceeded) {
@@ -380,12 +398,6 @@ public class BuildServer {
 
     zipOutputStream.flush();
     zipOutputStream.close();
-    if (outputApk != null) {
-      outputApk.deleteOnExit();  // Just in case
-    }
-    if (outputZip != null) {
-      outputZip.deleteOnExit();  // Just in case
-    }
   }
 
   private String genBuildOutput(Result buildResult) throws JSONException {
@@ -400,10 +412,13 @@ public class BuildServer {
   }
 
   private Result build(String userName, File zipFile) throws IOException {
-    System.out.println(zipFile.getPath());
     ProjectBuilder projectBuilder = new ProjectBuilder();
     outputDir = Files.createTempDir();
-    outputDir.deleteOnExit(); // Just in case
+    // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
+    // executes. However, it is likely that the directory won't be empty and therefore, won't
+    // actually be deleted. That's only if the build server is killed (via ctrl+c) while a build
+    // is happening, so we should be careful about that.
+    outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
                                               commandLineOptions.childProcessRamMb);
     String buildOutput = buildResult.getOutput();
@@ -411,20 +426,29 @@ public class BuildServer {
     String buildError = buildResult.getError();
     System.out.println("Build error output: " + buildError);
     outputApk = projectBuilder.getOutputApk();
+    if (outputApk != null) {
+      outputApk.deleteOnExit();  // In case build server is killed before cleanUp executes.
+    }
     outputKeystore = projectBuilder.getOutputKeystore();
+    if (outputKeystore != null) {
+      outputKeystore.deleteOnExit();  // In case build server is killed before cleanUp executes.
+    }
     checkMemory();
     return buildResult;
   }
 
-  private void cleanUp(File inputZipFile) {
-    if (inputZipFile != null) {
-      inputZipFile.delete();
+  private void cleanUp() {
+    if (inputZip != null) {
+      inputZip.delete();
     }
     if (outputKeystore != null) {
       outputKeystore.delete();
     }
     if (outputApk != null) {
       outputApk.delete();
+    }
+    if (outputZip != null) {
+      outputZip.delete();
     }
     if (outputDir != null) {
       outputDir.delete();
