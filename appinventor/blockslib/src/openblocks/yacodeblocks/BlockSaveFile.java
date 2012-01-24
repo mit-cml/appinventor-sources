@@ -256,7 +256,20 @@ public class BlockSaveFile {
         // No language blocks need to be modified to upgrade to version 16.
         blkLangVersion = 16;
       }
-
+      if (blkLangVersion < 17) {
+        // In BLOCKS_LANGUAGE_VERSION 17.
+        // Changed open-screen to open-another-screen 
+        // Changed open-screen-with-start-text to open-another-screen-with-start-value
+        // Marked get-startup-text as a bad block
+        // Added get-start-value
+        // Added get-plain-start-text
+        // Marked close-screen-with-result as a bad block
+        // Added close-screen-with-value
+        // Added close-screen-with-plain-text
+        changeGetStartTextAndOpenCloseScreenBlocks();
+        blkLangVersion = 17;
+      } 
+      
       if (blkLangVersion < sysLangVersion) {
         // If we got here, the blocks language needed to be upgraded, but nothing handled it.
         // NOTE(lizlooney,user) - we need to make sure that this situation does not happen by
@@ -1076,6 +1089,32 @@ public class BlockSaveFile {
     for (Element block : getAllMatchingGenusBlocks("number-minus")) {
       changeBlockLabel(block, oldLabel, newLabel);
     }
+  }
+   
+  private void changeGetStartTextAndOpenCloseScreenBlocks() {
+    String oldLabel = "open screen";
+    String newLabel = "open another screen";
+    for (Element block : getAllMatchingGenusBlocks("open-screen")) {
+      changeBlockLabel(block, oldLabel, newLabel);
+      changeBlockGenusName(block, "open-another-screen");
+    }
+    oldLabel = "open another screen with start text";
+    newLabel = "open another screen with start value";
+    for (Element block : getAllMatchingGenusBlocks("open-screen-with-start-text")) {
+      changeBlockLabel(block, oldLabel, newLabel);
+      changeBlockGenusName(block, "open-another-screen-with-start-value");
+      changeFirstMatchingSocketBlockConnectorLabel(block, "startText", "startValue");
+    }     
+    for (Element block : getAllMatchingGenusBlocks("get-startup-text")) {
+      markBlockBad(block, "The get startup text block is no longer used. " +
+          "Instead, please use get start value in multiple screen apps, " +
+          "or get plain start text when starting from other apps.");
+    }
+    for (Element block : getAllMatchingGenusBlocks("close-screen-with-result")) {
+      markBlockBad(block, "The close screen with result block is no longer used. " +
+          "Instead, please use close screen with value in multiple screen apps, " +
+          "or close screen with plain text for returning to other apps.");
+    }   
   }
 
   /*

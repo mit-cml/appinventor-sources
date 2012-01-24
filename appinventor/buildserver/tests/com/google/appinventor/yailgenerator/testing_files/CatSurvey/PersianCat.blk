@@ -9,9 +9,9 @@
 <BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="709" ></BlockConnector>
 </Sockets>
 </Block>
-<Block id="709" genus-name="close-screen-with-result" >
+<Block id="709" genus-name="close-screen-with-value" >
 <Location><X>85</X><Y>70</Y></Location>
-<Label>close screen with result</Label>
+<Label>close screen with value</Label>
 <BeforeBlockId>713</BeforeBlockId>
 <Sockets num-sockets="1" >
 <BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="result" position-type="single" con-block-id="717" ></BlockConnector>
@@ -41,9 +41,9 @@
 <BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="723" ></BlockConnector>
 </Sockets>
 </Block>
-<Block id="723" genus-name="close-screen-with-result" >
+<Block id="723" genus-name="close-screen-with-value" >
 <Location><X>76</X><Y>181</Y></Location>
-<Label>close screen with result</Label>
+<Label>close screen with value</Label>
 <BeforeBlockId>719</BeforeBlockId>
 <Sockets num-sockets="1" >
 <BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="result" position-type="single" con-block-id="725" ></BlockConnector>

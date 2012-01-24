@@ -4,6 +4,13 @@
     Based on third_party/java/openblocks/slcodeblocks/v20090424/support/lang_def.xml
   -->
 
+<!-- Note: WARNING:  When you create a block, don't name
+   one of the  connectors "value" and then use it in a block type
+   rule, for example 
+        LangSpecProperty key="socket-allow-1" value="value/boolean"
+   This will crash the  blocks editor with a "bad block" error.
+   We need to track this bug down and fix it, probably in BlockRules -->
+
 <BlockLangDef ya-version="%1$d" lang-version="%2$d">
   <BlockConnectorShapes>
     <BlockConnectorShape shape-type="number" shape-number="1"/>
@@ -704,7 +711,7 @@
         <arg-description n="2" name="then-do">The actions to be performed when test is true.</arg-description>
         <arg-description n="3" name="else">The actions to be performed when test is false.</arg-description>
         <text>Tests a given condition.  If the result is true, performs the actions in the 'then-do' sequence of blocks;
-otherwise, performs the actions in the 'else-do' sequence of blocks.</text>
+         otherwise, performs the actions in the 'else-do' sequence of blocks.</text>
       </description>
       <BlockConnectors>
         <BlockConnector label="test" connector-kind="socket" connector-type="poly"/>
@@ -822,7 +829,12 @@ value each time.  Use the given variable name to refer to the current value.</te
       </LangSpecProperties>
     </BlockGenus>
 
-    <!-- Get Startup Value Block -->
+    <!-- Multiple screens  -->
+
+    <!-- Get Start Text Block -->
+    <!-- This block is deprecated and has been removed from the drawer (see 
+     OUTPUT_FOOTER.txt).  The BlockGenus remains here so we can load blocks from old
+     projects and mark them "bad" -->
     <BlockGenus name="get-startup-text" decorator="call" kind="function" initlabel="get start text" color="control">
       <description>
       <text>Returns the text passed to this app when it was started, if any. If no text was passed, returns an empty text.</text>
@@ -837,7 +849,6 @@ value each time.  Use the given variable name to refer to the current value.</te
       </LangSpecProperties>
     </BlockGenus>
 
-
     <!-- Close Screen Block -->
     <BlockGenus name="close-screen" decorator="call" kind="command" initlabel="close screen" is-terminator="yes" color="control">
       <description>
@@ -850,6 +861,9 @@ value each time.  Use the given variable name to refer to the current value.</te
     </BlockGenus>
 
    <!-- Close Screen With Result Block -->
+    <!-- This block is deprecated and has been removed from the drawer (see 
+     OUTPUT_FOOTER.txt).  The BlockGenus remains here so we can load blocks from old
+     projects and mark them "bad" -->
    <BlockGenus name="close-screen-with-result" decorator="call" kind="command" initlabel="close screen with result" is-terminator="yes" color="control">
       <description>
         <arg-description n="1" doc-name="result">
@@ -874,7 +888,7 @@ value each time.  Use the given variable name to refer to the current value.</te
     <!-- Close Application Block -->
     <BlockGenus name="close-application" decorator="call" kind="command" initlabel="close application" is-terminator="yes" color="control">
       <description>
-        <text>Closes the current application.</text>
+        <text>Closes all screens in this app and stops the app.</text>
       </description>
       <LangSpecProperties>
         <LangSpecProperty key="ya-kind" value="primitive"/>
@@ -882,49 +896,134 @@ value each time.  Use the given variable name to refer to the current value.</te
       </LangSpecProperties>
     </BlockGenus>
 
-    <!-- Open Screen Block -->
-    <BlockGenus name="open-screen" decorator="call" kind="command" initlabel="open another screen" is-terminator="yes" color="control">
+    <!-- Open Another Screen Block -->
+    <BlockGenus name="open-another-screen" decorator="call" kind="command" initlabel="open another screen" is-terminator="yes" color="control">
       <description>
         <arg-description n="1" doc-name="screenName">
-          The name of the screen to open.
+          The name of the new screen to open.
         </arg-description>
-        <text>Opens a new screen.</text>
+        <text>Opens a new screen in a multiple screen app.</text>
       </description>
       <BlockConnectors>
         <BlockConnector label="screenName" connector-kind="socket" connector-type="poly"/>
       </BlockConnectors>
       <LangSpecProperties>
         <LangSpecProperty key="ya-kind" value="primitive"/>
-        <LangSpecProperty key="ya-rep" value="open-screen"/>
+        <LangSpecProperty key="ya-rep" value="open-another-screen"/>
         <LangSpecProperty key="socket-allow-1" value="screenName/text"/>
         <LangSpecProperty key="socket-allow-2" value="screenName/value"/>
       </LangSpecProperties>
     </BlockGenus>
 
-    <!-- Open Screen With Start Text Block -->
-    <BlockGenus name="open-screen-with-start-text" decorator="call" kind="command" initlabel="open another screen with start text" is-terminator="yes" color="control">
+    <!-- Open Another Screen With Start Value Block -->
+    <BlockGenus name="open-another-screen-with-start-value" decorator="call" kind="command" 
+       initlabel="open another screen with start value" is-terminator="yes" color="control">
       <description>
         <arg-description n="1" doc-name="screenName">
-          The name of the screen to open.
+          The name of the new screen to open.
         </arg-description>
-        <arg-description n="2" doc-name="startText">
-          Start text to be passed to the new screen.
+        <arg-description n="2" doc-name="startValue">
+          The value to be passed to the new screen.
         </arg-description>
-        <text>Opens a new screen and passes the start text to the screen.</text>
+        <text>Opens a new screen in a multiple screen app and passes the start value to that screen.</text>
       </description>
       <BlockConnectors>
         <BlockConnector label="screenName" connector-kind="socket" connector-type="poly"/>
-        <BlockConnector label="startText" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="startValue" connector-kind="socket" connector-type="poly"/>
       </BlockConnectors>
       <LangSpecProperties>
         <LangSpecProperty key="ya-kind" value="primitive"/>
-        <LangSpecProperty key="ya-rep" value="open-screen-with-start-text"/>
+        <LangSpecProperty key="ya-rep" value="open-another-screen-with-start-value"/>
         <LangSpecProperty key="socket-allow-1" value="screenName/text"/>
         <LangSpecProperty key="socket-allow-2" value="screenName/value"/>
-        <LangSpecProperty key="socket-allow-3" value="startText/text"/>
-        <LangSpecProperty key="socket-allow-4" value="startText/value"/>
+        <LangSpecProperty key="socket-exclude-1" value="startValue/argument"/>
       </LangSpecProperties>
     </BlockGenus>
+
+    <!-- Get Start Value Block -->
+    <BlockGenus name="get-start-value"
+       decorator="call" kind="function" initlabel="get start value" color="control">
+      <description>
+      <text>Returns the value that was passed to this screen when it
+was opened, typically by another screen in a multiple-screen app.
+If no value was passed, returns the empty text.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector connector-kind="plug" connector-type="poly"/>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="get-start-value"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+   <!-- Close Screen With Value Block -->
+   <BlockGenus name="close-screen-with-value" decorator="call" kind="command" 
+          initlabel="close screen with value" is-terminator="yes" color="control">
+      <description>
+        <arg-description n="1" doc-name="result">
+          Value to return when the screen closes.
+       </arg-description>
+        <text>Closes the current screen and returns a result to the screen that opened this one.
+        </text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="result" connector-kind="socket" connector-type="poly">
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="close-screen-with-value"/>
+        <LangSpecProperty key="socket-exclude-1" value="result/argument"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
+    <!--Communicating between apps -->
+
+     <!-- Get Plain Start Text Block -->
+     <BlockGenus name="get-plain-start-text"
+                 decorator="call" kind="function" initlabel="get plain start text" color=" control">
+       <description>
+         <text>Returns the plain text that was passed to this screen when it was started by another app.
+If no value was passed, returns the empty text.
+        
+For multiple screen apps, use get start value rather than get plain start text.
+         </text>
+       </description>
+       <BlockConnectors>
+         <BlockConnector connector-kind="plug" connector-type="poly"/>
+       </BlockConnectors>
+       <LangSpecProperties>
+         <LangSpecProperty key="ya-kind" value="primitive"/>
+         <LangSpecProperty key="ya-rep" value="get-plain-start-text"/>
+         <LangSpecProperty key="plug-type-1" value="text"/>
+       </LangSpecProperties>
+     </BlockGenus>
+
+        
+     <!-- Close Screen With Plain Text Block -->
+     <BlockGenus name="close-screen-with-plain-text" decorator="call" kind="command"
+                 initlabel="close screen with plain text" is-terminator="yes" color="control">
+       <description>
+         <arg-description n="1" doc-name="text">
+           Text to return when the screen closes.
+         </arg-description>
+         <text>Closes the current screen and returns text to the app that opened this one.
+
+For multiple screen apps, use close screen with value rather than close screen with plain text.
+         </text>
+       </description>
+       <BlockConnectors>
+         <BlockConnector label="text" connector-kind="socket" connector-type="poly">
+         </BlockConnector>
+       </BlockConnectors>
+       <LangSpecProperties>
+         <LangSpecProperty key="ya-kind" value="primitive"/>
+         <LangSpecProperty key="ya-rep" value="close-screen-with-plain-text"/>
+         <LangSpecProperty key="socket-allow-1" value="text/text"/>
+         <LangSpecProperty key="socket-allow-2" value="text/value"/>
+       </LangSpecProperties>
+     </BlockGenus>
 
     <!-- Logic -->
 

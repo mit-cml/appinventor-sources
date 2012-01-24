@@ -16,7 +16,6 @@
 ;;; but the top-level forms are evaluated in that run() function.
 ;;;
 
-;; TODO(markf) change *debug* back to #f before submitting
 (define *debug* #f)
 
 (define (android-log message)
@@ -2048,25 +2047,80 @@ list, use the make-yail-list constructor with no arguments.
 ;;;; End of Color implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; Activity startup/finish
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Multiple screens
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define (startup-value)
-  (SimpleForm:getStartupValue))
-
+;; Close the screen and return to the other screen that opened it, or to
+;; the activity that started it.
 (define (close-screen)
   (SimpleForm:finishActivity))
 
-(define (close-screen-with-result result-string)
-  (SimpleForm:finishActivityWithResult (coerce-to-string result-string)))
-
+;; Close the application and stop it running.
+;; This stops the entire application, as opposed to
+;; close-screen, which closes just the current screen
 (define (close-application)
   (SimpleForm:finishApplication))
 
-(define (open-screen screen-name)
+(define (open-another-screen screen-name)
   (SimpleForm:switchForm (coerce-to-string screen-name)))
 
-(define (open-screen-with-start-text screen-name start-text)
-  (SimpleForm:switchFormWithStartupValue (coerce-to-string screen-name) (coerce-to-string start-text)))
+;; Open another screen and pass it a value.
+;; The other screen sees this by using the get-start-value method
+;; This JSON encodes the value before placing it in the intent
+(define (open-another-screen-with-start-value screen-name start-value)
+  (SimpleForm:switchFormWithStartValue (coerce-to-string screen-name) start-value))
+
+;; Get the value string that was sent to this screen by the screen that opened it.
+;; If no value was passed, returns the empty string.
+;; This JSON decodes the text extracted from the intent
+;; Note that the call to SimpleForm:getStartValue can return an arbitrary Java object
+;; and therefore must be explicitly sanitized.
+(define (get-start-value)
+  (sanitize-component-data (SimpleForm:getStartValue)))
+
+;; Close the screen and return a value to the screen that opened it
+;; This procedure JSON encodes the value before adding it to the intent
+(define (close-screen-with-value result)
+  (SimpleForm:finishActivityWithResult result))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Communication with non-App Inventor apps
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Get the text string that was sent by the activity that started this screen.
+;; If no value was passed, returns the empty string.
+(define (get-plain-start-text)
+  (SimpleForm:getStartText))
+
+;; Close the screen and return a string to the screen that opened it
+;; This procedure does not JSON encode the value before adding it to the intent
+(define (close-screen-with-plain-text string)
+  (SimpleForm:finishActivityWithTextResult string))
+
+;; Note: There are two methods by which App Inventor screens can
+;; communicate with other screens and other apps
+
+;; Method 1 -- In multiple screen app  Screen A opens screen B using
+;; open-another-screen-with-start-value. Screen B sees this value as
+;; the result of screen.get-start-value To return a result, Screen B
+;; can close with close-screen-with-value, and screen A will see
+;; that value as the callback result in its other-screen-closed event.
+
+;; Method 2 -- App A can start App B and pass it a value (text only).
+;; If App A is an AppInventor app, it uses the activity starter with
+;; the ExtraKey property set to APP_INVENTOR_START, the ExtraValue
+;; property to the text, and with ResultName set to to
+;; APP_INVENTOR_RESULT.  If App B is an App Inventor App, it will see
+;; the text passed to it as the result of get-plain-start-text.  To
+;; return a result (text only), App B uses close-screen-with-plain-text.
+
+;; The implementation difference between the two methods is that
+;; method 1 imposes a level of JSON encoding/decoding, while Method 2
+;; passes the plain text string.  It is possible to mix the
+;; methods to take advantage of this.  For example, an external app
+;; can pass the string [ 1, 2, [3, 4]] to an App inventor app that
+;; uses get-start-value, and the result will be the list (1 2 (3 4))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Support for REPL

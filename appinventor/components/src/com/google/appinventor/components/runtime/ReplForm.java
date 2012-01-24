@@ -51,7 +51,7 @@ public class ReplForm extends Form {
   }
 
   @Override
-  protected void startNewForm(String nextFormName, String startupValue) {
+  protected void startNewForm(String nextFormName, Object startupValue) {
     // Switching forms is not allowed in REPL (yet?).
     runOnUiThread(new Runnable() {
       public void run() {

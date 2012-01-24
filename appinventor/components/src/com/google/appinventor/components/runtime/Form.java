@@ -6,6 +6,7 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -16,6 +17,7 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -37,6 +39,8 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -65,6 +69,9 @@ import java.util.Set;
 public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
+  
+  // *** set this back to false after review
+  private static final boolean DEBUG = true;
 
   private static final String RESULT_NAME = "APP_INVENTOR_RESULT";
 
@@ -201,27 +208,55 @@ public class Form extends Activity
     }
   }
 
+  // onActivityResult should be triggered in only two cases:
+  // (1) The result is for some other component in the app, not this Form itself
+  // (2) This page started another page, and that page is closing, and passing
+  // its value back as a JSON-encoded string in the intent.
+
   @Override
   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    Log.d(LOG_TAG, "Form " + formName + " got onActivityResult, requestCode = " +
+    Log.i(LOG_TAG, "Form " + formName + " got onActivityResult, requestCode = " +
         requestCode + ", resultCode = " + resultCode);
     if (requestCode == SWITCH_FORM_REQUEST_CODE) {
-      // In a multiple screen application, a secondary screen has closed.
-      String result;
+      // Assume this is a multiple screen application, and a secondary
+      // screen has closed.  Process the result as a JSON-encoded string.
+     String resultString;
       if (data != null && data.hasExtra(RESULT_NAME)) {
-        result = data.getStringExtra(RESULT_NAME);
+        resultString = data.getStringExtra(RESULT_NAME);
       } else {
-        result = "";
-      }
-      OtherScreenClosed(nextFormName, result);
-
-    } else {
+        resultString = "";
+      }  
+      Object decodedResult = decodeJSONStringForForm(resultString, "other screen closed");
+      // nextFormName was set when this screen opened the secondary screen
+      OtherScreenClosed(nextFormName, decodedResult); 
+    } else { 
       // Another component (such as a ListPicker, ActivityStarter, etc) is expecting this result.
       ActivityResultListener component = activityResultMap.get(requestCode);
       if (component != null) {
         component.resultReturned(requestCode, resultCode, data);
       }
     }
+  }
+  
+  // functionName is a string to include in the error message that will be shown
+  // if the JSON decoding fails
+  private  static Object decodeJSONStringForForm(String jsonString, String functionName) {
+    if (DEBUG) {
+      Log.i(LOG_TAG, "decodeJSONStringForForm -- decoding JSON representation:" + jsonString);
+    }
+    Object valueFromJSON = "";
+    try {
+      valueFromJSON = JsonUtil.getObjectFromJson(jsonString);
+      if (DEBUG) {
+        Log.i(LOG_TAG, "decodeJSONStringForForm -- got decoded JSON:" + valueFromJSON.toString());
+      }
+    } catch (JSONException e) {
+      activeForm.dispatchErrorOccurredEvent(activeForm, functionName,
+          // showing the start value here will produce an ugly error on the phone, but it's
+          // more useful than not showing the value
+          ErrorMessages.ERROR_SCREEN_BAD_VALUE_RECEIVED, jsonString);
+    }
+    return valueFromJSON;
   }
 
   public int registerForActivityResult(ActivityResultListener listener) {
@@ -249,7 +284,7 @@ public class Form extends Activity
   @Override
   protected void onResume() {
     super.onResume();
-    Log.d(LOG_TAG, "Form " + formName + " got onResume");
+    Log.i(LOG_TAG, "Form " + formName + " got onResume");
     activeForm = this;
 
     // If applicationIsBeingClosed is true, call closeApplication() immediately to continue
@@ -271,7 +306,7 @@ public class Form extends Activity
   @Override
   protected void onPause() {
     super.onPause();
-    Log.d(LOG_TAG, "Form " + formName + " got onPause");
+    Log.i(LOG_TAG, "Form " + formName + " got onPause");
     for (OnPauseListener onPauseListener : onPauseListeners) {
       onPauseListener.onPause();
     }
@@ -284,7 +319,7 @@ public class Form extends Activity
   @Override
   protected void onStop() {
     super.onStop();
-    Log.d(LOG_TAG, "Form " + formName + " got onStop");
+    Log.i(LOG_TAG, "Form " + formName + " got onStop");
     for (OnStopListener onStopListener : onStopListeners) {
       onStopListener.onStop();
     }
@@ -298,7 +333,7 @@ public class Form extends Activity
   protected void onDestroy() {
     super.onDestroy();
     // for debugging and future growth
-    Log.d(LOG_TAG, "Form " + formName + " got onDestroy");
+    Log.i(LOG_TAG, "Form " + formName + " got onDestroy");
 
     // Unregister events for components in this form.
     EventDispatcher.removeDispatchDelegate(this);
@@ -692,42 +727,77 @@ public class Form extends Activity
    * @param nextFormName the name of the new form to display
    * @param startupValue the startup value to pass to the new form
    */
-  // This is called from runtime.scm when a "open another screen with start text" block is
-  // executed.
-  public static void switchFormWithStartupValue(String nextFormName, String startupValue) {
+  // This is called from runtime.scm when a "open another screen with start value" block is
+  // executed.  Note that startNewForm will JSON encode the start value
+  public static void switchFormWithStartValue(String nextFormName, Object startValue) {
+    Log.i(LOG_TAG, "Open another screen with start value:" + nextFormName);
     if (activeForm != null) {
-      activeForm.startNewForm(nextFormName, startupValue);
-    } else {
-      throw new IllegalStateException("activeForm is null");
+      activeForm.startNewForm(nextFormName, startValue);
+      } else {
+        throw new IllegalStateException("activeForm is null");
     }
   }
 
-  protected void startNewForm(String nextFormName, String startupValue) {
+  // This JSON encodes the startup value
+  protected void startNewForm(String nextFormName, Object startupValue) {
+    Log.i(LOG_TAG, "startNewForm:" + nextFormName);
     Intent activityIntent = new Intent();
     // Note that the following is dependent on form generated class names being the same as
     // their form names and all forms being in the same package.
     activityIntent.setClassName(this, getPackageName() + "." + nextFormName);
+    String functionName = (startupValue == null) ? "open another screen" :
+      "open another screen with start value";
+    String jValue;
     if (startupValue != null) {
-      activityIntent.putExtra(ARGUMENT_NAME, startupValue);
+      Log.i(LOG_TAG, "StartNewForm about to JSON encode:" + startupValue);
+      jValue = jsonEncodeForForm(startupValue, functionName);
+      Log.i(LOG_TAG, "StartNewForm got JSON encoding:" + jValue);
+    } else{
+      jValue = "";
     }
+    activityIntent.putExtra(ARGUMENT_NAME, jValue);
     // Save the nextFormName so that it can be passed to the OtherScreenClosed event in the
     // future.
     this.nextFormName = nextFormName;
+    Log.i(LOG_TAG, "about to start new form" + nextFormName);
     try {
+      Log.i(LOG_TAG, "startNewForm starting activity:" + activityIntent);
       startActivityForResult(activityIntent, SWITCH_FORM_REQUEST_CODE);
     } catch (ActivityNotFoundException e) {
-      String functionName = (startupValue == null) ? "open another screen" :
-          "open another screen with start text";
       dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_SCREEN_NOT_FOUND, nextFormName);
     }
   }
 
+  // functionName is used for including in the error message to be shown
+  // if the JSON encoding fails
+  private static String jsonEncodeForForm(Object value, String functionName) {
+    String jsonResult = "";
+    if (DEBUG) {
+      Log.i(LOG_TAG, "jsonEncodeForForm -- creating JSON representation:" + value.toString());
+    }
+    try {
+      // TODO(hal): check that this is OK for raw strings
+      jsonResult = JsonUtil.getJsonRepresentation(value);
+      if (DEBUG) {
+        Log.i(LOG_TAG, "jsonEncodeForForm -- got JSON representation:" + jsonResult);
+      }
+    } catch (JSONException e) {
+      activeForm.dispatchErrorOccurredEvent(activeForm, functionName,
+          // showing the bad value here will produce an ugly error on the phone, but it's
+          // more useful than not showing the value
+          ErrorMessages.ERROR_SCREEN_BAD_VALUE_FOR_SENDING, value.toString());
+    }
+    return jsonResult;
+  }
+  
   @SimpleEvent(description = "Event raised when another screen has closed and control has " +
       "returned to this screen.")
-  public void OtherScreenClosed(String otherScreenName, String result) {
-    Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " + otherScreenName +
-        ", result = " + result);
+  public void OtherScreenClosed(String otherScreenName, Object result) {
+    if (DEBUG) {
+      Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " + 
+          otherScreenName + ", result = " + result.toString());
+    }
     EventDispatcher.dispatchEvent(this, "OtherScreenClosed", otherScreenName, result);
   }
 
@@ -778,8 +848,14 @@ public class Form extends Activity
     return activeForm;
   }
 
-  // This is called from runtime.scm when a "get start text" block is executed.
-  public static String getStartupValue() {
+
+  /**
+   * Returns the string that was passed to this screen when it was opened
+   *
+   * @return StartupText
+   */
+  // This is called from runtime.scm when a "get plain start text" block is executed.
+  public static String getStartText() {
     if (activeForm != null) {
       return activeForm.startupValue;
     } else {
@@ -787,6 +863,28 @@ public class Form extends Activity
     }
   }
 
+  /**
+   * Returns the value that was passed to this screen when it was opened
+   *
+   * @return StartValue
+   */
+  // TODO(hal): cache this?
+  // Note: This is called as a primitive from runtime.scm and it returns an arbitrary Java object.
+  // Therefore it must be explicitly sanitized by runtime, unlike methods, which
+  // are sanitized via call-component-method.
+  public static Object getStartValue() {
+    if (activeForm != null) {
+      return decodeJSONStringForForm(activeForm.startupValue, "get start value");
+    } else { 
+      throw new IllegalStateException("activeForm is null");
+    }
+  }
+  
+ 
+  /**
+   * Closes the current screen, as opposed to finishApplication, which
+   * exits the entire application.
+   */
   // This is called from runtime.scm when a "close screen" block is executed.
   public static void finishActivity() {
     if (activeForm != null) {
@@ -796,8 +894,20 @@ public class Form extends Activity
     }
   }
 
-  // This is called from runtime.scm when a "close screen with result" block is executed.
-  public static void finishActivityWithResult(String result) {
+  // This is called from runtime.scm when a "close screen with value" block is executed.
+  public static void finishActivityWithResult(Object result) {
+    if (activeForm != null) {
+      String jString = jsonEncodeForForm(result, "close screen with value");
+      Intent resultIntent = new Intent();
+      resultIntent.putExtra(RESULT_NAME, jString);
+      activeForm.closeForm(resultIntent);
+    } else {
+      throw new IllegalStateException("activeForm is null");
+    }
+  }
+
+  // This is called from runtime.scm when a "close screen with plain text" block is executed.
+  public static void finishActivityWithTextResult(String result) {
     if (activeForm != null) {
       Intent resultIntent = new Intent();
       resultIntent.putExtra(RESULT_NAME, result);
@@ -807,6 +917,7 @@ public class Form extends Activity
     }
   }
 
+  
   protected void closeForm(Intent resultIntent) {
     if (resultIntent != null) {
       setResult(Activity.RESULT_OK, resultIntent);
@@ -881,7 +992,7 @@ public class Form extends Activity
     alertDialog.setTitle("Stop application?");
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setMessage("Stop this application and exit?  You'll need to relaunch " +
+    alertDialog.setMessage("Stop this application and exit? You'll need to relaunch " +
     "the application to use it again.");
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Stop and exit",
         new DialogInterface.OnClickListener() {
@@ -965,17 +1076,17 @@ public class Form extends Activity
     try {
       method = component.getClass().getMethod("Initialize", (Class<?>[]) null);
     } catch (SecurityException e) {
-      Log.d(LOG_TAG, "Security exception " + e.getMessage());
+      Log.i(LOG_TAG, "Security exception " + e.getMessage());
       return;
     } catch (NoSuchMethodException e) {
       //This is OK.
       return;
     }
     try {
-      Log.d(LOG_TAG, "calling Initialize method for Object " + component.toString());
+      Log.i(LOG_TAG, "calling Initialize method for Object " + component.toString());
       method.invoke(component, (Object[]) null);
     } catch (InvocationTargetException e){
-      Log.d(LOG_TAG, "invoke exception: " + e.getMessage());
+      Log.i(LOG_TAG, "invoke exception: " + e.getMessage());
       throw e.getTargetException();
     }
   }

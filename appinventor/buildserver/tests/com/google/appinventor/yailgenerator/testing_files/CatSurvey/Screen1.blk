@@ -241,7 +241,7 @@
 <Label>SiameseCat</Label>
 <Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1638" ></BlockConnector></Plug>
 </Block>
-<Block id="1638" genus-name="open-screen" >
+<Block id="1638" genus-name="open-another-screen" >
 <Location><X>865</X><Y>487</Y></Location>
 <Label>open another screen</Label>
 <BeforeBlockId>1632</BeforeBlockId>
@@ -261,7 +261,7 @@
 <Label>PersianCat</Label>
 <Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1628" ></BlockConnector></Plug>
 </Block>
-<Block id="1628" genus-name="open-screen" >
+<Block id="1628" genus-name="open-another-screen" >
 <Location><X>878</X><Y>347</Y></Location>
 <Label>open another screen</Label>
 <BeforeBlockId>1622</BeforeBlockId>
@@ -281,7 +281,7 @@
 <Label>OrangeCat</Label>
 <Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="639" ></BlockConnector></Plug>
 </Block>
-<Block id="639" genus-name="open-screen" >
+<Block id="639" genus-name="open-another-screen" >
 <Location><X>866</X><Y>245</Y></Location>
 <Label>open another screen</Label>
 <BeforeBlockId>811</BeforeBlockId>
@@ -564,7 +564,7 @@
 <Label>CalicoCat</Label>
 <Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1618" ></BlockConnector></Plug>
 </Block>
-<Block id="1618" genus-name="open-screen" >
+<Block id="1618" genus-name="open-another-screen" >
 <Location><X>852</X><Y>150</Y></Location>
 <Label>open another screen</Label>
 <BeforeBlockId>815</BeforeBlockId>
@@ -584,7 +584,7 @@
 <Label>BlackCat</Label>
 <Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1612" ></BlockConnector></Plug>
 </Block>
-<Block id="1612" genus-name="open-screen" >
+<Block id="1612" genus-name="open-another-screen" >
 <Location><X>858</X><Y>46</Y></Location>
 <Label>open another screen</Label>
 <BeforeBlockId>1606</BeforeBlockId>

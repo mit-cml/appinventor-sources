@@ -218,12 +218,14 @@
         <BlockGenusMember>foreach</BlockGenusMember>
         <BlockGenusMember>forrange</BlockGenusMember>
         <BlockGenusMember>while</BlockGenusMember>
-        <BlockGenusMember>get-startup-text</BlockGenusMember>
+        <BlockGenusMember>open-another-screen</BlockGenusMember>
+        <BlockGenusMember>open-another-screen-with-start-value</BlockGenusMember>
+        <BlockGenusMember>get-start-value</BlockGenusMember>
         <BlockGenusMember>close-screen</BlockGenusMember>
-        <BlockGenusMember>close-screen-with-result</BlockGenusMember>
+        <BlockGenusMember>close-screen-with-value</BlockGenusMember>
         <BlockGenusMember>close-application</BlockGenusMember>
-        <BlockGenusMember>open-screen</BlockGenusMember>
-        <BlockGenusMember>open-screen-with-start-text</BlockGenusMember>
+        <BlockGenusMember>get-plain-start-text</BlockGenusMember>
+        <BlockGenusMember>close-screen-with-plain-text</BlockGenusMember>
       </BlockDrawer>
 
       <BlockDrawer name="Colors" button-color="colors">

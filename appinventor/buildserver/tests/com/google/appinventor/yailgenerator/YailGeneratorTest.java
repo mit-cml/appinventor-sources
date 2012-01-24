@@ -379,7 +379,7 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonBlackCat Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive open-screen (*list-for-runtime* \"BlackCat\")\n" +
+        " (call-yail-primitive open-another-screen (*list-for-runtime* \"BlackCat\")\n" +
         " '( text)\n" +
         " \"open another screen\")\n" +
         "\n" +
@@ -414,7 +414,7 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonCalicoCat Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive open-screen (*list-for-runtime* \"CalicoCat\")\n" +
+        " (call-yail-primitive open-another-screen (*list-for-runtime* \"CalicoCat\")\n" +
         " '( text)\n" +
         " \"open another screen\")\n" +
         "\n" +
@@ -449,7 +449,7 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonOrangeCat Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive open-screen (*list-for-runtime* \"OrangeCat\")\n" +
+        " (call-yail-primitive open-another-screen (*list-for-runtime* \"OrangeCat\")\n" +
         " '( text)\n" +
         " \"open another screen\")\n" +
         "\n" +
@@ -484,7 +484,7 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonPersianCat Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive open-screen (*list-for-runtime* \"PersianCat\")\n" +
+        " (call-yail-primitive open-another-screen (*list-for-runtime* \"PersianCat\")\n" +
         " '( text)\n" +
         " \"open another screen\")\n" +
         "\n" +
@@ -519,7 +519,7 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonSiameseCat Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive open-screen (*list-for-runtime* \"SiameseCat\")\n" +
+        " (call-yail-primitive open-another-screen (*list-for-runtime* \"SiameseCat\")\n" +
         " '( text)\n" +
         " \"open another screen\")\n" +
         "\n" +
@@ -573,9 +573,9 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonYes Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive close-screen-with-result (*list-for-runtime* \"Yes\")\n" +
-        " '( text)\n" +
-        " \"close screen with result\")\n" +
+        " (call-yail-primitive close-screen-with-value (*list-for-runtime* \"Yes\")\n" +
+        " '( any)\n" +
+        " \"close screen with value\")\n" +
         "\n" +
         ")\n");
     assertContainsYailFragment(yail,
@@ -587,9 +587,9 @@ public class YailGeneratorTest extends TestCase {
     assertContainsYailFragment(yail,
         "(define-event ButtonNo Click()\n" +
         " (set-this-form)\n" +
-        " (call-yail-primitive close-screen-with-result (*list-for-runtime* \"No\")\n" +
-        " '( text)\n" +
-        " \"close screen with result\")\n" +
+        " (call-yail-primitive close-screen-with-value (*list-for-runtime* \"No\")\n" +
+        " '( any)\n" +
+        " \"close screen with value\")\n" +
         "\n" +
         ")\n");
     assertContainsYailFragment(yail,
