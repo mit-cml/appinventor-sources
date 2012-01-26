@@ -122,6 +122,23 @@ public class BluetoothReflection {
         bluetoothAdapter, name, uuid);
   }
 
+  /**
+   * Invokes the method
+   * {@link android.bluetooth.BluetoothAdapter#listenUsingInsecureRfcommWithServiceRecord(String,UUID)}.
+   *
+   * @param bluetoothAdapter a {@link android.bluetooth.BluetoothAdapter} object
+   * @param name  service name for SDP record
+   * @param uuid  uuid for SDP record
+   * @return a listening RFCOMM {@link android.bluetooth.BluetoothServerSocket}
+   */
+  public static Object listenUsingInsecureRfcommWithServiceRecord(Object bluetoothAdapter, String name,
+      UUID uuid) throws IOException {
+    // return bluetoothAdapter.listenUsingInsecureRfcommWithServiceRecord(name, uuid);
+    return invokeMethodThrowsIOException(getMethod(bluetoothAdapter.getClass(),
+        "listenUsingInsecureRfcommWithServiceRecord", String.class, UUID.class),
+        bluetoothAdapter, name, uuid);
+  }
+
   // BluetoothDevice methods
 
   /**
@@ -185,11 +202,27 @@ public class BluetoothReflection {
    * @param uuid the service record uuid
    * @return a {@link android.bluetooth.BluetoothSocket} object
    */
-  public static Object createBluetoothSocket(Object bluetoothDevice, UUID uuid)
+  public static Object createRfcommSocketToServiceRecord(Object bluetoothDevice, UUID uuid)
       throws IOException {
     // return bluetoothDevice.createRfcommSocketToServiceRecord(uuid);
     return invokeMethodThrowsIOException(
         getMethod(bluetoothDevice.getClass(), "createRfcommSocketToServiceRecord", UUID.class),
+        bluetoothDevice, uuid);
+  }
+
+  /**
+   * Invokes the method
+   * {@link android.bluetooth.BluetoothDevice#createInsecureRfcommSocketToServiceRecord(UUID)}.
+   *
+   * @param bluetoothDevice a {@link android.bluetooth.BluetoothDevice} object
+   * @param uuid the service record uuid
+   * @return a {@link android.bluetooth.BluetoothSocket} object
+   */
+  public static Object createInsecureRfcommSocketToServiceRecord(Object bluetoothDevice, UUID uuid)
+      throws IOException {
+    // return bluetoothDevice.createInsecureRfcommSocketToServiceRecord(uuid);
+    return invokeMethodThrowsIOException(
+        getMethod(bluetoothDevice.getClass(), "createInsecureRfcommSocketToServiceRecord", UUID.class),
         bluetoothDevice, uuid);
   }
 

@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.util.Log;
@@ -42,6 +43,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   private ByteOrder byteOrder;
   private String encoding;
   private byte delimiter;
+  protected boolean secure;
 
   private Object connectedBluetoothSocket;
   private InputStream inputStream;
@@ -62,6 +64,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
     HighByteFirst(false); // Lego Mindstorms NXT is low-endian, so false is a good default.
     CharacterEncoding("UTF-8");
     DelimiterByte(0);
+    Secure(true);
   }
 
   /**
@@ -186,6 +189,30 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public final boolean IsConnected() {
     return (connectedBluetoothSocket != null);
+  }
+
+  /**
+   * Returns whether a secure connection should be used.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "Whether to invoke SSP (Simple Secure Pairing), which is supported on " +
+      "devices with Bluetooth v2.1 or higher. When working with embedded Bluetooth devices, " +
+      "this property may need to be set to False. For Android 2.0-2.2, this property setting " +
+      "will be ignored.")
+  public boolean Secure() {
+    return secure;
+  }
+
+  /**
+   * Specifies whether a secure connection should be used.
+   *
+   * @param secure {@code true} to use a secure connection
+   */
+  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void Secure(boolean secure) {
+    this.secure = secure;
   }
 
   /**

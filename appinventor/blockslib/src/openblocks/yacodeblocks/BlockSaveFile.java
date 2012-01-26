@@ -554,6 +554,11 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The BluetoothClient.Secure property was added.
+      // No blocks need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
+    }
     return blkCompVersion;
   }
 
@@ -578,6 +583,11 @@ public class BlockSaveFile {
       // The BluetoothServer.DelimiterByte property was added.
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
+    }
+    if (blkCompVersion < 5) {
+      // The BluetoothServer.Secure property was added.
+      // No blocks need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
     }
     return blkCompVersion;
   }

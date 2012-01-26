@@ -159,8 +159,11 @@ public class YaVersion {
   // - BLOCKS_LANGUAGE_VERSION was incremented to 16.
   // For YOUNG_ANDROID_VERSION 52:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 17.
+  // For YOUNG_ANDROID_VERSION 53:
+  // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 5.
+  // - BLUETOOTHSERVER_COMPONENT_VERSION was incremented to 5.
 
-  public static final int YOUNG_ANDROID_VERSION = 52;
+  public static final int YOUNG_ANDROID_VERSION = 53;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -204,7 +207,7 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 16:
   // - Added make-color and split-color to Color drawer.
   // For BLOCKS_LANGUAGE_VERSION 17:
-  // Changed open-screen to open-another-screen 
+  // Changed open-screen to open-another-screen
   // Changed open-screen-with-start-text to open-another-screen-with-start-value
   // Marked get-startup-text as a bad block
   // Added get-start-value
@@ -254,7 +257,9 @@ public class YaVersion {
   // - The BluetoothClient.BluetoothError event was marked userVisible false and is no longer used.
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 4:
   // - The BluetoothClient.DelimiterByte property was added.
-  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 4;
+  // For BLUETOOTHCLIENT_COMPONENT_VERSION 5:
+  // - The BluetoothClient.Secure property was added.
+  public static final int BLUETOOTHCLIENT_COMPONENT_VERSION = 5;
 
   // For BLUETOOTHSERVER_COMPONENT_VERSION 2:
   // - The BluetoothServer.Enabled property was added.
@@ -262,7 +267,9 @@ public class YaVersion {
   // - The BluetoothServer.BluetoothError event was marked userVisible false and is no longer used.
   // For BLUETOOTHSERVER_COMPONENT_VERSION 4:
   // - The BluetoothServer.DelimiterByte property was added.
-  public static final int BLUETOOTHSERVER_COMPONENT_VERSION = 4;
+  // For BLUETOOTHSERVER_COMPONENT_VERSION 5:
+  // - The BluetoothServer.Secure property was added.
+  public static final int BLUETOOTHSERVER_COMPONENT_VERSION = 5;
 
   // For BUTTON_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

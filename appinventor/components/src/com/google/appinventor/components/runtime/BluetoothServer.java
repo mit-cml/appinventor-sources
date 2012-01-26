@@ -14,6 +14,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.os.Handler;
 import android.util.Log;
@@ -91,8 +92,15 @@ public final class BluetoothServer extends BluetoothConnectionBase {
     }
 
     try {
-      Object bluetoothServerSocket = BluetoothReflection.listenUsingRfcommWithServiceRecord(
-          bluetoothAdapter, name, uuid);
+      Object bluetoothServerSocket;
+      if (!secure && SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD_MR1) {
+        // listenUsingInsecureRfcommWithServiceRecord was introduced in level 10
+        bluetoothServerSocket = BluetoothReflection.listenUsingInsecureRfcommWithServiceRecord(
+            bluetoothAdapter, name, uuid);
+      } else {
+        bluetoothServerSocket = BluetoothReflection.listenUsingRfcommWithServiceRecord(
+            bluetoothAdapter, name, uuid);
+      }
       arBluetoothServerSocket.set(bluetoothServerSocket);
     } catch (IOException e) {
       form.dispatchErrorOccurredEvent(this, functionName,
