@@ -2,6 +2,7 @@
 
 package com.google.appinventor.client;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 /**
@@ -44,5 +45,10 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
     String errorMessage =
         (failureMessage == null) ? caught.getMessage() : failureMessage;
     ErrorReporter.reportError(errorMessage);
+    OdeLog.elog("Got exception: " + caught.getMessage());
+    Throwable cause = caught.getCause();
+    if (cause != null) {
+      OdeLog.elog("Caused by: " + cause.getMessage());
+    }
   }
 }

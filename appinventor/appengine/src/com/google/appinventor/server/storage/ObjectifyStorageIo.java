@@ -253,15 +253,29 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId.t);
           try {
             for (TextFile file : project.getSourceFiles()) {
-              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, file.getFileName(),
-                  file.getContent().getBytes(DEFAULT_ENCODING)));
+              try {
+                addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, 
+                    file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
+              } catch (BlobWriteException e) {
+                // Note that this makes the BlobWriteException fatal. The job will
+                // not be retried if we get this exception.
+                throw CrashReport.createAndLogError(LOG, null, 
+                    collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+              }
             }
-          } catch (UnsupportedEncodingException e) {  // shouldn't happen!
+          }  catch (UnsupportedEncodingException e) {  // shouldn't happen!
             throw CrashReport.createAndLogError(LOG, null, project.getProjectName(), e);
           }
           for (RawFile file : project.getRawSourceFiles()) {
-            addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, file.getFileName(),
-                file.getContent()));
+            try {
+              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, file.getFileName(),
+                  file.getContent()));
+            } catch (BlobWriteException e) {
+              // Note that this makes the BlobWriteException fatal. The job will
+              // not be retried if we get this exception.
+              throw CrashReport.createAndLogError(LOG, null, 
+                  collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+            }
           }
           datastore.put(addedFiles);  // batch put
         }
@@ -300,7 +314,7 @@ public class ObjectifyStorageIo implements  StorageIo {
    *  the database.
    */
   private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
-      String fileName, byte[] content) throws ObjectifyException {
+      String fileName, byte[] content) throws BlobWriteException, ObjectifyException {
     FileData file = new FileData();
     file.fileName = fileName;
     file.projectKey = projectKey;
@@ -721,7 +735,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileNames[0]), e);
+          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);
     }
   }
 
@@ -742,7 +756,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileNames[0]), e);
+          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);
     }
   }
 
@@ -773,7 +787,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return fd;
     } else if (!fd.role.equals(role)) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectKey.getId(), fileName),
+          collectProjectErrorInfo(null, projectKey.getId(), fileName),
           new IllegalStateException("File role change is not supported"));
     }
     return null;
@@ -791,7 +805,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileNames[0]), e);
+          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);
     }
   }
 
@@ -807,7 +821,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileNames[0]), e);
+          collectProjectErrorInfo(userId, projectId, fileNames[0]), e);
     }
   }
 
@@ -821,7 +835,8 @@ public class ObjectifyStorageIo implements  StorageIo {
         if (fd.role.equals(role)) {
           filesToRemove.add(projectFileKey(projectKey, fileName));
         } else {
-          throw CrashReport.createAndLogError(LOG, null, collectProjectErrorInfo(projectId, fileName),
+          throw CrashReport.createAndLogError(LOG, null, 
+              collectProjectErrorInfo(null, projectId, fileName),
               new IllegalStateException("File role change is not supported"));
         }
       }
@@ -895,7 +910,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return uploadRawFile(projectId, fileName, userId, content.getBytes(encoding));
     } catch (UnsupportedEncodingException e) {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding,"
-          + collectProjectErrorInfo(projectId, fileName), e);
+          + collectProjectErrorInfo(null, projectId, fileName), e);
     }
   }
 
@@ -932,7 +947,14 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           if (useBlobstore) {
             fd.isBlob = true;
-            fd.blobstorePath = uploadToBlobstore(content);
+            try {
+              fd.blobstorePath = uploadToBlobstore(content);
+            } catch (BlobWriteException e) {
+              // Note that this makes the BlobWriteException fatal. The job will
+              // not be retried if we get this exception.
+              throw CrashReport.createAndLogError(LOG, null,
+                  collectProjectErrorInfo(userId, projectId, fileName), e);
+            }
             // If the content was previously stored in the datastore, clear it out.
             fd.content = null;
           } else {
@@ -943,7 +965,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         }
 
         @Override
-        public void onNonFatalError() throws ObjectifyException {
+        public void onNonFatalError() {
           if (fd != null && fd.blobstorePath != null) {
             oldBlobstorePath.t = fd.blobstorePath;
           }
@@ -958,7 +980,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       }
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileName), e);
+          collectProjectErrorInfo(userId, projectId, fileName), e);
     }
     return modTime.t;
   }
@@ -971,7 +993,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     BlobstoreServiceFactory.getBlobstoreService().delete(blobKey);
   }
 
-  private String uploadToBlobstore(byte[] content) throws ObjectifyException {
+  private String uploadToBlobstore(byte[] content) throws BlobWriteException, ObjectifyException {
     // Get a file service
     FileService fileService = FileServiceFactory.getFileService();
 
@@ -989,9 +1011,9 @@ public class ObjectifyStorageIo implements  StorageIo {
       blobstoreOutputStream.close();
       blobstoreWriteChannel.closeFinally();
     } catch (IOException e) {
-      throw new ObjectifyException(e);
-    } catch (Exception ex) {
-      throw new ObjectifyException(ex);
+      throw new BlobWriteException("Error writing blob: " + e.getMessage());
+    } catch (Exception e) {
+      throw new ObjectifyException(e.getMessage());
     }
 
     return blobstoreFile.getFullPath();
@@ -1028,7 +1050,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileName), e);
+          collectProjectErrorInfo(userId, projectId, fileName), e);
     }
     if (oldBlobstorePath.t != null) {
       deleteBlobstoreFile(oldBlobstorePath.t);
@@ -1046,7 +1068,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return new String(downloadRawFile(userId, projectId, fileName), encoding);
     } catch (UnsupportedEncodingException e) {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, "
-          + collectProjectErrorInfo(projectId, fileName), e);
+          + collectProjectErrorInfo(userId, projectId, fileName), e);
     }
   }
 
@@ -1069,35 +1091,40 @@ public class ObjectifyStorageIo implements  StorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, fileName), e);
+          collectProjectErrorInfo(userId, projectId, fileName), e);
     }
     FileData fileData = fd.t;
     if (fileData != null) {
       if (fileData.isBlob) {
         try {
           result.t = getBlobstoreBytes(fileData.blobstorePath);
-        } catch (IOException e) {
+        } catch (BlobReadException e) {
           throw CrashReport.createAndLogError(LOG, null,
-                                              collectProjectErrorInfo(projectId, fileName),
-                                              new FileNotFoundException(fileName));
+              collectProjectErrorInfo(userId, projectId, fileName), e);
         }
       } else {
         result.t = fileData.content;
       }
     } else {
       throw CrashReport.createAndLogError(LOG, null,
-                                          collectProjectErrorInfo(projectId, fileName),
-                                          new FileNotFoundException(fileName));
+          collectProjectErrorInfo(userId, projectId, fileName),
+          new FileNotFoundException("No data for " + fileName));
     }
     return result.t;
   }
 
-  private byte[] getBlobstoreBytes(String blobstorePath) throws IOException {
+  private byte[] getBlobstoreBytes(String blobstorePath) throws BlobReadException {
     AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
-    FileReadChannel blobstoreReadChannel =
-        FileServiceFactory.getFileService().openReadChannel(blobstoreFile, false);
-    InputStream blobstoreInputStream = Channels.newInputStream(blobstoreReadChannel);
-    return ByteStreams.toByteArray(blobstoreInputStream);
+    try {
+      FileReadChannel blobstoreReadChannel =
+          FileServiceFactory.getFileService().openReadChannel(blobstoreFile, false);
+      InputStream blobstoreInputStream = Channels.newInputStream(blobstoreReadChannel);
+      return ByteStreams.toByteArray(blobstoreInputStream);
+    } catch (IOException e) {
+      throw new BlobReadException("Error trying to read blob from " + blobstorePath 
+          + ", blobkey = " + FileServiceFactory.getFileService().getBlobKey(blobstoreFile)
+          + ", " + e.getMessage());
+    }
   }
 
   /**
@@ -1139,7 +1166,13 @@ public class ObjectifyStorageIo implements  StorageIo {
                 }
                 byte[] data;
                 if (fd.isBlob) {
-                  data = getBlobstoreBytes(fd.blobstorePath);
+                  try {
+                    data = getBlobstoreBytes(fd.blobstorePath);
+                  } catch (BlobReadException e) {
+                    // Note that this exception will be fatal for the job
+                    throw CrashReport.createAndLogError(LOG, null,
+                        collectProjectErrorInfo(userId, projectId, fileName), e);
+                   }
                 } else {
                   data = fd.content;
                 }
@@ -1165,25 +1198,19 @@ public class ObjectifyStorageIo implements  StorageIo {
             }
 
           } catch (IOException e) {
-            System.err.println("Unexpected io exception for userid " + userId +
-                               " projectId " + projectId);
             throw CrashReport.createAndLogError(LOG, null,
-                                                collectProjectErrorInfo(projectId, null), e);
+                collectProjectErrorInfo(userId, projectId, null), e);
           }
         }
       });
     } catch (ObjectifyException e) {
-      System.err.println("Unexpected objectify exception for userid " + userId +
-          " projectId " + projectId);
       CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(projectId, null), e);
+          collectProjectErrorInfo(userId, projectId, null), e);
       throw new IOException("Reflecting exception for userid " + userId +
-          " projectId " + projectId);
+          " projectId " + projectId + ", original exception " + e.getMessage());
     } catch (RuntimeException e) {
-      System.err.println("Unexpected runtime exception for userid " + userId +
-          " projectId " + projectId);
       throw new IOException("Reflecting exception for userid " + userId +
-          " projectId " + projectId);
+          " projectId " + projectId + ", original exception " + e.getMessage());
     }
 
     if (fileCount.t == 0) {
@@ -1207,10 +1234,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                   }
                 }
               } catch (IOException e) {
-                System.err.println("Unexpected io exception for userid " + userId +
-                                   " projectId " + projectId);
                 throw CrashReport.createAndLogError(LOG, null,
-                                                    collectProjectErrorInfo(projectId, null), e);
+                    collectProjectErrorInfo(userId, projectId, null), e);
               }
             }
           });
@@ -1293,6 +1318,15 @@ public class ObjectifyStorageIo implements  StorageIo {
     return new Key<FileData>(projectKey, FileData.class, fileName);
   }
 
+  /**
+   * Call job.run() in a transaction and commit the transaction if no exceptions
+   * occur. If we get a {@link java.util.ConcurrentModificationException} 
+   * or {@link com.google.appinventor.server.storage.ObjectifyException}
+   * we will retry the job (at most {@code MAX_JOB_RETRIES times}). 
+   * Any other exception will cause the job to fail immediately.
+   * @param job
+   * @throws ObjectifyException
+   */
   @VisibleForTesting
   void runJobWithRetries(JobRetryHelper job) throws ObjectifyException {
     int tries = 0;
@@ -1327,8 +1361,9 @@ public class ObjectifyStorageIo implements  StorageIo {
     return "user=" + userId + ", file=" + fileName;
   }
 
-  private static String collectProjectErrorInfo(final long projectId, final String fileName) {
-    return "project=" + projectId + ", file=" + fileName;
+  private static String collectProjectErrorInfo(final String userId, final long projectId, 
+      final String fileName) {
+    return "user=" + userId + ", project=" + projectId + ", file=" + fileName;
   }
 
   private static String collectUserProjectErrorInfo(final String userId, final long projectId) {
