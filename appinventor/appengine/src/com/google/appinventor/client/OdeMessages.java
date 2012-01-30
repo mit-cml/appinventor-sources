@@ -771,6 +771,11 @@ public interface OdeMessages extends Messages {
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
+  @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
+		  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
+  @Description("Error message when file name contains characters that would require URL encoding.")
+  String malformedFilename();
+  
   @DefaultMessage("Uploading {0} to the App Inventor server")
   @Description("Message displayed when an asset is uploaded.")
   String fileUploadingMessage(String filename);
