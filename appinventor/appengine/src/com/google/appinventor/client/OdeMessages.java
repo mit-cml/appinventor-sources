@@ -667,6 +667,18 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button to download all projects' source code")
   String downloadAllButton();
 
+  @DefaultMessage("Download Keystore")
+  @Description("Label of the button for download keystore")
+  String downloadKeystoreButton();
+
+  @DefaultMessage("Upload Keystore")
+  @Description("Label of the button for upload keystore")
+  String uploadKeystoreButton();
+
+  @DefaultMessage("Delete Keystore")
+  @Description("Label of the button for delete keystore")
+  String deleteKeystoreButton();
+
   @DefaultMessage("It may take a little while for your projects to be downloaded. " +
       "Please be patient...")
   @Description("Warning that downloading projects will take a while")
@@ -695,6 +707,49 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("One project must be selected")
   @Description("Error message displayed when no or many projects are selected")
   String wrongNumberProjectsSelected();
+
+  @DefaultMessage("Server error: could not download your keystore file.")
+  @Description("Error message displayed when a server error occurs during download keystore")
+  String downloadKeystoreError();
+
+  @DefaultMessage("There is no keystore file to download.")
+  @Description("Error message displayed when no keystore file exists")
+  String noKeystoreToDownload();
+
+  @DefaultMessage("Server error: could not upload your keystore file.")
+  @Description("Error message displayed when a server error occurs during upload keystore")
+  String uploadKeystoreError();
+
+  @DefaultMessage("Do you want to overwrite your keystore file?\n\n" +
+      "If you agree, your old keystore file will be completely removed from the App Inventor " +
+      "server.\n\n" +
+      "Any projects that you package in the future will be signed using your new keystore file. " +
+      "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
+      "are not sure that you want to do this, please read the documentation about keystores by " +
+      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "of Applications\"\n\n" +
+      "There is no undo for overwriting your keystore file.")
+  @Description("Confirmation message shown when keystore is about to be overwritten.")
+  String confirmOverwriteKeystore();
+
+  @DefaultMessage("Server error: could not delete your keystore file.")
+  @Description("Error message reported when a server error occurs during delete keystore")
+  String deleteKeystoreError();
+
+  @DefaultMessage("Do you really want to delete your keystore file?\n\n" +
+      "If you agree, your old keystore file will be completely removed from the App Inventor " +
+      "server. A new, but different, keystore file will be created automatically the next time " +
+      "you package a project for the phone.\n\n" +
+      "Any projects that you package in the future will be signed using your new keystore file. " +
+      "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
+      "are not sure that you want to do this, please read the documentation about keystores by " +
+      "clicking above on \"Learn\", then \"Troubleshooting\", and then \"Keystores and Signing " +
+      "of Applications\"\n\n" +
+      "There is no undo for deleting your keystore file.")
+  @Description("Confirmation message for delete keystore")
+  String confirmDeleteKeystore();
+
+
 
   // Used in output/OdeLog.java
 
@@ -796,6 +851,20 @@ public interface OdeMessages extends Messages {
       "the old file?")
   @Description("Confirmation message shown when a file is about to be overwritten.")
   String confirmOverwrite(String filename);
+
+  // Used in wizards/KeystoreUploadWizard.java
+
+  @DefaultMessage("Upload Keystore...")
+  @Description("Caption for keystore upload wizard.")
+  String keystoreUploadWizardCaption();
+
+  @DefaultMessage("Server error: could not upload keystore. Please try again later!")
+  @Description("Error message reported when the keystore couldn't be uploaded to the server.")
+  String keystoreUploadError();
+
+  @DefaultMessage("The selected file is not a keystore!")
+  @Description("Error message reported when the file selected for upload is not a keystore.")
+  String notKeystoreError();
 
   // Used in wizards/NewProjectWizard.java
 

@@ -57,9 +57,9 @@ public class ProjectUploadWizard extends Wizard {
             return;
           }
 
-          Uploader.getInstance().upload(
-              upload,
-              GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/project/" + filename,
+          String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" +
+              ServerLayout.UPLOAD_PROJECT + "/" + filename;
+          Uploader.getInstance().upload(upload, uploadUrl,
               new OdeAsyncCallback<UploadResponse>(
                   // failure message
                   MESSAGES.projectUploadError()) {

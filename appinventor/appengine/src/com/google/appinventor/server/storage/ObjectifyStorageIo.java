@@ -71,8 +71,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
-  private static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
-
   // Use this class to define the work of a job that can be retried. The
   // "datastore" argument to run() is the Objectify object for this job
   // (created with ObjectifyService.beginTransaction()). Note that all operations
@@ -254,16 +252,16 @@ public class ObjectifyStorageIo implements  StorageIo {
           try {
             for (TextFile file : project.getSourceFiles()) {
               try {
-                addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE, 
+                addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE,
                     file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
               } catch (BlobWriteException e) {
                 // Note that this makes the BlobWriteException fatal. The job will
                 // not be retried if we get this exception.
-                throw CrashReport.createAndLogError(LOG, null, 
+                throw CrashReport.createAndLogError(LOG, null,
                     collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
               }
             }
-          }  catch (UnsupportedEncodingException e) {  // shouldn't happen!
+          } catch (UnsupportedEncodingException e) {  // shouldn't happen!
             throw CrashReport.createAndLogError(LOG, null, project.getProjectName(), e);
           }
           for (RawFile file : project.getRawSourceFiles()) {
@@ -273,7 +271,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             } catch (BlobWriteException e) {
               // Note that this makes the BlobWriteException fatal. The job will
               // not be retried if we get this exception.
-              throw CrashReport.createAndLogError(LOG, null, 
+              throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
             }
           }
@@ -835,7 +833,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         if (fd.role.equals(role)) {
           filesToRemove.add(projectFileKey(projectKey, fileName));
         } else {
-          throw CrashReport.createAndLogError(LOG, null, 
+          throw CrashReport.createAndLogError(LOG, null,
               collectProjectErrorInfo(null, projectId, fileName),
               new IllegalStateException("File role change is not supported"));
         }
@@ -1121,7 +1119,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       InputStream blobstoreInputStream = Channels.newInputStream(blobstoreReadChannel);
       return ByteStreams.toByteArray(blobstoreInputStream);
     } catch (IOException e) {
-      throw new BlobReadException("Error trying to read blob from " + blobstorePath 
+      throw new BlobReadException("Error trying to read blob from " + blobstorePath
           + ", blobkey = " + FileServiceFactory.getFileService().getBlobKey(blobstoreFile)
           + ", " + e.getMessage());
     }
@@ -1226,8 +1224,9 @@ public class ObjectifyStorageIo implements  StorageIo {
               try {
                 Key<UserData> userKey = userKey(userId);
                 for (UserFileData ufd : datastore.query(UserFileData.class).ancestor(userKey)) {
-                  if (ufd.fileName.equals(ANDROID_KEYSTORE_FILENAME) && (ufd.content.length > 0)) {
-                    out.putNextEntry(new ZipEntry(ANDROID_KEYSTORE_FILENAME));
+                  if (ufd.fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME) &&
+                      (ufd.content.length > 0)) {
+                    out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
                     out.write(ufd.content, 0, ufd.content.length);
                     out.closeEntry();
                     fileCount.t++;
@@ -1320,9 +1319,9 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   /**
    * Call job.run() in a transaction and commit the transaction if no exceptions
-   * occur. If we get a {@link java.util.ConcurrentModificationException} 
+   * occur. If we get a {@link java.util.ConcurrentModificationException}
    * or {@link com.google.appinventor.server.storage.ObjectifyException}
-   * we will retry the job (at most {@code MAX_JOB_RETRIES times}). 
+   * we will retry the job (at most {@code MAX_JOB_RETRIES times}).
    * Any other exception will cause the job to fail immediately.
    * @param job
    * @throws ObjectifyException
@@ -1361,7 +1360,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     return "user=" + userId + ", file=" + fileName;
   }
 
-  private static String collectProjectErrorInfo(final String userId, final long projectId, 
+  private static String collectProjectErrorInfo(final String userId, final long projectId,
       final String fileName) {
     return "user=" + userId + ", project=" + projectId + ", file=" + fileName;
   }

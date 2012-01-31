@@ -26,7 +26,6 @@ import javax.annotation.Nullable;
 public final class FileExporterImpl implements FileExporter {
 
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
-  private static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
 
   @Override
   public RawFile exportProjectOutputFile(String userId, long projectId, @Nullable String target)
@@ -117,11 +116,11 @@ public final class FileExporterImpl implements FileExporter {
     }
 
     List<String> userFiles = storageIo.getUserFiles(userId);
-    if (userFiles.contains(ANDROID_KEYSTORE_FILENAME)) {
+    if (userFiles.contains(StorageUtil.ANDROID_KEYSTORE_FILENAME)) {
       byte[] androidKeystoreBytes =
-          storageIo.downloadRawUserFile(userId, ANDROID_KEYSTORE_FILENAME);
+          storageIo.downloadRawUserFile(userId, StorageUtil.ANDROID_KEYSTORE_FILENAME);
       if (androidKeystoreBytes.length > 0) {
-        out.putNextEntry(new ZipEntry(ANDROID_KEYSTORE_FILENAME));
+        out.putNextEntry(new ZipEntry(StorageUtil.ANDROID_KEYSTORE_FILENAME));
         out.write(androidKeystoreBytes, 0, androidKeystoreBytes.length);
         out.closeEntry();
         count++;
@@ -139,12 +138,23 @@ public final class FileExporterImpl implements FileExporter {
 
   @Override
   public RawFile exportFile(String userId, long projectId, String filePath) throws IOException {
-    // Download a specific file.
+    // Download a specific project file.
     try {
       byte[] content = storageIo.downloadRawFile(userId, projectId, filePath);
       return new RawFile(StorageUtil.basename(filePath), content);
     } catch (RuntimeException e) {
       throw new IllegalArgumentException("Unknown download file: " + filePath, e);
+    }
+  }
+
+  @Override
+  public RawFile exportUserFile(String userId, String filePath) throws IOException {
+    // Download a specific user file.
+    try {
+      byte[] content = storageIo.downloadRawUserFile(userId, filePath);
+      return new RawFile(StorageUtil.basename(filePath), content);
+    } catch (RuntimeException e) {
+      throw new IllegalArgumentException("Unknown download user file: " + filePath, e);
     }
   }
 

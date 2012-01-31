@@ -98,15 +98,39 @@ public class ServerLayout {
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
-   * for downloading a project's output
+   * for downloading a file
    */
   public static final String DOWNLOAD_FILE = "file";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a user file
+   */
+  public static final String DOWNLOAD_USERFILE = "userfile";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.UploadServlet}
    * within the ODE GWT module.
    */
   public static final String UPLOAD_SERVLET = "upload";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.UploadServlet}
+   * for uploading a project
+   */
+  public static final String UPLOAD_PROJECT = "project";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.UploadServlet}
+   * for uploading a file
+   */
+  public static final String UPLOAD_FILE = "file";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.UploadServlet}
+   * for uploading a user file
+   */
+  public static final String UPLOAD_USERFILE = "userfile";
 
   /**
    * Relative path of the {@link com.google.appinventor.server.GetMotdServiceImpl}
@@ -158,9 +182,9 @@ public class ServerLayout {
   public static final String UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT = "uploadProjectArchive";
 
   /**
-   * Name of the form element to upload the invite csv file.
+   * Name of the form element to upload user files.
    */
-  public static final String UPLOAD_INVITE_FILE_FORM_ELEMENT = "uploadInviteFile";
+  public static final String UPLOAD_USERFILE_FORM_ELEMENT = "uploadUserFile";
 
   public static String genRelativeDownloadPath(long projectId, String target) {
     return DOWNLOAD_SERVLET_BASE + DOWNLOAD_PROJECT_OUTPUT + "/" + projectId + "/" + target;

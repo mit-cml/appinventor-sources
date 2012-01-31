@@ -60,8 +60,19 @@ public interface FileImporter {
    * @throws FileImporterException if the file is too large
    * @throws IOException if any file operation fails
    */
-  long importFile(String userId, long projectId, String fileName,  InputStream uploadedFileStream)
+  long importFile(String userId, long projectId, String fileName, InputStream uploadedFileStream)
       throws FileImporterException, IOException;
+
+  /**
+   * Adds the user file on the server and imports its content.
+   *
+   * @param userId the userId
+   * @param fileName user file name
+   * @param uploadedFileStream uploaded file
+   * @throws IOException if any file operation fails
+   */
+  void importUserFile(String userId, String fileName, InputStream uploadedFileStream)
+      throws IOException;
 
   /**
    * Returns the names of all the projects belonging to the user.

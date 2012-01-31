@@ -135,7 +135,8 @@ public class Toolbar extends Composite {
    *
    * @param dropDownName name used for internal map
    * @param caption name of button
-   * @param items list of items to add to drop down
+   * @param items list of items to add to drop down; null items indicate a separator should be
+   *        addded
    * @param rightAlign button should be right aligned in toolbar
    */
   protected void addDropDownButton(String dropDownName, String caption, List<ToolbarItem> items,
@@ -143,8 +144,12 @@ public class Toolbar extends Composite {
     final TextButton button = new TextButton(caption + " \u25BE");  // drop down triangle
     final ContextMenu contextMenu = new ContextMenu();
     for (ToolbarItem item : items) {
-      MenuItem menuItem = contextMenu.addItem(item.caption, item.command);
-      dropDownItemMap.put(item.widgetName, menuItem);
+      if (item != null) {
+        MenuItem menuItem = contextMenu.addItem(item.caption, item.command);
+        dropDownItemMap.put(item.widgetName, menuItem);
+      } else {
+        contextMenu.addSeparator();
+      }
     }
     button.addClickHandler(new ClickHandler() {
       @Override

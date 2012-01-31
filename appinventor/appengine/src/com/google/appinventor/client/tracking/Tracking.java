@@ -17,8 +17,6 @@ public class Tracking {
    */
   public static final String PROJECT_EVENT = "Project";
   public static final String PROJECT_ACTION_PREFIX = "Project_";
-  public static final String PROJECT_ACTION_NEW_SIMPLE = PROJECT_ACTION_PREFIX +
-      "New-Simple";
   public static final String PROJECT_ACTION_NEW_YA = PROJECT_ACTION_PREFIX +
       "New-YA";
   public static final String PROJECT_ACTION_DELETE_PROJECT_YA = PROJECT_ACTION_PREFIX +
@@ -52,6 +50,9 @@ public class Tracking {
 
   public static final String USER_EVENT = "User";
   public static final String USER_ACTION_PREFIX = "User_";
+  public static final String USER_ACTION_DOWNLOAD_KEYSTORE = USER_ACTION_PREFIX + "DownloadKeystore";
+  public static final String USER_ACTION_UPLOAD_KEYSTORE = USER_ACTION_PREFIX + "UploadKeystore";
+  public static final String USER_ACTION_DELETE_KEYSTORE = USER_ACTION_PREFIX + "DeleteKeystore";
 
   // Google Analytics account
   private static final String GA_ACCOUNT = "UA-5856106-2";

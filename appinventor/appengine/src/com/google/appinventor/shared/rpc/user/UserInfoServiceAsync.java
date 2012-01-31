@@ -26,4 +26,14 @@ public interface UserInfoServiceAsync {
    * @see UserInfoService#storeUserSettings(String)
    */
   void storeUserSettings(String settings, AsyncCallback<Void> callback);
+
+  /**
+   * @see UserInfoService#hasUserFile(String)
+   */
+  void hasUserFile(String fileName, AsyncCallback<Boolean> callback);
+
+  /**
+   * @see UserInfoService#deleteUserFile(String)
+   */
+  void deleteUserFile(String fileName, AsyncCallback<Void> callback);
 }

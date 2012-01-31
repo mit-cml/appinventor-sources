@@ -13,10 +13,13 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.Toolbar.ToolbarItem;
+import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
@@ -35,6 +38,9 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_DOWNLOAD_ALL = "DownloadAll";
   private static final String WIDGET_NAME_DOWNLOAD_SOURCE = "DownloadSource";
   private static final String WIDGET_NAME_UPLOAD_SOURCE = "UploadSource";
+  private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
+  private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
+  private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -56,7 +62,16 @@ public class ProjectToolbar extends Toolbar {
         MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
     otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_SOURCE,
         MESSAGES.uploadSourceButton(), new UploadSourceAction()));
+    otherItems.add(null);
+    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
+        MESSAGES.downloadKeystoreButton(), new DownloadKeystoreAction()));
+    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_KEYSTORE,
+        MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
+    otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
+        MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
+
+    updateKeystoreButtons();
   }
 
   private static class NewAction implements Command {
@@ -191,6 +206,71 @@ public class ProjectToolbar extends Toolbar {
     }
   }
 
+  private static class DownloadKeystoreAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          new OdeAsyncCallback<Boolean>(MESSAGES.downloadKeystoreError()) {
+        @Override
+        public void onSuccess(Boolean keystoreFileExists) {
+          if (keystoreFileExists) {
+            Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DOWNLOAD_KEYSTORE);
+            Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+                ServerLayout.DOWNLOAD_USERFILE + "/" + StorageUtil.ANDROID_KEYSTORE_FILENAME);
+          } else {
+            Window.alert(MESSAGES.noKeystoreToDownload());
+          }
+        }
+      });
+    }
+  }
+
+  private class UploadKeystoreAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          new OdeAsyncCallback<Boolean>(MESSAGES.uploadKeystoreError()) {
+        @Override
+        public void onSuccess(Boolean keystoreFileExists) {
+          if (!keystoreFileExists || Window.confirm(MESSAGES.confirmOverwriteKeystore())) {
+            KeystoreUploadWizard wizard = new KeystoreUploadWizard(new Command() {
+              @Override
+              public void execute() {
+                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_UPLOAD_KEYSTORE);
+                updateKeystoreButtons();
+              }
+            });
+            wizard.center();
+          }
+        }
+      });
+    }
+  }
+
+  private class DeleteKeystoreAction implements Command {
+    @Override
+    public void execute() {
+      final String errorMessage = MESSAGES.deleteKeystoreError();
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          new OdeAsyncCallback<Boolean>(errorMessage) {
+        @Override
+        public void onSuccess(Boolean keystoreFileExists) {
+          if (keystoreFileExists && Window.confirm(MESSAGES.confirmDeleteKeystore())) {
+            Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DELETE_KEYSTORE);
+            Ode.getInstance().getUserInfoService().deleteUserFile(
+                StorageUtil.ANDROID_KEYSTORE_FILENAME,
+                new OdeAsyncCallback<Void>(errorMessage) {
+              @Override
+              public void onSuccess(Void result) {
+                updateKeystoreButtons();
+              }
+            });
+          }
+        }
+      });
+    }
+  }
+
   /**
    * Enables and/or disables buttons based on how many projects exist
    * (in the case of "Download All Projects") or are selected (in the case
@@ -208,4 +288,24 @@ public class ProjectToolbar extends Toolbar {
     setDropItemEnabled(WIDGET_NAME_DOWNLOAD_SOURCE, numSelectedProjects == 1);
   }
 
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file.
+   */
+  public void updateKeystoreButtons() {
+    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+        new AsyncCallback<Boolean>() {
+      @Override
+      public void onSuccess(Boolean keystoreFileExists) {
+        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+      }
+
+      @Override
+      public void onFailure(Throwable caught) {
+        // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
+        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
+        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, true);
+      }
+    });
+  }
 }

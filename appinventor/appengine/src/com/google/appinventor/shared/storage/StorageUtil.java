@@ -22,6 +22,8 @@ public class StorageUtil {
   // create the initial record.
   public static final long INITIAL_MOTD_ID = 1;
 
+  public static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
+
   /**
    * Gets the final component from a path.  This assumes that path components
    * are separated by forward slashes.

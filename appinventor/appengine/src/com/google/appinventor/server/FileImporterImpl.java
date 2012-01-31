@@ -185,6 +185,19 @@ public final class FileImporterImpl implements FileImporter {
   }
 
   @Override
+  public void importUserFile(String userId, String fileName, InputStream uploadedFileStream)
+      throws IOException {
+    byte[] content = ByteStreams.toByteArray(uploadedFileStream);
+
+    // If the file already exists, we will overwrite the content.
+    List<String> userFiles = storageIo.getUserFiles(userId);
+    if (!userFiles.contains(fileName)) {
+      storageIo.addFilesToUser(userId, fileName);
+    }
+    storageIo.uploadRawUserFile(userId, fileName, content);
+  }
+
+  @Override
   public Set<String> getProjectNames(final String userId) {
     List<Long> projectIds = storageIo.getProjects(userId);
     Iterable<String> names = Iterables.transform(projectIds, new Function<Long, String>() {

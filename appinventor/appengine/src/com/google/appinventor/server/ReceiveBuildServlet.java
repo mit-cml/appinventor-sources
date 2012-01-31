@@ -5,6 +5,7 @@ package com.google.appinventor.server;
 import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.io.ByteStreams;
 
 import java.io.IOException;
@@ -32,7 +33,6 @@ public class ReceiveBuildServlet extends OdeServlet {
 
   private final OdeAuthFilter odeFilter = new OdeAuthFilter();
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
-  private static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
 
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -59,9 +59,9 @@ public class ReceiveBuildServlet extends OdeServlet {
         }
         String fileName = zipEntry.getName();
         byte[] fileBytes = ByteStreams.toByteArray(zipInputStream);
-        if (ANDROID_KEYSTORE_FILENAME.equals(fileName)) {
+        if (StorageUtil.ANDROID_KEYSTORE_FILENAME.equals(fileName)) {
           LOG.info("Saving android.keystore for user: " + userId);
-          storageIo.addFilesToUser(userId, ANDROID_KEYSTORE_FILENAME);
+          storageIo.addFilesToUser(userId, StorageUtil.ANDROID_KEYSTORE_FILENAME);
           storageIo.uploadRawUserFile(userId, fileName, fileBytes);
         } else {
           String filePath = buildFileDirPath + "/" + fileName;

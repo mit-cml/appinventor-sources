@@ -49,4 +49,20 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   public void storeUserSettings(String settings) {
     storageIo.storeSettings(userInfoProvider.getUserId(), settings);
   }
+
+  /**
+   * Returns true if the current user has a user file with the given file name
+   */
+  @Override
+  public boolean hasUserFile(String fileName) {
+    return storageIo.getUserFiles(userInfoProvider.getUserId()).contains(fileName);
+  }
+
+  /**
+   * Deletes the user file with the given file name
+   */
+  @Override
+  public void deleteUserFile(String fileName) {
+    storageIo.deleteUserFile(userInfoProvider.getUserId(), fileName);
+  }
 }

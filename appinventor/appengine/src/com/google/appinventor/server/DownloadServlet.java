@@ -29,34 +29,41 @@ public class DownloadServlet extends OdeServlet {
    *    /<baseurl>/download/project-source/<projectId>/{<title>}
    *    /<baseurl>/download/all-projects-source
    *    /<baseurl>/download/file/<projectId>/<file-path>
-   * </pre>
+   *    /<baseurl>/download/userfile/<file-path>
    */
 
   // Constants for accessing split URI
   /*
    * Download kind can be: "project-output", "project-source",
-   * "all-projects-source", or "file".
+   * "all-projects-source", "file", or "userfile".
    * Constants for these are defined in ServerLayout.
    */
   private static final int DOWNLOAD_KIND_INDEX = 3;
+
+  // PROJECT_ID_INDEX is used for more than one download kind
   private static final int PROJECT_ID_INDEX = 4;
 
-  // NOTE(lizlooney) - currently all the SPLIT_LIMIT_... constants are 6, but
-  // the code does not assume that.
-
   // Constants used when download kind is "project-output".
+  // PROJECT_ID_INDEX = 4 (declared above)
   private static final int TARGET_INDEX = 5;
   private static final int SPLIT_LIMIT_PROJECT_OUTPUT = 6;
 
   // Constants used when download kind is "project-source".
   // Since the project title may contain slashes, it must be the last component in the URI.
+  // PROJECT_ID_INDEX = 4 (declared above)
   private static final int PROJECT_TITLE_INDEX = 5;
   private static final int SPLIT_LIMIT_PROJECT_SOURCE = 6;
 
-  // Constants used when download kind is "project-source".
+  // Constants used when download kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
+  // PROJECT_ID_INDEX = 4 (declared above)
   private static final int FILE_PATH_INDEX = 5;
   private static final int SPLIT_LIMIT_FILE = 6;
+
+  // Constants used when download kind is "userfile".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int USERFILE_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_USERFILE = 5;
 
 
   // Logging support
@@ -84,20 +91,17 @@ public class DownloadServlet extends OdeServlet {
       String[] uriComponents = uri.split("/");
       String downloadKind = uriComponents[DOWNLOAD_KIND_INDEX];
       String userId = userInfoProvider.getUserId();
-      long projectId = 0;
-      // When downloading all projects, no project id is specified.
-      if (!downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
-        projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-      }
 
       if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_OUTPUT)) {
         // Download project output file.
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_OUTPUT);
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String target = (uriComponents.length > TARGET_INDEX) ? uriComponents[TARGET_INDEX] : null;
         downloadableFile = fileExporter.exportProjectOutputFile(userId, projectId, target);
 
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_SOURCE)) {
         // Download project source files as a zip.
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE);
         String projectTitle = (uriComponents.length > PROJECT_TITLE_INDEX) ?
             uriComponents[PROJECT_TITLE_INDEX] : null;
@@ -117,9 +121,20 @@ public class DownloadServlet extends OdeServlet {
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_FILE)) {
         // Download a specific file.
         uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
         String filePath = (uriComponents.length > FILE_PATH_INDEX) ?
             uriComponents[FILE_PATH_INDEX] : null;
         downloadableFile = fileExporter.exportFile(userId, projectId, filePath);
+
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USERFILE)) {
+        // Download a specific user file, such as android.keystore
+        uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
+        if (uriComponents.length > USERFILE_PATH_INDEX) {
+          String filePath = uriComponents[USERFILE_PATH_INDEX];
+          downloadableFile = fileExporter.exportUserFile(userId, filePath);
+        } else {
+          throw new IllegalArgumentException("Missing user file path.");
+        }
 
       } else {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);

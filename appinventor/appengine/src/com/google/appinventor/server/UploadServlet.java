@@ -25,6 +25,37 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public class UploadServlet extends OdeServlet {
+
+  /*
+   * URIs for upload requests are structured as follows:
+   *    /<baseurl>/upload/project/<projectname>}
+   *    /<baseurl>/upload/file/<projectId>/<filePath>
+   *    /<baseurl>/upload/userfile/<filePath>
+   */
+
+  // Constants for accessing split URI
+  /*
+   * Upload kind can be: "project", "file", or "userfile".
+   * Constants for these are defined in ServerLayout.
+   */
+  private static final int UPLOAD_KIND_INDEX = 3;
+
+  // Constants used when upload kind is "project".
+  private static final int PROJECT_TITLE_INDEX = 4;
+  private static final int SPLIT_LIMIT_PROJECT_SOURCE = 5;
+
+  // Constants used when upload kind is "file".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int PROJECT_ID_INDEX = 4;
+  private static final int FILE_PATH_INDEX = 5;
+  private static final int SPLIT_LIMIT_FILE = 6;
+
+  // Constants used when upload kind is "userfile".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int USERFILE_PATH_INDEX = 4;
+  private static final int SPLIT_LIMIT_USERFILE = 5;
+
+
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
 
@@ -40,16 +71,17 @@ public class UploadServlet extends OdeServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
     setDefaultHeader(resp);
 
-    // URIs for upload requests are structured as follows:
-    //  /upload/{(project/<projectname>)|(file/<projectId>/<filename>)
-    String uriComponents[] = req.getRequestURI().split("/", 6);
-    String uploadKind = uriComponents[3];
-
     UploadResponse uploadResponse;
 
     try {
-      if (uploadKind.equals("project")) {
-        String projectName = uriComponents[4];
+      String uri = req.getRequestURI();
+      // First, call split with no limit parameter.
+      String[] uriComponents = uri.split("/");
+      String uploadKind = uriComponents[UPLOAD_KIND_INDEX];
+
+      if (uploadKind.equals(ServerLayout.UPLOAD_PROJECT)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_PROJECT_SOURCE);
+        String projectName = uriComponents[PROJECT_TITLE_INDEX];
         InputStream uploadedStream;
         try {
           uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_PROJECT_ARCHIVE_FORM_ELEMENT);
@@ -65,9 +97,10 @@ public class UploadServlet extends OdeServlet {
         } catch (FileImporterException e) {
           uploadResponse = e.uploadResponse;
         }
-      } else if (uploadKind.equals("file")) {
-        long projectId = Long.parseLong(uriComponents[4]);
-        String fileName = uriComponents[5];
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_FILE)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
+        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+        String fileName = uriComponents[FILE_PATH_INDEX];
         InputStream uploadedStream;
         try {
           uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
@@ -82,6 +115,22 @@ public class UploadServlet extends OdeServlet {
         } catch (FileImporterException e) {
           uploadResponse = e.uploadResponse;
         }
+      } else if (uploadKind.equals(ServerLayout.UPLOAD_USERFILE)) {
+        uriComponents = uri.split("/", SPLIT_LIMIT_USERFILE);
+        if (USERFILE_PATH_INDEX >= uriComponents.length) {
+          throw CrashReport.createAndLogError(LOG, req, null,
+              new IllegalArgumentException("Missing user file path."));
+        }
+        String fileName = uriComponents[USERFILE_PATH_INDEX];
+        InputStream uploadedStream;
+        try {
+          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_USERFILE_FORM_ELEMENT);
+        } catch (Exception e) {
+          throw CrashReport.createAndLogError(LOG, req, null, e);
+        }
+
+        fileImporter.importUserFile(userInfoProvider.getUserId(), fileName, uploadedStream);
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
       } else {
         throw CrashReport.createAndLogError(LOG, req, null,
             new IllegalArgumentException("Unknown upload kind: " + uploadKind));

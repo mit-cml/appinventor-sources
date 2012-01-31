@@ -93,6 +93,7 @@ img.c2 {border-width:0}
               <a href="#Phone">Connecting the phone</a><br>
               <a href="#AppsPhone">Running apps on the phone</a><br>
               <a href="#ImagesSounds">Working with sounds and images</a><br>
+              <a href="#Keystore">Keystores and Signing of Applications (".apk" files)</a><br>
               <a href="#justlost">I'm just lost!</a><br>
               <br>
               <h2>
@@ -412,6 +413,78 @@ img.c2 {border-width:0}
                 but there may be issues with other formats. See <a href=
                 "http://developer.android.com/guide/appendix/media-formats.html">developer.android.com/guide/appendix/media-formats.html</a>
                 for a list of supported media formats. Warning: Not all WAV files are PCM/WAV.
+              </p>
+              <h2>
+                <a name="Keystore">Keystores and Signing of Applications (".apk" files)</a>
+              </h2><br>
+              <b>I'm seeing the error [INSTALL_PARSE_FAILED_INCONSISTENT_CERTIFICATES] when I try
+              to download my app to my Android device</b>
+              <p>
+                If you get this error message you most likely are
+                trying to reinstall an app on your device that you
+                have previously packaged and installed with a different
+                App Inventor service. For example, you might have packaged
+                the app originally with the Google App Inventor
+                service and now you are trying to re-package with the MIT
+                App Inventor service, or with a service that someone
+                else is running. If you don't have any data associated
+                with the app on the device (e.g., in a TinyDB) the
+                easiest solution is to remove the app from the device
+                and then install the new version. If you need to
+                preserve the data associated with the app, and you
+                have a copy of the <b><i>keystore</i></b> that was used to
+                package the app that is already installed, see below for
+                how to upload the old keystore to the new service.
+              </p>
+              <b>What is a <i>keystore</i> and why might I want to upload or download one?</b>
+              <p>
+                Every Android app (".apk" file) needs to be signed
+                with a key belonging to the user who creates the app
+                (see <a href="http://developer.android.com/guide/publishing/app-signing.html">
+                developer.android.com/guide/publishing/app-signing.html</a> for lots more
+                information on signing apps).  App Inventor generally
+                handles this for you behind the scenes, so that most
+                users don't need to think about app signing most of
+                the time. However, you might run into a situation
+                where you need to know about app signing if you move
+                between different App Inventor services and you want
+                to reinstall an application that was built on a
+                different service while still preserving its local
+                data. App Inventor keeps the key used to sign your
+                apps in a file called a <b><i>keystore</i></b>. When you
+                first start using an App Inventor service it creates a
+                new keystore for you and uses that to sign any apps
+                you package on the service. If you move to a different
+                App Inventor service and want to keep using the same
+                keystore to sign your apps (to avoid the <i>inconsistent
+                certificates</i> problem mentioned above), you will
+                need to download (or otherwise obtain) the keystore from the old service and
+                upload that keystore into the new service. Options for downloading
+                and uploading keystores can be found in the <b>My Projects</b> tab, under
+                the <b>More Actions</b> menu. Note that
+                the same keystore is used to sign all of a user's
+                projects in a given App Inventor service, so you
+                cannot designate one keystore for some apps and a
+                different keystore for other apps.
+              </p>
+              <b>How can I get the keystore that was used to package my apps in the original
+                Google App Inventor service?</b>
+              <p>
+                Most users of the original Google App Inventor service
+                can find a copy of their app source zip files, as well
+                as the keystore that was used to package their apps,
+                in their Google Docs account:
+                <ul>
+                <li>In your browser, go to http://docs.google.com.</li>
+                <li>Search for <b><i>All-App-Inventor-Projects.zip</i></b>.</li>
+                <li>Download the zip file by clicking on <b><i>Download</i></b> under
+                  <b><i>File</i></b>.</li>
+                <li>Unzip the downloaded file and you will find a directory called
+                  <b><i>keystore</i></b> containing a file called <b><i>android.keystore</i></b>
+                  This file contains the keystore that was used to sign the apps for that
+                  App Inventor account on the Google App Inventor service.
+                </li>
+                </ul>
               </p>
               <h2>
                 <a name="justlost">I'm just lost!</a>

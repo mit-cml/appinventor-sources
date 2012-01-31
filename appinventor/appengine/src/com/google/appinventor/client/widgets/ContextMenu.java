@@ -5,6 +5,7 @@ package com.google.appinventor.client.widgets;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.MenuBar;
 import com.google.gwt.user.client.ui.MenuItem;
+import com.google.gwt.user.client.ui.MenuItemSeparator;
 import com.google.gwt.user.client.ui.PopupPanel;
 
 /**
@@ -46,6 +47,14 @@ public final class ContextMenu {
     menuItem.setStylePrimaryName("ode-ContextMenuItem");
     menuBar.addItem(menuItem);
     return menuItem;
+  }
+
+  /**
+   * Adds a separator to the context menu.
+   */
+  public void addSeparator() {
+    MenuItemSeparator menuItemSeparator = menuBar.addSeparator();
+    menuItemSeparator.setStylePrimaryName("ode-ContextMenuItemSeparator");
   }
 
   /**

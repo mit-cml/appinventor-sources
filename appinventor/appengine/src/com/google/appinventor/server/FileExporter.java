@@ -63,7 +63,7 @@ public interface FileExporter {
   ProjectSourceZip exportAllProjectsSourceZip(String userId, String zipName) throws IOException;
 
   /**
-   * Exports a specific file.
+   * Exports a specific project file.
    *
    * @param userId the userId
    * @param projectId the project id belonging to the userId
@@ -73,4 +73,15 @@ public interface FileExporter {
    *         (file is not known)
    */
   RawFile exportFile(String userId, long projectId, String filePath) throws IOException;
+
+  /**
+   * Exports a specific user file.
+   *
+   * @param userId the userId
+   * @param filePath the full path of the file
+   * @return RawFile with the name and content
+   * @throws IllegalArgumentException if download request cannot be fulfilled
+   *         (file is not known)
+   */
+  RawFile exportUserFile(String userId, String filePath) throws IOException;
 }

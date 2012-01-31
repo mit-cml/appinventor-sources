@@ -43,6 +43,10 @@ body {
   padding-left: 8px;
 }
 
+.ode-ContextMenuItemSeparator {
+  background-color: #d2d2d2;
+}
+
 .ode-CurrentColor {
   padding-left: 0px;
 }

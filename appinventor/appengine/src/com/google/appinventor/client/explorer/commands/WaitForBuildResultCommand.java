@@ -86,6 +86,7 @@ public class WaitForBuildResultCommand extends ChainableCommand {
         Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_SUBACTION_BUILD_YA,
                             node.getName(), getElapsedMillis());
         if (result.succeeded()) {
+          ode.getProjectToolbar().updateKeystoreButtons();
           executeNextCommand(node);
         } else if (result.getResult() == 1) {
           // General build error
