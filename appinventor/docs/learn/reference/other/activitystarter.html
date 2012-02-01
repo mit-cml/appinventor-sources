@@ -93,9 +93,10 @@ img.c2 {border-width:0}
                 to the activity starter.
               </p>
               <p>
-                You can also start an application and get back a result from it to use in further
-                processing, provided that the application is designed to a result. Presently, you
-                can get back text results only.
+                For applications that are appropriately designed, you can pass values to the
+                applications when starting it. You can also start an application and get back a result
+                from it to use in further processing, provided that the application is designed to
+                return a result. Presently, you can pass and receive text values only.
               </p>
               <p>
                 To start another application, you must supply certain control information to the
@@ -104,7 +105,7 @@ img.c2 {border-width:0}
                 some examples.
               </p>
               <h2>
-                Starting Another App Inventor Application
+                Starting Another App Inventor Application from your App Inventor App
               </h2>
               <p>
                 You can start another app that was created with App Inventor if you know its
@@ -125,18 +126,17 @@ img.c2 {border-width:0}
                 For example, here is a first line you might see for an App named HelloPurr.:
               </p>
               <p>
-                <code>main=com.gmail.Simpson.Homer.HelloPurr.Screen1</code>
+                <code>main=appinventor.ai_HomerSimpson.HelloPurr</code>
               </p>
               <p>
-                The <code>gmail.Simpson.Homer</code> part of the name comes from the App Inventor
-                user account, such as, <code><a href=
-                "mailto:Homer.Simpson@gmail.com">Homer.Simpson@gmail.com</a></code>.
+                The <code>HomerSimpson</code> part of the name comes from the App Inventor
+                user account.
               </p>
               <p>
                 To start this app, you would use an activity starter component with these
                 properties:
-              </p><code>ActivityPackage: com.gmail.Simpson.Homer.HelloPurr</code><br>
-              <code>ActivityClass: com.gmail.Simpson.Homer.HelloPurr.Screen1</code>
+              </p><code>ActivityPackage: appinventor.ai_HomerSimpson.HelloPurr</code><br>
+              <code>ActivityClass: appinventor.ai_HomerSimpson.HelloPurr.Screen1</code>
               <p>
                 Invoking the activity starter's <code>StartActivity</code> method will start
                 HelloPurr. When HelloPurr finishes (if it does), the original app's
@@ -146,16 +146,22 @@ img.c2 {border-width:0}
                 <em>Note:</em> If you are going to start another App Inventor app, make sure you
                 use the correct package name. For example, if someone posts the source code (zip
                 file) for an app, and you repackage that app, you'll end up with a different
-                package name than he had. In cases of doubt, start the activity by hand and run
+                package name than he had. In cases of doubt, or if you don't have the source code,
+                start the activity by hand on the phone and run
                 "adb logcat" to view the Android system log and see what was actually started, as
                 explained below in "Figuring out how to set the properties".
               </p>
+              <em>Note:</em> If you will be starting a second App Inventor app that you yourself are
+              writing, it's generally easier and more convenient to design the whole thing as a
+              single multiple screen app, rather than creating two separate apps.
+              See the section below on "Activity Starter versus Multiple Screen Apps".
+              </p>
               <h2>
-                Starting a Builtin Phone Application
+                Starting a Builtin Phone Application from your App Inventor App
               </h2>
               <p>
-                Apps that come with the phone can be invokd using package names and class names, as
-                above. These apps can also launch response to an <em>intent</em>, which is the
+                Apps that come with the phone can be invoked using package names and class names, as
+                above. Android apps can also launch responses to an <em>intent</em>, which is the
                 Android operating system's way of specifying something to do without necessarily
                 designating a particular app. You can find information about intents (written for
                 advanced developers) in the <a href=
@@ -163,10 +169,11 @@ img.c2 {border-width:0}
                 system documentation</a>.
               </p>
               <p>
-                Some apps can take extra information when they are launched. For example, maps can
+                Some apps are designed to take extra information when
+                they are launched. For example, maps can
                 take geographic information that specifies which map to display. Another example is
                 launching a Web search with extra information that specifies the text to search
-                for. You must consult documentation about the particular app to learn what this
+                for. You must consult the documentation for the particular app to learn what this
                 extra information is and how to specify it. Generally, you specify the information
                 by setting the activity starter's properties just before the other app is launched.
               </p>
@@ -213,7 +220,7 @@ img.c2 {border-width:0}
               <p>
                 To start the Android mailer application, use the action
                 <code>android.intent.action.VIEW</code>. You can use Activity starter's
-                <code>DataUri</code> property to specify the recipient, the message subject, and
+                <code>DataUri</code> property to specify the recipient, the subject, and the
                 body of the message. In each case, starting the activity will bring up the Android
                 mailer, and you can complete the message and then press "Send".
               </p>
@@ -227,7 +234,7 @@ img.c2 {border-width:0}
               <p>
                 If you specify:
               </p><code>Action: android.intent.action.VIEW</code><br>
-              <code>DataUri: mailto:santa@northpole.com?subject=Please Santa&amp;Bring me a
+              <code>DataUri: mailto:santa@northpole.com?subject=Please Santa&body=Bring me a
               pony</code>
               <p>
                 then starting the activity will bring up the mailer, with the addressee, the
@@ -235,8 +242,11 @@ img.c2 {border-width:0}
                 sending the message, if you prefer.
               </p>
               <p>
-                You can find the complete rules for encoding messages in the DataURI at <a href=
-                "http://www.ianr.unl.edu/internet/mailto.html">http://www.ianr.unl.edu/internet/mailto.html</a>.
+                The DataURI here must be a URL encoded message designed to work with the internet
+                mailto service. Search the Web to find appropriate documentation and tools for
+                creating these, for example <a
+                href="http://email.about.com/od/mailtoemaillinks/a/mailto_elements.htm">
+                Elements of a Mailto: URL</a>
               </p>
               <h3>
                 Show a map for a location
@@ -311,8 +321,7 @@ img.c2 {border-width:0}
                 these intents for the benefit of other Android developers. For hints on starting
                 other apps using intents, see the <a href=
                 "http://developer.android.com/reference/android/content/Intent.html">Android API
-                documentation</a> and <a href="http://www.openintents.org/en/node/35">OpenIntent's
-                list of Intents</a>.
+                documentation</a> or search the Android developer forums.
               </p>
               <p>
                 If you have an app on your phone and you don't have the source code, you might
@@ -320,51 +329,61 @@ img.c2 {border-width:0}
                 by launching the app and inspecting the Android system log, as indicated above.
               </p>
               <h2>
-                Getting values back from the apps you start
+                Receiving results from apps that you start
               </h2>
               <p>
-                Some apps are constructed to return a value to to access the result to access the
-                result depends on the design of the activity being started. Currently, App Inventor
-                can get back text results only.
+                Some apps are constructed to return a result.  You can see that result as the  
+                <code>result</code> argument of the activity starter's <code>AfterActivity</code>
+                event. Currently, App Inventor can receive text results only.
               </p>
               <h3>
-                Returning results from App Inventor Apps
+                Returning results from App Inventor apps, and getting the result
               </h3>
               <p>
-                You can create App Inventor activities that return a (text) result to their
+                You can create App Inventor apps that return a (text) result to their
                 callers, so they can be used as subroutines. To return a result, invoke the command
-                <code>close screen with result</code> (located in the Control drawer). Your
-                subroutine will will terminate, and the argument of <code>close screen with
-                result</code> will become available to the activity starter that started it, passed
-                as an argument to the <code>AfterActivity</code> event.
+                <code>close screen with plain text</code> (located in the Control drawer). Your
+                subroutine app will terminate, and the argument of <code>close screen with
+                plain text</code> will become available to the app that called it.
+                If the calling app was itself an App Inventor app that used an activity starter,
+                it will see that text as
+                the argument to the activity starter's <code>AfterActivity</code> event.
               </p>
               <p>
-                More specifically, suppose there is a <code>SubroutineApp</code> designed to be
+                In more detail, suppose there are two App Inventor apps:
+                A <code>SubroutineApp</code> designed to  be
                 started with an activity starter and return a value, and a <code>CallerApp</code>
                 that uses an ActivityStarter to call <code>SubroutineApp</code>. To return the
-                result, <code>SubroutineApp</code> executes <code>close screen with result</code>,
-                giving it as argument the result that should be returned to the caller.
+                result, <code>SubroutineApp</code> executes
+                <code>close screen with plain text</code>,
+                giving it as argument the result (text only) that should be returned to the caller.
               </p>
               <p>
-                On the caller side, <code>CallerApp</code> sets up its Activity Starter with the
+                On the caller side, <code>CallerApp</code> 
+                sets up its Activity Starter with the
                 correct package name and class name for starting <code>SubroutineApp</code>. It
                 must also set the <code>ActivityStarter.ResultName</code> property to the special
                 text string <code>APP_INVENTOR_RESULT</code>. Then <code>CallerApp</code> starts
                 the <code>SubroutineApp</code> activity. When the subroutine finishes, the Activity
-                Starter's <code>AfterActivity</code> event triggers, and the <code>result</code>
-                argument to <code>AfteActivity</code> will be the result that was passed back from
-                <code>SubroutineApp</code>. That same information is available as the
+                Starter's <code>AfterActivity</code> event triggers,
+                and the result that was passed back from
+                <code>SubroutineApp</code> will be available as the <code>result</code>
+                argument to <code>AfterActivity</code>. That same information is available as the
                 ActivityStarter's <code>Result</code> property.
               </p>
               <h3>
-                Passing values to App Inventor Apps
+                Calling App Inventor Apps and passing values to them
               </h3>
               <p>
-                You can pass a text value to an App Inventor app that you start with the Activity
-                Starter. To do this, set the ActivityStarter's ExtraKey property to
-                <code>APP_INVENTOR_START</code> and the ExtraValue property to the text you want to
-                pass. The second app can retrieve that value by using the <code>get start
-                text</code> block from the Control drawer.
+               If you are writing an App Inventor<code>CallerApp</code> to call an
+               App Inventor<code>SubroutineApp</code>, you can pass a text value
+               to <code>SubroutineApp</code>.
+                To do this, use an Activity Starter in <code>CallerApp</code> with the
+                ExtraKey property to set to the special tag
+                <code>APP_INVENTOR_START</code> and the ExtraValue
+                property set to the text you want to
+                pass. The <code>SubroutineApp</code> can retrieve that value by using
+                the <code>get start plain text</code> block from the Control drawer.
               </p>
               <p>
                 By passing and returning results, you can combine several App Inventor apps, both
@@ -375,13 +394,16 @@ img.c2 {border-width:0}
               </h3>
               <p>
                 Getting values back from other applications is like getting values back from App
-                Inventor apps. In general, an app will return a result that is designated by a
-                name, where the result is designated by a name, and the expected name is specified
+                Inventor apps. In general in Android, an activity will
+                return a result that is designated by a
+                name, where the result is designated by a name, where the name is specified
                 with the Activity Starter's <code>ResultName</code> property. The name to use for
                 App Inventor apps is <code>APP_INVENTOR_RESULT</code>, as described above. Other
                 applications, not created with App Inventor, will use other names, and you'll need
-                to know those names in order get values back from those applications. Here you'll
-                need documentation about the app you want to use as a subroutine. Some developers
+                to know those names in order get values back from
+                those applications. In general, you'll
+                need to consult documentation about the app you want to use as a subroutine.
+                Some developers
                 provide this information, or sometimes you'll have access to the source code.
               </p>
               <p>
@@ -427,14 +449,44 @@ img.c2 {border-width:0}
                 plays the music track as appropriate.
               </p>
               <h3>
-                Is the application available?
-              </h3>If your app calls other apps as activities, you'll want to check that those
+              Is the application available?
+              </h3>
+              <p>
+              If your app calls other apps as activities, you'll want to check that those
               other apps are available on your user's phone before trying to start them. You can
               check this using the Activity Starter method <code>ResolveActivity</code>, which
               returns the name of the Activity that would be started, given the package or intent
               information you've provided. If this name is blank, then the required application is
               not present, and you can warn your user.
-            </div>
+              </p>
+               <h3>
+               Using the Activity Starter versus using multiple screens
+              </h3>
+              <p>
+              The sections above explain how you can create an App Inventor app that calls
+              another App Inventor app, perhaps with passing and returning text values.   If you
+              will be writing both apps, it's probably better to make a single
+              multiscreen app rather than create two apps and use the Activity Starter.  This
+              will simplify things for your users, because they will need install only one app on
+              their device.   Also, with multiple screen apps, you can pass and return lists as
+              values rather than just text, and you can share values
+              between the screens with TinyDB.
+              See the documentation on multiple screen apps for details.
+              </p>
+               <h4>
+               Note on upgrading old apps
+              </h4>
+              <p>
+              The activity starter commands described here have
+              changed from earlier releases, which used
+              <code>close screen with result</code> and <code>get
+              start text</code>, rather than the newer <code>close screen
+              with plain text</code> and <code>get start plain
+              text</code>.  If you load the source for an app from before 2012 and
+              release 66, App Inventor will flag the old blocks
+              and require you to replace them with the new versions.
+              </p>
+        </div>
           </div>
         </div>
         <div class="footer">
@@ -468,3 +520,4 @@ img.c2 {border-width:0}
     </div>
   </body>
 </html>
+    
