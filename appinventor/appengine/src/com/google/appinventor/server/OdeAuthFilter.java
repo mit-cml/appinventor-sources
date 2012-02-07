@@ -126,6 +126,7 @@ public class OdeAuthFilter implements Filter {
       String userId = apiUser.getUserId();
       String email = apiUser.getEmail();
       User user = storageIo.getUser(userId, email);
+      user.setIsAdmin(userService.isUserAdmin());
       if (!email.equals(user.getUserEmail())) {
         user.setUserEmail(email);
       }

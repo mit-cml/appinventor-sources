@@ -74,4 +74,13 @@ public class LocalUser implements UserInfoProvider {
     }
   }
 
+  @Override
+  public boolean getIsAdmin() {
+    try {
+      return user.get().getIsAdmin();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
 }

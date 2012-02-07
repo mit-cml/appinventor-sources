@@ -45,6 +45,7 @@ import java.nio.channels.Channels;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -108,9 +109,14 @@ public class ObjectifyStorageIo implements  StorageIo {
     return getUser(userId, null);
   }
 
+  /*
+   * Note that the User returned by this method will always have isAdmin set to
+   * false. We leave it to the caller to determine whether the user has admin
+   * priviledges.
+   */
   @Override
   public User getUser(final String userId, final String email) {
-    final User user = new User(userId, email, false);
+    final User user = new User(userId, email, false, false);
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1273,6 +1279,18 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, null, e);
     }
     return motd.t;
+  }
+  
+  @Override
+  public String findUserByEmail(final String email) throws NoSuchElementException {
+    Objectify datastore = ObjectifyService.begin();
+    // note: if there are multiple users with the same email we'll only
+    // get the first one. we don't expect this to happen
+    UserData userData = datastore.query(UserData.class).filter("email", email).get();
+    if (userData == null) {
+      throw new NoSuchElementException("Couldn't find a user with email " + email);
+    }
+    return userData.id;
   }
 
   private void initMotd() {

@@ -98,6 +98,13 @@ public class ServerLayout {
 
   /**
    * Relative path within {@link com.google.appinventor.server.DownloadServlet}
+   * for downloading a project's sources for a user other than the logged-in
+   * user (admin only)
+   */
+  public static final String DOWNLOAD_USER_PROJECT_SOURCE = "user-project-source";
+
+  /**
+   * Relative path within {@link com.google.appinventor.server.DownloadServlet}
    * for downloading a file
    */
   public static final String DOWNLOAD_FILE = "file";

@@ -9,6 +9,7 @@ import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
 
@@ -376,5 +377,17 @@ public interface StorageIo {
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
                                           @Nullable String zipName) throws IOException;
+  
+  /**
+   * Find a user's id given their email address. Note that this query is case
+   * sensitive!
+   * 
+   * @param email user's email address
+   * 
+   * @return the user's id if found
+   * @throws NoSuchElementException if we can't find a user with that exact
+   *    email address
+   */
+  String findUserByEmail(String email) throws NoSuchElementException;
 
 }

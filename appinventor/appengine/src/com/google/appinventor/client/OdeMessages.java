@@ -687,6 +687,34 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("More Actions")
   @Description("Label of the button leading to more cascade items")
   String moreActionsButton();
+  
+  @DefaultMessage("Download User Source")
+  @Description("Label of the button for admins to download a user's project source")
+  String downloadUserSourceButton();
+  
+  @DefaultMessage("Download User Source")
+  @Description("Title of the dialog box for downloading a user's project source")
+  String downloadUserSourceDialogTitle();
+  
+  @DefaultMessage("User id or email (case-sensitive):")
+  @Description("Label for the user id input text box")
+  String userIdLabel();
+
+  @DefaultMessage("Project id or name:")
+  @Description("Label for the project id input text box")
+  String projectIdLabel();
+  
+  @DefaultMessage("Please specify both a user email address or id and a project name or id " +
+      "for the project to be downloaded. Ids are numeric and may come from the system " +
+      "logs or from browsing the Datastore. If you use an email address, it must match " +
+      "exactly the stored email address in the Datastore. Similarly, project names must " +
+      "match exactly. Both are case sensitive.")
+  @Description("Error message reported when user id or project id is missing")
+  String invalidUserIdOrProjectIdError();
+  
+  @DefaultMessage("Admin")
+  @Description("Label of the button leading to admin functionality")
+  String adminButton();
 
   @DefaultMessage("Please select a project to delete")
   @Description("Error message displayed when no project is selected")

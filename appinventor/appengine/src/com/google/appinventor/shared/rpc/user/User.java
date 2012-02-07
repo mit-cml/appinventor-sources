@@ -17,6 +17,9 @@ public class User implements IsSerializable, UserInfoProvider {
 
   // whether user has accepted terms of service
   private boolean tosAccepted;
+  
+  // whether the user has admin priviledges
+  private boolean isAdmin;
 
   /**
    * Creates a new user data transfer object.
@@ -25,10 +28,11 @@ public class User implements IsSerializable, UserInfoProvider {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, boolean tosAccepted) {
+  public User(String id, String email, boolean tosAccepted, boolean isAdmin) {
     this.id = id;
     this.email = email;
     this.tosAccepted = tosAccepted;
+    this.isAdmin = isAdmin;
   }
 
   /**
@@ -85,6 +89,22 @@ public class User implements IsSerializable, UserInfoProvider {
   public boolean getUserTosAccepted() {
     return tosAccepted;
   }
+  
+  @Override
+  public boolean getIsAdmin() {
+    return isAdmin;
+  }
+  
+  /**
+   * Sets whether the user has admin priviledges.
+   *
+   * @param admin {@code true} if the user has admin priviledges,
+   *              {@code false} otherwise
+   */
+  public void setIsAdmin(boolean admin) {
+    isAdmin = admin;
+  }
+
 
   /**
    * Returns this object.
@@ -107,6 +127,6 @@ public class User implements IsSerializable, UserInfoProvider {
   }
 
   public User copy() {
-    return new User(id, email, tosAccepted);
+    return new User(id, email, tosAccepted, isAdmin);
   }
 }

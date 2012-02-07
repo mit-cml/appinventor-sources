@@ -3,6 +3,8 @@
 package com.google.appinventor.server;
 
 import com.google.appinventor.common.utils.StringUtils;
+import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -11,6 +13,7 @@ import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.storage.StorageUtil;
 
 import java.io.IOException;
+import java.util.NoSuchElementException;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletOutputStream;
@@ -27,6 +30,7 @@ public class DownloadServlet extends OdeServlet {
    * URIs for download requests are structured as follows:
    *    /<baseurl>/download/project-output/<projectId>/{<target>}
    *    /<baseurl>/download/project-source/<projectId>/{<title>}
+   *    /<baseurl>/download/user-project-source/<projectIdOrName>/<userIdOrEmail>
    *    /<baseurl>/download/all-projects-source
    *    /<baseurl>/download/file/<projectId>/<file-path>
    *    /<baseurl>/download/userfile/<file-path>
@@ -53,6 +57,10 @@ public class DownloadServlet extends OdeServlet {
   // PROJECT_ID_INDEX = 4 (declared above)
   private static final int PROJECT_TITLE_INDEX = 5;
   private static final int SPLIT_LIMIT_PROJECT_SOURCE = 6;
+
+  // Constants used when download kind is "user-project-source".
+  private static final int USER_PROJECT_USERID_INDEX = 5;
+  private static final int SPLIT_LIMIT_USER_PROJECT_SOURCE = 6;
 
   // Constants used when download kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
@@ -112,6 +120,57 @@ public class DownloadServlet extends OdeServlet {
             projectId, includeProjectHistory, false, zipName);
         downloadableFile = zipFile.getRawFile();
 
+      } else if (downloadKind.equals(ServerLayout.DOWNLOAD_USER_PROJECT_SOURCE)) {
+        // Download project source files for the specified user project as a zip.
+        uriComponents = uri.split("/", SPLIT_LIMIT_USER_PROJECT_SOURCE);
+        
+        String userIdOrEmail = uriComponents[USER_PROJECT_USERID_INDEX];
+        String projectUserId;
+        StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+        if (userIdOrEmail.contains("@")) {
+          // email address
+          try {
+            projectUserId = storageIo.findUserByEmail(userIdOrEmail);
+          } catch (NoSuchElementException e) {
+            throw new IllegalArgumentException(e.getMessage());
+          }
+        } else {
+          projectUserId = userIdOrEmail;
+        }
+
+        String projectIdOrName = uriComponents[PROJECT_ID_INDEX];
+        String projectName;
+        long projectId = 0;
+        try {
+          // try to parse the projectIdOrName as a number, since project names
+          // must start with a letter.
+          projectId = Long.parseLong(projectIdOrName);
+          projectName = storageIo.getProjectName(projectUserId, projectId);
+        } catch (NumberFormatException e) {
+          // assume we got a name instead
+          for (Long pid: storageIo.getProjects(projectUserId)) {
+            if (storageIo.getProjectName(projectUserId, pid).equals(projectIdOrName)) {
+              projectId = pid;
+            }
+          }
+          if (projectId == 0) {
+            // didn't find project by name
+            throw new IllegalArgumentException("Can't find a project named " 
+                + projectIdOrName + " for user id " + projectUserId);
+          } else {
+            projectName = projectIdOrName;
+          }
+        }
+        String zipName;
+        if (!projectName.isEmpty()) {
+          zipName = projectName + "_" + projectUserId + ".zip";
+        } else {
+          zipName = "u" + projectUserId + "_p" + projectId + ".zip";
+        }
+        ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
+            projectId, /* include history*/ true, /* include keystore */ true, zipName);
+        downloadableFile = zipFile.getRawFile();
+        
       } else if (downloadKind.equals(ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE)) {
         // Download all project source files as a zip of zips.
         ProjectSourceZip zipFile = fileExporter.exportAllProjectsSourceZip(

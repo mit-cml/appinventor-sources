@@ -13,6 +13,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.widgets.Toolbar.ToolbarItem;
+import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -38,6 +39,8 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_DOWNLOAD_ALL = "DownloadAll";
   private static final String WIDGET_NAME_DOWNLOAD_SOURCE = "DownloadSource";
   private static final String WIDGET_NAME_UPLOAD_SOURCE = "UploadSource";
+  private static final String WIDGET_NAME_ADMIN = "Admin";
+  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
@@ -70,7 +73,12 @@ public class ProjectToolbar extends Toolbar {
     otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
         MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
-
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      List<ToolbarItem> adminItems = Lists.newArrayList();
+      adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
+          MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+      addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
+    }
     updateKeystoreButtons();
   }
 
@@ -203,6 +211,13 @@ public class ProjectToolbar extends Toolbar {
 
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
           ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+    }
+  }
+
+  private static class DownloadUserSourceAction implements Command {
+    @Override
+    public void execute() {
+      new DownloadUserSourceWizard().center();
     }
   }
 

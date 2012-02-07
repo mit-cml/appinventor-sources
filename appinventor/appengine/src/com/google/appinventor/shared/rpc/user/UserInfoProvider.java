@@ -35,4 +35,12 @@ public interface UserInfoProvider {
    *         {@code false} otherwise
    */
   boolean getUserTosAccepted();
+  
+  /**
+   * Returns whether the user has admin priviledges
+   * 
+   * @return {@code true} if the user has admin priviledges, 
+   *         {@code false} otherwise
+   */
+  boolean getIsAdmin();
 }

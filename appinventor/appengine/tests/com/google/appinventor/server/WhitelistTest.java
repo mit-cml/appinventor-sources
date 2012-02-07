@@ -44,7 +44,7 @@ public class WhitelistTest {
   }
 
   LocalUser makeUser(String email) {
-    user.set(new User(ID, email, false));
+    user.set(new User(ID, email, false, false));
     return user;
   }
 
