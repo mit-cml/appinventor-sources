@@ -211,7 +211,7 @@
       <include name="${appinventor.pkg}/shared/**/*.java" />
       <classpath>
         <!-- jars that we put in <build>/war/WEB-INF/lib -->
-        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar"/>
+        <fileset dir="${build.war.dir}/WEB-INF/lib" includes="*.jar" excludes="AiSharedLib.jar"/>
       </classpath>
     </ai.javac>
 

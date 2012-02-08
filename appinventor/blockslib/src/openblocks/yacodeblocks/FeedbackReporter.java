@@ -98,7 +98,7 @@ public class FeedbackReporter extends JOptionPane {
         throw new RuntimeException(msgText);
       }
       String options[] = {"NOT NOW", "EXIT"};
-      HTMLPane htmlMsg = new HTMLPane(msgText + "<p>Exit the Blocks Editor now?</p> + "
+      HTMLPane htmlMsg = new HTMLPane(msgText + "<p>Exit the Blocks Editor now?</p>"
           + TROUBLESHOOTING_LINK);
       int choice = showOptionDialog(frame, htmlMsg,
           ERROR_MESSAGE_TITLE, YES_NO_OPTION, ERROR_MESSAGE, null, options, options[0]);

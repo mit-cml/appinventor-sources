@@ -2,6 +2,7 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.server.project.utils.Security;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -44,8 +45,14 @@ public class ReceiveBuildServlet extends OdeServlet {
     // will throw an ArrayIndexOutOfBoundsException. We could deal with that outcome more cleanly
     // by returning an HTTP error code. This applies to all of our servlets.
 
-    String userId = Security.decryptUserId(uriComponents[3]);
-    long projectId = Security.decryptProjectId(uriComponents[3]);
+    String userId;
+    long projectId;
+    try {
+      userId = Security.decryptUserId(uriComponents[3]);
+      projectId = Security.decryptProjectId(uriComponents[3]);
+    } catch (EncryptionException e) {
+      throw CrashReport.createAndLogError(LOG, req, null, e);
+    }
 
     // Set the user in the OdeFilter, which is used everywhere as the UserInfoProvider.
     odeFilter.setUserFromUserId(userId);

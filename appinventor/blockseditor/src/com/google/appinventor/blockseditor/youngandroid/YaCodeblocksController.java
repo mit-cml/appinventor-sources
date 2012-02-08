@@ -62,11 +62,16 @@ public final class YaCodeblocksController implements ExternalController {
       OutputStreamWriter writer = new OutputStreamWriter(httpUrlConn.getOutputStream(), "UTF-8");
       writer.write(contents);
       writer.close();
-      int responseCode = httpUrlConn.getResponseCode();
-      if (responseCode == HttpURLConnection.HTTP_OK) {
+      int responseCode = checkForUpdatedAppInventorServer(httpUrlConn);
+      if (responseCode == HttpURLConnection.HTTP_OK ||
+          responseCode == HttpURLConnection.HTTP_NO_CONTENT ||
+          responseCode == HttpURLConnection.HTTP_CONFLICT) {
         System.out.println("Saved " + what);
         return true;
-      } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND ||
+      }
+
+      if (responseCode == HttpURLConnection.HTTP_NOT_FOUND ||
+          responseCode == HttpURLConnection.HTTP_GONE ||
           responseCode == HttpURLConnection.HTTP_BAD_GATEWAY ||
           responseCode == HttpURLConnection.HTTP_INTERNAL_ERROR) {
         FeedbackReporter.showErrorMessageWithExit(
@@ -76,7 +81,7 @@ public final class YaCodeblocksController implements ExternalController {
             "the Designer web page, and then reopening the Blocks Editor.");
       } else {
         FeedbackReporter.showSystemErrorMessage("Unexpected response code: "
-            + httpUrlConn.getResponseCode()
+            + responseCode
             + " error stream: "
             + inputStreamToString(httpUrlConn.getErrorStream(), httpUrlConn.getContentEncoding()));
       }
@@ -119,12 +124,40 @@ public final class YaCodeblocksController implements ExternalController {
   }
 
   /*
+   * Checks for the response code HTTP_CONFLICT or HTTP_GONE from the given HttpURLConnection and
+   * reports an appropriate message to the user concerning an updated App Inventor server.
+   */
+  private int checkForUpdatedAppInventorServer(HttpURLConnection httpUrlConn) throws IOException {
+    int responseCode = httpUrlConn.getResponseCode();
+    if (responseCode == HttpURLConnection.HTTP_CONFLICT ||
+      // HTTP_CONFLICT (response code 409) is used when the server is now running a different
+      // version of code than it was when it generated the baseUrl, but it was able to decrypt
+      // the user and project ids because the encryption keystore files were not updated.
+        responseCode == HttpURLConnection.HTTP_GONE) {
+      // HTTP_GONE (response code 410) is used when the server is now running a different
+      // version of code than it was when it generated the baseUrl, and it was unable to decrypt
+      // the user and project ids because the encryption keystore files have been updated.
+      FeedbackReporter.showErrorMessageWithExit(
+          "The App Inventor server has been updated since you started the Blocks Editor." +
+          "<p>You need to close the Blocks Editor, refresh the Designer web page, and then reopen " +
+          "the Blocks Editor.</p>");
+    }
+    return responseCode;
+  }
+
+  /*
    * Retrieve the contents named by {@code path} from the server. Throws
    * {@link IOException} if an error occurred.
    */
   String getContentsFromServer(String path) throws IOException {
-    URLConnection urlConnection = conn.getConnection(baseUrl + path);
-    return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding());
+    HttpURLConnection urlConnection = conn.getConnection(baseUrl + path);
+    int responseCode = checkForUpdatedAppInventorServer(urlConnection);
+    if (responseCode == HttpURLConnection.HTTP_OK ||
+        responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+      return inputStreamToString(urlConnection.getInputStream(), urlConnection.getContentEncoding());
+    }
+    String partialPath = path.substring(path.indexOf('/') + 1);
+    throw new IOException("HTTP request for " + partialPath + " returned " + responseCode);
   }
 
   /*
@@ -133,15 +166,16 @@ public final class YaCodeblocksController implements ExternalController {
    */
   Map<String, String> downloadZipFromServer(String assetsPath) throws IOException {
     HttpURLConnection httpUrlConn = conn.getConnection(baseUrl + assetsPath);
-    int response = httpUrlConn.getResponseCode();
-    if (response == HttpURLConnection.HTTP_NO_CONTENT) {
+    int responseCode = checkForUpdatedAppInventorServer(httpUrlConn);
+    if (responseCode == HttpURLConnection.HTTP_OK) {
+      return Util.downloadZipFile(httpUrlConn);
+    }
+    if (responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
       System.out.println("No zip file from server. Returning empty file map.");
       return new HashMap<String, String>();
-    } else if (response != HttpURLConnection.HTTP_OK) {
-      throw new IOException("HTTP request for URL " + baseUrl + assetsPath +
-          " returned " + response);
     }
-    return Util.downloadZipFile(httpUrlConn);
+    String partialPath = assetsPath.substring(assetsPath.indexOf('/') + 1);
+    throw new IOException("HTTP request for " + partialPath + " returned " + responseCode);
   }
 
   /**
@@ -152,8 +186,14 @@ public final class YaCodeblocksController implements ExternalController {
    */
   public String downloadContentFromServer(String path) throws IOException {
     String fileName = parseBaseName(path);
-    return Util.downloadFileToGivenNameElseExtension(conn.getConnection(baseUrl + path),
-        fileName);
+    HttpURLConnection httpUrlConn = conn.getConnection(baseUrl + path);
+    int responseCode = checkForUpdatedAppInventorServer(httpUrlConn);
+    if (responseCode == HttpURLConnection.HTTP_OK ||
+        responseCode == HttpURLConnection.HTTP_NO_CONTENT) {
+      return Util.downloadFileToGivenNameElseExtension(httpUrlConn, fileName);
+    }
+    String partialPath = path.substring(path.indexOf('/') + 1);
+    throw new IOException("HTTP request for " + partialPath + " returned " + responseCode);
   }
 
   private String parseBaseName(String path) {

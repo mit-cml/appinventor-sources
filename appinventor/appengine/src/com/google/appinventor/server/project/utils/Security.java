@@ -8,8 +8,6 @@ import com.google.appinventor.server.encryption.Encryptor;
 import com.google.appinventor.server.storage.StorageIo;
 
 import java.math.BigInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Security related helper functions.
@@ -17,8 +15,6 @@ import java.util.logging.Logger;
  * @author markf@google.com (Mark Friedman)
  */
 public class Security {
-  private static final Logger LOG = Logger.getLogger(Security.class.getName());
-
   // Radix of the encrypted userID/projectID value
   private static final int ENCRYPTED_ID_RADIX = Character.MAX_RADIX;
 
@@ -60,18 +56,15 @@ public class Security {
    *          encryptUserAndProjectId or null
    *          if the encrypted string was invalid
    */
-  public static String decryptUserId(String idEnc) {
+  public static String decryptUserId(String idEnc) throws EncryptionException {
     try {
       // Decrypt, skip the projectId (fixed length) and return the
       // rest of the decrypted string as the userId
       BigInteger bigint = new BigInteger(idEnc, ENCRYPTED_ID_RADIX);
       String decryptedString = new String(encryptor.decrypt(unpadBytes(bigint.toByteArray())));
       return decryptedString.substring(ID_DIGITS);
-    } catch (EncryptionException e) {  // COV_NF_LINE
-      LOG.log(Level.SEVERE, "Decryption failed with error", e);
-      return null;  // COV_NF_LINE
     } catch (NumberFormatException e) {
-      return null;
+      throw new EncryptionException(e);
     }
   }
 
@@ -85,17 +78,14 @@ public class Security {
    *          {@link StorageIo#INVALID_PROJECTID} if the encrypted string
    *          was invalid
    */
-  public static long decryptProjectId(String idEnc) {
+  public static long decryptProjectId(String idEnc) throws EncryptionException {
     try {
       BigInteger bigint = new BigInteger(idEnc, ENCRYPTED_ID_RADIX);
       String decryptedString = new String(encryptor.decrypt(unpadBytes(bigint.toByteArray())));
       // The projectId is the first ID_DIGITS characters of the decrypted string
       return new BigInteger(decryptedString.substring(0, ID_DIGITS), 16).longValue();
-    } catch (EncryptionException e) {  // COV_NF_LINE
-      LOG.log(Level.SEVERE, "Decryption failed with error", e);
-      return StorageIo.INVALID_PROJECTID;  // COV_NF_LINE
     } catch (NumberFormatException e) {
-      return StorageIo.INVALID_PROJECTID;
+      throw new EncryptionException(e);
     }
   }
 

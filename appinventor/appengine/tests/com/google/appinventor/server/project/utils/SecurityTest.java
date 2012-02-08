@@ -107,6 +107,17 @@ public class SecurityTest extends TestCase {
     }
 
     // Test putting in some bogus value for the encrypted IDs
-    assertEquals(StorageIo.INVALID_PROJECTID, Security.decryptProjectId(""));
+    try {
+      Security.decryptUserId("");
+      fail();
+    } catch (EncryptionException e) {
+      // expected
+    }
+    try {
+      Security.decryptProjectId("");
+      fail();
+    } catch (EncryptionException e) {
+      // expected
+    }
   }
 }

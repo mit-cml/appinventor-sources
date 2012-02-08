@@ -119,10 +119,15 @@ public class YaHttpServerMain {
   }
 
   private void reportDownloadError(String exceptionMessage) {
-    FeedbackReporter.showSystemErrorMessage(
-        "We could not download the starter application from the server " +
-        "in order to install it on the phone.\n" +
-        " This may prevent the \"Connect to Device\" button from working.");
+    FeedbackReporter.showErrorMessage(
+        "We could not download the starter application from the server in order to install it " +
+        "on the <br/>device. This may prevent the \"Connect to Device\" button from working." +
+        "<p>This error can occur if you have tried to start the blocks editor with a previously " +
+        "downloaded <br/>\".jnlp\" file.</p>" +
+        "<p>Make sure that you start the blocks editor by clicking the \"Open the Blocks " +
+        "Editor\" button in <br/>the designer and using the \".jnlp\" file that is downloaded by " +
+        "that action. <br/><b>Do not try to start the blocks editor with a previously downloaded " +
+        "\".jnlp\" file.</b></p>");
     System.out.println("Failed to get application from server and start controller: " +
         exceptionMessage);
   }

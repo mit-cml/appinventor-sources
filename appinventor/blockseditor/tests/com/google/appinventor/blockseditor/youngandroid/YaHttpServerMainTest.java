@@ -146,11 +146,13 @@ public class YaHttpServerMainTest extends TestCase {
 
     // read the blocks source from server
     expect(mockServerConn.getConnection(baseUrl + codeblocksSourcePath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(blocksSource));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
     // read the form properties from server
     expect(mockServerConn.getConnection(baseUrl + formPath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
@@ -188,11 +190,13 @@ public class YaHttpServerMainTest extends TestCase {
   public void testLoadFormEmpty_success() throws Throwable {
     // read the blocks source from server
     expect(mockServerConn.getConnection(baseUrl + codeblocksSourcePath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_NO_CONTENT);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(new byte[0]));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
     // read the form properties from server
     expect(mockServerConn.getConnection(baseUrl + formPath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
@@ -213,11 +217,13 @@ public class YaHttpServerMainTest extends TestCase {
   public void testLoadFormCodeblocks_failure() throws Throwable {
     // read the blocks source from server
     expect(mockServerConn.getConnection(baseUrl + codeblocksSourcePath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(blocksSource));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
     // read the form properties from server
     expect(mockServerConn.getConnection(baseUrl + formPath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
@@ -242,6 +248,7 @@ public class YaHttpServerMainTest extends TestCase {
 
     // read the form properties from server
     expect(mockServerConn.getConnection(baseUrl + formPath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
@@ -263,6 +270,7 @@ public class YaHttpServerMainTest extends TestCase {
 
     // read the form properties from server
     expect(mockServerConn.getConnection(baseUrl + formPath)).andReturn(mockURLconn);
+    expect(mockURLconn.getResponseCode()).andReturn(HttpURLConnection.HTTP_OK);
     expect(mockURLconn.getInputStream()).andReturn(new ByteArrayInputStream(formProps));
     expect(mockURLconn.getContentEncoding()).andReturn(null);
 
