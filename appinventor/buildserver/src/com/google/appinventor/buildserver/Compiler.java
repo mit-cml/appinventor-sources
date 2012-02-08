@@ -526,6 +526,8 @@ public final class Compiler {
 
     String[] jarsignerCommandLine = {
         jarsignerFile.getAbsolutePath(),
+        "-digestalg", "SHA1",
+        "-sigalg", "MD5withRSA",
         "-keystore", keystoreAbsolutePath,
         "-storepass", "android",
         apkAbsolutePath,
