@@ -8,6 +8,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 /**
  * Methods for analyzing the contents of a Young Android Form file.
@@ -18,6 +19,9 @@ public class FormPropertiesAnalyzer {
 
   private static final String FORM_PROPERTIES_PREFIX = "#|\n";
   private static final String FORM_PROPERTIES_SUFFIX = "\n|#";
+  
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(FormPropertiesAnalyzer.class.getName());
 
   private FormPropertiesAnalyzer() {
   }

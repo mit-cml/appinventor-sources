@@ -1,6 +1,8 @@
 // Copyright 2011 Google Inc. All Rights Reserved.
 package com.google.appinventor.buildserver;
 
+import java.util.logging.Logger;
+
 /**
  * Constants and utility methods related to storage.
  *
@@ -10,6 +12,10 @@ package com.google.appinventor.buildserver;
  */
 
 public class PathUtil {
+
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(PathUtil.class.getName());
+  
   private PathUtil() {}
 
   // Default character encoding

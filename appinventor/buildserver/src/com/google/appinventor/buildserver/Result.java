@@ -2,6 +2,8 @@
 
 package com.google.appinventor.buildserver;
 
+import java.util.logging.Logger;
+
 /**
  * Class used to report results of an external call or remote process.
  *
@@ -37,6 +39,9 @@ public class Result {
   private String error;
   // The name of the form being built when an error occurred
   private String formName;
+  
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(Result.class.getName());
 
   /**
    * Creates a new Result object

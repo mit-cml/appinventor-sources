@@ -2,12 +2,17 @@
 
 package com.google.appinventor.buildserver;
 
+import java.util.logging.Logger;
+
 /**
  * Helper methods to deal with type names and signatures.
  *
  */
 public final class Signatures {
 
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(Signatures.class.getName());
+  
   private Signatures() {
   }
 

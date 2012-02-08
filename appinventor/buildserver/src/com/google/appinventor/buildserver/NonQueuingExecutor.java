@@ -3,6 +3,7 @@ package com.google.appinventor.buildserver;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 /**
  * An {@link Executor} used for executing tasks using a thread pool.
@@ -19,6 +20,9 @@ final class NonQueuingExecutor implements Executor {
   private final AtomicInteger activeTaskCount = new AtomicInteger(0);
   private final AtomicInteger completedTaskCount = new AtomicInteger(0);
 
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(NonQueuingExecutor.class.getName());
+  
   // lockExecute is used so that the execute method can be executed only one thread at a time.
   private final Object lockExecute = new Object();
 

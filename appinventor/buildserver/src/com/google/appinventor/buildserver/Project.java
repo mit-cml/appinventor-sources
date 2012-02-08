@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * This class gives access to Young Android project files.
@@ -82,6 +83,9 @@ public final class Project {
 
   // List of source files
   private List<SourceDescriptor> sources;
+  
+  // Logging support
+  private static final Logger LOG = Logger.getLogger(Project.class.getName());
 
   /**
    * Creates a new Young Android project descriptor.

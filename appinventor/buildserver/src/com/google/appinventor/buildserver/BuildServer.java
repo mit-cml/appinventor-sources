@@ -25,6 +25,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 import java.lang.management.RuntimeMXBean;
+import java.lang.Math;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
@@ -92,6 +93,15 @@ public class BuildServer {
   // The number of rejected build requests for this server run
   private static final AtomicInteger rejectedAsyncBuildRequests = new AtomicInteger(0);
 
+  //The number of successful build requests for this server run
+  private static final AtomicInteger successfulBuildRequests = new AtomicInteger(0);
+
+  //The number of failed build requests for this server run
+  private static final AtomicInteger failedBuildRequests = new AtomicInteger(0);
+
+  //The number of failed build requests for this server run
+  private static int maximumActiveBuildTasks = 0;
+
   // The build executor used to limit the number of simultaneous builds.
   // NOTE(lizlooney) - the buildExecutor must be created after the command line options are
   // processed in main(). If it is created here, the number of simultaneous builds will always be
@@ -155,6 +165,8 @@ public class BuildServer {
     // Build requests
     variables.put("count-async-build-requests", asyncBuildRequests.get() + "");
     variables.put("rejected-async-build-requests", rejectedAsyncBuildRequests.get() + "");
+    variables.put("successful-async-build-requests", successfulBuildRequests.get() + "");
+    variables.put("failed-async-build-requests", failedBuildRequests.get() + "");
 
     // Build tasks
     int max = buildExecutor.getMaxActiveTasks();
@@ -164,6 +176,8 @@ public class BuildServer {
       variables.put("maximum-simultaneous-build-tasks", max + "");
     }
     variables.put("completed-build-tasks", buildExecutor.getCompletedTaskCount() + "");
+    maximumActiveBuildTasks = Math.max(maximumActiveBuildTasks, buildExecutor.getActiveTaskCount());
+    variables.put("maximum-active-build-tasks", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
 
     StringBuilder html = new StringBuilder();
@@ -313,11 +327,11 @@ public class BuildServer {
       public void run() {
         int count = buildCount.incrementAndGet();
         try {
-          System.out.println("START NEW BUILD " + count);
+          LOG.info("START NEW BUILD " + count);
           checkMemory();
           buildAndCreateZip(userName, inputZipFile);
           // Send zip back to the callbackUrl
-          System.out.println("CallbackURL: " + callbackUrlStr);
+          LOG.info("CallbackURL: " + callbackUrlStr);
           URL callbackUrl = new URL(callbackUrlStr);
           HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
           connection.setDoOutput(true);
@@ -343,17 +357,17 @@ public class BuildServer {
           }
 
           if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            System.out.println("Bad Response Code!: " + connection.getResponseCode());
+            LOG.severe("Bad Response Code!: " + connection.getResponseCode());
             // TODO(user) Maybe do some retries
           }
 
         } catch (Exception e) {
           // TODO(user): Maybe send a failure callback
-          System.out.println("Exception: " + e.getMessage());
+          LOG.severe("Exception: " + e.getMessage());
         } finally {
           cleanUp();
           checkMemory();
-          System.out.println("BUILD " + count + " FINISHED");
+          LOG.info("BUILD " + count + " FINISHED");
         }
       }
     };
@@ -370,7 +384,6 @@ public class BuildServer {
       return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN_TYPE)
           .entity("The build server is currently at maximum capacity.").build();
     }
-
     return Response.ok().build();
   }
 
@@ -389,13 +402,17 @@ public class BuildServer {
       }
       zipOutputStream.putNextEntry(new ZipEntry(outputApk.getName()));
       Files.copy(outputApk, zipOutputStream);
+      successfulBuildRequests.getAndIncrement();
+    } else {
+      LOG.severe("Build " + buildCount.get() + " Failed: " + buildResult.getResult() + 
+          " " + buildResult.getError());
+      failedBuildRequests.getAndIncrement();
     }
     zipOutputStream.putNextEntry(new ZipEntry("build.out"));
     String buildOutputJson = genBuildOutput(buildResult);
     PrintStream zipPrintStream = new PrintStream(zipOutputStream);
     zipPrintStream.print(buildOutputJson);
     zipPrintStream.flush();
-
     zipOutputStream.flush();
     zipOutputStream.close();
   }
@@ -422,9 +439,9 @@ public class BuildServer {
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false,
                                               commandLineOptions.childProcessRamMb);
     String buildOutput = buildResult.getOutput();
-    System.out.println("Build output: " + buildOutput);
+    LOG.info("Build output: " + buildOutput);
     String buildError = buildResult.getError();
-    System.out.println("Build error output: " + buildError);
+    LOG.info("Build error output: " + buildError);
     outputApk = projectBuilder.getOutputApk();
     if (outputApk != null) {
       outputApk.deleteOnExit();  // In case build server is killed before cleanUp executes.
@@ -458,7 +475,7 @@ public class BuildServer {
   private static void checkMemory() {
     MemoryMXBean mBean = ManagementFactory.getMemoryMXBean();
     mBean.gc();
-    System.out.println("Build " + buildCount + " current used memory: "
+    LOG.info("Build " + buildCount + " current used memory: "
         + mBean.getHeapMemoryUsage().getUsed() + " bytes");
   }
 
@@ -470,7 +487,7 @@ public class BuildServer {
     try {
       cmdLineParser.parseArgument(args);
     } catch (CmdLineException e) {
-      System.err.println(e.getMessage());
+      LOG.severe(e.getMessage());
       cmdLineParser.printUsage(System.err);
       System.exit(1);
     }
@@ -481,19 +498,19 @@ public class BuildServer {
     int port = commandLineOptions.port;
     SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
-    System.out.println("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
+    LOG.info("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
         " Id: " + MercurialBuildId.getId());
-    System.out.println("Running at: http://" + hostAddress + ":" + port + "/buildserver");
+    LOG.info("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
-      System.out.println("Maximum simultanous builds = unlimited!");
+      LOG.info("Maximum simultanous builds = unlimited!");
     } else {
-      System.out.println("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
+      LOG.info("Maximum simultanous builds = " + commandLineOptions.maxSimultaneousBuilds);
     }
-    System.out.println("Visit: http://" + hostAddress + ":" + port +
+    LOG.info("Visit: http://" + hostAddress + ":" + port +
         "/buildserver/health for server health");
-    System.out.println("Visit: http://" + hostAddress + ":" + port +
+    LOG.info("Visit: http://" + hostAddress + ":" + port +
         "/buildserver/vars for server values");
-    System.out.println("Server running");
+    LOG.info("Server running");
   }
 
   private static class DeleteFileOnCloseFileInputStream extends FileInputStream {
