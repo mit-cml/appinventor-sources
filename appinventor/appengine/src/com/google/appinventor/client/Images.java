@@ -15,14 +15,6 @@ import com.google.gwt.user.client.ui.Tree.Resources;
 public interface Images extends Resources {
 
   /**
-   * Young Android logo
-   */
-  // TODO(user): Replace with commented image source below when ready
-  @Source("com/google/appinventor/images/logo_ya_experimental.png")
-//  @Source("com/google/appinventor/images/logo_ya.png")
-  ImageResource logoYoungAndroid();
-
-  /**
    * Close button image for the box widget
    */
   @Source("com/google/appinventor/images/boxClose.png")

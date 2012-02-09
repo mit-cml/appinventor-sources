@@ -7,8 +7,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.help.HelpService;
-import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -26,6 +24,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class TopPanel extends Composite {
   private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
+  private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
@@ -39,7 +38,7 @@ public class TopPanel extends Composite {
   // TODO(user) Remove the expermental warning label below when ready.
   private final Label warning = new Label("This is an experimental version of App Inventor. "
       + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
-
+  
   private HTML divider() {
     return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
   }
@@ -155,7 +154,9 @@ public class TopPanel extends Composite {
   private void addLogo(HorizontalPanel panel) {
     // Logo should be a link to App Inv homepage. Currently, after the user
     // has logged in, the top level *is* ODE; so for now don't make it a link.
-    Image logo = new Image(Ode.getImageBundle().logoYoungAndroid());
+    // Add timestamp to logo url to get around browsers that agressively cache
+    // the image! This same trick is used in StorageUtil.getFilePath().
+    Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
     panel.add(logo);
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
