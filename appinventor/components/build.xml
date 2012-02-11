@@ -329,7 +329,7 @@
   </target>
 
   <!-- =====================================================================
-       ComponentDocumentation: create component documentation for source
+       ComponentDocumentation: create component documentation from source
        ===================================================================== -->
   <target name="ComponentDocumentation"
           description="Make component documentation from source annotations."
@@ -343,8 +343,8 @@
             apt-target="${ComponentDocumentation-class.dir}/component-doc.html"/>
 
     <copy file="${ComponentDocumentation-class.dir}/component-doc.html"
-          todir="${local.build.dir}"/>
-    <echo message="Please see the documentation at file://${local.build.dir}/component-doc.html"/>
+          todir="${public.build.dir}"/>
+    <echo message="Please see the documentation at file://${public.build.dir}/component-doc.html"/>
   </target>
 
 </project>
