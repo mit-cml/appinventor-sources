@@ -502,8 +502,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   private String getCurrentHost() {
     if (Server.isProductionServer()) {
+      String applicationVersionId = SystemProperty.applicationVersion.get();
       String applicationId = SystemProperty.applicationId.get();
-      return applicationId + ".appspot.com";
+      return applicationVersionId + "." + applicationId + ".appspot.com";
     } else {
       // TODO(user): Figure out how to make this more generic
       return "localhost:8888";
