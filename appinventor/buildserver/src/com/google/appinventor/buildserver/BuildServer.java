@@ -13,6 +13,7 @@ import org.codehaus.jettison.json.JSONObject;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
+import org.kohsuke.args4j.spi.StringArrayOptionHandler;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -71,6 +72,16 @@ public class BuildServer {
     @Option(name = "--port",
             usage = "The port number to bind to on the local machine.")
     int port = 9990;
+
+    @Option(name = "--requiredHosts",
+            usage = "If specified, a list of hosts which are permitted to use this BuildServer, other the server is open to all.",
+            handler = StringArrayOptionHandler.class)
+            String[] requiredHosts = null;
+
+    @Option(name = "--debug",
+            usage = "Turn on debugging, which enables the non-async calls of the buildserver.")
+            boolean debug = false;
+
   }
 
   private static final CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -210,6 +221,10 @@ public class BuildServer {
     inputZip = zipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
 
+    if(!commandLineOptions.debug)
+    return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
+        .entity("Entry point unavailable unless debugging.").build();
+
     try {
       build(userName, zipFile);
       String attachedFilename = outputApk.getName();
@@ -248,6 +263,10 @@ public class BuildServer {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
+
+    if(!commandLineOptions.debug)
+    return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
+        .entity("Entry point unavailable unless debugging.").build();
 
     try {
       buildAndCreateZip(userName, inputZipFile);
@@ -300,6 +319,30 @@ public class BuildServer {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
     inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
+
+    String requesting_host = (new URL(callbackUrlStr)).getHost();
+
+    if (commandLineOptions.requiredHosts != null) {
+        boolean oktoproceed = false;
+        for (String host : commandLineOptions.requiredHosts) {
+            if (host.equals(requesting_host)) {
+                oktoproceed = true;
+                break;
+            }
+        }
+
+        if (oktoproceed) {
+            LOG.info("requesting host (" + requesting_host + ") is in the allowed host list request will be honored.");
+        } else {
+            // Return an error
+            LOG.info("requesting host (" + requesting_host + ") is NOT in the allowed host list request will be rejected.");
+            return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
+                .entity("You are not permitted to use this build server.").build();
+        }
+    } else {
+        LOG.info("requiredHosts is not set, no restriction on callback url.");
+    }
+
 
     asyncBuildRequests.incrementAndGet();
 
