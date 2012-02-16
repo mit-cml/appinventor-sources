@@ -2,8 +2,15 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileReadChannel;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.files.FinalizationException;
+import com.google.appengine.api.files.LockException;
 import com.google.appinventor.server.LocalDatastoreTestCase;
-import com.google.appinventor.server.storage.ObjectifyStorageIo.JobRetryHelper;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -12,8 +19,13 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjec
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
+import java.util.List;
 
 /**
  * Tests for {@link ObjectifyStorageIo}.
@@ -26,7 +38,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   private static final String FAKE_PROJECT_TYPE = "FakeProjectType";
   private static final String PROJECT_NAME = "Project1";
   private static final String FILE_NAME1 = "File1.src";
-  private static final String FILE_NAME2 = "File2.src";
+  private static final String FILE_NAME2 = "src/File2.blk";
   private static final String RAW_FILE_NAME1 = "assets/File1.jpg";
   private static final String RAW_FILE_NAME2 = "assets/File2.wav";
   private static final String FILE_NAME_OUTPUT = "File.apk";
@@ -73,6 +85,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     storage.deleteUserFile(userId, RAW_FILE_NAME2);
     storage.createRawUserFile(userId, FILE_NAME1,
         FILE_CONTENT1.getBytes(StorageUtil.DEFAULT_CHARSET));
+    // note: the following 3 files should be stored in blobstore
     storage.createRawUserFile(userId, FILE_NAME2,
         FILE_CONTENT2.getBytes(StorageUtil.DEFAULT_CHARSET));
     storage.createRawUserFile(userId, RAW_FILE_NAME1, RAW_FILE_CONTENT1);
@@ -131,7 +144,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testCreateProjectFailFirst() {
     final String USER_ID = "600";
-    StorageIo throwingStorage = new FailingJobObjectifyStorageIo(1);
+    // fail on first job in createProject (2nd job overall)
+    StorageIo throwingStorage = new FailingJobObjectifyStorageIo(2);
 
     try {
       throwingStorage.getUser(USER_ID);
@@ -146,7 +160,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
   public void testCreateProjectFailSecond() {
     final String USER_ID = "700";
-    StorageIo throwingStorage = new FailingJobObjectifyStorageIo(2);
+    // fail on second job in createProject (3rd job overall)
+    StorageIo throwingStorage = new FailingJobObjectifyStorageIo(3);
 
     try {
       throwingStorage.getUser(USER_ID);
@@ -157,6 +172,60 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
 
     fail();
+  }
+  
+  public void testCreateProjectDeletesBlobsOnFileFailure() {
+    final String USER_ID = "710";
+    // fail on 3rd blob creation.
+    FailingBlobFileService failingFileService = new FailingBlobFileService(3);
+    // storage doesn't really fail but we want to count blob deletions.
+    FailingJobObjectifyStorageIo storageIo = 
+        new FailingJobObjectifyStorageIo(0, failingFileService);
+    try {
+      storageIo.getUser(USER_ID);
+      storageIo.createProject(USER_ID, project, SETTINGS);
+    } catch (RuntimeException e) {
+      assertEquals(3, failingFileService.numBlobsCreated());
+      assertEquals(2, storageIo.numBlobsDeleted());
+    }
+  }
+  
+  public void testCreateProjectDeletesBlobsOnJobFailure() {
+    final String USER_ID = "720";
+    // we don't actually want blob creation to fail in this case, but we do
+    // want to be able to count created blobs
+    FailingBlobFileService failingFileService = new FailingBlobFileService(0);
+    // arrange that the second job in createProject fails. make sure
+    // blobs created in the first job were deleted.
+    FailingJobObjectifyStorageIo storageIo = 
+        new FailingJobObjectifyStorageIo(3, failingFileService);
+    try {
+      storageIo.getUser(USER_ID);
+      storageIo.createProject(USER_ID, project, SETTINGS);
+    } catch (RuntimeException e) {
+      assertEquals(3, failingFileService.numBlobsCreated());
+      assertEquals(3, storageIo.numBlobsDeleted());
+    }
+  }
+
+  public void testCreateProjectDeletesBlobsOnRetry() {
+    final String USER_ID = "730";
+    // 2nd blob creation fails with ConcurrentModificationException, which
+    // should cause the job to be retried. It should ultimately succeed
+    // and we should have 1 blob that got deleted.
+    FailingBlobFileService failingFileService = new FailingBlobFileService(2,
+        new ConcurrentModificationException("this is intentional"));
+    // storage doesn't really fail but we want to count deleted blobs
+    FailingJobObjectifyStorageIo storageIo = 
+        new FailingJobObjectifyStorageIo(0, failingFileService);
+    try {
+      storageIo.getUser(USER_ID);
+      storageIo.createProject(USER_ID, project, SETTINGS);
+    } catch (RuntimeException e) {
+      fail();
+    }
+    assertEquals(5, failingFileService.numBlobsCreated());
+    assertEquals(1, storageIo.numBlobsDeleted());
   }
 
   public void testUploadBeforeAdd() {
@@ -479,12 +548,24 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
   }
 
 
+  /*
+   * Fail on the Nth call to runJobWithRetries, where N is the value of the
+   * failingRun argument to the constructor. Also allows counting 
+   * blob deletions.
+   */
   private static class FailingJobObjectifyStorageIo extends ObjectifyStorageIo {
     private final int failingRun;
     private int run;
+    private int numDeletedBlobs = 0;
 
     FailingJobObjectifyStorageIo(int failingRun) {
       super();
+      this.failingRun = failingRun;
+      run = 0;
+    }
+
+    FailingJobObjectifyStorageIo(int failingRun, FileService fileService) {
+      super(fileService);
       this.failingRun = failingRun;
       run = 0;
     }
@@ -498,7 +579,94 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         throw new ObjectifyException("job failed (on purpose)");
       }
     }
+    
+    @Override
+    protected void deleteBlobstoreFile(String blobstorePath) {
+      super.deleteBlobstoreFile(blobstorePath);
+      numDeletedBlobs++;
+    }
+    
+    int numBlobsDeleted() {
+      return numDeletedBlobs;
+    }
   }
+  
+  /* 
+   * Fail on Nth blob create, where N is the value of the failingBlobNum
+   * argument to the constructor. Also allows counting attempted blob creations.
+   */
+  private class FailingBlobFileService implements FileService {
+    private final int failingBlobNum;
+    private FileService fileService = FileServiceFactory.getFileService();
+    private List<AppEngineFile> blobs = new ArrayList<AppEngineFile>();
+    private RuntimeException runtimeException;
+    private int numBlobsCreated;
+    
+    // fail on creation of blob number failingBlobNum with an IOException
+    FailingBlobFileService(int failingBlobNum) {
+      super();
+      this.failingBlobNum = failingBlobNum;
+      numBlobsCreated = 0;
+      runtimeException = null;
+    }
+
+    // fail on creation of blob number failingBlobNum with runtime exception e
+    FailingBlobFileService(int failingBlobNum, RuntimeException e) {
+      super();
+      this.failingBlobNum = failingBlobNum;
+      numBlobsCreated = 0;
+      runtimeException = e;
+    }
+    
+    @Override
+    public AppEngineFile createNewBlobFile(String arg0) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public AppEngineFile createNewBlobFile(String arg0, String arg1) throws IOException {
+      numBlobsCreated++;
+      if (numBlobsCreated == failingBlobNum) {
+        if (runtimeException != null) {
+          throw runtimeException;
+        } else {
+          throw new IOException("This one is supposed to fail");
+        }
+      } else {
+        AppEngineFile newBlob = fileService.createNewBlobFile(arg0, arg1);
+        blobs.add(newBlob);
+        return newBlob;
+      }
+    }
+
+    @Override
+    public AppEngineFile getBlobFile(BlobKey arg0) {
+      throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public BlobKey getBlobKey(AppEngineFile arg0) {
+      return fileService.getBlobKey(arg0);
+    }
+
+    @Override
+    public FileReadChannel openReadChannel(AppEngineFile arg0, boolean arg1)
+        throws FileNotFoundException, LockException, IOException {
+      return fileService.openReadChannel(arg0, arg1);
+    }
+
+    @Override
+    public FileWriteChannel openWriteChannel(AppEngineFile arg0, boolean arg1)
+        throws FileNotFoundException, FinalizationException, LockException, IOException {
+      return fileService.openWriteChannel(arg0, arg1);
+    }
+    
+    // note: returns number of attempted creates, not just successful ones
+    public int numBlobsCreated() {
+      return numBlobsCreated;
+    }
+  }
+
 
   private long createProject(String userId, String name, String type, String fileName) {
     return createProject(userId, name, type, fileName, storage);
