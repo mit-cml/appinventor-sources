@@ -3,15 +3,15 @@
 package com.google.appinventor.server.storage;
 
 import com.google.appengine.api.blobstore.BlobKey;
+import com.google.appengine.api.blobstore.BlobstoreInputStream;
 import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.files.AppEngineFile;
-import com.google.appengine.api.files.FileReadChannel;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appinventor.server.CrashReport;
-import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
@@ -1145,6 +1145,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectProjectErrorInfo(userId, projectId, fileName), e);
     }
+    // read the blob outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
       if (fileData.isBlob) {
@@ -1165,17 +1166,18 @@ public class ObjectifyStorageIo implements  StorageIo {
     return result.t;
   }
 
+  // Note: this must be called outside of any transaction, since getBlobKey()
+  // uses the current transaction and it will most likely have the wrong
+  // entity group!
   private byte[] getBlobstoreBytes(String blobstorePath) throws BlobReadException {
     AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
+    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);    
     try {
-      FileReadChannel blobstoreReadChannel = 
-          fileService.openReadChannel(blobstoreFile, false);
-      InputStream blobstoreInputStream = Channels.newInputStream(blobstoreReadChannel);
-      return ByteStreams.toByteArray(blobstoreInputStream);
+      InputStream blobInputStream = new BlobstoreInputStream(blobKey);
+      return ByteStreams.toByteArray(blobInputStream);
     } catch (IOException e) {
       throw new BlobReadException("Error trying to read blob from " + blobstorePath
-          + ", blobkey = " + fileService.getBlobKey(blobstoreFile)
-          + ", " + e.getMessage());
+          + ", blobkey = " + blobKey + ", " + e.getMessage());
     }
   }
 
@@ -1196,72 +1198,88 @@ public class ObjectifyStorageIo implements  StorageIo {
                                                  @Nullable String zipName) throws IOException {
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
+    final Result<String> projectHistory = new Result<String>();
+    projectHistory.t = null;
+    // We collect up all the file data for the project in a transaction but
+    // then we read the data and write the zip file outside of the transaction
+    // to avoid problems reading blobs in a transaction with the wrong
+    // entity group.
+    final List<FileData> fileData = new ArrayList<FileData>();
     final Result<String> projectName = new Result<String>();
-    projectName.t = "";
-
+    projectName.t = null;
+    String fileName = null;
+    
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     final ZipOutputStream out = new ZipOutputStream(zipFile);
-
+    
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          try {
-            Key<ProjectData> projectKey = projectKey(projectId);
-            List<String> fileList = new ArrayList<String>();
-            for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
-              if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
-                String fileName = fd.fileName;
-
-                if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-                  // Skip legacy remix history files that were previous stored with the project
-                  continue;
-                }
-                byte[] data;
-                if (fd.isBlob) {
-                  try {
-                    data = getBlobstoreBytes(fd.blobstorePath);
-                  } catch (BlobReadException e) {
-                    // Note that this exception will be fatal for the job
-                    throw CrashReport.createAndLogError(LOG, null,
-                        collectProjectErrorInfo(userId, projectId, fileName), e);
-                   }
-                } else {
-                  data = fd.content;
-                }
-                out.putNextEntry(new ZipEntry(fileName));
-                out.write(data, 0, data.length);
-                out.closeEntry();
-                fileCount.t++;
+          Key<ProjectData> projectKey = projectKey(projectId);
+          for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
+            String fileName = fd.fileName;
+            if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
+              if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+                // Skip legacy remix history files that were previous stored with the project
+                continue;
               }
+              fileData.add(fd);
+              fileCount.t++;
             }
-
-            if (fileCount.t > 0) {
-              ProjectData pd = datastore.find(projectKey(projectId));
-              if (includeProjectHistory) {
-                if (!Strings.isNullOrEmpty(pd.history)) {
-                  byte[] data = pd.history.getBytes(StorageUtil.DEFAULT_CHARSET);
-                  out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
-                  out.write(data, 0, data.length);
-                  out.closeEntry();
-                  fileCount.t++;
-                }
-              }
-              projectName.t = pd.name;
+          }
+          if (fileCount.t > 0) {
+            ProjectData pd = datastore.find(projectKey);
+            projectName.t = pd.name;
+            if (includeProjectHistory && !Strings.isNullOrEmpty(pd.history)) {
+              projectHistory.t = pd.history;
             }
-
-          } catch (IOException e) {
-            throw CrashReport.createAndLogError(LOG, null,
-                collectProjectErrorInfo(userId, projectId, null), e);
           }
         }
       });
+
+      // Process the file contents outside of the job since we can't read
+      // blobs in the job.
+      for (FileData fd : fileData) {
+        if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
+          fileName = fd.fileName;
+
+          if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+            // Skip legacy remix history files that were previous stored with the project
+            continue;
+          }
+          byte[] data;
+          if (fd.isBlob) {
+            try {
+              data = getBlobstoreBytes(fd.blobstorePath);
+            } catch (BlobReadException e) {
+              throw CrashReport.createAndLogError(LOG, null,
+                  collectProjectErrorInfo(userId, projectId, fileName), e);
+             }
+          } else {
+            data = fd.content;
+          }
+          out.putNextEntry(new ZipEntry(fileName));
+          out.write(data, 0, data.length);
+          out.closeEntry();
+          fileCount.t++;
+        }
+      }
+      if (projectHistory.t != null) {
+        byte[] data = projectHistory.t.getBytes(StorageUtil.DEFAULT_CHARSET);
+        out.putNextEntry(new ZipEntry(FileExporter.REMIX_INFORMATION_FILE_PATH));
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        fileCount.t++;
+      }
     } catch (ObjectifyException e) {
       CrashReport.createAndLogError(LOG, null,
-          collectProjectErrorInfo(userId, projectId, null), e);
+          collectProjectErrorInfo(userId, projectId, fileName), e);
       throw new IOException("Reflecting exception for userid " + userId +
           " projectId " + projectId + ", original exception " + e.getMessage());
     } catch (RuntimeException e) {
+      CrashReport.createAndLogError(LOG, null,
+          collectProjectErrorInfo(userId, projectId, fileName), e);
       throw new IOException("Reflecting exception for userid " + userId +
           " projectId " + projectId + ", original exception " + e.getMessage());
     }
@@ -1289,7 +1307,8 @@ public class ObjectifyStorageIo implements  StorageIo {
                 }
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
-                    collectProjectErrorInfo(userId, projectId, null), e);
+                    collectProjectErrorInfo(userId, projectId, 
+                        StorageUtil.ANDROID_KEYSTORE_FILENAME), e);
               }
             }
           });
@@ -1418,7 +1437,11 @@ public class ObjectifyStorageIo implements  StorageIo {
         job.onNonFatalError();
       } finally {
         if (datastore.getTxn().isActive()) {
-          datastore.getTxn().rollback();
+          try {
+            datastore.getTxn().rollback();
+          } catch (RuntimeException e) {
+            LOG.log(Level.WARNING, "Transaction rollback failed", e);
+          }
         }
       }
       tries++;

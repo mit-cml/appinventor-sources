@@ -9,7 +9,10 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.FinalizationException;
+import com.google.appengine.api.files.GSFileOptions;
 import com.google.appengine.api.files.LockException;
+import com.google.appengine.api.files.RecordReadChannel;
+import com.google.appengine.api.files.RecordWriteChannel;
 import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -664,6 +667,23 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // note: returns number of attempted creates, not just successful ones
     public int numBlobsCreated() {
       return numBlobsCreated;
+    }
+
+    @Override
+    public AppEngineFile createNewGSFile(GSFileOptions arg0) throws IOException {
+      return null;
+    }
+
+    @Override
+    public RecordReadChannel openRecordReadChannel(AppEngineFile arg0, boolean arg1)
+        throws FileNotFoundException, LockException, IOException {
+      return null;
+    }
+
+    @Override
+    public RecordWriteChannel openRecordWriteChannel(AppEngineFile arg0, boolean arg1)
+        throws FileNotFoundException, FinalizationException, LockException, IOException {
+      return null;
     }
   }
 

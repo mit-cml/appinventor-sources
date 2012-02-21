@@ -34,7 +34,7 @@
   <import file="../build-common.xml" />
 
   <property name="gwt.sdk" location="${lib.dir}/gwt/2.3.0" />
-  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.5.3" />
+  <property name="appengine.sdk" location="${lib.dir}/appengine/appengine-java-sdk-1.6.2.1" />
 
   <property name="build.war.dir" location="${local.build.dir}/war" />
 
