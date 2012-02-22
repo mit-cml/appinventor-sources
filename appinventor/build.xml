@@ -78,8 +78,8 @@
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
         <!-- app engine libs -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.5.3/lib/user/appengine-api-1.0-sdk-1.5.3.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.5.3/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/appengine-api-1.0-sdk-1.6.2.1.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
       </classpath>
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
       <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
