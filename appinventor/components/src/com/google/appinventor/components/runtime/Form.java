@@ -220,6 +220,8 @@ public class Form extends Activity
     if (requestCode == SWITCH_FORM_REQUEST_CODE) {
       // Assume this is a multiple screen application, and a secondary
       // screen has closed.  Process the result as a JSON-encoded string.
+      // This can also happen if the user presses the back button, in which case
+      // there's no data.
      String resultString;
       if (data != null && data.hasExtra(RESULT_NAME)) {
         resultString = data.getStringExtra(RESULT_NAME);

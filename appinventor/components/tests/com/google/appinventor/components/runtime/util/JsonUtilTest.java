@@ -116,4 +116,9 @@ public class JsonUtilTest extends TestCase {
     assertEquals(123456789101112L, JsonUtil.convertJsonItem(array.get(4)));
     assertEquals(15, JsonUtil.convertJsonItem(array.get(5)));
   }
+  
+  public void testConvertEmpty() throws JSONException {
+    Object shouldBeEmpty = JsonUtil.getObjectFromJson("");
+    assertEquals("", JsonUtil.getObjectFromJson(""));
+  }
 }

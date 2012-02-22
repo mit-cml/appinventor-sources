@@ -116,8 +116,8 @@ public interface OdeMessages extends Messages {
   // Used in Ode.java
 
   // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("App Inventor for Android - Experimental Version")
-//  @DefaultMessage("App Inventor for Android")
+  @DefaultMessage("App Inventor for Android - Beta")
+  //  @DefaultMessage("App Inventor for Android")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -910,7 +910,8 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a project couldn't be uploaded to the server.")
   String projectUploadError();
 
-  @DefaultMessage("The selected project is not a project archive!")
+  @DefaultMessage("The selected project is not a project source file!\n" +
+      "Project source files are zip files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 

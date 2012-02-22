@@ -175,19 +175,28 @@ public class JsonUtil {
   }
 
   public static Object getObjectFromJson(String jsonString) throws JSONException {
-    final Object value = (new JSONTokener(jsonString)).nextValue();
-    // Note that the JSONTokener may return a value equals() to null.
-    if (value == null || value.equals(null)) {
-      return null;
-    } else if ((value instanceof String) ||
-               (value instanceof Number) ||
-               (value instanceof Boolean)) {
-      return value;
-    } else if (value instanceof JSONArray) {
-      return getListFromJsonArray((JSONArray)value);
-    } else if (value instanceof JSONObject) {
-      return getListFromJsonObject((JSONObject)value);
+      if ((jsonString == null) || jsonString.equals("")) {
+      // We'd like the empty string to decode to the empty string.  Form.java
+      // relies on this for the case where there's an activity result with no intent data.
+      // We handle this case explicitly since nextValue() appears to throw an error
+      // when given the empty string.
+      return "";
+    } else {
+      final Object value = (new JSONTokener(jsonString)).nextValue();
+      // Note that the JSONTokener may return a value equals() to null.
+      if (value == null || value.equals(null)) {
+        return null;
+      } else if ((value instanceof String) ||
+          (value instanceof Number) ||
+          (value instanceof Boolean)) {
+        return value;
+      } else if (value instanceof JSONArray) {
+        return getListFromJsonArray((JSONArray)value);
+      } else if (value instanceof JSONObject) {
+        return getListFromJsonObject((JSONObject)value);
+      }
+      throw new JSONException("Invalid JSON string.");
     }
-    throw new JSONException("Invalid JSON string.");
   }
 }
+
