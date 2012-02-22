@@ -1217,6 +1217,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<ProjectData> projectKey = projectKey(projectId);
+          boolean foundFiles = false;
           for (FileData fd : datastore.query(FileData.class).ancestor(projectKey)) {
             String fileName = fd.fileName;
             if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
@@ -1225,10 +1226,10 @@ public class ObjectifyStorageIo implements  StorageIo {
                 continue;
               }
               fileData.add(fd);
-              fileCount.t++;
+              foundFiles = true;
             }
           }
-          if (fileCount.t > 0) {
+          if (foundFiles) {
             ProjectData pd = datastore.find(projectKey);
             projectName.t = pd.name;
             if (includeProjectHistory && !Strings.isNullOrEmpty(pd.history)) {
@@ -1241,29 +1242,22 @@ public class ObjectifyStorageIo implements  StorageIo {
       // Process the file contents outside of the job since we can't read
       // blobs in the job.
       for (FileData fd : fileData) {
-        if (fd.role.equals(FileData.RoleEnum.SOURCE)) {
-          fileName = fd.fileName;
-
-          if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
-            // Skip legacy remix history files that were previous stored with the project
-            continue;
+        fileName = fd.fileName;
+        byte[] data;
+        if (fd.isBlob) {
+          try {
+            data = getBlobstoreBytes(fd.blobstorePath);
+          } catch (BlobReadException e) {
+            throw CrashReport.createAndLogError(LOG, null,
+                collectProjectErrorInfo(userId, projectId, fileName), e);
           }
-          byte[] data;
-          if (fd.isBlob) {
-            try {
-              data = getBlobstoreBytes(fd.blobstorePath);
-            } catch (BlobReadException e) {
-              throw CrashReport.createAndLogError(LOG, null,
-                  collectProjectErrorInfo(userId, projectId, fileName), e);
-             }
-          } else {
-            data = fd.content;
-          }
-          out.putNextEntry(new ZipEntry(fileName));
-          out.write(data, 0, data.length);
-          out.closeEntry();
-          fileCount.t++;
+        } else {
+          data = fd.content;
         }
+        out.putNextEntry(new ZipEntry(fileName));
+        out.write(data, 0, data.length);
+        out.closeEntry();
+        fileCount.t++;
       }
       if (projectHistory.t != null) {
         byte[] data = projectHistory.t.getBytes(StorageUtil.DEFAULT_CHARSET);
