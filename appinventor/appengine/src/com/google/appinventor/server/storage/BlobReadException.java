@@ -10,8 +10,8 @@ import java.io.IOException;
  */
 public class BlobReadException extends IOException {
 
- public BlobReadException(Exception e) {
-   super();
+ public BlobReadException(Exception e, String msg) {
+   super(msg);
    this.initCause(e);
  }
  

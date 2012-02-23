@@ -10,8 +10,8 @@ import java.io.IOException;
  */
 public class BlobWriteException extends IOException {
 
-  public BlobWriteException(Exception e) {
-    super();
+  public BlobWriteException(Exception e, String msg) {
+    super(msg);
     this.initCause(e);
   }
   

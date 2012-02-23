@@ -1042,9 +1042,16 @@ public class ObjectifyStorageIo implements  StorageIo {
   protected void deleteBlobstoreFile(String blobstorePath) {
     // It would be nice if there were an AppEngineFile.delete() method but alas there isn't, so we
     // have to get the BlobKey and delete via the BlobstoreService.
-    AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
-    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);
-    BlobstoreServiceFactory.getBlobstoreService().delete(blobKey);
+    BlobKey blobKey = null;
+    try {
+      AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
+      blobKey = fileService.getBlobKey(blobstoreFile);
+      BlobstoreServiceFactory.getBlobstoreService().delete(blobKey);
+    } catch (RuntimeException e) {
+      // Log blob delete errors but don't make them fatal
+      CrashReport.createAndLogError(LOG, null, "Error deleting blob with path " +
+          blobstorePath + " and key " + blobKey, e);
+    }
   }
 
   private String uploadToBlobstore(byte[] content, String name) 
@@ -1063,9 +1070,9 @@ public class ObjectifyStorageIo implements  StorageIo {
       blobstoreOutputStream.close();
       blobstoreWriteChannel.closeFinally();
     } catch (IOException e) {
-      throw new BlobWriteException("Error writing blob: " + e.getMessage());
+      throw new BlobWriteException(e, "Error writing blob with name " + name);
     } catch (Exception e) {
-      throw new ObjectifyException(e.getMessage());
+      throw new ObjectifyException(e);
     }
 
     return blobstoreFile.getFullPath();
@@ -1176,8 +1183,8 @@ public class ObjectifyStorageIo implements  StorageIo {
       InputStream blobInputStream = new BlobstoreInputStream(blobKey);
       return ByteStreams.toByteArray(blobInputStream);
     } catch (IOException e) {
-      throw new BlobReadException("Error trying to read blob from " + blobstorePath
-          + ", blobkey = " + blobKey + ", " + e.getMessage());
+      throw new BlobReadException(e, "Error trying to read blob from " + blobstorePath
+          + ", blobkey = " + blobKey);
     }
   }
 

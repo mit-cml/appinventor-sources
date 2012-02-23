@@ -97,12 +97,17 @@ public final class FileImporterImpl implements FileImporter {
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
-          } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH)) {
+          } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) || 
+              fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME)) {
             // If the remix information file is present, we ignore it. In the past, a remix
             // information file was saved in the zip when project source was downloaded and
             // retrieved from the zip when it was uploaded. However, we no longer do that because
             // we don't have a way to verify that the contents of the remix information file is
             // accurate during the upload.
+            // If a keystore file is present we ignore that too for now, since
+            // we don't have per-project keystores. The only way to get such a
+            // source zip at the moment is using the admin functionality to
+            // download another user's project source.
             continue;
 
           } else {
