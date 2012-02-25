@@ -220,6 +220,13 @@ body {
   font-family: 'Droid Sans', arial, sans-serif;
 }
 
+.ode-TopPanelLabel {
+  color: #888;
+  font-family: 'Droid Sans', arial, sans-serif;
+  font-size: 15px;
+}
+
+
 /*
  * StatusPanel
  */

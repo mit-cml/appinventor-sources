@@ -6,7 +6,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.common.version.AppInventorFeatures;
-import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -24,20 +23,23 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class TopPanel extends Composite {
   private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
+  private static final String KNOWN_ISSUES_LINK_URL = Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
+
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private static final String EXTRA_TEXT_IF_NOT_PRODUCTION = "This is an experimental version of "
-      + " App Inventor. IT IS FOR TESTING ONLY, NOT FOR GENERAL USE!"
-      + " Note: This App Inventor instance is not being hosted on AppEngine."
-      + " As a result, it will not correctly save your projects when you log out."
-      + " You'll have to download them if you want them saved.";
+  private static final String EXTRA_TEXT_IF_NOT_PRODUCTION = 
+      " Note: This App Inventor instance is not being hosted on AppEngine."
+          + " As a result, it will not correctly save your projects when you log out."
+          + " You'll have to download them if you want them saved.";
 
-  // TODO(user) Remove the expermental warning label below when ready.
-  private final Label warning = new Label("This is an experimental version of App Inventor. "
-      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
+  private final Label welcome = new Label("Welcome to the App Inventor beta preview release." +
+      " Be sure to check the list of known issues.");
+
+    //This is an experimental version of App Inventor. "
+    //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
   
   private HTML divider() {
     return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
@@ -52,7 +54,7 @@ public class TopPanel extends Composite {
      *
      *  +-- topPanel ------------------------------+
      *  |+-- logo --++--middleLinks--++--account--+|
-     *  ||          ||               ||           ||
+     *  ||          ||               ||underaccount| 
      *  |+----------++---------------++-----------+|
      *  +------------------------------------------+
      */
@@ -66,19 +68,29 @@ public class TopPanel extends Composite {
     account.setStyleName("ode-TopPanelAccount");
     account.add(userEmail);
     account.add(divider());
+    
+    HorizontalPanel underaccount = new HorizontalPanel();
+    underaccount.setStyleName("ode-TopPanelAccount");
+    underaccount.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT); 
     if (AppInventorFeatures.sendBugReports()) {
       HTML reportBugLink =
           new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +
-          makeSpacesNonBreakable(MESSAGES.reportBugLink()) + "</a>");
-      account.add(reportBugLink);
-      account.add(divider());
+              makeSpacesNonBreakable(MESSAGES.reportBugLink()) + "</a>");
+      underaccount.add(reportBugLink);
+      underaccount.add(divider());
     }
+    HTML knownIssuesLink = 
+        new HTML("<a href='" + KNOWN_ISSUES_LINK_URL + "' target='_blank'>" +
+            makeSpacesNonBreakable("Known issues") + "</a>");
+    underaccount.add(knownIssuesLink);
+
     HTML signOutLink =
-        new HTML("<a href='" + ServerLayout.ODE_LOGOUT_URL + "'>" +
-        makeSpacesNonBreakable(MESSAGES.signOutLink()) + "</a>");
+        new HTML("<a href='"  + "'>" +
+            makeSpacesNonBreakable(MESSAGES.signOutLink()) + "</a>");
     account.add(signOutLink);
 
     rightPanel.add(account);
+    rightPanel.add(underaccount);
     addLogo(topPanel);
 
     HorizontalPanel middleLinks = new HorizontalPanel();
@@ -120,8 +132,8 @@ public class TopPanel extends Composite {
     }
 
     setWarningLabelText();
-    warning.setStyleName("ode-TopPanelWarningLabel");
-    middleLinks.add(warning);
+    welcome.setStyleName("ode-TopPanelLabel");
+    middleLinks.add(welcome);
 
     topPanel.add(middleLinks);
     topPanel.add(rightPanel);
@@ -144,7 +156,7 @@ public class TopPanel extends Composite {
       @Override
       public void onSuccess(Boolean isProduction) {
         if (!isProduction) {
-          warning.setText(EXTRA_TEXT_IF_NOT_PRODUCTION);
+          welcome.setText(welcome.getText() + EXTRA_TEXT_IF_NOT_PRODUCTION);
         }
       }
     };
