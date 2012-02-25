@@ -17,13 +17,8 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class StatusPanel extends Composite {
   private String AppInventorFooter =
-    "&copy;2010 Google" +
-    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/'" +
-    " target=_blank>" + MESSAGES.aboutLink() + "</a>" +
-    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/privacy.html'" +
-    " target=_blank>" + MESSAGES.privacyLink() + "</a>" +
-    " - <a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
-    " target=_blank>" + MESSAGES.termsLink() + "</a>";
+    "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html/'" +
+    " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
   /**
    * Initializes and assembles all UI elements shown in the status panel.

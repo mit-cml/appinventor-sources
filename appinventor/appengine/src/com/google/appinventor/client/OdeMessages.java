@@ -185,6 +185,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Terms")
   @Description("Label of the link for Terms")
   String termsLink();
+  
+  @DefaultMessage("Privacy Policy and Terms of Use")
+  @Description("Label of the link for Privacy and Terms of Use")
+  String privacyTermsLink();
 
   // Used in TopPanel.java
 

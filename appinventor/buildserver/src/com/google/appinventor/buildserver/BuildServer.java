@@ -156,6 +156,10 @@ public class BuildServer {
     variables.put("vm-vender", runtimeBean.getVmVendor());
     variables.put("vm-version", runtimeBean.getVmVersion());
 
+    //BuildServer Version and Id
+    variables.put("buildserver-version", MercurialBuildId.getVersion() + "");
+    variables.put("buildserver-id", MercurialBuildId.getId() + "");
+
     // OS
     OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
     variables.put("os-arch", osBean.getArch());
@@ -172,7 +176,7 @@ public class BuildServer {
     variables.put("max-memory", runtime.maxMemory() + "");
     variables.put("used-heap", memoryBean.getHeapMemoryUsage().getUsed() + "");
     variables.put("used-non-heap", memoryBean.getNonHeapMemoryUsage().getUsed() + "");
-
+    
     // Build requests
     variables.put("count-async-build-requests", asyncBuildRequests.get() + "");
     variables.put("rejected-async-build-requests", rejectedAsyncBuildRequests.get() + "");
@@ -182,13 +186,13 @@ public class BuildServer {
     // Build tasks
     int max = buildExecutor.getMaxActiveTasks();
     if (max == 0) {
-      variables.put("maximum-simultaneous-build-tasks", "unlimited");
+      variables.put("maximum-simultaneous-build-tasks-allowed", "unlimited");
     } else {
-      variables.put("maximum-simultaneous-build-tasks", max + "");
+      variables.put("maximum-simultaneous-build-tasks-allowed", max + "");
     }
     variables.put("completed-build-tasks", buildExecutor.getCompletedTaskCount() + "");
     maximumActiveBuildTasks = Math.max(maximumActiveBuildTasks, buildExecutor.getActiveTaskCount());
-    variables.put("maximum-active-build-tasks", maximumActiveBuildTasks + "");
+    variables.put("maximum-simultaneous-build-tasks-occurred", maximumActiveBuildTasks + "");
     variables.put("active-build-tasks", buildExecutor.getActiveTaskCount() + "");
 
     StringBuilder html = new StringBuilder();
