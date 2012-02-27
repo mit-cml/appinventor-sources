@@ -32,7 +32,7 @@ import android.util.Log;
     " method is called, send the text message " +
     "specified in the <code>Message</code> property to the phone number " +
     "specified in the <code>PhoneNumber</code> property. " +
-    "<p>This component can also receive test messages unless the " +
+    "<p>This component can also receive text messages unless the " +
     "<code>ReceivingEnabled</code> property is False.  When a message " +
     "arrives, the <code>MessageReceived</code> event is raised and provides " +
     "the sending number and message.</p>" +
