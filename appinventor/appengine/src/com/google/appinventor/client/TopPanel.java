@@ -23,20 +23,19 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class TopPanel extends Composite {
   private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
-  private static final String KNOWN_ISSUES_LINK_URL = Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
+  private static final String KNOWN_ISSUES_LINK_URL =
+      Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
+  private static final String KNOWN_ISSUES_LINK_AND_TEXT =
+      "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
 
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
   private final HTML userEmail = new HTML();
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private static final String EXTRA_TEXT_IF_NOT_PRODUCTION = 
-      " Note: This App Inventor instance is not being hosted on AppEngine."
-          + " As a result, it will not correctly save your projects when you log out."
-          + " You'll have to download them if you want them saved.";
+  private final HTML welcome = new HTML("Welcome to the App Inventor beta preview release." +
+      " Be sure to check the list of " + KNOWN_ISSUES_LINK_AND_TEXT + ".");
 
-  private final Label welcome = new Label("Welcome to the App Inventor beta preview release." +
-      " Be sure to check the list of known issues.");
 
     //This is an experimental version of App Inventor. "
     //      + "IT IS FOR TESTING ONLY, NOT FOR GENERAL USE! ");
@@ -54,7 +53,7 @@ public class TopPanel extends Composite {
      *
      *  +-- topPanel ------------------------------+
      *  |+-- logo --++--middleLinks--++--account--+|
-     *  ||          ||               ||underaccount| 
+     *  ||          ||               ||            | 
      *  |+----------++---------------++-----------+|
      *  +------------------------------------------+
      */
@@ -69,20 +68,13 @@ public class TopPanel extends Composite {
     account.add(userEmail);
     account.add(divider());
     
-    HorizontalPanel underaccount = new HorizontalPanel();
-    underaccount.setStyleName("ode-TopPanelAccount");
-    underaccount.setHorizontalAlignment(HorizontalPanel.ALIGN_RIGHT); 
     if (AppInventorFeatures.sendBugReports()) {
       HTML reportBugLink =
           new HTML("<a href='" + BugReport.getBugReportLink() + "' target='_blank'>" +
               makeSpacesNonBreakable(MESSAGES.reportBugLink()) + "</a>");
-      underaccount.add(reportBugLink);
-      underaccount.add(divider());
+      account.add(reportBugLink);
+      account.add(divider());
     }
-    HTML knownIssuesLink = 
-        new HTML("<a href='" + KNOWN_ISSUES_LINK_URL + "' target='_blank'>" +
-            makeSpacesNonBreakable("Known issues") + "</a>");
-    underaccount.add(knownIssuesLink);
 
     HTML signOutLink =
         new HTML("<a href='"  + "'>" +
@@ -90,7 +82,6 @@ public class TopPanel extends Composite {
     account.add(signOutLink);
 
     rightPanel.add(account);
-    rightPanel.add(underaccount);
     addLogo(topPanel);
 
     HorizontalPanel middleLinks = new HorizontalPanel();
@@ -131,7 +122,6 @@ public class TopPanel extends Composite {
       middleLinks.add(debugging);
     }
 
-    setWarningLabelText();
     welcome.setStyleName("ode-TopPanelLabel");
     middleLinks.add(welcome);
 
@@ -146,21 +136,6 @@ public class TopPanel extends Composite {
 
     setStyleName("ode-TopPanel");
     setWidth("100%");
-  }
-
-  private void setWarningLabelText() {
-    AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
-      @Override
-      public void onFailure(Throwable caught) {
-      }
-      @Override
-      public void onSuccess(Boolean isProduction) {
-        if (!isProduction) {
-          welcome.setText(welcome.getText() + EXTRA_TEXT_IF_NOT_PRODUCTION);
-        }
-      }
-    };
-    Ode.getInstance().getHelpService().isProductionServer(callback);
   }
 
   private void addLogo(HorizontalPanel panel) {
