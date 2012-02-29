@@ -80,6 +80,7 @@ public class ProjectToolbar extends Toolbar {
       addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
     }
     updateKeystoreButtons();
+    updateButtons();
   }
 
   private static class NewAction implements Command {
