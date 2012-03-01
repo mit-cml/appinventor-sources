@@ -3,9 +3,11 @@
 package com.google.appinventor.server.project.youngandroid;
 
 import com.google.appengine.api.utils.SystemProperty;
+import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.common.version.MercurialBuildId;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.FileExporterImpl;
 import com.google.appinventor.server.Server;
@@ -70,6 +72,10 @@ import java.util.logging.Logger;
 public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
+  
+  // The value of this flag can be changed in appengine-web.xml
+  private static final Flag<Boolean> sendMercurialId = 
+    Flag.createFlag("build.send.mercurial.id", true);
 
   // Project folder prefixes
   public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
@@ -418,12 +424,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     for (String buildOutputFile : buildOutputFiles) {
       storageIo.deleteFile(userId, projectId, buildOutputFile);
     }
+    URL buildServerUrl = null;
+    ProjectSourceZip zipFile = null;
     try {
-      URL buildServerUrl =
-          new URL(getBuildServerUrlStr(user.getUserEmail(),
-                                       userId,
-                                       projectId,
-                                       outputFileDir));
+      buildServerUrl = new URL(getBuildServerUrlStr(
+          user.getUserEmail(),
+          userId,
+          projectId,
+          outputFileDir));
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
@@ -431,10 +439,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       BufferedOutputStream bufferedOutputStream =
           new BufferedOutputStream(connection.getOutputStream());
       FileExporter fileExporter = new FileExporterImpl();
-      ProjectSourceZip zipFile =
-          fileExporter.exportProjectSourceZip(userId, projectId, false,
-                                              /* includeAndroidKeystore */ true,
-                                              projectName + ".zip");
+      zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
+          /* includeAndroidKeystore */ true,
+          projectName + ".zip");
       bufferedOutputStream.write(zipFile.getContent());
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
@@ -474,13 +481,43 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         return new RpcResult(responseCode, "", StringUtils.escape(error));
       }
     } catch (MalformedURLException e) {
+      CrashReport.createAndLogError(LOG, null, 
+          buildErrorMsg("MalformedURLException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (IOException e) {
+      CrashReport.createAndLogError(LOG, null, 
+          buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (EncryptionException e) {
+      CrashReport.createAndLogError(LOG, null, 
+          buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
+    } catch (RuntimeException e) {  
+      // In particular, we often see RequestTooLargeException (if the zip is too 
+      // big) and ApiProxyException. There may be others.
+      Throwable wrappedException = e;
+      if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
+        int zipFileLength = zipFile.getContent().length;
+        if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
+          wrappedException = new IllegalArgumentException(
+              "Sorry, can't package projects larger than 5MB."
+              + " Yours is " + zipFileLength + " bytes.", e);
+        } else {
+          wrappedException = new IllegalArgumentException(
+              "Sorry, project was too large to package (" + zipFileLength + " bytes)");
+        }
+      }
+      CrashReport.createAndLogError(LOG, null, 
+          buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
+      return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
+  }
+ 
+  private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
+    return "Request to build failed with " + exceptionName + ", user=" + userId
+        + ", project=" + projectId + ", build URL is " + buildURL
+        + " [" + buildURL.toString().length() + "]";
   }
 
   // Note that this is a function rather than just a constant because we assume it will get
@@ -491,7 +528,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       throws UnsupportedEncodingException, EncryptionException {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + "&mercurialBuildId=" + URLEncoder.encode(MercurialBuildId.MERCURIAL_BUILD_ID, "UTF-8")
+           + (sendMercurialId.get()
+               ? "&mercurialBuildId=" 
+                 + URLEncoder.encode(MercurialBuildId.MERCURIAL_BUILD_ID, "UTF-8")
+               : "")
            + "&callback="
            + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH
                                + ServerLayout.RECEIVE_BUILD_SERVLET + "/"

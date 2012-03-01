@@ -93,12 +93,15 @@ public class DownloadServlet extends OdeServlet {
 
     RawFile downloadableFile;
 
+    String userId = null;
+
     try {
       String uri = req.getRequestURI();
       // First, call split with no limit parameter.
       String[] uriComponents = uri.split("/");
       String downloadKind = uriComponents[DOWNLOAD_KIND_INDEX];
-      String userId = userInfoProvider.getUserId();
+      
+      userId = userInfoProvider.getUserId();
 
       if (downloadKind.equals(ServerLayout.DOWNLOAD_PROJECT_OUTPUT)) {
         // Download project output file.
@@ -199,7 +202,7 @@ public class DownloadServlet extends OdeServlet {
         throw new IllegalArgumentException("Unknown download kind: " + downloadKind);
       }
     } catch (IllegalArgumentException e) {
-      throw CrashReport.createAndLogError(LOG, req, null, e);
+      throw CrashReport.createAndLogError(LOG, req, "user=" + userId, e);
     }
 
     String fileName = downloadableFile.getFileName();

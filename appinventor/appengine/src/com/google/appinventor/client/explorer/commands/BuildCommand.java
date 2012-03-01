@@ -88,7 +88,9 @@ public class BuildCommand extends ChainableCommand {
               ErrorReporter.reportInfo(MESSAGES.buildServerDifferentVersion());
               break;
             default:
-              ErrorReporter.reportError(MESSAGES.buildFailedError());
+              String errorMsg = result.getError();
+              ErrorReporter.reportError(MESSAGES.buildFailedError() + 
+                  (errorMsg.isEmpty() ? "" : " " + errorMsg));
               break;
           }
           executionFailedOrCanceled();

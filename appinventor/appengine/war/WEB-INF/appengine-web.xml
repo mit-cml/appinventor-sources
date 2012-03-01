@@ -45,6 +45,11 @@
          MOTD checking, make the interval long, because this check is
          resource expensive on App Engine -->
     <property name="motd.check.interval.secs" value="0" />
+    
+    <!-- Set this to false if we should not send our Mercurial build id with build requests.
+         This is useful when testing new servers where we don't want to require the 
+         buildserver to match -->
+    <property name="build.send.mercurial.id" value="true" />
 
   </system-properties>
 

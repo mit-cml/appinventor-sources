@@ -113,7 +113,12 @@ public final class YoungAndroidWebStartSupport extends WebStartSupport {
         data = ResourceUtil.downloadSignedCodeblocksJar();
         ModifiedHeaders.setHeaders(resp);
 
-      } else if (fileName.equals(YaHttpServerConstants.STARTER_PHONEAPP_APK)) {
+      } else if (0 == fileName.compareToIgnoreCase(YaHttpServerConstants.STARTER_PHONEAPP_APK)) {
+        if (!fileName.equals(YaHttpServerConstants.STARTER_PHONEAPP_APK)) {
+          throw CrashReport.createAndLogError(LOG, req, 
+              "Bad starter app name, user=" + userId + ", project=" + projectId, 
+              null);
+        }
         // Special case for the phone component APK. projectId is ignored.
         // Does not need to be signed.
         data = ResourceUtil.downloadStarterAppApk();
