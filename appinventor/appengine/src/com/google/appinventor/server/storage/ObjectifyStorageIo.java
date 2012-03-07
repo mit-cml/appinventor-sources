@@ -1178,7 +1178,10 @@ public class ObjectifyStorageIo implements  StorageIo {
   // entity group!
   private byte[] getBlobstoreBytes(String blobstorePath) throws BlobReadException {
     AppEngineFile blobstoreFile = new AppEngineFile(blobstorePath);
-    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);    
+    BlobKey blobKey = fileService.getBlobKey(blobstoreFile);
+    if (blobKey == null) {
+      throw new BlobReadException("getBlobKey() returned null for " + blobstorePath);
+    }
     try {
       InputStream blobInputStream = new BlobstoreInputStream(blobKey);
       return ByteStreams.toByteArray(blobInputStream);

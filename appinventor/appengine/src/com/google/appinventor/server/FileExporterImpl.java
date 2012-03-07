@@ -143,7 +143,9 @@ public final class FileExporterImpl implements FileExporter {
       byte[] content = storageIo.downloadRawFile(userId, projectId, filePath);
       return new RawFile(StorageUtil.basename(filePath), content);
     } catch (RuntimeException e) {
-      throw new IllegalArgumentException("Unknown download file: " + filePath, e);
+      
+      throw new RuntimeException("Error downloading project file: " + filePath
+          + "user=" + userId + ", project=" + projectId, e);
     }
   }
 
@@ -154,7 +156,8 @@ public final class FileExporterImpl implements FileExporter {
       byte[] content = storageIo.downloadRawUserFile(userId, filePath);
       return new RawFile(StorageUtil.basename(filePath), content);
     } catch (RuntimeException e) {
-      throw new IllegalArgumentException("Unknown download user file: " + filePath, e);
+      throw new RuntimeException("Error downloading user file: " + filePath
+          + "user=" + userId, e);
     }
   }
 
