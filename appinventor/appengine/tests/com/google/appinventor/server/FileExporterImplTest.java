@@ -14,6 +14,7 @@ import com.google.common.io.ByteStreams;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -156,8 +157,9 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     try {
       exporter.exportFile(USER_ID, projectId, nonExistingFileName);
       fail();
-    } catch (IllegalArgumentException e) {
+    } catch (RuntimeException e) {
       // expected
+      // note that FileExporter throws an explicit RuntimeException
     }
   }
 
