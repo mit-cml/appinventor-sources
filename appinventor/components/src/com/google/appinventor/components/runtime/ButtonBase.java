@@ -347,8 +347,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  font size in pixel
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -360,8 +359,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }

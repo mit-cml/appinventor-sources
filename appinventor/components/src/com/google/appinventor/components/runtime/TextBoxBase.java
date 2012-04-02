@@ -292,10 +292,8 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      userVisible = false,
       description = "The font size for the text.  By default, it is " +
-      Component.FONT_DEFAULT_SIZE + " points."
-      )
+      Component.FONT_DEFAULT_SIZE + " points.")
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -307,8 +305,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }
