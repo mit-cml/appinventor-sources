@@ -185,7 +185,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Terms")
   @Description("Label of the link for Terms")
   String termsLink();
-  
+
   @DefaultMessage("Privacy Policy and Terms of Use")
   @Description("Label of the link for Privacy and Terms of Use")
   String privacyTermsLink();
@@ -361,6 +361,24 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("right")
   @Description("Text for text alignment choice 'right'")
   String rightTextAlignment();
+
+  // Used in editor/youngandroid/properties/YoungAndroidButtonShapeChoicePropertyEditor.java
+
+  @DefaultMessage("default")
+  @Description("Text for button shape choice 'default'")
+  String defaultButtonShape();
+
+  @DefaultMessage("rounded")
+  @Description("Text for button shape choice 'rounded'")
+  String roundedButtonShape();
+
+  @DefaultMessage("rectangular")
+  @Description("Text for button shape choice 'rectangular'")
+  String rectButtonShape();
+
+  @DefaultMessage("oval")
+  @Description("Text for button shape choice 'oval'")
+  String ovalButtonShape();
 
   // Used in editor/youngandroid/properties/YoungAndroidAssetSelectorPropertyEditor.java
 
@@ -691,15 +709,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("More Actions")
   @Description("Label of the button leading to more cascade items")
   String moreActionsButton();
-  
+
   @DefaultMessage("Download User Source")
   @Description("Label of the button for admins to download a user's project source")
   String downloadUserSourceButton();
-  
+
   @DefaultMessage("Download User Source")
   @Description("Title of the dialog box for downloading a user's project source")
   String downloadUserSourceDialogTitle();
-  
+
   @DefaultMessage("User id or email (case-sensitive):")
   @Description("Label for the user id input text box")
   String userIdLabel();
@@ -707,7 +725,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Project id or name:")
   @Description("Label for the project id input text box")
   String projectIdLabel();
-  
+
   @DefaultMessage("Please specify both a user email address or id and a project name or id " +
       "for the project to be downloaded. Ids are numeric and may come from the system " +
       "logs or from browsing the Datastore. If you use an email address, it must match " +
@@ -715,7 +733,7 @@ public interface OdeMessages extends Messages {
       "match exactly. Both are case sensitive.")
   @Description("Error message reported when user id or project id is missing")
   String invalidUserIdOrProjectIdError();
-  
+
   @DefaultMessage("Admin")
   @Description("Label of the button leading to admin functionality")
   String adminButton();
@@ -859,10 +877,10 @@ public interface OdeMessages extends Messages {
   String fileUploadWizardCaption();
 
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
-		  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
+                  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
-  
+
   @DefaultMessage("Uploading {0} to the App Inventor server")
   @Description("Message displayed when an asset is uploaded.")
   String fileUploadingMessage(String filename);

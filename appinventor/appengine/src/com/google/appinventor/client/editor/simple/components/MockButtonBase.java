@@ -31,9 +31,12 @@ abstract class MockButtonBase extends MockVisibleComponent {
   private String imagePropValue;
   private boolean hasImage;
 
-  // We need to maintain this so we can show color only when
+  // We need to maintain these so we can show color and shape only when
   // there is no image.
   private String backgroundColor;
+  // Legal values for shape are defined in
+  // com.google.appinventor.components.runtime.Component.java.
+  private int shape;
 
   /**
    * Creates a new MockButtonBase component.
@@ -105,6 +108,44 @@ abstract class MockButtonBase extends MockVisibleComponent {
   }
 
   /*
+   * Sets the button's Shape property to a new value.
+   */
+  private void setShapeProperty(String text) {
+    shape = Integer.parseInt(text);
+    // Android Buttons with images take the shape of the image and do not
+    // use one of the defined Shapes.
+    if (hasImage) {
+      return;
+    }
+    switch(shape) {
+      case 0:
+        // Default Button
+        DOM.setStyleAttribute(buttonWidget.getElement(), "border-radius", "0px");
+        break;
+      case 1:
+        // Rounded Button.
+        // The corners of the Button are rounded by 10 px.
+        // The value 10 px was chosen strictly for style.
+        // 10 px is the same as ROUNDED_CORNERS_RADIUS defined in
+        // com.google.appinventor.components.runtime.ButtonBase.
+        DOM.setStyleAttribute(buttonWidget.getElement(), "border-radius", "10px");
+        break;
+      case 2:
+        // Rectangular Button
+        DOM.setStyleAttribute(buttonWidget.getElement(), "border-radius", "0px");
+        break;
+      case 3:
+        // Oval Button
+        String height = DOM.getStyleAttribute(buttonWidget.getElement(), "height");
+        DOM.setStyleAttribute(buttonWidget.getElement(), "border-radius", height);
+        break;
+      default:
+        // This should never happen
+        throw new IllegalArgumentException("shape:" + shape);
+    }
+  }
+
+  /*
    * Sets the button's BackgroundColor property to a new value.
    */
   private void setBackgroundColorProperty(String text) {
@@ -169,6 +210,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
       hasImage = false;
       url = "";
       setBackgroundColorProperty(backgroundColor);
+      setShapeProperty(Integer.toString(shape));
     } else {
       hasImage = true;
       // Android Buttons do not show a background color if they have an image.
@@ -177,6 +219,7 @@ abstract class MockButtonBase extends MockVisibleComponent {
       // setting the widget's background color to COLOR_NONE.
       MockComponentsUtil.setWidgetBackgroundColor(buttonWidget,
           "&H" + COLOR_NONE);
+      DOM.setStyleAttribute(buttonWidget.getElement(), "border-radius", "0px");
     }
     MockComponentsUtil.setWidgetBackgroundImage(buttonWidget, url);
     image.setUrl(url);
@@ -270,6 +313,8 @@ abstract class MockButtonBase extends MockVisibleComponent {
       refreshForm();
     } else if (propertyName.equals(PROPERTY_NAME_TEXTCOLOR)) {
       setTextColorProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_BUTTONSHAPE)){
+      setShapeProperty(newValue);
     }
   }
 }

@@ -162,8 +162,14 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 53:
   // - BLUETOOTHCLIENT_COMPONENT_VERSION was incremented to 5.
   // - BLUETOOTHSERVER_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 54:
+  // - BUTTON_COMPONENT_VERSION was incremented to 4.
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 4.
+  // - IMAGEPICKER_COMPONENT_VERSION was incremented to 4.
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 5.
+  // - PHONENUMBERPICKER_COMPONENT_VERSION was incremented to 4.
 
-  public static final int YOUNG_ANDROID_VERSION = 53;
+  public static final int YOUNG_ANDROID_VERSION = 54;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -275,7 +281,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For BUTTON_COMPONENT_VERSION 3:
   // - The LongClick event was added.
-  public static final int BUTTON_COMPONENT_VERSION = 3;
+  // For BUTTON_COMPONENT_VERSION 4:
+  // - The Shape property was added.
+  public static final int BUTTON_COMPONENT_VERSION = 4;
 
   public static final int CAMERA_COMPONENT_VERSION = 1;
 
@@ -302,7 +310,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For CONTACTPICKER_COMPONENT_VERSION 3:
   // - The method Open was added.
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 3;
+  // For CONTACTPICKER_COMPONENT_VERSION 4:
+  // - The Shape property was added.
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 4;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -333,7 +343,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For IMAGEPICKER_COMPONENT_VERSION 3:
   // - The method Open was added.
-  public static final int IMAGEPICKER_COMPONENT_VERSION = 3;
+  // For IMAGEPICKER_COMPONENT_VERSION 4:
+  // - The Shape property was added.
+  public static final int IMAGEPICKER_COMPONENT_VERSION = 4;
 
   // For IMAGESPRITE_COMPONENT_VERSION 2:
   // - The Rotates property was added.
@@ -368,7 +380,9 @@ public class YaVersion {
   // - The SelectionIndex read-write property was added.
   // For LISTPICKER_COMPONENT_VERSION 4:
   // - The method Open was added.
-  public static final int LISTPICKER_COMPONENT_VERSION = 4;
+  // For LISTPICKER_COMPONENT_VERSION 5:
+  // - The Shape property was added.
+  public static final int LISTPICKER_COMPONENT_VERSION = 5;
 
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 1;
 
@@ -391,7 +405,9 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   // For PHONENUMBERPICKER_COMPONENT_VERSION 3:
   // - The method Open was added.
-  public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 3;
+  // For PHONENUMBERPICKER_COMPONENT_VERSION 4:
+  // - The Shape property was added.
+  public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 4;
 
   // For PLAYER_COMPONENT_VERSION 2:
   // - The Player.PlayerError event was added.

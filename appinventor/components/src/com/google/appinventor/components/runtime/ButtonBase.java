@@ -13,7 +13,12 @@ import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
+import android.graphics.drawable.shapes.RectShape;
+import android.graphics.drawable.shapes.RoundRectShape;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,6 +40,18 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   private final android.widget.Button view;
 
+  // Constant for shape
+  // 10px is the radius of the rounded corners.  
+  // 10px was chosen for esthetic reasons.
+  private static final float ROUNDED_CORNERS_RADIUS = 10f;
+  private static final float[] ROUNDED_CORNERS_ARRAY = new float[] { ROUNDED_CORNERS_RADIUS,
+      ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS,
+      ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS, ROUNDED_CORNERS_RADIUS,
+      ROUNDED_CORNERS_RADIUS };
+
+  // Constant background color for buttons with a Shape other than default
+  private static final int SHAPED_DEFAULT_BACKGROUND_COLOR = Color.LTGRAY;
+
   // Backing for text alignment
   private int textAlignment;
 
@@ -52,6 +69,9 @@ public abstract class ButtonBase extends AndroidViewComponent
 
   // Backing for text color
   private int textColor;
+
+  // Backing for button shape
+  private int shape;
 
   // Image path
   private String imagePath = "";
@@ -101,6 +121,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_DEFAULT);
+    Shape(Component.BUTTON_SHAPE_DEFAULT);
   }
 
   @Override
@@ -157,6 +178,39 @@ public abstract class ButtonBase extends AndroidViewComponent
   public void TextAlignment(int alignment) {
     this.textAlignment = alignment;
     TextViewUtil.setAlignment(view, alignment, true);
+  }
+
+  /**
+   * Returns the style of the button.
+   *
+   * @return  one of {@link Component#BUTTON_SHAPE_DEFAULT},
+   *          {@link Component#BUTTON_SHAPE_ROUNDED},
+   *          {@link Component#BUTTON_SHAPE_RECT} or
+   *          {@link Component#BUTTON_SHAPE_OVAL}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int Shape() {
+    return shape;
+  }
+
+  /**
+   * Specifies the style the button. This does not check that the argument is a legal value.
+   *
+   * @param shape one of {@link Component#BUTTON_SHAPE_DEFAULT}, 
+   *          {@link Component#BUTTON_SHAPE_ROUNDED},
+   *          {@link Component#BUTTON_SHAPE_RECT} or
+   *          {@link Component#BUTTON_SHAPE_OVAL}
+   *   
+   * @throws IllegalArgumentException if shape is not a legal value.
+   */
+  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BUTTON_SHAPE,
+      defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
+  @SimpleProperty(userVisible = false)
+  public void Shape(int shape) {
+    this.shape = shape;
+    updateAppearance();
   }
 
   /**
@@ -240,24 +294,57 @@ public abstract class ButtonBase extends AndroidViewComponent
     updateAppearance();
   }
 
-  // Update appearance based on values of backgroundImageDrawable and backgroundColor.
+  // Update appearance based on values of backgroundImageDrawable, backgroundColor and shape.
   // Images take precedence over background colors.
   private void updateAppearance() {
-    // If there is no background image, the appearance depends solely on the background color.
+    // If there is no background image, 
+    // the appearance depends solely on the background color and shape.
     if (backgroundImageDrawable == null) {
-      if (backgroundColor == Component.COLOR_DEFAULT) {
-        // Restore original 3D bevel appearance.
-        ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+      if (shape == Component.BUTTON_SHAPE_DEFAULT) {
+        if (backgroundColor == Component.COLOR_DEFAULT) {
+          // If there is no background image and color is default, 
+          // restore original 3D bevel appearance.
+          ViewUtil.setBackgroundDrawable(view, defaultButtonDrawable);
+        } else {
+          // Clear the background image.
+          ViewUtil.setBackgroundDrawable(view, null);
+          // Set to the specified color (possibly COLOR_NONE for transparent).
+          TextViewUtil.setBackgroundColor(view, backgroundColor);
+        }   
       } else {
-        // Clear the background image.
-        ViewUtil.setBackgroundDrawable(view, null);
-        // Set to the specified color (possibly COLOR_NONE for transparent).
-        TextViewUtil.setBackgroundColor(view, backgroundColor);
+        // If there is no background image and the shape is something other than default,
+        // create a drawable with the appropriate shape and color.
+        setShape();
       }
-      return;
+    } else { 
+      // If there is a background image
+      ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
     }
+  }
 
-    ViewUtil.setBackgroundImage(view, backgroundImageDrawable);
+  // Throw IllegalArgumentException if shape has illegal value. 
+  private void setShape() {
+    ShapeDrawable drawable = new ShapeDrawable();
+    // Set color of drawable.
+    drawable.getPaint().setColor((backgroundColor == Component.COLOR_DEFAULT) 
+                                 ? SHAPED_DEFAULT_BACKGROUND_COLOR : backgroundColor);
+    // Set shape of drawable.
+    switch (shape) {
+      case Component.BUTTON_SHAPE_ROUNDED:
+        drawable.setShape(new RoundRectShape(ROUNDED_CORNERS_ARRAY, null, null));
+        break;
+      case Component.BUTTON_SHAPE_RECT:
+        drawable.setShape(new RectShape());
+        break;
+      case Component.BUTTON_SHAPE_OVAL:
+        drawable.setShape(new OvalShape());
+        break;
+      default:
+        throw new IllegalArgumentException();
+    }
+    // Set drawable to the background of the button.
+    view.setBackgroundDrawable(drawable);
+    view.invalidate();
   }
 
   /**
@@ -347,7 +434,8 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  font size in pixel
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -359,7 +447,8 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty
+  @SimpleProperty(
+      userVisible = false)
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }
