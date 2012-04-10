@@ -77,7 +77,7 @@ public class TopPanel extends Composite {
     }
 
     HTML signOutLink =
-        new HTML("<a href='"  + "'>" +
+        new HTML("<a href='/ode/_logout'>" +
             makeSpacesNonBreakable(MESSAGES.signOutLink()) + "</a>");
     account.add(signOutLink);
 
