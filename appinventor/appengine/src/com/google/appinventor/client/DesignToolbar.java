@@ -3,7 +3,6 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -21,6 +20,7 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
@@ -139,19 +139,20 @@ public class DesignToolbar extends Toolbar {
   private class RemoveFormAction implements Command {
     @Override
     public void execute() {
-      YaFormEditor formEditor = Ode.getInstance().getCurrentYoungAndroidFormEditor();
-      if (formEditor != null && !formEditor.isScreen1()) {
+      YoungAndroidSourceNode sourceNode = Ode.getInstance().getCurrentYoungAndroidSourceNode();
+      if (sourceNode != null && !sourceNode.isScreen1()) {
         // DeleteFileCommand handles the whole operation, including displaying the confirmation
-        // message dialog, closing the form editor, deleting the file in the server's storage,
-        // and deleting the corresponding client-side node.
+        // message dialog, closing the form editor, closing the blocks editor (in the browser),
+        // deleting the files in the server's storage, and deleting the corresponding client-side
+        // nodes.
         final String deleteConfirmationMessage = MESSAGES.reallyDeleteForm(
-            formEditor.getFormName());
+            sourceNode.getFormName());
         ChainableCommand cmd = new DeleteFileCommand() {
           protected boolean deleteConfirmation() {
             return Window.confirm(deleteConfirmationMessage);
           }
         };
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_REMOVEFORM_YA, formEditor.getFormNode());
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_REMOVEFORM_YA, sourceNode);
       }
     }
   }
@@ -243,11 +244,11 @@ public class DesignToolbar extends Toolbar {
 
   /**
    * Enables and/or disables buttons based (mostly) on whether there is a
-   * current form editor.
+   * current form.
    */
   public void updateButtons() {
-    YaFormEditor formEditor = Ode.getInstance().getCurrentYoungAndroidFormEditor();
-    boolean enabled = (formEditor != null);
+    YoungAndroidSourceNode sourceNode = Ode.getInstance().getCurrentYoungAndroidSourceNode();
+    boolean enabled = (sourceNode != null);
     setButtonEnabled(WIDGET_NAME_SAVE, enabled);
     setButtonEnabled(WIDGET_NAME_SAVE_AS, enabled);
     setButtonEnabled(WIDGET_NAME_CHECKPOINT, enabled);
@@ -257,7 +258,7 @@ public class DesignToolbar extends Toolbar {
 
     if (AppInventorFeatures.allowMultiScreenApplications()) {
       setButtonEnabled(WIDGET_NAME_ADDFORM, enabled);
-      enabled = (formEditor != null && !formEditor.isScreen1());
+      enabled = (sourceNode != null && !sourceNode.isScreen1());
       setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);
     }
 

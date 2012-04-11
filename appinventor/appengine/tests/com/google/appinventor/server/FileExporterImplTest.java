@@ -156,8 +156,9 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     try {
       exporter.exportFile(USER_ID, projectId, nonExistingFileName);
       fail();
-    } catch (IllegalArgumentException e) {
+    } catch (RuntimeException e) {
       // expected
+      // note that FileExporter throws an explicit RuntimeException
     }
   }
 

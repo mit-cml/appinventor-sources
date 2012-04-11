@@ -91,11 +91,15 @@ public class WaitForBuildResultCommand extends ChainableCommand {
         } else if (result.getResult() == 1) {
           // General build error
           String errorMsg = result.getError();
-          ErrorReporter.reportError(MESSAGES.buildFailedError() + 
+          ErrorReporter.reportError(MESSAGES.buildFailedError() +
               (errorMsg.isEmpty() ? "" : " " + errorMsg));
           executionFailedOrCanceled();
         } else if (result.getResult() == 2) {
           // Yail generation error
+          // TODO(BLOCKS-IN-BROWSER) - Currently we show the form editor, which causes codeblocks
+          // to show the blocks that caused the Yail generation error. In the future, when the
+          // blocks editor is fully supported in the browser, we'll need to update this code to
+          // show the blocks editor.
           String formName = extractFormName(result);
           ErrorReporter.reportError(MESSAGES.errorGeneratingYail(formName));
           String formFileName = formName  + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;

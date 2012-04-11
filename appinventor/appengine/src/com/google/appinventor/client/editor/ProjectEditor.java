@@ -43,7 +43,7 @@ public abstract class ProjectEditor extends Composite {
   protected final Project project;
 
   private final Map<String, FileEditor> openFileEditors;
-  protected final List<String> tabNames;  // tab names in the same order as the TabBar.
+  protected final List<String> fileIds;  // file ids in the same order as the TabBar.
 
   // UI elements
   private final TabBar tabBar;
@@ -62,7 +62,7 @@ public abstract class ProjectEditor extends Composite {
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
     openFileEditors = new HashMap<String, FileEditor>();
-    tabNames = new ArrayList<String>();
+    fileIds = new ArrayList<String>();
 
     tabBar = new TabBar();
     deckPanel = new DeckPanel();
@@ -176,10 +176,8 @@ public abstract class ProjectEditor extends Composite {
   public final void addFileEditor(FileEditor fileEditor) {
     String fileId = fileEditor.getFileId();
     openFileEditors.put(fileId, fileEditor);
-
-    String tabText = fileEditor.getTabText();
-    tabNames.add(tabText);
-    tabBar.addTab(tabText);
+    fileIds.add(fileId);
+    tabBar.addTab(fileEditor.getTabText());
     deckPanel.add(fileEditor);
   }
 
@@ -192,10 +190,8 @@ public abstract class ProjectEditor extends Composite {
   public final void insertFileEditor(FileEditor fileEditor, int beforeIndex) {
     String fileId = fileEditor.getFileId();
     openFileEditors.put(fileId, fileEditor);
-
-    String tabText = fileEditor.getTabText();
-    tabNames.add(beforeIndex, tabText);
-    tabBar.insertTab(tabText, beforeIndex);
+    fileIds.add(beforeIndex, fileId);
+    tabBar.insertTab(fileEditor.getTabText(), beforeIndex);
     deckPanel.insert(fileEditor, beforeIndex);
   }
 
@@ -234,7 +230,7 @@ public abstract class ProjectEditor extends Composite {
     FileEditor fileEditor = openFileEditors.remove(fileId);
     if (fileEditor != null) {
       int index = deckPanel.getWidgetIndex(fileEditor);
-      tabNames.remove(index);
+      fileIds.remove(index);
       tabBar.removeTab(index);
       deckPanel.remove(fileEditor);
 

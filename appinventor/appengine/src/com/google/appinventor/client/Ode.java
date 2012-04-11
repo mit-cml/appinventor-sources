@@ -13,7 +13,7 @@ import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
@@ -37,9 +37,11 @@ import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
+import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
@@ -109,8 +111,8 @@ public class Ode implements EntryPoint {
   // Collection of editors
   private EditorManager editorManager;
 
-  // Currently active form editor
-  private YaFormEditor currentYaFormEditor;
+  // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
+  private FileEditor currentFileEditor;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -221,7 +223,7 @@ public class Ode implements EntryPoint {
   public void switchToDesignView() {
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
-    if (currentYaFormEditor != null) {
+    if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
     }
   }
@@ -662,12 +664,12 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Set the current young android form editor.
+   * Set the current file editor.
    *
-   * @param yaFormEditor  the form editor, can be null.
+   * @param fileEditor  the file editor, can be null.
    */
-  public void setCurrentYaFormEditor(YaFormEditor yaFormEditor) {
-    currentYaFormEditor = yaFormEditor;
+  public void setCurrentFileEditor(FileEditor fileEditor) {
+    currentFileEditor = fileEditor;
 
     switchToDesignView();
 
@@ -693,8 +695,8 @@ public class Ode implements EntryPoint {
    * @return  project root node corresponding to current project
    */
   public ProjectRootNode getCurrentYoungAndroidProjectRootNode() {
-    if (currentYaFormEditor != null) {
-      return currentYaFormEditor.getFormNode().getProjectRoot();
+    if (currentFileEditor != null) {
+      return currentFileEditor.getProjectRootNode();
     }
     return null;
   }
@@ -717,19 +719,25 @@ public class Ode implements EntryPoint {
    * @return  the current project id
    */
   public long getCurrentYoungAndroidProjectId() {
-    if (currentYaFormEditor != null) {
-      return currentYaFormEditor.getProjectId();
+    if (currentFileEditor != null) {
+      return currentFileEditor.getProjectId();
     }
     return 0;
   }
 
   /**
-   * Returns the current form editor, or null if there is no current form editor.
+   * Returns the current source node, or null if there is no current source node.
    *
-   * @return  the current form editor
+   * @return  the current source node
    */
-  public YaFormEditor getCurrentYoungAndroidFormEditor() {
-    return currentYaFormEditor;
+  public YoungAndroidSourceNode getCurrentYoungAndroidSourceNode() {
+    if (currentFileEditor != null) {
+      FileNode fileNode = currentFileEditor.getFileNode();
+      if (fileNode instanceof YoungAndroidSourceNode) {
+        return (YoungAndroidSourceNode) fileNode;
+      }
+    }
+    return null;
   }
 
   /**

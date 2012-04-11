@@ -7,7 +7,6 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
 import com.google.appinventor.client.jsonp.ConnectivityListener;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
@@ -17,7 +16,9 @@ import com.google.appinventor.client.utils.Urls;
 import com.google.appinventor.common.youngandroid.YaHttpServerConstants;
 import com.google.appinventor.shared.jsonp.JsonpConnectionInfo;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -177,10 +178,9 @@ public class CodeblocksManager implements ConnectivityListener {
 
               // The user may have switched projects/forms while codeblocks was starting.
               // We want the current project/form now.
-              YaFormEditor formEditor = Ode.getInstance().getCurrentYoungAndroidFormEditor();
-              if (formEditor != null) {
-                YoungAndroidFormNode formNode = formEditor.getFormNode();
-                loadPropertiesAndBlocks(formNode, null);
+              YoungAndroidSourceNode sourceNode = Ode.getInstance().getCurrentYoungAndroidSourceNode();
+              if (sourceNode != null) {
+                loadPropertiesAndBlocks(sourceNode, null);
               }
             }
           }
@@ -320,10 +320,10 @@ public class CodeblocksManager implements ConnectivityListener {
    * @param formNode the YoungAndroidFormNode
    * @param callback an optional callback to pass along to the connection
    */
-  public void loadPropertiesAndBlocks(final YoungAndroidFormNode formNode,
+  public void loadPropertiesAndBlocks(final YoungAndroidSourceNode sourceNode,
       final AsyncCallback<Void> callback) {
     if (checkConnection(false, callback)) {
-      long projectId = formNode.getProjectId();
+      long projectId = sourceNode.getProjectId();
       final String projectPath = projectPaths.get(projectId);
       if (projectPath == null) {
         // We don't have the project path for the project.
@@ -331,7 +331,7 @@ public class CodeblocksManager implements ConnectivityListener {
         getProjectPath(projectId, new AsyncCallback<Void>() {
           @Override
           public void onSuccess(Void result) {
-            loadPropertiesAndBlocks(formNode, callback);
+            loadPropertiesAndBlocks(sourceNode, callback);
           }
           @Override
           public void onFailure(Throwable caught) {
@@ -343,6 +343,7 @@ public class CodeblocksManager implements ConnectivityListener {
         });
 
       } else {
+        final YoungAndroidFormNode formNode = getFormNode(sourceNode);
         String formPath = projectPath + "/" + formNode.getFileId();
         String assetsPath = projectPath + "/" + YaHttpServerConstants.ASSETS_ZIPFILE;
         String projectName = Ode.getInstance().getProjectManager().getProject(projectId).
@@ -364,6 +365,17 @@ public class CodeblocksManager implements ConnectivityListener {
         });
       }
     }
+  }
+
+  private YoungAndroidFormNode getFormNode(YoungAndroidSourceNode sourceNode) {
+    if (sourceNode instanceof YoungAndroidFormNode) {
+      return (YoungAndroidFormNode) sourceNode;
+    }
+    if (sourceNode instanceof YoungAndroidBlocksNode) {
+      return (YoungAndroidFormNode) sourceNode.getProjectRoot().getSourceNode(
+          YoungAndroidFormNode.getFormFileId(sourceNode.getQualifiedName()));
+    }
+    throw new IllegalStateException("Illegal sourceNode");
   }
 
   /**

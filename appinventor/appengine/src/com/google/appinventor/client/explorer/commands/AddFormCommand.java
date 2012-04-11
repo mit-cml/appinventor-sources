@@ -12,6 +12,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
@@ -28,8 +29,8 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A command that creates a new form.
@@ -65,7 +66,7 @@ public final class AddFormCommand extends ChainableCommand {
     // UI elements
     private final LabeledTextBox newNameTextBox;
 
-    private final List<String> otherFormNames;
+    private final Set<String> otherFormNames;
 
     NewFormDialog(final YoungAndroidProjectNode projectRootNode) {
       super(false, true);
@@ -77,10 +78,11 @@ public final class AddFormCommand extends ChainableCommand {
       final String prefix = "Screen";
       final int prefixLength = prefix.length();
       int highIndex = 0;
-      otherFormNames = new ArrayList<String>();
+      // Collect the existing form names so we can prevent duplicate form names.
+      otherFormNames = new HashSet<String>();
       for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
         if (source instanceof YoungAndroidFormNode) {
-          String formName = StorageUtil.trimOffExtension(StorageUtil.basename(source.getFileId()));
+          String formName = ((YoungAndroidFormNode) source).getFormName();
           otherFormNames.add(formName);
 
           if (formName.startsWith(prefix)) {
@@ -171,6 +173,7 @@ public final class AddFormCommand extends ChainableCommand {
       final YoungAndroidPackageNode packageNode = projectRootNode.getPackageNode();
       String qualifiedFormName = packageNode.getPackageName() + '.' + formName;
       final String formFileId = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
+      final String blocksFileId = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
 
       OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
           // failure message
@@ -179,11 +182,10 @@ public final class AddFormCommand extends ChainableCommand {
         public void onSuccess(Long modDate) {
           Ode.getInstance().updateModificationDate(projectRootNode.getProjectId(), modDate);
 
-          // Add the new form node to the project
-          YoungAndroidFormNode newFormNode = new YoungAndroidFormNode(formFileId);
+          // Add the new form and blocks nodes to the project
           Project project = Ode.getInstance().getProjectManager().getProject(projectRootNode);
-          project.addNode(packageNode, newFormNode);
-          final String fileId = newFormNode.getFileId();
+          project.addNode(packageNode, new YoungAndroidFormNode(formFileId));
+          project.addNode(packageNode, new YoungAndroidBlocksNode(blocksFileId));
 
           // Select the new form editor. We need to do this later because the form editor isn't
           // added to the project editor until the form file is completely loaded.
@@ -191,7 +193,7 @@ public final class AddFormCommand extends ChainableCommand {
             @Override
             public void execute() {
               ProjectEditor projectEditor = ViewerBox.getViewerBox().show(projectRootNode);
-              FileEditor fileEditor = projectEditor.getFileEditor(fileId);
+              FileEditor fileEditor = projectEditor.getFileEditor(formFileId);
               if (fileEditor != null) {
                 projectEditor.selectFileEditor(fileEditor);
 
@@ -213,7 +215,8 @@ public final class AddFormCommand extends ChainableCommand {
         }
       };
 
-      // Create the new form on the backend
+      // Create the new form on the backend. The backend will create the form (.scm) and blocks
+      // (.blk) files.
       ode.getProjectService().addFile(projectRootNode.getProjectId(), formFileId, callback);
     }
 

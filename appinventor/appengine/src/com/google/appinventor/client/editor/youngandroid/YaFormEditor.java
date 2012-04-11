@@ -5,6 +5,7 @@ package com.google.appinventor.client.editor.youngandroid;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
@@ -173,13 +174,13 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public String getTabText() {
-    return getFormName();
+    return formNode.getFormName();
   }
 
   @Override
   public void onShow() {
     // When this editor is shown, update the "current" editor.
-    Ode.getInstance().setCurrentYaFormEditor(this);
+    Ode.getInstance().setCurrentFileEditor(this);
 
     loadDesigner();
 
@@ -195,7 +196,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     unloadDesigner();
 
     // When an editor is detached, clear the "current" editor.
-    Ode.getInstance().setCurrentYaFormEditor(null);
+    Ode.getInstance().setCurrentFileEditor(null);
 
     super.onHide();
   }
@@ -259,7 +260,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public boolean isScreen1() {
-    return isScreen1(getFormName());
+    return formNode.isScreen1();
   }
 
   // FormChangeListener implementation
@@ -337,31 +338,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    */
   public MockForm getForm() {
     return form;
-  }
-
-  /**
-   * Returns the form node associated with this YaFormEditor.
-   *
-   * @return a YoungAndroidFormNode
-   */
-  public YoungAndroidFormNode getFormNode() {
-    return formNode;
-  }
-
-  /**
-   * Returns the form name associated with this YaFormEditor.
-   *
-   * @return the form name
-   */
-  public String getFormName() {
-    return StorageUtil.trimOffExtension(StorageUtil.basename(getFileId()));
-  }
-
-  /**
-   * Returns true if the given formName is Screen1, false otherwise.
-   */
-  public static boolean isScreen1(String formName) {
-    return formName.equals("Screen1");
   }
 
   // private methods
@@ -486,15 +462,24 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     MockComponent selectedComponent = form.getSelectedComponent();
 
     // Set the palette box's content.
-    PaletteBox.getPaletteBox().setContent(palettePanel);
+    PaletteBox paletteBox = PaletteBox.getPaletteBox();
+    paletteBox.setContent(palettePanel);
 
     // Update the source structure explorer with the tree of this form's components.
     sourceStructureExplorer.updateTree(form.buildComponentsTree(),
         selectedComponent.getSourceStructureExplorerItem());
+    SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    sourceStructureBox.setVisible(true);
+
+    // Show the assets box.
+    AssetListBox assetListBox = AssetListBox.getAssetListBox();
+    assetListBox.setVisible(true);
 
     // Set the properties box's content.
-    PropertiesBox.getPropertiesBox().setContent(designProperties);
+    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+    propertiesBox.setContent(designProperties);
     updatePropertiesPanel(selectedComponent);
+    propertiesBox.setVisible(true);
 
     // Listen to changes on the form.
     form.addFormChangeListener(this);
@@ -608,12 +593,21 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     form.removeFormChangeListener(this);
 
     // Clear the palette box.
-    PaletteBox.getPaletteBox().clear();
+    PaletteBox paletteBox = PaletteBox.getPaletteBox();
+    paletteBox.clear();
 
-    // Clear source structure explorer.
+    // Clear and hide the source structure explorer.
     sourceStructureExplorer.clearTree();
+    SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    sourceStructureBox.setVisible(false);
 
-    // Clear the properties box.
-    PropertiesBox.getPropertiesBox().clear();
+    // Hide the assets box.
+    AssetListBox assetListBox = AssetListBox.getAssetListBox();
+    assetListBox.setVisible(false);
+
+    // Clear and hide the properties box.
+    PropertiesBox propertiesBox = PropertiesBox.getPropertiesBox();
+    propertiesBox.clear();
+    propertiesBox.setVisible(false);
   }
 }

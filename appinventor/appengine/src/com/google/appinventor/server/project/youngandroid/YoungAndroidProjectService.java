@@ -30,10 +30,12 @@ import com.google.appinventor.shared.rpc.project.TextFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidPackageNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceFolderNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.settings.Settings;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -72,9 +74,9 @@ import java.util.logging.Logger;
 public final class YoungAndroidProjectService extends CommonProjectService {
 
   private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
-  
+
   // The value of this flag can be changed in appengine-web.xml
-  private static final Flag<Boolean> sendMercurialId = 
+  private static final Flag<Boolean> sendMercurialId =
     Flag.createFlag("build.send.mercurial.id", true);
 
   // Project folder prefixes
@@ -143,10 +145,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return contents;
   }
 
-  private static String getFormPropertiesFileName(String qualifiedName) {
-    return packageNameToPath(qualifiedName) + FORM_PROPERTIES_EXTENSION;
-  }
-
   /**
    * Returns the contents of a new Young Android form file.
    * @param qualifiedName the qualified name of the form.
@@ -167,13 +165,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "\"Properties\":{\"$Name\":\"" + formName + "\",\"$Type\":\"Form\"," +
         "\"$Version\":\"" + YaVersion.FORM_COMPONENT_VERSION + "\",\"Uuid\":\"" + 0 + "\"," +
         "\"Title\":\"" + formName + "\"}}\n|#";
-  }
-
-  /**
-   * Returns the name of the codeblocks source file given a qualified form name
-   */
-  private static String getCodeblocksSourceFileName(String qualifiedName) {
-    return packageNameToPath(qualifiedName) + CODEBLOCKS_SOURCE_EXTENSION;
   }
 
   /**
@@ -242,10 +233,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
         qualifiedFormName, null);
 
-    String formFileName = getFormPropertiesFileName(qualifiedFormName);
+    String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
 
-    String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+    String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
     String codeblocksFileContents = getInitialCodeblocksSourceFileContents(qualifiedFormName);
 
     Project project = new Project(projectName);
@@ -335,18 +326,22 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
 
       } else if (fileId.startsWith(SRC_FOLDER + '/')) {
-        // We only send form (.scm) nodes to the ODE client.
-        // We don't send codeblocks source (.blk) nodes.
+        // We send both form (.scm) and blocks (.blk) nodes to the ODE client.
+        YoungAndroidSourceNode sourceNode = null;
         if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
-          YoungAndroidFormNode formNode = new YoungAndroidFormNode(fileId);
-          String packageName = StorageUtil.getPackageName(formNode.getQualifiedName());
+          sourceNode = new YoungAndroidFormNode(fileId);
+        } else if (fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+          sourceNode = new YoungAndroidBlocksNode(fileId);
+        }
+        if (sourceNode != null) {
+          String packageName = StorageUtil.getPackageName(sourceNode.getQualifiedName());
           ProjectNode packageNode = packagesMap.get(packageName);
           if (packageNode == null) {
             packageNode = new YoungAndroidPackageNode(packageName, packageNameToPath(packageName));
             packagesMap.put(packageName, packageNode);
             sourcesNode.addChild(packageNode);
           }
-          packageNode.addChild(formNode);
+          packageNode.addChild(sourceNode);
         }
       }
     }
@@ -356,11 +351,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   @Override
   public long addFile(String userId, long projectId, String fileId) {
-    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
-      // If the file to be added is a new form, add a new form file and a new codeblocks file.
-      String qualifiedFormName = YoungAndroidFormNode.getQualifiedName(fileId);
-      String formFileName = getFormPropertiesFileName(qualifiedFormName);
-      String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
+        fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+      // If the file to be added is a form file or a blocks file, add a new form file and a new
+      // blocks file.
+      String qualifiedFormName = YoungAndroidSourceNode.getQualifiedName(fileId);
+      String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
+      String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
 
       List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
       if (!sourceFiles.contains(formFileName) &&
@@ -386,11 +383,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
   @Override
   public long deleteFile(String userId, long projectId, String fileId) {
-    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
-      // If the file to be deleted is a form, delete the form file and the codeblocks file.
-      String qualifiedFormName = YoungAndroidFormNode.getQualifiedName(fileId);
-      String formFileName = getFormPropertiesFileName(qualifiedFormName);
-      String codeblocksFileName = getCodeblocksSourceFileName(qualifiedFormName);
+    if (fileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
+        fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+      // If the file to be deleted is a form file or a blocks file, delete both the form file
+      // and the blocks file.
+      String qualifiedFormName = YoungAndroidSourceNode.getQualifiedName(fileId);
+      String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
+      String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
       storageIo.deleteFile(userId, projectId, formFileName);
       storageIo.deleteFile(userId, projectId, codeblocksFileName);
       storageIo.removeSourceFilesFromProject(userId, projectId, true,
@@ -481,19 +480,19 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         return new RpcResult(responseCode, "", StringUtils.escape(error));
       }
     } catch (MalformedURLException e) {
-      CrashReport.createAndLogError(LOG, null, 
+      CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("MalformedURLException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (IOException e) {
-      CrashReport.createAndLogError(LOG, null, 
+      CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (EncryptionException e) {
-      CrashReport.createAndLogError(LOG, null, 
+      CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
-    } catch (RuntimeException e) {  
-      // In particular, we often see RequestTooLargeException (if the zip is too 
+    } catch (RuntimeException e) {
+      // In particular, we often see RequestTooLargeException (if the zip is too
       // big) and ApiProxyException. There may be others.
       Throwable wrappedException = e;
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
@@ -507,13 +506,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
               "Sorry, project was too large to package (" + zipFileLength + " bytes)");
         }
       }
-      CrashReport.createAndLogError(LOG, null, 
+      CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("RuntimeException", buildServerUrl, userId, projectId), wrappedException);
       return new RpcResult(false, "", wrappedException.getMessage());
     }
     return new RpcResult(true, "Building " + projectName, "");
   }
- 
+
   private String buildErrorMsg(String exceptionName, URL buildURL, String userId, long projectId) {
     return "Request to build failed with " + exceptionName + ", user=" + userId
         + ", project=" + projectId + ", build URL is " + buildURL
@@ -529,7 +528,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
            + (sendMercurialId.get()
-               ? "&mercurialBuildId=" 
+               ? "&mercurialBuildId="
                  + URLEncoder.encode(MercurialBuildId.MERCURIAL_BUILD_ID, "UTF-8")
                : "")
            + "&callback="
