@@ -32,18 +32,47 @@ function createHeader(breadcrumbs) {
     document.write('<div class="customhr customhr-green"></div>');
     
     //Links to About, Learn, Forum
-    //document.write('<div id="navigation">');
-    document.write('<div id="navigation-links">');
-    document.write('<div class="navigation-link-option" id="navigation-link-home">');
-    document.write('<a href="/about/">About</a>');
-    document.write('</div>');
-    document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-learn">');
-    document.write('<a href="/learn/">Learn</a>');
-    document.write('</div>');
-       document.write('<div class="navigation-link-option" id="navigation-link-forum">');
-    document.write('<a href="/forum/">Forum</a>');
-    document.write('</div>');
-    document.write('</div>');
+    var active = document.location.pathname;
+    switch(active)
+    {
+    case "/about/":
+        document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-home">');
+        document.write('<a href="/about/">About</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option" id="navigation-link-learn">');
+        document.write('<a href="/learn/">Learn</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option" id="navigation-link-forum">');
+        document.write('<a href="/forum/">Forum</a>');
+        document.write('</div>');
+        document.write('</div>');
+      break;
+    case "/learn/":
+        document.write('<div class="navigation-link-option" id="navigation-link-home">');
+        document.write('<a href="/about/">About</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-learn">');
+        document.write('<a href="/learn/">Learn</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option" id="navigation-link-forum">');
+        document.write('<a href="/forum/">Forum</a>');
+        document.write('</div>');
+        document.write('</div>');
+      break;
+    case "/forum/":
+        document.write('<div class="navigation-link-option" id="navigation-link-home">');
+        document.write('<a href="/about/">About</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option" id="navigation-link-learn">');
+        document.write('<a href="/learn/">Learn</a>');
+        document.write('</div>');
+        document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-forum">');
+        document.write('<a href="/forum/">Forum</a>');
+        document.write('</div>');
+        document.write('</div>');
+        break;
+    default:
+    }
     
     //breadcrumbs
     document.write(breadcrumbs);
