@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Launch the Build Server.
 # This script must be run on the Build Server machine.
 # You first need to copy BuildServer.tar to that machine.  Then
@@ -6,7 +6,31 @@
 # tar -xf BuildServer.tar
 # Then run this script
 # The output log will be written in the directory where the script is run
-cd lib
-nohup java -Xmx1828m -cp activation-1.1.jar:jersey-bundle-1.3.jar:args4j-2.0.18.jar:jersey-multipart-1.3.jar:asm-3.1.jar:jettison-1.1.jar:BuildServer.jar:json.jar:CommonUtils.jar:jsr311-api-1.1.1.jar:CommonVersion.jar:localizer.jar:FastInfoset-1.2.2.jar:mail-1.4.jar:grizzly-servlet-webserver-1.9.18-i.jar:guava-10.0.1.jar:rome-0.9.jar:http-20070405.jar:sdklib.jar:jackson-core-asl-1.1.1.jar:stax-api-1.0-2.jar:jaxb-api-2.1.jar:wadl2java.jar:jaxb-impl-2.1.10.jar:wadl-cmdline.jar:jaxb-xjc.jar:wadl-core.jar:jdom-1.0.jar -Dfile.encoding=UTF-8 com.google.appinventor.buildserver.BuildServer > ../buildserver-log.out &
 
+EXECUTE=true
+LAUNCH_BUILDSERVER_OPT=
+while true; do
+  case "$1" in
+    -c | --childProcessRamMb )
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --childProcessRamM $2"; shift 2 ;;
+    -m | --maxSimultaneousBuilds )
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --maxSimultaneousBuilds $2"; shift 2 ;;
+    -p | --port)
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --port $2"; shift 2;;
+    -r | --requiredHosts )
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --requiredHosts $2"; shift 2;;
+    -d | --debug )
+      LAUNCH_BUILDSERVER_OPT="$LAUNCH_BUILDSERVER_OPT --debug $2"; shift 2;;
+    -h | --help )
+      echo "Usage: [-c , --childProcessRamM ] [-m , --maxSimultaneousBuilds ] [-p , --port ] [-r , --requiredHosts ] [-d , --debug ]"; EXECUTE=false; break ;;
+    -- ) EXECUTE=false; break ;;
+    - ) EXECUTE=false; break ;;
+    * ) break ;;
+  esac
+echo $LAUNCH_BUILDSERVER_OPT;
+done
 
+if $EXECUTE; then
+cd lib;
+exec nohup java -Xmx1828m -cp activation-1.1.jar:jersey-bundle-1.3.jar:args4j-2.0.18.jar:jersey-multipart-1.3.jar:asm-3.1.jar:jettison-1.1.jar:BuildServer.jar:json.jar:CommonUtils.jar:jsr311-api-1.1.1.jar:CommonVersion.jar:localizer.jar:FastInfoset-1.2.2.jar:mail-1.4.jar:grizzly-servlet-webserver-1.9.18-i.jar:guava-10.0.1.jar:rome-0.9.jar:http-20070405.jar:sdklib.jar:jackson-core-asl-1.1.1.jar:stax-api-1.0-2.jar:jaxb-api-2.1.jar:wadl2java.jar:jaxb-impl-2.1.10.jar:wadl-cmdline.jar:jaxb-xjc.jar:wadl-core.jar:jdom-1.0.jar -Dfile.encoding=UTF-8 com.google.appinventor.buildserver.BuildServer $LAUNCH_BUILDSERVER_OPT &> /home/buildserver/buildserver-log.out
+fi
