@@ -9,7 +9,7 @@ function createHeader(breadcrumbs) {
     document.write('<a href="/about/"><img alt="" src="/static/images/appinventor_logo.gif"></a>');//may need to change this source
     document.write('</div>');
     document.write('<form action="http://www.google.com/cse" id="cse-search-box">');
-    document.write(' <input name="cx" type="hidden" \ value="011848991959401852367:xnrcbhk2zus"> <input name= \
+    document.write(' <input name="cx" type="hidden" \ value="005719495929270354943:tlvxrelje-e"> <input name= \
             "ie" type="hidden" value="UTF-8">');
     document.write('<div class="header-search">');
     document.write('<div class="header-search-query">');
