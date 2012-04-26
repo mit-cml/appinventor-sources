@@ -38,7 +38,7 @@ public class FeedbackReporter extends JOptionPane {
    */
   private static final String TROUBLESHOOTING_LINK =
     "<hr><p>The Troubleshooting Guide at"
-    + " http://appinventor.googlelabs.com/learn/troubleshooting.html"
+    + " http://beta.appinventor.mit.edu/learn/troubleshooting.html"
     + " <br />may provide further help.</p>";
 
   // This is the notice icon from the documentation.   We use it here for
