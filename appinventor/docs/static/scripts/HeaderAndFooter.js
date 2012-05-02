@@ -30,8 +30,8 @@ function createHeader(breadcrumbs) {
     //bodyHeaderTag (all above writes)
     
     document.write('<div class="customhr customhr-green"></div>');
-    
     //Links to About, Learn, Forum
+    document.write('<div id="navigation-links">');
     var active = document.location.pathname;
     switch(active)
     {
