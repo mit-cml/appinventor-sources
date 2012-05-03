@@ -32,10 +32,11 @@ function createHeader(breadcrumbs) {
     document.write('<div class="customhr customhr-green"></div>');
     //Links to About, Learn, Forum
     document.write('<div id="navigation-links">');
-    var active = document.location.pathname;
-    switch(active)
+    var currentPath = document.location.pathname.split( '/' );
+    
+    switch(currentPath[1])
     {
-    case "/about/":
+    case ('about'):
         document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-home">');
         document.write('<a href="/about/">About</a>');
         document.write('</div>');
@@ -45,9 +46,9 @@ function createHeader(breadcrumbs) {
         document.write('<div class="navigation-link-option" id="navigation-link-forum">');
         document.write('<a href="/forum/">Forum</a>');
         document.write('</div>');
-        document.write('</div>');
+        //document.write('</div>');
       break;
-    case "/learn/":
+    case ('learn'):
         document.write('<div class="navigation-link-option" id="navigation-link-home">');
         document.write('<a href="/about/">About</a>');
         document.write('</div>');
@@ -57,9 +58,9 @@ function createHeader(breadcrumbs) {
         document.write('<div class="navigation-link-option" id="navigation-link-forum">');
         document.write('<a href="/forum/">Forum</a>');
         document.write('</div>');
-        document.write('</div>');
+        //document.write('</div>');
       break;
-    case "/forum/":
+    case ('forum'):
         document.write('<div class="navigation-link-option" id="navigation-link-home">');
         document.write('<a href="/about/">About</a>');
         document.write('</div>');
@@ -69,11 +70,11 @@ function createHeader(breadcrumbs) {
         document.write('<div class="navigation-link-option navigation-link-active" id="navigation-link-forum">');
         document.write('<a href="/forum/">Forum</a>');
         document.write('</div>');
-        document.write('</div>');
+        //document.write('</div>');
         break;
     default:
     }
-    
+    document.write('</div>');
     //breadcrumbs
     document.write(breadcrumbs);
     document.write('</div>');
