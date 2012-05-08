@@ -207,7 +207,9 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
-  @SimpleProperty(userVisible = false)
+  @SimpleProperty(description = "Specifies the button's shape (default, rounded," +
+      " rectangular, oval). The shape will not be visible if an Image is being displayed.",
+      userVisible = false)
   public void Shape(int shape) {
     this.shape = shape;
     updateAppearance();
