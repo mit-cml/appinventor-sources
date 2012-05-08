@@ -43,7 +43,7 @@
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init">
+          depends="init,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war"/>
@@ -51,7 +51,13 @@
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
-      <fileset dir="${docs.dir}" />
+      <fileset dir="${docs.dir}"/>
+      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
+      <fileset dir="${appinventor.dir}/blocklyeditor/src">
+        <include name="media/*"/>
+        <include name="**/*.css"/>
+        <include name="1x1.gif"/>
+      </fileset>
     </copy>
   </target>
 

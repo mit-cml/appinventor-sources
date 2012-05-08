@@ -281,6 +281,16 @@
   </target>
 
   <!-- ====================================================================
+       blocklyeditor_BlocklyCompile builds:
+       - build/blockly-all.js
+       ==================================================================== -->
+  
+  <target name="blocklyeditor_BlocklyCompile">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
+         target="BlocklyCompile"/>
+  </target>
+
+  <!-- ====================================================================
        buildserver_StarterApp builds:
        - build/buildserver/AppInventorPhoneApp.apk
        ==================================================================== -->

@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <title>Unit tests for Blockly</title>
+    <script type="text/javascript" src="../blockly.js"></script>
+    <script type="text/javascript" src="../connection.js"></script>
+    <script type="text/javascript" src="blockly_test.js"></script>
+    <script type="text/javascript" src="../generator.js"></script>
+    <script type="text/javascript" src="generator_test.js"></script>
+    <script type="text/javascript" src="../variables.js"></script>
+    <script type="text/javascript" src="variables_test.js"></script>
+
+    <script type="text/javascript">
+      // Counters for unit test results.
+      var test_good = 0;
+      var test_bad = 0;
+
+      // If expected and actual are the identical, print 'Ok', otherwise 'Fail!'
+      function assertEquals(msg, expected, actual) {
+        if (typeof actual == 'undefined') {
+          // msg is optional.
+          actual = expected;
+          expected = msg;
+          msg = 'Expected: \'' + expected + '\' Actual: \'' + actual + '\'';
+        }
+        if (expected === actual) {
+          document.write('<FONT COLOR="#009900">Ok</FONT><BR>');
+          test_good++;
+        } else {
+          document.write('<FONT COLOR="#990000"><BIG>Fail!</BIG></FONT><BR>');
+          msg = msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+          document.write('<code>' + msg + '</code><BR>');
+          test_bad++;
+        }
+      }
+
+      function assertTrue(msg, actual) {
+        if (typeof actual == 'undefined') {
+          // msg is optional.
+          actual = msg;
+          assertEquals(true, actual);
+        } else {
+          assertEquals(msg, true, actual);
+        }
+      }
+
+      function assertFalse(msg, actual) {
+        if (typeof actual == 'undefined') {
+          // msg is optional.
+          actual = msg;
+          assertEquals(false, actual);
+        } else {
+          assertEquals(msg, false, actual);
+        }
+      }
+
+      function runTests() {
+        for (var x = 0; x < tests.length; x++) {
+          document.write('<H3>' + tests[x] + ':</H3>');
+          eval(tests[x] + '()');
+        }
+      }
+
+      var tests = [
+          'test_DB_addConnection',
+          'test_DB_removeConnection',
+          'test_removeChildren',
+          'test_addClass',
+          'test_removeClass',
+
+          'test_get',
+          'test_prefix',
+
+          'test_safeName',
+          'test_getVariable',
+          'test_getDistinctVariable'];
+
+    </script>
+  </head>
+  <body>
+    <p>If debugging errors, start with the first reported error,
+    subsequent tests often rely on earlier ones.</p>
+
+    <script type="text/javascript">
+      var startTime = (new Date()).getTime();
+      runTests();
+      var endTime = (new Date()).getTime();
+      document.write('<H3>Done.</H3>');
+      document.write('<P>Tests passed: ' + test_good + '<BR>Tests failed: ' + test_bad + '</P>');
+      document.write('<P>Total time: ' + (endTime - startTime) + ' ms</P>');
+    </script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+              "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:html="http://www.w3.org/1999/xhtml"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   version="1.1"
+   width="100%"
+   height="100%">
+  <rect x="25" y="75" height="50" width="50" style="fill:red"/>
+  <foreignObject xmlns="http://www.w3.org/2000/svg" width="15" x="50" y="50" height="100">
+    <body xmlns="http://www.w3.org/1999/xhtml" style="margin: 0; padding: 0;">
+        <div xmlns="http://www.w3.org/1999/xhtml" style="width: 15px; overflow-x: hidden; overflow-y: scroll; height: 100px;">
+            <img src="../1x1.gif" style="width: 1px; height: 200px; "/>
+        </div>
+    </body>
+  </foreignObject>
+</svg>
