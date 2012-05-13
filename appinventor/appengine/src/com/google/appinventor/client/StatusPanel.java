@@ -29,11 +29,12 @@ public class StatusPanel extends Composite {
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
     hpanel.add(new HTML(AppInventorFooter));
 
-    // This shows the id from mercurial hg id -i -n
+    // This shows the id from mercurial hg id -i -n and the date of the build
     String version = MercurialBuildId.getVersion();
     String id = MercurialBuildId.getId();
-    if (version != null && id != null) {
-      Label buildId = new Label(MESSAGES.mercurialBuildId(version, id));
+    String date = MercurialBuildId.getDate();
+    if (version != null && id != null && date != null) {
+      Label buildId = new Label(MESSAGES.mercurialBuildId(date, version, id));
       hpanel.add(buildId);
       hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
     }

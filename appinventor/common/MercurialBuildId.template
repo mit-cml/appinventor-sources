@@ -4,12 +4,13 @@ package com.google.appinventor.common.version;
 
 /**
  * Class containing a constant for the Mercurial build id.
- *
+ * And another one for the Build date
  */
 public final class MercurialBuildId {
 
-  // The following value is set during the ant build.
+  // The following values are set during the ant build.
   public static final String MERCURIAL_BUILD_ID = "@mercurial.version.id@";
+  public static final String ANT_BUILD_DATE = "@ant.build.date@";
 
   private MercurialBuildId() {
   }
@@ -28,5 +29,9 @@ public final class MercurialBuildId {
       return idAndVersion[1];
     }
     return null;
+  }
+  
+  public static String getDate() {
+    return ANT_BUILD_DATE;
   }
 }

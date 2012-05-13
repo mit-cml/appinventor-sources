@@ -96,6 +96,11 @@
         <arg line = "id -n -i " />
     </exec>
     <filter token="mercurial.version.id" value="${mercurial.version.id}" />
+  	
+    <tstamp/>
+    <property name="ant.build.date" value="${TODAY}" />
+    <filter token="ant.build.date" value="${ant.build.date}" />
+    
     <mkdir dir="${local.build.dir}/src/${common.pkg}/version/"/>
     <copy tofile="${local.build.dir}/src/${common.pkg}/version/MercurialBuildId.java" file="MercurialBuildId.template" filtering="true" />
 
