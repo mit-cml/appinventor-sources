@@ -1,14 +1,10 @@
 <?xml version="1.0"?>
 
 <!-- ======================================================================
-     Copyright 2011 Google Inc.  All Rights Reserved.
-     Author: kerr@google.com (Debby Wallach)
+     Copyright 2012 Google Inc.  All Rights Reserved.
+     Author: sharon@google.com (Sharon Perl)
 
-     Blocks library
-
-     In order to ensure that the blocks editor can run on Java 5, we compile
-     with ai.javac5 and we do not depend on any jars that are not compiled
-     with ai.javac5.
+     Blockly-based blocks editor
      ====================================================================== -->
 
 <project name="blocklyeditor" default="all">
@@ -25,20 +21,29 @@
        ===================================================================== -->
   <import file="../build-common.xml" />
 
+  <property name="blockly.src.dir" location="${lib.dir}/blockly/src" />
+
   <target name="BlocklyCompile"
-          description="For now, compiling Blockly means cat-ing its javascript together">
-    <echo message="Going to concat javascript files to ${public.build.dir}/blockly-all.js"/>
+          description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library">
     <!-- blockly.js has to come first -->
     <concat destfile="${public.build.dir}/blockly-all.js">
-      <fileset file="${src.dir}/blockly.js"/>
+      <fileset file="${blockly.src.dir}/blockly.js"/>
     </concat>
-    <!-- the rest of the .js files can come in any order -->
+    <!-- the rest of the blockly .js files can come in any order -->
+    <concat destfile="${public.build.dir}/blockly-all.js"
+            append="true">
+      <fileset dir="${blockly.src.dir}">
+        <include name="*.js"/>
+        <exclude name="blockly.js"/>
+        <include name="language/language_*.js"/>
+        <exclude name="language/language_docs.js"/>
+      </fileset>
+    </concat>
+    <!-- finally, include any of our own .js file in any order -->
     <concat destfile="${public.build.dir}/blockly-all.js"
             append="true">
       <fileset dir="${src.dir}">
         <include name="*.js"/>
-        <exclude name="blockly.js"/>
-        <include name="language/language_*.js"/>
       </fileset>
     </concat>
   </target>

@@ -14,6 +14,7 @@
 
   <target name="all">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockslib"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
@@ -27,6 +28,7 @@
 
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
@@ -91,6 +93,7 @@
 
   <target name="clean">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>  
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>

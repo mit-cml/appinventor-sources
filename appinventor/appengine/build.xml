@@ -53,7 +53,7 @@
       </fileset>
       <fileset dir="${docs.dir}"/>
       <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
-      <fileset dir="${appinventor.dir}/blocklyeditor/src">
+      <fileset dir="${lib.dir}/blockly/src">
         <include name="media/*"/>
         <include name="**/*.css"/>
         <include name="1x1.gif"/>
