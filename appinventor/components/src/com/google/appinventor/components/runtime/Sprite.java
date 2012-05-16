@@ -27,6 +27,7 @@ import java.util.Set;
  * by multiplying the speed by a cosine or sine value) have the chance to
  * add up.</p>
  *
+ * @author spertus.google.com (Ellen Spertus)
  */
 @SimpleObject
 public abstract class Sprite extends VisibleComponent
@@ -440,6 +441,7 @@ public abstract class Sprite extends VisibleComponent
           + other + " removed but not present");
     }
     registeredCollisions.remove(other);
+    postEvent(this, "NoLongerCollidingWith", other);
   }
 
   /**
