@@ -80,12 +80,27 @@
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/appengine-api-1.0-sdk-1.6.2.1.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+	<!-- prevent error importing MercurialBuildId if it has been generated -->
+        <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
-      <link href="http://download.oracle.com/javase/6/docs/api/"/>
-      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
+      <!-- Ignore non-standard tags used in blockslib.  -->
+      <tag name="assumptions" />
+      <tag name="effect" />
+      <tag name="effects" />
+      <tag name="expects" />
+      <tag name="modifies" />
+      <tag name="override" />
+      <tag name="requires" />
+      <tag name="specfield" />
+      <tag name="warning" />
       <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the
            classpath above,so our javadoc will link appropriate online javadoc for libraries we
            depend on. -->
+      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
+      <link href="http://d.android.com/reference"
+	    offline="true"
+	    packagelistLoc="lib/android"/>
     </javadoc>
   </target>
 

@@ -727,7 +727,7 @@ public class Form extends Activity
    * Display a new form and pass a startup value to the new form.
    *
    * @param nextFormName the name of the new form to display
-   * @param startupValue the startup value to pass to the new form
+   * @param startValue the start value to pass to the new form
    */
   // This is called from runtime.scm when a "open another screen with start value" block is
   // executed.  Note that startNewForm will JSON encode the start value
