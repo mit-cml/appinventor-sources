@@ -61,9 +61,7 @@ import java.util.List;
  * To the user, the first three layers are all the background, in terms
  * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
  * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
- * changing the background color or image clears the drawing layer
- * (@link #clearDrawingLayer()}.
- *
+ * changing the background color or image clears the drawing layer.
  */
 @DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION,
     description = "<p>A two-dimensional touch-sensitive rectangular panel on " +

@@ -1,0 +1,6 @@
+It was necessary to create a local copy of the Android package list because it
+is not accessible in the ordinary location
+(http://d.android.com/reference/package-list).  The file package-list was
+downloaded from "http://libs-for-android.googlecode.com/git-history/45f08023b849769aee6c0560ab70f2ceff6b9996/docs/android/package-list".
+It is not in the 2.2 subdirectory because I believe it is for a later version
+of Android.

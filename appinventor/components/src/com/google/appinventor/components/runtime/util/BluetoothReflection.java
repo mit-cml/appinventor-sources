@@ -6,6 +6,7 @@ package com.google.appinventor.components.runtime.util;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 
 import java.io.IOException;
@@ -124,7 +125,7 @@ public class BluetoothReflection {
 
   /**
    * Invokes the method
-   * {@link android.bluetooth.BluetoothAdapter#listenUsingInsecureRfcommWithServiceRecord(String,UUID)}.
+   * {@link android.bluetooth.BluetoothAdapter#listenUsingInsecureRfcommWithServiceRecord(String, UUID)}.
    *
    * @param bluetoothAdapter a {@link android.bluetooth.BluetoothAdapter} object
    * @param name  service name for SDP record
