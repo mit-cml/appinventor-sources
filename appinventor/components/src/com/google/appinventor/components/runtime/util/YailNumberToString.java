@@ -4,14 +4,13 @@ package com.google.appinventor.components.runtime.util;
 
 import java.text.*;
 
+/**
+ * Convert inexact numbers to strings for printing in App Inventor.
+ * Kawa's default shows too many decimal places.
+ *
+ * @author halabelson@google.com (Hal Abelson)
+ */
 public final class YailNumberToString {
-
-  /**
-   * Convert inexact numbers to strings for printing in App Inventor.
-   * Kawa's default shows too many decimal places.
-   * @author halabelson@google.com (Hal Abelson)
-   */
-
   // format magnitudes larger than BIGBOUND in scientific notation
   private static final double BIGBOUND = 1.e6;
   // format magnitudes smaller than SMALLBOUND in scientific notation

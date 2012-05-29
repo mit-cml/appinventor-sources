@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.util.Map;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 /**
  * Tool to generate a list of the simple component types, and the permissions
@@ -44,8 +43,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
 
     componentPermissions.append("\n]");
 
-    FileObject src = processingEnvironment.getFiler().createResource(
-        StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, COMPONENT_LIST_OUTPUT_FILE_NAME);
+    FileObject src = createOutputFileObject(COMPONENT_LIST_OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
     try {
       writer.write(componentList.toString());
@@ -55,8 +53,7 @@ public final class ComponentListGenerator extends ComponentProcessor {
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
 
-    src = processingEnvironment.getFiler().createResource(
-        StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, COMPONENT_PERMISIONS_OUTPUT_FILE_NAME);
+    src = createOutputFileObject(COMPONENT_PERMISIONS_OUTPUT_FILE_NAME);
     writer = src.openWriter();
     try {
       writer.write(componentPermissions.toString());

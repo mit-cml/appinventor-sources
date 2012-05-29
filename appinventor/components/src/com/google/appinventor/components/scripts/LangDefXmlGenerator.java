@@ -12,12 +12,12 @@ import java.util.Map;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 /**
  * Processes component source files to generate an XML file to specify a
  * language to Codeblocks.
  *
+ * @author spertus@google.com (Ellen Spertus)
  */
 public final class LangDefXmlGenerator extends ComponentProcessor {
   // Where to write results.
@@ -89,8 +89,7 @@ public final class LangDefXmlGenerator extends ComponentProcessor {
   @Override
   protected void outputResults() throws IOException {
     // Begin writing output file.
-    FileObject src = processingEnvironment.getFiler().
-        createResource(StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, OUTPUT_FILE_NAME);
+    FileObject src = createOutputFileObject(OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
     writer.write(String.format(OUTPUT_HEADER, YaVersion.YOUNG_ANDROID_VERSION,
         YaVersion.BLOCKS_LANGUAGE_VERSION));
@@ -278,7 +277,7 @@ public final class LangDefXmlGenerator extends ComponentProcessor {
   }
 
   /*
-   * TODO(sharon): note that stripping the HTML out of the description text
+   * TODO(user): note that stripping the HTML out of the description text
    * leaves some of the description pretty unreadable. It would be nice
    * to be able to keep some formatting in the descriptions.
    */

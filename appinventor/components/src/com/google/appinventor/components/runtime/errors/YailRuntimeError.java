@@ -3,8 +3,9 @@
 package com.google.appinventor.components.runtime.errors;
 
 /**
- * @author halabelson@google.com (Hal Abelson)
+ * Runtime error not fitting in any more specific category.
  *
+ * @author halabelson@google.com (Hal Abelson)
  */
 public class YailRuntimeError extends RuntimeError {
 
@@ -14,7 +15,7 @@ public class YailRuntimeError extends RuntimeError {
     super(message);
     this.errorType = errorType;
   }
-  
+
   public String getErrorType() {
     return errorType;
   }
