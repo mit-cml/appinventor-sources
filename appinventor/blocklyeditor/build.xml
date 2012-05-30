@@ -40,11 +40,20 @@
       </fileset>
     </concat>
     <!-- finally, include any of our own .js file in any order -->
+    <!-- Comment this out until we check in some javascript to blockleditor.
+         Previously the blockly javascript was here but it got moved to
+         its own directory. Apparently not having any matches for *.js causes
+         the build to fail but I missed it on the earlier check-in.
     <concat destfile="${public.build.dir}/blockly-all.js"
             append="true">
       <fileset dir="${src.dir}">
         <include name="*.js"/>
       </fileset>
     </concat>
+    -->
+  </target>
+
+  <target name="tests">
+    <echo message="No blocklyeditor tests yet" />
   </target>
 </project>

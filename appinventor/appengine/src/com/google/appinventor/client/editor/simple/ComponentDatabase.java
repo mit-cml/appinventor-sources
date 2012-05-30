@@ -34,9 +34,11 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     private final Map<String, String> propertiesTypesByName;
     private final boolean nonVisible;
     private final String iconName;
+    private final String typeDescription;
 
     Component(String name, int version, String categoryString, String helpString,
-              boolean showOnPalette, boolean nonVisible, String iconName) {
+              boolean showOnPalette, boolean nonVisible, String iconName,
+              String typeDescription) {
       this.name = name;
       this.version = version;
       this.categoryString = categoryString;
@@ -47,6 +49,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
       this.propertiesTypesByName = new HashMap<String, String>();
       this.nonVisible = nonVisible;
       this.iconName = iconName;
+      this.typeDescription = typeDescription;
     }
 
     void add(PropertyDefinition property) {
@@ -163,6 +166,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     return component.propertiesTypesByName;
   }
 
+  @Override
+  public String getTypeDescription(String componentTypeName) {
+    Component component = components.get(componentTypeName);
+    if (component == null) {
+      throw new IllegalArgumentException();
+    }
+
+    return component.typeDescription;
+  }
+
   /*
    * Creates a component descriptor from the contents of the JSON file and puts
    * it in the components map.
@@ -176,7 +189,8 @@ class ComponentDatabase implements ComponentDatabaseInterface {
         properties.get("helpString").asString().getString(),
         Boolean.valueOf(properties.get("showOnPalette").asString().getString()),
         Boolean.valueOf(properties.get("nonVisible").asString().getString()),
-        properties.get("iconName").asString().getString());
+        properties.get("iconName").asString().getString(),
+        componentNode.toJson());
     findComponentProperties(component, properties.get("properties").asArray());
     components.put(component.name, component);
   }

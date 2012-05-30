@@ -143,4 +143,11 @@ public interface ComponentDatabaseInterface {
    * @return  map of property names and types
    */
   Map<String, String> getPropertyTypesByName(String componentTypeName);
+  
+  /*
+   * Returns the JSON string describing the component type for a component
+   * 
+   * @param componentTypeName  name of component to query
+   */
+  String getTypeDescription(String componentTypeName);
 }

@@ -235,6 +235,7 @@
   <path id="libsForAiSharedLibTests.path">
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils.jar" />
     <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -247,7 +248,7 @@
   </path>
 
   <target name="AiSharedLibTests"
-          depends="AiSharedLib,AiServerLib"
+          depends="AiSharedLib,AiServerLib,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiSharedLibTests"
                 aij-dir="${appinventor.pkg}/shared" >
@@ -379,6 +380,7 @@
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${build.dir}/common/CommonUtils.jar" />
     <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -392,7 +394,7 @@
   </path>
 
   <target name="AiClientLibTests"
-          depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants"
+          depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiClientLibTests"
                 aij-dir="${appinventor.pkg}/client" >

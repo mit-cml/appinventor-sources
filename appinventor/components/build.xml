@@ -256,6 +256,7 @@
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
+        <pathelement location="${build.dir}/common/CommonUtils.jar" />
         <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
       </classpath>
     </ai.javac>
@@ -271,6 +272,7 @@
       <zipfileset src="${local.build.dir}/ComponentProcessingLib.jar"/>
       <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
+      <zipfileset src="${build.dir}/common/CommonUtils.jar" />
       <zipfileset src="${lib.dir}/guava/guava-10.0.1.jar" />
     </jar>
 
@@ -281,7 +283,7 @@
        ===================================================================== -->
   <target name="JsonComponentDescription"
           description="Make simple_components.json."
-          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
+          depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants,common_CommonUtils">
     <property name="JsonComponentDescription-class.dir"
               location="${class.dir}/JsonComponentDescription" />
     <ai.apt apt-classdir="${JsonComponentDescription-class.dir}"
