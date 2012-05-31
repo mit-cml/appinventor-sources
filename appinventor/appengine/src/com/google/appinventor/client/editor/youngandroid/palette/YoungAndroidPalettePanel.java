@@ -28,6 +28,7 @@ import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyDefinition;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.StackPanel;
@@ -137,41 +138,42 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
    * Creates a new property editor.
    */
   private PropertyEditor createPropertyEditor(String editorType) {
-    // TODO(user): use constants
-    if (editorType.equals("asset")) {
+    if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ASSET)) {
       return new YoungAndroidAssetSelectorPropertyEditor(editor);
-    } else if (editorType.equals("BluetoothClient")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BLUETOOTHCLIENT)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor,
+          // Pass the set of component types that will be shown in the property editor,
+          // in this case, just "BluetoothClient".
           Collections.singleton("BluetoothClient"));
-    } else if (editorType.equals("boolean")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN)) {
       return new YoungAndroidBooleanPropertyEditor();
-    } else if (editorType.equals("color")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE)) {
+      return new YoungAndroidButtonShapeChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COLOR)) {
       return new YoungAndroidColorChoicePropertyEditor();
-    } else if (editorType.equals("component")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_COMPONENT)) {
       return new YoungAndroidComponentSelectorPropertyEditor(editor);
-    } else if (editorType.equals("float")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_FLOAT)) {
       return new FloatPropertyEditor();
-    } else if (editorType.equals("integer")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_INTEGER)) {
       return new IntegerPropertyEditor();
-    } else if (editorType.equals("lego_nxt_sensor_port")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT)) {
       return new YoungAndroidLegoNxtSensorPortChoicePropertyEditor();
-    } else if (editorType.equals("lego_nxt_generated_color")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_GENERATED_COLOR)) {
       return new YoungAndroidColorChoicePropertyEditor(
           YoungAndroidColorChoicePropertyEditor.NXT_GENERATED_COLORS);
-    } else if (editorType.equals("non_negative_float")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT)) {
       return new NonNegativeFloatPropertyEditor();
-    } else if (editorType.equals("non_negative_integer")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER)) {
       return new NonNegativeIntegerPropertyEditor();
-    } else if (editorType.equals("screen_orientation")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION)) {
       return new YoungAndroidScreenOrientationChoicePropertyEditor();
-    } else if (editorType.equals("string")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_STRING)) {
       return new StringPropertyEditor();
-    } else if (editorType.equals("textalignment")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT)) {
       return new YoungAndroidAlignmentChoicePropertyEditor();
-    } else if (editorType.equals("typeface")) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE)) {
       return new YoungAndroidFontTypefaceChoicePropertyEditor();
-    } else if (editorType.equals("buttonshape")){
-      return new YoungAndroidButtonShapeChoicePropertyEditor(); 
     } else {
       return new TextPropertyEditor();
     }

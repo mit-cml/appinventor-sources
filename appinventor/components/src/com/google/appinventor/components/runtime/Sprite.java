@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.errors.AssertionFailure;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.BoundingBox;
@@ -158,7 +159,7 @@ public abstract class Sprite extends VisibleComponent
    * @param enabled  {@code true} starts the timer, {@code false} stops it
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
       public void Enabled(boolean enabled) {
@@ -175,7 +176,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_HEADING + "")
   public void Heading(double userHeading) {
     this.userHeading = userHeading;
@@ -221,7 +222,7 @@ public abstract class Sprite extends VisibleComponent
    * @param interval  timer interval in ms
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_INTERVAL + "")
   @SimpleProperty
   public void Interval(int interval) {
@@ -237,7 +238,7 @@ public abstract class Sprite extends VisibleComponent
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = DEFAULT_SPEED + "")
   public void Speed(float speed) {
     this.speed = speed;
@@ -275,7 +276,7 @@ public abstract class Sprite extends VisibleComponent
    * otherwise.
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_VISIBLE ? "True" : "False")
   @SimpleProperty
   public void Visible(boolean visible) {
@@ -290,7 +291,7 @@ public abstract class Sprite extends VisibleComponent
     return xLeft;
   }
 
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
@@ -299,7 +300,7 @@ public abstract class Sprite extends VisibleComponent
     registerChange();
   }
 
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "0.0")
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
@@ -325,7 +326,7 @@ public abstract class Sprite extends VisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
                     defaultValue = DEFAULT_Z + "")
   public void Z(double layer) {
     this.zLayer = layer;

@@ -9,6 +9,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
@@ -120,7 +121,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param argb  background RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
@@ -148,7 +149,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
   public void Enabled(boolean enabled) {
@@ -175,7 +176,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -204,7 +205,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -229,7 +230,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param size  font size in pixel
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
@@ -261,7 +262,7 @@ public final class CheckBox extends AndroidViewComponent
    *                  {@link Component#TYPEFACE_SANSSERIF} or
    *                  {@link Component#TYPEFACE_MONOSPACE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TYPEFACE,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
@@ -286,7 +287,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param text  new caption for checkbox
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -311,7 +312,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param argb  text RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void TextColor(int argb) {
@@ -339,7 +340,7 @@ public final class CheckBox extends AndroidViewComponent
    *
    * @param value  {@code true} indicates checked, {@code false} unchecked
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty
   public void Checked(boolean value) {

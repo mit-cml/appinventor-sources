@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.content.BroadcastReceiver;
@@ -107,7 +108,7 @@ public class Texting extends AndroidNonvisibleComponent
    *
    * @param phoneNumber a phone number to call
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -128,7 +129,7 @@ public class Texting extends AndroidNonvisibleComponent
    *
    * @param message the message to send when the SendMessage function is called.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -190,7 +191,7 @@ public class Texting extends AndroidNonvisibleComponent
    *                 {@link #MessageReceived(String,String)} event to get run
    *                 when a new text message is received.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
                     defaultValue = "True")
   @SimpleProperty()
   public void ReceivingEnabled(boolean enabled) {
