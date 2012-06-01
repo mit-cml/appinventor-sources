@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.util.ExternalTextToSpeech;
@@ -130,7 +131,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * @param language is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) language code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public void Language(String language) {
@@ -178,7 +179,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * @param country is the ISO2 (i.e. 2 letter) or ISO3 (i.e. 3 letter) country code to set this
    * TextToSpeech component to.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING, defaultValue = "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public void Country(String country) {

@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 
@@ -99,7 +100,7 @@ public final class Label extends AndroidViewComponent {
    *                   {@link Component#ALIGNMENT_CENTER} or
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TEXTALIGNMENT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty(
       userVisible = false)
@@ -126,7 +127,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param argb  background RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_NONE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
@@ -158,7 +159,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -187,7 +188,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -212,7 +213,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param size  font size in pixel
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
@@ -244,7 +245,7 @@ public final class Label extends AndroidViewComponent {
    *                  {@link Component#TYPEFACE_SANSSERIF} or
    *                  {@link Component#TYPEFACE_MONOSPACE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TYPEFACE,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
@@ -269,7 +270,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param text  new caption for label
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -294,7 +295,7 @@ public final class Label extends AndroidViewComponent {
    *
    * @param argb  text RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void TextColor(int argb) {

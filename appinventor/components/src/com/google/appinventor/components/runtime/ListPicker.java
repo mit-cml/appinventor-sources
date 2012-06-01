@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailList;
@@ -72,7 +73,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   /**
    * Selection property setter method.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Selection(String value) {
@@ -155,7 +156,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * @param itemstring - a string containing a comma-separated list of the
    *                     strings to be picked from
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
                     defaultValue = "")
   // TODO(sharon): it might be nice to have a list editorType where the developer
   // could directly enter a list of strings (e.g. one per row) and we could

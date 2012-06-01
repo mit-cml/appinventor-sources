@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
@@ -157,7 +158,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *                   {@link Component#ALIGNMENT_CENTER} or
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TEXTALIGNMENT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
       defaultValue = Component.ALIGNMENT_NORMAL + "")
   @SimpleProperty(
       userVisible = false)
@@ -187,7 +188,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param argb  background RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void BackgroundColor(int argb) {
@@ -217,7 +218,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
   public void Enabled(boolean enabled) {
@@ -246,7 +247,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -277,7 +278,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(userVisible = false)
   public void FontItalic(boolean italic) {
@@ -303,7 +304,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param size  font size in pixel
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
@@ -337,7 +338,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *                  {@link Component#TYPEFACE_SANSSERIF} or
    *                  {@link Component#TYPEFACE_MONOSPACE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TYPEFACE,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
@@ -365,7 +366,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param hint  hint text
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Hint(String hint) {
@@ -389,7 +390,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param text  new text in text box
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty(
       // This kind of breaks the appearance/behavior dichotomy
@@ -422,7 +423,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
    *
    * @param argb  text RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void TextColor(int argb) {

@@ -7,6 +7,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
@@ -59,7 +60,7 @@ public class TableArrangement extends AndroidViewComponent
    *
    * @param numColumns  number of columns in this layout
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
   @SimpleProperty(userVisible = false)
   public void Columns(int numColumns) {
@@ -81,7 +82,7 @@ public class TableArrangement extends AndroidViewComponent
    *
    * @param numRows  number of rows in this layout
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2")
   @SimpleProperty(userVisible = false)
   public void Rows(int numRows) {

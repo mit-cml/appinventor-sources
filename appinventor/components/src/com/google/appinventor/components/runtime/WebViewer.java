@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.view.MotionEvent;
@@ -147,7 +148,7 @@ public final class WebViewer extends AndroidViewComponent {
    *
    * @param url URL of the page the WebVewier should load
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
                     defaultValue = "")
   @SimpleProperty()
   public void HomeUrl(String url) {
@@ -199,7 +200,7 @@ public final class WebViewer extends AndroidViewComponent {
    *
    * @param follow
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
                     defaultValue = "True")
   @SimpleProperty()
   public void FollowLinks(boolean follow) {

@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -138,7 +139,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the action that will be used to start the activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Action(String action) {
@@ -172,7 +173,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the extra key that will be passed to the activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ExtraKey(String extraKey) {
@@ -192,7 +193,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the extra value that will be passed to the activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ExtraValue(String extraValue) {
@@ -228,7 +229,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
    * Specifies the name that will be used to retrieve a result from the
    * activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ResultName(String resultName) {
@@ -256,7 +257,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the data URI that will be used to start the activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void DataUri(String dataUri) {
@@ -275,7 +276,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the MIME type to pass to the activity.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void DataType(String dataType) {
@@ -294,7 +295,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the package part of the specific component that will be started.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ActivityPackage(String activityPackage) {
@@ -313,7 +314,7 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   /**
    * Specifies the class part of the specific component that will be started.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ActivityClass(String activityClass) {
