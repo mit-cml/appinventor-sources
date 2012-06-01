@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -117,7 +118,7 @@ public final class Player extends AndroidNonvisibleComponent
    *
    * @param path  the path to the audio or video source
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_ASSET,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
   public void Source(String path) {

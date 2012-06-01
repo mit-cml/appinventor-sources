@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.HtmlEntities;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
@@ -205,7 +206,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Specifies the URL.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Url(String url) {
@@ -254,7 +255,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Specifies whether cookies should be allowed
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "false")
   @SimpleProperty
   public void AllowCookies(boolean allowCookies) {
@@ -277,7 +278,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * Specifies whether the response should be saved in a file.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "false")
   @SimpleProperty
   public void SaveResponse(boolean saveResponse) {
@@ -301,7 +302,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * If SaveResponse is true and ResponseFileName is empty, then a new file
    * name will be generated.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ResponseFileName(String responseFileName) {

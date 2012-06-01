@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.BluetoothReflection;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -208,7 +209,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    *
    * @param secure {@code true} to use a secure connection
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
   public void Secure(boolean secure) {
@@ -234,7 +235,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * @param highByteFirst  {@code true} for high byte first, {@code false} for
    *        low byte first
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty
   public void HighByteFirst(boolean highByteFirst) {
@@ -244,7 +245,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
   /**
    * Sets the character encoding to use when sending and receiving text.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING, defaultValue = "UTF-8")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "UTF-8")
   @SimpleProperty
   public void CharacterEncoding(String encoding) {
     try {
@@ -270,7 +271,7 @@ public abstract class BluetoothConnectionBase extends AndroidNonvisibleComponent
    * numberOfBytes parameter when calling ReceiveText, ReceiveSignedBytes, or
    * ReceiveUnsignedBytes.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "0")
   @SimpleProperty
   public void DelimiterByte(int number) {

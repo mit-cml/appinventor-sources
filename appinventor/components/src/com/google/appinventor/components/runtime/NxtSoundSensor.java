@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.os.Handler;
@@ -101,7 +102,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
   /**
    * Specifies the sensor port that the sensor is connected to.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
       defaultValue = DEFAULT_SENSOR_PORT)
   @SimpleProperty(userVisible = false)
   public void SensorPort(String sensorPortLetter) {
@@ -154,7 +155,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies the bottom of the range used for the BelowRange, WithinRange,
    * and AboveRange events.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "" + DEFAULT_BOTTOM_OF_RANGE)
   @SimpleProperty
   public void BottomOfRange(int bottomOfRange) {
@@ -177,7 +178,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies the top of the range used for the BelowRange, WithinRange, and
    * AboveRange events.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "" + DEFAULT_TOP_OF_RANGE)
   @SimpleProperty
   public void TopOfRange(int topOfRange) {
@@ -200,7 +201,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies whether the BelowRange event should fire when the sound level
    * goes below the BottomOfRange.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void BelowRangeEventEnabled(boolean enabled) {
     boolean handlerWasNeeded = isHandlerNeeded();
@@ -237,7 +238,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies whether the WithinRange event should fire when the sound level
    * goes between the BottomOfRange and the TopOfRange.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void WithinRangeEventEnabled(boolean enabled) {
     boolean handlerWasNeeded = isHandlerNeeded();
@@ -274,7 +275,7 @@ public class NxtSoundSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies whether the AboveRange event should fire when the sound level
    * goes above the TopOfRange.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void AboveRangeEventEnabled(boolean enabled) {
     boolean handlerWasNeeded = isHandlerNeeded();

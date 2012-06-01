@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ClientLoginHelper;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -81,7 +82,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     query = DEFAULT_QUERY;
   }
 
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
     defaultValue = DEFAULT_QUERY)
   @SimpleProperty
   public void Query(String query) {

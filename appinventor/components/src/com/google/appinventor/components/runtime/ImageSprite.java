@@ -9,6 +9,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
@@ -149,7 +150,7 @@ public class ImageSprite extends Sprite {
    *
    * @param path  the path of the sprite's picture
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_ASSET,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
   public void Picture(String path) {
@@ -228,7 +229,7 @@ public class ImageSprite extends Sprite {
    * @param rotates  {@code true} indicates that the image rotates to match the sprite's heading
    * {@code false} indicates that the sprite image doesn't rotate.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
     public void Rotates(boolean rotates) {

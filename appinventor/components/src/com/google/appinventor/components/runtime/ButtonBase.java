@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
@@ -172,7 +173,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *                   {@link Component#ALIGNMENT_CENTER} or
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TEXTALIGNMENT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
   public void TextAlignment(int alignment) {
@@ -205,7 +206,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *   
    * @throws IllegalArgumentException if shape is not a legal value.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BUTTON_SHAPE,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BUTTON_SHAPE,
       defaultValue = Component.BUTTON_SHAPE_DEFAULT + "")
   @SimpleProperty(description = "Specifies the button's shape (default, rounded," +
       " rectangular, oval). The shape will not be visible if an Image is being displayed.",
@@ -234,7 +235,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param path  the path of the button's image
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_ASSET,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(description = "Specifies the path of the button's image.  " +
       "If there is both an Image and a BackgroundColor, only the Image will be " +
@@ -287,7 +288,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param argb background RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
                     defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty(description = "Specifies the button's background color. " +
       "The background color will not be visible if an Image is being displayed.")
@@ -365,7 +366,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param enabled  {@code true} for enabled, {@code false} disabled
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
   public void Enabled(boolean enabled) {
@@ -392,7 +393,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param bold  {@code true} indicates bold, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -421,7 +422,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param italic  {@code true} indicates italic, {@code false} normal
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
@@ -447,7 +448,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param size  font size in pixel
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty(
       userVisible = false)
@@ -480,7 +481,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *                  {@link Component#TYPEFACE_SANSSERIF} or
    *                  {@link Component#TYPEFACE_MONOSPACE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TYPEFACE,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE,
       defaultValue = Component.TYPEFACE_DEFAULT + "")
   @SimpleProperty(
       userVisible = false)
@@ -505,7 +506,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param text  new caption for button
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
@@ -530,7 +531,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @param argb  text RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DEFAULT)
   @SimpleProperty
   public void TextColor(int argb) {

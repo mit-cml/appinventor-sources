@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.os.Handler;
@@ -83,7 +84,7 @@ public class NxtTouchSensor extends LegoMindstormsNxtSensor implements Deleteabl
   /**
    * Specifies the sensor port that the sensor is connected to.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LEGO_NXT_SENSOR_PORT,
       defaultValue = DEFAULT_SENSOR_PORT)
   @SimpleProperty(userVisible = false)
   public void SensorPort(String sensorPortLetter) {
@@ -135,7 +136,7 @@ public class NxtTouchSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies whether the Pressed event should fire when the touch sensor is
    * pressed.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void PressedEventEnabled(boolean enabled) {
     boolean handlerWasNeeded = isHandlerNeeded();
@@ -172,7 +173,7 @@ public class NxtTouchSensor extends LegoMindstormsNxtSensor implements Deleteabl
    * Specifies whether the Released event should fire when the touch sensor is
    * released.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty
   public void ReleasedEventEnabled(boolean enabled) {
     boolean handlerWasNeeded = isHandlerNeeded();
