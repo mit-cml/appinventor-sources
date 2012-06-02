@@ -170,9 +170,9 @@ public interface OdeMessages extends Messages {
 
   // Used in StatusPanel.java
 
-  @DefaultMessage("Release Date: {0} Version: {1} Id: {2}")
-  @Description("Label showing the Mercurial build id and build date")
-  String mercurialBuildId(String date, String version, String id);
+  @DefaultMessage("Build date: {0}  Version: {1}")
+  @Description("Label showing the ant build date and the git version")
+  String gitBuildId(String date, String version);
 
   @DefaultMessage("About")
   @Description("Label of the link for About")

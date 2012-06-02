@@ -2,7 +2,7 @@
 
 package com.google.appinventor.server.project.utils;
 
-import com.google.appinventor.common.version.MercurialBuildId;
+import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.server.encryption.EncryptionException;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
@@ -23,7 +23,7 @@ public final class JavaWebStart {
     public final String userId;
     public final long projectId;
     /**
-     * versionOk is true if the version specified in the project path matches the current Mercurial
+     * versionOk is true if the version specified in the project path matches the current Git
      * build version.
      */
     public final boolean versionOk;
@@ -68,12 +68,7 @@ public final class JavaWebStart {
    * Returns the version prefix used in the project path.
    */
   private static String getVersionPrefix() {
-    String version = MercurialBuildId.getVersion();
-    // If there's a trailing +, remove it.
-    if (version.endsWith("+")) {
-      version = version.substring(0, version.length() - 1);
-    }
-    return version;
+    return GitBuildId.getVersion();
   }
 
   /**
