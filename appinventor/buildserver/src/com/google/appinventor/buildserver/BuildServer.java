@@ -1,6 +1,6 @@
 package com.google.appinventor.buildserver;
 
-import com.google.appinventor.common.version.MercurialBuildId;
+import com.google.appinventor.common.version.GitBuildId;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
@@ -157,8 +157,8 @@ public class BuildServer {
     variables.put("vm-version", runtimeBean.getVmVersion());
 
     //BuildServer Version and Id
-    variables.put("buildserver-version", MercurialBuildId.getVersion() + "");
-    variables.put("buildserver-id", MercurialBuildId.getId() + "");
+    variables.put("buildserver-version", GitBuildId.getVersion() + "");
+    variables.put("buildserver-git-fingerprint", GitBuildId.getFingerprint() + "");
 
     // OS
     OperatingSystemMXBean osBean = ManagementFactory.getOperatingSystemMXBean();
@@ -297,8 +297,8 @@ public class BuildServer {
    * files as well as the APK file if the build succeeded and the android.keystore file if it was
    * not provided in the input zip
    *
-   * Before building the app, we'll check that the mercurialBuildId parameter (if present) equals
-   * MercurialBuildId.MERCURIAL_BUILD_ID. If the values are different, we won't even try to build
+   * Before building the app, we'll check that the gitBuildVersion parameter (if present) equals
+   * GitBuildId.getVersion(). If the values are different, we won't even try to build
    * the app. This may seem too strict, but we need to make sure that when we build apps, we use
    * the same version of the code that loads the .blk and .scm files, the same version of
    * runtime.scm, and the same version of the App Inventor component classes.
@@ -307,7 +307,7 @@ public class BuildServer {
    * as connection.getResponseCode().
    *
    * @param userName  The user name to be used in making the CN entry in the generated keystore.
-   * @param mercurialBuildId  The value of MercurialBuildId.MERCURIAL_BUILD_ID sent from
+   * @param gitBuildVersion  The value of GitBuildId.getVersion() sent from
    *     YoungAndroidProjectService.build.
    * @param callbackUrlStr An url to send the build results back to.
    * @param inputZipFile  The zip file representing the App Inventor source code.
@@ -318,7 +318,7 @@ public class BuildServer {
   @Produces(MediaType.TEXT_PLAIN)
   public Response buildAllFromZipFileAsync(@QueryParam("uname") final String userName,
       @QueryParam("callback") final String callbackUrlStr,
-      @QueryParam("mercurialBuildId") final String mercurialBuildId,
+      @QueryParam("gitBuildVersion") final String gitBuildVersion,
       final File inputZipFile) throws IOException {
     // Set the inputZip field so we can delete the input zip file later in cleanUp.
     inputZip = inputZipFile;
@@ -350,14 +350,14 @@ public class BuildServer {
 
     asyncBuildRequests.incrementAndGet();
 
-    if (mercurialBuildId != null && !mercurialBuildId.isEmpty()) {
-      if (!mercurialBuildId.equals(MercurialBuildId.MERCURIAL_BUILD_ID)) {
+    if (gitBuildVersion != null && !gitBuildVersion.isEmpty()) {
+      if (!gitBuildVersion.equals(GitBuildId.getVersion())) {
         // This build server is not compatible with the App Inventor instance. Log this as severe
         // so the owner of the build server will know about it.
-        String errorMessage = "Build server version " + MercurialBuildId.MERCURIAL_BUILD_ID +
-            " is not compatible with App Inventor version " + mercurialBuildId + ".";
+        String errorMessage = "Build server version " + GitBuildId.getVersion() +
+            " is not compatible with App Inventor version " + gitBuildVersion + ".";
         LOG.severe(errorMessage);
-        // This request was rejected because the mercurialBuildId parameter did not equal the
+        // This request was rejected because the gitBuildVersion parameter did not equal the
         // expected value.
         rejectedAsyncBuildRequests.incrementAndGet();
         cleanUp();
@@ -545,8 +545,8 @@ public class BuildServer {
     int port = commandLineOptions.port;
     SelectorThread threadSelector = GrizzlyServerFactory.create("http://localhost:" + port + "/");
     String hostAddress = InetAddress.getLocalHost().getHostAddress();
-    LOG.info("App Inventor Build Server - Version: " + MercurialBuildId.getVersion() +
-        " Id: " + MercurialBuildId.getId());
+    LOG.info("App Inventor Build Server - Version: " + GitBuildId.getVersion());
+    LOG.info("App Inventor Build Server - Git Fingerprint: " + GitBuildId.getFingerprint());
     LOG.info("Running at: http://" + hostAddress + ":" + port + "/buildserver");
     if (commandLineOptions.maxSimultaneousBuilds == 0) {
       LOG.info("Maximum simultanous builds = unlimited!");
