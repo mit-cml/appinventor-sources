@@ -33,7 +33,7 @@ public class FeedbackReporter extends JOptionPane {
 
   // TODO(sharon): clickable links not yet implemented
   /*private static final String TROUBLESHOOTING_LINK =
-    "<hr><p>The <a href=\"http://appinventor.googlelabs.com/learn/troubleshooting.html\">"
+    "<hr><p>The <a href=\"http://beta.appinventor.mit.edu/learn/troubleshooting.html\">"
     + "Troubleshooting Guide</a> may provide further help.</p>";
    */
   private static final String TROUBLESHOOTING_LINK =
