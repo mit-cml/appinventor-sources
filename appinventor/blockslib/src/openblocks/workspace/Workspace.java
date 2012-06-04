@@ -165,13 +165,14 @@ public class Workspace extends JLayeredPane
 
     // Show the Git version using a non-editable JTextField instead of a JLabel, so the user
     // can select and copy it.
-    JTextField gitBuildId = new JTextField("Version: " + GitBuildId.getVersion());
+    JTextField gitBuildId = new JTextField(
+        "Built: " + GitBuildId.getDate() + " Version: " + GitBuildId.getVersion());
     gitBuildId.setEditable(false);
     gitBuildId.setBorder(null);
     gitBuildId.setBackground(CGraphite.lightergreen);
     gitBuildId.setForeground(Color.gray);
     gitBuildId.setHorizontalAlignment(JTextField.CENTER);
-    gitBuildId.setFont(new Font("Arial", Font.PLAIN, 13));
+    gitBuildId.setFont(new Font("Arial", Font.PLAIN, 10));
     explorerPanel.add(gitBuildId, BorderLayout.SOUTH);
 
     blockCanvasLayer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
