@@ -107,7 +107,9 @@ public class FileUploadWizard extends Wizard {
                           fileUploadedCallback);
                       break;
                     case FILE_TOO_LARGE:
-                      ErrorReporter.reportError(MESSAGES.fileTooLargeError());
+                      // Issue 114: The user can resolve the problem by
+                      // uploading a smaller file.
+                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
                       break;
                     default:
                       ErrorReporter.reportError(MESSAGES.fileUploadError());

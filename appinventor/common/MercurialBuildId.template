@@ -16,19 +16,19 @@ public final class MercurialBuildId {
   }
 
   public static String getId() {
-    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
-    if (idAndVersion.length == 2) {
-      return idAndVersion[0];
-    }
-    return null;
+//    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
+//    if (idAndVersion.length == 2) {
+//      return idAndVersion[0];
+//    }
+    return "abc";
   }
 
   public static String getVersion() {
-    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
-    if (idAndVersion.length == 2) {
-      return idAndVersion[1];
-    }
-    return null;
+//    String[] idAndVersion = MERCURIAL_BUILD_ID.split("\\s+", 2);
+//    if (idAndVersion.length == 2) {
+//      return idAndVersion[1];
+//    }
+    return "abc";
   }
   
   public static String getDate() {
