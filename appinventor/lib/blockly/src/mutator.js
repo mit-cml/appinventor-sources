@@ -18,7 +18,8 @@
  */
 
 /**
- * @fileoverview Object representing a mutator dialog.
+ * @fileoverview Object representing a mutator dialog.  A mutator allows the
+ * user to change the shape of a block using a nested blocks editor.
  * @author fraser@google.com (Neil Fraser)
  */
 
@@ -30,7 +31,6 @@
 Blockly.Mutator = function(block, toolbox) {
   this.block_ = block;
   this.toolbox_ = toolbox;
-  this.createIcon_(block);
 };
 
 /**
@@ -57,10 +57,8 @@ Blockly.Mutator.prototype.destroy = function() {
 
 /**
  * Create the icon on the block.
- * @param {!Blockly.Block} block The block associated with this comment.
- * @private
  */
-Blockly.Mutator.prototype.createIcon_ = function(block) {
+Blockly.Mutator.prototype.createIcon = function() {
   /* Here's the markup that will be generated:
   <g class="blocklyIconGroup">
     <rect class="blocklyIconShield" width="16" height="16"/>
@@ -69,15 +67,15 @@ Blockly.Mutator.prototype.createIcon_ = function(block) {
   */
   var quantum = Blockly.Mutator.ICON_SIZE / 8;
   this.iconGroup_ = Blockly.createSvgElement('g', {}, null);
-  if (block.editable) {
+  if (this.block_.editable) {
     this.iconGroup_.setAttribute('class', 'blocklyIconGroup');
   }
   var iconShield = Blockly.createSvgElement('rect',
       {'class': 'blocklyIconShield',
-      width: 8 * quantum,
-      height: 8 * quantum,
-      rx: 2 * quantum,
-      ry: 2 * quantum}, this.iconGroup_);
+       width: 8 * quantum,
+       height: 8 * quantum,
+       rx: 2 * quantum,
+       ry: 2 * quantum}, this.iconGroup_);
   if (!Blockly.Mutator.crossPath_) {
     // Draw the cross once, and save it for future use.
     var path = [];
@@ -92,9 +90,9 @@ Blockly.Mutator.prototype.createIcon_ = function(block) {
   }
   var iconMark = Blockly.createSvgElement('path',
       {'class': 'blocklyMutatorMark',
-      d: Blockly.Mutator.crossPath_}, this.iconGroup_);
-  block.svg_.svgGroup_.appendChild(this.iconGroup_);
-  if (block.editable) {
+       d: Blockly.Mutator.crossPath_}, this.iconGroup_);
+  this.block_.getSvgRoot().appendChild(this.iconGroup_);
+  if (this.block_.editable) {
     Blockly.bindEvent_(this.iconGroup_, 'mouseup', this, this.onMouseUp_);
   }
 
@@ -108,13 +106,19 @@ Blockly.Mutator.prototype.createIcon_ = function(block) {
 };
 
 /**
- * Render the icon for this comment.
+ * Render the icon for this mutator.
  * @param {number} titleX Horizontal offset at which to position the icon.
  * @return {number} Width of icon.
  */
 Blockly.Mutator.prototype.renderIcon = function(titleX) {
+  if (this.block_.collapsed) {
+    this.iconGroup_.setAttribute('display', 'none');
+    return 0;
+  }
+  this.iconGroup_.setAttribute('display', 'block');
+
   var TOP_MARGIN = 5;
-  var diameter = 2 * Blockly.Comment.ICON_RADIUS;
+  var diameter = Blockly.Mutator.ICON_SIZE;
   if (Blockly.RTL) {
     titleX -= diameter;
   }
@@ -179,7 +183,7 @@ Blockly.Mutator.createDom = function() {
                                  Blockly.Mutator.showHelp_);
   Blockly.Mutator.cancelButton_ =
       new Blockly.Mutator.Button(Blockly.MSG_MUTATOR_CANCEL, false,
-                                 Blockly.Mutator.closeDialog_);
+                                 Blockly.Mutator.closeDialog);
   Blockly.Mutator.changeButton_ =
       new Blockly.Mutator.Button(Blockly.MSG_MUTATOR_CHANGE, true,
                                  Blockly.Mutator.saveDialog_);
@@ -194,7 +198,7 @@ Blockly.Mutator.createDom = function() {
   // Mutator stops being a singleton.
   Blockly.Mutator.workspace_ = new Blockly.Workspace(true);
   Blockly.Mutator.flyout_ = new Blockly.Flyout();
-
+  Blockly.Mutator.flyout_.autoClose = false;
   Blockly.Mutator.svgDialog_.appendChild(
       Blockly.Mutator.flyout_.createDom());
   Blockly.Mutator.svgDialog_.appendChild(
@@ -373,9 +377,8 @@ Blockly.Mutator.openDialog_ = function(block) {
 
 /**
  * Close the dialog.
- * @private
  */
-Blockly.Mutator.closeDialog_ = function() {
+Blockly.Mutator.closeDialog = function() {
   Blockly.Mutator.isOpen = false;
   Blockly.addClass_(Blockly.Mutator.svgGroup_, 'blocklyHidden');
   Blockly.unbindEvent_(window, 'resize', Blockly.Mutator.resizeWrapper_);
@@ -383,7 +386,7 @@ Blockly.Mutator.closeDialog_ = function() {
 
   // Empty the dialog.
   Blockly.Mutator.flyout_.hide();
-  var blocks = Blockly.Mutator.workspace_.getTopBlocks();
+  var blocks = Blockly.Mutator.workspace_.getTopBlocks(false);
   for (var x = 0, block; block = blocks[x]; x++) {
     block.destroy();
   }
@@ -397,7 +400,7 @@ Blockly.Mutator.closeDialog_ = function() {
  */
 Blockly.Mutator.saveDialog_ = function() {
   Blockly.Mutator.sourceBlock_.compose(Blockly.Mutator.rootBlock_);
-  Blockly.Mutator.closeDialog_();
+  Blockly.Mutator.closeDialog();
 };
 
 // If Buttons get used for other things beyond the Mutator Dialog, then move
@@ -470,7 +473,12 @@ Blockly.Mutator.Button.prototype.createDom = function() {
  */
 Blockly.Mutator.Button.prototype.init = function() {
   var X_PADDING = Blockly.ContextMenu.X_PADDING;
-  var bBox = this.svgText_.getBBox();
+  try {
+    var bBox = this.svgText_.getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    var bBox = {height: 0, width: 0};
+  }
   this.svgShadow_.setAttribute('width', bBox.width + 2 * X_PADDING);
   this.svgShadow_.setAttribute('height', bBox.height + 10);
   this.svgBackground_.setAttribute('width', bBox.width + 2 * X_PADDING);
@@ -484,7 +492,12 @@ Blockly.Mutator.Button.prototype.init = function() {
  * @return {!Object} Bounding box with x, y, height and width properties.
  */
 Blockly.Mutator.Button.prototype.getBBox = function() {
-  return this.svgGroup_.getBBox();
+  try {
+    return this.svgGroup_.getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return {height: 0, width: 0};
+  }
 };
 
 /**

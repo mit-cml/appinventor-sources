@@ -1,0 +1,81 @@
+<html>
+<head>
+  <title>Blockly Demo: RTL</title>
+  <script type="text/javascript" src="../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../language/en/control.js"></script>
+  <script type="text/javascript" src="../../language/en/logic.js"></script>
+  <script type="text/javascript" src="../../language/en/math.js"></script>
+  <script type="text/javascript" src="../../language/en/text.js"></script>
+  <script type="text/javascript" src="../../language/en/lists.js"></script>
+  <script type="text/javascript" src="../../language/en/variables.js"></script>
+  <script type="text/javascript" src="../../language/en/procedures.js"></script>
+  <style>
+    body {
+      background-color: white;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    #svgDiv {
+      height: 600px;
+      width: 800px;
+      border: 1px solid #ccc;
+    }
+  </style>
+  <script>
+    function init() {
+      Blockly.inject(document.getElementById('svgDiv'), {path: '../../', rtl: true});
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, document.getElementById('startBlocks'));
+      //window.onbeforeunload = function() {
+      //  return 'Leaving this page will result in the loss of your work.';
+      //};
+    }
+  </script>
+</head>
+<body onload="init()">
+  <h1><a href="http://code.google.com/p/google-blockly/">Blockly</a> &gt;
+    <a href="../index.html">Demos</a> &gt; Right-to-Left</h1>
+
+  <div id="svgDiv"></div>
+
+  <xml id="startBlocks" style="display: none">
+    <block type="controls_if" inline="false" x="-100" y="50">
+      <value i="0">
+        <block type="logic_compare" inline="true">
+          <value i="0">
+            <block type="variables_get">
+              <title i="1">item</title>
+            </block>
+          </value>
+          <value i="1" label="&gt;">
+            <block type="math_number">
+              <title i="0">256</title>
+            </block>
+          </value>
+        </block>
+      </value>
+      <statement i="0">
+        <block type="variables_set" inline="false">
+          <title i="1">item</title>
+          <value i="0">
+            <block type="math_number">
+              <title i="0">0</title>
+            </block>
+          </value>
+          <next>
+            <block type="text_print" inline="false">
+              <value i="0">
+                <block type="text">
+                  <title i="1">Game Over</title>
+                </block>
+              </value>
+            </block>
+          </next>
+        </block>
+      </statement>
+    </block>
+  </xml>
+</body>
+</html>

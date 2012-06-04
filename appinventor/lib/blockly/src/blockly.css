@@ -22,10 +22,6 @@
  * @author fraser@google.com (Neil Fraser)
  */
 
-.blocklySvg {
-  border: 1px solid black;
-}
-
 .blocklyDraggable {
   /* Hotspot coordinates are baked into the CUR file, but they are still
      required in the CSS due to a Chrome bug.
@@ -69,24 +65,18 @@
   font-size: 15pt;
   fill: #000;
 }
-.blocklyNonEditableText>rect {
-  fill: #fff;
-  fill-opacity: 0.2;
-}
+.blocklyNonEditableText>rect,
 .blocklyEditableText>rect {
   fill: #fff;
-  fill-opacity: 0.2;
+  fill-opacity: 0.6;
+}
+.blocklyNonEditableText>text,
+.blocklyEditableText>text {
+  fill: #000;
 }
 .blocklyEditableText:hover>rect {
-  stroke-width: 1;
+  stroke-width: 2;
   stroke: #fff;
-}
-.blocklyEditableHighlight {
-  stroke-linecap: round;
-  stroke-width: 1;
-  stroke: #fff;
-  stroke-opacity: 0.5;
-  fill: none;
 }
 /*
  * Don't allow users to select text.
@@ -240,7 +230,7 @@
   fill: #000;
 }
 .blocklyLaunchButton>.blocklyButtonBackground {
-  fill: #f00;
+  fill: #d43;
 }
 .blocklyLaunchButton>.blocklyButtonText {
   fill: #fff;
@@ -249,9 +239,6 @@
   fill: #bbb;
   filter: url(#blocklyShadowFilter);
   display: none;
-}
-.blocklyLaunchButton>.blocklyButtonShadow {
-  fill: #999;
 }
 .blocklyButton:hover>.blocklyButtonShadow {
   display: block;

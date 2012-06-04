@@ -1,0 +1,81 @@
+<html>
+<head>
+  <title>Blockly Demo: Maze</title>
+  <script type="text/javascript" src="maze.js"></script>
+  
+  <style>
+    body {
+      background-color: white;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    #finish {
+      position: absolute;
+    }
+    #pegman {
+      position: absolute;
+      background-image: url(pegman.png);
+    }
+  
+    /* Buttons */
+    button {
+      margin: 5px;
+      margin-right: 12px;
+      margin-left: 0;
+      padding: 10px;
+      font-size: large;
+      border-radius: 5px;
+      border: 1px solid #d43;
+      background-color: #d43;
+      color: white;
+    }
+    button:active {
+      border: 1px solid blue !important;
+    }
+    button:hover {
+      box-shadow: 2px 2px 5px #888;
+    }
+    #buttonDiv {
+      text-align: center;
+      padding-top: 2em;
+    }
+    
+    iframe {
+      height: 100%;
+      width: 100%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <table width="100%" height="100%">
+    <tr>
+      <td width="410" valign="top">
+        <h1><a href="http://code.google.com/p/google-blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Maze</h1>
+      
+        <div>
+          <img src="map.png" height=400 width=400 id="map" style="padding-right: 10">
+          <img src="marker.png" height=34 width=20 id="finish">
+          <img src="1x1.gif" height=52 width=49 id="pegman">
+        </div>
+      
+        <div id="buttonDiv">
+          <button id="runButton" onclick="Maze.runButtonClick();">Run Program</button>
+          <button id="resetButton" onclick="Maze.resetButtonClick();" style="display: none">&nbsp; Reset &nbsp;</button>
+        </div>
+      </td>
+      <td valign="top" rowspan=2>
+        <iframe src="frame.html"></iframe>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" valign="bottom">
+        <small>[<a href="javascript:void(Maze.showCode())">See generated JavaScript code.</a>]</small>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

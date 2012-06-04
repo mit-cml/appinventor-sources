@@ -30,6 +30,7 @@
  * @constructor
  */
 Blockly.Block = function(workspace, prototypeName) {
+  this.id = Blockly.uniqueId();
   this.titleRow = [];
   this.outputConnection = null;
   this.nextConnection = null;
@@ -48,11 +49,7 @@ Blockly.Block = function(workspace, prototypeName) {
 
   this.isInFlyout = false;
   this.workspace = workspace;
-  // Create required elements: the group and the path.
-  this.svg_ = new Blockly.BlockSvg(this);
 
-  Blockly.bindEvent_(this.svg_.svgGroup_, 'mousedown', this, this.onMouseDown_);
-  workspace.getCanvas().appendChild(this.svg_.svgGroup_);
   workspace.addTopBlock(this);
 
   // Copy the type-specific functions and data from the prototype.
@@ -70,6 +67,31 @@ Blockly.Block = function(workspace, prototypeName) {
   if (typeof this.init == 'function') {
     this.init();
   }
+};
+
+/**
+ * Pointer to SVG representation of the block.
+ * @type {Blockly.BlockSvg}
+ */
+Blockly.Block.prototype.svg_ = null;
+
+/**
+ * Create and initialize the SVG representation of the block.
+ */
+Blockly.Block.prototype.initSvg = function() {
+  this.svg_ = new Blockly.BlockSvg(this);
+  this.svg_.init();
+  Blockly.bindEvent_(this.svg_.getRootNode(), 'mousedown', this,
+                     this.onMouseDown_);
+  this.workspace.getCanvas().appendChild(this.svg_.getRootNode());
+};
+
+/**
+ * Return the root node of the SVG or null if none exists.
+ * @return {Node} The root SVG node (probably a group).
+ */
+Blockly.Block.prototype.getSvgRoot = function() {
+  return this.svg_ && this.svg_.getRootNode();
 };
 
 /**
@@ -123,6 +145,8 @@ Blockly.Block.prototype.select = function() {
   }
   Blockly.selected = this;
   this.svg_.addSelect();
+  Blockly.fireUiEvent(Blockly.svgDoc, this.workspace.getCanvas(),
+                      'blocklySelectChange');
 };
 
 /**
@@ -131,6 +155,8 @@ Blockly.Block.prototype.select = function() {
 Blockly.Block.prototype.unselect = function() {
   Blockly.selected = null;
   this.svg_.removeSelect();
+  Blockly.fireUiEvent(Blockly.svgDoc, this.workspace.getCanvas(),
+                      'blocklySelectChange');
 };
 
 /**
@@ -205,8 +231,10 @@ Blockly.Block.prototype.destroy = function(gentle) {
     connections[x].destroy();
   }
   // Destroy the SVG and break circular references.
-  this.svg_.destroy();
-  this.svg_ = null;
+  if (this.svg_) {
+    this.svg_.destroy();
+    this.svg_ = null;
+  }
 };
 
 /**
@@ -215,7 +243,7 @@ Blockly.Block.prototype.destroy = function(gentle) {
  * @return {!Object} Object with .x and .y properties.
  */
 Blockly.Block.prototype.getRelativeToSurfaceXY = function() {
-  var element = this.svg_.svgGroup_;
+  var element = this.svg_.getRootNode();
   var x = 0;
   var y = 0;
   do {
@@ -235,7 +263,7 @@ Blockly.Block.prototype.getRelativeToSurfaceXY = function() {
  */
 Blockly.Block.prototype.moveBy = function(dx, dy) {
   var xy = this.getRelativeToSurfaceXY();
-  this.svg_.svgGroup_.setAttribute('transform',
+  this.svg_.getRootNode().setAttribute('transform',
       'translate(' + (xy.x + dx) + ', ' + (xy.y + dy) + ')');
   this.moveConnections_(dx, dy);
 };
@@ -264,6 +292,7 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
     return;
   } else {
     // Left-click (or middle click)
+    Blockly.removeAllRanges();
     Blockly.setCursorHand_(true);
     // Look up the current translation and record it.
     var xy = this.getRelativeToSurfaceXY();
@@ -383,7 +412,7 @@ Blockly.Block.prototype.showContextMenu_ = function(x, y) {
   var options = [];
 
   if (this.editable) {
-    if (Blockly.Comment) {
+    if (Blockly.Comment && !this.collapsed) {
       // Option to add/remove a comment.
       var commentOption = {enabled: true};
       if (this.comment) {
@@ -547,6 +576,7 @@ Blockly.Block.prototype.setDragging_ = function(adding) {
  * @private
  */
 Blockly.Block.prototype.onMouseMove_ = function(e) {
+  Blockly.removeAllRanges();
   var dx = e.clientX - this.startDragMouseX;
   var dy = e.clientY - this.startDragMouseY;
   if (Blockly.Block.dragMode_ == 1) {
@@ -564,7 +594,7 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
     // Unrestricted dragging.
     var x = this.startDragX + dx;
     var y = this.startDragY + dy;
-    this.svg_.svgGroup_.setAttribute('transform',
+    this.svg_.getRootNode().setAttribute('transform',
                                      'translate(' + x + ', ' + y + ')');
     // Drag all the nested comments.
     for (var x = 0; x < this.draggedComments_.length; x++) {
@@ -691,8 +721,8 @@ Blockly.Block.prototype.setParent = function(newParent) {
     }
     // Move this block up the DOM.  Keep track of x/y translations.
     var xy = this.getRelativeToSurfaceXY();
-    this.workspace.getCanvas().appendChild(this.svg_.svgGroup_);
-    this.svg_.svgGroup_.setAttribute('transform',
+    this.workspace.getCanvas().appendChild(this.svg_.getRootNode());
+    this.svg_.getRootNode().setAttribute('transform',
         'translate(' + xy.x + ', ' + xy.y + ')');
 
     // Disconnect from superior blocks.
@@ -715,7 +745,7 @@ Blockly.Block.prototype.setParent = function(newParent) {
     newParent.childBlocks_.push(this);
 
     var oldXY = this.getRelativeToSurfaceXY();
-    newParent.svg_.svgGroup_.appendChild(this.svg_.svgGroup_);
+    newParent.svg_.getRootNode().appendChild(this.svg_.getRootNode());
     var newXY = this.getRelativeToSurfaceXY();
     // Move the connections to match the child's new position.
     this.moveConnections_(newXY.x - oldXY.x, newXY.y - oldXY.y);
@@ -741,20 +771,21 @@ Blockly.Block.prototype.getDescendants = function() {
 
 /**
  * Get the colour of a block.
- * @return {string} colourName Name of colour.
+ * @return {string} HSV hue value.
  */
 Blockly.Block.prototype.getColour = function() {
-  return this.colourName_;
+  return this.colourHue_;
 };
 
 /**
  * Change the colour of a block.
- * @param {string} colourName Name of colour as listed in Blockly.COLOURS.
- *     Colour must be in '#fff' format.
+ * @param {number} colourHue HSV hue value.
  */
-Blockly.Block.prototype.setColour = function(colourName) {
-  this.colourName_ = colourName;
-  this.svg_.setColour(colourName);
+Blockly.Block.prototype.setColour = function(colourHue) {
+  this.colourHue_ = colourHue;
+  if (this.svg_) {
+    this.svg_.updateColour();
+  }
   if (this.comment) {
     this.comment.updateColour();
   }
@@ -769,6 +800,7 @@ Blockly.Block.prototype.setColour = function(colourName) {
  * @param {number} opt_index If present, this is the index (zero-based) where
  *     the new item will be in the title row.  If not present, the new item
  *     will be at the end of the row.
+ * @return {!Blockly.Field} The title object created.
  */
 Blockly.Block.prototype.addTitle = function(title, opt_index) {
   // Generate a FieldLabel when given a plain text title.
@@ -780,19 +812,22 @@ Blockly.Block.prototype.addTitle = function(title, opt_index) {
   if (typeof opt_index == 'number') {
     if (opt_index < 0 || opt_index > this.titleRow.length) {
       throw 'There are ' + this.titleRow.length +
-            ' title(s), unable to insert at position ' + opt_index + '.';
+            ' title(s), unable to insert at index ' + opt_index + '.';
     }
     this.titleRow.splice(opt_index, 0, title);
   } else {
     this.titleRow.push(title);
   }
 
-  title.init(this);
+  if (this.svg_) {
+    title.init(this);
+  }
   if (this.rendered) {
     this.render();
     // Adding a title will cause the block to change shape.
     this.bumpNeighbours_();
   }
+  return title;
 };
 
 /**
@@ -803,7 +838,7 @@ Blockly.Block.prototype.addTitle = function(title, opt_index) {
 Blockly.Block.prototype.setTitleText = function(newText, index) {
   if (index < 0 || index >= this.titleRow.length) {
     throw 'There are ' + this.titleRow.length +
-          ' title(s), unable to set text at position ' + index + '.';
+          ' title(s), unable to set text at index ' + index + '.';
   }
   this.titleRow[index].setText(newText);
 };
@@ -811,12 +846,11 @@ Blockly.Block.prototype.setTitleText = function(newText, index) {
 /**
  * Returns the text from the title of a block.
  * @param {number} index The index (zero-based) in the title row.
- * @return {string} Text from the title.
+ * @return {!string} Text from the title or null if title does not exist.
  */
 Blockly.Block.prototype.getTitleText = function(index) {
   if (index < 0 || index >= this.titleRow.length) {
-    throw 'There are ' + this.titleRow.length +
-          ' title(s), unable to get text at position ' + index + '.';
+    return null;
   }
   return this.titleRow[index].getText();
 };
@@ -939,7 +973,7 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
       }
       var child = input.targetBlock();
       if (child) {
-        child.svg_.svgGroup_.style.display = display;
+        child.svg_.getRootNode().style.display = display;
         if (collapsed) {
           child.rendered = false;
         }
@@ -948,6 +982,10 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
       // This is a local variable.
       input.setVisible(!collapsed);
     }
+  }
+
+  if (collapsed && this.comment) {
+    this.comment.setPinned(false);
   }
 
   if (renderList.length == 0) {
@@ -986,7 +1024,9 @@ Blockly.Block.prototype.addInput = function(label, tooltip, type, opt_index) {
       // Editable label.
       textElement = label;
     }
-    textElement.init(this);
+    if (this.svg_) {
+      textElement.init(this);
+    }
     if (tooltip) {
       textElement.setTooltip(tooltip);
     }
@@ -994,9 +1034,11 @@ Blockly.Block.prototype.addInput = function(label, tooltip, type, opt_index) {
   var input;
   if (type == Blockly.LOCAL_VARIABLE) {
     // Add input to list.
-    input = new Blockly.FieldDropdown('item',
+    input = new Blockly.FieldDropdown(
         Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange);
-    input.init(this);
+    if (this.svg_) {
+      input.init(this);
+    }
     input.type = Blockly.LOCAL_VARIABLE;
   } else {
     // Add input to list.
@@ -1006,7 +1048,7 @@ Blockly.Block.prototype.addInput = function(label, tooltip, type, opt_index) {
   if (typeof opt_index == 'number') {
     if (opt_index < 0 || opt_index > this.inputList.length) {
       throw 'There are ' + this.inputList.length +
-            ' input(s), unable to insert at position ' + opt_index + '.';
+            ' input(s), unable to insert at index ' + opt_index + '.';
     }
     this.inputList.splice(opt_index, 0, input);
   } else {
@@ -1028,7 +1070,7 @@ Blockly.Block.prototype.removeInput = function(index) {
   var input = this.inputList[index];
   if (!input) {
     throw 'There are ' + this.inputList.length +
-          ' input(s), unable to delete at position ' + index + '.';
+          ' input(s), unable to delete at index ' + index + '.';
   }
   if (input.targetConnection) {
     throw 'Must disconnect input value before removing connection.';
@@ -1145,7 +1187,7 @@ Blockly.Block.prototype.getStatementLabel = function(n) {
  * @param {number} n The index (starting at 0).
  * @return {string} The label's text, or null if the input does not exist.
  */
-Blockly.Block.prototype.getVariableLabel = function(n) {
+Blockly.Block.prototype.getNameLabel = function(n) {
   return this.getLabel_(n, Blockly.LOCAL_VARIABLE);
 };
 
@@ -1191,10 +1233,13 @@ Blockly.Block.prototype.setMutator = function(mutator) {
     this.mutator.destroy();
   }
   this.mutator = mutator;
+  if (this.svg_) {
+    mutator.createIcon();
+  }
 };
 
 /**
- * Returns the comment on this block (or '' of none).
+ * Returns the comment on this block (or '' if none).
  * @return {string} Block's comment.
  */
 Blockly.Block.prototype.getCommentText = function() {

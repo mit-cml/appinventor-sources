@@ -39,6 +39,11 @@ Blockly.FieldLabel = function(text) {
 Blockly.FieldLabel.prototype = new Blockly.Field(null);
 
 /**
+ * Editable fields are saved by the XML renderer, non-editable fields are not.
+ */
+Blockly.FieldLabel.prototype.EDITABLE = false;
+
+/**
  * Install this text on a block.
  * @param {!Blockly.Block} block The block containing this text.
  */
@@ -47,7 +52,7 @@ Blockly.FieldLabel.prototype.init = function(block) {
     throw 'Text has already been initialized once.';
   }
   this.sourceBlock_ = block;
-  block.svg_.svgGroup_.appendChild(this.textElement_);
+  block.getSvgRoot().appendChild(this.textElement_);
 
   // Configure the field to be transparent with respect to tooltips.
   this.textElement_.tooltip = this.sourceBlock_;
@@ -73,10 +78,15 @@ Blockly.FieldLabel.prototype.getRootElement = function() {
 
 /**
  * Returns the resulting bounding box.
- * @return {!Object} Object containing width/height/x/y properties.
+ * @return {Object} Object containing width/height/x/y properties.
  */
 Blockly.FieldLabel.prototype.render = function() {
-  var bBox = this.textElement_.getBBox();
+  try {
+    var bBox = this.textElement_.getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return null;
+  }
   if (bBox.height == 0) {
     bBox.height = 18;
   }

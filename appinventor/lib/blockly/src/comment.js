@@ -170,7 +170,7 @@ Blockly.Comment.prototype.createIcon_ = function() {
       x: Blockly.Comment.ICON_RADIUS / 2,
       y: 2 * Blockly.Comment.ICON_RADIUS - 3}, this.iconGroup_);
   this.iconMark_.appendChild(Blockly.svgDoc.createTextNode('?'));
-  this.block_.svg_.svgGroup_.appendChild(this.iconGroup_);
+  this.block_.getSvgRoot().appendChild(this.iconGroup_);
   Blockly.bindEvent_(this.iconGroup_, 'click', this, this.iconClick_);
   Blockly.bindEvent_(this.iconGroup_, 'mouseover', this, this.iconMouseOver_);
   Blockly.bindEvent_(this.iconGroup_, 'mouseout', this, this.iconMouseOut_);
@@ -244,6 +244,8 @@ Blockly.Comment.prototype.createBubble_ = function(commentGroup) {
                      this.bubbleMouseDown_);
   Blockly.bindEvent_(this.resizeGroup_, 'mousedown', this,
                      this.resizeMouseDown_);
+  Blockly.bindEvent_(this.foreignObject_, 'mousedown', this,
+                     Blockly.noEvent);
   Blockly.bindEvent_(this.textarea_, 'mouseup', this,
                      this.textareaFocus_);
 };
@@ -623,7 +625,7 @@ Blockly.Comment.prototype.setText = function(text) {
  * Change the colour of a comment to match its block.
  */
 Blockly.Comment.prototype.updateColour = function() {
-  var hexColour = Blockly.hexColour(this.block_.getColour());
+  var hexColour = Blockly.makeColour(this.block_.getColour());
   this.bubbleBack_.setAttribute('fill', hexColour);
   this.bubbleArrow_.setAttribute('fill', hexColour);
 };
@@ -651,6 +653,12 @@ Blockly.Comment.prototype.destroy = function() {
  * @return {number} Width of icon.
  */
 Blockly.Comment.prototype.renderIcon = function(titleX) {
+  if (this.block_.collapsed) {
+    this.iconGroup_.setAttribute('display', 'none');
+    return 0;
+  }
+  this.iconGroup_.setAttribute('display', 'block');
+
   var TOP_MARGIN = 5;
   var diameter = 2 * Blockly.Comment.ICON_RADIUS;
   if (Blockly.RTL) {
