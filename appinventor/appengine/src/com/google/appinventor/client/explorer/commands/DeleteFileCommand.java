@@ -74,9 +74,25 @@ public class DeleteFileCommand extends ChainableCommand {
             executionFailedOrCanceled();
           }
         });
-      } else {
-        executionFailedOrCanceled();
-        throw new IllegalArgumentException("node must be a YoungAndroidSourceNode");
+      } else {  // asset file
+        ode.getProjectService().deleteFile(
+            node.getProjectId(), node.getFileId(),
+            new OdeAsyncCallback<Long>(
+                // message on failure
+                MESSAGES.deleteFileError()) {
+              @Override
+              public void onSuccess(Long date) {
+                getProject(node).deleteNode(node);
+                Ode.getInstance().updateModificationDate(node.getProjectId(), date);
+                executeNextCommand(node);
+              }
+
+              @Override
+              public void onFailure(Throwable caught) {
+                super.onFailure(caught);
+                executionFailedOrCanceled();
+              }
+            });
       }
     } else {
       executionFailedOrCanceled();
