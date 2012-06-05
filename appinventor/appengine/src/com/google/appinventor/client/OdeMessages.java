@@ -170,7 +170,7 @@ public interface OdeMessages extends Messages {
 
   // Used in StatusPanel.java
 
-  @DefaultMessage("Build date: {0}  Version: {1}")
+  @DefaultMessage("Built: {0}  Version: {1}")
   @Description("Label showing the ant build date and the git version")
   String gitBuildId(String date, String version);
 
