@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
@@ -136,7 +137,7 @@ public class Voting extends AndroidNonvisibleComponent implements Component {
    *
    * @param serviceURL the URL (includes initial http:, but no trailing slash)
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "http://androvote.appspot.com")
   @SimpleProperty
   public void ServiceURL(String serviceURL) {

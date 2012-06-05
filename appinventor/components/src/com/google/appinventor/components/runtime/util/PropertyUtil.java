@@ -9,6 +9,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
+ * Utilities for copying properties between different instances of the same component.
+ *
  * @author markf@google.com (Mark Friedman)
  */
 public class PropertyUtil {

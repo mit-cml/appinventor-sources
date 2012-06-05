@@ -169,7 +169,7 @@ public final class Compiler {
           "package=\"" + packageName + "\" " +
           // TODO(markf): uncomment the following line when we're ready to enable publishing to the
           // Android Market.
-//         "android:versionCode=\"1\" " + "android:versionName=\"1.0\" " +
+         "android:versionCode=\"3\" " + "android:versionName=\"1.5\" " +
           ">\n");
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");

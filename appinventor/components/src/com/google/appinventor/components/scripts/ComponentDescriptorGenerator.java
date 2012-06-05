@@ -12,7 +12,6 @@ import java.util.Map;
 
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 /**
  * Tool to generate simple component descriptors as JSON.
@@ -206,8 +205,7 @@ public final class ComponentDescriptorGenerator extends ComponentProcessor {
 
     sb.append(']');
 
-    FileObject src = processingEnvironment.getFiler().
-        createResource(StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, OUTPUT_FILE_NAME);
+    FileObject src = createOutputFileObject(OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
     writer.write(sb.toString());
     writer.flush();

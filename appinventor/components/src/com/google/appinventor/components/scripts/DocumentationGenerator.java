@@ -8,18 +8,22 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import javax.tools.Diagnostic;
 import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 
 /**
- * Generates user-level HTML documentation for Young Android components into a
- * single html file.
+ * <p>Generates user-level HTML documentation for Young Android components into a
+ * single html file.</p>
  *
+ * <p>Historical note: This was once an abstract superclass of multiple documentation
+ * generators (one single-page, one multi-page).  If there is a need to make it so
+ * again, change the private output methods back to protected, and override them as
+ * desired in concrete subclasses.</p>
+ *
+ * @author spertus@google.com (Ellen Spertus)
  */
 public class DocumentationGenerator extends ComponentProcessor {
   private static final String OUTPUT_FILE_NAME = "component-doc.html";
-
-  private static final String DESIGNER_ONLY = "designer-only";
 
   /**
    * Returns string introducing a component.
@@ -33,12 +37,15 @@ public class DocumentationGenerator extends ComponentProcessor {
   /**
    * Returns string describing a given property.
    */
-  private String getPropertyDefinition(String name, String rwString, String description) {
-    if (rwString.equals(READ_ONLY)) {
-      return String.format("  <dt><code><em>%s</em></code></dt>\n  <dd>%s</dd>\n",
-          name, description);
-    } else if (rwString.equals(DESIGNER_ONLY)) {
+  private String getPropertyDefinition(String name, String description,
+      boolean isUserVisible, boolean isReadable, boolean isWritable) {
+
+    if (!isUserVisible) {
       return String.format("  <dt><code>%s</code> (designer only)</dt>\n  <dd>%s</dd>\n",
+          name, description);
+    }
+    else if (isReadable && !isWritable) {
+      return String.format("  <dt><code><em>%s</em></code></dt>\n  <dd>%s</dd>\n",
           name, description);
     }
     return String.format("  <dt><code>%s</code></dt>\n  <dd>%s</dd>\n",
@@ -66,8 +73,7 @@ public class DocumentationGenerator extends ComponentProcessor {
 
   protected final void outputResults() throws IOException {
     // Begin writing output file.
-    FileObject src = processingEnvironment.getFiler().createResource(
-        StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, OUTPUT_FILE_NAME);
+    FileObject src = createOutputFileObject(OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
 
     // Output table at top showing components by category.
@@ -82,6 +88,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     // Close output file
     writer.flush();
     writer.close();
+    messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
   }
 
   /**
@@ -91,7 +98,7 @@ public class DocumentationGenerator extends ComponentProcessor {
    * @param writer the destination for the page
    * @param component the component to document
    */
-  protected void outputComponent(Writer writer, ComponentInfo component) throws IOException {
+  private void outputComponent(Writer writer, ComponentInfo component) throws IOException {
     // Output component name and description.
     writer.write(getComponentOutputString(component.name,
                                           component.description));
@@ -164,7 +171,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     writer.write("</tr>\n</tbody>\n</table>\n");
   }
 
-  protected void outputProperties(Writer writer, ComponentInfo component)
+  private void outputProperties(Writer writer, ComponentInfo component)
       throws java.io.IOException {
     writer.write("<h3>Properties</h3>\n");
     // Only list properties that are user-visible or designer properties.
@@ -176,8 +183,10 @@ public class DocumentationGenerator extends ComponentProcessor {
           writer.write("<dl>\n");
         }
         writer.write(getPropertyDefinition(property.name,
-            property.isUserVisible() ? property.getRwString() : DESIGNER_ONLY,
-            property.getDescription()));
+                                           property.getDescription(),
+                                           property.isUserVisible(),
+                                           property.isReadable(),
+                                           property.isWritable()));
         definitionWritten = true;
       }
     }
@@ -188,7 +197,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     }
   }
 
-  protected void outputEvents(Writer writer, ComponentInfo component) throws java.io.IOException {
+  private void outputEvents(Writer writer, ComponentInfo component) throws java.io.IOException {
     writer.write("<h3>Events</h3>\n");
     // Only list events that are user-visible.
     boolean definitionWritten = false;
@@ -209,7 +218,7 @@ public class DocumentationGenerator extends ComponentProcessor {
     }
   }
 
-  protected void outputMethods(Writer writer, ComponentInfo component) throws java.io.IOException {
+  private void outputMethods(Writer writer, ComponentInfo component) throws java.io.IOException {
     writer.write("<h3>Methods</h3>\n");
     // Only list methods that are user-visible.
     boolean definitionWritten = false;

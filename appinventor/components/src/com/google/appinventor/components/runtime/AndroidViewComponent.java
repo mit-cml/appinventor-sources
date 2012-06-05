@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimplePropertyCopier;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 
 import android.view.View;
 
@@ -56,7 +57,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * Specifies whether the component should be visible
    * @param  visible desired state
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty
   public void Visible(boolean visible) {
     // The principle of least astonishment suggests we not offer the

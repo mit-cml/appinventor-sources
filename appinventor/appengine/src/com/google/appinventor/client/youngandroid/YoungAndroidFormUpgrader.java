@@ -418,6 +418,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The Shape property was added.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -470,6 +475,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // The Open method was added.  No changes are needed.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The Shape property was added.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }
@@ -551,6 +561,11 @@ public final class YoungAndroidFormUpgrader {
       // The Open method was added.  No changes are needed.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The Shape property was added.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -599,6 +614,11 @@ public final class YoungAndroidFormUpgrader {
       // The Open method was added.  No changes are needed.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The Shape property was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 
@@ -635,6 +655,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 3) {
       // The Open method was added.  No changes are needed.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The Shape property was added.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

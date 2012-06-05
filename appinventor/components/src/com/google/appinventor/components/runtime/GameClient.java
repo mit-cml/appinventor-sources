@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
@@ -197,7 +198,7 @@ public class GameClient extends AndroidNonvisibleComponent
   // Only exposed in the designer to enforce that each GameClient
   // instance should be made for a single GameId.
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   public void GameId(String id) {
     this.gameId = id;
@@ -309,7 +310,7 @@ public class GameClient extends AndroidNonvisibleComponent
    * @param url The URL (include initial http://).
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "http://appinvgameserver.appspot.com")
   public void ServiceURL(String url){
     if (url.endsWith("/")) {

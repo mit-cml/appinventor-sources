@@ -50,6 +50,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.Date;
 
 import javax.annotation.Nullable;
 
@@ -228,6 +229,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.settings = settings;
+	    userData.visited = new Date(); // Indicate that this person was active now
             datastore.put(userData);
           }
         }

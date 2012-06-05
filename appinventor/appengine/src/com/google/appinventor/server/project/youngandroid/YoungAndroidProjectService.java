@@ -5,7 +5,7 @@ package com.google.appinventor.server.project.youngandroid;
 import com.google.appengine.api.utils.SystemProperty;
 import com.google.apphosting.api.ApiProxy;
 import com.google.appinventor.common.utils.StringUtils;
-import com.google.appinventor.common.version.MercurialBuildId;
+import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
@@ -76,8 +76,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
 
   // The value of this flag can be changed in appengine-web.xml
-  private static final Flag<Boolean> sendMercurialId =
-    Flag.createFlag("build.send.mercurial.id", true);
+  private static final Flag<Boolean> sendGitVersion = 
+    Flag.createFlag("build.send.git.version", true);
 
   // Project folder prefixes
   public static final String SRC_FOLDER = YoungAndroidSourceAnalyzer.SRC_FOLDER;
@@ -527,9 +527,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       throws UnsupportedEncodingException, EncryptionException {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
-           + (sendMercurialId.get()
-               ? "&mercurialBuildId="
-                 + URLEncoder.encode(MercurialBuildId.MERCURIAL_BUILD_ID, "UTF-8")
+           + (sendGitVersion.get()
+               ? "&gitBuildVersion=" 
+                 + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
                : "")
            + "&callback="
            + URLEncoder.encode("http://" + getCurrentHost() + ServerLayout.ODE_BASEURL_NOAUTH

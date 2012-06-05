@@ -763,20 +763,25 @@ public class YaBlockCompilerTest extends TestCase {
                                     "'( number) \"random set seed\")");
   }
 
-// TODO(halabelson): remake these tests with the new list operations
-//   /**
-//    * Tests for logic blocks.
-//    */
-//   public void testLogicBlocks() throws CodeblocksException {
-//     initAndTestProject("logic.blk", "logic.scm");
-//     String yail = TestUtils.getController().testGetYail(properties);
-//     String testString = "(if  (call-yail-primitive yail-or (*list-for-runtime* #t " +
-//         "(call-yail-primitive yail-not (*list-for-runtime* #f)  '( boolean)  \"not\")  ) " +
-//         "'( boolean boolean)  \"or\") (begin   (if  (call-yail-primitive yail-and " +
-//         "(*list-for-runtime* (yail-equal?  #t #t)  )  '( boolean)  \"and\") (begin   " +
-//         "(*list-for-runtime*  \"worked!\" ) ) ) )  (begin   \"didn't work\") )";
-//     assertContainsIgnoreSpace(yail, testString);
-//   }
+  /**
+   * Tests for logic blocks.
+   */
+  public void testLogicBlocks() throws CodeblocksException {
+    initAndTestProject("logic.blk", "logic.scm");
+    String yail = TestUtils.getController().testGetYail(properties);
+    String testString =
+        "     (if (or-delayed                                                              " +
+        "          #t                                                                      " +
+        "          (call-yail-primitive yail-not (*list-for-runtime* #f) '( boolean) \"not\") ) " +
+        "         (begin (if (and-delayed                                                  " +
+        "               (call-yail-primitive yail-equal?                                   " +
+        "                                    (*list-for-runtime* #t #t)                    " +
+        "                                    '( any any)                                   " +
+        "                                    \"=\") )                                      " +
+        "              (begin ) ) )                                                        " +
+        "         (begin \"didn't work\" ) )                                               " ;
+    assertContainsIgnoreSpace(yail, testString);
+  }
 
 
   /**

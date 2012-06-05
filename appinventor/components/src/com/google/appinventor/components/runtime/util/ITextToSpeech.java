@@ -12,6 +12,9 @@ import java.util.Locale;
  */
 public interface ITextToSpeech {
 
+  /**
+   * Callback specifying methods for successful and failed attempts to generate speech.
+   */
   interface TextToSpeechCallback {
 
     /**
@@ -26,7 +29,7 @@ public interface ITextToSpeech {
   }
 
   /**
-   * Speak the given message corresponding to the language and country of the given locale
+   * Speaks the given message corresponding to the language and country of the given locale.
    * @param message the message to speak
    * @param loc the locale to use
    */

@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.content.Context;
@@ -275,7 +276,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    * Starts the process of calibrating the stride length by comparing number
    * of steps with the ditance covered (using the GPS).
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "true")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -308,7 +309,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param length is the stride length in meters.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = "0.73")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -333,7 +334,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    *
    * @param timeout the timeout in milliseconds.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "2000")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -358,7 +359,7 @@ public class Pedometer extends AndroidNonvisibleComponent
    * @param gps {@code true} enables use of GPS,
    *            {@code false} disables GPS
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "true")
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)

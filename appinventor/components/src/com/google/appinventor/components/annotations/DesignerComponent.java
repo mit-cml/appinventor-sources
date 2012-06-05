@@ -10,9 +10,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to mark components for use in the ODE visual designer
- * and Codeblocks.
- *
+ * Annotation to mark components for use in the Designer and Blocks Editor.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
@@ -36,7 +34,7 @@ public @interface DesignerComponent {
    * is displayed in the designer.  For now, this cannot contain an
    * ampersand (%), which would corrupt ya_lang_def.xml.
    */
-  // TODO(user): Add more robust character escaping (BUG 2386151)
+  // TODO(user): Add more robust character escaping.
   String designerHelpDescription() default "";
 
   /**
