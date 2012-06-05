@@ -25,6 +25,12 @@
 // Top level object for Blockly.
 var Blockly = {};
 
+/**
+ * Path to Blockly's directory.  Can be relative, absolute, or remote.
+ * Used for loading additional resources.
+ */
+Blockly.pathToBlockly = './';
+
 // Required name space for SVG elements.
 Blockly.SVG_NS = 'http://www.w3.org/2000/svg';
 // Required name space for HTML elements.
@@ -48,33 +54,68 @@ Blockly.MSG_RENAME_VARIABLE = 'Rename variable...';
 Blockly.MSG_RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
 Blockly.MSG_VARIABLE_CATEGORY = 'Variables';
 
+Blockly.MSG_PROCEDURE_CATEGORY = 'Procedures';
+
 Blockly.MSG_MUTATOR_TOOLTIP = 'Edit this block';
 Blockly.MSG_MUTATOR_HEADER = 'Block Editor';
 Blockly.MSG_MUTATOR_CHANGE = 'Change';
 Blockly.MSG_MUTATOR_CANCEL = 'Cancel';
 
 /**
- * Block colours.
- * Colours must be in '#fff' format due to parser in Blockly.Block.setColour.
+ * The HSV_SATURATION and HSV_VALUE constants provide Blockly with a consistent
+ * colour scheme, regardless of the hue.
+ * Both constants must be in the range of 0 (inclusive) to 1 (exclusive).
  */
-Blockly.COLOURS = {
-  'red': '#c66',
-  'yellow': '#ec4',
-  'green': '#6a6',
-  'baby': '#68c',
-  'blue': '#46b',
-  'purple': '#b8b',
-  'brown': '#c95',
-  'pink': '#f89'
-};
+Blockly.HSV_SATURATION = 0.45;
+Blockly.HSV_VALUE = 0.65;
 
 /**
- * Converts a blockly colour name into a hex colour value.
- * @param {string} colourName Name of the colour.
- * @return {string} The colour in #fff format.
+ * Convert a hue (HSV model) into an RGB hex triplet.
+ * @param {number} hue Hue on a colour wheel (0-360).
+ * @return {string} RGB code, e.g. '#84c'.
  */
-Blockly.hexColour = function(colourName) {
-  return Blockly.COLOURS[colourName] || '#000';
+Blockly.makeColour = function(hue) {
+  hue %= 360;
+  var topLimit = Blockly.HSV_VALUE;
+  var bottomLimit = Blockly.HSV_VALUE * (1 - Blockly.HSV_SATURATION);
+  var rangeUp = (topLimit - bottomLimit) * (hue % 60 / 60) + bottomLimit;
+  var rangeDown = (topLimit - bottomLimit) * (1 - hue % 60 / 60) + bottomLimit;
+  var r, g, b;
+  if (0 <= hue && hue < 60) {
+    r = topLimit;
+    g = rangeUp;
+    b = bottomLimit;
+  } else if (60 <= hue && hue < 120) {
+    r = rangeDown;
+    g = topLimit;
+    b = bottomLimit;
+  } else if (120 <= hue && hue < 180) {
+    r = bottomLimit;
+    g = topLimit;
+    b = rangeUp;
+  } else if (180 <= hue && hue < 240) {
+    r = bottomLimit;
+    g = rangeDown;
+    b = topLimit;
+  } else if (240 <= hue && hue < 300) {
+    r = rangeUp;
+    g = bottomLimit;
+    b = topLimit;
+  } else if (300 <= hue && hue < 360) {
+    r = topLimit;
+    g = bottomLimit;
+    b = rangeDown;
+  } else {
+    // Negative number?
+    r = 0;
+    g = 0;
+    b = 0;
+  }
+  r = Math.floor(r * 16);
+  g = Math.floor(g * 16);
+  b = Math.floor(b * 16);
+  var HEX = '0123456789abcdef';
+  return '#' + HEX.charAt(r) + HEX.charAt(g) + HEX.charAt(b);
 };
 
 /**
@@ -128,11 +169,6 @@ Blockly.selected = null;
 Blockly.editable = true;
 
 /**
- * Should 'x' and 'X' be different variables?
- */
-Blockly.caseSensitiveVariables = false;
-
-/**
  * Currently highlighted connection (during a drag).
  * @type {Blockly.Connection}
  * @private
@@ -168,6 +204,12 @@ Blockly.BUMP_DELAY = 250;
 Blockly.svgDoc = null;
 
 /**
+ * The main workspace (defined by inject.js).
+ * @type {Blockly.Workspace}
+ */
+Blockly.mainWorkspace = null;
+
+/**
  * Returns the dimensions of the current SVG image.
  * @return {!Object} Contains width, height, top and left properties.
  */
@@ -193,17 +235,9 @@ Blockly.svgResize = function() {
     Blockly.svg.setAttribute('height', height + 'px');
     Blockly.svg.cachedHeight_ = height;
   }
-
-  var left = 0;
-  var top = 0;
-  var node = Blockly.svg.parentNode;
-  do {
-    left += node.offsetLeft;
-    top += node.offsetTop;
-    node = node.offsetParent;
-  } while (node);
-  Blockly.svg.cachedLeft_ = left;
-  Blockly.svg.cachedTop_ = top;
+  var bBox = Blockly.svg.getBoundingClientRect();
+  Blockly.svg.cachedLeft_ = bBox.left;
+  Blockly.svg.cachedTop_ = bBox.top;
 };
 
 /**
@@ -213,6 +247,7 @@ Blockly.svgResize = function() {
  */
 Blockly.onMouseDown_ = function(e) {
   Blockly.hideChaff();
+  Blockly.removeAllRanges();
   if (Blockly.isTargetInput_(e) ||
       (Blockly.Mutator && Blockly.Mutator.isOpen)) {
     return;
@@ -257,6 +292,7 @@ Blockly.onMouseUp_ = function(e) {
  */
 Blockly.onMouseMove_ = function(e) {
   if (Blockly.mainWorkspace.dragMode) {
+    Blockly.removeAllRanges();
     var dx = e.clientX - Blockly.mainWorkspace.startDragMouseX;
     var dy = e.clientY - Blockly.mainWorkspace.startDragMouseY;
     var metrics = Blockly.mainWorkspace.startDragMetrics;
@@ -289,16 +325,19 @@ Blockly.onKeyDown_ = function(e) {
   if (e.keyCode == 27) {
     // Pressing esc closes the context menu.
     Blockly.hideChaff();
-  } else {
-    if (e.keyCode == 8 || e.keyCode == 46) {
-      // Delete or backspace.
-      if (Blockly.selected && Blockly.selected.editable) {
-        Blockly.playAudio('delete');
-        Blockly.selected.destroy(true);
-      }
-      // Stop the browser from going back to the previous page.
-      e.preventDefault();
+    if (Blockly.Mutator && Blockly.Mutator.isOpen) {
+      Blockly.Mutator.closeDialog();
     }
+  } else if (e.keyCode == 8 || e.keyCode == 46) {
+    // Delete or backspace.
+    if (Blockly.selected && Blockly.selected.editable &&
+        (!Blockly.Mutator || !Blockly.Mutator.isOpen)) {
+      Blockly.hideChaff();
+      Blockly.playAudio('delete');
+      Blockly.selected.destroy(true);
+    }
+    // Stop the browser from going back to the previous page.
+    e.preventDefault();
   }
 };
 
@@ -343,25 +382,21 @@ Blockly.hideChaff = function(opt_allowToolbox) {
   if (Blockly.Toolbox && !opt_allowToolbox) {
     Blockly.Toolbox.clearSelection();
   }
-  // Chrome will select text outside the SVG when double-clicking.
-  // Deselect this text, so that it doesn't mess up any subsequent drag.
-  // But allow selected text inside Blockly (such as in an editable text field).
+};
+
+/**
+ * Destroy all selections on the webpage.
+ * Chrome will select text outside the SVG when double-clicking.
+ * Deselect this text, so that it doesn't mess up any subsequent drag.
+ */
+Blockly.removeAllRanges = function() {
   if (window.getSelection) {  // W3
     var sel = window.getSelection();
-    if (sel) {
-      var node = sel.focusNode;
-      // Determine if this node is in the SVG.
-      while (node) {
-        if (node == Blockly.svg) {
-          break;
-        }
-        node = node.parentNode;
-      }
-      if (!node) {
-        window.setTimeout(function() {
-            window.getSelection().removeAllRanges();
-          }, 0);
-      }
+    if (sel && sel.removeAllRanges) {
+      sel.removeAllRanges();
+      window.setTimeout(function() {
+          window.getSelection().removeAllRanges();
+        }, 0);
     }
   }
 };
@@ -382,7 +417,7 @@ Blockly.isTargetInput_ = function(e) {
  * @private
  */
 Blockly.loadAudio_ = function(name) {
-  var sound = new Audio('media/' + name + '.wav');
+  var sound = new Audio(Blockly.pathToBlockly + 'media/' + name + '.wav');
   // To force the browser to load the sound, play it, but stop it immediately.
   // If this starts creating a chip on startup, turn the sound's volume down,
   // or use another caching method such as XHR.
@@ -418,10 +453,10 @@ Blockly.setCursorHand_ = function(closed) {
      http://code.google.com/p/chromium/issues/detail?id=1446 */
   var cursor = '';
   if (closed) {
-    cursor = 'url(media/handclosed.cur) 7 3, auto';
+    cursor = 'url(' + Blockly.pathToBlockly + 'media/handclosed.cur) 7 3, auto';
   }
   if (Blockly.selected) {
-    Blockly.selected.svg_.svgGroup_.style.cursor = cursor;
+    Blockly.selected.getSvgRoot().style.cursor = cursor;
   }
   // Set cursor on the SVG surface as well as block so that rapid movements
   // don't result in cursor changing to an arrow momentarily.
@@ -441,7 +476,7 @@ Blockly.setCursorHand_ = function(closed) {
  * .contentLeft: Offset of the left-most content from the x=0 coordinate.
  * .absoluteTop: Top-edge of view.
  * .absoluteLeft: Left-edge of view.
- * @return {!Object} Contains size and position metrics of main workspace.
+ * @return {Object} Contains size and position metrics of main workspace.
  */
 Blockly.getMainWorkspaceMetrics = function() {
   var hwView = Blockly.svgSize();
@@ -450,7 +485,12 @@ Blockly.getMainWorkspaceMetrics = function() {
   }
   var viewWidth = hwView.width - Blockly.Scrollbar.scrollbarThickness;
   var viewHeight = hwView.height - Blockly.Scrollbar.scrollbarThickness;
-  var blockBox = Blockly.mainWorkspace.getCanvas().getBBox();
+  try {
+    var blockBox = Blockly.mainWorkspace.getCanvas().getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return null;
+  }
   if (blockBox.width == -Infinity && blockBox.height == -Infinity) {
     // Opera has trouble with bounding boxes around empty objects.
     blockBox = {width: 0, height: 0, x: 0, y: 0};
@@ -502,6 +542,15 @@ Blockly.setMainWorkspaceMetrics = function(xyRatio) {
       (Blockly.mainWorkspace.scrollY + metrics.absoluteTop) + ')';
   Blockly.mainWorkspace.getCanvas().setAttribute('transform', translation);
   Blockly.commentCanvas.setAttribute('transform', translation);
+};
+
+/**
+ * Rerender certain elements which might have had their sizes changed by the
+ * CSS file and thus need realigning.
+ * Called when the CSS file has finally loaded.
+ */
+Blockly.cssLoaded = function() {
+  Blockly.Toolbox && Blockly.Toolbox.redraw();
 };
 
 // Utility methods.
@@ -720,4 +769,26 @@ Blockly.caseInsensitiveComparator = function(a, b) {
     return -1;
   }
   return 0;
+};
+
+/**
+ * Return a random id that's 8 letters long.
+ * 26*(26+10+4)^7 = 4,259,840,000,000
+ * @return {string} Random id.
+ */
+Blockly.uniqueId = function() {
+  // First character must be a letter.
+  // IE is case insensitive (in violation of the W3 spec).
+  var soup = 'abcdefghijklmnopqrstuvwxyz';
+  var id = soup.charAt(Math.random() * soup.length);
+  // Subsequent characters may include these.
+  soup += '0123456789-_:.';
+  for (var x = 1; x < 8; x++) {
+    id += soup.charAt(Math.random() * soup.length);
+  }
+  // Don't allow IDs with '--' in them since it might close a comment.
+  if (id.indexOf('--') != -1) {
+    id = Blockly.uniqueId();
+  }
+  return id;
 };

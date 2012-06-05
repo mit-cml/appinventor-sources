@@ -140,3 +140,19 @@ function test_removeClass() {
   Blockly.removeClass_(p, 'zero');
   assertEquals('Removing "zero"', '', p.className);
 }
+
+function testCaseInsensitiveComparator() {
+  var abc = ['cat', 'BAT', 'ant'];
+  abc.sort();
+  assertEquals('Case senstive sort', 'BAT,ant,cat', abc.toString());
+  abc.sort(Blockly.caseInsensitiveComparator);
+  assertEquals('Case insenstive sort', 'ant,BAT,cat', abc.toString());
+}
+
+function testUniqueId() {
+  // Test length
+  assertEquals(8, Blockly.uniqueId().length);
+  // Two IDs should not be the same.
+  // There's a 1 in 4 trillion chance this test could fail normally.
+  assertEquals(false, Blockly.uniqueId() == Blockly.uniqueId());
+}

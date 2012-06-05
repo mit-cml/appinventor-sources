@@ -26,16 +26,15 @@
 
 /**
  * Class for an editable dropdown field.
- * @param {string} text The initial content of the field.
  * @param {!Function} menuGenerator A function that returns an array of options
  *     for a dropdown list.
  * @param {Function} opt_changeHandler A function that is executed when a new
  *     option is selected.
  * @constructor
  */
-Blockly.FieldDropdown = function(text, menuGenerator, opt_changeHandler) {
+Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
   // Call parent's constructor.
-  Blockly.Field.call(this, text);
+  Blockly.Field.call(this, menuGenerator()[0]);
   this.menuGenerator_ = menuGenerator;
   this.changeHandler_ = opt_changeHandler;
 };
@@ -167,7 +166,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   svgShadow.setAttribute('height', height);
   svgBackground.setAttribute('width', width);
   svgBackground.setAttribute('height', height);
-  var hexColour = Blockly.hexColour(this.sourceBlock_.getColour());
+  var hexColour = Blockly.makeColour(this.sourceBlock_.getColour());
   svgBackground.setAttribute('fill', hexColour);
   // Position the dropdown to line up with the field.
   var xy = Blockly.getAbsoluteXY_(this.borderRect_);

@@ -1,7 +1,7 @@
 /**
  * Visual Blocks Editor
  *
- * Copyright 2011 Google Inc.
+ * Copyright 2012 Google Inc.
  * http://code.google.com/p/google-blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -105,25 +105,105 @@ Blockly.Workspace.prototype.removeTopBlock = function(block) {
 };
 
 /**
- * Finds the top-level blocks and returns them.  Blocks are sorted by
- * position; top to bottom.
+ * Finds the top-level blocks and returns them.  Blocks are optionally sorted
+ * by position; top to bottom.
+ * @param {boolean} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} The top-level block objects.
  */
-Blockly.Workspace.prototype.getTopBlocks = function() {
+Blockly.Workspace.prototype.getTopBlocks = function(ordered) {
+  // Copy the topBlocks_ list.
   var blocks = [].concat(this.topBlocks_);
-  blocks.sort(function(a, b)
-      {return a.getRelativeToSurfaceXY().y - b.getRelativeToSurfaceXY().y;});
+  if (ordered && blocks.length > 1) {
+    blocks.sort(function(a, b)
+        {return a.getRelativeToSurfaceXY().y - b.getRelativeToSurfaceXY().y;});
+  }
   return blocks;
 };
 
 /**
- * Find all blocks in workspace.
+ * Find all blocks in workspace.  No particular order.
  * @return {!Array.<!Blockly.Block>} Array of blocks.
  */
 Blockly.Workspace.prototype.getAllBlocks = function() {
-  var blocks = this.getTopBlocks();
+  var blocks = this.getTopBlocks(false);
   for (var x = 0; x < blocks.length; x++) {
     blocks = blocks.concat(blocks[x].getChildren());
   }
   return blocks;
 };
+
+/**
+ * Destroy all blocks in workspace.
+ */
+Blockly.Workspace.prototype.clear = function() {
+  while (this.topBlocks_.length) {
+    this.topBlocks_[0].destroy();
+  }
+};
+
+/**
+ * Render all blocks in workspace.
+ */
+Blockly.Workspace.prototype.render = function() {
+  var renderList = this.getAllBlocks();
+  for (var x = 0, block; block = renderList[x]; x++) {
+    if (!block.getChildren().length) {
+      block.render();
+    }
+  }
+};
+
+/**
+ * Finds the block with the specified ID in this workspace.
+ * @param {string} id ID of block to find.
+ * @return {Blockly.Block} The matching block, or null if not found.
+ */
+Blockly.Workspace.prototype.getBlockById = function(id) {
+  // If this O(n) function fails to scale well, maintain a hash table of IDs.
+  var blocks = this.getAllBlocks();
+  for (var x = 0, block; block = blocks[x]; x++) {
+    if (block.id == id) {
+      return block;
+    }
+  }
+  return null;
+};
+
+/**
+ * Turn the visual trace functionality on or off.
+ * @param {boolean} active True if the trace should be on.
+ */
+Blockly.Workspace.prototype.traceOn = function(armed) {
+  this.traceOn_ = armed;
+  if (this.traceWrapper_) {
+    Blockly.unbindEvent_(this.svgBlockCanvas_, 'blocklySelectChange',
+                         this.traceWrapper_);
+    this.traceWrapper_ = null;
+  }
+  if (armed) {
+    this.traceWrapper_ = Blockly.bindEvent_(this.svgBlockCanvas_,
+        'blocklySelectChange', this, function() {this.traceOn_ = false});
+  }
+};
+
+/**
+ * Highlight a block in the workspace.
+ * @param {string} id ID of block to find.
+ */
+Blockly.Workspace.prototype.highlightBlock = function(id) {
+  if (!this.traceOn_) {
+    return;
+  }
+  var block = this.getBlockById(id);
+  if (!block) {
+    return;
+  }
+  // Temporary turn off the listener for selection changes, so that we don't
+  // trip the monitor for detecting user activity.
+  this.traceOn(false);
+  // Select the curent block.
+  block.select();
+  // Restore the monitor for user activity.
+  this.traceOn(true);
+};
+

@@ -1,0 +1,204 @@
+<html>
+<head>
+  <title>Blockly Demo: Code</title>
+  <script>
+/**
+ * List of tab names.
+ * @private
+ */
+var TABS_ = ['blocks', 'javascript', 'dart', 'python', 'xml'];
+
+/**
+ * Switch the visible pane when a tab is clicked.
+ * @param {string} id ID of tab clicked.
+ */
+function tabClick(id) {
+  var xmlTextarea = document.getElementById('textarea_xml');
+  // If the XML tab was open, save and render the content.
+  if (document.getElementById('tab_xml').className == 'tabon') {
+    var xmlText = xmlTextarea.value;
+    var xmlDom = null;
+    try {
+      xmlDom = Blockly.Xml.textToDom(xmlText);
+    } catch (e) {
+      var q =
+          window.confirm('Error parsing XML:\n' + e + '\n\nAbandon changes?');
+      if (!q) {
+        // Leave the user on the XML tab.
+        return;
+      }
+    }
+    if (xmlDom) {
+      Blockly.mainWorkspace.clear();
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDom);
+    }
+  }
+
+  // Deselect all tabs and hide all panes.
+  for (var x in TABS_) {
+    document.getElementById('tab_' + TABS_[x]).className = 'taboff';
+    document.getElementById('content_' + TABS_[x]).style.display = 'none';
+  }
+
+  // Select the active tab.
+  document.getElementById(id).className = 'tabon';
+  // Show the selected pane.
+  var content = document.getElementById(id.replace('tab_', 'content_'));
+  content.style.display = 'block';
+
+  // Initialize the pane.
+  if (id == 'tab_blocks') {
+    // If the workspace was changed by the XML tab, Firefox will have performed
+    // an incomplete rendering due to Blockly being invisible.  Rerender.
+    Blockly.mainWorkspace.render();
+  } else if (id == 'tab_xml') {
+    var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+    var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+    xmlTextarea.value = xmlText;
+    xmlTextarea.focus();
+  } else if (id == 'tab_javascript') {
+    content.innerHTML = Blockly.Generator.workspaceToCode('JavaScript');
+  } else if (id == 'tab_dart') {
+    content.innerHTML = Blockly.Generator.workspaceToCode('Dart');
+  } else if (id == 'tab_python') {
+    content.innerHTML = Blockly.Generator.workspaceToCode('Python');
+  }
+}
+
+/**
+ * Initialize Blockly.  Called on page load.
+ */
+function init(blockly) {
+  //window.onbeforeunload = function() {
+  //  return 'Leaving this page will result in the loss of your work.';
+  //};
+
+  window.Blockly = blockly;
+
+  // Make the 'Blocks' tab line up with the toolbox.
+  if (Blockly.Toolbox) {
+    Blockly.bindEvent_(window, 'resize', null, function() {
+      document.getElementById('tab_blocks').style.minWidth =
+          (Blockly.Toolbox.width - 38) + 'px';
+          // Account for the 19 pixel margin and on each side.
+      });
+    window.setTimeout(function() {
+        Blockly.fireUiEvent(document, window, 'resize');
+      }, 1);
+  }
+}
+  </script>
+  <style>
+    body {
+      background-color: white;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    td {
+      vertical-align: top;
+    }
+
+    /* Tabs */
+    #tabRow>td {
+      border: 1px solid #ccc;
+    }
+    td.tabon {
+      border-bottom-color: #ddd !important;
+      background-color: #ddd;
+      padding: 5px 19px;
+    }
+    td.taboff {
+      cursor: pointer;
+      padding: 5px 19px;
+    }
+    td.taboff:hover {
+      background-color: #eee;
+    }
+    td.tabmin {
+      border-top-style: none !important;
+      border-left-style: none !important;
+      border-right-style: none !important;
+    }
+    td.tabmax {
+      border-top-style: none !important;
+      border-left-style: none !important;
+      border-right-style: none !important;
+      width: 99%;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin: 0;
+      padding: 0;
+      border: none;
+    }
+    td {
+      padding: 0;
+    }
+    pre,
+    #content_xml {
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      margin: 0;
+      border: 1px solid #ccc;
+      border-top-style: none;
+      overflow: hidden;
+      display: none;
+    }
+    #textarea_xml {
+      width: 100%;
+      height: 100%;
+      border: none;
+      resize: none;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: 1px solid #ccc;
+      border-top-style: none;
+    }
+  </style>
+</head>
+<body>
+  <table height="100%" width="100%">
+    <tr>
+      <td>
+        <h1><a href="http://code.google.com/p/google-blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Code</h1>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <table>
+          <tr id="tabRow" height="1em">
+            <td id="tab_blocks" class="tabon" onclick="tabClick(this.id)">Blocks</td>
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_javascript" class="taboff" onclick="tabClick(this.id)">JavaScript</td>
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_dart" class="taboff" onclick="tabClick(this.id)">Dart</td>
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_python" class="taboff" onclick="tabClick(this.id)">Python</td>
+            <td class="tabmin">&nbsp;</td>
+            <td id="tab_xml" class="taboff" onclick="tabClick(this.id)">XML</td>
+            <td class="tabmax">&nbsp;</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr>
+      <td height="99%">
+        <iframe id="content_blocks" src="frame.html"></iframe>
+        <pre id="content_javascript"></pre>
+        <pre id="content_dart"></pre>
+        <pre id="content_python"></pre>
+        <div id="content_xml">
+          <textarea id="textarea_xml"></textarea>
+        </div>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

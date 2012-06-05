@@ -140,7 +140,7 @@ Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
   anchorX -= svgSize.left;
   anchorY -= svgSize.top;
   if (anchorY + bBox.height > svgSize.height) {
-    // Falling off the bottom of the screen; flip the menu vertically.
+    // Falling off the bottom of the screen; shift the menu up.
     anchorY -= bBox.height - 10;
   }
   if (Blockly.RTL) {

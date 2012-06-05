@@ -1,0 +1,53 @@
+<html>
+<head>
+  <title>Blockly Demo: Maze</title>
+  <script type="text/javascript" src="../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../generators/javascript.js"></script>
+  <script type="text/javascript" src="../../generators/javascript/control.js"></script>
+  <script type="text/javascript" src="../../generators/javascript/logic.js"></script>
+  <script type="text/javascript" src="language.js"></script>
+  <script type="text/javascript" src="../../language/en/control.js"></script>
+  <script type="text/javascript" src="../../language/en/logic.js"></script>
+  
+  <style>
+    html, body {
+      background-color: #fff;
+      margin: 0;
+      padding:0;
+      overflow: hidden;
+    }
+    .blocklySvg {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <script>
+    function init() {
+      // Strip out unneeded blocks.
+      delete Blockly.Language.controls_forEach;
+      delete Blockly.Language.controls_for;
+      delete Blockly.Language.controls_flow_statements;
+      delete Blockly.Language.logic_compare;
+
+      Blockly.inject(document.body, {path: '../../'});
+
+      if (window.parent.Maze) {
+        // Let the top-level application know that Blockly is ready.
+        window.parent.Maze.init(Blockly);
+      } else {
+        // Attempt to diagnose the problem.
+        var msg = 'Error: Unable to communicate between frames.\n\n';
+        if (window.parent == window) {
+          msg += 'Try loading index.html instead of frame.html';
+        } else if (window.location.protocol == 'file:') {
+          msg += 'This may be due to a security restriction preventing\n' +
+              'access when using the file:// protocol.';
+        }
+        alert(msg);
+      }
+    }
+  </script>
+</head>
+<body onload="init()">
+</body>
+</html>

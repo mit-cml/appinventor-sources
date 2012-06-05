@@ -24,14 +24,14 @@
 
 /**
  * Initialise the SVG document with various handlers.
- * @param {!Element} doc The document object.
+ * @param {!Element} container Containing element.
  * @param {Object} opt_options Optional dictionary of options.
  */
-Blockly.inject = function(doc, opt_options) {
+Blockly.inject = function(container, opt_options) {
   if (opt_options) {
     Blockly.parseOptions_(opt_options);
   }
-  Blockly.createDom_(doc);
+  Blockly.createDom_(container);
   Blockly.init_();
 };
 
@@ -43,11 +43,12 @@ Blockly.inject = function(doc, opt_options) {
 Blockly.parseOptions_ = function(options) {
   Blockly.RTL = !!options['rtl'];
   Blockly.editable = !options['readOnly'];
+  Blockly.pathToBlockly = options['path'] || './';
 };
 
 /**
  * Create the SVG image.
- * @param {!Element} container Containing element (probably an SVG tag).
+ * @param {!Element} container Containing element.
  * @private
  */
 Blockly.createDom_ = function(container) {
@@ -61,9 +62,10 @@ Blockly.createDom_ = function(container) {
   // Load CSS.
   //<link href="blockly.css" rel="stylesheet" type="text/css" />
   var link = doc.createElement('link');
-  link.setAttribute('href', 'blockly.css');
+  link.setAttribute('href', Blockly.pathToBlockly + 'blockly.css');
   link.setAttribute('rel', 'stylesheet');
   link.setAttribute('type', 'text/css');
+  link.setAttribute('onload', 'Blockly.cssLoaded()');
   var head = doc.head || doc.getElementsByTagName('head')[0];
   if (!head) {
     throw 'No head in document.';

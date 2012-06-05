@@ -25,6 +25,8 @@
 
 Blockly.Generator = {};
 
+Blockly.Generator.NAME_TYPE = 'generated_function';
+
 /**
  * Database of code generators, one for each language.
  */
@@ -58,6 +60,34 @@ Blockly.Generator.get = function(name) {
       return this.scrub_(block, code);
     };
 
+    /**
+     * Generate Dart code representing the specified value input.
+     * @param {!Blockly.Block} block The block containing the input.
+     * @param {number} index The index of the input (0-based).
+     * @param {?boolean} opt_dropParens If true, don't surround code with paretheses
+     *     since the caller already has a safe container.
+     * @return {string} Generated code or '' if no blocks are connected.
+     */
+    generator.valueToCode = function(block, index, opt_dropParens) {
+      var input = block.getValueInput(index);
+      return this.blockToCode(input, opt_dropParens);
+    };
+    
+    /**
+     * Generate Dart code representing the statement.  Indent the code.
+     * @param {!Blockly.Block} block The block containing the input.
+     * @param {number} index The index of the input (0-based).
+     * @return {string} Generated code or '' if no blocks are connected.
+     */
+    generator.statementToCode = function(block, index) {
+      var input = block.getStatementInput(index);
+      var code = this.blockToCode(input);
+      if (code) {
+        code = Blockly.Generator.prefixLines(code, '  ');
+      }
+      return code;
+    };
+
     Blockly.Generator.languages[name] = generator;
   }
   return Blockly.Generator.languages[name];
@@ -72,7 +102,7 @@ Blockly.Generator.workspaceToCode = function(name) {
   var code = [];
   var generator = Blockly.Generator.get(name);
   generator.init();
-  var blocks = Blockly.mainWorkspace.getTopBlocks();
+  var blocks = Blockly.mainWorkspace.getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
     var line = generator.blockToCode(block, true);
     if (block.outputConnection && generator.scrubNakedValue) {

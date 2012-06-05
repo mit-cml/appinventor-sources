@@ -18,7 +18,9 @@
  */
 
 /**
- * @fileoverview Utility functions for handling variables.
+ * @fileoverview Utility functions for handling variables and procedure names.
+ * Note that variables and procedures share the same name space, meaning that
+ * one can't have a variable and a procedure of the same name.
  * @author fraser@google.com (Neil Fraser)
  */
 
@@ -28,98 +30,9 @@
  *     use as variable names in a language (e.g. ['new', 'if', 'this', ...]).
  * @constructor
  */
-Blockly.Variables = function(reservedWords) {
-  this.reservedDict_ = {};
-  if (reservedWords) {
-    for (var x = 0; x < reservedWords.length; x++) {
-      this.reservedDict_[Blockly.Variables.PREFIX_ + reservedWords[x]] = true;
-    }
-  }
-  this.reset();
-};
+Blockly.Variables = {};
 
-/**
- * JavaScript doesn't have a true hashtable, it uses object properties.
- * Since even clean objects have a few properties, prepend this prefix onto
- * names so that they don't collide with any builtins.
- * @private
- */
-Blockly.Variables.PREFIX_ = 'x_';
-
-/**
- * Empty the database and start from scratch.  The reserved words are kept.
- */
-Blockly.Variables.prototype.reset = function() {
-  this.db_ = {};
-  this.dbReverse_ = {};
-};
-
-/**
- * Convert a Blockly variable name to a legal exportable variable name.
- * @param {string} name The Blockly variable name (no constraints).
- * @return {string} A variable name legal for the exported language.
- */
-Blockly.Variables.prototype.getVariable = function(name) {
-  var normalized = Blockly.Variables.PREFIX_ +
-      (Blockly.caseSensitiveVariables ? name : name.toLowerCase());
-  if (normalized in this.db_) {
-    return this.db_[normalized];
-  } else {
-    return this.getDistinctVariable(name);
-  }
-};
-
-/**
- * Convert a Blockly variable name to a legal exportable variable name.
- * Ensure that this is a new variable not overlapping any previously defined
- * variable.
- * @param {string} name The Blockly variable name (no constraints).
- * @return {string} A variable name legal for the exported language.
- */
-Blockly.Variables.prototype.getDistinctVariable = function(name) {
-  var safeName = this.safeName_(name);
-  if (this.dbReverse_[Blockly.Variables.PREFIX_ + safeName]) {
-    // Collision with existing variable.  Create a unique name.
-    var testName;
-    var i = 1;
-    do {
-      i++;
-      testName = safeName + i;
-    } while (this.dbReverse_[Blockly.Variables.PREFIX_ + testName]);
-    safeName = testName;
-  }
-  this.db_[Blockly.Variables.PREFIX_ + name.toLowerCase()] = safeName;
-  this.dbReverse_[Blockly.Variables.PREFIX_ + safeName] = true;
-  return safeName;
-};
-
-/**
- * Given a proposed variable name, generate a name that conforms to the
- * [_A-Za-z][_A-Za-z0-9]* format that most languages consider legal for
- * variables.
- * Also check against list of reserved words for the current language and
- * ensure variable doesn't collide.
- * @param {string} name Potentially illegal variable name.
- * @return {string} Safe variable name.
- * @private
- */
-Blockly.Variables.prototype.safeName_ = function(name) {
-  if (!name) {
-    name = 'var_unnamed';
-  } else {
-    // Unfortunately names in non-latin characters will all be sequences of _s.
-    // TODO: Make friendlier names for non-latin variables.
-    name = name.replace(/[^\w]/g, '_');
-    if ('0123456789'.indexOf(name.charAt(0)) != -1) {
-      name = 'var_' + name;
-    }
-  }
-  // Ensure no collsion with reserved word list.
-  while ((Blockly.Variables.PREFIX_ + name) in this.reservedDict_) {
-    name = 'var_' + name;
-  }
-  return name;
-};
+Blockly.Variables.NAME_TYPE = 'variable';
 
 /**
  * Find all user-created variables.
@@ -135,9 +48,11 @@ Blockly.Variables.allVariables = function() {
       var blockVariables = func.call(blocks[x]);
       for (var y = 0; y < blockVariables.length; y++) {
         var varName = blockVariables[y];
-        variableHash[Blockly.Variables.PREFIX_ +
-            (Blockly.caseSensitiveVariables ?
-            varName : varName.toLowerCase())] = varName;
+        // Variable name may be null if the block is only half-built.
+        if (varName) {
+          variableHash[Blockly.Names.PREFIX_ +
+              varName.toLowerCase()] = varName;
+        }
       }
     }
   }
@@ -185,31 +100,14 @@ Blockly.Variables.dropdownChange = function(text) {
   } else {
     if (text == Blockly.MSG_NEW_VARIABLE) {
       text = promptName(Blockly.MSG_NEW_VARIABLE_TITLE, '');
-      // If variables are case-insensitive, ensure that if the new variable
+      // Since variables are case-insensitive, ensure that if the new variable
       // matches with an existing variable, the new case prevails throughout.
-      if (!Blockly.caseSensitiveVariables) {
-        Blockly.Variables.renameVariable(text, text);
-      }
+      Blockly.Variables.renameVariable(text, text);
     }
     if (text) {
       this.setText(text);
     }
   }
-};
-
-/**
- * Do the given two variable names refer to the same variable?
- * Blockly has a mode where variables are case-insensitive.
- * @param {string} name1 First variable name.
- * @param {string} name2 Second variable name.
- * @return {boolean} True if names are the same.
- */
-Blockly.Variables.nameEquals = function(name1, name2) {
-  if (!Blockly.caseSensitiveVariables) {
-    name1 = name1.toLowerCase();
-    name2 = name2.toLowerCase();
-  }
-  return name1 == name2;
 };
 
 /**
@@ -224,6 +122,47 @@ Blockly.Variables.renameVariable = function(oldName, newName) {
     var func = blocks[x].renameVar;
     if (func) {
       func.call(blocks[x], oldName, newName);
+    }
+  }
+};
+
+/**
+ * Construct the blocks required by the flyout for the variable category.
+ * @param {!Array.<!Blockly.Block>} blocks List of blocks to show.
+ * @param {!Array.<number>} gaps List of widths between blocks.
+ * @param {number} margin Standard margin width for calculating gaps.
+ * @param {!Blockly.Workspace} workspace The flyout's workspace.
+ */
+Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
+  var variableList = Blockly.Variables.allVariables();
+  variableList.sort(Blockly.caseInsensitiveComparator);
+  // In addition to the user's variables, we also want to display the default
+  // variable name at the top.  We also don't want this duplicated if the
+  // user has created a variable of the same name.
+  variableList.unshift(null);
+  var defaultVariable = undefined;
+  for (var i = 0; i < variableList.length; i++) {
+    if (variableList[i] === defaultVariable) {
+      continue;
+    }
+    var getBlock = Blockly.Language.variables_get ?
+        new Blockly.Block(workspace, 'variables_get') : null;
+    getBlock && getBlock.initSvg();
+    var setBlock = Blockly.Language.variables_set ?
+        new Blockly.Block(workspace, 'variables_set') : null;
+    setBlock && setBlock.initSvg();
+    if (variableList[i] === null) {
+      defaultVariable = (getBlock || setBlock).getVars()[0];
+    } else {
+      getBlock && getBlock.setTitleText(variableList[i], 1);
+      setBlock && setBlock.setTitleText(variableList[i], 1);
+    }
+    setBlock && blocks.push(setBlock);
+    getBlock && blocks.push(getBlock);
+    if (getBlock && setBlock) {
+      gaps.push(margin, margin * 3);
+    } else {
+      gaps.push(margin * 2);
     }
   }
 };

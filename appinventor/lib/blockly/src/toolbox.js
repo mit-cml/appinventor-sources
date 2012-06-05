@@ -74,12 +74,17 @@ Blockly.Toolbox.createDom = function() {
  * .contentTop: Offset of the top-most content from the y=0 coordinate,
  * .absoluteTop: Top-edge of view.
  * .absoluteLeft: Left-edge of view.
- * @return {!Object} Contains size and position metrics of the toolbox.
+ * @return {Object} Contains size and position metrics of the toolbox.
  */
 Blockly.Toolbox.getMetrics = function() {
   var viewHeight = Blockly.svgSize().height;
   var viewWidth = Blockly.Toolbox.width;
-  var optionBox = Blockly.Toolbox.svgOptions_.getBBox();
+  try {
+    var optionBox = Blockly.Toolbox.svgOptions_.getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return null;
+  }
   return {
     viewHeight: viewHeight,
     viewWidth: viewWidth,
@@ -114,7 +119,7 @@ Blockly.Toolbox.init = function() {
   Blockly.Toolbox.flyout_.init(Blockly.mainWorkspace,
                                Blockly.getMainWorkspaceMetrics);
   Blockly.Toolbox.languageTree = Blockly.Toolbox.buildTree_();
-  Blockly.Toolbox.populateOptions_(Blockly.Toolbox.languageTree);
+  Blockly.Toolbox.redraw();
 
   // Add scrollbars.
   new Blockly.Scrollbar(Blockly.Toolbox.svgOptions_,
@@ -147,11 +152,6 @@ Blockly.Toolbox.position_ = function() {
 Blockly.Toolbox.PREFIX_ = 'cat_';
 
 /**
- * Category used for variables.
- */
-Blockly.Toolbox.VARIABLE_CAT = 'variables';
-
-/**
  * Build the hierarchical tree of block types.
  * @return {!Object} Tree object.
  * @private
@@ -176,13 +176,11 @@ Blockly.Toolbox.buildTree_ = function() {
 
 /**
  * Fill the toolbox with options.
- * @param {!Object} tree Hierarchical tree of block types.
- * @private
  */
-Blockly.Toolbox.populateOptions_ = function(tree) {
+Blockly.Toolbox.redraw = function() {
   // Create an option for each category.
   var options = [];
-  for (var cat in tree) {
+  for (var cat in Blockly.Toolbox.languageTree) {
     var option = {};
     option.text =
         window.decodeURI(cat.substring(Blockly.Toolbox.PREFIX_.length));
@@ -190,10 +188,16 @@ Blockly.Toolbox.populateOptions_ = function(tree) {
     options.push(option);
   }
   var option = {};
-  if (Blockly.Language.variables_get && Blockly.Language.variables_set) {
+  if (Blockly.Language.variables_get || Blockly.Language.variables_set) {
     // Variables have a special category that is dynamic.
     options.push({text: Blockly.MSG_VARIABLE_CATEGORY,
-                  cat: Blockly.Toolbox.VARIABLE_CAT});
+                  cat: Blockly.MSG_VARIABLE_CATEGORY});
+  }
+  if (Blockly.Language.procedures_defnoreturn ||
+      Blockly.Language.procedures_defreturn) {
+    // Procedures have a special category that is dynamic.
+    options.push({text: Blockly.MSG_PROCEDURE_CATEGORY,
+                  cat: Blockly.MSG_PROCEDURE_CATEGORY});
   }
 
   function callbackFactory(cat, element) {
