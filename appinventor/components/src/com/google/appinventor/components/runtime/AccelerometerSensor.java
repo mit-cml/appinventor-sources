@@ -86,6 +86,12 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   // Indicates whether the accelerometer should generate events
   private boolean enabled;
+  
+  //Specifies the time interval between firing of accelerometer events //KARISHMA
+  private static final int MINIMUM_INTERVAL = 300;
+  
+  //Specifies the last time the phone shook.//KARISHMA
+  private long timeLastShook;
 
   private Sensor accelerometerSensor;
 
@@ -117,8 +123,11 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
-
-    if (isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel)) {
+    //KARISHMA
+    long currentTime = System.currentTimeMillis();
+    if ((isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel)) /*KARISHMA*/&& (timeLastShook == 0 || currentTime >= timeLastShook + MINIMUM_INTERVAL)) {
+      //KARISHMA
+      timeLastShook = currentTime;
       Shaking();
     }
 
@@ -130,7 +139,13 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void Shaking() {
-    EventDispatcher.dispatchEvent(this, "Shaking");
+	//KARISHMA
+	//int currentTime = (int) System.currentTimeMillis();
+	//if(timeLastShook == 0 || currentTime > timeLastShook + MINIMUM_INTERVAL)
+	//{
+	  //timeLastShook += currentTime;	
+      EventDispatcher.dispatchEvent(this, "Shaking");
+	//}
   }
 
   /**
