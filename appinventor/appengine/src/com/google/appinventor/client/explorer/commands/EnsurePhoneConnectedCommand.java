@@ -45,7 +45,7 @@ public class EnsurePhoneConnectedCommand extends ChainableCommand {
         if (result) {
           executeNextCommand(node);
         } else {
-          ErrorReporter.reportError(MESSAGES.phoneNotConnected());
+          ErrorReporter.reportInfo(MESSAGES.phoneNotConnected());
           executionFailedOrCanceled();
         }
       }
