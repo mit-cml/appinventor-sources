@@ -3,7 +3,7 @@
 package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.common.version.MercurialBuildId;
+import com.google.appinventor.common.version.GitBuildId;
 
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -29,12 +29,11 @@ public class StatusPanel extends Composite {
     hpanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
     hpanel.add(new HTML(AppInventorFooter));
 
-    // This shows the id from mercurial hg id -i -n and the date of the build
-    String version = MercurialBuildId.getVersion();
-    String id = MercurialBuildId.getId();
-    String date = MercurialBuildId.getDate();
-    if (version != null && id != null && date != null) {
-      Label buildId = new Label(MESSAGES.mercurialBuildId(date, version, id));
+    // This shows the git version and the date of the build
+    String version = GitBuildId.getVersion();
+    String date = GitBuildId.getDate();
+    if (version != null && date != null) {
+      Label buildId = new Label(MESSAGES.gitBuildId(date, version));
       hpanel.add(buildId);
       hpanel.setCellHorizontalAlignment(buildId, HorizontalPanel.ALIGN_RIGHT);
     }

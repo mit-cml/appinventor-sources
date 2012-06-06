@@ -80,7 +80,7 @@
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/appengine-api-1.0-sdk-1.6.2.1.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
-	<!-- prevent error importing MercurialBuildId if it has been generated -->
+	<!-- prevent error importing GitBuildId if it has been generated -->
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
       <!-- Ignore non-standard tags used in blockslib.  -->
