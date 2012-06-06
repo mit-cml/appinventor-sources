@@ -6,10 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Categories for grouping components in the palette
- *
+ * Categories for grouping components in the palette within the Designer.
  */
-public enum ComponentCategory{
+public enum ComponentCategory {
   // TODO(user): i18n category names
   BASIC("Basic"),
   MEDIA("Media"),
@@ -25,7 +24,8 @@ public enum ComponentCategory{
   // UNINITIALIZED is used as a default value so Swing libraries can still compile
   UNINITIALIZED("Uninitialized");
 
-  // Mapping of component categories to their goro documentation names
+  // Mapping of component categories to names consisting only of lower-case letters,
+  // suitable for appearing in URLs.
   private static final Map<String, String> DOC_MAP =
       new HashMap<String, String>();
   static {
@@ -42,14 +42,29 @@ public enum ComponentCategory{
 
   private String name;
 
-  ComponentCategory(String categoryName) {
+  private ComponentCategory(String categoryName) {
     name = categoryName;
   }
 
+  /**
+   * Returns the display name of this category, as used on the Designer palette, such
+   * as "Not ready for prime time".  To get the enum name (such as "EXPERIMENTAL"),
+   * use {@link #toString}.
+   *
+   * @return the display name of this category
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Returns a version of the name of this category consisting of only lower-case
+   * letters, meant for use in a URL.  For example, for the category with the enum
+   * name "EXPERIMENTAL" and display name "Not ready for prime time", this returns
+   * "experimental".
+   *
+   * @return a name for this category consisting of only lower-case letters
+   */
   public String getDocName() {
     return DOC_MAP.get(name);
   }

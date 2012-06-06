@@ -9,6 +9,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
 import android.content.Context;
@@ -118,7 +119,7 @@ public final class TextBox extends TextBoxBase {
    * @param acceptsNumbersOnly {@code true} restricts input to numeric,
    * {@code false} allows any text
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty(
       description = "If true, then this text box accepts only numbers as keyboard input.  " +
       "Numbers can include a decimal point and an optional leading minus sign.  " +
@@ -171,7 +172,7 @@ public final class TextBox extends TextBoxBase {
    * @param multiLine {@code true} lets to textbox accept multiple lines of input
    * {@code false} restricts the textbox to only a single line
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty()
   public void MultiLine(boolean multiLine) {
     this.multiLine = multiLine;

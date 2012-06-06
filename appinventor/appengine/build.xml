@@ -168,6 +168,7 @@
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${build.dir}/common/CommonUtils.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+    <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
@@ -196,7 +197,7 @@
   </path>
 
   <target name="AiServerLibTests"
-          depends="AiServerLib,common_CommonTestUtils,common_CommonUtils,Keystore"
+          depends="AiServerLib,common_CommonTestUtils,common_CommonUtils,common_CommonVersion,Keystore"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiServerLibTests"
                 aij-dir="${appinventor.pkg}/server" >

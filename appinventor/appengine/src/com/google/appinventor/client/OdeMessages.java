@@ -170,9 +170,9 @@ public interface OdeMessages extends Messages {
 
   // Used in StatusPanel.java
 
-  @DefaultMessage("Version: {0} Id: {1}")
-  @Description("Label showing the Mercurial build id")
-  String mercurialBuildId(String version, String id);
+  @DefaultMessage("Built: {0}  Version: {1}")
+  @Description("Label showing the ant build date and the git version")
+  String gitBuildId(String date, String version);
 
   @DefaultMessage("About")
   @Description("Label of the link for About")
@@ -365,6 +365,24 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("right")
   @Description("Text for text alignment choice 'right'")
   String rightTextAlignment();
+
+  // Used in editor/youngandroid/properties/YoungAndroidButtonShapeChoicePropertyEditor.java
+
+  @DefaultMessage("default")
+  @Description("Text for button shape choice 'default'")
+  String defaultButtonShape();
+
+  @DefaultMessage("rounded")
+  @Description("Text for button shape choice 'rounded'")
+  String roundedButtonShape();
+
+  @DefaultMessage("rectangular")
+  @Description("Text for button shape choice 'rectangular'")
+  String rectButtonShape();
+
+  @DefaultMessage("oval")
+  @Description("Text for button shape choice 'oval'")
+  String ovalButtonShape();
 
   // Used in editor/youngandroid/properties/YoungAndroidAssetSelectorPropertyEditor.java
 
@@ -863,7 +881,7 @@ public interface OdeMessages extends Messages {
   String fileUploadWizardCaption();
 
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
-		  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
+                  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
 

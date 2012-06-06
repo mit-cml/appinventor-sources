@@ -8,6 +8,7 @@ import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PaintUtil;
 
@@ -95,7 +96,7 @@ public final class Ball extends Sprite {
 
   // Additional properties
 
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = "5")
   @SimpleProperty(
       // Kind of both categories: APPEARANCE and BEHAVIOR
@@ -126,7 +127,7 @@ public final class Ball extends Sprite {
    *
    * @param argb  paint RGB color with alpha
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void PaintColor(int argb) {

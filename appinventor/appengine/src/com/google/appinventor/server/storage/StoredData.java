@@ -6,6 +6,7 @@ import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Parent;
 import com.googlecode.objectify.annotation.Indexed;
 import com.googlecode.objectify.annotation.Unindexed;
+import java.util.Date;
 
 import javax.persistence.Id;
 
@@ -38,6 +39,9 @@ public class StoredData {
 
     // Has user accepted terms of service?
     boolean tosAccepted;
+
+    @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
+
   }
 
   // Project properties

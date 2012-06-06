@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
@@ -127,7 +128,7 @@ public final class VideoPlayer extends AndroidViewComponent
    *
    * @param path  the path to the video source
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_ASSET,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty(
       description = "The \"path\" to the video.  Usually, this will be the " +

@@ -11,8 +11,6 @@ import java.util.Date;
  * Return timestamp information for when this server was last deployed
  *
  * @author sharon@google.com (Sharon Perl)
- *
- * @see com.google.appinventor.common.version.MercurialBuildId
  */
 public class BuildData {
 

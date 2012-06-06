@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -200,7 +201,7 @@ public final class Twitter extends AndroidNonvisibleComponent
    *
    * @param consumerKey the key for use in Twitter OAuth
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ConsumerKey(String consumerKey) {
@@ -222,7 +223,7 @@ public final class Twitter extends AndroidNonvisibleComponent
    *
    * @param consumerSecret the secret for use in Twitter OAuth
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void ConsumerSecret(String consumerSecret) {

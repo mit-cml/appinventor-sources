@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import java.io.IOException;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,6 +39,9 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+
 
 /**
  * Processor for generating output files based on the annotations and
@@ -61,9 +65,10 @@ import javax.tools.Diagnostic;
  *   <li> {@link SimpleEvent} to identify events.
  * </ul>
  *
+ * @author spertus@google.com (Ellen Spertus)
  */
 public abstract class ComponentProcessor extends AbstractProcessor {
-  protected static final String OUTPUT_PACKAGE = "";
+  private static final String OUTPUT_PACKAGE = "";
 
   // Returned by getSupportedAnnotationTypes()
   private static final Set<String> SUPPORTED_ANNOTATION_TYPES = ImmutableSet.of(
@@ -74,16 +79,16 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.SimpleObject",
       "com.google.appinventor.components.annotations.SimpleProperty");
 
-  protected static final String READ_WRITE = "read-write";
-  protected static final String READ_ONLY = "read-only";
-  protected static final String WRITE_ONLY = "write-only";
+  // Returned by getRwString()
+  private static final String READ_WRITE = "read-write";
+  private static final String READ_ONLY = "read-only";
+  private static final String WRITE_ONLY = "write-only";
 
-  // The next three fields are set in init()
+  // The next two fields are set in init().
   /**
    * A handle allowing access to facilities provided by the annotation
    * processing tool framework
    */
-  protected ProcessingEnvironment processingEnvironment;
   private Elements elementUtils;
   private Types typeUtils;
 
@@ -100,9 +105,10 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   private int pass = 0;
 
   /**
-   * SortedMap from fully-qualified name (e.g.,
-   * "com.google.appinventor.components.runtime.components.android.Label") to
-   * the corresponding {@link ComponentProcessor.ComponentInfo} object
+   * Information about every App Inventor component.  Keys are fully-qualified names
+   * (such as "com.google.appinventor.components.runtime.components.android.Label"), and
+   * values are the corresponding {@link ComponentProcessor.ComponentInfo} objects.
+   * This is constructed by {@link #process} for use in {@link #outputResults()}.
    */
   protected final SortedMap<String, ComponentInfo> components = Maps.newTreeMap();
 
@@ -110,13 +116,26 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   /**
    * Represents a parameter consisting of a name and a type.  The type is a
-   * String representation of the java type; e.g., "int", "double", or
+   * String representation of the java type, such as "int", "double", or
    * "java.lang.String".
    */
   protected final class Parameter {
+    /**
+     * The parameter name
+     */
     protected final String name;
+
+    /**
+     * The parameter's Java type, such as "int" or "java.lang.String".
+     */
     protected final String type;
 
+    /**
+     * Constructs a Parameter.
+     *
+     * @param name the parameter name
+     * @param type the parameter's Java type (such as "int" or "java.lang.String")
+     */
     protected Parameter(String name, String type) {
       this.name = name;
       this.type = type;
@@ -201,8 +220,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
-   * Represents a Young Android component event (annotated with
-   * {@link SimpleEvent}).
+   * Represents an App Inventor event (annotated with {@link SimpleEvent}).
    */
   protected final class Event extends ParameterizedFeature
       implements Cloneable, Comparable<Event> {
@@ -228,7 +246,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
-   * Represents a Young Android component method (annotated with
+   * Represents an App Inventor component method (annotated with
    * {@link SimpleFunction}).
    */
   protected final class Method extends ParameterizedFeature
@@ -262,7 +280,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
-   * Represents a Young Android component property (annotated with
+   * Represents an App Inventor component property (annotated with
    * {@link SimpleProperty}).
    */
   protected static final class Property implements Cloneable {
@@ -311,16 +329,51 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return sb.toString();
     }
 
+    /**
+     * Returns the description of this property, as retrieved by
+     * {@link SimpleProperty#description()}.
+     *
+     * @return the description of this property
+     */
     protected String getDescription() {
       return description;
     }
 
+    /**
+     * Returns whether this property is visible in the Blocks Editor, as retrieved
+     * from {@link SimpleProperty#userVisible()}.
+     *
+     * @return whether the property is visible in the Blocks Editor
+     */
     protected boolean isUserVisible() {
       return userVisible;
     }
 
+    /**
+     * Returns this property's Java type (e.g., "int", "double", or "java.lang.String").
+     *
+     * @return the feature's Java type
+     */
     protected String getType() {
       return type;
+    }
+
+    /**
+     * Returns whether this property is readable (has a getter).
+     *
+     * @return whether this property is readable
+     */
+    protected boolean isReadable() {
+      return readable;
+    }
+
+    /**
+     * Returns whether this property is writable (has a setter).
+     *
+     * @return whether this property is writable
+     */
+    protected boolean isWritable() {
+      return writable;
     }
 
     /**
@@ -349,18 +402,54 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
-   * Represents a Young Android component, including its designer properties,
-   * properties, methods, and events.
+   * Represents an App Inventor component, including its designer properties,
+   * Simple properties, methods, and events.
    */
   protected final class ComponentInfo extends Feature {
     // Inherits name and description
+    /**
+     * Permissions required by this component.
+     * @see android.Manifest.permission
+     */
     protected final Set<String> permissions;
+
+    /**
+     * Properties of this component that are visible in the Designer.
+     * @see DesignerProperty
+     */
     protected final SortedMap<String, DesignerProperty> designerProperties;
+
+    /**
+     * Properties of this component, whether or not they are visible in
+     * the Designer.  The keys of this map are a superset of the keys of
+     * {@link #designerProperties}.
+     */
     protected final SortedMap<String, Property> properties;
+
+    /**
+     * Methods provided by this component.
+     */
     protected final SortedMap<String, Method> methods;
+
+    /**
+     * Events provided by this component.
+     */
     protected final SortedMap<String, Event> events;
+
+    /**
+     * Whether this component is abstract (such as
+     * {@link com.google.appinventor.components.runtime.Sprite}) or concrete.
+     */
     protected final boolean abstractClass;
+
+    /**
+     * The displayed name of this component.  This is usually the same as the
+     * {@link Class#getSimpleName()}.  The exception is for the component
+     * {@link com.google.appinventor.components.runtime.Form}, for which the
+     * name "Screen" is used.
+     */
     protected final String displayName;
+
     private String helpDescription;  // Shorter popup description
     private String category;
     private String categoryString;
@@ -417,30 +506,79 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
     }
 
+    /**
+     * A brief description of this component to be shown when the user requests
+     * help in the Designer.  This is obtained from the first of the following that
+     * was provided in the source code for the component:
+     * <ol>
+     *   <li> {@link DesignerComponent#designerHelpDescription()}</li>
+     *   <li> {@link DesignerComponent#description()}</li>
+     *   <li> the Javadoc preceding the beginning of the class corresponding to the component</li>
+     * </ol>
+     */
     protected String getHelpDescription() {
       return helpDescription;
     }
 
+    /**
+     * Returns the name of this component's category within the Designer, as displayed
+     * (for example, "Screen Arrangement").
+     *
+     * @return the name of this component's Designer category
+     */
     protected String getCategory() {
       return category;
     }
 
+    /**
+     * Returns the String representation of the EnumConstant corresponding to this
+     * component's category within the Designer (for example, "ARRANGEMENTS").
+     * Usually, you should use {@link #getCategory()} instead.
+     *
+     * @return the EnumConstant representing this component's Designer category
+     */
     protected String getCategoryString() {
       return categoryString;
     }
 
+    /**
+     * Returns the version number of this component, as specified by
+     * {@link DesignerComponent#version()}.
+     *
+     * @return the version number of this component
+     */
     protected int getVersion() {
       return version;
     }
 
+    /**
+     * Returns whether this component is shown on the palette in the Designer, as
+     * specified by {@link DesignerComponent#showOnPalette()}.
+     *
+     * @return whether this component is shown on the Designer palette
+     */
     protected boolean getShowOnPalette() {
       return showOnPalette;
     }
 
+    /**
+     * Returns whether this component is non-visible on the device's screen, as
+     * specified by {@link DesignerComponent#nonVisible()}.  Examples of non-visible
+     * components are {@link com.google.appinventor.components.runtime.LocationSensor}
+     * and {@link com.google.appinventor.components.runtime.Clock}.
+     *
+     * @return {@code true} if the component is non-visible, {@code false} otherwise
+     */
     protected boolean getNonVisible() {
       return nonVisible;
     }
 
+    /**
+     * Returns the name of the icon file used on the Designer palette, as specified in
+     * {@link DesignerComponent#iconName()}.
+     *
+     * @return the name of the icon file
+     */
     protected String getIconName() {
       return iconName;
     }
@@ -452,6 +590,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   }
 
+  /**
+   * Returns the annotations supported by this {@code ComponentProcessor}, namely those related
+   * to components ({@link com.google.appinventor.components.annotations}).
+   *
+   * @return the supported annotations
+   */
   @Override
   public Set<String> getSupportedAnnotationTypes() {
     return SUPPORTED_ANNOTATION_TYPES;
@@ -459,13 +603,25 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
   @Override
   public void init(ProcessingEnvironment processingEnv) {
-    processingEnvironment = processingEnv;
+    super.init(processingEnv);
     elementUtils = processingEnv.getElementUtils();
     typeUtils = processingEnv.getTypeUtils();
   }
 
+  /**
+   * Processes the component-related annotations ({@link
+   * com.google.appinventor.components.annotations}),
+   * populating {@link #components} and initializing {@link #messager} for use within
+   * {@link #outputResults()}, which is called at the end of this method and must be overriden by
+   * concrete subclasses.
+   *
+   * @param annotations the annotation types requested to be processed
+   * @param roundEnv environment for information about the current and prior round
+   * @return {@code true}, indicating that the annotations have been claimed by this processor.
+   * @see AbstractProcessor#process
+   */
   @Override
-  public boolean process(Set<? extends TypeElement> elements, RoundEnvironment env) {
+  public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
     // This method will be called many times for the source code.
     // Only do something on the first pass.
     pass++;
@@ -473,12 +629,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       return true;
     }
 
-    messager = processingEnvironment.getMessager();
+    messager = processingEnv.getMessager();
 
-    for (TypeElement te : elements) {
+    for (TypeElement te : annotations) {
       if (te.getSimpleName().toString().equals("DesignerComponent")
           || te.getSimpleName().toString().equals("SimpleObject")) {
-        for (Element element : env.getElementsAnnotatedWith(te)) {
+        for (Element element : roundEnv.getElementsAnnotatedWith(te)) {
           processComponent(element);
         }
       }
@@ -508,12 +664,12 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     return true;
   }
 
-  /**
-   * This processes an element if it represents a component, reading in its
-   * information and adding it to {#link components}.  If this component is a
-   * subclass of another component, this method recursively calls itself on the
-   * superclass.
-   */
+    /*
+     * This processes an element if it represents a component, reading in its
+     * information and adding it to components.  If this component is a
+     * subclass of another component, this method recursively calls itself on the
+     * superclass.
+     */
   private void processComponent(Element element) {
     // If the element is not a component (e.g., Float), return early.
     if (element.getAnnotation(SimpleObject.class) == null &&
@@ -700,7 +856,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             if (newProperty.readable) {
               priorProperty.type = newProperty.type;
             } else if (priorProperty.writable) {
-              // TODO(markf): handle lang_def and document generation for multiple setters.
+              // TODO(user): handle lang_def and document generation for multiple setters.
               throw new RuntimeException("Inconsistent types " + priorProperty.type +
                                          " and " + newProperty.type + " for property " +
                                          propertyName + " in component " + componentInfo.name);
@@ -842,10 +998,13 @@ public abstract class ComponentProcessor extends AbstractProcessor {
   }
 
   /**
-   * Method implemented by concrete subclasses to produce output once the
-   * input source files are processed.  The fields {@link #components},
-   * {@link #messager}, and {@link #processingEnvironment} are
-   * guaranteed to be correctly populated when this is called.
+   * <p>Outputs the required component information in the desired format.  It is called by
+   * {@link #process} after the fields {@link #components} and {@link #messager}
+   * have been populated.</p>
+   *
+   * <p>Implementations of this methods should call {@link #getOutputWriter(String)} to obtain a
+   * {@link Writer} for their output.  Diagnostic messages should be written
+   * using {@link #messager}.</p>
    */
   protected abstract void outputResults() throws IOException;
 
@@ -898,5 +1057,31 @@ public abstract class ComponentProcessor extends AbstractProcessor {
 
     throw new RuntimeException("Cannot convert Java type '" + type +
                                "' to Yail type");
+  }
+
+  /**
+   * Creates and returns a {@link FileObject} for output.
+   *
+   * @param fileName the name of the output file
+   * @return the {@code FileObject}
+   * @throws IOException if the file cannot be created
+   */
+  protected FileObject createOutputFileObject(String fileName) throws IOException {
+    return processingEnv.getFiler().
+      createResource(StandardLocation.SOURCE_OUTPUT, OUTPUT_PACKAGE, fileName);
+  }
+
+  /**
+   * Returns a {@link Writer} to which output should be written.  As with any
+   * {@code Writer}, the methods {@link Writer#flush()} and {@link Writer#close()}
+   * should be called when output is complete.
+   *
+   * @param fileName the name of the output file
+   * @return the {@code Writer}
+   * @throws IOException if the {@code Writer} or underlying {@link FileObject}
+   *         cannot be created
+   */
+  protected Writer getOutputWriter(String fileName) throws IOException {
+    return createOutputFileObject(fileName).openWriter();
   }
 }

@@ -11,6 +11,9 @@ import android.content.Intent;
 import java.util.Locale;
 
 /**
+ * Wrapper class for delegating calls to an external text-to-speech library for
+ * devices lacking an internal text-to-speech library (pre-1.6).
+ *
  * @author markf@google.com (Mark Friedman)
  */
 public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListener {

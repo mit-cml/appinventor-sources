@@ -3,7 +3,7 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.utils.Urls;
-import com.google.appinventor.common.version.MercurialBuildId;
+import com.google.appinventor.common.version.GitBuildId;
 
 /**
  * Handles reporting of bugs in the ODE client code.
@@ -50,10 +50,11 @@ public final class BugReport {
     String notes = Urls.escapeQueryParameter("Browser: " + getUserAgent() + "\n\n" +
         "Please attach a screenshot to help us fix the problem!\n\n" +
     "Steps to reproduce:\n");
-    String foundIn = Urls.escapeQueryParameter(MercurialBuildId.MERCURIAL_BUILD_ID);
+    String foundIn = Urls.escapeQueryParameter(GitBuildId.getVersion());
     return BUG_REPORT_FORM_LINK;
 
   }
+  
 
   /**
    * Returns information regarding the user agent (aka browser).

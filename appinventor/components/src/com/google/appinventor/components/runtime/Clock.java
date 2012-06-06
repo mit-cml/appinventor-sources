@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.Dates;
@@ -95,7 +96,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param interval timer interval in ms
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
       defaultValue = DEFAULT_INTERVAL + "")
   @SimpleProperty
   public void TimerInterval(int interval) {
@@ -120,7 +121,7 @@ public final class Clock extends AndroidNonvisibleComponent
    * @param enabled {@code true} starts the timer, {@code false} stops it
    */
   @DesignerProperty(
-      editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = DEFAULT_ENABLED ? "True" : "False")
   @SimpleProperty
   public void TimerEnabled(boolean enabled) {
@@ -145,7 +146,7 @@ public final class Clock extends AndroidNonvisibleComponent
    *  @param always {@code true} if the timer event should fire even if the
    *  application is not on the screen
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
   @SimpleProperty
   public void TimerAlwaysFires(boolean always) {
     timerAlwaysFires = always;

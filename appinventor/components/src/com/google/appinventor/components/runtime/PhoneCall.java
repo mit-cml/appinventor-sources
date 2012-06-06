@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.PhoneCallUtil;
 
@@ -74,7 +75,7 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component {
    *
    * @param phoneNumber a phone number to call
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "")
   @SimpleProperty
   public void PhoneNumber(String phoneNumber) {

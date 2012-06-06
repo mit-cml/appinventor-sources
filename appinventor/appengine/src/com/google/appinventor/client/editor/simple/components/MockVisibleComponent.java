@@ -19,6 +19,7 @@ public abstract class MockVisibleComponent extends MockComponent {
 
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_TEXTALIGNMENT = "TextAlignment";
+  protected static final String PROPERTY_NAME_BUTTONSHAPE= "Shape";
   protected static final String PROPERTY_NAME_BACKGROUNDCOLOR = "BackgroundColor";
   protected static final String PROPERTY_NAME_BACKGROUNDIMAGE = "BackgroundImage";
   protected static final String PROPERTY_NAME_ENABLED = "Enabled";

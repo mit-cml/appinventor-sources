@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.BoundingBox;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
@@ -61,9 +62,7 @@ import java.util.List;
  * To the user, the first three layers are all the background, in terms
  * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
  * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
- * changing the background color or image clears the drawing layer
- * (@link #clearDrawingLayer()}.
- *
+ * changing the background color or image clears the drawing layer.
  */
 @DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION,
     description = "<p>A two-dimensional touch-sensitive rectangular panel on " +
@@ -812,7 +811,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param argb background color in the format 0xAARRGGBB, which
    * includes alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
   @SimpleProperty
   public void BackgroundColor(int argb) {
@@ -839,7 +838,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *
    * @param path  the path of the canvas background image
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_ASSET,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")
   @SimpleProperty
   public void BackgroundImage(String path) {
@@ -869,7 +868,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param argb paint color in the format 0xAARRGGBB, which includes
    * alpha, red, green, and blue components
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_COLOR,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_BLACK)
   @SimpleProperty
   public void PaintColor(int argb) {
@@ -895,7 +894,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     return paint.getTextSize();
   }
 
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty
   public void FontSize(float size) {
@@ -918,7 +917,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *
    * @param width
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
   public void LineWidth(float width) {
@@ -951,7 +950,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *                   {@link Component#ALIGNMENT_CENTER} or
    *                   {@link Component#ALIGNMENT_OPPOSITE}
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_TEXTALIGNMENT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT,
                     defaultValue = Component.ALIGNMENT_CENTER + "")
   @SimpleProperty(userVisible = false)
   public void TextAlignment(int alignment) {

@@ -604,6 +604,11 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 3.
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The Shape property was added.
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
@@ -653,6 +658,11 @@ public class BlockSaveFile {
     if (blkCompVersion < 3) {
       // The Open method was added, which does not require changes.
       blkCompVersion = 3;
+    }
+    if (blkCompVersion < 4) {
+      // The Shape property was added.
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
     }
     return blkCompVersion;
   }
@@ -708,6 +718,11 @@ public class BlockSaveFile {
       // The Open method was added, which does not require changes.
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The Shape property was added.
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
@@ -755,6 +770,11 @@ public class BlockSaveFile {
       // The Open method was added, which does not require changes.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The Shape property was added.
+      // No blocks need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
+    }
     return blkCompVersion;
   }
 
@@ -794,6 +814,11 @@ public class BlockSaveFile {
     if (blkCompVersion < 3) {
       // The Open method was added, which does not require changes.
       blkCompVersion = 3;
+    }
+    if (blkCompVersion < 4) {
+      // The Shape property was added.
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
     }
     return blkCompVersion;
   }

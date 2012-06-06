@@ -25,6 +25,14 @@ public interface Component {
   static final int ALIGNMENT_OPPOSITE = 2;
 
   /*
+   * Button Styles.
+   */
+  static final int BUTTON_SHAPE_DEFAULT = 0;
+  static final int BUTTON_SHAPE_ROUNDED = 1;
+  static final int BUTTON_SHAPE_RECT = 2;
+  static final int BUTTON_SHAPE_OVAL = 3;
+
+  /*
    * Color constants.
    */
   static final int COLOR_NONE = 0x00FFFFFF;

@@ -9,6 +9,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -84,7 +85,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
   /**
    * Specifies the motor ports that are used for driving.
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_STRING,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
       defaultValue = "CB")
   @SimpleProperty
   public void DriveMotors(String motorPortLetters) {
@@ -115,7 +116,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    *
    * @param wheelDiameter the diameter of the wheel
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_FLOAT,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT,
       defaultValue = "4.32")
   @SimpleProperty
   public void WheelDiameter(float wheelDiameter) {
@@ -136,7 +137,7 @@ public class NxtDrive extends LegoMindstormsNxtBase {
    *
    * @param stopBeforeDisconnect whether to stop the drive motors before disconnecting
    */
-  @DesignerProperty(editorType = DesignerProperty.PROPERTY_TYPE_BOOLEAN,
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
   @SimpleProperty
   public void StopBeforeDisconnect(boolean stopBeforeDisconnect) {
