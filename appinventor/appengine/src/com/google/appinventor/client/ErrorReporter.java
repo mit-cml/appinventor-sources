@@ -36,8 +36,7 @@ public final class ErrorReporter {
      * Initializes the ErrorPopup.
      */
     ErrorPopup() {
-      //super(false);      
-      super(true); //JOHANNA
+      super(true); //constructor for PopupPanel class. "True" initializes the "auto-hide" variable
       
       
       // I'm leaving this setSTyleName line here as a comment, to show the typical way to define

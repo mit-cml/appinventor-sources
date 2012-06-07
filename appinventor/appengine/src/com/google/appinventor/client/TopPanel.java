@@ -116,7 +116,6 @@ public class TopPanel extends Composite {
       debugging.addClickHandler(new ClickHandler() {
           public void onClick(ClickEvent event) {
             ode.switchToDebuggingView();
-            ErrorReporter.hide(); ///JOHANNA 
           }
         }
       );
