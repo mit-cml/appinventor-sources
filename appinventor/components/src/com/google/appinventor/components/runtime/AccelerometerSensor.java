@@ -87,10 +87,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   // Indicates whether the accelerometer should generate events
   private boolean enabled;
   
-  //Specifies the time interval between firing of accelerometer events //KARISHMA
-  private static final int MINIMUM_INTERVAL = 300;
+  //Specifies the minimum time interval between calls to Shaking()
+  private int MinimumInterval;
   
-  //Specifies the last time the phone shook.//KARISHMA
+  //Specifies the time when Shaking() was last called
   private long timeLastShook;
 
   private Sensor accelerometerSensor;
@@ -110,6 +110,34 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
   }
+  
+  /**
+   * Returns the minimum interval required between calls to Shaking(),
+   * in milliseconds.
+   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * until the interval has elapsed.
+   * @return  minimum interval in ms
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "The minimum interval between phone shakes")
+  public int MinimumInterval() {
+    return MinimumInterval;
+  }
+  
+  /**
+   * Specifies the minimum interval required between calls to Shaking(),
+   * in milliseconds.
+   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * until the interval has elapsed.
+   * @param interval  minimum interval in ms
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "300")
+  @SimpleProperty
+  public void MinimumInterval(int interval) {
+    MinimumInterval = interval;
+  }
 
   /**
    * Indicates the acceleration changed in the X, Y, and/or Z dimensions.
@@ -123,10 +151,13 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
-    //KARISHMA
+    
     long currentTime = System.currentTimeMillis();
-    if ((isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel)) /*KARISHMA*/&& (timeLastShook == 0 || currentTime >= timeLastShook + MINIMUM_INTERVAL)) {
-      //KARISHMA
+
+    //Checks whether the phone is shaking and the minimum interval
+    //has elapsed since the last registered a shaking event.
+    if ((isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel))
+        && (timeLastShook == 0 || currentTime >= timeLastShook + MinimumInterval)){
       timeLastShook = currentTime;
       Shaking();
     }
@@ -139,13 +170,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void Shaking() {
-	//KARISHMA
-	//int currentTime = (int) System.currentTimeMillis();
-	//if(timeLastShook == 0 || currentTime > timeLastShook + MINIMUM_INTERVAL)
-	//{
-	  //timeLastShook += currentTime;	
       EventDispatcher.dispatchEvent(this, "Shaking");
-	//}
   }
 
   /**
