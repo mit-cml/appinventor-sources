@@ -109,6 +109,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
+    MinimumInterval(300);
   }
   
   /**
