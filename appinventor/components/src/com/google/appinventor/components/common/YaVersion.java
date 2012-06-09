@@ -171,7 +171,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 55:
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 54;
+  public static final int YOUNG_ANDROID_VERSION = 55;
 
   // ............................... Blocks Language Version Number ...............................
 

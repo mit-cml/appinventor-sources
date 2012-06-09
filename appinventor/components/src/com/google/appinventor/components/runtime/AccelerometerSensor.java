@@ -109,7 +109,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
-    MinimumInterval(300);
+    MinimumInterval(400);
   }
   
   /**
@@ -134,7 +134,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    * @param interval  minimum interval in ms
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = "300")
+      defaultValue = "400") //Default value derived by trial of 12 people on 3 different devices
   @SimpleProperty
   public void MinimumInterval(int interval) {
     MinimumInterval = interval;
