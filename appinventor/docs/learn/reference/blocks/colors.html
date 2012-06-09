@@ -44,6 +44,15 @@
                 Properties panel.
        </p>
        <h3>
+       Using Predefined Colors
+       </h3>
+       <p>
+       Predefined colors are listed in the Colors drawer.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="images/predefinedcolors.png" width="162" />
+       </div>
+       <h3>
         Making your own colors
        </h3>
        <p>
@@ -67,7 +76,7 @@
         <em>
          B
         </em>
-        specifications for may colors, or you can experiment with your own
+        specifications for many colors, or you can experiment with your own
         <em>
          R
         </em>
@@ -90,100 +99,43 @@
                 underlying screen will show though.
        </p>
        <p>
-        To get a color number for App Inventor, combine the four numbers according to the
-                following algorithm:
-       </p>
-       <ol>
-        <li>
-         Start with the opacity.
-        </li>
-        <li>
-         Multiply this by 256 and add
-         <em>
-          R
-         </em>
-         .
-        </li>
-        <li>
-         Multiply the result by 256 and add
-         <em>
-          G
-         </em>
-         .
-        </li>
-        <li>
-         Multiply the result by 256 and add
-         <em>
-          B
-         </em>
-         .
-        </li>
-        <li>
-         Take the result and subtract 16
-         <sup>
-          8
-         </sup>
-         = 4294967296
-        </li>
-        <li>
-         The resulting (negative) number is what you use for App Inventor.
-        </li>
-       </ol>
-       <p>
-        As an example, the
-        <em>
-         R
-        </em>
-        ,
-        <em>
-         G
-        </em>
-        ,
-        <em>
-         B
-        </em>
-        values for a deep shade of
-                purple are
-        <em>
-         R
-        </em>
-        = 160,
-        <em>
-         G
-        </em>
-        = 32,
-        <em>
-         B
-        </em>
-        = 240. Applying the
-                algorithm to these values, with an opacity of 255, gives −6283024. If you set the
-                background color of a canvas to −6283024, you'll see a purple patch on the screen.
+       	A "make color" block will take a list of your 
+       	<em>
+       	R
+       	</em>
+       	,
+       	<em>
+       	 G
+       	 </em>
+       	 , 
+       	 <em>
+       	 B
+       	 </em>
+       	  and opacity components and create 
+       		that color for you. The opacity component is optional, if omitted is set to 255. A 
+       		"split color" block takes a color and returns a list of the four number components.
        </p>
        <p>
         <a href="colorchart.html">
-         Here is a chart
+         This chart
         </a>
-        that gives the numbers for a variety
+         gives the numbers for a variety
                 of colors.
        </p>
        <p>
-        And here's a blocks program that computes the color number given
-        <em>
-         R
-        </em>
-        ,
-        <em>
-         G
-        </em>
-        , and
-        <em>
-         B
-        </em>
-        . The opacity is fixed ar 255, but you can change that by
-                changing the global variable.
+        Here's a sample program that assigns the name purple to the color with R=160, G=32, B= 240,
+          and opacity = 255.
        </p>
        <div class="imagecontainer">
-        <img alt="" src="images/colorNumber.png" width="735" />
+        <img alt="" src="images/makecolor.png" width="483" />
+       </div>
+       <p>
+       Using the "split color" block, the user can manipulate the R, G, B and opacity values separately.
+       		Here’s an example program using “split color”. The procedure takes in a color and then 
+       		returns a new color with the opacity at 100.
+       </p>
+       <div class="imagecontainer">
+       <img alt="" src="images/splitcolor.png" width="561" />
        </div>
       </div>
      </div>
