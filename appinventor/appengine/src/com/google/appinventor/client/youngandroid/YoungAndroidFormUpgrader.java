@@ -197,6 +197,7 @@ public final class YoungAndroidFormUpgrader {
       // properties as necessary.
       if (componentType.equals("AccelerometerSensor")){
         srcCompVersion = upgradeAccelerometerSensorProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("ActivityStarter")) {
         srcCompVersion = upgradeActivityStarterProperties(componentProperties, srcCompVersion);
 

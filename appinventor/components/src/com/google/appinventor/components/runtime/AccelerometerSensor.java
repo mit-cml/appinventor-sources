@@ -88,7 +88,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private boolean enabled;
   
   //Specifies the minimum time interval between calls to Shaking()
-  private int MinimumInterval;
+  private int minimumInterval;
   
   //Specifies the time when Shaking() was last called
   private long timeLastShook;
@@ -123,7 +123,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       category = PropertyCategory.BEHAVIOR,
       description = "The minimum interval between phone shakes")
   public int MinimumInterval() {
-    return MinimumInterval;
+    return minimumInterval;
   }
   
   /**
@@ -137,7 +137,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       defaultValue = "400") //Default value derived by trial of 12 people on 3 different devices
   @SimpleProperty
   public void MinimumInterval(int interval) {
-    MinimumInterval = interval;
+    minimumInterval = interval;
   }
 
   /**
@@ -158,7 +158,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     //Checks whether the phone is shaking and the minimum interval
     //has elapsed since the last registered a shaking event.
     if ((isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel))
-        && (timeLastShook == 0 || currentTime >= timeLastShook + MinimumInterval)){
+        && (timeLastShook == 0 || currentTime >= timeLastShook + minimumInterval)){
       timeLastShook = currentTime;
       Shaking();
     }
@@ -171,7 +171,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    */
   @SimpleEvent
   public void Shaking() {
-      EventDispatcher.dispatchEvent(this, "Shaking");
+    EventDispatcher.dispatchEvent(this, "Shaking");
   }
 
   /**
