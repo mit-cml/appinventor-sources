@@ -74,7 +74,7 @@ public class ProjectUploadWizard extends Wizard {
                       ode.openYoungAndroidProjectInDesigner(uploadedProject);
                       break;
                     case NOT_PROJECT_ARCHIVE:
-                      // Issue 114: This may be a "severe" error; but in the
+                      // This may be a "severe" error; but in the
                       // interest of reducing the number of red errors, the 
                       // line has been changed to report info not an error.
                       // This error is triggered when the user attempts to
