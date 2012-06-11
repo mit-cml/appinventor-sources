@@ -381,8 +381,11 @@ public class BlockSaveFile {
       // NOTE(lizlooney,user) - when a component changes, increment the component's version
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade blocks
       // as necessary.
-
-      if (genus.equals("ActivityStarter")) {
+      
+      if(genus.equals("AccelerometerSensor")){
+    	blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
+    	
+      } else if (genus.equals("ActivityStarter")) {
         blkCompVersion = upgradeActivityStarterBlocks(blkCompVersion, componentName);
 
       } else if (genus.equals("Ball")) {
@@ -493,6 +496,15 @@ public class BlockSaveFile {
       String newConnectorLabel = "notice";
       changeFirstMatchingSocketBlockConnectorLabel(block, oldConnectorLabel, newConnectorLabel);
     }
+  }
+  
+  private int upgradeAccelerometerSensorBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The AccelerometerSensor.MinimumInterval property was added.
+  	  // No blocks need to be modified to upgrade to version 2.
+	  blkCompVersion = 2;
+    }
+	return blkCompVersion;
   }
 
   private int upgradeActivityStarterBlocks(int blkCompVersion, String componentName) {
