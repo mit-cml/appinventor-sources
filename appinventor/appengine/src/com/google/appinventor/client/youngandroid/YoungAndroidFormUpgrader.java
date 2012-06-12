@@ -195,8 +195,10 @@ public final class YoungAndroidFormUpgrader {
       // NOTE(lizlooney,user) - when a component changes, increment the component's version
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade
       // properties as necessary.
-
-      if (componentType.equals("ActivityStarter")) {
+      if (componentType.equals("AccelerometerSensor")){
+        srcCompVersion = upgradeAccelerometerSensorProperties(componentProperties, srcCompVersion);
+        
+      } else if (componentType.equals("ActivityStarter")) {
         srcCompVersion = upgradeActivityStarterProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("Ball")) {
@@ -321,6 +323,16 @@ public final class YoungAndroidFormUpgrader {
     }
   }
 
+  private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+	  // The AccelerometerSensor.MinimumInterval property was added.
+	  // No properties need to be modified to upgrade to version 2.
+	  srcCompVersion = 2;
+    }
+	return srcCompVersion;
+  }
+  
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {

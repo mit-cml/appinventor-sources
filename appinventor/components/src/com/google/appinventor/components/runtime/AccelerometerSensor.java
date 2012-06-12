@@ -86,6 +86,12 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   // Indicates whether the accelerometer should generate events
   private boolean enabled;
+  
+  //Specifies the minimum time interval between calls to Shaking()
+  private int minimumInterval;
+  
+  //Specifies the time when Shaking() was last called
+  private long timeLastShook;
 
   private Sensor accelerometerSensor;
 
@@ -103,6 +109,35 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     sensorManager = (SensorManager) container.$context().getSystemService(Context.SENSOR_SERVICE);
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
+    MinimumInterval(400);
+  }
+  
+  /**
+   * Returns the minimum interval required between calls to Shaking(),
+   * in milliseconds.
+   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * until the interval has elapsed.
+   * @return  minimum interval in ms
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "The minimum interval between phone shakes")
+  public int MinimumInterval() {
+    return minimumInterval;
+  }
+  
+  /**
+   * Specifies the minimum interval required between calls to Shaking(),
+   * in milliseconds.
+   * Once the phone starts being shaken, all further Shaking() calls will be ignored
+   * until the interval has elapsed.
+   * @param interval  minimum interval in ms
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "400") //Default value derived by trial of 12 people on 3 different devices
+  @SimpleProperty
+  public void MinimumInterval(int interval) {
+    minimumInterval = interval;
   }
 
   /**
@@ -117,8 +152,14 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
+    
+    long currentTime = System.currentTimeMillis();
 
-    if (isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel)) {
+    //Checks whether the phone is shaking and the minimum interval
+    //has elapsed since the last registered a shaking event.
+    if ((isShaking(X_CACHE, xAccel) || isShaking(Y_CACHE, yAccel) || isShaking(Z_CACHE, zAccel))
+        && (timeLastShook == 0 || currentTime >= timeLastShook + minimumInterval)){
+      timeLastShook = currentTime;
       Shaking();
     }
 
