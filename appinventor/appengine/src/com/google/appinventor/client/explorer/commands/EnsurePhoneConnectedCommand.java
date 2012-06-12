@@ -36,7 +36,15 @@ public class EnsurePhoneConnectedCommand extends ChainableCommand {
     AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
       @Override
       public void onFailure(Throwable caught) {
-        ErrorReporter.reportError(caught.getMessage());
+    	if (caught.getMessage().equals(MESSAGES.noCodeblocksConnection())) {
+          // This error is not an App Inventor bug; therefore, it 
+          // should be reported as an info message.
+          ErrorReporter.reportInfo(caught.getMessage());    		
+    	}else{
+    	  // The error is something else; therefore, report as 
+    	  // an error message.
+    	  ErrorReporter.reportError(caught.getMessage());
+    	}
         executionFailedOrCanceled();
       }
 
