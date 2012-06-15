@@ -427,6 +427,9 @@ public class BlockSaveFile {
       } else if (genus.equals("ListPicker")) {
         blkCompVersion = upgradeListPickerBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("LocationSensor")) { 
+        blkCompVersion = upgradeLocationSensorBlocks(blkCompVersion, componentName);
+    	  
       } else if (genus.equals("OrientationSensor")) {
         blkCompVersion = upgradeOrientationSensorBlocks(blkCompVersion, componentName);
 
@@ -787,6 +790,16 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 5.
       blkCompVersion = 5;
     }
+    return blkCompVersion;
+  }
+
+  private int upgradeLocationSensorBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The TimeInterval and DistanceInterval properties were added.
+      // No changes required.
+      blkCompVersion = 2;
+    }
+
     return blkCompVersion;
   }
 

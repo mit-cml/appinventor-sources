@@ -508,6 +508,44 @@ public interface OdeMessages extends Messages {
   @Description("Text for screen orientation choice 'Landscape '")
   String landscapeScreenOrientation();
 
+  //Used in editor/youngandroid/properties/YoungAndroidSensorTimeIntervalChoicePropertyEditor.java
+  @DefaultMessage("0")
+  @Description("Text for time interval choice '0' milliseconds")
+  String zeroTimeInterval();
+
+  @DefaultMessage("1000")
+  @Description("Text for time interval choice '1000' milliseconds")
+  String oneThousandTimeInterval();
+  
+  @DefaultMessage("10000")
+  @Description("Text for time interval choice '10000' milliseconds")
+  String tenThousandTimeInterval();
+  
+  @DefaultMessage("60000")
+  @Description("Text for time interval choice '60000' milliseconds")
+  String sixtyThousandTimeInterval();
+  
+  @DefaultMessage("300000")
+  @Description("Text for time interval choice '300000' milliseconds")
+  String threeHundredThousandTimeInterval();
+  
+  //Used in editor/youngandroid/properties/YoungAndroidSensorDistIntervalChoicePropertyEditor.java  
+  @DefaultMessage("0")
+  @Description("Text for distance interval choice '0 meters'")
+  String zeroDistanceInterval();
+  
+  @DefaultMessage("1")
+  @Description("Text for distance interval choice '1 meter'")
+  String oneDistanceInterval();
+  
+  @DefaultMessage("10")
+  @Description("Text for distance interval choice '10 meters'")
+  String tenDistanceInterval();
+  
+  @DefaultMessage("100")
+  @Description("Text for distance interval choice '100 meters'")
+  String oneHundredDistanceInterval();
+ 
   // Used in explorer/SourceStructureExplorer.java
 
   @DefaultMessage("Rename")

@@ -134,19 +134,6 @@ public class LocationSensor extends AndroidNonvisibleComponent
    */
   public static final int UNKNOWN_VALUE = 0;
 
-  /**
-   * Minimum time in milliseconds between location checks. The documentation for
-   * {@link android.location.LocationManager#requestLocationUpdates}
-   * does not recommend using a location lower than 60,000 (60 seconds) because
-   * of power consumption.
-   */
-  public static final long MIN_TIME_INTERVAL = 60000;
-
-  /**
-   * Minimum distance in meters to be reported
-   */
-  public static final long MIN_DISTANCE_INTERVAL = 5;  // 5 meters
-
   // These variables contain information related to the LocationProvider.
   private final Criteria locationCriteria;
   private final Handler handler;
@@ -154,8 +141,11 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private boolean providerLocked = false; // if true we can't change providerName
   private String providerName;
-    // Invariant: providerLocked => providerName is non-empty
+  // Invariant: providerLocked => providerName is non-empty
 
+  private int timeInterval;
+  private int distanceInterval;
+  
   private MyLocationListener myLocationListener;
 
   private LocationProvider locationProvider;
@@ -193,12 +183,17 @@ public class LocationSensor extends AndroidNonvisibleComponent
     form.registerForOnResume(this);
     form.registerForOnStop(this);
 
+    // Initialize sensor properties (60 seconds; 5 meters)
+    timeInterval = 60000;
+    distanceInterval = 5;
+
     // Initialize location-related fields
     Context context = container.$context();
     geocoder = new Geocoder(context);
     locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     locationCriteria = new Criteria();
     myLocationListener = new MyLocationListener();
+    
   }
 
   // Events
@@ -262,8 +257,9 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether the sensor should listen for location changes
-   * and raise the corresponding events.
+   * Indicates whether the sensor should allow the developer to 
+   * manually change the provider (GPS, GSM, Wifi, etc.) 
+   * from which location updates are received.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
@@ -271,7 +267,65 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public void ProviderLocked(boolean lock) {
       providerLocked = lock;
   }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SENSOR_TIME_INTERVAL,
+      defaultValue = "60000")
+  @SimpleProperty
+  public void TimeInterval(int interval) {
+      
+      // make sure that the provided value is a valid one.
+      // choose 1000000 miliseconds to be the upper limit
+      if (interval < 0 || interval > 1000000)
+    	  return;
+      
+      timeInterval = interval;
+      
+      // restart listening for location updates, using the new time interval
+      if (enabled) {
+    	  RefreshProvider();
+      }
+  }
 
+  @SimpleProperty(
+      description = "Determines the minimum time interval, in milliseconds, that the sensor will try " +
+	  "to use for sending out location updates. However, location updates will only be received " +
+	  "when the location of the phone actually changes, and use of the specified time interval " +
+	  "is not guaranteed. For example, if 1000 is used as the time interval, location updates will " +
+	  "never be fired sooner than 1000ms, but they may be fired anytime after.",
+	  category = PropertyCategory.BEHAVIOR)
+  public int TimeInterval() {
+      return timeInterval;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SENSOR_DIST_INTERVAL,
+      defaultValue = "5")
+  @SimpleProperty
+  public void DistanceInterval(int interval) {
+      
+      // make sure that the provided value is a valid one.
+      // choose 1000 meters to be the upper limit
+      if (interval < 0 || interval > 1000)
+    	  return;
+      
+      distanceInterval = interval;
+      
+      // restart listening for location updates, using the new distance interval
+      if (enabled) {
+    	  RefreshProvider();
+      }
+  }
+
+  @SimpleProperty(
+      description = "Determines the minimum distance interval, in meters, that the sensor will try " +
+      "to use for sending out location updates. For example, if this is set to 5, then the sensor will " +
+      "fire a LocationChanged event only after 5 meters have been traversed. However, the sensor does " +
+      "not guarantee that an update will be received at exactly the distance interval. It may take more " +
+      "than 5 meters to fire an event, for instance.",
+      category = PropertyCategory.BEHAVIOR)
+  public int DistanceInterval() {
+      return distanceInterval;
+  }
+  
   /**
    * Indicates whether longitude and latitude information is available.  (It is
    * always the case that either both or neither are.)
@@ -487,8 +541,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
     }
     stopListening();
     locationProvider = tLocationProvider;
-    locationManager.requestLocationUpdates(providerName, MIN_TIME_INTERVAL,
-          MIN_DISTANCE_INTERVAL, myLocationListener);
+    locationManager.requestLocationUpdates(providerName, timeInterval,
+          distanceInterval, myLocationListener);
     listening = true;
     return true;
   }
