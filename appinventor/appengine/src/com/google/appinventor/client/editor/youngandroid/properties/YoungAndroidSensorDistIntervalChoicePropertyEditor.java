@@ -15,10 +15,10 @@ public class YoungAndroidSensorDistIntervalChoicePropertyEditor extends ChoicePr
   private static final Choice[] distIntervalChoices = new Choice[] {
     // To avoid confusion, we only show a subset of the available sensor
     // distance interval values.
-    new Choice(MESSAGES.zeroDistanceInterval(), "0"),
-    new Choice(MESSAGES.oneDistanceInterval(), "1"),
-    new Choice(MESSAGES.tenDistanceInterval(), "10"),
-    new Choice(MESSAGES.oneHundredDistanceInterval(), "100"),
+    new Choice("0", "0"),
+    new Choice("1", "1"),
+    new Choice("10", "10"),
+    new Choice("100", "100"),
   };
 
   public YoungAndroidSensorDistIntervalChoicePropertyEditor() {

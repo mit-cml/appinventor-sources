@@ -15,11 +15,11 @@ public class YoungAndroidSensorTimeIntervalChoicePropertyEditor extends ChoicePr
   private static final Choice[] timeIntervalChoices = new Choice[] {
     // To avoid confusion, we only show a subset of the available 
     // sensor time interval values.
-    new Choice(MESSAGES.zeroTimeInterval(), "0"),
-    new Choice(MESSAGES.oneThousandTimeInterval(), "1000"),
-    new Choice(MESSAGES.tenThousandTimeInterval(), "10000"),
-    new Choice(MESSAGES.sixtyThousandTimeInterval(), "60000"),
-    new Choice(MESSAGES.threeHundredThousandTimeInterval(), "300000"),
+    new Choice("0", "0"),
+    new Choice("1000", "1000"),
+    new Choice("10000", "10000"),
+    new Choice("60000", "60000"),
+    new Choice("300000", "300000"),
   };
 
   public YoungAndroidSensorTimeIntervalChoicePropertyEditor() {
