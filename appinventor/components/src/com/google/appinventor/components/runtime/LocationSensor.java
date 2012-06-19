@@ -239,8 +239,6 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * Whatever happens now, the provider and the reported name may be switched to
    * Android's preferred provider later. This is primarily for debugging.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "")
   @SimpleProperty
   public void ProviderName(String providerName) {
     this.providerName = providerName;
@@ -261,8 +259,6 @@ public class LocationSensor extends AndroidNonvisibleComponent
    * manually change the provider (GPS, GSM, Wifi, etc.) 
    * from which location updates are received.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "False")
   @SimpleProperty
   public void ProviderLocked(boolean lock) {
       providerLocked = lock;
