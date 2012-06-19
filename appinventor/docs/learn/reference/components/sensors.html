@@ -138,6 +138,20 @@
         <dd>
          Acceleration in the Z-dimension.
         </dd>
+        <dt>
+         <code class="c2">
+           MinimumInterval
+         </code>
+        </dt>
+        <dd>
+         Minimum time interval between phone shakes.
+  		 <br/>
+           You may want to change the time interval depending on the activity you want to perform when the phone is shaken.
+           For example, you may want the phone to say "Stop shaking me" each time the user shakes the phone. At shorter time intervals, this 
+           will produce an unwanted echo effect. 
+  		   In another case, you may want a quick flick of the phone to be considered a single shake and perhaps increment a 
+           counter each time the phone shakes. In cases such as this, a shorter time interval will be more appropriate to properly count the shakes.
+        </dd>
        </dl>
        <h3>
         Events

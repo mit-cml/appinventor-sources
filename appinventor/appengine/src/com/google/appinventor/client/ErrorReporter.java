@@ -36,8 +36,9 @@ public final class ErrorReporter {
      * Initializes the ErrorPopup.
      */
     ErrorPopup() {
-      super(false);
-
+      super(true); //constructor for PopupPanel class. "True" initializes the "auto-hide" variable
+      
+      
       // I'm leaving this setSTyleName line here as a comment, to show the typical way to define
       // the style.
       // I would have preferred to use this method rather than constructing the HTML by hand,
