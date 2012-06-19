@@ -11,6 +11,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.youngandroid.CodeblocksManager;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -79,9 +80,12 @@ public class FileUploadWizard extends Wizard {
         String uploadFilename = upload.getFilename();
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
-          if(filename.contains("'")||!filename.equals(URL.encodeComponent(filename))){
-              Window.alert(MESSAGES.malformedFilename());
-              return;
+          if(!TextValidators.isValidCharFilename(filename)){
+            Window.alert(MESSAGES.malformedFilename());
+            return;
+          } else if (!TextValidators.isValidLengthFilename(filename)){
+            Window.alert(MESSAGES.filenameBadSize());
+            return;
           }
           if (fileAlreadyExists(folderNode, filename)) {
             if (!confirmOverwrite(folderNode, filename)) {
