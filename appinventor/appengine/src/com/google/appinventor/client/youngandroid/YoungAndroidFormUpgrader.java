@@ -240,6 +240,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ListPicker")) {
         srcCompVersion = upgradeListPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("LocationSensor")) { 
+    	srcCompVersion = upgradeLocationSensorProperties(componentProperties, srcCompVersion);
+    	
       } else if (componentType.equals("OrientationSensor")) {
         srcCompVersion = upgradeOrientationSensorProperties(componentProperties, srcCompVersion);
 
@@ -630,6 +633,16 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeLocationSensorProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The TimeInterval and DistanceInterval properties were added.
+      // No properties need to be modified to upgrade to Version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

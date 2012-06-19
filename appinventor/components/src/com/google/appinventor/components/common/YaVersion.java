@@ -170,10 +170,12 @@ public class YaVersion {
   // - PHONENUMBERPICKER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 55:
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 2.
-  // For YOUNG_ANDROID_VERSION 56:
+  // For YOUNG_ANDROID_VERSION 56
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 57:
   // - PLAYER_COMPONENT_VERSION was incremented to 4.
 
-  public static final int YOUNG_ANDROID_VERSION = 56;
+  public static final int YOUNG_ANDROID_VERSION = 57;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -392,7 +394,9 @@ public class YaVersion {
   // - The Shape property was added.
   public static final int LISTPICKER_COMPONENT_VERSION = 5;
 
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 1;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 2:
+  // - The TimeInterval and DistanceInterval properties were added.
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
 
   public static final int NOTIFIER_COMPONENT_VERSION = 1;
 

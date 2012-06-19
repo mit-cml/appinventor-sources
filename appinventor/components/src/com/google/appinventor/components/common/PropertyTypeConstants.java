@@ -93,6 +93,18 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_SCREEN_ORIENTATION = "screen_orientation";
 
+   /** 
+    * Minimum distance interval, in meters, that the location sensor will try to use
+    * for sending out location updates. See {@link com.google.appinventor.components.runtime.LocationSensor}.
+    */
+  public static final String PROPERTY_TYPE_SENSOR_DIST_INTERVAL = "sensor_dist_interval";
+
+  /**
+   * Minimum time interval, in milliseconds, that the location sensor use to send out
+   * location updates. See {@link com.google.appinventor.components.runtime.LocationSensor}.
+   */
+  public static final String PROPERTY_TYPE_SENSOR_TIME_INTERVAL = "sensor_time_interval";
+
   /**
    * Strings.  This has the same effect as, but is preferred in component
    * definitions to, {@link #PROPERTY_TYPE_TEXT}).
