@@ -1,15 +1,13 @@
 package com.google.appinventor.client.editor.youngandroid;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
-import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.AbsolutePanel;
 import com.google.gwt.user.client.ui.Label;
@@ -85,7 +83,7 @@ public final class YaBlocksEditor extends FileEditor {
 
     // TODO(BLOCKS-IN-BROWSER) - For now, we tell codeblocks to load the form and blocks when this
     // blocks editor is shown. We can remove this code when we really support editing blocks in the browser.
-    CodeblocksManager.getCodeblocksManager().loadPropertiesAndBlocks(blocksNode, null);
+    // CodeblocksManager.getCodeblocksManager().loadPropertiesAndBlocks(blocksNode, null);
 
     super.onShow();
   }
@@ -94,7 +92,7 @@ public final class YaBlocksEditor extends FileEditor {
   public void onHide() {
     // TODO(BLOCKS-IN-BROWSER) - remove the following call to
     // CodeblocksManager.saveCodeblocksSource when we really support editing blocks in the browser.
-    CodeblocksManager.getCodeblocksManager().saveCodeblocksSource(null);
+    // CodeblocksManager.getCodeblocksManager().saveCodeblocksSource(null);
 
     // Clear the palette box.
     PaletteBox paletteBox = PaletteBox.getPaletteBox();

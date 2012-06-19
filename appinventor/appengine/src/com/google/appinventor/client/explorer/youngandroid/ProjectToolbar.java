@@ -2,9 +2,10 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -12,14 +13,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.widgets.Toolbar.ToolbarItem;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
@@ -158,26 +156,13 @@ public class ProjectToolbar extends Toolbar {
       boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
       ode.getEditorManager().closeProjectEditor(projectId);
       if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer and Codeblocks we
-        // need to clear the ViewerBox and tell Codeblocks to clear its workspace first.  However,
+        // If we're deleting the project that is currently open in the Designer we
+        // need to clear the ViewerBox first.  However,
         // even if that fails, we still want to complete the delete operation.
         ViewerBox.getViewerBox().clear();
-        CodeblocksManager.getCodeblocksManager().clearCodeblocks(new AsyncCallback<Void>() {
-          @Override
-          public void onFailure(Throwable caught) {
-            doDeleteProject(projectId);
-          }
-
-          @Override
-          public void onSuccess(Void result) {
-            doDeleteProject(projectId);
-          }
-        });
-
-      } else {
-        // Make sure that we delete projects even if they are not open.
-        doDeleteProject(projectId);
       }
+      // Make sure that we delete projects even if they are not open.
+      doDeleteProject(projectId);
     }
 
     private void doDeleteProject(final long projectId) {

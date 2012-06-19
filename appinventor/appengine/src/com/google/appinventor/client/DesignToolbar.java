@@ -12,12 +12,10 @@ import com.google.appinventor.client.explorer.commands.DownloadProjectOutputComm
 import com.google.appinventor.client.explorer.commands.DownloadToPhoneCommand;
 import com.google.appinventor.client.explorer.commands.EnsurePhoneConnectedCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.commands.SaveBlocksCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
@@ -44,9 +42,6 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_BARCODE = "Barcode";
   private static final String WIDGET_NAME_DOWNLOAD = "Download";
   private static final String WIDGET_NAME_DOWNLOAD_TO_PHONE = "DownloadToPhone";
-  private static final String WIDGET_NAME_OPEN_BLOCKS_EDITOR = "OpenBlocksEditor";
-
-  private boolean codeblocksButtonCancel = false;
 
   private Label projectName;
 
@@ -75,9 +70,6 @@ public class DesignToolbar extends Toolbar {
       addButton(new ToolbarItem(WIDGET_NAME_REMOVEFORM, MESSAGES.removeFormButton(),
           new RemoveFormAction()));
     }
-
-    addButton(new ToolbarItem(WIDGET_NAME_OPEN_BLOCKS_EDITOR,
-        MESSAGES.openBlocksEditorButton(), new OpenBlocksEditorAction()), true);
 
     List<ToolbarItem> buildItems = Lists.newArrayList();
     buildItems.add(new ToolbarItem(WIDGET_NAME_BARCODE,
@@ -148,6 +140,7 @@ public class DesignToolbar extends Toolbar {
         final String deleteConfirmationMessage = MESSAGES.reallyDeleteForm(
             sourceNode.getFormName());
         ChainableCommand cmd = new DeleteFileCommand() {
+          @Override
           protected boolean deleteConfirmation() {
             return Window.confirm(deleteConfirmationMessage);
           }
@@ -164,10 +157,9 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new SaveBlocksCommand(
-                new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new ShowBarcodeCommand(target)))));
+            new BuildCommand(target,
+                new WaitForBuildResultCommand(target,
+                    new ShowBarcodeCommand(target))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -187,10 +179,9 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new SaveBlocksCommand(
-                new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new DownloadProjectOutputCommand(target)))));
+            new BuildCommand(target,
+                new WaitForBuildResultCommand(target,
+                    new DownloadProjectOutputCommand(target))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
@@ -211,10 +202,9 @@ public class DesignToolbar extends Toolbar {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new EnsurePhoneConnectedCommand(
             new SaveAllEditorsCommand(
-                new SaveBlocksCommand(
-                    new BuildCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadToPhoneCommand(target))))));
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new DownloadToPhoneCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_TO_PHONE_YA, projectRootNode,
             new Command() {
@@ -223,17 +213,6 @@ public class DesignToolbar extends Toolbar {
             updateBuildButton(false);
           }
         });
-      }
-    }
-  }
-
-  private class OpenBlocksEditorAction implements Command {
-    @Override
-    public void execute() {
-      if (codeblocksButtonCancel) {
-        CodeblocksManager.getCodeblocksManager().cancelCodeblocks();
-      } else {
-        CodeblocksManager.getCodeblocksManager().startCodeblocks();
       }
     }
   }
@@ -261,8 +240,6 @@ public class DesignToolbar extends Toolbar {
       enabled = (sourceNode != null && !sourceNode.isScreen1());
       setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);
     }
-
-    updateCodeblocksButton();
   }
 
   /**
@@ -272,33 +249,5 @@ public class DesignToolbar extends Toolbar {
     setDropDownButtonEnabled(WIDGET_NAME_BUILD, !isBuilding);
     setDropDownButtonCaption(WIDGET_NAME_BUILD,
         isBuilding ? MESSAGES.isBuildingButton() : MESSAGES.buildButton());
-  }
-
-  /**
-   * Enable or disables the codeblocks button based on whether the
-   * {@link CodeblocksManager} can start (or cancel) codeblocks.
-   */
-  public void updateCodeblocksButton() {
-    setButtonEnabled(WIDGET_NAME_OPEN_BLOCKS_EDITOR, codeblocksButtonCancel
-        ? CodeblocksManager.getCodeblocksManager().canCancelCodeblocks()
-        : CodeblocksManager.getCodeblocksManager().canStartCodeblocks());
-  }
-
-  /**
-   * Changes the codeblocks button label to reflect its current state
-   *
-   * @param cancel true if the button should be a cancel button
-   */
-  public void updateCodeblocksButtonLabel(boolean cancel) {
-    codeblocksButtonCancel = cancel;
-    String caption;
-    if (codeblocksButtonCancel) {
-      caption = MESSAGES.cancelBlocksEditorButton();
-    } else if (CodeblocksManager.getCodeblocksManager().canStartCodeblocks()) {
-      caption = MESSAGES.openBlocksEditorButton();
-    } else {
-      caption = MESSAGES.blocksEditorIsOpenButton();
-    }
-    setButtonCaption(WIDGET_NAME_OPEN_BLOCKS_EDITOR, caption);
   }
 }

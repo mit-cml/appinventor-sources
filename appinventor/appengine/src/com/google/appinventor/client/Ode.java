@@ -2,8 +2,6 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
@@ -28,7 +26,6 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
@@ -56,7 +53,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
@@ -410,6 +406,7 @@ public class Ode implements EntryPoint {
     userInfoService.getUserInformation(callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
+      @Override
       public void onValueChange(ValueChangeEvent<String> event) {
         openProject(event.getValue());
       }
@@ -788,22 +785,5 @@ public class Ode implements EntryPoint {
 
     // Save all unsaved editors.
     editorManager.saveDirtyEditors(null);
-
-    CodeblocksManager codeblocksManager = CodeblocksManager.getCodeblocksManager();
-    if (codeblocksManager.isCodeblocksOpen()) {
-      codeblocksManager.terminateCodeblocks();
-
-      // NOTE(lizlooney) - Terminating codeblocks involves an asynchronous JSONP call. This works
-      // fine on most browsers, but is not actually sent in Safari (and in some cases in Chrome).
-      // The only way I found to fix this is to put a Window.alert() at the end of this method.
-      // This gives the browser a chance to process the asynchronous call.
-      // However, the alert is quite annoying, so for now we don't show the alert and we might
-      // leave codeblocks running.
-      /*
-      if (!isBrowserSafari()) {
-        Window.alert(MESSAGES.onClosingBrowserWithCodeblocksOpen());
-      }
-      */
-    }
   }
 }

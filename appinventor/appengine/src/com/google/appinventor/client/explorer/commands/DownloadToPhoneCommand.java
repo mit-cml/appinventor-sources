@@ -3,17 +3,8 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.RpcStatusPopup;
-import com.google.appinventor.client.output.MessagesOutput;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.base.Preconditions;
-
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 
 
 /**
@@ -24,10 +15,12 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public class DownloadToPhoneCommand extends ChainableCommand {
   // The download target
   private String target;
+  /*
   private static final String BUILD_FOLDER = "build";
   // must match string in RpcStatusPopup map
   private static final String FAKE_RPC_NAME = "downloadToPhone";
-
+  */
+  
   /**
    * Creates a new command.
    *
@@ -58,6 +51,11 @@ public class DownloadToPhoneCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
+    // TODO(newblocks): reimplement
+    ErrorReporter.reportError("Download to phone is not (re)implemented yet");
+    executionFailedOrCanceled();
+    
+    /*
     final MessagesOutput messagesOutput = MessagesOutput.getMessagesOutput();
     messagesOutput.addMessages(MESSAGES.downloadingToPhoneMessage());
 
@@ -92,7 +90,8 @@ public class DownloadToPhoneCommand extends ChainableCommand {
     rpcStatusPopup.onStart(FAKE_RPC_NAME);
     String apkFilePath = BUILD_FOLDER + "/" +
         YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID + "/" + node.getName() + ".apk";
-    CodeblocksManager.getCodeblocksManager().installApplication(apkFilePath, node.getName(),
-        packageName, callback);
+    // CodeblocksManager.getCodeblocksManager().installApplication(apkFilePath, node.getName(),
+    //    packageName, callback);
+    */
   }
 }

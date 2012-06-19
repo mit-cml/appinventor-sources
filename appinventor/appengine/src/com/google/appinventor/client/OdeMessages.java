@@ -137,11 +137,6 @@ public interface OdeMessages extends Messages {
   @Description("Error message if the server becomes completely unavailable.")
   String serverUnavailable();
 
-  @DefaultMessage("The Blocks Editor should close automatically.\n" +
-      "Please press OK when the Blocks Editor is closed.")
-  @Description("Closing messsage with codeblocks open")
-  String onClosingBrowserWithCodeblocksOpen();
-
   // Used in RpcStatusPopup.java
 
   @DefaultMessage("Loading...")
@@ -571,12 +566,6 @@ public interface OdeMessages extends Messages {
   @Description("Message displayed when an error occurs while generating YAIL for a form.")
   String errorGeneratingYail(String formName);
 
-  @DefaultMessage("There are errors in the blocks for this project. Click on the [Open the " +
-      "Blocks Editor] button. Then, retry packaging your project with the blocks editor open.")
-  @Description("Alert displayed when an error occurs while generating YAIL for a form and " +
-      "codeblocks is not open.")
-  String errorGeneratingYailPleaseOpenCodeblocks();
-
   // Used in explorer/commands/CommandRegistory.java
 
   @DefaultMessage("Delete...")
@@ -960,61 +949,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Project name:")
   @Description("Label for the project name input text box")
   String projectNameLabel();
-
-  // Used in youngandroid/CodeblocksManager.java
-
-  @DefaultMessage("Unable to start the Blocks Editor.")
-  @Description("Error message displayed when Codeblocks fails to open.")
-  String startingCodeblocksFailed();
-
-  @DefaultMessage("Would you like to continue waiting for the Blocks Editor to start?")
-  @Description("Message displayed after waiting a long time for the Blocks Editor to start.")
-  String continueTryingToConnect();
-
-  @DefaultMessage("The Blocks Editor needs to be open. Click on the " +
-      "[Open the Blocks Editor] button.")
-  @Description("Error message displayed when an attempt is made to communicate with Codeblocks, " +
-      "but the connection is null.")
-  String noCodeblocksConnection();
-
-  @DefaultMessage("The Blocks Editor is not responding. Click on the " +
-      "[Open the Blocks Editor] button.")
-  @Description("Error message displayed when we need to communicate with Codeblocks, " +
-      "but it is not responding.")
-  String codeblocksConnectionUnresponsive();
-
-  @DefaultMessage("The Blocks Editor was not able to reload the designer properties.")
-  @Description("Error message displayed when Codeblocks fails to reload properties.")
-  String codeblocksFailedToReloadProperties();
-
-  @DefaultMessage("The Blocks Editor was not able to load the blocks for the screen.")
-  @Description("Error message displayed when Codeblocks fails to load a form.")
-  String codeblocksFailedToLoadPropertiesAndBlocks();
-
-  @DefaultMessage("The Blocks Editor was not able to package the blocks.")
-  @Description("Error message displayed when Codeblocks fails to save blocks.")
-  String codeblocksFailedToSaveBlocks();
-
-  @DefaultMessage("Blocks Editor failed to clear.  Please close and reopen Blocks Editor.")
-  @Description("Error message reported when attempting to clear codeblocks.")
-  String clearCodeblocksError();
-
-  @DefaultMessage("The Blocks Editor was not able to receive the property change.")
-  @Description("Error message displayed when Codeblocks fails to sync a property.")
-  String codeblocksFailedToSyncProperty();
-
-  @DefaultMessage("The Blocks Editor was not able to add the asset.")
-  @Description("Error message displayed when Codeblocks fails to add an asset.")
-  String codeblocksFailedToAddAsset();
-
-  @DefaultMessage("The Blocks Editor was not able to install the application.")
-  @Description("Error message displayed when Codeblocks fails to install an application.")
-  String codeblocksFailedToInstallApplication();
-
-  @DefaultMessage("Blocks Editor failed to determine whether a phone is connected.  Please close" +
-      " and reopen Blocks Editor.")
-  @Description("Error message reported when attempting to check if phone is connected.")
-  String codeblocksIsPhoneConnectedError();
 
   // Used in youngandroid/TextValidators.java
 
