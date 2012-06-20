@@ -91,7 +91,9 @@ public class WaitForBuildResultCommand extends ChainableCommand {
         } else if (result.getResult() == 1) {
           // General build error
           String errorMsg = result.getError();
-          ErrorReporter.reportError(MESSAGES.buildFailedError() + 
+          // This is not an internal App Inventor bug. The error should be
+          // reported in a yellow info box.
+          ErrorReporter.reportInfo(MESSAGES.buildFailedError() + 
               (errorMsg.isEmpty() ? "" : " " + errorMsg));
           executionFailedOrCanceled();
         } else if (result.getResult() == 2) {

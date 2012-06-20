@@ -268,7 +268,9 @@ public class CodeblocksManager implements ConnectivityListener {
     if (conn == null) {
       if (codeblocksMustBeOpen) {
         // If codeblocks is not open, tell the user to open it.
-        ErrorReporter.reportError(MESSAGES.noCodeblocksConnection());
+      	// The user can resolve the issue by opening
+      	// the codeblocks editor.
+        ErrorReporter.reportInfo(MESSAGES.noCodeblocksConnection());
         if (callback != null) {
           callback.onFailure(new InvocationException(MESSAGES.noCodeblocksConnection()));
         }
@@ -284,7 +286,9 @@ public class CodeblocksManager implements ConnectivityListener {
       // Codeblocks was open, but has been closed or is unresponsive.
       if (codeblocksMustBeOpen) {
         // If codeblocks has been closed or is unresponsive, report that.
-        ErrorReporter.reportError(MESSAGES.codeblocksConnectionUnresponsive());
+      	// The user can resolve this problem by restarting the
+      	// codeblocks editor.
+        ErrorReporter.reportInfo(MESSAGES.codeblocksConnectionUnresponsive());
         if (callback != null) {
           callback.onFailure(new InvocationException(MESSAGES.codeblocksConnectionUnresponsive()));
         }

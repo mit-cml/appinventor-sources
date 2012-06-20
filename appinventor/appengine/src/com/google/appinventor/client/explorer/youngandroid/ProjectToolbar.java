@@ -127,7 +127,9 @@ public class ProjectToolbar extends Toolbar {
         }
 
       } else {
-        ErrorReporter.reportError(MESSAGES.noProjectSelectedForDelete());
+      	// The user can select a project to resolve the 
+      	// error.
+        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
       }
     }
 
@@ -202,7 +204,8 @@ public class ProjectToolbar extends Toolbar {
       if (selectedProjects.size() == 1) {
         downloadSource(selectedProjects.get(0));
       } else {
-        ErrorReporter.reportError(MESSAGES.wrongNumberProjectsSelected());
+      	// The user needs to select only one project.
+        ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
       }
     }
 

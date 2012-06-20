@@ -89,7 +89,9 @@ public class BuildCommand extends ChainableCommand {
               break;
             default:
               String errorMsg = result.getError();
-              ErrorReporter.reportError(MESSAGES.buildFailedError() + 
+              // This is not an internal App Inventor bug. The error is reported as info so that
+              // the red background is not shown.
+              ErrorReporter.reportInfo(MESSAGES.buildFailedError() + 
                   (errorMsg.isEmpty() ? "" : " " + errorMsg));
               break;
           }
