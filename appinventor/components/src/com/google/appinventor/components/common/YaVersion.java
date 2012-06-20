@@ -168,8 +168,12 @@ public class YaVersion {
   // - IMAGEPICKER_COMPONENT_VERSION was incremented to 4.
   // - LISTPICKER_COMPONENT_VERSION was incremented to 5.
   // - PHONENUMBERPICKER_COMPONENT_VERSION was incremented to 4.
+  // For YOUNG_ANDROID_VERSION 55:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 56
+  // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 2
 
-  public static final int YOUNG_ANDROID_VERSION = 54;
+  public static final int YOUNG_ANDROID_VERSION = 56;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -236,8 +240,12 @@ public class YaVersion {
   //    upgradeComponentProperties to upgrade the .scm file contents
   // 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
   //    upgrade the .blk file contents
-
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 1;
+  
+  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
+  // - AccelerometerSensor.MinimumInterval property was added.
+  // - AccelerometerSensor.AccelerationChanged method was modified to wait for
+  //   the minimum interval to elapse before calling a shaking event when necessary.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 2;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
@@ -384,7 +392,9 @@ public class YaVersion {
   // - The Shape property was added.
   public static final int LISTPICKER_COMPONENT_VERSION = 5;
 
-  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 1;
+  // For LOCATIONSENSOR_COMPONENT_VERSION 2:
+  // - The TimeInterval and DistanceInterval properties were added.
+  public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
 
   public static final int NOTIFIER_COMPONENT_VERSION = 1;
 
