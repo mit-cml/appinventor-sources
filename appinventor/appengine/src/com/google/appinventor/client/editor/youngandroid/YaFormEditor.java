@@ -466,7 +466,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     designProperties.setProperties(component.getProperties());
   }
 
- private void onFormStructureChange() {
+  private void onFormStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
 
     // Update source structure panel

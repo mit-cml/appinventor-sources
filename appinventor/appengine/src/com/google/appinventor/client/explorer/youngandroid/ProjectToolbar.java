@@ -157,8 +157,7 @@ public class ProjectToolbar extends Toolbar {
       ode.getEditorManager().closeProjectEditor(projectId);
       if (isCurrentProject) {
         // If we're deleting the project that is currently open in the Designer we
-        // need to clear the ViewerBox first.  However,
-        // even if that fails, we still want to complete the delete operation.
+        // need to clear the ViewerBox first.
         ViewerBox.getViewerBox().clear();
       }
       // Make sure that we delete projects even if they are not open.

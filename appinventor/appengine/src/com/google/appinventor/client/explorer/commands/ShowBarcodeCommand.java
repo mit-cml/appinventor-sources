@@ -2,7 +2,6 @@
 
 package com.google.appinventor.client.explorer.commands;
 
-import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.output.OdeLog;
@@ -51,9 +50,6 @@ public class ShowBarcodeCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    ErrorReporter.reportError("Can't build with new block editor yet");
-    executionFailedOrCanceled();
-    /*
     // Display a barcode for an url pointing at our server's download servlet
     String barcodeUrl = CHARTSERVER_BARCODE_URI + GWT.getModuleBaseURL()
         + ServerLayout.genRelativeDownloadPath(node.getProjectId(), target);
@@ -106,6 +102,5 @@ public class ShowBarcodeCommand extends ChainableCommand {
 //      contentPanel.setSize("320px", "100%");
       add(contentPanel);
     }
-    */
   }
 }
