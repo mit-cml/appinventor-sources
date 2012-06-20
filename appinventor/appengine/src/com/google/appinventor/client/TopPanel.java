@@ -25,8 +25,12 @@ public class TopPanel extends Composite {
   private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
   private static final String KNOWN_ISSUES_LINK_URL =
       Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
+  private static final String RELEASE_NOTES_LINK_URL =
+	  Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
   private static final String KNOWN_ISSUES_LINK_AND_TEXT =
       "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
+  private static final String RELEASE_NOTES_LINK_AND_TEXT =
+	  "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
 
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
@@ -34,7 +38,7 @@ public class TopPanel extends Composite {
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
   private final HTML welcome = new HTML("Welcome to the App Inventor beta preview release." +
-      " Be sure to check the list of " + KNOWN_ISSUES_LINK_AND_TEXT + ".");
+      " Be sure to check the list of " + KNOWN_ISSUES_LINK_AND_TEXT + " and " + RELEASE_NOTES_LINK_AND_TEXT + ".");
 
 
     //This is an experimental version of App Inventor. "
