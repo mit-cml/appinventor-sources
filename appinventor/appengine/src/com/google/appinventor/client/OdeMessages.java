@@ -881,6 +881,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
 
+  @DefaultMessage("File names must be between 1 and 100 characters.")
+  @Description("Error message when filenames are 0 or 101+ characters long")
+  String filenameBadSize();
+  
   @DefaultMessage("Uploading {0} to the App Inventor server")
   @Description("Message displayed when an asset is uploaded.")
   String fileUploadingMessage(String filename);
