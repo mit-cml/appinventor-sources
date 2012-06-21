@@ -298,9 +298,14 @@
         <code>
          Source
         </code>
-        property, which can be set in the Designer or in the Blocks Editor. The length of
+        property, which can be set in the Designer or in the Blocks Editor. To use a Player for
+        		streaming, set the
+        <code>
+         Source
+        </code>
+        inside the Blocks Editor to a text block with the URL. The length of
                 time for a vibration is specified in the Blocks Editor in milliseconds (thousandths
-                of a second).
+                of a second). The volume should be an integer between 0 and 100.
        </p>
        <p>
         See
@@ -324,11 +329,35 @@
        <dl>
         <dt>
          <code>
+          IsLooping
+         </code>
+        </dt>
+        <dd>
+         If set, the media is looping.
+        </dd>
+        <dt>
+         <code>
+          IsPlaying
+         </code>
+        </dt>
+        <dd>
+         Whether the media is playing.
+        </dd>
+        <dt>
+         <code>
           Source
          </code>
         </dt>
         <dd>
          Audio or video file associated with this player.
+        </dd>
+        <dt>
+         <code>
+          Volume
+         </code>
+        </dt>
+        <dd>
+         A number between 0 and 100.
         </dd>
        </dl>
        <h3>
@@ -366,6 +395,19 @@
         </dt>
         <dd>
          Activate the phone's vibration motor for the given number of milliseconds.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Completed()
+         </code>
+        </dt>
+        <dd>
+         Media has finished playing.
         </dd>
        </dl>
        <h2 id="Sound">
