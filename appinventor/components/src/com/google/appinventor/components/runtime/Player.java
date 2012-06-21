@@ -26,8 +26,6 @@ import android.util.Log;
 
 import java.io.IOException;
 
-//import openblocks.yacodeblocks.FeedbackReporter;
-
 // TODO: This implementation does nothing about releasing the Media
 // Player resources when the application stops.  This needs to be handled
 // at the application level, not just at the component level.
@@ -165,7 +163,7 @@ public final class Player extends AndroidNonvisibleComponent
   }
   
   /**
-   * Returns a boolean which tells if the media is playing.
+   * Reports whether the media is playing.
    */
   @SimpleProperty(
       description = "Whether the media is playing",
@@ -178,7 +176,7 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns a boolean which tells if the media is looping.
+   * Reports whether the media is looping.
    */
   @SimpleProperty(
       description = "Whether the media is looping",
