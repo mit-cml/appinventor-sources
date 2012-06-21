@@ -2,8 +2,9 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.PaletteBox;
@@ -28,18 +29,15 @@ import com.google.appinventor.client.properties.json.ClientJsonParser;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.client.widgets.properties.EditableProperties;
 import com.google.appinventor.client.widgets.properties.PropertiesPanel;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.client.youngandroid.YoungAndroidFormUpgrader;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
-import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
@@ -99,8 +97,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   private final SimpleNonVisibleComponentsPanel nonVisibleComponentsPanel;
 
   private MockForm form;  // initialized lazily after the file is loaded from the ODE server
-
-  private boolean codeblocksNeedsToReloadProperties;
 
   /**
    * Creates a new YaFormEditor.
@@ -184,15 +180,11 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     loadDesigner();
 
-    CodeblocksManager.getCodeblocksManager().loadPropertiesAndBlocks(formNode, null);
-
     super.onShow();
   }
 
   @Override
   public void onHide() {
-    CodeblocksManager.getCodeblocksManager().saveCodeblocksSource(null);
-
     unloadDesigner();
 
     // When an editor is detached, clear the "current" editor.
@@ -210,21 +202,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onSave() {
-    CodeblocksManager codeblocksManager = CodeblocksManager.getCodeblocksManager();
-    if (codeblocksNeedsToReloadProperties && codeblocksManager.getCurrentFormNode() == formNode) {
-      // Tell codeblocks to reload the properties from the ODE server.
-      codeblocksManager.reloadProperties(new AsyncCallback<Void>() {
-        @Override
-        public void onSuccess(Void result) {
-          codeblocksNeedsToReloadProperties = false;
-        }
-
-        @Override
-        public void onFailure(Throwable caught) {
-          // The error has already been reported in CodeblocksManager.
-        }
-      });
-    }
   }
 
   // SimpleEditor methods
@@ -272,10 +249,6 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       // If the property isn't actually persisted to the .scm file, we don't need to do anything.
       if (component.isPropertyPersisted(propertyName)) {
         Ode.getInstance().getEditorManager().scheduleAutoSave(this);
-        if (!codeblocksNeedsToReloadProperties) {
-          syncPropertyChangeToCodeblocks(component.getName(), component.getType(),
-              propertyName, propertyValue);
-        }
       }
     } else {
       OdeLog.elog("onComponentPropertyChanged called when loadComplete is false");
@@ -493,35 +466,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     designProperties.setProperties(component.getProperties());
   }
 
-  /**
-   * When a component property is changed, send the information over to
-   * codeblocks so that it can, in turn, update the property on the phone
-   * if it's connected.
-   *
-   * @param componentName the name of the component
-   * @param componentType the type of the component
-   * @param propertyName the name of the changed property
-   * @param propertyValue the new value of the property
-   */
-  private void syncPropertyChangeToCodeblocks(final String componentName, String componentType,
-      final String propertyName, String propertyValue) {
-
-    CodeblocksManager codeblocksManager = CodeblocksManager.getCodeblocksManager();
-    if (codeblocksManager.getCurrentFormNode() == formNode) {
-      codeblocksManager.syncProperty(componentName, componentType,
-          propertyName, propertyValue, null);
-    }
-  }
-
   private void onFormStructureChange() {
     Ode.getInstance().getEditorManager().scheduleAutoSave(this);
 
     // Update source structure panel
     sourceStructureExplorer.updateTree(form.buildComponentsTree(),
         form.getSelectedComponent().getSourceStructureExplorerItem());
-
-    // Set a flag so that properties will be synced to codeblocks.
-    codeblocksNeedsToReloadProperties = true;
   }
 
   private void populateComponentsMap(MockComponent component, Map<String, MockComponent> map) {
