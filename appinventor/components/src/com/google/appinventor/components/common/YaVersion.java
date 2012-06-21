@@ -172,8 +172,10 @@ public class YaVersion {
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 56
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 57:
+  // - PLAYER_COMPONENT_VERSION was incremented to 4.
 
-  public static final int YOUNG_ANDROID_VERSION = 56;
+  public static final int YOUNG_ANDROID_VERSION = 57;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -423,7 +425,13 @@ public class YaVersion {
   // - The Player.PlayerError event was added.
   // For PLAYER_COMPONENT_VERSION 3:
   // - The Player.PlayerError event was marked userVisible false and is no longer used.
-  public static final int PLAYER_COMPONENT_VERSION = 3;
+  // For PLAYER_COMPONENT_VERSION 4:
+  // - The Player.Completed event was added.
+  // - The IsLooping property was added.
+  // - The Volume property was added.
+  // - The IsPlaying method was added.
+
+  public static final int PLAYER_COMPONENT_VERSION = 4;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.

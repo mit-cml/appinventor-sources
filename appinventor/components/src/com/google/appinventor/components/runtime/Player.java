@@ -13,12 +13,14 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
 import android.util.Log;
 
@@ -65,7 +67,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
 public final class Player extends AndroidNonvisibleComponent
-    implements Component, OnDestroyListener, Deleteable {
+    implements Component, OnCompletionListener, OnDestroyListener, Deleteable {
 
   private MediaPlayer mp;
   private final Vibrator vibe;
@@ -137,6 +139,7 @@ public final class Player extends AndroidNonvisibleComponent
     if (sourcePath.length() > 0) {
       Log.i("Player", "Source path is " + sourcePath);
       mp = new MediaPlayer();
+      mp.setOnCompletionListener(this);
 
       try {
         MediaUtil.loadMediaPlayer(mp, form, sourcePath);
@@ -158,9 +161,72 @@ public final class Player extends AndroidNonvisibleComponent
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
     }
   }
+  
+  /**
+   * Reports whether the media is playing.
+   */
+  @SimpleProperty(
+      description = "Whether the media is playing",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean IsPlaying() {
+    if (playerState == 1 || playerState == 2) {
+      return mp.isPlaying();
+    }
+    return false;
+  }
+
+  /**
+   * Reports whether the media is looping.
+   */
+  @SimpleProperty(
+      description = "Whether the media is looping",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean IsLooping() {
+    if (playerState == 1 || playerState == 2) {
+      return mp.isLooping();
+    }
+    return false;
+  }
+
+  /**
+   * Sets the looping property to true or false.
+   *
+   * @param looping  tells if the media should be looping
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty
+  public void IsLooping(boolean looping) {
+    if (playerState == 1 || playerState == 2) {
+      mp.setLooping(looping);
+      Log.i("Player", "Looping is " + String.valueOf(looping));
+    }
+  }
+
+  /**
+   * Sets the volume property to a number between 0 and 100.
+   *
+   * @param vol  the desired volume level
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = "50")
+  @SimpleProperty(
+      description = "Sets the volume to a number between 0 and 100")
+  public void Volume(int vol) {
+    if (playerState == 1 || playerState == 2) {
+      if (vol > 100 || vol < 0) {
+        throw new IllegalArgumentError("Volume must be set to a number between 0 and 100");
+      }
+      mp.setVolume(((float) vol)/100, ((float) vol)/100);
+      Log.i("Player", "Volume is " + String.valueOf(vol));
+    }
+  }
 
   /**
    * Plays the media.  If it was previously paused, the playing is resumed.
+   * If it was previously stopped, it starts from the beginning.
    */
   @SimpleFunction
   public void Start() {
@@ -186,7 +252,7 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Stops playing the media
+   * Stops playing the media and seeks to the beginning of the song.
    */
   @SimpleFunction
   public void Stop() {
@@ -194,6 +260,7 @@ public final class Player extends AndroidNonvisibleComponent
     if (playerState == 1 || playerState == 2) {
       mp.stop();
       prepare();
+      mp.seekTo(0);
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
     }
   }
@@ -229,7 +296,23 @@ public final class Player extends AndroidNonvisibleComponent
           ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA, sourcePath);
     }
   }
+ 
+  // OnCompletionListener implementation
 
+  @Override
+  public void onCompletion(MediaPlayer m) {
+    Completed();
+  }
+
+  /**
+   * Indicates that the media has reached the end
+   */
+  @SimpleEvent
+  public void Completed() {
+    Log.i("Player", "Calling Completed -- State=" + playerState);
+    EventDispatcher.dispatchEvent(this, "Completed");
+  }
+  
   // OnDestroyListener implementation
 
   @Override

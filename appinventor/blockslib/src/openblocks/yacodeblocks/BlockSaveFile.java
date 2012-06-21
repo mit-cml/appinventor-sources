@@ -863,6 +863,13 @@ public class BlockSaveFile {
       }
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The Looping and Volume properties were added.
+      // The Completed Event was added.
+      // The IsPlaying method was added.
+      // No properties need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
