@@ -291,6 +291,8 @@ public class YaVersion {
   // - The Shape property was added.
   public static final int BUTTON_COMPONENT_VERSION = 4;
 
+  public static final int CAMCORDER_COMPONENT_VERSION = 1;
+  
   public static final int CAMERA_COMPONENT_VERSION = 1;
 
   // For CANVAS_COMPONENT_VERSION 2:

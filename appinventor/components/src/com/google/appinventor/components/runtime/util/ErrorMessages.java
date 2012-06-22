@@ -21,6 +21,7 @@ public final class ErrorMessages {
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
   // Camera errors
   public static final int ERROR_CAMERA_NO_IMAGE_RETURNED = 201;
+
   // Twitter errors
   public static final int ERROR_TWITTER_UNSUPPORTED_LOGIN_FUNCTION = 301;
   public static final int ERROR_TWITTER_BLANK_CONSUMER_KEY_OR_SECRET = 302;
@@ -113,8 +114,11 @@ public final class ErrorMessages {
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
-  // Please start the next group of error numbers at 1201.
-
+  //Camcorder errors
+  public static final int ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201;
+  
+  // Please start the next group of error numbers at 1301.
+  
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
   static {
@@ -309,6 +313,9 @@ public final class ErrorMessages {
         "The software used in this app cannot extract contacts from this type of phone.");
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING,
         "To pick contacts, pick them directly, without using search.");
+    // Camcorder errors
+    errorMessages.put(ERROR_CAMCORDER_NO_CLIP_RETURNED,
+        "The camcorder did not return a clip.");
   }
 
   private ErrorMessages() {
