@@ -52,22 +52,4 @@
   <target name="tests">
     <echo message="No blocklyeditor tests yet" />
   </target>
-
-  <target name="demo">
-    <mkdir dir="${local.build.dir}/demo"/>
-    <copy todir="${local.build.dir}/demo/">
-      <fileset dir="${lib.dir}/blockly/src">
-	<include name="*.js"/>
-        <include name="language/en/*.js"/>
-	<include name="media/*"/>
-        <include name="**/*.css"/>
-	<include name="1x1.gif"/>
-      </fileset>
-      <fileset dir="${src.dir}/">
-	<include name="**/*.js"/>
-        <include name="blocklyTest.html"/>
-      </fileset>
-    </copy>
-  </target>
-
 </project>
