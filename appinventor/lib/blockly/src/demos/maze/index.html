@@ -1,8 +1,9 @@
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Blockly Demo: Maze</title>
   <script type="text/javascript" src="maze.js"></script>
-  
+
   <style>
     body {
       background-color: white;
@@ -19,7 +20,7 @@
       position: absolute;
       background-image: url(pegman.png);
     }
-  
+
     /* Buttons */
     button {
       margin: 5px;
@@ -42,7 +43,7 @@
       text-align: center;
       padding-top: 2em;
     }
-    
+
     iframe {
       height: 100%;
       width: 100%;
@@ -55,13 +56,13 @@
     <tr>
       <td width="410" valign="top">
         <h1><a href="http://code.google.com/p/google-blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Maze</h1>
-      
+
         <div>
           <img src="map.png" height=400 width=400 id="map" style="padding-right: 10">
           <img src="marker.png" height=34 width=20 id="finish">
           <img src="1x1.gif" height=52 width=49 id="pegman">
         </div>
-      
+
         <div id="buttonDiv">
           <button id="runButton" onclick="Maze.runButtonClick();">Run Program</button>
           <button id="resetButton" onclick="Maze.resetButtonClick();" style="display: none">&nbsp; Reset &nbsp;</button>

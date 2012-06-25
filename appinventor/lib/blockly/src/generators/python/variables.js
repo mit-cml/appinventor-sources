@@ -28,14 +28,14 @@ Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.variables_get = function() {
   // Variable getter.
-  return Blockly.Python.variableDB_.getName(this.getTitleText(1),
+  return Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
 };
 
 Blockly.Python.variables_set = function() {
   // Variable setter.
-  var argument0 = Blockly.Python.valueToCode(this, 0, true) || '0';
-  var varName = Blockly.Python.variableDB_.getName(this.getTitleText(1),
+  var argument0 = Blockly.Python.valueToCode(this, 'VALUE', true) || '0';
+  var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + '\n';
 };

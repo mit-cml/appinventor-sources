@@ -36,10 +36,16 @@ Blockly.Variables.NAME_TYPE = 'variable';
 
 /**
  * Find all user-created variables.
+ * @param {Blockly.Block} opt_block Optional root block.
  * @return {!Array.<string>} Array of variable names.
  */
-Blockly.Variables.allVariables = function() {
-  var blocks = Blockly.mainWorkspace.getAllBlocks();
+Blockly.Variables.allVariables = function(opt_block) {
+  var blocks;
+  if (opt_block) {
+    blocks = opt_block.getDescendants();
+  } else {
+    blocks = Blockly.mainWorkspace.getAllBlocks();
+  }
   var variableHash = {};
   // Iterate through every block and add each variable to the hash.
   for (var x = 0; x < blocks.length; x++) {
@@ -71,10 +77,21 @@ Blockly.Variables.allVariables = function() {
  */
 Blockly.Variables.dropdownCreate = function() {
   var variableList = Blockly.Variables.allVariables();
+  // Ensure that the currently selected variable is an option.
+  var name = this.getText();
+  if (name && variableList.indexOf(name) == -1) {
+    variableList.push(name);
+  }
   variableList.sort(Blockly.caseInsensitiveComparator);
   variableList.push(Blockly.MSG_RENAME_VARIABLE);
   variableList.push(Blockly.MSG_NEW_VARIABLE);
-  return variableList;
+  // Variables are not language-specific, use the name as both the user-facing
+  // text and the internal representation.
+  var options = [];
+  for (var x = 0; x < variableList.length; x++) {
+    options[x] = [variableList[x], variableList[x]];
+  }
+  return options;
 };
 
 /**
@@ -154,8 +171,8 @@ Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
     if (variableList[i] === null) {
       defaultVariable = (getBlock || setBlock).getVars()[0];
     } else {
-      getBlock && getBlock.setTitleText(variableList[i], 1);
-      setBlock && setBlock.setTitleText(variableList[i], 1);
+      getBlock && getBlock.setTitleText(variableList[i], 'VAR');
+      setBlock && setBlock.setTitleText(variableList[i], 'VAR');
     }
     setBlock && blocks.push(setBlock);
     getBlock && blocks.push(getBlock);

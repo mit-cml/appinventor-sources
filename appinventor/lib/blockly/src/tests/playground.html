@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta charset="utf-8">
 <title>Blocky Playground</title>
 <script type="text/javascript" src="../blockly.js"></script>
 <script type="text/javascript" src="../block.js"></script>
@@ -38,6 +39,7 @@
 <script type="text/javascript" src="../generators/python/lists.js"></script>
 <script type="text/javascript" src="../generators/python/variables.js"></script>
 <script type="text/javascript" src="../generators/python/procedures.js"></script>
+<script type="text/javascript" src="../language/en/_messages.js"></script>
 <script type="text/javascript" src="../language/en/control.js"></script>
 <script type="text/javascript" src="../language/en/text.js"></script>
 <script type="text/javascript" src="../language/en/math.js"></script>
@@ -77,18 +79,13 @@ function setColour() {
   block.setColour(document.getElementById('colour').value);
 }
 
-function addTitle() {
+function appendTitle() {
   var type = document.getElementById('titleType').value;
   var title = document.getElementById('titleLabel').value;
   if (type == 'textInput') {
     title = new Blockly.FieldTextInput(title);
   }
-  var index = parseInt(document.getElementById('titleIndex').value, 10);
-  if (isNaN(index)) {
-    block.addTitle(title);
-  } else {
-    block.addTitle(title, index);
-  }
+  block.appendTitle(title);
 }
 
 function setTooltip() {
@@ -132,18 +129,13 @@ function setInputsInline() {
 function addInput() {
   var type = parseInt(document.getElementById('inputType').value, 10);
   var label = document.getElementById('inputLabel').value;
-  var tooltip = document.getElementById('inputTooltip').value;
-  var index = parseInt(document.getElementById('inputIndex').value, 10);
-  if (isNaN(index)) {
-    block.addInput(label, tooltip, type);
-  } else {
-    block.addInput(label, tooltip, type, index);
-  }
+  var name = document.getElementById('inputName').value;
+  block.appendInput(label, type, name);
 }
 
 function removeInput() {
-  var index = parseInt(document.getElementById('removeInputIndex').value, 10);
-  block.removeInput(index);
+  var name = document.getElementById('removeInputName').value;
+  block.removeInput(name);
 }
 
 function toXml() {
@@ -263,8 +255,8 @@ h1 {
     </tr>
     <tr>
       <td>New title:</td>
-      <td><select id="titleType"><option value="label">Label</option><option value="textInput">Text Input</option></select> with text <input type="text" id="titleLabel"> at <input id="titleIndex" type="number" min="0" style="width: 3em">
-      <input type="button" onclick="addTitle()" value="Add"></td>
+      <td><select id="titleType"><option value="label">Label</option><option value="textInput">Text Input</option></select> with text <input type="text" id="titleLabel">
+      <input type="button" onclick="appendTitle()" value="Add"></td>
     </tr>
     <tr>
       <td>Tooltip:</td>
@@ -291,13 +283,13 @@ h1 {
       <td><input type="checkbox" id="inputsInline" onchange="setInputsInline()"></td>
     </tr>
     <tr>
-      <td>New input:</td>
-      <td><select id="inputType"><option value=1>Value</option><option value=3>Statement</option><option value=5>Variable</option></select> called <input type="text" id="inputLabel"> at <input id="inputIndex" type="number" min="0" style="width: 3em"><br>
-      with tooltip <input id="inputTooltip" type="text"> <input type="button" onclick="addInput()" value="Add"></td>
+      <td>Append input:</td>
+      <td><select id="inputType"><option value=1>Value</option><option value=3>Statement</option><option value=5>Variable</option></select> labled <input type="text" size=10 id="inputLabel"> with ID <input type="text" size=10 id="inputName">
+      <input type="button" onclick="addInput()" value="Add"></td>
     </tr>
     <tr>
       <td>Remove input:</td>
-      <td>At <input id="removeInputIndex" type="number" min="0" style="width: 3em">
+      <td>ID <input id="removeInputName">
       <input type="button" onclick="removeInput()" value="Remove"></td>
     </tr>
   </tbody>

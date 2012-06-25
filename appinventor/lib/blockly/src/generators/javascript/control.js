@@ -29,16 +29,16 @@ Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 Blockly.JavaScript.controls_if = function() {
   // If/elseif/else condition.
   var n = 0;
-  var argument = Blockly.JavaScript.valueToCode(this, n, true) || 'false';
-  var branch = Blockly.JavaScript.statementToCode(this, n);
+  var argument = Blockly.JavaScript.valueToCode(this, 'IF' + n, true) || 'false';
+  var branch = Blockly.JavaScript.statementToCode(this, 'DO' + n);
   var code = 'if (' + argument + ') {\n' + branch + '}';
   for (n = 1; n <= this.elseifCount_; n++) {
-    argument = Blockly.JavaScript.valueToCode(this, n, true) || 'false';
-    branch = Blockly.JavaScript.statementToCode(this, n);
+    argument = Blockly.JavaScript.valueToCode(this, 'IF' + n, true) || 'false';
+    branch = Blockly.JavaScript.statementToCode(this, 'DO' + n);
     code += ' else if (' + argument + ') {\n' + branch + '}';
   }
   if (this.elseCount_) {
-    branch = Blockly.JavaScript.statementToCode(this, n);
+    branch = Blockly.JavaScript.statementToCode(this, 'ELSE');
     code += ' else {\n' + branch + '}';
   }
   return code + '\n';
@@ -46,9 +46,9 @@ Blockly.JavaScript.controls_if = function() {
 
 Blockly.JavaScript.controls_whileUntil = function() {
   // Do while/until loop.
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0, true) || 'false';
-  var branch0 = Blockly.JavaScript.statementToCode(this, 0);
-  if (this.getTitleText(1) == this.MSG_UNTIL) {
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'BOOL', true) || 'false';
+  var branch0 = Blockly.JavaScript.statementToCode(this, 'DO');
+  if (this.getTitleValue('MODE') == 'UNTIL') {
     if (!argument0.match(/^\w+$/)) {
       argument0 = '(' + argument0 + ')';
     }
@@ -60,10 +60,10 @@ Blockly.JavaScript.controls_whileUntil = function() {
 Blockly.JavaScript.controls_for = function() {
   // For loop.
   var variable0 = Blockly.JavaScript.variableDB_.getName(
-      this.getVariableInput(0), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0, true) || '0';
-  var argument1 = Blockly.JavaScript.valueToCode(this, 1, true) || '0';
-  var branch0 = Blockly.JavaScript.statementToCode(this, 0);
+      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'FROM', true) || '0';
+  var argument1 = Blockly.JavaScript.valueToCode(this, 'TO', true) || '0';
+  var branch0 = Blockly.JavaScript.statementToCode(this, 'DO');
   var code;
   if (argument1.match(/^\w+$/)) {
     code = 'for (' + variable0 + ' = ' + argument0 + '; ' + variable0 + ' <= ' + argument1 + '; ' + variable0 + '++) {\n' +
@@ -83,9 +83,9 @@ Blockly.JavaScript.controls_for = function() {
 Blockly.JavaScript.controls_forEach = function() {
   // For each loop.
   var variable0 = Blockly.JavaScript.variableDB_.getName(
-      this.getVariableInput(0), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0, true) || '[]';
-  var branch0 = Blockly.JavaScript.statementToCode(this, 0);
+      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST', true) || '[]';
+  var branch0 = Blockly.JavaScript.statementToCode(this, 'DO');
   var code;
   var indexVar = Blockly.JavaScript.variableDB_.getDistinctName(
       variable0 + '_index', Blockly.Variables.NAME_TYPE);
@@ -108,10 +108,10 @@ Blockly.JavaScript.controls_forEach = function() {
 
 Blockly.JavaScript.controls_flow_statements = function() {
   // Flow statements: continue, break.
-  switch (this.getTitleText(0)) {
-    case this.MSG_BREAK:
+  switch (this.getTitleValue('FLOW')) {
+    case 'BREAK':
       return 'break;\n';
-    case this.MSG_CONTINUE:
+    case 'CONTINUE':
       return 'continue;\n';
   }
   throw 'Unknown flow statement.';

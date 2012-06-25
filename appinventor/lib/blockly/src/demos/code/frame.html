@@ -1,5 +1,6 @@
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Blockly Demo: Code</title>
   <script type="text/javascript" src="../blockly_compressed.js"></script>
   <script type="text/javascript" src="../../generators/dart.js"></script>
@@ -26,6 +27,7 @@
   <script type="text/javascript" src="../../generators/python/lists.js"></script>
   <script type="text/javascript" src="../../generators/python/variables.js"></script>
   <script type="text/javascript" src="../../generators/python/procedures.js"></script>
+  <script type="text/javascript" src="../../language/en/_messages.js"></script>
   <script type="text/javascript" src="../../language/en/control.js"></script>
   <script type="text/javascript" src="../../language/en/logic.js"></script>
   <script type="text/javascript" src="../../language/en/math.js"></script>
@@ -59,7 +61,8 @@
           msg += 'Try loading index.html instead of frame.html';
         } else if (window.location.protocol == 'file:') {
           msg += 'This may be due to a security restriction preventing\n' +
-              'access when using the file:// protocol.';
+              'access when using the file:// protocol.\n' +
+              'http://code.google.com/p/chromium/issues/detail?id=47416';
         }
         alert(msg);
       }
