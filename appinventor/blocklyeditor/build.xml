@@ -35,25 +35,39 @@
       <fileset dir="${blockly.src.dir}">
         <include name="*.js"/>
         <exclude name="blockly.js"/>
-        <include name="language/language_*.js"/>
-        <exclude name="language/language_docs.js"/>
+        <!-- leave out the toolbox. it is replaced by our drawer.js -->
+        <exclude name="toolbox.js"/> 
+        <include name="language/en/*.js"/>
       </fileset>
     </concat>
     <!-- finally, include any of our own .js file in any order -->
-    <!-- Comment this out until we check in some javascript to blockleditor.
-         Previously the blockly javascript was here but it got moved to
-         its own directory. Apparently not having any matches for *.js causes
-         the build to fail but I missed it on the earlier check-in.
     <concat destfile="${public.build.dir}/blockly-all.js"
             append="true">
       <fileset dir="${src.dir}">
-        <include name="*.js"/>
+        <include name="**/*.js"/>
       </fileset>
     </concat>
-    -->
   </target>
 
   <target name="tests">
     <echo message="No blocklyeditor tests yet" />
   </target>
+
+  <target name="demo">
+    <mkdir dir="${local.build.dir}/demo"/>
+    <copy todir="${local.build.dir}/demo/">
+      <fileset dir="${lib.dir}/blockly/src">
+	<include name="*.js"/>
+        <include name="language/en/*.js"/>
+	<include name="media/*"/>
+        <include name="**/*.css"/>
+	<include name="1x1.gif"/>
+      </fileset>
+      <fileset dir="${src.dir}/">
+	<include name="**/*.js"/>
+        <include name="blocklyTest.html"/>
+      </fileset>
+    </copy>
+  </target>
+
 </project>
