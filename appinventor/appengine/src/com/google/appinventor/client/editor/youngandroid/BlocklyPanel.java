@@ -13,7 +13,8 @@ import java.util.Map;
 /**
  * Blocks editor panel. 
  * The contents of the blocks editor panel is in an iframe identified by
- * the formName passed to the constructor. This class provides methods for 
+ * the formName passed to the constructor. That identifier is also the hashtag
+ * on the URL that is the source of the iframe. This class provides methods for 
  * calling the Javascript Blockly code from the rest of the Designer.
  * 
  * @author sharon@google.com (Sharon Perl)
@@ -45,18 +46,27 @@ public class BlocklyPanel extends HTMLPanel {
   private final String formName;
   
   // Keep track of component additions/removals/renames that happen before
-  // blocks editor is inited. Replay them in order after initialized. Keys
-  // are form names. If there is an entry for a given form name in the map,
-  // its blocks have not yet been inited.
+  // blocks editor is inited for the first time, or before reinitialization
+  // after the blocks editor's project has been detached from the document. 
+  // Replay them in order after initialized. Keys are form names. If there is 
+  // an entry for a given form name in the map, its blocks have not yet been 
+  // (re)inited.
   private static Map<String, List<ComponentOp>> componentOps = 
       new HashMap<String, List<ComponentOp>>();
   
-  // For each form, keep track of the components currently in that form, stored
-  // as "add" operations that can be replayed to restore those components when 
-  // the underlying Blockly state is re-inited (when the document is replaced).
-  // This component state is updated as components are added, removed, 
-  // and renamed. The outer map is keyed by form name, and the inner map is 
-  // keyed by component uid.
+  // When a user switches projects, the ProjectEditor widget gets detached
+  // from the main document in the browser. If the user switches back to a 
+  // previously open project (in the same session), when the ProjectEditor
+  // widget gets reattached, all of its FileEditors in its deckPanel get
+  // reloaded, causing the Blockly objects for the blocks editors
+  // to be created anew. Since the FileEditor Java objects themselves are
+  // not recreated, we need to reconstruct the set of components in the Blockly
+  // object when the object gets recreated. For each form, we keep track of the 
+  // components currently in that form, stored as "add" operations that can be 
+  // replayed to restore those components when the underlying Blockly state 
+  // is re-inited. This component state is updated as components are added, 
+  // removed, and renamed. The outer map is keyed by form name, and the 
+  // inner map is keyed by component uid.
   private static Map<String, Map<String, ComponentOp>> currentComponents =
       new HashMap<String, Map<String, ComponentOp>>();
 

@@ -7,6 +7,9 @@
  * includes the built-in drawers that we get from the blocks language, as
  * well as a drawer per component instance that was added to this workspace.
  * 
+ * TODO(sharon): add support for advanced drawer that contains generic
+ * component blocks
+ * 
  * @author Sharon Perl (sharon@google.com)
  */
 

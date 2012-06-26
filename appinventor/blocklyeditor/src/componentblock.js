@@ -5,6 +5,8 @@
  * Methods for creating the different kinds of blocks for App Inventor 
  * components: events, methods, property getters and setters, component
  * 
+ * TODO(sharon): add support for generic component blocks (per component type)
+ * 
  * @author sharon@google.com (Sharon Perl)
  */
 
