@@ -79,6 +79,18 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor")
   String openBlocksEditorButton();
 
+  @DefaultMessage("Screens...")
+  @Description("Label of the button for switching screens")
+  String screensButton();
+
+  @DefaultMessage("Blocks")
+  @Description("Label of the button for switching to the blocks editor")
+  String switchToBlocksEditorButton();
+
+  @DefaultMessage("UI")
+  @Description("Label of the button for switching to the designer")
+  String switchToDesignerButton();
+
   @DefaultMessage("Show Barcode")
   @Description("Label of the cascade item for building a project and showing barcode")
   String showBarcodeButton();
@@ -86,10 +98,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Download to this Computer")
   @Description("Label of the cascade item for building a project and downloading")
   String downloadToComputerButton();
-
-  @DefaultMessage("Download to Connected Phone")
-  @Description("Label of the cascade item for building a project and downloading it to a phone")
-  String downloadToPhoneButton();
 
   @DefaultMessage("Package for Phone")
   @Description("Label of the button leading to build related cascade items")
@@ -211,6 +219,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Debugging tab")
   String tabNameDebugging();
 
+  @DefaultMessage("Please choose a project to open.")
+  @Description("Message shown when there is no current file editor to switch to")
+  String chooseProject();
+
   // Used in boxes/AssetListBox.java
 
   @DefaultMessage("Media")
@@ -259,6 +271,16 @@ public interface OdeMessages extends Messages {
   @Description("Caption for source structure box.")
   String sourceStructureBoxCaption();
 
+  // Used in boxes/BlockSelectorBox.java
+
+  @DefaultMessage("Blocks")
+  @Description("Caption for block selector box.")
+  String blockSelectorBoxCaption();
+  
+  @DefaultMessage("Built-in")
+  @Description("Label on built-in-blocks branch of block selector tree")
+  String builtinBlocksLabel();
+  
   // Used in boxes/ViewerBox.java
 
   @DefaultMessage("Viewer")
@@ -617,21 +639,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not delete the file. Please try again later!")
   @Description("Error message reported when deleting a file failed on the server.")
   String deleteFileError();
-
-  // Used in explorer/commands/DownloadToPhoneCommand.java
-
-  @DefaultMessage("Downloading application to the phone.")
-  @Description("Message displayed when downloading an Android application to the phone.")
-  String downloadingToPhoneMessage();
-
-  @DefaultMessage("Server error: download to phone failed. Please try again later!")
-  @Description("Message displayed when downloading an Android application to the phone fails.")
-  String downloadToPhoneFailedMessage();
-
-  @DefaultMessage("Application successfully downloaded to phone.")
-  @Description("Message displayed after a successful download of an Android application " +
-      "to the phone.")
-  String downloadToPhoneSucceededMessage();
 
   // Used in explorer/commands/EnsurePhoneConnectedCommand.java
 

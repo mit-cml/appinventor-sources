@@ -17,7 +17,7 @@ public interface SourceStructureExplorerItem {
    * Invoked when this item is expanded or collapsed
    */
   void onStateChange(boolean open);
-
+  
   /**
    * Returns true if this item can be renamed.
    */

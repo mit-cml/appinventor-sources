@@ -92,14 +92,12 @@ public abstract class FileEditor extends Composite {
   /**
    * Called when the FileEditor is about to be shown.
    */
-  public void onShow() {
-  }
+  public abstract void onShow();
 
   /**
    * Called when the FileEditor is about to be hidden.
    */
-  public void onHide() {
-  }
+  public abstract void onHide();
 
   /**
    * Gets the raw content of the file associated with the editor.

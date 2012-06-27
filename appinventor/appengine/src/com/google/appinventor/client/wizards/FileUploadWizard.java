@@ -76,7 +76,7 @@ public class FileUploadWizard extends Wizard {
         String uploadFilename = upload.getFilename();
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
-          if(filename.contains("'")||!filename.equals(URL.encodeComponent(filename))){
+          if(filename.contains("'")||!filename.equals(URL.encodePathSegment(filename))){
               Window.alert(MESSAGES.malformedFilename());
               return;
           }

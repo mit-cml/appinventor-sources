@@ -85,6 +85,10 @@ public abstract class YoungAndroidSourceNode extends SourceNode {
    * blocks (.blk) files.
    */
   public static boolean isScreen1(String fileId) {
-    return getFormName(fileId).equals("Screen1");
+    return getFormName(fileId).equals(screen1FormName());
+  }
+  
+  public static String screen1FormName() {
+    return "Screen1";
   }
 }
