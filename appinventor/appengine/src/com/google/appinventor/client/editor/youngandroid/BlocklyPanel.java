@@ -51,6 +51,9 @@ public class BlocklyPanel extends HTMLPanel {
   // Replay them in order after initialized. Keys are form names. If there is 
   // an entry for a given form name in the map, its blocks have not yet been 
   // (re)inited.
+  // TODO(sharon): do we need to worry about concurrent access to 
+  // this map? Are there multiple threads that could be adding to 
+  // and removing from the same list of componentOps at the same time?
   private static Map<String, List<ComponentOp>> componentOps = 
       new HashMap<String, List<ComponentOp>>();
   
