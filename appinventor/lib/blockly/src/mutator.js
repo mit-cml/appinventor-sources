@@ -26,11 +26,12 @@
 /**
  * Class for a mutator dialog.
  * @param {!Blockly.Block} block The block associated with this mutator.
+ * @param {!Array.<string>} quarkNames List of names of sub-blocks for flyout.
  * @constructor
  */
-Blockly.Mutator = function(block, toolbox) {
+Blockly.Mutator = function(block, quarkNames) {
   this.block_ = block;
-  this.toolbox_ = toolbox;
+  this.quarkNames_ = quarkNames;
 };
 
 /**
@@ -337,8 +338,7 @@ Blockly.Mutator.getWorkspaceMetrics_ = function() {
 };
 
 /**
- * Open the dialog.
- * @param {!Blockly.Block} block Block to mutate.
+ * Load the source block's help page in a new window.
  * @private
  */
 Blockly.Mutator.showHelp_ = function() {
@@ -361,7 +361,7 @@ Blockly.Mutator.openDialog_ = function(block) {
   // If the document resizes, reposition the dialog.
   Blockly.Mutator.resizeWrapper_ =
       Blockly.bindEvent_(window, 'resize', null, Blockly.Mutator.position_);
-  Blockly.Mutator.flyout_.show(block.mutator.toolbox_);
+  Blockly.Mutator.flyout_.show(block.mutator.quarkNames_);
 
   Blockly.Mutator.rootBlock_ = block.decompose(Blockly.Mutator.workspace_);
   var blocks = Blockly.Mutator.rootBlock_.getDescendants();

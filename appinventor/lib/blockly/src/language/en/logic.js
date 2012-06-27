@@ -37,41 +37,38 @@ Blockly.Language.logic_compare = {
     var thisBlock = this;
     this.setColour(120);
     this.setOutput(true);
-    this.addInput('', '', Blockly.INPUT_VALUE);
+    this.appendInput('', Blockly.INPUT_VALUE, 'A');
     var dropdown = new Blockly.FieldDropdown(function() {
-      return [thisBlock.MSG_EQ,
-              thisBlock.MSG_NEQ,
-              thisBlock.MSG_LT,
-              thisBlock.MSG_LTE,
-              thisBlock.MSG_GT,
-              thisBlock.MSG_GTE];
+      return Blockly.Language.logic_compare.OPERATORS;
     });
-    this.addInput(dropdown, '', Blockly.INPUT_VALUE);
+    this.appendInput(dropdown, Blockly.INPUT_VALUE, 'B');
     this.setInputsInline(true);
     this.setTooltip(function() {
-      switch (thisBlock.getValueLabel(1)) {
-        case thisBlock.MSG_EQ:
-          return 'Return true if both inputs equal each other.';
-        case thisBlock.MSG_NEQ:
-          return 'Return true if both inputs are not equal to each other.';
-        case thisBlock.MSG_LT:
-          return 'Return true if the first input is smaller\nthan the second input.';
-        case thisBlock.MSG_LTE:
-          return 'Return true if the first input is smaller\nthan or equal to the second input.';
-        case thisBlock.MSG_GT:
-          return 'Return true if the first input is greater\nthan the second input.';
-        case thisBlock.MSG_GTE:
-          return 'Return true if the first input is greater\nthan or equal to the second input.';
-      }
-      return '';
+      var op = thisBlock.getInputLabelValue('B');
+      return Blockly.Language.logic_compare.TOOLTIPS[op];
     });
-  },
-  MSG_EQ: '=',
-  MSG_NEQ: '\u2260',
-  MSG_LT: '<',
-  MSG_LTE: '\u2264',
-  MSG_GT: '>',
-  MSG_GTE: '\u2265'
+  }
+};
+
+Blockly.Language.logic_compare.OPERATORS =
+    [['=', 'EQ'],
+     ['\u2260', 'NEQ'],
+     ['<', 'LT'],
+     ['\u2264', 'LTE'],
+     ['>', 'GT'],
+     ['\u2265', 'GTE']];
+
+Blockly.Language.logic_compare.TOOLTIPS = {
+  EQ: 'Return true if both inputs equal each other.',
+  NEQ: 'Return true if both inputs are not equal to each other.',
+  LT: 'Return true if the first input is smaller\n' +
+      'than the second input.',
+  LTE: 'Return true if the first input is smaller\n' +
+       'than or equal to the second input.',
+  GT: 'Return true if the first input is greater\n' +
+      'than the second input.',
+  GTE: 'Return true if the first input is greater\n' +
+       'than or equal to the second input.'
 };
 
 Blockly.Language.logic_operation = {
@@ -83,24 +80,24 @@ Blockly.Language.logic_operation = {
     var thisBlock = this;
     this.setColour(120);
     this.setOutput(true);
-    this.addInput('', '', Blockly.INPUT_VALUE);
+    this.appendInput('', Blockly.INPUT_VALUE, 'A');
     var dropdown = new Blockly.FieldDropdown(function() {
-      return [thisBlock.MSG_AND, thisBlock.MSG_OR];
+      return Blockly.Language.logic_operation.OPERATORS;
     });
-    this.addInput(dropdown, '', Blockly.INPUT_VALUE);
+    this.appendInput(dropdown, Blockly.INPUT_VALUE, 'B');
     this.setInputsInline(true);
     this.setTooltip(function() {
-      switch (thisBlock.getValueLabel(1)) {
-        case thisBlock.MSG_AND:
-          return 'Return true if both inputs are true.';
-        case thisBlock.MSG_OR:
-          return 'Return true if either inputs are true.';
-      }
-      return '';
+      var op = thisBlock.getInputLabelValue('B');
+      return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
-  },
-  MSG_AND: 'and',
-  MSG_OR: 'or'
+  }
+};
+
+Blockly.Language.logic_operation.OPERATORS = [['and', 'AND'], ['or', 'OR']];
+
+Blockly.Language.logic_operation.TOOLTIPS = {
+  AND: 'Return true if both inputs are true.',
+  OR: 'Return true if either inputs are true.'
 };
 
 Blockly.Language.logic_negate = {
@@ -110,8 +107,9 @@ Blockly.Language.logic_negate = {
   init: function() {
     this.setColour(120);
     this.setOutput(true);
-    this.addInput('not', '', Blockly.INPUT_VALUE);
-    this.setTooltip('Returns true if the input is false.\nReturns false if the input is true.');
+    this.appendInput('not', Blockly.INPUT_VALUE, 'BOOL');
+    this.setTooltip('Returns true if the input is false.\n' +
+                    'Returns false if the input is true.');
   }
 };
 
@@ -125,11 +123,12 @@ Blockly.Language.logic_boolean = {
     this.setColour(120);
     this.setOutput(true);
     var dropdown = new Blockly.FieldDropdown(function() {
-      return [thisBlock.MSG_TRUE, thisBlock.MSG_FALSE];
+      return Blockly.Language.logic_boolean.OPERATORS;
     });
-    this.addTitle(dropdown);
+    this.appendTitle(dropdown, 'BOOL');
     this.setTooltip('Returns either true or false.');
-  },
-  MSG_TRUE: 'true',
-  MSG_FALSE: 'false'
+  }
 };
+
+Blockly.Language.logic_boolean.OPERATORS =
+    [['true', 'TRUE'], ['false', 'FALSE']];

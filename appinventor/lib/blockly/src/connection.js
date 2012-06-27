@@ -50,6 +50,12 @@ Blockly.Connection.prototype.destroy = function() {
     this.dbList_[this.type].removeConnection_(this);
   }
   this.inDB_ = false;
+  if (Blockly.highlightedConnection_ == this) {
+    Blockly.highlightedConnection_ = null;
+  }
+  if (Blockly.localConnection_ == this) {
+    Blockly.localConnection_ = null;
+  }
 };
 
 /**

@@ -36,31 +36,6 @@ Blockly.SVG_NS = 'http://www.w3.org/2000/svg';
 // Required name space for HTML elements.
 Blockly.HTML_NS = 'http://www.w3.org/1999/xhtml';
 
-// Text strings (factored out to make multi-language easier).
-Blockly.MSG_REMOVE_COMMENT = 'Remove Comment';
-Blockly.MSG_ADD_COMMENT = 'Add Comment';
-Blockly.MSG_EXTERNAL_INPUTS = 'External Inputs';
-Blockly.MSG_INLINE_INPUTS = 'Inline Inputs';
-Blockly.MSG_DELETE_BLOCK = 'Delete Block';
-Blockly.MSG_DELETE_X_BLOCKS = 'Delete %1 Blocks';
-Blockly.MSG_COLLAPSE_BLOCK = 'Collapse Block';
-Blockly.MSG_EXPAND_BLOCK = 'Expand Block';
-Blockly.MSG_HELP = 'Help';
-
-Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
-Blockly.MSG_NEW_VARIABLE = 'New variable...';
-Blockly.MSG_NEW_VARIABLE_TITLE = 'New variable name:';
-Blockly.MSG_RENAME_VARIABLE = 'Rename variable...';
-Blockly.MSG_RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
-Blockly.MSG_VARIABLE_CATEGORY = 'Variables';
-
-Blockly.MSG_PROCEDURE_CATEGORY = 'Procedures';
-
-Blockly.MSG_MUTATOR_TOOLTIP = 'Edit this block';
-Blockly.MSG_MUTATOR_HEADER = 'Block Editor';
-Blockly.MSG_MUTATOR_CHANGE = 'Change';
-Blockly.MSG_MUTATOR_CANCEL = 'Cancel';
-
 /**
  * The HSV_SATURATION and HSV_VALUE constants provide Blockly with a consistent
  * colour scheme, regardless of the hue.
@@ -419,7 +394,7 @@ Blockly.isTargetInput_ = function(e) {
 Blockly.loadAudio_ = function(name) {
   var sound = new Audio(Blockly.pathToBlockly + 'media/' + name + '.wav');
   // To force the browser to load the sound, play it, but stop it immediately.
-  // If this starts creating a chip on startup, turn the sound's volume down,
+  // If this starts creating a chirp on startup, turn the sound's volume down,
   // or use another caching method such as XHR.
   if (sound && sound.play) {
     sound.play();
@@ -616,21 +591,21 @@ Blockly.removeClass_ = function(node, className) {
  * Bind an event to a function call.
  * @param {!Element} element Element upon which to listen to.
  * @param {string} name Event name to listen to (e.g. 'mousedown').
- * @param {Object} object The value of 'this' in the function.
+ * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
  * @return {!Function} Function wrapper that was bound.  Used for unbindEvent_.
  * @private
  */
-Blockly.bindEvent_ = function(element, name, object, func) {
+Blockly.bindEvent_ = function(element, name, thisObject, func) {
   var wrapFunc;
   if (element.addEventListener) {  // W3C
     wrapFunc = function(e) {
-      func.apply(object, arguments);
+      func.apply(thisObject, arguments);
     };
     element.addEventListener(name, wrapFunc, false);
   } else {  // IE
     wrapFunc = function(e) {
-      func.apply(object, arguments);
+      func.apply(thisObject, arguments);
       e.stopPropagation();
     };
     element.attachEvent('on' + name, wrapFunc);

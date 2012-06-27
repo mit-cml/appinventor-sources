@@ -34,19 +34,19 @@ Blockly.Language.variables_get = {
   helpUrl: 'http://en.wikipedia.org/wiki/Variable_(computer_science)',
   init: function() {
     this.setColour(330);
-    this.addTitle('get');
-    this.addTitle(new Blockly.FieldDropdown(
-        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange))
-        .setText('item');
+    this.appendTitle('get');
+    this.appendTitle(new Blockly.FieldDropdown(
+        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange),
+        'VAR').setText('item');
     this.setOutput(true);
     this.setTooltip('Returns the value of this variable.');
   },
   getVars: function() {
-    return [this.getTitleText(1)];
+    return [this.getTitleText('VAR')];
   },
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getTitleText(1))) {
-      this.setTitleText(newName, 1);
+    if (Blockly.Names.equals(oldName, this.getTitleText('VAR'))) {
+      this.setTitleText(newName, 'VAR');
     }
   }
 };
@@ -57,21 +57,21 @@ Blockly.Language.variables_set = {
   helpUrl: 'http://en.wikipedia.org/wiki/Variable_(computer_science)',
   init: function() {
     this.setColour(330);
-    this.addTitle('set');
-    this.addTitle(new Blockly.FieldDropdown(
-        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange))
-        .setText('item');
-    this.addInput('', '', Blockly.INPUT_VALUE);
+    this.appendTitle('set');
+    this.appendTitle(new Blockly.FieldDropdown(
+        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange),
+        'VAR').setText('item');
+    this.appendInput('', Blockly.INPUT_VALUE, 'VALUE');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('Sets this variable to be equal to the input.');
   },
   getVars: function() {
-    return [this.getTitleText(1)];
+    return [this.getTitleText('VAR')];
   },
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getTitleText(1))) {
-      this.setTitleText(newName, 1);
+    if (Blockly.Names.equals(oldName, this.getTitleText('VAR'))) {
+      this.setTitleText(newName, 'VAR');
     }
   }
 };

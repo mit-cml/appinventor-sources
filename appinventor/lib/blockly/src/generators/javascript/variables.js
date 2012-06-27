@@ -28,14 +28,14 @@ Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
 Blockly.JavaScript.variables_get = function() {
   // Variable getter.
-  return Blockly.JavaScript.variableDB_.getName(this.getTitleText(1),
+  return Blockly.JavaScript.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
 };
 
 Blockly.JavaScript.variables_set = function() {
   // Variable setter.
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0, true) || '0';
-  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleText(1),
-      Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'VALUE', true) || '0';
+  var varName = Blockly.JavaScript.variableDB_.getName(
+      this.getTitleText('VAR'), Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + ';\n';
 };

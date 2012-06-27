@@ -35,7 +35,7 @@ Blockly.Language.lists_create_empty = {
   init: function() {
     this.setColour(210);
     this.setOutput(true);
-    this.addTitle('create empty list');
+    this.appendTitle('create empty list');
     this.setTooltip('Returns a list, of length 0, containing no data records');
   }
 };
@@ -46,10 +46,10 @@ Blockly.Language.lists_create_with = {
   helpUrl: '',
   init: function() {
     this.setColour(210);
-    this.addTitle('create list with');
-    this.addInput('', '', Blockly.INPUT_VALUE);
-    this.addInput('', '', Blockly.INPUT_VALUE);
-    this.addInput('', '', Blockly.INPUT_VALUE);
+    this.appendTitle('create list with');
+    this.appendInput('', Blockly.INPUT_VALUE, 'ADD0');
+    this.appendInput('', Blockly.INPUT_VALUE, 'ADD1');
+    this.appendInput('', Blockly.INPUT_VALUE, 'ADD2');
     this.setOutput(true);
     this.setMutator(new Blockly.Mutator(this, ['lists_create_with_item']));
     this.setTooltip('Create a list with any number of items.');
@@ -61,12 +61,12 @@ Blockly.Language.lists_create_with = {
     return container;
   },
   domToMutation: function(container) {
-    while (this.inputList.length) {
-      this.removeInput(0);
+    for (var x = 0; x < this.itemCount_; x++) {
+      this.removeInput('ADD' + x);
     }
     this.itemCount_ = window.parseInt(container.getAttribute('items'), 10);
     for (var x = 0; x < this.itemCount_; x++) {
-      this.addInput('', '', Blockly.INPUT_VALUE);
+      this.appendInput('', Blockly.INPUT_VALUE, 'ADD' + x);
     }
   },
   decompose: function(workspace) {
@@ -78,32 +78,26 @@ Blockly.Language.lists_create_with = {
       var itemBlock = new Blockly.Block(workspace, 'lists_create_with_item');
       itemBlock.initSvg();
       // Store a pointer to any connected blocks.
-      itemBlock.valueInput_ = this.inputList[x].targetConnection;
+      itemBlock.valueInput_ = this.getInput('ADD' + x).targetConnection;
       connection.connect(itemBlock.previousConnection);
       connection = itemBlock.nextConnection;
     }
     return listBlock;
   },
   compose: function(listBlock) {
-    // Disconnect all input blocks.
-    for (var x = 0; x < this.inputList.length; x++) {
-      var child = this.inputList[x].targetBlock();
-      if (child) {
-        child.setParent(null);
-      }
-    }
-    // Destroy all inputs.
-    while (this.inputList.length) {
-      this.removeInput(0);
+    // Disconnect all input blocks and destroy all inputs.
+    for (var x = 0; x < this.itemCount_; x++) {
+      this.removeInput('ADD' + x);
     }
     this.itemCount_ = 0;
     // Rebuild the block's inputs.
-    var itemBlock = listBlock.getStatementInput(0);
+    var itemBlock = listBlock.getInputTargetBlock('STACK');
     while (itemBlock) {
-      this.addInput('', '', Blockly.INPUT_VALUE);
+      var input =
+          this.appendInput('', Blockly.INPUT_VALUE, 'ADD' + this.itemCount_);
       // Reconnect any child blocks.
       if (itemBlock.valueInput_) {
-        this.inputList[this.itemCount_].connect(itemBlock.valueInput_);
+        input.connect(itemBlock.valueInput_);
       }
       this.itemCount_++;
       itemBlock = itemBlock.nextConnection &&
@@ -116,8 +110,8 @@ Blockly.Language.lists_create_with_container = {
   // Container.
   init: function() {
     this.setColour(210);
-    this.addTitle('add');
-    this.addInput('', '', Blockly.NEXT_STATEMENT);
+    this.appendTitle('add');
+    this.appendInput('', Blockly.NEXT_STATEMENT, 'STACK');
     this.setTooltip('Add, remove, or reorder sections to reconfigure this list block.');
     this.contextMenu = false;
   }
@@ -127,7 +121,7 @@ Blockly.Language.lists_create_with_item = {
   // Add items.
   init: function() {
     this.setColour(210);
-    this.addTitle('item');
+    this.appendTitle('item');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('Add an item to the list.');
@@ -142,11 +136,12 @@ Blockly.Language.lists_repeat = {
   init: function() {
     this.setColour(210);
     this.setOutput(true);
-    this.addTitle('create list');
-    this.addInput('with item', '', Blockly.INPUT_VALUE);
-    this.addInput('repeated', '', Blockly.INPUT_VALUE);
+    this.appendTitle('create list');
+    this.appendInput('with item', Blockly.INPUT_VALUE, 'ITEM');
+    this.appendInput('repeated', Blockly.INPUT_VALUE, 'NUM');
     this.setInputsInline(true);
-    this.setTooltip('Creates a list consisting of the given value\nrepeated the specified number of times.');
+    this.setTooltip('Creates a list consisting of the given value\n' +
+                    'repeated the specified number of times.');
   }
 };
 
@@ -156,7 +151,7 @@ Blockly.Language.lists_length = {
   helpUrl: 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html',
   init: function() {
     this.setColour(210);
-    this.addInput('length', '', Blockly.INPUT_VALUE);
+    this.appendInput('length', Blockly.INPUT_VALUE, 'VALUE');
     this.setOutput(true);
     this.setTooltip('Returns the length of a list.');
   }
@@ -168,7 +163,7 @@ Blockly.Language.lists_isEmpty = {
   helpUrl: 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html',
   init: function() {
     this.setColour(210);
-    this.addInput('is empty', '', Blockly.INPUT_VALUE);
+    this.appendInput('is empty', Blockly.INPUT_VALUE, 'VALUE');
     this.setOutput(true);
     this.setTooltip('Returns true if the list is empty.');
   }
@@ -183,19 +178,22 @@ Blockly.Language.lists_indexOf = {
     var thisBlock = this;
     this.setColour(210);
     this.setOutput(true);
-    this.addTitle('find');
+    this.appendTitle('find');
     var menu = new Blockly.FieldDropdown(function() {
-      return [thisBlock.MSG_FIRST, thisBlock.MSG_LAST];
+      return Blockly.Language.lists_indexOf.OPERATORS;
     });
-    this.addTitle(menu);
-    this.addInput('occurrence of item', '', Blockly.INPUT_VALUE);
-    this.addInput('in list', '', Blockly.INPUT_VALUE);
+    this.appendTitle(menu, 'END');
+    this.appendInput('occurrence of item', Blockly.INPUT_VALUE, 'FIND');
+    this.appendInput('in list', Blockly.INPUT_VALUE, 'VALUE');
     this.setInputsInline(true);
-    this.setTooltip('Returns the index of the first/last occurrence\nof the item in the list.\nReturns 0 if text is not found.');
-  },
-  MSG_FIRST: 'first',
-  MSG_LAST: 'last'
+    this.setTooltip('Returns the index of the first/last occurrence\n' +
+                    'of the item in the list.\n' +
+                    'Returns 0 if text is not found.');
+  }
 };
+
+Blockly.Language.lists_indexOf.OPERATORS =
+    [['first', 'FIRST'], ['last', 'LAST']];
 
 Blockly.Language.lists_getIndex = {
   // Get element at index.
@@ -204,9 +202,9 @@ Blockly.Language.lists_getIndex = {
   init: function() {
     this.setColour(210);
     this.setOutput(true);
-    this.addTitle('get item');
-    this.addInput('at', '', Blockly.INPUT_VALUE);
-    this.addInput('in list', '', Blockly.INPUT_VALUE);
+    this.appendTitle('get item');
+    this.appendInput('at', Blockly.INPUT_VALUE, 'AT');
+    this.appendInput('in list', Blockly.INPUT_VALUE, 'VALUE');
     this.setInputsInline(true);
     this.setTooltip('Returns the value at the specified position in a list.');
   }
@@ -218,10 +216,10 @@ Blockly.Language.lists_setIndex = {
   helpUrl: 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm',
   init: function() {
     this.setColour(210);
-    this.addTitle('set item');
-    this.addInput('at', '', Blockly.INPUT_VALUE);
-    this.addInput('in list', '', Blockly.INPUT_VALUE);
-    this.addInput('to', '', Blockly.INPUT_VALUE);
+    this.appendTitle('set item');
+    this.appendInput('at', Blockly.INPUT_VALUE, 'AT');
+    this.appendInput('in list', Blockly.INPUT_VALUE, 'LIST');
+    this.appendInput('to', Blockly.INPUT_VALUE, 'TO');
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);

@@ -46,7 +46,12 @@ Blockly.FieldTextInput.prototype = new Blockly.Field(null);
  */
 Blockly.FieldTextInput.prototype.setText = function(text) {
   if (this.validationFunc_) {
-    text = this.validationFunc_(text);
+    var validated = this.validationFunc_(text);
+    // If the new text is invalid, validation returns null.
+    // In this case we still want to display the illegal result.
+    if (validated !== null) {
+      text = validated;
+    }
   }
   Blockly.Field.prototype.setText.call(this, text);
 };

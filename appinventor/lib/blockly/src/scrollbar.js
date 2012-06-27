@@ -545,7 +545,11 @@ Blockly.ScrollbarSvg.prototype.resize = function(opt_metrics) {
       // headache (due to interactions with the corner square).
       this.setVisible(outerLength < hostMetrics.contentHeight);
     }
-    this.ratio_ = (outerLength / hostMetrics.contentWidth) || 0;
+    this.ratio_ = outerLength / hostMetrics.contentWidth;
+    if (this.ratio_ === -Infinity || this.ratio_ === Infinity ||
+        isNaN(this.ratio_)) {
+      this.ratio_ = 0;
+    }
     var innerLength = hostMetrics.viewWidth * this.ratio_;
     var innerOffset = (hostMetrics.viewLeft - hostMetrics.contentLeft) *
         this.ratio_;
@@ -570,7 +574,11 @@ Blockly.ScrollbarSvg.prototype.resize = function(opt_metrics) {
       // Only show the scrollbar if needed.
       this.setVisible(outerLength < hostMetrics.contentHeight);
     }
-    this.ratio_ = (outerLength / hostMetrics.contentHeight) || 0;
+    this.ratio_ = outerLength / hostMetrics.contentHeight;
+    if (this.ratio_ === -Infinity || this.ratio_ === Infinity ||
+        isNaN(this.ratio_)) {
+      this.ratio_ = 0;
+    }
     var innerLength = hostMetrics.viewHeight * this.ratio_;
     var innerOffset = (hostMetrics.viewTop - hostMetrics.contentTop) *
         this.ratio_;

@@ -1,0 +1,39 @@
+<!-- Copyright 2012 Massachusetts Institute of Technology. All Rights Reserved. -->
+
+<!-- The contents of a blocks editor iframe in App Inventor -->
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" href="blockly.css">
+    <script type="text/javascript" src="blockly-all.js"></script>
+    <style>
+      html, body {
+      background-color: #fff;
+      margin: 0;
+      padding:0;
+      overflow: hidden;
+    }
+    .blocklySvg {
+      height: 100%;
+      width: 100%;
+    }
+    </style>
+
+    <script type="text/javascript">
+      function init() {
+        // We expect window.location.hash to have the form:
+        // projectId_formName, and to be unique among
+        // all the Blockly instances created in this App Inventor session. 
+        var formName = window.location.hash.substr(1);
+        Blockly.BlocklyEditor.startup(document.body);
+        if (!window.parent.Blocklies) {
+          // We keep a set of Blockly objects indexed by name
+          // of the form for which they are the blocks editor
+          window.parent.Blocklies = {};
+        }
+        window.parent.Blocklies[formName] = Blockly;
+        window.parent.BlocklyPanel_initComponents(formName);
+      }
+    </script>
+  </head>
+<body onload="init()">  </body>
+</html>

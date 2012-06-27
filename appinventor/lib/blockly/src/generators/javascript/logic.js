@@ -28,32 +28,10 @@ Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
 Blockly.JavaScript.logic_compare = function(opt_dropParens) {
   // Comparison operator.
-  var operator;
-  switch (this.getValueLabel(1)) {
-    case this.MSG_EQ:
-      operator = '==';
-      break;
-    case this.MSG_NEQ:
-      operator = '!=';
-      break;
-    case this.MSG_LT:
-      operator = '<';
-      break;
-    case this.MSG_LTE:
-      operator = '<=';
-      break;
-    case this.MSG_GT:
-      operator = '>';
-      break;
-    case this.MSG_GTE:
-      operator = '>=';
-      break;
-    default:
-      throw 'Unknown operator.';
-  }
-
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0) || '0';
-  var argument1 = Blockly.JavaScript.valueToCode(this, 1) || '0';
+  var mode = this.getInputLabelValue('B');
+  var operator = Blockly.JavaScript.logic_compare.OPERATORS[mode];
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'A') || '0';
+  var argument1 = Blockly.JavaScript.valueToCode(this, 'B') || '0';
   var code = argument0 + ' ' + operator + ' ' + argument1;
   if (!opt_dropParens) {
     code = '(' + code + ')';
@@ -61,11 +39,20 @@ Blockly.JavaScript.logic_compare = function(opt_dropParens) {
   return code;
 };
 
+Blockly.JavaScript.logic_compare.OPERATORS = {
+  EQ: '==',
+  NEQ: '!=',
+  LT: '<',
+  LTE: '<=',
+  GT: '>',
+  GTE: '>='
+};
+
 Blockly.JavaScript.logic_operation = function(opt_dropParens) {
   // Operations 'and', 'or'.
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0) || 'false';
-  var argument1 = Blockly.JavaScript.valueToCode(this, 1) || 'false';
-  var operator = (this.getValueLabel(1) == this.MSG_AND) ? '&&' : '||';
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'A') || 'false';
+  var argument1 = Blockly.JavaScript.valueToCode(this, 'B') || 'false';
+  var operator = (this.getInputLabelValue('B') == 'AND') ? '&&' : '||';
   var code = argument0 + ' ' + operator + ' ' + argument1;
   if (!opt_dropParens) {
     code = '(' + code + ')';
@@ -75,7 +62,7 @@ Blockly.JavaScript.logic_operation = function(opt_dropParens) {
 
 Blockly.JavaScript.logic_negate = function(opt_dropParens) {
   // Negation.
-  var argument0 = Blockly.JavaScript.valueToCode(this, 0) || 'false';
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'BOOL') || 'false';
   var code = '!' + argument0;
   if (!opt_dropParens) {
     code = '(' + code + ')';
@@ -85,6 +72,5 @@ Blockly.JavaScript.logic_negate = function(opt_dropParens) {
 
 Blockly.JavaScript.logic_boolean = function() {
   // Boolean values true and false.
-  return (this.getTitleText(0) == this.MSG_TRUE) ?
-      'true' : 'false';
+  return (this.getTitleValue('BOOL') == 'TRUE') ? 'true' : 'false';
 };
