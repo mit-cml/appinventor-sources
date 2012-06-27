@@ -1,7 +1,9 @@
 <html>
 <head>
+  <meta charset="utf-8">
   <title>Blockly Demo: RTL</title>
   <script type="text/javascript" src="../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../language/en/_messages.js"></script>
   <script type="text/javascript" src="../../language/en/control.js"></script>
   <script type="text/javascript" src="../../language/en/logic.js"></script>
   <script type="text/javascript" src="../../language/en/math.js"></script>
@@ -42,33 +44,33 @@
 
   <xml id="startBlocks" style="display: none">
     <block type="controls_if" inline="false" x="-100" y="50">
-      <value i="0">
+      <value name="IF0">
         <block type="logic_compare" inline="true">
-          <value i="0">
+          <value name="A">
             <block type="variables_get">
-              <title i="1">item</title>
+              <title name="VAR">item</title>
             </block>
           </value>
-          <value i="1" label="&gt;">
+          <value name="B" label="&gt;">
             <block type="math_number">
-              <title i="0">256</title>
+              <title name="NUM">256</title>
             </block>
           </value>
         </block>
       </value>
-      <statement i="0">
+      <statement name="DO0">
         <block type="variables_set" inline="false">
-          <title i="1">item</title>
-          <value i="0">
+          <title name="VAR">item</title>
+          <value name="VALUE">
             <block type="math_number">
-              <title i="0">0</title>
+              <title name="NUM">0</title>
             </block>
           </value>
           <next>
             <block type="text_print" inline="false">
-              <value i="0">
+              <value name="TEXT">
                 <block type="text">
-                  <title i="1">Game Over</title>
+                  <title name="TEXT">Game Over</title>
                 </block>
               </value>
             </block>

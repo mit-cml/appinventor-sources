@@ -56,6 +56,7 @@ Blockly.Procedures.allProcedures = function() {
 
 /**
  * Ensure two identically-named procedures don't exist.
+ * @param {string} name Proposed procedure name.
  * @param {!Blockly.Block} block Block to disambiguate.
  * @return {string} Non-colliding name.
  */
@@ -95,8 +96,7 @@ Blockly.Procedures.isLegalName = function(name, workspace, opt_exclude) {
     var func = blocks[x].getProcedureDef;
     if (func) {
       var procName = func.call(blocks[x]);
-      // Procedure name may be null if the block is only half-built.
-      if (procName && procName[0].toLowerCase() == name) {
+      if (procName[0].toLowerCase() == name) {
         return false;
       }
     }
@@ -145,7 +145,7 @@ Blockly.Procedures.flyoutCategory = function(blocks, gaps, margin, workspace) {
     blocks.push(block);
     gaps.push(margin * 2);
   }
-  if (Blockly.Language.procedures_defnoreturn) {
+  if (Blockly.Language.procedures_defreturn) {
     var block = new Blockly.Block(workspace, 'procedures_defreturn');
     block.initSvg();
     blocks.push(block);
@@ -158,7 +158,7 @@ Blockly.Procedures.flyoutCategory = function(blocks, gaps, margin, workspace) {
   if (Blockly.Language.procedures_callnoreturn) {
     for (var x = 0; x < proceduresNoReturn.length; x++) {
       var block = new Blockly.Block(workspace, 'procedures_callnoreturn');
-      block.setTitleText(proceduresNoReturn[x], 1);
+      block.setTitleText(proceduresNoReturn[x], 'NAME');
       block.initSvg();
       blocks.push(block);
       gaps.push(margin * 2);
@@ -167,7 +167,7 @@ Blockly.Procedures.flyoutCategory = function(blocks, gaps, margin, workspace) {
   if (Blockly.Language.procedures_callreturn) {
     for (var x = 0; x < proceduresReturn.length; x++) {
       var block = new Blockly.Block(workspace, 'procedures_callreturn');
-      block.setTitleText(proceduresReturn[x], 1);
+      block.setTitleText(proceduresReturn[x], 'NAME');
       block.initSvg();
       blocks.push(block);
       gaps.push(margin * 2);
@@ -193,5 +193,5 @@ Blockly.Procedures.destroyCallers = function(name, workspace) {
         blocks[x].destroy(true);
       }
     }
-  }  
+  }
 };

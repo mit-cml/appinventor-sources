@@ -72,7 +72,7 @@ Blockly.Flyout.prototype.createDom = function() {
  * @return {Object} Contains size and position metrics of the flyout.
  */
 Blockly.Flyout.prototype.getMetrics = function() {
-  if (this.svgGroup_.style.display != 'block') {
+  if (!this.isVisible()) {
     // Flyout is hidden.
     return null;
   }
@@ -83,7 +83,7 @@ Blockly.Flyout.prototype.getMetrics = function() {
   } catch (e) {
     // Firefox has trouble with hidden elements (Bug 528969).
     var optionBox = {height: 0, y: 0};
-  }  
+  }
   return {
     viewHeight: viewHeight,
     viewWidth: viewWidth,
@@ -122,6 +122,7 @@ Blockly.Flyout.prototype.init = function(workspace, workspaceMetrics) {
   this.targetWorkspaceMetrics_ = workspaceMetrics;
   // Add scrollbars.
   this.width_ = 0;
+  this.height_ = 0;
   var flyout = this;
   new Blockly.Scrollbar(this.svgOptions_,
       function() {return flyout.getMetrics();},
@@ -175,6 +176,14 @@ Blockly.Flyout.prototype.position_ = function() {
 
   // Record the height for Blockly.Flyout.getMetrics.
   this.height_ = metrics.viewHeight;
+};
+
+/**
+ * Is the flyout visisble?
+ * @return {boolean} True if visible.
+ */
+Blockly.Flyout.prototype.isVisible = function() {
+  return this.svgGroup_.style.display != 'none';
 };
 
 /**

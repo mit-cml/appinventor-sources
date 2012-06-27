@@ -131,6 +131,10 @@ Blockly.JavaScript.quote_ = function(string) {
  * @private
  */
 Blockly.JavaScript.scrub_ = function(block, code) {
+  if (code === null) {
+    // Block has handled code generation itself.
+    return '';
+  }
   var commentCode = '';
   // Only collect comments for blocks that aren't inline.
   if (!block.outputConnection || !block.outputConnection.targetConnection) {

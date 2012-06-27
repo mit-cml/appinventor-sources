@@ -33,8 +33,10 @@
  * @constructor
  */
 Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
+  var options = menuGenerator.call(this);
+  firstOption = options[0][0];
   // Call parent's constructor.
-  Blockly.Field.call(this, menuGenerator()[0]);
+  Blockly.Field.call(this, firstOption);
   this.menuGenerator_ = menuGenerator;
   this.changeHandler_ = opt_changeHandler;
 };
@@ -84,7 +86,6 @@ Blockly.FieldDropdown.prototype.CURSOR = 'default';
  * @private
  */
 Blockly.FieldDropdown.prototype.showEditor_ = function() {
-  var options = this.menuGenerator_();
   var svgGroup = Blockly.FieldDropdown.svgGroup_;
   var svgOptions = Blockly.FieldDropdown.svgOptions_;
   var svgBackground = Blockly.FieldDropdown.svgBackground_;
@@ -110,13 +111,16 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   var maxWidth = 0;
   var resizeList = [];
   var checkElement = null;
-  for (var x = 0, option; option = options[x]; x++) {
-    var gElement = Blockly.ContextMenu.optionToDom(option);
+  var options = this.menuGenerator_();
+  for (var x = 0; x < options.length; x++) {
+    var text = options[x][0];  // Human-readable text.
+    var value = options[x][1]; // Language-neutral value.
+    var gElement = Blockly.ContextMenu.optionToDom(text);
     var rectElement = gElement.firstChild;
     var textElement = gElement.lastChild;
     svgOptions.appendChild(gElement);
     // Add a checkmark next to the current item.
-    if (!checkElement && option == this.text_) {
+    if (!checkElement && text == this.text_) {
       checkElement = Blockly.createSvgElement('text',
           {'class': 'blocklyMenuText', y: 15}, null);
       // Insert the checkmark between the rect and text, thus preserving the
@@ -129,7 +133,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
         'translate(0, ' + (x * Blockly.ContextMenu.Y_HEIGHT) + ')');
     resizeList.push(rectElement);
     Blockly.bindEvent_(gElement, 'mousedown', null, Blockly.noEvent);
-    Blockly.bindEvent_(gElement, 'mouseup', this, callbackFactory(option));
+    Blockly.bindEvent_(gElement, 'mouseup', this, callbackFactory(text));
     Blockly.bindEvent_(gElement, 'mouseup', null,
                        Blockly.FieldDropdown.hideMenu);
     // Compute the length of the longest text length.
@@ -188,3 +192,36 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
 Blockly.FieldDropdown.hideMenu = function() {
   Blockly.FieldDropdown.svgGroup_.style.display = 'none';
 };
+
+/**
+ * Get the language-neutral value from this dropdown menu.
+ * @return {string} Current text.
+ */
+Blockly.FieldDropdown.prototype.getValue = function() {
+  var selectedText = this.text_;
+  var options = this.menuGenerator_();
+  for (var x = 0; x < options.length; x++) {
+    // Options are tuples of human-readable text and language-neutral values.
+    if (options[x][0] == selectedText) {
+      return options[x][1];
+    }
+  }
+  throw '"' + selectedText + '" not valid in dropdown.';
+};
+
+/**
+ * Set the language-neutral value for this dropdown menu.
+ * @param {string} newValue New value to set.
+ */
+Blockly.FieldDropdown.prototype.setValue = function(newValue) {
+  var options = this.menuGenerator_();
+  for (var x = 0; x < options.length; x++) {
+    // Options are tuples of human-readable text and language-neutral values.
+    if (options[x][1] == newValue) {
+      this.setText(options[x][0]);
+      return;
+    }
+  }
+  throw '"' + newValue + '" not found in dropdown.';
+};
+

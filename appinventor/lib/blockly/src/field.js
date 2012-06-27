@@ -71,7 +71,8 @@ Blockly.Field.prototype.init = function(block) {
       block.editable ? 'blocklyEditableText' : 'blocklyNonEditableText');
   block.getSvgRoot().appendChild(this.group_);
   if (block.editable) {
-    Blockly.bindEvent_(this.group_, 'mouseup', this, this.onMouseUp_);
+    this.mouseUpWrapper_ =
+        Blockly.bindEvent_(this.group_, 'mouseup', this, this.onMouseUp_);
   }
 };
 
@@ -79,6 +80,11 @@ Blockly.Field.prototype.init = function(block) {
  * Destroy all DOM objects belonging to this editable field.
  */
 Blockly.Field.prototype.destroy = function() {
+  if (this.mouseUpWrapper_) {
+    Blockly.unbindEvent_(this.group_, 'mouseup', this.mouseUpWrapper_);
+    this.mouseUpWrapper_ = null;
+  }
+  this.sourceBlock_ = null;
   this.group_.parentNode.removeChild(this.group_);
   this.group_ = null;
   this.textElement_ = null;
@@ -146,6 +152,14 @@ Blockly.Field.prototype.width = function() {
 };
 
 /**
+ * Get the text from this field.
+ * @return {string} Current text.
+ */
+Blockly.Field.prototype.getText = function() {
+  return this.text_;
+};
+
+/**
  * Set the text in this field.  Trigger a rerender of the source block.
  * @param {string} text New text.
  */
@@ -169,11 +183,21 @@ Blockly.Field.prototype.setText = function(text) {
 };
 
 /**
- * Get the text from this field.
+ * By default there is no difference between the human-readable text and
+ * the language-neutral values.  Subclasses (such as dropdown) may define this.
  * @return {string} Current text.
  */
-Blockly.Field.prototype.getText = function() {
-  return this.text_;
+Blockly.Field.prototype.getValue = function() {
+  return this.getText();
+};
+
+/**
+ * By default there is no difference between the human-readable text and
+ * the language-neutral values.  Subclasses (such as dropdown) may define this.
+ * @param {string} text New text.
+ */
+Blockly.Field.prototype.setValue = function(text) {
+  this.setText(text);
 };
 
 /**

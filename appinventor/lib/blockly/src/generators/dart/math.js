@@ -28,25 +28,21 @@ Blockly.Dart = Blockly.Generator.get('Dart');
 
 Blockly.Dart.math_number = function() {
   // Numeric value.
-  return window.parseFloat(this.getTitleText(0));
+  return window.parseFloat(this.getTitleText('NUM'));
 };
 
 Blockly.Dart.math_arithmetic = function(opt_dropParens) {
   // Basic arithmetic operators, and power.
-  var argument0 = Blockly.Dart.valueToCode(this, 0) || '0';
-  var argument1 = Blockly.Dart.valueToCode(this, 1) || '0';
+  var argument0 = Blockly.Dart.valueToCode(this, 'A') || '0';
+  var argument1 = Blockly.Dart.valueToCode(this, 'B') || '0';
   var code;
-  
-  if (this.getValueLabel(1) == this.MSG_POW) {
+
+  var mode = this.getInputLabelValue('B');
+  if (mode == 'POWER') {
     code = 'Math.pow(' + argument0 + ', ' + argument1 + ')';
   } else {
-    var map = {};
-    map[this.MSG_ADD] = '+';
-    map[this.MSG_MINUS] = '-';
-    map[this.MSG_MULTIPLY] = '*';
-    map[this.MSG_DIVIDE] = '/';
-    var operator = map[this.getValueLabel(1)];
-    code = argument0 + ' ' + operator + ' ' + argument1;
+    var operator = Blockly.Dart.math_arithmetic.OPERATORS[mode];
+    code = argument0 + operator + argument1;
     if (!opt_dropParens) {
       code = '(' + code + ')';
     }
@@ -54,60 +50,67 @@ Blockly.Dart.math_arithmetic = function(opt_dropParens) {
   return code;
 };
 
+Blockly.Dart.math_arithmetic.OPERATORS = {
+  ADD: ' + ',
+  MINUS: ' - ',
+  MULTIPLY: ' * ',
+  DIVIDE: ' / '
+};
+
 Blockly.Dart.math_change = function() {
   // Add to a variable in place.
-  var argument0 = Blockly.Dart.valueToCode(this, 0) || '0';
-  var varName = Blockly.Dart.variableDB_.getName(this.getTitleText(1),
-			Blockly.Variables.NAME_TYPE);
-  return varName + ' = (' + varName + ' is num ? ' + varName + ' : 0) + ' + 
+  var argument0 = Blockly.Dart.valueToCode(this, 'DELTA') || '0';
+  var varName = Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
+      Blockly.Variables.NAME_TYPE);
+  return varName + ' = (' + varName + ' is num ? ' + varName + ' : 0) + ' +
       argument0 + ';\n';
 };
 
 Blockly.Dart.math_single = function(opt_dropParens) {
   // Math operators with single operand.
-  var argNaked = Blockly.Dart.valueToCode(this, 0, true) || '0';
-  var argParen = Blockly.Dart.valueToCode(this, 0, false) || '0';
-	var argDartSafe = argNaked;
-	if (!argDartSafe.match(/^[\w\.]+$/)) {
+  var argNaked = Blockly.Dart.valueToCode(this, 'NUM', true) || '0';
+  var argParen = Blockly.Dart.valueToCode(this, 'NUM', false) || '0';
+  var argDartSafe = argNaked;
+  if (!argDartSafe.match(/^[\w\.]+$/)) {
     // -4.abs() returns -4 in Dart due to strange order of operation choices.
     // Need to wrap non-trivial numbers in parentheses: (-4).abs()
     argDartSafe = '(' + argDartSafe + ')';
   }
-  var operator = this.getValueLabel(0);
+  var operator = this.getInputLabelValue('NUM');
   var code;
   // First, handle cases which generate values that don't need parentheses.
   switch (operator) {
-    case this.MSG_ABS:
+    case 'ABS':
       code = argDartSafe + '.abs()';
       break;
-    case this.MSG_ROOT:
+    case 'ROOT':
       code = 'Math.sqrt(' + argNaked + ')';
       break;
-    case this.MSG_LN:
+    case 'LN':
       code = 'Math.log(' + argNaked + ')';
       break;
-    case this.MSG_EXP:
+    case 'EXP':
       code = 'Math.exp(' + argNaked + ')';
       break;
-    case this.MSG_10POW:
+    case '10POW':
       code = 'Math.pow(10,' + argNaked + ')';
-    case this.MSG_ROUND:
-			// Dart-safe parens not needed since -4.2.round() == (-4.2).round() 
+    case 'ROUND':
+      // Dart-safe parens not needed since -4.2.round() == (-4.2).round()
       code = argParen + '.round()';
       break;
-    case this.MSG_ROUNDUP:
+    case 'ROUNDUP':
       code = argDartSafe + '.ceil()';
       break;
-    case this.MSG_ROUNDDOWN:
+    case 'ROUNDDOWN':
       operator = argDartSafe + '.floor()';
       break;
-    case this.MSG_SIN:
+    case 'SIN':
       code = 'Math.sin(' + argParen + ' / 180 * Math.PI)';
       break;
-    case this.MSG_COS:
+    case 'COS':
       code = 'Math.cos(' + argParen + ' / 180 * Math.PI)';
       break;
-    case this.MSG_TAN:
+    case 'TAN':
       code = 'Math.tan(' + argParen + ' / 180 * Math.PI)';
       break;
   }
@@ -116,19 +119,19 @@ Blockly.Dart.math_single = function(opt_dropParens) {
   }
   // Second, handle cases which generate values that may need parentheses.
   switch (operator) {
-    case this.MSG_NEG:
+    case 'NEG':
       code = '-' + argParen;
       break;
-    case this.MSG_LOG10:
+    case 'LOG10':
       code = 'Math.log(' + argNaked + ') / Math.log(10)';
       break;
-    case this.MSG_ASIN:
+    case 'ASIN':
       code = 'Math.asin(' + argNaked + ') / Math.PI * 180';
       break;
-    case this.MSG_ACOS:
+    case 'ACOS':
       code = 'Math.acos(' + argNaked + ') / Math.PI * 180';
       break;
-    case this.MSG_ATAN:
+    case 'ATAN':
       code = 'Math.atan(' + argNaked + ') / Math.PI * 180';
       break;
     default:
@@ -147,11 +150,11 @@ Blockly.Dart.math_trig = Blockly.Dart.math_single;
 
 Blockly.Dart.math_on_list = function() {
   // Rounding functions.
-  func = this.getTitleText(0);
-  list = Blockly.Dart.valueToCode(this, 0, true) || '[]';
+  func = this.getTitleValue('OP');
+  list = Blockly.Dart.valueToCode(this, 'LIST', true) || '[]';
   var code;
   switch (func) {
-    case this.MSG_SUM:
+    case 'SUM':
       if (!Blockly.Dart.definitions_['math_sum']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_sum', Blockly.Generator.NAME_TYPE);
@@ -166,7 +169,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_sum + '(' + list + ')';
       break;
-    case this.MSG_MIN:
+    case 'MIN':
       if (!Blockly.Dart.definitions_['math_min']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_min', Blockly.Generator.NAME_TYPE);
@@ -182,7 +185,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_min + '(' + list + ')';
       break;
-    case this.MSG_MAX:
+    case 'MAX':
       if (!Blockly.Dart.definitions_['math_max']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_max', Blockly.Generator.NAME_TYPE);
@@ -198,7 +201,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_max + '(' + list + ')';
       break;
-    case this.MSG_AVERAGE:
+    case 'AVERAGE':
       if (!Blockly.Dart.definitions_['math_average']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_average', Blockly.Generator.NAME_TYPE);
@@ -214,7 +217,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_average + '(' + list + ')';
       break;
-    case this.MSG_MEDIAN:
+    case 'MEDIAN':
       if (!Blockly.Dart.definitions_['math_median']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_median', Blockly.Generator.NAME_TYPE);
@@ -237,7 +240,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_median + '(' + list + ')';
       break;
-    case this.MSG_MODE:
+    case 'MODE':
       if (!Blockly.Dart.definitions_['math_modes']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_modes', Blockly.Generator.NAME_TYPE);
@@ -278,7 +281,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_modes + '(' + list + ')';
       break;
-    case this.MSG_STD_DEV:
+    case 'STD_DEV':
       if (!Blockly.Dart.definitions_['math_standard_deviation']) {
         var functionName = Blockly.Dart.variableDB_.getDistinctName(
             'math_standard_deviation', Blockly.Generator.NAME_TYPE);
@@ -300,7 +303,7 @@ Blockly.Dart.math_on_list = function() {
       }
       code = Blockly.Dart.math_on_list.math_standard_deviation + '(' + list + ')';
       break;
-    case this.MSG_RANDOM_ITEM:
+    case 'RANDOM':
       code = list + '[(Math.random() * ' + list + '.length).floor().toInt()]';
       break;
     default:
@@ -311,16 +314,16 @@ Blockly.Dart.math_on_list = function() {
 
 Blockly.Dart.math_constrain = function() {
   // Constrain a number between two limits.
-  var argument0 = Blockly.Dart.valueToCode(this, 0, true) || '0';
-  var argument1 = Blockly.Dart.valueToCode(this, 1, true) || '0';
-  var argument2 = Blockly.Dart.valueToCode(this, 2, true) || '0';
+  var argument0 = Blockly.Dart.valueToCode(this, 'VALUE', true) || '0';
+  var argument1 = Blockly.Dart.valueToCode(this, 'LOW', true) || '0';
+  var argument2 = Blockly.Dart.valueToCode(this, 'HIGH', true) || '0';
   return 'Math.min(Math.max(' + argument0 + ', ' + argument1 + '), ' + argument2 + ')';
 };
 
 Blockly.Dart.math_modulo = function(opt_dropParens) {
   // Remainder computation.
-  var argument0 = Blockly.Dart.valueToCode(this, 0) || '0';
-  var argument1 = Blockly.Dart.valueToCode(this, 1) || '0';
+  var argument0 = Blockly.Dart.valueToCode(this, 'DIVIDEND') || '0';
+  var argument1 = Blockly.Dart.valueToCode(this, 'DIVISOR') || '0';
   var code = argument0 + ' % ' + argument1;
   if (!opt_dropParens) {
     code = '(' + code + ')';
@@ -328,16 +331,13 @@ Blockly.Dart.math_modulo = function(opt_dropParens) {
   return code;
 };
 
-Blockly.Dart.math_random_float = function() {
-  return 'Math.random()';
-};
-
 Blockly.Dart.math_random_int = function() {
-  var argument0 = Blockly.Dart.valueToCode(this, 0) || '0';
-  var argument1 = Blockly.Dart.valueToCode(this, 1) || '0';
-  var rand1 = '(Math.random() * (' + argument1 + ' - ' + argument0 + ' + 1' + 
+  // Random integer between [X] and [Y].
+  var argument0 = Blockly.Dart.valueToCode(this, 'FROM') || '0';
+  var argument1 = Blockly.Dart.valueToCode(this, 'TO') || '0';
+  var rand1 = '(Math.random() * (' + argument1 + ' - ' + argument0 + ' + 1' +
       ') + ' + argument0 + ').floor()';
-  var rand2 = '(Math.random() * (' + argument0 + ' - ' + argument1 + ' + 1' + 
+  var rand2 = '(Math.random() * (' + argument0 + ' - ' + argument1 + ' + 1' +
       ') + ' + argument1 + ').floor()';
   var code;
   if (argument0.match(/^[\d\.]+$/) && argument1.match(/^[\d\.]+$/)) {
@@ -350,4 +350,9 @@ Blockly.Dart.math_random_int = function() {
     code = argument0 + ' < ' + argument1 + ' ? ' + rand1 + ' : ' + rand2;
   }
   return code;
+};
+
+Blockly.Dart.math_random_float = function() {
+  // Random fraction between 0 and 1.
+  return 'Math.random()';
 };

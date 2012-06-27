@@ -285,7 +285,7 @@ Blockly.Toolbox.clearSelection = function() {
   var oldSelectedOption = Blockly.Toolbox.selectedOption_;
   if (oldSelectedOption) {
     Blockly.removeClass_(oldSelectedOption, 'blocklyMenuSelected');
-    Blockly.Toolbox.flyout_.hide();
     Blockly.Toolbox.selectedOption_ = null;
   }
+  Blockly.Toolbox.flyout_.hide();
 };

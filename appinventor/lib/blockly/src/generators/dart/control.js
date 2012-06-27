@@ -29,16 +29,16 @@ Blockly.Dart = Blockly.Generator.get('Dart');
 Blockly.Dart.controls_if = function() {
   // If/elseif/else condition.
   var n = 0;
-  var argument = Blockly.Dart.valueToCode(this, n, true) || 'false';
-  var branch = Blockly.Dart.statementToCode(this, n);
+  var argument = Blockly.Dart.valueToCode(this, 'IF' + n, true) || 'false';
+  var branch = Blockly.Dart.statementToCode(this, 'DO' + n);
   var code = 'if (' + argument + ') {\n' + branch + '}';
   for (n = 1; n <= this.elseifCount_; n++) {
-    argument = Blockly.Dart.valueToCode(this, n, true) || 'false';
-    branch = Blockly.Dart.statementToCode(this, n);
+    argument = Blockly.Dart.valueToCode(this, 'IF' + n, true) || 'false';
+    branch = Blockly.Dart.statementToCode(this, 'DO' + n);
     code += ' else if (' + argument + ') {\n' + branch + '}';
   }
   if (this.elseCount_) {
-    branch = Blockly.Dart.statementToCode(this, n);
+    branch = Blockly.Dart.statementToCode(this, 'ELSE');
     code += ' else {\n' + branch + '}';
   }
   return code + '\n';
@@ -46,9 +46,9 @@ Blockly.Dart.controls_if = function() {
 
 Blockly.Dart.controls_whileUntil = function() {
   // Do while/until loop.
-  var argument0 = Blockly.Dart.valueToCode(this, 0, true) || 'false';
-  var branch0 = Blockly.Dart.statementToCode(this, 0);
-  if (this.getTitleText(1) == this.MSG_UNTIL) {
+  var argument0 = Blockly.Dart.valueToCode(this, 'BOOL', true) || 'false';
+  var branch0 = Blockly.Dart.statementToCode(this, 'DO');
+  if (this.getTitleValue('MODE') == 'UNTIL') {
     if (!argument0.match(/^\w+$/)) {
       argument0 = '(' + argument0 + ')';
     }
@@ -60,10 +60,10 @@ Blockly.Dart.controls_whileUntil = function() {
 Blockly.Dart.controls_for = function() {
   // For loop.
   var variable0 = Blockly.Dart.variableDB_.getName(
-      this.getVariableInput(0), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.Dart.valueToCode(this, 0, true) || '0';
-  var argument1 = Blockly.Dart.valueToCode(this, 1, true) || '0';
-  var branch0 = Blockly.Dart.statementToCode(this, 0);
+      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.Dart.valueToCode(this, 'FROM', true) || '0';
+  var argument1 = Blockly.Dart.valueToCode(this, 'TO', true) || '0';
+  var branch0 = Blockly.Dart.statementToCode(this, 'DO');
   var code;
   if (argument1.match(/^\w+$/)) {
     code = 'for (' + variable0 + ' = ' + argument0 + '; ' + variable0 + ' <= ' + argument1 + '; ' + variable0 + '++) {\n' +
@@ -83,9 +83,9 @@ Blockly.Dart.controls_for = function() {
 Blockly.Dart.controls_forEach = function() {
   // For each loop.
   var variable0 = Blockly.Dart.variableDB_.getName(
-      this.getVariableInput(0), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.Dart.valueToCode(this, 0, true) || '[]';
-  var branch0 = Blockly.Dart.statementToCode(this, 0);
+      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.Dart.valueToCode(this, 'LIST', true) || '[]';
+  var branch0 = Blockly.Dart.statementToCode(this, 'DO');
   var code;
   var indexVar = Blockly.Dart.variableDB_.getDistinctName(
       variable0 + '_index', Blockly.Variables.NAME_TYPE);
@@ -108,10 +108,10 @@ Blockly.Dart.controls_forEach = function() {
 
 Blockly.Dart.controls_flow_statements = function() {
   // Flow statements: continue, break.
-  switch (this.getTitleText(0)) {
-    case this.MSG_BREAK:
+  switch (this.getTitleValue('FLOW')) {
+    case 'BREAK':
       return 'break;\n';
-    case this.MSG_CONTINUE:
+    case 'CONTINUE':
       return 'continue;\n';
   }
   throw 'Unknown flow statement.';

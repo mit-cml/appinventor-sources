@@ -21,7 +21,9 @@
  * @fileoverview Style sheet for a Blockly editor.
  * @author fraser@google.com (Neil Fraser)
  */
-
+.blocklySvg {
+  background-color: #fff;
+}
 .blocklyDraggable {
   /* Hotspot coordinates are baked into the CUR file, but they are still
      required in the CSS due to a Chrome bug.
