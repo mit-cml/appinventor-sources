@@ -98,7 +98,11 @@ public final class Execution {
   public static boolean execute(File workingDir, String[] command, PrintStream out,
       PrintStream err) {
     LOG.log(Level.INFO, "____Executing " + joiner.join(command));
-
+    if (System.getProperty("os.name").startsWith("Windows")){
+    	for(int i =0; i < command.length; i++){
+    		command[i] = command[i].replace("\"", "\\\"");
+    	}
+    }
     try {
       Process process = Runtime.getRuntime().exec(command, null, workingDir);
       new RedirectStreamHandler(new PrintWriter(out, true), process.getInputStream());
