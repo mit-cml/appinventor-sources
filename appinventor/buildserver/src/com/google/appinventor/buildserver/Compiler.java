@@ -58,6 +58,9 @@ public final class Compiler {
 
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
+  
+  private static final String DEFAULT_VERSION_CODE = "1";
+  private static final String DEFAULT_VERSION_NAME = "1.0";
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
@@ -156,7 +159,11 @@ public final class Compiler {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
-
+    String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
+    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
+    LOG.log(Level.INFO, "VCode: " + project.getVCode());
+    LOG.log(Level.INFO, "VName: " + project.getVName());
+    
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
@@ -169,7 +176,7 @@ public final class Compiler {
           "package=\"" + packageName + "\" " +
           // TODO(markf): uncomment the following line when we're ready to enable publishing to the
           // Android Market.
-         "android:versionCode=\"3\" " + "android:versionName=\"1.5\" " +
+         "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");

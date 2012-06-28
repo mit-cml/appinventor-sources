@@ -38,6 +38,29 @@
        Applications built with App Inventor can be uploaded to Google Play!
        <dl>
         <dt>
+        <h2>Version Your App</h2>
+        </dt>
+        <dd>
+         <p>
+          Every app you publish must have a <code>VersionCode</code> and a
+          <code>VersionName</code>. You can set these in the designer under the
+          properties panel for the <code>Screen1</code> component.
+         </p>
+         <p>
+          <code>VersionCode</code> is an integer value that will not be visible to
+          Google Play Store users. It is used by other apps to check if your app
+          has been upgraded or downgraded. It defaults to 1 and should be increased by
+          one with every successive change whether it is a major change or a minor change.
+         </p>
+         <p>
+          <code>VersionName</code> is a String which can be anything you would like. It is
+          defaulted to 1.0. A common structure is a decimal number which is
+          increased by 1 for every major change and 0.1 for every minor change. For example,
+          an initial <code>VersionName</code> could be 1.0 which can be updated to 1.1 after
+          a small change and 2.0 after a larger change.
+         </p>
+        </dd>
+        <dt>
          <h2>Download <code>.apk</code></h2>
         </dt>
         <dd>
