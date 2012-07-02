@@ -61,6 +61,8 @@ public final class Project {
    *    main - qualified name of main form class
    *    name - application name
    *    icon - application icon
+   *    versioncode - version code
+   *    versionname - version name
    *    source - comma separated list of source root directories
    *    assets - assets directory (for image and data files bundled with the application)
    *    build - output directory for the compiler
@@ -69,6 +71,8 @@ public final class Project {
   private static final String NAMETAG = "name";
   private static final String ICONTAG = "icon";
   private static final String SOURCETAG = "source";
+  private static final String VCODETAG = "versioncode";
+  private static final String VNAMETAG = "versionname";
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
 
@@ -182,6 +186,42 @@ public final class Project {
    */
   public void setIcon(String icon) {
     properties.setProperty(ICONTAG, icon);
+  }
+  
+  /**
+   * Returns the version code.
+   *
+   * @return  version code
+   */
+  public String getVCode() {
+    return properties.getProperty(VCODETAG);
+  }
+
+  /**
+   * Sets the version code.
+   *
+   * @param vcode  version code
+   */
+  public void setVCode(String vcode) {
+    properties.setProperty(VCODETAG, vcode);
+  }
+  
+  /**
+   * Returns the version name.
+   *
+   * @return  version name
+   */
+  public String getVName() {
+    return properties.getProperty(VNAMETAG);
+  }
+
+  /**
+   * Sets the version name.
+   *
+   * @param vname  version name
+   */
+  public void setVName(String vname) {
+    properties.setProperty(VNAMETAG, vname);
   }
 
   /**

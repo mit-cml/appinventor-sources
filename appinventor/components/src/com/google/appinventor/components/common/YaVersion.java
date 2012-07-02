@@ -174,8 +174,10 @@ public class YaVersion {
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 2
   // For YOUNG_ANDROID_VERSION 57:
   // - PLAYER_COMPONENT_VERSION was incremented to 4.
+  // For YOUNG_ANDROID_VERSION 58:
+  // - FORM_COMPONENT_VERSION was incremented to 7.
 
-  public static final int YOUNG_ANDROID_VERSION = 57;
+  public static final int YOUNG_ANDROID_VERSION = 58;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -339,7 +341,9 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 6:
   // - The SwitchForm and SwitchFormWithArgs methods were removed and the OtherScreenClosed event
   // was added.
-  public static final int FORM_COMPONENT_VERSION = 6;
+  // For FORM_COMPONENT_VERSION 7:
+  // - The VersionCode and VersionName properties were added.
+  public static final int FORM_COMPONENT_VERSION = 7;
 
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
 

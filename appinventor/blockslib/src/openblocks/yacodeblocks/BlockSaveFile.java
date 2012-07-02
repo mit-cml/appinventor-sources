@@ -719,6 +719,11 @@ public class BlockSaveFile {
       // was added.
       blkCompVersion = 6;
     }
+    if (blkCompVersion < 7) {
+      // The VersionCode and VersionName properties were added. No blocks need to be modified
+      // to update to version 7.
+      blkCompVersion = 7;
+    }
     return blkCompVersion;
   }
 

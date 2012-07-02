@@ -561,6 +561,11 @@ public final class YoungAndroidFormUpgrader {
       // was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The VersionCode and VersionName properties were added. No properties need to be modified
+      // to update to version 7.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
