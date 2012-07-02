@@ -3,6 +3,7 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
@@ -12,6 +13,7 @@ import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
@@ -221,9 +223,11 @@ public class Ode implements EntryPoint {
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
+    } else {
+      OdeLog.wlog("No current file editor to show in designer");
     }
   }
-
+  
   /**
    * Switch to the Debugging tab
    */
@@ -240,12 +244,14 @@ public class Ode implements EntryPoint {
       OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
+    OdeLog.log("Ode.openPreviousProject called");
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
         getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     openProject(value);
   }
 
   private void openProject(String projectIdString) {
+    OdeLog.log("Ode.openProject called for " + projectIdString);
     if (projectIdString.equals("")) {
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
@@ -288,9 +294,13 @@ public class Ode implements EntryPoint {
       project.loadProjectNodes();
 
     } else {
-      // The project nodes have been loaded. We can open the editor.
+      // The project nodes have been loaded. Tell the viewer to open
+      // the project. This will cause the projects source files to be fetched
+      // asynchronously, and loaded into file editors. 
       ViewerBox.getViewerBox().show(projectRootNode);
-      switchToDesignView();
+      // Note: we can't call switchToDesignView until the Screen1 file editor
+      // finishes loading. We leave that to setCurrentFileEditor(), which
+      // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
       if (!History.getToken().equals(projectIdString)) {
         // insert token into history but do not trigger listener event
@@ -425,6 +435,8 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private void initializeUi() {
+    BlocklyPanel.initUi();
+    
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
@@ -479,21 +491,27 @@ public class Ode implements EntryPoint {
     box.setWidth("225px");
     workColumns.add(box);
     workColumns.setCellWidth(box, "1%");
-    box = ViewerBox.getViewerBox();
-    workColumns.add(box);
-    workColumns.setCellWidth(box, "97%");
 
     VerticalPanel structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
+    // Only one of the SourceStructureBox and the BlockSelectorBox is visible
+    // at any given time, according to whether we are showing the UI designer
+    // or the blocks editor. They share the same screen real estate.
     structureAndAssets.add(SourceStructureBox.getSourceStructureBox());
+    structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
     structureAndAssets.add(AssetListBox.getAssetListBox());
     workColumns.add(structureAndAssets);
     workColumns.setCellWidth(structureAndAssets, "1%");
+
+    box = ViewerBox.getViewerBox();
+    workColumns.add(box);
+    workColumns.setCellWidth(box, "97%");
 
     box = PropertiesBox.getPropertiesBox();
     box.setWidth("210px");
     workColumns.add(box);
     workColumns.setCellWidth(box, "1%");
+    
     vertPanel.add(workColumns);
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(vertPanel);
@@ -665,25 +683,28 @@ public class Ode implements EntryPoint {
    *
    * @param fileEditor  the file editor, can be null.
    */
-  public void setCurrentFileEditor(FileEditor fileEditor) {
+  public void setCurrentFileEditor(FileEditor fileEditor, String formName) {
     currentFileEditor = fileEditor;
-
-    switchToDesignView();
-
-    ProjectRootNode root = getCurrentYoungAndroidProjectRootNode();
-    String name = "";
-    if (root != null) {
-      name = root.getName();
+    if (currentFileEditor == null) {
+      // nothing more we can do
+      OdeLog.log("Setting current file editor to null"); 
+      return;
     }
-    designToolbar.updateProjectName(name);
-    designToolbar.updateButtons();
-
+    OdeLog.log("Ode: Setting current file editor to " + currentFileEditor.getFileId());
+    switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
           changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
+  }
+  
+  /**
+   * @return  currently open FileEditor, or null if none
+   */
+  public FileEditor getCurrentFileEditor() {
+    return currentFileEditor;
   }
 
   /**

@@ -2,12 +2,15 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -21,6 +24,8 @@ import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -66,7 +71,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     SourcesMouseEvents, DragSource {
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_NAME = "Name";
-  protected static final String PROPERTY_NAME_UUID = "Uuid";
+  public static final String PROPERTY_NAME_UUID = "Uuid";
   protected static final String PROPERTY_NAME_SOURCE = "Source";
 
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
@@ -513,6 +518,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void select() {
     getForm().setSelectedComponent(this);
+    // are we showing the blocks editor? if so, toggle the component drawer
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor = 
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log("Showing item " + getName());
+      editor.showComponentBlocks(getName());
+    }
   }
 
   /**
@@ -624,7 +636,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected ProjectNode getAssetNode(String name) {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     if (project != null) {
-      HasAssetsFolder hasAssetsFolder = (HasAssetsFolder) project.getRootNode();
+      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder = 
+          (YoungAndroidProjectNode) project.getRootNode();
       for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
         if (asset.getName().equals(name)) {
           return asset;

@@ -8,7 +8,6 @@ import com.google.appinventor.client.boxes.MotdBox;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -92,6 +91,7 @@ public class TopPanel extends Composite {
 
     Label myApps = new Label(MESSAGES.tabNameProjects());
     myApps.addClickHandler(new ClickHandler() {
+        @Override
         public void onClick(ClickEvent event) {
           ode.switchToProjectsView();
         }
@@ -101,8 +101,13 @@ public class TopPanel extends Composite {
 
     Label design = new Label(MESSAGES.tabNameDesign());
     design.addClickHandler(new ClickHandler() {
+        @Override
         public void onClick(ClickEvent event) {
-          ode.switchToDesignView();
+          if (ode.getCurrentFileEditor() != null) {
+            ode.switchToDesignView();
+          } else {
+            ErrorReporter.reportInfo(MESSAGES.chooseProject());
+          }
         }
       }
     );
@@ -114,6 +119,7 @@ public class TopPanel extends Composite {
     if (AppInventorFeatures.hasDebuggingView()) {
       Label debugging = new Label(MESSAGES.tabNameDebugging());
       debugging.addClickHandler(new ClickHandler() {
+          @Override
           public void onClick(ClickEvent event) {
             ode.switchToDebuggingView();
           }

@@ -109,7 +109,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     this.formNode = formNode;
 
-    // Get references to the source structure explorer and the assets list.
+    // Get reference to the source structure explorer
     sourceStructureExplorer =
         SourceStructureBox.getSourceStructureBox().getSourceStructureExplorer();
 
@@ -175,22 +175,28 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void onShow() {
+    OdeLog.log("YaFormEditor: got onShow() for " + getFileId());
+    
     // When this editor is shown, update the "current" editor.
-    Ode.getInstance().setCurrentFileEditor(this);
+    Ode.getInstance().setCurrentFileEditor(this, form.getName());
 
     loadDesigner();
-
-    super.onShow();
   }
 
   @Override
   public void onHide() {
-    unloadDesigner();
-
-    // When an editor is detached, clear the "current" editor.
-    Ode.getInstance().setCurrentFileEditor(null);
-
-    super.onHide();
+    // When an editor is detached, if we are the "current" editor,
+    // set the current editor to null. 
+    // Note: I'm not sure it is possible that we would not be the "current"
+    // editor when this is called, but we check just to be safe.
+    OdeLog.log("YaFormEditor: got onHide() for " + getFileId());
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      Ode.getInstance().setCurrentFileEditor(null, null);
+      unloadDesigner();
+    } else {
+      OdeLog.wlog("YaFormEditor.onHide: Not doing anything since we're not the "
+          + "current file editor!");
+    }
   }
 
   @Override
@@ -239,7 +245,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public boolean isScreen1() {
     return formNode.isScreen1();
   }
-
+  
   // FormChangeListener implementation
 
   @Override
@@ -416,6 +422,12 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       }
     }
 
+    // Add component type to the blocks editor
+    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
+    blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(), 
+        mockComponent.getPropertyValue(MockComponent.PROPERTY_NAME_UUID));
+
     // Add nested components
     if (properties.containsKey("$Components")) {
       for (JSONValue nestedComponent : properties.get("$Components").asArray().getElements()) {
@@ -441,8 +453,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Update the source structure explorer with the tree of this form's components.
     sourceStructureExplorer.updateTree(form.buildComponentsTree(),
         selectedComponent.getSourceStructureExplorerItem());
-    SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-    sourceStructureBox.setVisible(true);
+    SourceStructureBox.getSourceStructureBox().setVisible(true);
 
     // Show the assets box.
     AssetListBox assetListBox = AssetListBox.getAssetListBox();
@@ -456,14 +467,20 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     // Listen to changes on the form.
     form.addFormChangeListener(this);
+    // Also have the blocks editor listen to changes. Do this here instead
+    // of in the blocks editor so that we don't risk it missing any updates.
+    OdeLog.log("Adding blocks editor as a listener for " + form.getName());
+    form.addFormChangeListener(((YaProjectEditor)projectEditor).getBlocksFileEditor(form.getName()));
   }
 
   /*
    * Show the given component's properties in the properties panel.
    */
   private void updatePropertiesPanel(MockComponent component) {
-    designProperties.setPropertiesCaption(component.getVisibleTypeName());
     designProperties.setProperties(component.getProperties());
+    // need to update the caption after the setProperties call, since
+    // setProperties clears the caption!
+    designProperties.setPropertiesCaption(component.getName());
   }
 
   private void onFormStructureChange() {
@@ -539,8 +556,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
    * Clears the palette, source structure explorer, and properties panel.
    */
   private void unloadDesigner() {
-    // Stop listening to changes on the form.
-    form.removeFormChangeListener(this);
+    // The form can still potentially change if the blocks editor is displayed
+    // so don't remove the formChangeListener.
 
     // Clear the palette box.
     PaletteBox paletteBox = PaletteBox.getPaletteBox();
@@ -548,8 +565,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
     // Clear and hide the source structure explorer.
     sourceStructureExplorer.clearTree();
-    SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
-    sourceStructureBox.setVisible(false);
+    SourceStructureBox.getSourceStructureBox().setVisible(false);
 
     // Hide the assets box.
     AssetListBox assetListBox = AssetListBox.getAssetListBox();

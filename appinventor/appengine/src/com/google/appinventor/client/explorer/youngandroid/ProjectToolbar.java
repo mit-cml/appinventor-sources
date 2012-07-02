@@ -285,7 +285,8 @@ public class ProjectToolbar extends Toolbar {
 
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
 
-    setDropItemEnabled(WIDGET_NAME_DOWNLOAD_SOURCE, numSelectedProjects == 1);
+    setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_SOURCE, 
+        numSelectedProjects == 1);
   }
 
   /**
@@ -296,15 +297,15 @@ public class ProjectToolbar extends Toolbar {
         new AsyncCallback<Boolean>() {
       @Override
       public void onSuccess(Boolean keystoreFileExists) {
-        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
       }
 
       @Override
       public void onFailure(Throwable caught) {
         // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
-        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, true);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, true);
       }
     });
   }
