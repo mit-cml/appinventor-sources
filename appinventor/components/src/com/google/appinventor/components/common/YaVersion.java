@@ -175,7 +175,11 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 57:
   // - PLAYER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 58:
+<<<<<<< HEAD
   // The Camcorder component was added.
+=======
+  // - FORM_COMPONENT_VERSION was incremented to 7.
+>>>>>>> 135acbca7522f0027117263d88507b955cdc55f4
 
   public static final int YOUNG_ANDROID_VERSION = 58;
 
@@ -343,7 +347,9 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 6:
   // - The SwitchForm and SwitchFormWithArgs methods were removed and the OtherScreenClosed event
   // was added.
-  public static final int FORM_COMPONENT_VERSION = 6;
+  // For FORM_COMPONENT_VERSION 7:
+  // - The VersionCode and VersionName properties were added.
+  public static final int FORM_COMPONENT_VERSION = 7;
 
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
 
