@@ -8,12 +8,12 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -38,10 +38,10 @@ public abstract class ProjectEditor extends Composite {
   // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
   // is non-null, it is one of the file editors in openFileEditors and the 
   // one currently showing in deckPanel. 
-  protected final Map<String, FileEditor> openFileEditors;
+  private final Map<String, FileEditor> openFileEditors;
   protected final List<String> fileIds; 
-  protected final DeckPanel deckPanel;
-  protected FileEditor selectedFileEditor;
+  private final DeckPanel deckPanel;
+  private FileEditor selectedFileEditor;
 
   /**
    * Creates a {@code ProjectEditor} instance.
@@ -53,7 +53,7 @@ public abstract class ProjectEditor extends Composite {
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
-    openFileEditors = new HashMap<String, FileEditor>();
+    openFileEditors = Maps.newHashMap();
     fileIds = new ArrayList<String>();
 
     deckPanel = new DeckPanel();
@@ -63,7 +63,7 @@ public abstract class ProjectEditor extends Composite {
     deckPanel.setSize("100%", "100%");
     panel.setSize("100%", "100%");
     initWidget(panel);
-    // TODO: I'm not sure that the setSize call below does anything useful.
+    // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");
   }
 
@@ -158,6 +158,13 @@ public abstract class ProjectEditor extends Composite {
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
   }
+  
+  /**
+   * Returns the currently selected file editor
+   */
+  protected final FileEditor getSelectedFileEditor() {
+    return selectedFileEditor;
+  }
 
   /**
    * Closes the file editors for the given file IDs, without saving.
@@ -179,6 +186,7 @@ public abstract class ProjectEditor extends Composite {
       if (selectedFileEditor == fileEditor) {
         selectedFileEditor = null;
       }
+      fileEditor.onClose();
     }
   }
   

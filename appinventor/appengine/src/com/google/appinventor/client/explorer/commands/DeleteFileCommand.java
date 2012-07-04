@@ -4,13 +4,11 @@ package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.explorer.project.Project;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.gwt.user.client.Window;
 

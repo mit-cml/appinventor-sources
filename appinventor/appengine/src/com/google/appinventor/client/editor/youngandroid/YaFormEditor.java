@@ -37,11 +37,11 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.DockPanel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -176,27 +176,31 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   @Override
   public void onShow() {
     OdeLog.log("YaFormEditor: got onShow() for " + getFileId());
-    
-    // When this editor is shown, update the "current" editor.
-    Ode.getInstance().setCurrentFileEditor(this, form.getName());
-
+    super.onShow();
     loadDesigner();
   }
 
   @Override
   public void onHide() {
+    OdeLog.log("YaFormEditor: got onHide() for " + getFileId());
     // When an editor is detached, if we are the "current" editor,
-    // set the current editor to null. 
+    // set the current editor to null and clean up the UI.
     // Note: I'm not sure it is possible that we would not be the "current"
     // editor when this is called, but we check just to be safe.
-    OdeLog.log("YaFormEditor: got onHide() for " + getFileId());
     if (Ode.getInstance().getCurrentFileEditor() == this) {
-      Ode.getInstance().setCurrentFileEditor(null, null);
+      super.onHide();
       unloadDesigner();
     } else {
       OdeLog.wlog("YaFormEditor.onHide: Not doing anything since we're not the "
           + "current file editor!");
     }
+  }
+  
+  @Override
+  public void onClose() {
+    form.removeFormChangeListener(this);
+    // Note: our partner YaBlocksEditor will remove itself as a FormChangeListener, even
+    // though we added it.
   }
 
   @Override
@@ -219,7 +223,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public Map<String, MockComponent> getComponents() {
-    Map<String, MockComponent> map = new HashMap<String, MockComponent>();
+    Map<String, MockComponent> map = Maps.newHashMap();
     if (loadComplete) {
       populateComponentsMap(form, map);
     }
@@ -426,7 +430,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
     YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
     blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(), 
-        mockComponent.getPropertyValue(MockComponent.PROPERTY_NAME_UUID));
+        mockComponent.getUuid());
 
     // Add nested components
     if (properties.containsKey("$Components")) {
@@ -470,7 +474,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Also have the blocks editor listen to changes. Do this here instead
     // of in the blocks editor so that we don't risk it missing any updates.
     OdeLog.log("Adding blocks editor as a listener for " + form.getName());
-    form.addFormChangeListener(((YaProjectEditor)projectEditor).getBlocksFileEditor(form.getName()));
+    form.addFormChangeListener(((YaProjectEditor) projectEditor)
+        .getBlocksFileEditor(form.getName()));
   }
 
   /*

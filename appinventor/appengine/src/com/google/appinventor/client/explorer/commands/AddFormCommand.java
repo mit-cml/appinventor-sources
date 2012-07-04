@@ -7,7 +7,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.explorer.project.Project;
@@ -210,7 +209,8 @@ public final class AddFormCommand extends ChainableCommand {
                 long projectId = formEditor.getProjectId();
                 designToolbar.addScreen(projectId, formName, formEditor, 
                     blocksEditor);
-                designToolbar.switchToScreen(projectId, formName, true /* showDesigner */);
+                designToolbar.switchToScreen(projectId, formName, DesignToolbar.View.FORM);
+                executeNextCommand(projectRootNode);
               } else {
                 // The form editor and/or blocks editor is still not there. Try again later.
                 Scheduler.get().scheduleDeferred(this);

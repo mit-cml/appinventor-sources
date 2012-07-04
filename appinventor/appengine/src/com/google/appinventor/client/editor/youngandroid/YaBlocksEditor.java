@@ -22,6 +22,9 @@ import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocks
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Editor for Young Android Blocks (.blk) files.
  * 
@@ -32,6 +35,10 @@ import com.google.gwt.user.client.ui.TreeItem;
  */
 public final class YaBlocksEditor extends FileEditor
     implements FormChangeListener, BlockDrawerSelectionListener {
+
+  // Database of component type descriptions
+  private static final SimpleComponentDatabase COMPONENT_DATABASE =
+      SimpleComponentDatabase.getInstance();
 
   private final YoungAndroidBlocksNode blocksNode;
 
@@ -49,16 +56,18 @@ public final class YaBlocksEditor extends FileEditor
   // will get reinitialized.
   private final BlocklyPanel blocksArea;
 
-  // Database of component type descriptions
-  private static final SimpleComponentDatabase COMPONENT_DATABASE =
-      SimpleComponentDatabase.getInstance();
-
   // True once we've finished loading the current file.
   private boolean loadComplete = false;
 
   // if selectedDrawer != null, it is either "component_" + instance name or
   // "builtin_" + drawer name
   private String selectedDrawer = null;
+  
+  // Keep a list of components that we know about. Need this to detect when a call to add a
+  // component is adding one that we already have (which can happen when a component gets
+  // moved from one container to another). In that case we do not want to add it to the
+  // blocks area again.
+  private Set<String> componentUuids = new HashSet<String>();
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -122,10 +131,7 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void onShow() {
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
-
-    // When this editor is shown, update the "current" editor.
-    Ode.getInstance().setCurrentFileEditor(this, getMyForm().getName());
-
+    super.onShow();
     loadBlocksEditor();
   }
 
@@ -142,7 +148,7 @@ public final class YaBlocksEditor extends FileEditor
     }
 
     // Update the source structure explorer with the tree of this form's components.
-    MockForm form = getMyForm();
+    MockForm form = getForm();
     if (form != null) {
       // start with no component selected in sourceStructureExplorer. We
       // don't want a component drawer open in the blocks editor when we
@@ -162,17 +168,24 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void onHide() {
     // When an editor is detached, if we are the "current" editor,
-    // set the current editor to null. 
+    // set the current editor to null and clean up the UI.
     // Note: I'm not sure it is possible that we would not be the "current"
     // editor when this is called, but we check just to be safe.
     OdeLog.log("YaBlocksEditor: got onHide() for " + getFileId());
     if (Ode.getInstance().getCurrentFileEditor() == this) {
-      Ode.getInstance().setCurrentFileEditor(null, null);
+      super.onHide();
       unloadBlocksEditor();
     } else {
       OdeLog.wlog("YaBlocksEditor.onHide: Not doing anything since we're not the "
           + "current file editor!");
     }
+  }
+  
+  @Override
+  public void onClose() {
+    // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
+    getForm().removeFormChangeListener(this);
+    BlockSelectorBox.getBlockSelectorBox().removeBlockDrawerSelectionListener(this);
   }
 
   private void unloadBlocksEditor() {
@@ -195,13 +208,14 @@ public final class YaBlocksEditor extends FileEditor
 
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
     TreeItem items[] = new TreeItem[2];
-    items[0] = BlockSelectorBox.getBuiltInBlocksTree();
+    items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
     items[1] = form.buildComponentsTree();
     sourceStructureExplorer.updateTree(items, itemToSelect);
   }
 
   // Do whatever is needed to save Blockly state when our project is about to be
-  // detached from the parent document
+  // detached from the parent document. Note that this is not for saving the blocks file itself.
+  // We use EditorManager.scheduleAutoSave for that.
   public void prepareForUnload() {
     blocksArea.saveComponents();
   }
@@ -218,11 +232,19 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   public void addComponent(String typeName, String instanceName, String uid) {
+    if (componentUuids.contains(uid)) {
+      return;  // already have this one
+    }
+    componentUuids.add(uid);
     String typeDescription = COMPONENT_DATABASE.getTypeDescription(typeName);
     blocksArea.addComponent(typeDescription, instanceName, uid);
   }
 
   public void removeComponent(String typeName, String instanceName, String uid) {
+    if (!componentUuids.contains(uid)) {
+      return;  // don't know about this one - can this ever happen?
+    }
+    componentUuids.remove(uid);
     blocksArea.removeComponent(typeName, instanceName, uid);
   }
 
@@ -264,7 +286,7 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.hideBuiltinBlocks();
   }
 
-  public MockForm getMyForm() {
+  public MockForm getForm() {
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
     YaFormEditor myFormEditor = yaProjectEditor.getFormFileEditor(blocksNode.getFormName());
     if (myFormEditor != null) {
@@ -297,8 +319,7 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void onComponentRemoved(MockComponent component, boolean permanentlyDeleted) {
     if (permanentlyDeleted) {
-      removeComponent(component.getType(), component.getName(),
-          component.getPropertyValue(MockComponent.PROPERTY_NAME_UUID));
+      removeComponent(component.getType(), component.getName(), component.getUuid());
       if (loadComplete) {
         updateSourceStructureExplorer();
       }
@@ -312,8 +333,7 @@ public final class YaBlocksEditor extends FileEditor
    */
   @Override
   public void onComponentAdded(MockComponent component) {
-    addComponent(component.getType(), component.getName(),
-        component.getPropertyValue(MockComponent.PROPERTY_NAME_UUID));
+    addComponent(component.getType(), component.getName(), component.getUuid());
     if (loadComplete) {
       // Update source structure panel
       updateSourceStructureExplorer();
@@ -327,8 +347,7 @@ public final class YaBlocksEditor extends FileEditor
    */
   @Override
   public void onComponentRenamed(MockComponent component, String oldName) {
-    renameComponent(component.getType(), oldName, component.getName(),
-        component.getPropertyValue(MockComponent.PROPERTY_NAME_UUID));
+    renameComponent(component.getType(), oldName, component.getName(), component.getUuid());
     if (loadComplete) {
       updateSourceStructureExplorer();
       // renaming could potentially confuse an open drawer so close just in case
@@ -338,7 +357,7 @@ public final class YaBlocksEditor extends FileEditor
   }
   
   private void updateSourceStructureExplorer() {
-    MockForm form = getMyForm();
+    MockForm form = getForm();
     if (form != null) {
       updateBlocksTree(form, form.getSelectedComponent().getSourceStructureExplorerItem());
     }
@@ -362,15 +381,9 @@ public final class YaBlocksEditor extends FileEditor
    */
   @Override
   public void onBuiltinDrawerSelected(String drawerName) {
-    showBuiltinBlocks(drawerName);
-  }
-
-  /*
-   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
-   * onBlockDrawerUnselected(java.lang.String)
-   */
-  @Override
-  public void onBuiltinDrawerUnselected(String drawerName) {
-    hideBuiltinBlocks();
+    // Only do something if we are the current file editor
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      showBuiltinBlocks(drawerName);
+    }
   }
 }
