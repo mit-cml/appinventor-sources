@@ -2,8 +2,9 @@
 
 package com.google.appinventor.client.explorer;
 
-import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -77,9 +78,11 @@ public class SourceStructureExplorer extends Composite {
           if (userObject instanceof SourceStructureExplorerItem) {
             SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
             enableButtons(item);
+            //showBlocks(item);
             item.onSelected();
           } else {
             disableButtons();
+            //hideComponent();
           }
         } else {
           disableButtons();
@@ -150,6 +153,31 @@ public class SourceStructureExplorer extends Composite {
     renameButton.setEnabled(false);
     deleteButton.setEnabled(false);
   }
+  
+  /* move this logic to declarations of SourceStructureExplorerItem subtypes
+  private void showBlocks(SourceStructureExplorerItem item) {
+    // are we showing the blocks editor?
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor = 
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log("Showing item " + item.getItemName());
+      if (item.isComponent()) {
+        editor.showComponentBlocks(item.getItemName());
+      } else {
+        editor.showBuiltinBlocks(item.getItemName());
+      }
+    }
+  }
+
+  private void hideComponent() {
+    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+      YaBlocksEditor editor =
+          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+      OdeLog.log("Hiding selected item");
+      editor.hideComponentBlocks();
+    }  
+  }
+   */  
 
   /**
    * Clears the tree.
@@ -162,12 +190,27 @@ public class SourceStructureExplorer extends Composite {
   /**
    * Updates the tree
    *
-   * @param root the new root RreeItem
+   * @param root the new root TreeItem
    * @param itemToSelect item to select, or null for no selected item
    */
   public void updateTree(TreeItem root, SourceStructureExplorerItem itemToSelect) {
+    TreeItem items[] = new TreeItem[1];
+    items[0] = root;
+    updateTree(items, itemToSelect);
+  }
+
+  
+  /**
+   * Updates the tree
+   *
+   * @param roots An array of root items (all top level)
+   * @param itemToSelect item to select, or null for no selected item
+   */
+  public void updateTree(TreeItem[] roots, SourceStructureExplorerItem itemToSelect) {
     tree.clear();
-    tree.addItem(root);
+    for (TreeItem root : roots) {
+      tree.addItem(root);
+    }
     if (itemToSelect != null) {
       selectItem(itemToSelect, true);
     } else {
@@ -192,9 +235,11 @@ public class SourceStructureExplorer extends Composite {
         if (select) {
           tree.setSelectedItem(treeItem, false); // false means don't trigger a SelectionEvent
           enableButtons(item);
+          //showBlocks(item);
         } else {
           tree.setSelectedItem(null, false); // false means don't trigger a SelectionEvent
           disableButtons();
+          //hideComponent();
         }
         break;
       }

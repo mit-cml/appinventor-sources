@@ -5,6 +5,7 @@ package com.google.appinventor.client.boxes;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 
@@ -42,6 +43,7 @@ public class ViewerBox extends Box {
    */
   public ProjectEditor show(ProjectRootNode projectRootNode) {
     ProjectEditor projectEditor = Ode.getInstance().getEditorManager().openProject(projectRootNode);
+    OdeLog.log("ViewerBox: switching the content in the viewer box");
     setContent(projectEditor);
     return projectEditor;
   }

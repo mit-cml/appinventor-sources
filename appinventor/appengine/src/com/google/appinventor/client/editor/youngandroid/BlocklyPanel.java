@@ -3,6 +3,7 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
@@ -51,11 +52,10 @@ public class BlocklyPanel extends HTMLPanel {
   // Replay them in order after initialized. Keys are form names. If there is 
   // an entry for a given form name in the map, its blocks have not yet been 
   // (re)inited.
-  // TODO(sharon): do we need to worry about concurrent access to 
-  // this map? Are there multiple threads that could be adding to 
-  // and removing from the same list of componentOps at the same time?
-  private static Map<String, List<ComponentOp>> componentOps = 
-      new HashMap<String, List<ComponentOp>>();
+  // Note: Javascript is single-threaded. Since this code is compiled by GWT
+  // into Javascript, we don't need to worry about concurrent access to 
+  // this map.
+  private static Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
   
   // When a user switches projects, the ProjectEditor widget gets detached
   // from the main document in the browser. If the user switches back to a 
@@ -70,13 +70,13 @@ public class BlocklyPanel extends HTMLPanel {
   // is re-inited. This component state is updated as components are added, 
   // removed, and renamed. The outer map is keyed by form name, and the 
   // inner map is keyed by component uid.
-  private static Map<String, Map<String, ComponentOp>> currentComponents =
-      new HashMap<String, Map<String, ComponentOp>>();
+  private static Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
 
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
     this.formName = formName;
     componentOps.put(formName, new ArrayList<ComponentOp>());
+    // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
     currentComponents.put(formName, new HashMap<String, ComponentOp>());
     initJS();
     OdeLog.log("Created BlocklyPanel for " + formName);
@@ -334,6 +334,7 @@ public class BlocklyPanel extends HTMLPanel {
   private static native void exportInitComponentsMethod() /*-{ 
     $wnd.BlocklyPanel_initComponents = 
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initComponents(Ljava/lang/String;));
+    // Note: above line is longer than 100 chars but I'm not sure whether it can be split
   }-*/;
   
   private native void initJS() /*-{

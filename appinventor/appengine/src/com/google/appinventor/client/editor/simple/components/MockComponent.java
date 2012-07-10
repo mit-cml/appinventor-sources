@@ -2,12 +2,15 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.ClonedWidget;
 import com.google.appinventor.client.widgets.LabeledTextBox;
 import com.google.appinventor.client.widgets.dnd.DragSource;
@@ -21,6 +24,8 @@ import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.HasAssetsFolder;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidAssetsFolder;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -216,7 +221,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
       public void onSelected() {
-        select();
+        // are we showing the blocks editor? if so, toggle the component drawer
+        if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+          YaBlocksEditor blocksEditor = 
+              (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+          OdeLog.log("Showing item " + getName());
+          blocksEditor.showComponentBlocks(getName());
+        } else {
+          select();
+        }
       }
 
       @Override
@@ -571,7 +584,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return iconImage;
   }
 
- /**
+  /**
+   * Returns the unique id for the component
+   *
+   * @return  uuid for the component
+   */
+  public final String getUuid() {
+    return getPropertyValue(PROPERTY_NAME_UUID);
+  }
+
+  /**
    * Sets the component container to which the component belongs.
    *
    * @param container  owning component container for this component
@@ -624,7 +646,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected ProjectNode getAssetNode(String name) {
     Project project = Ode.getInstance().getProjectManager().getProject(editor.getProjectId());
     if (project != null) {
-      HasAssetsFolder hasAssetsFolder = (HasAssetsFolder) project.getRootNode();
+      HasAssetsFolder<YoungAndroidAssetsFolder> hasAssetsFolder = 
+          (YoungAndroidProjectNode) project.getRootNode();
       for (ProjectNode asset : hasAssetsFolder.getAssetsFolder().getChildren()) {
         if (asset.getName().equals(name)) {
           return asset;

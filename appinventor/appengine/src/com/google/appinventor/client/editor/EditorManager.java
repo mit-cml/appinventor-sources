@@ -2,18 +2,19 @@
 
 package com.google.appinventor.client.editor;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public final class EditorManager {
    * Creates the editor manager.
    */
   public EditorManager() {
-    openProjectEditors = new HashMap<Long, ProjectEditor>();
+    openProjectEditors = Maps.newHashMap();
 
     dirtyProjectSettings = new HashSet<ProjectSettings>();
     dirtyFileEditors = new HashSet<FileEditor>();
@@ -85,12 +86,14 @@ public final class EditorManager {
 
         // Add the editor to the openProjectEditors map.
         openProjectEditors.put(projectId, projectEditor);
+        
+        // Tell the DesignToolbar about this project
+        Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 
         // Load the project into the editor. The actual loading is asynchronous.
         projectEditor.loadProject();
       }
     }
-
     return projectEditor;
   }
 
@@ -105,22 +108,24 @@ public final class EditorManager {
   }
 
   /**
-   * Closes the file editor for a specific file, without saving.
-   * This is used when the file is about to be deleted.
+   * Closes the file editors for the specified files, without saving.
+   * This is used when the files are about to be deleted.
    *
    * @param projectId  project ID
-   * @param fileId  file ID of the file to be closed
+   * @param fileIds  file IDs of the file editors to be closed
    */
-  public void closeFileEditor(long projectId, String fileId) {
+  public void closeFileEditors(long projectId, String[] fileIds) {
     ProjectEditor projectEditor = openProjectEditors.get(projectId);
     if (projectEditor != null) {
-      FileEditor fileEditor = projectEditor.getFileEditor(fileId);
-      // The file may not be open in an editor. For example, an asset file can be deleted, but there
-      // won't be a file editor for it. So, check fileEditor for null.
-      if (fileEditor != null) {
-        dirtyFileEditors.remove(fileEditor);
-        projectEditor.closeFileEditor(fileId);
+      for (String fileId : fileIds) {
+        FileEditor fileEditor = projectEditor.getFileEditor(fileId);
+        // in case the file is not open in an editor (possible?) check 
+        // the FileEditors for null. 
+        if (fileEditor != null) {
+          dirtyFileEditors.remove(fileEditor);
+        }
       }
+      projectEditor.closeFileEditors(fileIds);
     }
   }
 
