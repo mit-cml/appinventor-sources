@@ -373,7 +373,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     }    
   }
   
-  private boolean isScreen1(String formName) {
+  private static boolean isScreen1(String formName) {
     return formName.equals(YoungAndroidSourceNode.SCREEN1_FORM_NAME);
   }
 

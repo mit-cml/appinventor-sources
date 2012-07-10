@@ -77,7 +77,7 @@ public abstract class ProjectEditor extends Composite {
    * Called when the ProjectEditor widget is loaded after having been hidden. 
    * Subclasses must implement this method, taking responsiblity for causing 
    * the onShow method of the selected file editor to be called and for updating 
-   * any other UI elements related to showing the file editor.
+   * any other UI elements related to showing the project editor.
    */
   protected abstract void onShow();
   
@@ -85,7 +85,7 @@ public abstract class ProjectEditor extends Composite {
    * Called when the ProjectEditor widget is about to be unloaded. Subclasses
    * must implement this method, taking responsiblity for causing the onHide 
    * method of the selected file editor to be called and for updating any 
-   * other UI elements related to hiding the file editor.
+   * other UI elements related to hiding the project editor.
    */
   protected abstract void onHide();
 
@@ -145,6 +145,9 @@ public abstract class ProjectEditor extends Composite {
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
+    // Note that we still want to do the following statements even if 
+    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // to a previously opened project from another project.
     selectedFileEditor = fileEditor;
     deckPanel.showWidget(index);
     selectedFileEditor.onShow();

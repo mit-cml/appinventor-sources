@@ -45,12 +45,12 @@ public class DesignToolbar extends Toolbar {
    * in the screens pull-down.
    */
   private static class Screen {
-    private final String name;
+    private final String screenName;
     private final FileEditor formEditor;
     private final FileEditor blocksEditor;
     
     public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
-      this.name = name;
+      this.screenName = name;
       this.formEditor = formEditor;
       this.blocksEditor = blocksEditor;
     }
@@ -390,8 +390,8 @@ public class DesignToolbar extends Toolbar {
       currentProject = projectMap.get(projectId);
       // TODO(sharon): add screens to drop-down menu in the right order
       for (Screen screen : currentProject.screens.values()) {
-        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new ToolbarItem(screen.name,
-            screen.name, new SwitchScreenAction(projectId, screen.name)));
+        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new ToolbarItem(screen.screenName,
+            screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
       }
       projectNameLabel.setText(projectName);
     } else {

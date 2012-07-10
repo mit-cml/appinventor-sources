@@ -93,16 +93,16 @@ public abstract class FileEditor extends Composite {
   /**
    * Called when the FileEditor is about to be shown. Calls 
    * Ode.getInstance().setCurrentFileEditor(this). The subclass should do anything else necessary
-   * get its UI set up after calling super.onShow().
+   * to get its UI set up after calling super.onShow().
    */
   public void onShow() {
     Ode.getInstance().setCurrentFileEditor(this);
   }
 
   /**
-   * Called when the FileEditor is about to be shown. Calls 
-   * Ode.getInstance().setCurrentFileEditor(null). he subclass should do anything else necessary 
-   * get its UI cleaned up after calling super.onHide().
+   * Called when the FileEditor is about to be hidden. Calls 
+   * Ode.getInstance().setCurrentFileEditor(null). The subclass should do anything else necessary 
+   * to get its UI cleaned up after calling super.onHide().
    */
   public void onHide() {
     // When an editor is detached, if we are the "current" editor,

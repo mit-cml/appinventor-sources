@@ -75,8 +75,15 @@ public final class YaBlocksEditor extends FileEditor
     this.blocksNode = blocksNode;
 
     blocksArea = new BlocklyPanel(blocksNode.getProjectId() + "_" + blocksNode.getFormName());
+    
     // We would like the blocks area to fill the available space automatically,
     // but apparently we need to give it a height or else it ends up too short.
+    // TODO(sharon): Neil was stumped the last time he looked at this, and I didn't manage to get
+    // it to work either after some futzing. I think the problem was that there
+    // was no set height to fill. Looking again, I wonder if this might be a
+    // problem in the Box constructor, perhaps in the call to
+    // body.setSize("100%", "100%"). I wonder if that should be using the initial
+    // height passed into the Box constructor instead.  
     blocksArea.setSize("100%", "600px");
 
     initWidget(blocksArea);
@@ -231,25 +238,21 @@ public final class YaBlocksEditor extends FileEditor
     // Nothing to do after blocks are saved.
   }
 
-  public void addComponent(String typeName, String instanceName, String uid) {
-    if (componentUuids.contains(uid)) {
-      return;  // already have this one
+  public void addComponent(String typeName, String instanceName, String uuid) {
+    if (componentUuids.add(uuid)) {
+      String typeDescription = COMPONENT_DATABASE.getTypeDescription(typeName);
+      blocksArea.addComponent(typeDescription, instanceName, uuid);
     }
-    componentUuids.add(uid);
-    String typeDescription = COMPONENT_DATABASE.getTypeDescription(typeName);
-    blocksArea.addComponent(typeDescription, instanceName, uid);
   }
 
-  public void removeComponent(String typeName, String instanceName, String uid) {
-    if (!componentUuids.contains(uid)) {
-      return;  // don't know about this one - can this ever happen?
+  public void removeComponent(String typeName, String instanceName, String uuid) {
+    if (componentUuids.remove(uuid)) {
+      blocksArea.removeComponent(typeName, instanceName, uuid);
     }
-    componentUuids.remove(uid);
-    blocksArea.removeComponent(typeName, instanceName, uid);
   }
 
-  public void renameComponent(String typeName, String oldName, String newName, String uid) {
-    blocksArea.renameComponent(typeName, oldName, newName, uid);
+  public void renameComponent(String typeName, String oldName, String newName, String uuid) {
+    blocksArea.renameComponent(typeName, oldName, newName, uuid);
   }
 
   public void showComponentBlocks(String instanceName) {
