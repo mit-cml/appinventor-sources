@@ -216,7 +216,7 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Switch to the Designer tab
+   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
     // Only show designer if there is a current editor.
@@ -225,6 +225,7 @@ public class Ode implements EntryPoint {
       deckPanel.showWidget(designTabIndex);
     } else {
       OdeLog.wlog("No current file editor to show in designer");
+      ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
   
@@ -495,7 +496,7 @@ public class Ode implements EntryPoint {
     VerticalPanel structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
     // Only one of the SourceStructureBox and the BlockSelectorBox is visible
-    // at any given time, according to whether we are showing the UI designer
+    // at any given time, according to whether we are showing the form editor
     // or the blocks editor. They share the same screen real estate.
     structureAndAssets.add(SourceStructureBox.getSourceStructureBox());
     structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
@@ -683,7 +684,7 @@ public class Ode implements EntryPoint {
    *
    * @param fileEditor  the file editor, can be null.
    */
-  public void setCurrentFileEditor(FileEditor fileEditor, String formName) {
+  public void setCurrentFileEditor(FileEditor fileEditor) {
     currentFileEditor = fileEditor;
     if (currentFileEditor == null) {
       // nothing more we can do

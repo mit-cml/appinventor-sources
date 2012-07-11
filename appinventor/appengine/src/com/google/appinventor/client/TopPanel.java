@@ -103,11 +103,7 @@ public class TopPanel extends Composite {
     design.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          if (ode.getCurrentFileEditor() != null) {
-            ode.switchToDesignView();
-          } else {
-            ErrorReporter.reportInfo(MESSAGES.chooseProject());
-          }
+          ode.switchToDesignView();
         }
       }
     );

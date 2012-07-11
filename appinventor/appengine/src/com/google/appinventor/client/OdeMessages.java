@@ -88,8 +88,8 @@ public interface OdeMessages extends Messages {
   String switchToBlocksEditorButton();
 
   @DefaultMessage("UI")
-  @Description("Label of the button for switching to the designer")
-  String switchToDesignerButton();
+  @Description("Label of the button for switching to the form editor")
+  String switchToFormEditorButton();
 
   @DefaultMessage("Show Barcode")
   @Description("Label of the cascade item for building a project and showing barcode")
@@ -219,7 +219,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of Debugging tab")
   String tabNameDebugging();
 
-  @DefaultMessage("Please choose a project to open.")
+  @DefaultMessage("Please choose a project to open or create a new project.")
   @Description("Message shown when there is no current file editor to switch to")
   String chooseProject();
 

@@ -75,8 +75,9 @@ public class AssetList extends Composite implements ProjectChangeListener {
     initWidget(panel);
 
     assetList.addSelectionHandler(new SelectionHandler<TreeItem>() {
-      public void onSelection(SelectionEvent event) {
-        TreeItem selected = (TreeItem) event.getSelectedItem();
+      @Override
+      public void onSelection(SelectionEvent<TreeItem> event) {
+        TreeItem selected = event.getSelectedItem();
         ProjectNode node = (ProjectNode) selected.getUserObject();
         // The actual menu is determined by what is registered for the filenode
         // type in CommandRegistry.java

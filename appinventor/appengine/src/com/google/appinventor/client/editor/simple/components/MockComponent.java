@@ -71,7 +71,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     SourcesMouseEvents, DragSource {
   // Common property names (not all components support all properties).
   protected static final String PROPERTY_NAME_NAME = "Name";
-  public static final String PROPERTY_NAME_UUID = "Uuid";
+  protected static final String PROPERTY_NAME_UUID = "Uuid";
   protected static final String PROPERTY_NAME_SOURCE = "Source";
 
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
@@ -221,7 +221,15 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     sourceStructureExplorerItem = new SourceStructureExplorerItem() {
       @Override
       public void onSelected() {
-        select();
+        // are we showing the blocks editor? if so, toggle the component drawer
+        if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
+          YaBlocksEditor blocksEditor = 
+              (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
+          OdeLog.log("Showing item " + getName());
+          blocksEditor.showComponentBlocks(getName());
+        } else {
+          select();
+        }
       }
 
       @Override
@@ -518,13 +526,6 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    */
   public final void select() {
     getForm().setSelectedComponent(this);
-    // are we showing the blocks editor? if so, toggle the component drawer
-    if (Ode.getInstance().getCurrentFileEditor() instanceof YaBlocksEditor) {
-      YaBlocksEditor editor = 
-          (YaBlocksEditor) Ode.getInstance().getCurrentFileEditor();
-      OdeLog.log("Showing item " + getName());
-      editor.showComponentBlocks(getName());
-    }
   }
 
   /**
@@ -583,7 +584,16 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     return iconImage;
   }
 
- /**
+  /**
+   * Returns the unique id for the component
+   *
+   * @return  uuid for the component
+   */
+  public final String getUuid() {
+    return getPropertyValue(PROPERTY_NAME_UUID);
+  }
+
+  /**
    * Sets the component container to which the component belongs.
    *
    * @param container  owning component container for this component

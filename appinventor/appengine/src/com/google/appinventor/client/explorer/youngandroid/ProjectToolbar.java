@@ -297,8 +297,10 @@ public class ProjectToolbar extends Toolbar {
         new AsyncCallback<Boolean>() {
       @Override
       public void onSuccess(Boolean keystoreFileExists) {
-        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
-        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, 
+            keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, 
+            keystoreFileExists);
       }
 
       @Override
