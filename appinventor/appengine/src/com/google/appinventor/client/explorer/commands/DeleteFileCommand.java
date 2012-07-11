@@ -42,7 +42,7 @@ public class DeleteFileCommand extends ChainableCommand {
         // (in the browser).
         final String qualifiedFormName = ((YoungAndroidSourceNode) node).getQualifiedName();
         final String formFileId = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
-        final String blocksFileId = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
+        final String blocksFileId = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
         final long projectId = node.getProjectId();
         String fileIds[] = new String[2];
         fileIds[0] = formFileId;
@@ -50,7 +50,7 @@ public class DeleteFileCommand extends ChainableCommand {
         ode.getEditorManager().closeFileEditors(projectId, fileIds);
 
         // When we tell the project service to delete either the form (.scm) file or the blocks
-        // (.blk) file, it will delete both of them
+        // (.bky) file, it will delete both of them
         ode.getProjectService().deleteFile(projectId, node.getFileId(),
             new OdeAsyncCallback<Long>(
         // message on failure

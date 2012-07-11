@@ -175,7 +175,7 @@ public final class AddFormCommand extends ChainableCommand {
       final YoungAndroidPackageNode packageNode = projectRootNode.getPackageNode();
       String qualifiedFormName = packageNode.getPackageName() + '.' + formName;
       final String formFileId = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
-      final String blocksFileId = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
+      final String blocksFileId = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
 
       OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
           // failure message

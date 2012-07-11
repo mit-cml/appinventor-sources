@@ -103,7 +103,7 @@ public final class YaBlocksEditor extends FileEditor
     OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(MESSAGES.loadError()) {
       @Override
       public void onSuccess(String blkFileContent) {
-        // TODO(BLOCKS-IN-BROWSER) - create the visual blocks.
+        blocksArea.loadBlockContent(blkFileContent);
         loadComplete = true;
         selectedDrawer = null;
         if (afterFileLoaded != null) {
@@ -208,8 +208,7 @@ public final class YaBlocksEditor extends FileEditor
 
   @Override
   public String getRawFileContent() {
-    // TODO(BLOCKS-IN-BROWSER) - return the content that should be saved in the .blk file
-    throw new RuntimeException("YaBlocksEditor.getRawFileContent is not implemented yet!");
+    return blocksArea.getBlockContent();
   }
 
   @Override

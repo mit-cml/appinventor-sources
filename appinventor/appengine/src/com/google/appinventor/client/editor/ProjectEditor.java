@@ -14,8 +14,10 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Abstract superclass for all project editors.
@@ -157,6 +159,17 @@ public abstract class ProjectEditor extends Composite {
    */
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
+  }
+  
+  /**
+   * Returns the set of open file editors
+   */
+  public final Set<FileEditor> getOpenFileEditors() {
+    Set<FileEditor> fileEditors = new HashSet<FileEditor>();
+    for (FileEditor fileEditor : openFileEditors.values()) {
+      fileEditors.add(fileEditor);
+    }
+    return fileEditors;
   }
 
   /**

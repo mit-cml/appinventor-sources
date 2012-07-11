@@ -27,6 +27,12 @@ public class YoungAndroidSourceAnalyzer {
    */
   public static final String CODEBLOCKS_SOURCE_EXTENSION = ".blk";
 
+  /**
+   * The filename extension for the file which contains block data to be
+   * consumed by blockly (the in-browser blocks editor).
+   */
+  public static final String BLOCKLY_SOURCE_EXTENSION = ".bky";
+
   private static final String FORM_PROPERTIES_PREFIX = "#|\n";
   private static final String FORM_PROPERTIES_SUFFIX = "\n|#";
 

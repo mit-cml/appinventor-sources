@@ -3,6 +3,7 @@
 package com.google.appinventor.client.editor.youngandroid;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ public class BlocklyPanel extends HTMLPanel {
     public String oldName;          // for RENAME
   }
   
-  static final String EDITOR_HTML = 
+  private static final String EDITOR_HTML = 
       "<style>\n" +
       ".svg {\n" +
       "  height: 100%;\n" +
@@ -54,8 +55,7 @@ public class BlocklyPanel extends HTMLPanel {
   // TODO(sharon): do we need to worry about concurrent access to 
   // this map? Are there multiple threads that could be adding to 
   // and removing from the same list of componentOps at the same time?
-  private static Map<String, List<ComponentOp>> componentOps = 
-      new HashMap<String, List<ComponentOp>>();
+  private static final Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
   
   // When a user switches projects, the ProjectEditor widget gets detached
   // from the main document in the browser. If the user switches back to a 
@@ -70,8 +70,11 @@ public class BlocklyPanel extends HTMLPanel {
   // is re-inited. This component state is updated as components are added, 
   // removed, and renamed. The outer map is keyed by form name, and the 
   // inner map is keyed by component uid.
-  private static Map<String, Map<String, ComponentOp>> currentComponents =
-      new HashMap<String, Map<String, ComponentOp>>();
+  private static final Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
+  
+  // Pending blocks file content, indexed by form name. Waiting to be loaded when the corresponding
+  // blocks area is initialized.
+  private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
 
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
@@ -88,7 +91,7 @@ public class BlocklyPanel extends HTMLPanel {
    * get called back from the Blockly Javascript when it finishes loading.
    */
   public static void initUi() {
-    exportInitComponentsMethod();
+    exportInitBlocksAreaMethod();
   }
   
   /*
@@ -99,11 +102,12 @@ public class BlocklyPanel extends HTMLPanel {
    * after it finishes loading. We export this method to Javascript in
    * exportInitComponentsMethod().
    */
-  private static void initComponents(String formName) {
-    // TODO(sharon): check whether we stashed away components from a previous 
-    // initialization and restore if necessary. works in conjunction with 
-    // saveComponents.
-    OdeLog.log("BlocklyPanel: Got initComponents call for " + formName);
+  private static void initBlocksArea(String formName) {
+    OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
+
+    // if there are any components added, add them first before we load
+    // block content that might reference them
+    
     Map<String, ComponentOp> savedComponents = currentComponents.get(formName);
     if (savedComponents != null) { // shouldn't be!
       OdeLog.log("Restoring " + savedComponents.size() + 
@@ -132,6 +136,13 @@ public class BlocklyPanel extends HTMLPanel {
         }
       }
       componentOps.remove(formName);
+    }
+    
+    // if we've gotten any block content to load, load it now
+    if (pendingBlocksContentMap.containsKey(formName)) {
+      OdeLog.log("Loading blocks area content for lastBlockContent");
+      doLoadBlocksContent(formName, pendingBlocksContentMap.get(formName));
+      pendingBlocksContentMap.remove(formName);
     }
   }
   
@@ -329,11 +340,29 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
   
+  public void loadBlockContent(String blockContent) {
+    if (blocksInited(formName)) {
+      doLoadBlocksContent(formName, blockContent);
+    } else {
+      // save it to load when the blocks area is initialized
+      pendingBlocksContentMap.put(formName, blockContent);
+    }
+  }
+  
+  public String getBlockContent() {
+    if (blocksInited(formName)) {
+      return doGetBlockContent(formName);
+    } else {
+      // in case someone clicks Save before the blocks area is inited
+      return pendingBlocksContentMap.get(formName);
+    }
+  }
+  
   // ------------ Native methods ------------
   
-  private static native void exportInitComponentsMethod() /*-{ 
-    $wnd.BlocklyPanel_initComponents = 
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initComponents(Ljava/lang/String;));
+  private static native void exportInitBlocksAreaMethod() /*-{ 
+    $wnd.BlocklyPanel_initBlocksArea = 
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
   }-*/;
   
   private native void initJS() /*-{
@@ -378,5 +407,12 @@ public class BlocklyPanel extends HTMLPanel {
   public static native boolean doDrawerShowing(String formName) /*-{
     return $wnd.Blocklies[formName].Drawer.isShowing();
   }-*/;
-
+  
+  public static native void doLoadBlocksContent(String formName, String blockContent) /*-{
+    $wnd.Blocklies[formName].SaveFile.load(blockContent);
+  }-*/;
+  
+  public static native String doGetBlockContent(String formName) /*-{
+    return $wnd.Blocklies[formName].SaveFile.get();
+  }-*/;
 }

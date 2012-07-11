@@ -89,12 +89,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
   private static final String CODEBLOCKS_SOURCE_EXTENSION =
       YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+  private static final String BLOCKLY_SOURCE_EXTENSION =
+      YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION;
 
   public static final String PROJECT_PROPERTIES_FILE_NAME = PROJECT_DIRECTORY + "/" +
       "project.properties";
-
-  // Maximum size of a generated apk file, in megabytes.
-  private static final Flag<Float> maxApkSizeMegs = Flag.createFlag("max.apk.size.megs", 10f);
 
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
 
@@ -102,9 +101,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   private static final String BUILD_FOLDER = "build";
 
   public static final String PROJECT_KEYSTORE_LOCATION = "android.keystore";
-
-  private static final String KEYSTORE_FILE_NAME = YoungAndroidProjectService.PROJECT_DIRECTORY +
-                                                   "/" + PROJECT_KEYSTORE_LOCATION;
 
   // host[:port] to use for connecting to the build server
   private static final Flag<String> buildServerHost =
@@ -168,9 +164,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   }
 
   /**
-   * Returns the initial contents of a Young Android codeblocks file.
+   * Returns the initial contents of a Young Android blockly blocks file.
    */
-  private static String getInitialCodeblocksSourceFileContents(String qualifiedName) {
+  private static String getInitialBlocklySourceFileContents(String qualifiedName) {
     return "";
   }
 
@@ -236,15 +232,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
 
-    String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
-    String codeblocksFileContents = getInitialCodeblocksSourceFileContents(qualifiedFormName);
+    String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
+    String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
 
     Project project = new Project(projectName);
     project.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
     // Project history not supported in legacy ode new project wizard
     project.addTextFile(new TextFile(propertiesFileName, propertiesFileContents));
     project.addTextFile(new TextFile(formFileName, formFileContents));
-    project.addTextFile(new TextFile(codeblocksFileName, codeblocksFileContents));
+    project.addTextFile(new TextFile(blocklyFileName, blocklyFileContents));
 
     // Create new project
     return storageIo.createProject(userId, project, getProjectSettings(""));
@@ -320,7 +316,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     Map<String, ProjectNode> packagesMap = Maps.newHashMap();
 
     // Retrieve project information
-    for (String fileId : storageIo.getProjectSourceFiles(userId, projectId)) {
+    List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    for (String fileId : sourceFiles) {
       if (fileId.startsWith(ASSETS_FOLDER + '/')) {
         // Assets is a flat folder
         assetsNode.addChild(new YoungAndroidAssetNode(StorageUtil.basename(fileId), fileId));
@@ -330,8 +327,23 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         YoungAndroidSourceNode sourceNode = null;
         if (fileId.endsWith(FORM_PROPERTIES_EXTENSION)) {
           sourceNode = new YoungAndroidFormNode(fileId);
-        } else if (fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+        } else if (fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
           sourceNode = new YoungAndroidBlocksNode(fileId);
+        } else if (fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+          // TODO(sharon): project has old Codeblocks blocks file that needs to be converted
+          // into a Blockly file.
+          String blocklyFileName = fileId.substring(0, fileId.lastIndexOf(CODEBLOCKS_SOURCE_EXTENSION)) 
+              + BLOCKLY_SOURCE_EXTENSION;
+          if (!sourceFiles.contains(blocklyFileName)) {
+            // This is an old project that hasn't been converted yet. Convert
+            // the blocks file to Blockly format and name. Leave the old
+            // codeblocks file around for now (for debugging)
+            String blocklyFileContents = convertCodeblocksToBlockly(userId, projectId, fileId);
+            storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
+            storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
+                StorageUtil.DEFAULT_CHARSET);
+            sourceNode = new YoungAndroidBlocksNode(blocklyFileName);
+          }
         }
         if (sourceNode != null) {
           String packageName = StorageUtil.getPackageName(sourceNode.getQualifiedName());
@@ -348,29 +360,38 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     return rootNode;
   }
+  
+  /*
+   * Convert the contents of the codeblocks file named codeblocksFileId
+   * to blockly format and return the blockly contents.
+   */
+  private String convertCodeblocksToBlockly(String userId, long projectId, String codeblocksFileId) {
+    // TODO(sharon): implement this!
+    return "";
+  }
 
   @Override
   public long addFile(String userId, long projectId, String fileId) {
     if (fileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
-        fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+        fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
       // If the file to be added is a form file or a blocks file, add a new form file and a new
       // blocks file.
       String qualifiedFormName = YoungAndroidSourceNode.getQualifiedName(fileId);
       String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
-      String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
+      String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
 
       List<String> sourceFiles = storageIo.getProjectSourceFiles(userId, projectId);
       if (!sourceFiles.contains(formFileName) &&
-          !sourceFiles.contains(codeblocksFileName)) {
+          !sourceFiles.contains(blocklyFileName)) {
 
         String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
         storageIo.addSourceFilesToProject(userId, projectId, false, formFileName);
         storageIo.uploadFile(projectId, formFileName, userId, formFileContents,
             StorageUtil.DEFAULT_CHARSET);
 
-        String codeblocksFileContents = getInitialCodeblocksSourceFileContents(qualifiedFormName);
-        storageIo.addSourceFilesToProject(userId, projectId, false, codeblocksFileName);
-        return storageIo.uploadFile(projectId, codeblocksFileName, userId, codeblocksFileContents,
+        String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
+        storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
+        return storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
             StorageUtil.DEFAULT_CHARSET);
       } else {
         throw new IllegalStateException("One or more files to be added already exists.");
@@ -384,16 +405,20 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   @Override
   public long deleteFile(String userId, long projectId, String fileId) {
     if (fileId.endsWith(FORM_PROPERTIES_EXTENSION) ||
-        fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
+        fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
       // If the file to be deleted is a form file or a blocks file, delete both the form file
-      // and the blocks file.
+      // and the blocks file. Also, if there was a codeblocks file laying around
+      // for that same form, delete it too (if it doesn't exist the delete
+      // for it will be a no-op).
       String qualifiedFormName = YoungAndroidSourceNode.getQualifiedName(fileId);
       String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
-      String codeblocksFileName = YoungAndroidBlocksNode.getBlocksFileId(qualifiedFormName);
+      String blocklyFileName = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
+      String codeblocksFileName = YoungAndroidBlocksNode.getCodeblocksFileId(qualifiedFormName);
       storageIo.deleteFile(userId, projectId, formFileName);
+      storageIo.deleteFile(userId, projectId, blocklyFileName);
       storageIo.deleteFile(userId, projectId, codeblocksFileName);
       storageIo.removeSourceFilesFromProject(userId, projectId, true,
-          formFileName, codeblocksFileName);
+          formFileName, blocklyFileName, codeblocksFileName);
       return storageIo.getProjectDateModified(userId, projectId);
 
     } else {
