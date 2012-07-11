@@ -175,13 +175,12 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 57:
   // - PLAYER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 58:
-<<<<<<< HEAD
-  // The Camcorder component was added.
-=======
   // - FORM_COMPONENT_VERSION was incremented to 7.
->>>>>>> 135acbca7522f0027117263d88507b955cdc55f4
+  // For YOUNG_ANDROID_VERSION 59:
+  //The Camcorder component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 58;
+
+  public static final int YOUNG_ANDROID_VERSION = 59;
 
   // ............................... Blocks Language Version Number ...............................
 
