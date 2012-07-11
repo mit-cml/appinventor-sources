@@ -39,14 +39,14 @@ public class Toolbar extends Composite {
     }
   }
   
-  /*
+  /**
    * Class representing a drop-down button with its associated menu. Note
    * that all items in the menu should have unique captions for removeItem
    * and setItemEnabled to work properly.
    */
   public static class DropDownButton extends TextButton {
-    private ContextMenu menu;
-    private List<MenuItem> items;
+    private final ContextMenu menu;
+    private final List<MenuItem> items;
     
     // Create a new drop-down menu button, initially populated with items. Null
     // items in the list cause a separator to be added at that position.
@@ -84,7 +84,7 @@ public class Toolbar extends Composite {
       for (MenuItem item : items) {
         menu.removeItem(item);
       }
-      items = new ArrayList<MenuItem>();
+      items.clear();
     }
     
     public void addItem(ToolbarItem item) {

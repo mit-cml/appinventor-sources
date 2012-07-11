@@ -97,8 +97,8 @@ public class WaitForBuildResultCommand extends ChainableCommand {
           // Yail generation error
           String formName = extractFormName(result);
           ErrorReporter.reportError(MESSAGES.errorGeneratingYail(formName));
-          String formFileName = formName  + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
-          String blocksFileName = formName  + YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+          String blocksFileName = formName  + 
+              YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
           YoungAndroidBlocksNode blocksNode =
               findBlocksNode((YoungAndroidProjectNode) node, blocksFileName);
           if (blocksNode != null) {

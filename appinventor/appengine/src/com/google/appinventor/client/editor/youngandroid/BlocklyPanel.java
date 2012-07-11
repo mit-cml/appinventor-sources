@@ -52,10 +52,10 @@ public class BlocklyPanel extends HTMLPanel {
   // Replay them in order after initialized. Keys are form names. If there is 
   // an entry for a given form name in the map, its blocks have not yet been 
   // (re)inited.
-  // TODO(sharon): do we need to worry about concurrent access to 
-  // this map? Are there multiple threads that could be adding to 
-  // and removing from the same list of componentOps at the same time?
-  private static final Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
+  // Note: Javascript is single-threaded. Since this code is compiled by GWT
+  // into Javascript, we don't need to worry about concurrent access to 
+  // this map.
+  private static Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
   
   // When a user switches projects, the ProjectEditor widget gets detached
   // from the main document in the browser. If the user switches back to a 
@@ -80,6 +80,7 @@ public class BlocklyPanel extends HTMLPanel {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
     this.formName = formName;
     componentOps.put(formName, new ArrayList<ComponentOp>());
+    // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
     currentComponents.put(formName, new HashMap<String, ComponentOp>());
     initJS();
     OdeLog.log("Created BlocklyPanel for " + formName);
@@ -363,6 +364,7 @@ public class BlocklyPanel extends HTMLPanel {
   private static native void exportInitBlocksAreaMethod() /*-{ 
     $wnd.BlocklyPanel_initBlocksArea = 
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
+    // Note: above line is longer than 100 chars but I'm not sure whether it can be split
   }-*/;
   
   private native void initJS() /*-{

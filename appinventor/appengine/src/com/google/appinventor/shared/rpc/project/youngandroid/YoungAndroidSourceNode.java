@@ -14,6 +14,7 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 public abstract class YoungAndroidSourceNode extends SourceNode {
 
   protected static final String SRC_PREFIX = YoungAndroidSourceAnalyzer.SRC_FOLDER + "/";
+  public static final String SCREEN1_FORM_NAME = "Screen1";
 
   /**
    * Default constructor (for serialization only).
@@ -86,10 +87,6 @@ public abstract class YoungAndroidSourceNode extends SourceNode {
    * blocks (.blk) files.
    */
   public static boolean isScreen1(String fileId) {
-    return getFormName(fileId).equals(screen1FormName());
-  }
-  
-  public static String screen1FormName() {
-    return "Screen1";
+    return getFormName(fileId).equals(SCREEN1_FORM_NAME);
   }
 }

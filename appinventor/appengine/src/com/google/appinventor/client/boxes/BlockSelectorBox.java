@@ -25,12 +25,12 @@ import java.util.List;
  * @author sharon@google.com (Sharon Perl)
  *
  */
-public class BlockSelectorBox extends Box {
+public final class BlockSelectorBox extends Box {
   // Singleton block selector box instance
   // Starts out not visible. call setVisible(true) to make it visible
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
   
-  private static final String BuiltinDrawerNames[] = {"Control",
+  private static final String BUILTIN_DRAWER_NAMES[] = {"Control",
                                                       "Lists",
                                                       "Logic",
                                                       "Math",
@@ -38,10 +38,10 @@ public class BlockSelectorBox extends Box {
                                                       "Variables",
                                                       "Procedures"};
 
-  // Source structure explorer (for components)
+  // Source structure explorer (for components and built-in blocks)
   private final SourceStructureExplorer sourceStructureExplorer;
   
-  private static List<BlockDrawerSelectionListener> drawerListeners;
+  private List<BlockDrawerSelectionListener> drawerListeners;
 
   /**
    * Return the singleton BlockSelectorBox box.
@@ -82,10 +82,10 @@ public class BlockSelectorBox extends Box {
    *
    * @return  tree item for this component
    */
-  public static TreeItem getBuiltInBlocksTree() {
+  public TreeItem getBuiltInBlocksTree() {
     TreeItem builtinNode = new TreeItem(new HTML("<span>" 
         + MESSAGES.builtinBlocksLabel() + "</span>"));
-    for (final String drawerName : BuiltinDrawerNames) {
+    for (final String drawerName : BUILTIN_DRAWER_NAMES) {
       TreeItem itemNode = new TreeItem(new HTML("<span>" + drawerName + "</span>"));
       SourceStructureExplorerItem sourceItem = new SourceStructureExplorerItem() {
         @Override
@@ -126,7 +126,11 @@ public class BlockSelectorBox extends Box {
     drawerListeners.add(listener);
   }
   
-  protected static void fireBuiltinDrawerSelected(String drawerName) {
+  public void removeBlockDrawerSelectionListener(BlockDrawerSelectionListener listener) {
+    drawerListeners.remove(listener);
+  }
+
+  private void fireBuiltinDrawerSelected(String drawerName) {
     for (BlockDrawerSelectionListener listener : drawerListeners) {
       listener.onBuiltinDrawerSelected(drawerName);
     }

@@ -8,12 +8,12 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -40,10 +40,10 @@ public abstract class ProjectEditor extends Composite {
   // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
   // is non-null, it is one of the file editors in openFileEditors and the 
   // one currently showing in deckPanel. 
-  protected final Map<String, FileEditor> openFileEditors;
+  private final Map<String, FileEditor> openFileEditors;
   protected final List<String> fileIds; 
-  protected final DeckPanel deckPanel;
-  protected FileEditor selectedFileEditor;
+  private final DeckPanel deckPanel;
+  private FileEditor selectedFileEditor;
 
   /**
    * Creates a {@code ProjectEditor} instance.
@@ -55,7 +55,7 @@ public abstract class ProjectEditor extends Composite {
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
-    openFileEditors = new HashMap<String, FileEditor>();
+    openFileEditors = Maps.newHashMap();
     fileIds = new ArrayList<String>();
 
     deckPanel = new DeckPanel();
@@ -65,7 +65,7 @@ public abstract class ProjectEditor extends Composite {
     deckPanel.setSize("100%", "100%");
     panel.setSize("100%", "100%");
     initWidget(panel);
-    // TODO: I'm not sure that the setSize call below does anything useful.
+    // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");
   }
 
@@ -79,7 +79,7 @@ public abstract class ProjectEditor extends Composite {
    * Called when the ProjectEditor widget is loaded after having been hidden. 
    * Subclasses must implement this method, taking responsiblity for causing 
    * the onShow method of the selected file editor to be called and for updating 
-   * any other UI elements related to showing the file editor.
+   * any other UI elements related to showing the project editor.
    */
   protected abstract void onShow();
   
@@ -87,7 +87,7 @@ public abstract class ProjectEditor extends Composite {
    * Called when the ProjectEditor widget is about to be unloaded. Subclasses
    * must implement this method, taking responsiblity for causing the onHide 
    * method of the selected file editor to be called and for updating any 
-   * other UI elements related to hiding the file editor.
+   * other UI elements related to hiding the project editor.
    */
   protected abstract void onHide();
 
@@ -147,6 +147,9 @@ public abstract class ProjectEditor extends Composite {
     if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
       selectedFileEditor.onHide();
     }
+    // Note that we still want to do the following statements even if 
+    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // to a previously opened project from another project.
     selectedFileEditor = fileEditor;
     deckPanel.showWidget(index);
     selectedFileEditor.onShow();
@@ -171,6 +174,12 @@ public abstract class ProjectEditor extends Composite {
     }
     return fileEditors;
   }
+  /**
+   * Returns the currently selected file editor
+   */
+  protected final FileEditor getSelectedFileEditor() {
+    return selectedFileEditor;
+  }
 
   /**
    * Closes the file editors for the given file IDs, without saving.
@@ -192,6 +201,7 @@ public abstract class ProjectEditor extends Composite {
       if (selectedFileEditor == fileEditor) {
         selectedFileEditor = null;
       }
+      fileEditor.onClose();
     }
   }
   

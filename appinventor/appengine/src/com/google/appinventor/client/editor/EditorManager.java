@@ -11,11 +11,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +52,7 @@ public final class EditorManager {
    * Creates the editor manager.
    */
   public EditorManager() {
-    openProjectEditors = new HashMap<Long, ProjectEditor>();
+    openProjectEditors = Maps.newHashMap();
 
     dirtyProjectSettings = new HashSet<ProjectSettings>();
     dirtyFileEditors = new HashSet<FileEditor>();
