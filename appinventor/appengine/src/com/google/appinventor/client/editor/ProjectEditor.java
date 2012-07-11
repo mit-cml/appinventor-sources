@@ -174,6 +174,7 @@ public abstract class ProjectEditor extends Composite {
     }
     return fileEditors;
   }
+  
   /**
    * Returns the currently selected file editor
    */

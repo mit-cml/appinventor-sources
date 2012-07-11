@@ -341,6 +341,11 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
   
+  /**
+   * Load the blocks described by blockContent into the blocks workspace.
+   * 
+   * @param blockContent  XML description of a blocks workspace in format expected by Blockly
+   */
   public void loadBlockContent(String blockContent) {
     if (blocksInited(formName)) {
       doLoadBlocksContent(formName, blockContent);
@@ -350,6 +355,9 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
   
+  /**
+   * Return the XML string describing the current state of the blocks workspace
+   */
   public String getBlockContent() {
     if (blocksInited(formName)) {
       return doGetBlockContent(formName);

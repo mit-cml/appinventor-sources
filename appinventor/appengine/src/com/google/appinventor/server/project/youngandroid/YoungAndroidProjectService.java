@@ -330,14 +330,13 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         } else if (fileId.endsWith(BLOCKLY_SOURCE_EXTENSION)) {
           sourceNode = new YoungAndroidBlocksNode(fileId);
         } else if (fileId.endsWith(CODEBLOCKS_SOURCE_EXTENSION)) {
-          // TODO(sharon): project has old Codeblocks blocks file that needs to be converted
-          // into a Blockly file.
-          String blocklyFileName = fileId.substring(0, fileId.lastIndexOf(CODEBLOCKS_SOURCE_EXTENSION)) 
+          String blocklyFileName = 
+              fileId.substring(0, fileId.lastIndexOf(CODEBLOCKS_SOURCE_EXTENSION)) 
               + BLOCKLY_SOURCE_EXTENSION;
           if (!sourceFiles.contains(blocklyFileName)) {
             // This is an old project that hasn't been converted yet. Convert
             // the blocks file to Blockly format and name. Leave the old
-            // codeblocks file around for now (for debugging)
+            // codeblocks file around for now (for debugging) but don't send it to the client.
             String blocklyFileContents = convertCodeblocksToBlockly(userId, projectId, fileId);
             storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
             storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
@@ -365,7 +364,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * Convert the contents of the codeblocks file named codeblocksFileId
    * to blockly format and return the blockly contents.
    */
-  private String convertCodeblocksToBlockly(String userId, long projectId, String codeblocksFileId) {
+  private String convertCodeblocksToBlockly(String userId, long projectId, 
+      String codeblocksFileId) {
     // TODO(sharon): implement this!
     return "";
   }
