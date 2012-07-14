@@ -21,7 +21,6 @@ public final class ErrorMessages {
   public static final int ERROR_LOCATION_SENSOR_LONGITUDE_NOT_FOUND = 102;
   // Camera errors
   public static final int ERROR_CAMERA_NO_IMAGE_RETURNED = 201;
-
   // Twitter errors
   public static final int ERROR_TWITTER_UNSUPPORTED_LOGIN_FUNCTION = 301;
   public static final int ERROR_TWITTER_BLANK_CONSUMER_KEY_OR_SECRET = 302;

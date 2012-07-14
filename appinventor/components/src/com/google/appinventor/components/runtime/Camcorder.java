@@ -26,11 +26,11 @@ import java.util.Date;
  */
 
 @DesignerComponent(version = YaVersion.CAMCORDER_COMPONENT_VERSION,
-description = "A component to record a video using the device's camcorder. " +
+description = "Camcorder is a non-visible component that records a video using the device's camera" +
      "After the video is recorded, the name of the file on the phone " +
      "containing the clip is available as an argument to the " +
-     "AfterRecording event. The file name can be used, for example, to set " +
-     "the source property of a VideoPlayer component.",
+     "AfterRecording event. The file name can be used, for example, as " +
+     "the source of a VideoPlayer component.",
 category = ComponentCategory.MEDIA,
 nonVisible = true,
 iconName = "images/camcorder.png")
@@ -58,7 +58,7 @@ public class Camcorder extends AndroidNonvisibleComponent
 	}
 	  
 	/**
-	 * Records a video, then raises the AfterRecoding event.
+	 * Opens the phone's camera to allow a video to be recorded. Records a video, then raises the AfterRecoding event.
 	 */
 	@SimpleFunction
 	public void RecordVideo() {
@@ -138,7 +138,7 @@ public class Camcorder extends AndroidNonvisibleComponent
 	}
 
 	/**
-   * Indicates that a photo was taken with the camera and provides the path to
+   * Indicates that a video was recorded with the camera and provides the path to
 	 * the stored picture.
 	 */
   @SimpleEvent
