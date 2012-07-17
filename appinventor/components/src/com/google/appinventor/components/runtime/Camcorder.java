@@ -29,7 +29,7 @@ import java.util.Date;
 description = "A component to record a video using the device's camcorder." +
      "After the video is recorded, the name of the file on the phone " +
      "containing the clip is available as an argument to the " +
-     "AfterRecording event. The file name can be used, for example, to set  " +
+     "AfterRecording event. The file name can be used, for example, to set " +
      "the source property of a VideoPlayer component.",
 category = ComponentCategory.MEDIA,
 nonVisible = true,
