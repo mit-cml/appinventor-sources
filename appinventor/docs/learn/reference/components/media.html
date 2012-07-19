@@ -39,6 +39,11 @@
        </h1>
        <ul>
         <li>
+         <a href="#Camcorder">
+          Camcorder
+         </a>
+        </li>
+        <li>
          <a href="#Camera">
           Camera
          </a>
@@ -64,6 +69,44 @@
          </a>
         </li>
        </ul>
+       <h2 id="Camcorder">
+        Camcorder
+       </h2>
+       <img alt="" src="images/camcorder.png" />
+       <p>
+	A component to record a video using the device's camcorder.After the video is recorded, the name of the file on the phone containing the   			clip is available as an argument to the AfterRecording event. The file name can be used, for example, to set the source property of a 			VideoPlayer component.
+	</p>
+	<h3>
+	Properties
+	</h3>
+	none
+	<h3>
+	Events
+	</h3>
+	<dl>
+  	<dt>
+	<code>
+	AfterRecording(text clip)
+	</code>
+	</dt>
+  	<dd>
+	Indicates that a video was recorded with the camera and provides the path to
+ 	the stored picture.
+	</dd>
+	</dl>
+	<h3>
+	Methods
+	</h3>
+	<dl>
+  	<dt>
+	<code>
+	RecordVideo()
+	</code>
+	</dt>
+  	<dd>
+	Records a video, then raises the AfterRecoding event.
+	</dd>
+	</dl>
        <h2 id="Camera">
         Camera
        </h2>
@@ -625,3 +668,4 @@
   </div>
  </body>
 </html>
+

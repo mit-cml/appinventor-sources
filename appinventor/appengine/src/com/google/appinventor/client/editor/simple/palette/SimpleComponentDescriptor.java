@@ -82,6 +82,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/barcodeScanner.png", images.barcodeScanner());
     bundledImages.put("images/bluetooth.png", images.bluetooth());
     bundledImages.put("images/camera.png", images.camera());
+    bundledImages.put("images/camcorder.png", images.camcorder());
     bundledImages.put("images/clock.png", images.clock());
     bundledImages.put("images/fusiontables.png", images.fusiontables());
     bundledImages.put("images/gameClient.png", images.gameclient());
