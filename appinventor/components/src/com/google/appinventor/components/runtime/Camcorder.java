@@ -26,125 +26,123 @@ import java.util.Date;
  */
 
 @DesignerComponent(version = YaVersion.CAMCORDER_COMPONENT_VERSION,
-description = "A component to record a video using the device's camcorder." +
-     "After the video is recorded, the name of the file on the phone " +
-     "containing the clip is available as an argument to the " +
-     "AfterRecording event. The file name can be used, for example, to set " +
-     "the source property of a VideoPlayer component.",
-category = ComponentCategory.MEDIA,
-nonVisible = true,
-iconName = "images/camcorder.png")
+    description = "A component to record a video using the device's camcorder." +
+        "After the video is recorded, the name of the file on the phone " +
+        "containing the clip is available as an argument to the " +
+        "AfterRecording event. The file name can be used, for example, to set " +
+        "the source property of a VideoPlayer component.",
+    category = ComponentCategory.MEDIA,
+    nonVisible = true,
+    iconName = "images/camcorder.png")
 @SimpleObject
-public class Camcorder extends AndroidNonvisibleComponent 
-  implements ActivityResultListener, Component {
-	
-	private static final String CAMCORDER_INTENT = "android.media.action.VIDEO_CAPTURE";
-	private static final String CAMCORDER_OUTPUT = "output";
-	private final ComponentContainer container;
+public class Camcorder extends AndroidNonvisibleComponent
+    implements ActivityResultListener, Component {
+
+  private static final String CAMCORDER_INTENT = "android.media.action.VIDEO_CAPTURE";
+  private static final String CAMCORDER_OUTPUT = "output";
+  private final ComponentContainer container;
   private Uri clipFile;
 
-	/* Used to identify the call to startActivityForResult. Will be passed back
-	into the resultReturned() callback method. */
-	private int requestCode;
+  /* Used to identify the call to startActivityForResult. Will be passed back
+     into the resultReturned() callback method. */
+  private int requestCode;
 
-	 /**
-	 * Creates a Camcorder component.
-	 *
-	 * @param container container, component will be placed in
-	 */
+  /**
+   * Creates a Camcorder component.
+   *
+   * @param container container, component will be placed in
+   */
   public Camcorder(ComponentContainer container) {
-	  super(container.$form());
-	  this.container = container;
-	}
-	  
-	/**
-	 * Records a video, then raises the AfterRecoding event.
-	 */
-	@SimpleFunction
-	public void RecordVideo() {
-	  Date date = new Date();
-	  String state = Environment.getExternalStorageState();
+    super(container.$form());
+    this.container = container;
+  }
 
-	  if (Environment.MEDIA_MOUNTED.equals(state)) {
-	    Log.i("CamcorderComponent", "External storage is available and writable");
+  /**
+   * Records a video, then raises the AfterRecoding event.
+   */
+  @SimpleFunction
+  public void RecordVideo() {
+    Date date = new Date();
+    String state = Environment.getExternalStorageState();
 
-	    clipFile = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
-	      "/Video/app_inventor_" + date.getTime()
-	      + ".3gp"));
+    if (Environment.MEDIA_MOUNTED.equals(state)) {
+      Log.i("CamcorderComponent", "External storage is available and writable");
 
-	    ContentValues values = new ContentValues();
-	    values.put(MediaStore.Video.Media.DATA, clipFile.getPath());
-	    values.put(MediaStore.Video.Media.MIME_TYPE, "clip/3gp");
-	    values.put(MediaStore.Video.Media.TITLE, clipFile.getLastPathSegment());
+      clipFile = Uri.fromFile(new File(Environment.getExternalStorageDirectory(),
+                                       "/Video/app_inventor_" + date.getTime()
+                                       + ".3gp"));
 
-	    if (requestCode == 0) {
-	      requestCode = form.registerForActivityResult(this);
-	    }
+      ContentValues values = new ContentValues();
+      values.put(MediaStore.Video.Media.DATA, clipFile.getPath());
+      values.put(MediaStore.Video.Media.MIME_TYPE, "clip/3gp");
+      values.put(MediaStore.Video.Media.TITLE, clipFile.getLastPathSegment());
 
-	    Uri clipUri = container.$context().getContentResolver().insert(
-	      MediaStore.Video.Media.INTERNAL_CONTENT_URI, values);
-	    Intent intent = new Intent(CAMCORDER_INTENT);
-	    intent.putExtra(CAMCORDER_OUTPUT, clipUri);
-	    container.$context().startActivityForResult(intent, requestCode);
-	  } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-	    form.dispatchErrorOccurredEvent(this, "RecordVideo",
-	        ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_READONLY);
-	  } else {
-	    form.dispatchErrorOccurredEvent(this, "RecordVideo",
-	        ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
-	  }
-	}
-	  
-	@Override
-	public void resultReturned(int requestCode, int resultCode, Intent data) {
-	  Log.i("CamcorderComponent",
-	    "Returning result. Request code = " + requestCode + ", result code = " + resultCode);
-	  if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
-	    File clip = new File(clipFile.getPath());
-	    if (clip.length() != 0) {
-	      AfterRecording(clipFile.toString());
-	    } else {
-	      deleteFile(clipFile);  // delete empty file
-	      // see if something useful got returned in the data
-	      if (data != null && data.getData() != null) {
-	        Uri tryClipUri = data.getData();
-	        Log.i("CamcorderComponent", "Calling Camcorder.AfterPicture with clip path "
-	            + tryClipUri.toString());
-	        AfterRecording(tryClipUri.toString());
-	      } else {
-	        Log.i("CamcorderComponent", "Couldn't find a clip file from the Camcorder result");
-	        form.dispatchErrorOccurredEvent(this, "TakeVideo",
-	            ErrorMessages.ERROR_CAMCORDER_NO_CLIP_RETURNED);
-	      }
-	    }
-	  } else {
-	    // delete empty file
-	    deleteFile(clipFile);
-	  }
-	}
+      if (requestCode == 0) {
+        requestCode = form.registerForActivityResult(this);
+      }
 
-	private void deleteFile(Uri fileUri) {
-	  File fileToDelete = new File(fileUri.getPath());
-	  try {
-	    if (fileToDelete.delete()) {
-	      Log.i("CamcorderComponent", "Deleted file " + fileUri.toString());
-	    } else {
-	      Log.i("CamcorderComponent", "Could not delete file " + fileUri.toString());
-	    }
-	  } catch (SecurityException e) {
-	    Log.i("CamcorderComponent", "Got security exception trying to delete file "
-	        + fileUri.toString());
-	  }
-	}
+      Uri clipUri = container.$context().getContentResolver().insert(
+                      MediaStore.Video.Media.INTERNAL_CONTENT_URI, values);
+      Intent intent = new Intent(CAMCORDER_INTENT);
+      intent.putExtra(CAMCORDER_OUTPUT, clipUri);
+      container.$context().startActivityForResult(intent, requestCode);
+    } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+      form.dispatchErrorOccurredEvent(this, "RecordVideo",
+                                      ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_READONLY);
+    } else {
+      form.dispatchErrorOccurredEvent(this, "RecordVideo",
+                                      ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_NOT_AVAILABLE);
+    }
+  }
 
-	/**
+  @Override
+  public void resultReturned(int requestCode, int resultCode, Intent data) {
+    Log.i("CamcorderComponent",
+          "Returning result. Request code = " + requestCode + ", result code = " + resultCode);
+    if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
+      File clip = new File(clipFile.getPath());
+      if (clip.length() != 0) {
+        AfterRecording(clipFile.toString());
+      } else {
+        deleteFile(clipFile);  // delete empty file
+        // see if something useful got returned in the data
+        if (data != null && data.getData() != null) {
+          Uri tryClipUri = data.getData();
+          Log.i("CamcorderComponent", "Calling Camcorder.AfterPicture with clip path "
+                + tryClipUri.toString());
+          AfterRecording(tryClipUri.toString());
+        } else {
+          Log.i("CamcorderComponent", "Couldn't find a clip file from the Camcorder result");
+          form.dispatchErrorOccurredEvent(this, "TakeVideo",
+                                          ErrorMessages.ERROR_CAMCORDER_NO_CLIP_RETURNED);
+        }
+      }
+    } else {
+      // delete empty file
+      deleteFile(clipFile);
+    }
+  }
+
+  private void deleteFile(Uri fileUri) {
+    File fileToDelete = new File(fileUri.getPath());
+    try {
+      if (fileToDelete.delete()) {
+        Log.i("CamcorderComponent", "Deleted file " + fileUri.toString());
+      } else {
+        Log.i("CamcorderComponent", "Could not delete file " + fileUri.toString());
+      }
+    } catch (SecurityException e) {
+      Log.i("CamcorderComponent", "Got security exception trying to delete file "
+            + fileUri.toString());
+    }
+  }
+
+  /**
    * Indicates that a video was recorded with the camera and provides the path to
-	 * the stored picture.
-	 */
+   * the stored picture.
+   */
   @SimpleEvent
-	public void AfterRecording(String clip) {
-	  EventDispatcher.dispatchEvent(this, "AfterRecording", clip);
-	}
+    public void AfterRecording(String clip) {
+    EventDispatcher.dispatchEvent(this, "AfterRecording", clip);
+  }
 }
-	  
-	 
