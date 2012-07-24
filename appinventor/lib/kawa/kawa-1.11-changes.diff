@@ -1,0 +1,106 @@
+==== gnu/bytecode/ObjectType.java#1 - gnu/bytecode/ObjectType.java#2 ====
+45c45,49
+<       return t.isExisting();
+---
+>       // start Google
+>       return ! (t instanceof ObjectType) || ((ObjectType) t).isExisting();
+>       // instead of
+>       // return t.isExisting();
+>       // end Google
+89a94,100
+>     // start Google
+>     try
+>       {
+>         return Class.forName(cname, false,  ObjectType.class.getClassLoader());
+>       }
+>     catch (java.lang.ClassNotFoundException ex)
+>       {
+90a102,105
+>       }
+>     // instead of
+>     // return Class.forName(cname, false, getContextClassLoader());
+>     // end Google
+171a187
+>   // if Google
+172a189
+>   // end Google
+176c193,197
+<     return getMethods(filter, searchSupers, result);
+---
+>     // if Google
+>     return Type.objectType.getMethods(filter, searchSupers, result, context);
+>     // instead of
+>     // return getMethods(filter, searchSupers, result);
+>     // end Google
+==== gnu/expr/Compilation.java#1 - gnu/expr/Compilation.java#2 ====
+2444,2445c2444,2446
+<     if (! mustCompile && ! ModuleExp.compilerAvailable)
+<       error('e', "this expression must be compiled, but compiler is unavailable");
+---
+>     if (! mustCompile && ! ModuleExp.compilerAvailable) {
+>       error('w', "this expression claimed that it must be compiled, but compiler is unavailable");
+>     } else {
+2447a2449
+>   }
+==== gnu/expr/ModuleExp.java#1 - gnu/expr/ModuleExp.java#2 ====
+174a175,190
+>   // start Google
+>   /** Flag to force no compilation */
+>   public static boolean neverCompile = false;
+> 
+>   public static void mustNeverCompile() {
+>     alwaysCompile = false;
+>     neverCompile = true;
+>     compilerAvailable = false;
+>   }
+> 
+>   public static void mustAlwaysCompile() {
+>     alwaysCompile = true;
+>     neverCompile = false;
+>   }
+>   // end Google
+> 
+204a221,234
+> 
+>     // if Google -- NOTE: EVERYTHING FAILS IF THESE ENABLED
+> //    alwaysCompile = false;
+> //    neverCompile = true;
+> //    compilerAvailable = false;
+> 
+>     if (alwaysCompile && neverCompile)
+>       {
+>         throw new RuntimeException("alwaysCompile and neverCompile are both true!");
+>       }
+>     if (neverCompile)
+>       comp.mustCompile = false;
+>     // end Google
+> 
+212a243,246
+>         // if Google
+>         // if (! alwaysCompile && ! comp.mustCompile)
+>         //  { // optimization - don't generate unneeded Class.
+>         // instead of
+214a249
+>         // end Google
+244c279
+<                   return null;
+---
+>                   return false;
+273c308
+<             if (inst instanceof Class)
+---
+>             if (inst instanceof Class) {
+275c310
+< 
+---
+>             }
+==== gnu/text/Path.java#1 - gnu/text/Path.java#2 ====
+13c13
+< implements javax.tools.FileObject
+---
+> // implements javax.tools.FileObject
+==== kawa/Version.java#1 - kawa/Version.java#2 ====
+5c5
+<     return "1.11 (revision 6811M)";
+---
+>     return "1.11";
