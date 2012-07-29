@@ -18,12 +18,12 @@ public final class GitBuildId {
 
  public static String getVersion() {
     String version = GIT_BUILD_VERSION;
-    // This catches the error returned by git describe
+    // This catches the emptry string or the error returned by git describe
     // in the case where there is no description.  In general
     // the version needs to be a string that can be 
     // embedded into a legal file name.  If it can't, then the
     // blocks editor won't load.
-    if (version.contains(" ")) {
+    if ((version == "") || version.contains(" ")) {
       return "none" ;
     } else {
       return version;
