@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2008 Google Inc. All Rights Reserved.
 
 package com.google.appinventor.server;
@@ -42,6 +43,7 @@ public class OdeAuthFilter implements Filter {
 
   // Note that if no whitelist exists, then no whitelist will be used.
   private static final Whitelist whitelist = new Whitelist();
+  private static final IdMap idmap = new IdMap();
 
   // Whether this server should use a whitelist to determine who can
   // access it. Value is specified in the <system-properties> section
@@ -125,6 +127,7 @@ public class OdeAuthFilter implements Filter {
     if (apiUser != null) {
       String userId = apiUser.getUserId();
       String email = apiUser.getEmail();
+      email = idmap.get(email);	// Map the user.
       User user = storageIo.getUser(userId, email);
       user.setIsAdmin(userService.isUserAdmin());
       if (!email.equals(user.getUserEmail())) {
