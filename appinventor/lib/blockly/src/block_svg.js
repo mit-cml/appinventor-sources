@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,25 @@ Blockly.BlockSvg = function(block) {
   // Create core elements for the block.
   this.svgGroup_ = Blockly.createSvgElement('g', {}, null);
   this.svgPathDark_ = Blockly.createSvgElement('path',
-      {transform: 'translate(1, 1)'}, this.svgGroup_);
-  this.svgPath_ = Blockly.createSvgElement('path', {}, this.svgGroup_);
-  this.svgPathLight_ = Blockly.createSvgElement('path',
-      {'fill': 'none', 'stroke-width': 2, 'stroke-linecap': 'round'},
+      {'class': 'blocklyPathDark', transform: 'translate(1, 1)'},
       this.svgGroup_);
+  this.svgPath_ = Blockly.createSvgElement('path', {'class': 'blocklyPath'},
+      this.svgGroup_);
+  this.svgPathLight_ = Blockly.createSvgElement('path',
+      {'class': 'blocklyPathLight', 'fill': 'none', 'stroke-width': 2,
+      'stroke-linecap': 'round'}, this.svgGroup_);
   this.svgPath_.tooltip = this.block_;
   Blockly.Tooltip && Blockly.Tooltip.bindMouseEvents(this.svgPath_);
   if (block.editable) {
     Blockly.addClass_(this.svgGroup_, 'blocklyDraggable');
   }
 };
+
+/**
+ * Constant for identifying rows that are to be rendered inline.
+ * Don't collide with Blockly.INPUT_VALUE and friends.
+ */
+Blockly.BlockSvg.INLINE = -1;
 
 /**
  * Initialize the SVG representation with any block attributes which have
@@ -160,11 +168,27 @@ Blockly.BlockSvg.prototype.updateColour = function() {
 };
 
 /**
+ * Enable or disable a block.
+ */
+Blockly.BlockSvg.prototype.updateDisabled = function() {
+  if (this.block_.disabled || this.block_.getInheritedDisabled()) {
+    Blockly.addClass_(this.svgGroup_, 'blocklyDisabled');
+    this.svgPath_.setAttribute('fill', 'url(#blocklyDisabledPattern)');
+  } else {
+    Blockly.removeClass_(this.svgGroup_, 'blocklyDisabled');
+    this.updateColour();
+  }
+  var children = this.block_.getChildren();
+  for (var x = 0, child; child = children[x]; x++) {
+    child.svg_.updateDisabled();
+  }
+};
+
+/**
  * Select this block.  Highlight it visually.
  */
 Blockly.BlockSvg.prototype.addSelect = function() {
-  Blockly.addClass_(this.svgPath_, 'blocklySelected');
-  this.svgPathLight_.setAttribute('display', 'none');
+  Blockly.addClass_(this.svgGroup_, 'blocklySelected');
   // Move the selected block to the top of the stack.
   this.svgGroup_.parentNode.appendChild(this.svgGroup_);
 };
@@ -173,8 +197,7 @@ Blockly.BlockSvg.prototype.addSelect = function() {
  * Unselect this block.  Remove its highlighting.
  */
 Blockly.BlockSvg.prototype.removeSelect = function() {
-  Blockly.removeClass_(this.svgPath_, 'blocklySelected');
-  this.svgPathLight_.setAttribute('display', 'block');
+  Blockly.removeClass_(this.svgGroup_, 'blocklySelected');
 };
 
 /**
@@ -182,18 +205,14 @@ Blockly.BlockSvg.prototype.removeSelect = function() {
  * Also disables the highlights/shadows to improve performance.
  */
 Blockly.BlockSvg.prototype.addDragging = function() {
-  Blockly.addClass_(this.svgPath_, 'blocklyDragging');
-  Blockly.addClass_(this.svgPathLight_, 'blocklyDragging');
-  this.svgPathDark_.style.display = 'none';
+  Blockly.addClass_(this.svgGroup_, 'blocklyDragging');
 };
 
 /**
  * Removes the dragging class from this block.
  */
 Blockly.BlockSvg.prototype.removeDragging = function() {
-  Blockly.removeClass_(this.svgPath_, 'blocklyDragging');
-  Blockly.removeClass_(this.svgPathLight_, 'blocklyDragging');
-  this.svgPathDark_.style.display = 'block';
+  Blockly.removeClass_(this.svgGroup_, 'blocklyDragging');
 };
 
 /**
@@ -203,12 +222,20 @@ Blockly.BlockSvg.prototype.removeDragging = function() {
 Blockly.BlockSvg.prototype.render = function() {
   this.block_.rendered = true;
   var titleY = 18;
-  if (!this.block_.collapsed &&
-      this.block_.inputsInline && this.block_.inputList.length &&
-      this.block_.inputList[0].type == Blockly.INPUT_VALUE) {
-    // Lower the title elements a bit in order to line up with the first
-    // row of inline labels.
-    titleY += Blockly.BlockSvg.SEP_SPACE_Y;
+  if (!this.block_.collapsed && this.block_.inputsInline &&
+      this.block_.inputList.length) {
+    // Determine if this block will have inline inputs in the top row.
+    var x = 0;
+    do {
+      var input = this.block_.inputList[x];
+      if (input && input.type == Blockly.INPUT_VALUE) {
+        // Lower the title elements a bit in order to line up with the first
+        // row of inline labels.
+        titleY += Blockly.BlockSvg.SEP_SPACE_Y;
+        break;
+      }
+      x++;
+    } while (input && input.type == Blockly.LOCAL_VARIABLE);
   }
   var titleX = Blockly.RTL ?
       this.renderTitleRTL_(titleY) : this.renderTitleLTR_(titleY);
@@ -221,7 +248,7 @@ Blockly.BlockSvg.prototype.render = function() {
     parentBlock.render();
   } else {
     // Top-most block.  Fire an event to allow scrollbars to resize.
-    Blockly.fireUiEvent(Blockly.svgDoc, window, 'resize');
+    Blockly.fireUiEvent(window, 'resize');
   }
 };
 
@@ -234,6 +261,13 @@ Blockly.BlockSvg.prototype.render = function() {
 Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
   var titleX = -Blockly.BlockSvg.SEP_SPACE_X;
   var iconWidth;
+  // Move the mutator icon into position.
+  if (this.block_.mutator) {
+    iconWidth = this.block_.mutator.renderIcon(titleX);
+    if (iconWidth) {
+      titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    }
+  }
   // Move the comment icon into position.
   if (this.block_.comment) {
     iconWidth = this.block_.comment.renderIcon(titleX);
@@ -241,9 +275,9 @@ Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
       titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
     }
   }
-  // Move the mutator icon into position.
-  if (this.block_.mutator) {
-    iconWidth = this.block_.mutator.renderIcon(titleX);
+  // Move the warning icon into position.
+  if (this.block_.warning) {
+    iconWidth = this.block_.warning.renderIcon(titleX);
     if (iconWidth) {
       titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
     }
@@ -276,6 +310,13 @@ Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
 Blockly.BlockSvg.prototype.renderTitleLTR_ = function(titleY) {
   var titleX = Blockly.BlockSvg.SEP_SPACE_X;
   var iconWidth;
+  // Move the mutator icon into position.
+  if (this.block_.mutator) {
+    iconWidth = this.block_.mutator.renderIcon(titleX);
+    if (iconWidth) {
+      titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    }
+  }
   // Move the comment icon into position.
   if (this.block_.comment) {
     iconWidth = this.block_.comment.renderIcon(titleX);
@@ -283,9 +324,9 @@ Blockly.BlockSvg.prototype.renderTitleLTR_ = function(titleY) {
       titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
     }
   }
-  // Move the mutator icon into position.
-  if (this.block_.mutator) {
-    iconWidth = this.block_.mutator.renderIcon(titleX);
+  // Move the warning icon into position.
+  if (this.block_.warning) {
+    iconWidth = this.block_.warning.renderIcon(titleX);
     if (iconWidth) {
       titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
     }
@@ -324,20 +365,31 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
   inputRows.hasValue = false;
   inputRows.hasVariable = false;
   inputRows.hasStatement = false;
-  var lastType = null;
+  var lastType = undefined;
   if (this.block_.collapsed) {
     // Collapsed blocks have no visible inputs.
     return inputRows;
   }
-  for (var i = 0; i < inputList.length; i++) {
-    var input = inputList[i];
+  for (var i = 0, input; input = inputList[i]; i++) {
     var row;
-    if (lastType != Blockly.INPUT_VALUE || input.type != Blockly.INPUT_VALUE ||
-        !this.block_.inputsInline) {
+    if (!this.block_.inputsInline ||
+        !(lastType == Blockly.INPUT_VALUE ||
+          lastType == Blockly.LOCAL_VARIABLE ||
+          lastType == Blockly.DUMMY_INPUT) ||
+        !(input.type == Blockly.INPUT_VALUE ||
+          input.type == Blockly.LOCAL_VARIABLE ||
+          input.type == Blockly.DUMMY_INPUT)) {
       // Create new row.
       lastType = input.type;
-      var row = [];
-      row.type = input.type;
+      row = [];
+      if (this.block_.inputsInline &&
+          (input.type == Blockly.INPUT_VALUE ||
+           input.type == Blockly.LOCAL_VARIABLE ||
+           input.type == Blockly.DUMMY_INPUT)) {
+        row.type = Blockly.BlockSvg.INLINE;
+      } else {
+        row.type = input.type;
+      }
       row.height = 0;
       inputRows.push(row);
     } else {
@@ -346,12 +398,18 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
     row.push(input);
 
     // Compute minimum input size.
-    input.height = Blockly.BlockSvg.MIN_BLOCK_Y;
-    if (row.type == Blockly.INPUT_VALUE) {
-      input.width = Blockly.BlockSvg.TAB_WIDTH + Blockly.BlockSvg.SEP_SPACE_X;
-    } else {
-      // The width is currently only needed for inline value inputs.
-      input.width = NaN;
+    input.renderHeight = Blockly.BlockSvg.MIN_BLOCK_Y;
+    input.renderWidth = NaN;
+    // The width is currently only needed for inline inputs.
+    if (this.block_.inputsInline) {
+      if (input.type == Blockly.INPUT_VALUE) {
+        input.renderWidth = Blockly.BlockSvg.TAB_WIDTH +
+            Blockly.BlockSvg.SEP_SPACE_X;
+      } else if (input.type == Blockly.LOCAL_VARIABLE) {
+        input.renderWidth = input.width() + Blockly.BlockSvg.SEP_SPACE_X;
+      } else if (input.type == Blockly.DUMMY_INPUT) {
+        input.renderWidth = 0;
+      }
     }
     // Expand input size if there is a connection.
     if (input.targetConnection) {
@@ -366,17 +424,17 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
         /* HACK:
          The current versions of Chrome (16.0) and Safari (5.1) with a common
          root of WebKit 535 has a size reporting bug where the height of a
-         block is 5 pixels too large.  If WebKit browsers start under-sizing
+         block is 3 pixels too large.  If WebKit browsers start under-sizing
          connections to other blocks, then delete this entire hack.
         */
-        bBox.height -= 5;
+        bBox.height -= 3;
       }
       // Subtract one from the height due to the shadow.
-      input.height = Math.max(input.height, bBox.height - 1);
-      input.width = Math.max(input.width, bBox.width);
+      input.renderHeight = Math.max(input.renderHeight, bBox.height - 1);
+      input.renderWidth = Math.max(input.renderWidth, bBox.width);
     }
 
-    row.height = Math.max(row.height, input.height);
+    row.height = Math.max(row.height, input.renderHeight);
     if (input.label) {
       if (input.label.getComputedTextLength) {
         // Plain text label.
@@ -391,12 +449,18 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
       input.labelWidth = 0;
     }
 
-    if (row.type == Blockly.INPUT_VALUE) {
-      inputRows.hasValue = true;
+    if (row.type == Blockly.BlockSvg.INLINE) {
       if (row.length == 1) {
         inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
                                              input.labelWidth);
       }
+    } else if (row.type == Blockly.DUMMY_INPUT) {
+      inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
+                                           input.labelWidth);
+    } else if (row.type == Blockly.INPUT_VALUE) {
+      inputRows.hasValue = true;
+      inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
+                                           input.labelWidth);
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       inputRows.hasStatement = true;
       inputRows.labelStatementWidth = Math.max(inputRows.labelStatementWidth,
@@ -404,16 +468,22 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
     } else if (row.type == Blockly.LOCAL_VARIABLE) {
       inputRows.hasVariable = true;
       inputRows.labelVariableWidth = Math.max(inputRows.labelVariableWidth,
-                                           input.labelWidth);
+                                              input.labelWidth);
     }
   }
 
   // Make inline rows a bit thicker in order to enclose the values.
-  if (this.block_.inputsInline && inputRows.hasValue) {
+  if (this.block_.inputsInline) {
     for (var y = 0; y < inputRows.length; y++) {
       var row = inputRows[y];
-      if (row.type == Blockly.INPUT_VALUE) {
-        row.height += 2 * Blockly.BlockSvg.SEP_SPACE_Y;
+      if (row.type == Blockly.BlockSvg.INLINE) {
+        for (var z = 0; z < row.length; z++) {
+          var input = row[z];
+          if (input.type == Blockly.INPUT_VALUE) {
+            row.height += 2 * Blockly.BlockSvg.SEP_SPACE_Y;
+            break;
+          }
+        }
       }
     }
   }
@@ -549,248 +619,283 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
-  if (inputRows.length) {
-    for (var y = 0; y < inputRows.length; y++) {
-      highlightSteps.push('M', (rightEdge - 1) + ',' + (cursorY + 1));
-      var row = inputRows[y];
-      if (row.type == Blockly.INPUT_VALUE) {
-        if (this.block_.inputsInline) {
-          // Inline inputs.
-          cursorX = Math.max(titleX + inputRows.labelValueWidth,
-                             inputRows.labelStatementWidth);
-          cursorX -= row[0].labelWidth;
-          for (var x = 0; x < row.length; x++) {
-            var input = row[x];
-            if (input.label) {
-              var labelElement = input.label.getRootElement();
-              var labelX = Blockly.RTL ? -cursorX - input.labelWidth : cursorX;
-              var labelY = cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y;
-              labelElement.setAttribute('transform',
-                  'translate(' + labelX + ',' + labelY + ')');
-              cursorX += input.labelWidth + Blockly.BlockSvg.SEP_SPACE_X;
-            }
-            cursorX += input.width + Blockly.BlockSvg.SEP_SPACE_X;
-            inlineSteps.push('M', (cursorX - Blockly.BlockSvg.SEP_SPACE_X) +
-                             ',' + (cursorY + Blockly.BlockSvg.SEP_SPACE_Y));
-            inlineSteps.push('h', Blockly.BlockSvg.TAB_WIDTH - input.width);
-            inlineSteps.push(Blockly.BlockSvg.TAB_PATH_DOWN);
-            inlineSteps.push('v', input.height - Blockly.BlockSvg.TAB_HEIGHT);
-            inlineSteps.push('h', input.width - Blockly.BlockSvg.TAB_WIDTH);
-            inlineSteps.push('z');
-            if (Blockly.RTL) {
-              // Highlight right edge, around back of tab, and bottom.
-              highlightInlineSteps.push('M',
-                  (cursorX - Blockly.BlockSvg.SEP_SPACE_X +
-                   Blockly.BlockSvg.TAB_WIDTH - input.width - 1) + ',' +
-                  (cursorY + Blockly.BlockSvg.SEP_SPACE_Y + 1));
-              highlightInlineSteps.push(
-                  Blockly.BlockSvg.TAB_PATH_DOWN_HIGHLIGHT_RTL);
-              highlightInlineSteps.push('v',
-                  input.height - Blockly.BlockSvg.TAB_HEIGHT + 2);
-              highlightInlineSteps.push('h',
-                  input.width - Blockly.BlockSvg.TAB_WIDTH);
-            } else {
-              // Highlight right edge, bottom, and glint at bottom of tab.
-              highlightInlineSteps.push('M',
-                  (cursorX - Blockly.BlockSvg.SEP_SPACE_X + 1) + ',' +
-                  (cursorY + Blockly.BlockSvg.SEP_SPACE_Y + 1));
-              highlightInlineSteps.push('v', input.height);
-              highlightInlineSteps.push('h', Blockly.BlockSvg.TAB_WIDTH -
-                                             input.width);
-              highlightInlineSteps.push('M',
-                  (cursorX - input.width - Blockly.BlockSvg.SEP_SPACE_X + 3.8) +
-                  ',' + (cursorY + Blockly.BlockSvg.SEP_SPACE_Y +
-                         Blockly.BlockSvg.TAB_HEIGHT - 0.4));
-              highlightInlineSteps.push('l',
-                  (Blockly.BlockSvg.TAB_WIDTH * 0.42) + ',-1.8');
-            }
-            // Create inline input connection.
-            if (Blockly.RTL) {
-              connectionX = connectionsXY.x - cursorX -
-                  Blockly.BlockSvg.TAB_WIDTH + Blockly.BlockSvg.SEP_SPACE_X +
-                  input.width - 1;
-            } else {
-              connectionX = connectionsXY.x + cursorX +
-                  Blockly.BlockSvg.TAB_WIDTH - Blockly.BlockSvg.SEP_SPACE_X -
-                  input.width + 1;
-            }
-            connectionY = connectionsXY.y + cursorY +
-                Blockly.BlockSvg.SEP_SPACE_Y;
-            input.moveTo(connectionX, connectionY);
-            if (input.targetConnection) {
-              input.tighten_();
-            }
-          }
-          steps.push('H', cursorX);
-          highlightSteps.push('H', cursorX + (Blockly.RTL ? -1 : 0));
-          steps.push('v', row.height);
+  for (var y = 0; y < inputRows.length; y++) {
+    highlightSteps.push('M', (rightEdge - 1) + ',' + (cursorY + 1));
+    var row = inputRows[y];
+    if (row.type == Blockly.BlockSvg.INLINE) {
+      // Inline inputs and/or variables.
+      cursorX = Math.max(titleX + inputRows.labelValueWidth,
+                         inputRows.labelStatementWidth);
+      cursorX -= row[0].labelWidth;
+      for (var x = 0; x < row.length; x++) {
+        var input = row[x];
+        if (input.label) {
+          var labelElement = input.label.getRootElement();
+          var labelX = Blockly.RTL ? -cursorX - input.labelWidth : cursorX;
+          var labelY = cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y;
+          labelElement.setAttribute('transform',
+              'translate(' + labelX + ',' + labelY + ')');
+          cursorX += input.labelWidth + Blockly.BlockSvg.SEP_SPACE_X;
+        }
+        if (input.type != Blockly.DUMMY_INPUT) {
+          cursorX += input.renderWidth + Blockly.BlockSvg.SEP_SPACE_X;
+        }
+        if (input.type == Blockly.INPUT_VALUE) {
+          inlineSteps.push('M', (cursorX - Blockly.BlockSvg.SEP_SPACE_X) +
+                           ',' + (cursorY + Blockly.BlockSvg.SEP_SPACE_Y));
+          inlineSteps.push('h', Blockly.BlockSvg.TAB_WIDTH - input.renderWidth);
+          inlineSteps.push(Blockly.BlockSvg.TAB_PATH_DOWN);
+          inlineSteps.push('v', input.renderHeight -
+                                Blockly.BlockSvg.TAB_HEIGHT);
+          inlineSteps.push('h', input.renderWidth - Blockly.BlockSvg.TAB_WIDTH);
+          inlineSteps.push('z');
           if (Blockly.RTL) {
-            highlightSteps.push('v', row.height - 2);
-          }
-        } else {
-          // External input.
-          var input = row[0];
-          if (input.label) {
-            var labelElement = input.label.getRootElement();
-            var labelX = Blockly.RTL ? -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
-                Blockly.BlockSvg.SEP_SPACE_X :
-                rightEdge - Blockly.BlockSvg.TAB_WIDTH -
-                Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
-            var labelY = cursorY + 18;
-            labelElement.setAttribute('transform',
-                'translate(' + labelX + ',' + labelY + ')');
-          }
-          steps.push(Blockly.BlockSvg.TAB_PATH_DOWN);
-          steps.push('v', row.height - Blockly.BlockSvg.TAB_HEIGHT);
-          if (Blockly.RTL) {
-            // Highlight around back of tab.
-            highlightSteps.push(Blockly.BlockSvg.TAB_PATH_DOWN_HIGHLIGHT_RTL);
-            highlightSteps.push('v', row.height - Blockly.BlockSvg.TAB_HEIGHT);
+            // Highlight right edge, around back of tab, and bottom.
+            highlightInlineSteps.push('M',
+                (cursorX - Blockly.BlockSvg.SEP_SPACE_X +
+                 Blockly.BlockSvg.TAB_WIDTH - input.renderWidth - 1) + ',' +
+                (cursorY + Blockly.BlockSvg.SEP_SPACE_Y + 1));
+            highlightInlineSteps.push(
+                Blockly.BlockSvg.TAB_PATH_DOWN_HIGHLIGHT_RTL);
+            highlightInlineSteps.push('v',
+                input.renderHeight - Blockly.BlockSvg.TAB_HEIGHT + 2);
+            highlightInlineSteps.push('h',
+                input.renderWidth - Blockly.BlockSvg.TAB_WIDTH);
           } else {
-            // Short highlight glint at bottom of tab.
-            highlightSteps.push('M', (rightEdge - 4.2) + ',' +
-                (cursorY + Blockly.BlockSvg.TAB_HEIGHT - 0.4));
-            highlightSteps.push('l', (Blockly.BlockSvg.TAB_WIDTH * 0.42) +
-                ',-1.8');
+            // Highlight right edge, bottom, and glint at bottom of tab.
+            highlightInlineSteps.push('M',
+                (cursorX - Blockly.BlockSvg.SEP_SPACE_X + 1) + ',' +
+                (cursorY + Blockly.BlockSvg.SEP_SPACE_Y + 1));
+            highlightInlineSteps.push('v', input.renderHeight);
+            highlightInlineSteps.push('h', Blockly.BlockSvg.TAB_WIDTH -
+                                           input.renderWidth);
+            highlightInlineSteps.push('M',
+                (cursorX - input.renderWidth - Blockly.BlockSvg.SEP_SPACE_X +
+                 3.8) + ',' + (cursorY + Blockly.BlockSvg.SEP_SPACE_Y +
+                 Blockly.BlockSvg.TAB_HEIGHT - 0.4));
+            highlightInlineSteps.push('l',
+                (Blockly.BlockSvg.TAB_WIDTH * 0.42) + ',-1.8');
           }
-          // Create external input connection.
-          connectionX = connectionsXY.x +
-              (Blockly.RTL ? -rightEdge - 1 : rightEdge + 1);
-          connectionY = connectionsXY.y + cursorY;
+          // Create inline input connection.
+          if (Blockly.RTL) {
+            connectionX = connectionsXY.x - cursorX -
+                Blockly.BlockSvg.TAB_WIDTH + Blockly.BlockSvg.SEP_SPACE_X +
+                input.renderWidth - 1;
+          } else {
+            connectionX = connectionsXY.x + cursorX +
+                Blockly.BlockSvg.TAB_WIDTH - Blockly.BlockSvg.SEP_SPACE_X -
+                input.renderWidth + 1;
+          }
+          connectionY = connectionsXY.y + cursorY +
+              Blockly.BlockSvg.SEP_SPACE_Y;
           input.moveTo(connectionX, connectionY);
           if (input.targetConnection) {
             input.tighten_();
           }
-        }
-      } else if (row.type == Blockly.LOCAL_VARIABLE) {
-        var input = row[0];
-        if (input.label) {
-          var labelElement = input.label.getRootElement();
+        } else if (input.type == Blockly.LOCAL_VARIABLE) {
+          var fieldGroup = input.getRootElement();
+          var fieldWidth = input.width();
           if (Blockly.RTL) {
-            labelElement.setAttribute('x', -rightEdge +
-                Blockly.BlockSvg.TAB_WIDTH + Blockly.BlockSvg.SEP_SPACE_X);
+            fieldGroup.setAttribute('transform', 'translate(' +
+                (-cursorX + Blockly.BlockSvg.SEP_SPACE_X * 1.5) +
+                ', ' + (cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y) + ')');
           } else {
-            labelElement.setAttribute('x', rightEdge -
-                Blockly.BlockSvg.TAB_WIDTH - Blockly.BlockSvg.SEP_SPACE_X -
-                input.labelWidth);
+            fieldGroup.setAttribute('transform', 'translate(' +
+                (cursorX - fieldWidth - Blockly.BlockSvg.SEP_SPACE_X * 1.5) +
+                ', ' + (cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y) + ')');
           }
-          labelElement.setAttribute('y', cursorY + 18);
-        }
-        var fieldGroup = input.getRootElement();
-        var bBox = input.render() || {height: 0, width: 0};
-        if (Blockly.RTL) {
-          fieldGroup.setAttribute('transform', 'translate(' +
-              (-rightEdge - bBox.width + Blockly.BlockSvg.SEP_SPACE_X / 2) +
-              ', ' + (cursorY + 18) + ')');
-        } else {
-          fieldGroup.setAttribute('transform', 'translate(' +
-              (rightEdge - Blockly.BlockSvg.SEP_SPACE_X / 2) +
-              ', ' + (cursorY + 18) + ')');
-        }
-        var width = bBox.width + Blockly.BlockSvg.SEP_SPACE_X / 2;
-        steps.push('H', rightEdge + width);
-        steps.push('v', row.height);
-        steps.push('h', -width);
-        if (Blockly.RTL) {
-          highlightSteps.push('h', width);
-          highlightSteps.push('v', row.height - 2);
-          highlightSteps.push('m', -width + ',0');
-        } else {
-          highlightSteps.push('h', width + 1);
-        }
-      } else if (row.type == Blockly.NEXT_STATEMENT) {
-        // Nested statement.
-        var input = row[0];
-        // If the first row is a block, add a header row on top.
-        if (y == 0) {
-          steps.push('v', Blockly.BlockSvg.MIN_BLOCK_Y);
-          if (Blockly.RTL) {
-            highlightSteps.push('v', Blockly.BlockSvg.MIN_BLOCK_Y - 2);
-          }
-          cursorY += Blockly.BlockSvg.MIN_BLOCK_Y;
-        }
-        if (input.label) {
-          var labelElement = input.label.getRootElement();
-          if (Blockly.RTL) {
-            labelElement.setAttribute('x', -Blockly.BlockSvg.SEP_SPACE_X -
-                inputRows.labelStatementWidth);
-          } else {
-            labelElement.setAttribute('x', Blockly.BlockSvg.SEP_SPACE_X +
-                inputRows.labelStatementWidth - input.labelWidth);
-          }
-          labelElement.setAttribute('y', cursorY + 18);
-        }
-        cursorX = Blockly.BlockSvg.SEP_SPACE_X + inputRows.labelStatementWidth +
-                  Blockly.BlockSvg.SEP_SPACE_X + Blockly.BlockSvg.NOTCH_WIDTH;
-        steps.push('H', cursorX);
-        steps.push(Blockly.BlockSvg.NOTCH_PATH_RIGHT + ' h -' +
-            (Blockly.BlockSvg.NOTCH_WIDTH - 15 -
-             Blockly.BlockSvg.CORNER_RADIUS));
-        if (Blockly.BlockSvg.CORNER_RADIUS) {
-          steps.push('a', Blockly.BlockSvg.CORNER_RADIUS + ',' +
-                     Blockly.BlockSvg.CORNER_RADIUS + ' 0 0,0 -' +
-                     Blockly.BlockSvg.CORNER_RADIUS + ',' +
-                     Blockly.BlockSvg.CORNER_RADIUS);
-        }
-        steps.push('v', row.height - 2 * Blockly.BlockSvg.CORNER_RADIUS);
-        if (Blockly.BlockSvg.CORNER_RADIUS) {
-          steps.push('a', Blockly.BlockSvg.CORNER_RADIUS + ',' +
-                     Blockly.BlockSvg.CORNER_RADIUS + ' 0 0,0 ' +
-                     Blockly.BlockSvg.CORNER_RADIUS + ',' +
-                     Blockly.BlockSvg.CORNER_RADIUS);
-        }
-        steps.push('H', rightEdge);
-        if (Blockly.RTL) {
-          highlightSteps.push('M',
-              (cursorX - Blockly.BlockSvg.NOTCH_WIDTH +
-               Blockly.BlockSvg.DISTANCE_45_OUTSIDE) +
-              ',' + (cursorY + Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
-          highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
-              (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
-              (-Blockly.BlockSvg.DISTANCE_45_OUTSIDE - 1) + ',' +
-              (Blockly.BlockSvg.CORNER_RADIUS -
-               Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
-          highlightSteps.push('v',
-              row.height - 2 * Blockly.BlockSvg.CORNER_RADIUS);
-          highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
-              (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
-              (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
-              (Blockly.BlockSvg.CORNER_RADIUS + 1));
-          highlightSteps.push('H', rightEdge - 1);
-        } else {
-          highlightSteps.push('M',
-              (cursorX - Blockly.BlockSvg.NOTCH_WIDTH +
-               Blockly.BlockSvg.DISTANCE_45_OUTSIDE) +
-              ',' + (cursorY + row.height -
-                     Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
-          highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
-              (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
-              (Blockly.BlockSvg.CORNER_RADIUS -
-               Blockly.BlockSvg.DISTANCE_45_OUTSIDE) + ',' +
-              (Blockly.BlockSvg.DISTANCE_45_OUTSIDE + 1));
-          highlightSteps.push('H', rightEdge);
-        }
-        // Create statement connection.
-        connectionX = connectionsXY.x + (Blockly.RTL ? -cursorX : cursorX);
-        connectionY = connectionsXY.y + cursorY + 1;
-        input.moveTo(connectionX, connectionY);
-        if (input.targetConnection) {
-          input.tighten_();
-        }
-        if (y == inputRows.length - 1 ||
-            inputRows[y + 1].type == Blockly.NEXT_STATEMENT) {
-          // If the final input is a block, add a small row underneath.
-          // Consecutive blocks are also separated by a small divider.
-          steps.push('v', Blockly.BlockSvg.SEP_SPACE_Y);
-          if (Blockly.RTL) {
-            highlightSteps.push('v', Blockly.BlockSvg.SEP_SPACE_Y - 1);
-          }
-          cursorY += Blockly.BlockSvg.SEP_SPACE_Y;
+          fieldWidth += Blockly.BlockSvg.SEP_SPACE_X / 2;
         }
       }
-      cursorY += row.height;
+      steps.push('H', cursorX);
+      highlightSteps.push('H', cursorX + (Blockly.RTL ? -1 : 0));
+      steps.push('v', row.height);
+      if (Blockly.RTL) {
+        highlightSteps.push('v', row.height - 2);
+      }
+    } else if (row.type == Blockly.INPUT_VALUE) {
+      // External input.
+      var input = row[0];
+      if (input.label) {
+        var labelElement = input.label.getRootElement();
+        var labelX = Blockly.RTL ? -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
+            Blockly.BlockSvg.SEP_SPACE_X :
+            rightEdge - Blockly.BlockSvg.TAB_WIDTH -
+            Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
+        var labelY = cursorY + 18;
+        labelElement.setAttribute('transform',
+            'translate(' + labelX + ',' + labelY + ')');
+      }
+      steps.push(Blockly.BlockSvg.TAB_PATH_DOWN);
+      steps.push('v', row.height - Blockly.BlockSvg.TAB_HEIGHT);
+      if (Blockly.RTL) {
+        // Highlight around back of tab.
+        highlightSteps.push(Blockly.BlockSvg.TAB_PATH_DOWN_HIGHLIGHT_RTL);
+        highlightSteps.push('v', row.height - Blockly.BlockSvg.TAB_HEIGHT);
+      } else {
+        // Short highlight glint at bottom of tab.
+        highlightSteps.push('M', (rightEdge - 4.2) + ',' +
+            (cursorY + Blockly.BlockSvg.TAB_HEIGHT - 0.4));
+        highlightSteps.push('l', (Blockly.BlockSvg.TAB_WIDTH * 0.42) +
+            ',-1.8');
+      }
+      // Create external input connection.
+      connectionX = connectionsXY.x +
+          (Blockly.RTL ? -rightEdge - 1 : rightEdge + 1);
+      connectionY = connectionsXY.y + cursorY;
+      input.moveTo(connectionX, connectionY);
+      if (input.targetConnection) {
+        input.tighten_();
+      }
+    } else if (row.type == Blockly.DUMMY_INPUT) {
+      // External naked label.
+      var input = row[0];
+      if (input.label) {
+        var labelElement = input.label.getRootElement();
+        var labelX = Blockly.RTL ? -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
+            Blockly.BlockSvg.SEP_SPACE_X :
+            rightEdge - Blockly.BlockSvg.TAB_WIDTH -
+            Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
+        var labelY = cursorY + 18;
+        labelElement.setAttribute('transform',
+            'translate(' + labelX + ',' + labelY + ')');
+      }
+      steps.push('v', row.height);
+      if (Blockly.RTL) {
+        highlightSteps.push('v', row.height - 2);
+      }
+    } else if (row.type == Blockly.LOCAL_VARIABLE) {
+      // External variable.
+      var input = row[0];
+      if (input.label) {
+        var labelElement = input.label.getRootElement();
+        var labelX;
+        var labelY = cursorY + 18;
+        if (Blockly.RTL) {
+          labelX = -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
+                   Blockly.BlockSvg.SEP_SPACE_X;
+        } else {
+          labelX = rightEdge - Blockly.BlockSvg.TAB_WIDTH -
+                   Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
+        }
+        labelElement.setAttribute('transform',
+            'translate(' + labelX + ',' + labelY + ')');
+      }
+      var fieldGroup = input.getRootElement();
+      var fieldWidth = input.width();
+      if (Blockly.RTL) {
+        fieldGroup.setAttribute('transform', 'translate(' +
+            (-rightEdge - fieldWidth + Blockly.BlockSvg.SEP_SPACE_X / 2) +
+            ', ' + (cursorY + 18) + ')');
+      } else {
+        fieldGroup.setAttribute('transform', 'translate(' +
+            (rightEdge - Blockly.BlockSvg.SEP_SPACE_X / 2) +
+            ', ' + (cursorY + 18) + ')');
+      }
+      fieldWidth += Blockly.BlockSvg.SEP_SPACE_X / 2;
+      steps.push('H', rightEdge + fieldWidth);
+      steps.push('v', row.height);
+      steps.push('h', -fieldWidth);
+      if (Blockly.RTL) {
+        highlightSteps.push('h', fieldWidth);
+        highlightSteps.push('v', row.height - 2);
+        highlightSteps.push('m', -fieldWidth + ',0');
+      } else {
+        highlightSteps.push('h', fieldWidth + 1);
+      }
+    } else if (row.type == Blockly.NEXT_STATEMENT) {
+      // Nested statement.
+      var input = row[0];
+      // If the first row is a block, add a header row on top.
+      if (y == 0) {
+        steps.push('v', Blockly.BlockSvg.MIN_BLOCK_Y);
+        if (Blockly.RTL) {
+          highlightSteps.push('v', Blockly.BlockSvg.MIN_BLOCK_Y - 2);
+        }
+        cursorY += Blockly.BlockSvg.MIN_BLOCK_Y;
+      }
+      if (input.label) {
+        var labelElement = input.label.getRootElement();
+        if (Blockly.RTL) {
+          labelElement.setAttribute('x', -Blockly.BlockSvg.SEP_SPACE_X -
+              inputRows.labelStatementWidth);
+        } else {
+          labelElement.setAttribute('x', Blockly.BlockSvg.SEP_SPACE_X +
+              inputRows.labelStatementWidth - input.labelWidth);
+        }
+        labelElement.setAttribute('y', cursorY + 18);
+      }
+      cursorX = Blockly.BlockSvg.SEP_SPACE_X + inputRows.labelStatementWidth +
+                Blockly.BlockSvg.SEP_SPACE_X + Blockly.BlockSvg.NOTCH_WIDTH;
+      steps.push('H', cursorX);
+      steps.push(Blockly.BlockSvg.NOTCH_PATH_RIGHT + ' h -' +
+          (Blockly.BlockSvg.NOTCH_WIDTH - 15 -
+           Blockly.BlockSvg.CORNER_RADIUS));
+      if (Blockly.BlockSvg.CORNER_RADIUS) {
+        steps.push('a', Blockly.BlockSvg.CORNER_RADIUS + ',' +
+                   Blockly.BlockSvg.CORNER_RADIUS + ' 0 0,0 -' +
+                   Blockly.BlockSvg.CORNER_RADIUS + ',' +
+                   Blockly.BlockSvg.CORNER_RADIUS);
+      }
+      steps.push('v', row.height - 2 * Blockly.BlockSvg.CORNER_RADIUS);
+      if (Blockly.BlockSvg.CORNER_RADIUS) {
+        steps.push('a', Blockly.BlockSvg.CORNER_RADIUS + ',' +
+                   Blockly.BlockSvg.CORNER_RADIUS + ' 0 0,0 ' +
+                   Blockly.BlockSvg.CORNER_RADIUS + ',' +
+                   Blockly.BlockSvg.CORNER_RADIUS);
+      }
+      steps.push('H', rightEdge);
+      if (Blockly.RTL) {
+        highlightSteps.push('M',
+            (cursorX - Blockly.BlockSvg.NOTCH_WIDTH +
+             Blockly.BlockSvg.DISTANCE_45_OUTSIDE) +
+            ',' + (cursorY + Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
+        highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
+            (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
+            (-Blockly.BlockSvg.DISTANCE_45_OUTSIDE - 1) + ',' +
+            (Blockly.BlockSvg.CORNER_RADIUS -
+             Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
+        highlightSteps.push('v',
+            row.height - 2 * Blockly.BlockSvg.CORNER_RADIUS);
+        highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
+            (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
+            (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
+            (Blockly.BlockSvg.CORNER_RADIUS + 1));
+        highlightSteps.push('H', rightEdge - 1);
+      } else {
+        highlightSteps.push('M',
+            (cursorX - Blockly.BlockSvg.NOTCH_WIDTH +
+             Blockly.BlockSvg.DISTANCE_45_OUTSIDE) +
+            ',' + (cursorY + row.height -
+                   Blockly.BlockSvg.DISTANCE_45_OUTSIDE));
+        highlightSteps.push('a', (Blockly.BlockSvg.CORNER_RADIUS + 1) + ',' +
+            (Blockly.BlockSvg.CORNER_RADIUS + 1) + ' 0 0,0 ' +
+            (Blockly.BlockSvg.CORNER_RADIUS -
+             Blockly.BlockSvg.DISTANCE_45_OUTSIDE) + ',' +
+            (Blockly.BlockSvg.DISTANCE_45_OUTSIDE + 1));
+        highlightSteps.push('H', rightEdge);
+      }
+      // Create statement connection.
+      connectionX = connectionsXY.x + (Blockly.RTL ? -cursorX : cursorX);
+      connectionY = connectionsXY.y + cursorY + 1;
+      input.moveTo(connectionX, connectionY);
+      if (input.targetConnection) {
+        input.tighten_();
+      }
+      if (y == inputRows.length - 1 ||
+          inputRows[y + 1].type == Blockly.NEXT_STATEMENT) {
+        // If the final input is a block, add a small row underneath.
+        // Consecutive blocks are also separated by a small divider.
+        steps.push('v', Blockly.BlockSvg.SEP_SPACE_Y);
+        if (Blockly.RTL) {
+          highlightSteps.push('v', Blockly.BlockSvg.SEP_SPACE_Y - 1);
+        }
+        cursorY += Blockly.BlockSvg.SEP_SPACE_Y;
+      }
     }
-  } else {
+    cursorY += row.height;
+  }
+  if (!inputRows.length) {
     if (this.block_.collapsed) {
       steps.push(Blockly.BlockSvg.JAGGED_TEETH);
       if (Blockly.RTL) {

@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@
 /**
  * @fileoverview Generating Dart for variable blocks.
  * @author fraser@google.com (Neil Fraser)
- * Due to the frequency of long strings, the 80-column wrap rule need not apply
- * to language files.
  */
 
 Blockly.Dart = Blockly.Generator.get('Dart');
 
 Blockly.Dart.variables_get = function() {
   // Variable getter.
-  return Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
+  var code = Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
+  return [code, Blockly.Dart.ORDER_ATOMIC];
 };
 
 Blockly.Dart.variables_set = function() {
   // Variable setter.
-  var argument0 = Blockly.Dart.valueToCode(this, 'VALUE', true) || '0';
+  var argument0 = Blockly.Dart.valueToCode(this, 'VALUE',
+      Blockly.Dart.ORDER_ASSIGNMENT) || '0';
   var varName = Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + ';\n';

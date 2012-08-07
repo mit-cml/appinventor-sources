@@ -3,7 +3,6 @@
   <meta charset="utf-8">
   <title>Blockly Demo: Maze</title>
   <script type="text/javascript" src="maze.js"></script>
-
   <style>
     body {
       background-color: white;
@@ -29,6 +28,11 @@
       padding: 10px;
       font-size: large;
       border-radius: 5px;
+      border: 1px solid #ddd;
+      background-color: #eee;
+      color: black;
+    }
+    button.launch {
       border: 1px solid #d43;
       background-color: #d43;
       color: white;
@@ -39,11 +43,10 @@
     button:hover {
       box-shadow: 2px 2px 5px #888;
     }
-    #buttonDiv {
+    #buttonDiv, #randomizeDiv {
       text-align: center;
       padding-top: 2em;
     }
-
     iframe {
       height: 100%;
       width: 100%;
@@ -55,7 +58,7 @@
   <table width="100%" height="100%">
     <tr>
       <td width="410" valign="top">
-        <h1><a href="http://code.google.com/p/google-blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Maze</h1>
+        <h1><a href="http://code.google.com/p/blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Maze</h1>
 
         <div>
           <img src="map.png" height=400 width=400 id="map" style="padding-right: 10">
@@ -64,8 +67,12 @@
         </div>
 
         <div id="buttonDiv">
-          <button id="runButton" onclick="Maze.runButtonClick();">Run Program</button>
-          <button id="resetButton" onclick="Maze.resetButtonClick();" style="display: none">&nbsp; Reset &nbsp;</button>
+          <button id="runButton" class="launch" onclick="Maze.runButtonClick();">Run Program</button>
+          <button id="resetButton" class="launch" onclick="Maze.resetButtonClick();" style="display: none">&nbsp; Reset &nbsp;</button>
+        </div>
+
+        <div id="randomizeDiv">
+          <button onclick="Maze.randomize();">Randomize Maze</button>
         </div>
       </td>
       <td valign="top" rowspan=2>

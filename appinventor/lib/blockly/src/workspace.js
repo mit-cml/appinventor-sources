@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,21 +40,42 @@ Blockly.Workspace.prototype.scrollX = 0;
 Blockly.Workspace.prototype.scrollY = 0;
 
 Blockly.Workspace.prototype.trashcan = null;
+Blockly.Workspace.prototype.fireChangeEventPid_ = null;
 
 /**
  * Create the trash can elements.
- * @return {!Element} The trash can's SVG group.
+ * @return {!Element} The workspace's SVG group.
  */
 Blockly.Workspace.prototype.createDom = function() {
   /*
   <g>
     [Trashcan may go here]
     <g></g>
+    <g></g>
   </g>
   */
   this.svgGroup_ = Blockly.createSvgElement('g', {}, null);
   this.svgBlockCanvas_ = Blockly.createSvgElement('g', {}, this.svgGroup_);
+  this.svgBubbleCanvas_ = Blockly.createSvgElement('g', {}, this.svgGroup_);
+  this.fireChangeEvent();
   return this.svgGroup_;
+};
+
+/**
+ * Destroy this workspace.
+ * Unlink from all DOM elements to prevent memory leaks.
+ */
+Blockly.Workspace.prototype.destroy = function() {
+  if (this.svgGroup_) {
+    this.svgGroup_.parentNode.removeChild(this.svgGroup_);
+    this.svgGroup_ = null;
+  }
+  this.svgBlockCanvas_ = null;
+  this.svgBubbleCanvas_ = null;
+  if (this.trashcan) {
+    this.trashcan.destroy();
+    this.trashcan = null;
+  }
 };
 
 /**
@@ -79,11 +100,20 @@ Blockly.Workspace.prototype.getCanvas = function() {
 };
 
 /**
+ * Get the SVG element that forms the bubble surface.
+ * @return {!Element} SVG element.
+ */
+Blockly.Workspace.prototype.getBubbleCanvas = function() {
+  return this.svgBubbleCanvas_;
+};
+
+/**
  * Add a block to the list of top blocks.
  * @param {!Blockly.Block} block Block to remove.
  */
 Blockly.Workspace.prototype.addTopBlock = function(block) {
   this.topBlocks_.push(block);
+  this.fireChangeEvent();
 };
 
 /**
@@ -102,6 +132,7 @@ Blockly.Workspace.prototype.removeTopBlock = function(block) {
   if (!found) {
     throw 'Block not present in workspace\'s list of top-most blocks.';
   }
+  this.fireChangeEvent();
 };
 
 /**
@@ -177,8 +208,7 @@ Blockly.Workspace.prototype.getBlockById = function(id) {
 Blockly.Workspace.prototype.traceOn = function(armed) {
   this.traceOn_ = armed;
   if (this.traceWrapper_) {
-    Blockly.unbindEvent_(this.svgBlockCanvas_, 'blocklySelectChange',
-                         this.traceWrapper_);
+    Blockly.unbindEvent_(this.traceWrapper_);
     this.traceWrapper_ = null;
   }
   if (armed) {
@@ -202,9 +232,27 @@ Blockly.Workspace.prototype.highlightBlock = function(id) {
   // Temporary turn off the listener for selection changes, so that we don't
   // trip the monitor for detecting user activity.
   this.traceOn(false);
-  // Select the curent block.
+  // Select the current block.
   block.select();
   // Restore the monitor for user activity.
   this.traceOn(true);
 };
 
+/**
+ * Fire a change event for this workspace.  Changes include new block, dropdown
+ * edits, mutations, connections, etc.  Groups of simultaneous changes (e.g.
+ * a tree of blocks being deleted) are merged into one event.
+ * Applications may hook workspace changes by listening for
+ * 'blocklyWorkspaceChange' on Blockly.mainWorkspace.getCanvas().
+ */
+Blockly.Workspace.prototype.fireChangeEvent = function() {
+  if (this.fireChangeEventPid_) {
+    window.clearTimeout(this.fireChangeEventPid_);
+  }
+  var canvas = this.svgBlockCanvas_;
+  if (canvas) {
+    this.fireChangeEventPid_ = window.setTimeout(function() {
+        Blockly.fireUiEvent(canvas, 'blocklyWorkspaceChange');
+      }, 0);
+  }
+};
