@@ -139,11 +139,12 @@ public class BlocklyPanel extends HTMLPanel {
       componentOps.remove(formName);
     }
     
-    // if we've gotten any block content to load, load it now
-    if (pendingBlocksContentMap.containsKey(formName)) {
-      OdeLog.log("Loading blocks area content for lastBlockContent");
-      doLoadBlocksContent(formName, pendingBlocksContentMap.get(formName));
-      pendingBlocksContentMap.remove(formName);
+    // If we've gotten any block content to load, load it now
+    // Note: Map.remove() returns the value (null if not present), as well as removing the mapping
+    String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
+    if (pendingBlocksContent != null) {
+      OdeLog.log("Loading blocks area content");
+      doLoadBlocksContent(formName, pendingBlocksContent);
     }
   }
   
@@ -320,14 +321,16 @@ public class BlocklyPanel extends HTMLPanel {
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
    * our parent object and then our blocks editor gets loaded
-   * again later).
+   * again later). Also, remember the current state of the blocks
+   * area in case we get reloaded.
    */
-  public void saveComponents() {
+  public void saveComponentsAndBlocks() {
     // Actually, we already have the components saved, but take this as an 
     // indication that we are going to reinit the blocks editor the next
     // time it is shown.
     OdeLog.log("BlocklyEditor: prepared for reinit for form " + formName);
     componentOps.put(formName, new ArrayList<ComponentOp>());
+    pendingBlocksContentMap.put(formName, getBlocksContent());
   }
   
   /**
@@ -342,25 +345,27 @@ public class BlocklyPanel extends HTMLPanel {
   }
   
   /**
-   * Load the blocks described by blockContent into the blocks workspace.
+   * Load the blocks described by blocksContent into the blocks workspace.
    * 
-   * @param blockContent  XML description of a blocks workspace in format expected by Blockly
+   * @param blocksContent  XML description of a blocks workspace in format expected by Blockly
    */
-  public void loadBlockContent(String blockContent) {
+  public void loadBlocksContent(String blocksContent) {
     if (blocksInited(formName)) {
-      doLoadBlocksContent(formName, blockContent);
+      OdeLog.log("Loading blocks content for " + formName);
+      doLoadBlocksContent(formName, blocksContent);
     } else {
       // save it to load when the blocks area is initialized
-      pendingBlocksContentMap.put(formName, blockContent);
+      OdeLog.log("Caching blocks content for " + formName + " for loading when blocks area inited");
+      pendingBlocksContentMap.put(formName, blocksContent);
     }
   }
   
   /**
    * Return the XML string describing the current state of the blocks workspace
    */
-  public String getBlockContent() {
+  public String getBlocksContent() {
     if (blocksInited(formName)) {
-      return doGetBlockContent(formName);
+      return doGetBlocksContent(formName);
     } else {
       // in case someone clicks Save before the blocks area is inited
       return pendingBlocksContentMap.get(formName);
@@ -418,11 +423,11 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.Blocklies[formName].Drawer.isShowing();
   }-*/;
   
-  public static native void doLoadBlocksContent(String formName, String blockContent) /*-{
-    $wnd.Blocklies[formName].SaveFile.load(blockContent);
+  public static native void doLoadBlocksContent(String formName, String blocksContent) /*-{
+    $wnd.Blocklies[formName].SaveFile.load(blocksContent);
   }-*/;
   
-  public static native String doGetBlockContent(String formName) /*-{
+  public static native String doGetBlocksContent(String formName) /*-{
     return $wnd.Blocklies[formName].SaveFile.get();
   }-*/;
 }

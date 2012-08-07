@@ -11,12 +11,11 @@ Blockly.SaveFile = {};
 
 Blockly.SaveFile.load = function(blocksContent) {
   // TODO(sharon): deal with errors
-  // Deal with old codeblocks code, in a YACodeBlocks element (if present)
   if (blocksContent.length != 0) {
     var xml = Blockly.Xml.textToDom(blocksContent);
     var firstChild = xml.childNodes[0];
     if (firstChild.nodeName && firstChild.nodeName == 'YACodeBlocks') {
-      console.log("Warning: don't know how to convert old codeblocks blocks  yet. Ignoring!")
+      console.log("Warning: don't know how to convert old codeblocks blocks  yet. Ignoring!");
     }
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
   }

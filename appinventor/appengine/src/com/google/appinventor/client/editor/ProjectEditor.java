@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -167,12 +168,8 @@ public abstract class ProjectEditor extends Composite {
   /**
    * Returns the set of open file editors
    */
-  public final Set<FileEditor> getOpenFileEditors() {
-    Set<FileEditor> fileEditors = new HashSet<FileEditor>();
-    for (FileEditor fileEditor : openFileEditors.values()) {
-      fileEditors.add(fileEditor);
-    }
-    return fileEditors;
+  public final Iterable<FileEditor> getOpenFileEditors() {
+    return Collections.unmodifiableCollection(openFileEditors.values());
   }
   
   /**
