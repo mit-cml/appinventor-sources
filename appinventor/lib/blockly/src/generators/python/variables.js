@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@
 /**
  * @fileoverview Generating Python for variable blocks.
  * @author fraser@google.com (Neil Fraser)
- * Due to the frequency of long strings, the 80-column wrap rule need not apply
- * to language files.
  */
 
 Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.variables_get = function() {
   // Variable getter.
-  return Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+  code = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
+  return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 Blockly.Python.variables_set = function() {
   // Variable setter.
-  var argument0 = Blockly.Python.valueToCode(this, 'VALUE', true) || '0';
+  var argument0 = Blockly.Python.valueToCode(this, 'VALUE',
+      Blockly.Python.ORDER_NONE) || '0';
   var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + '\n';

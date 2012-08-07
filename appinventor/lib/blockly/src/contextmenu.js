@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
  */
 
 /**
- * Due to a bug in Webkit concerning the stacking order of background colours,
+ * Due to a bug in WebKit concerning the stacking order of background colours,
  * it is not possible to use foreignObject to nest an HTML context menu in
  * an SVG document.  Therefore the context menu is purely SVG.
  * http://code.google.com/p/chromium/issues/detail?id=35545

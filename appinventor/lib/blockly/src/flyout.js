@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ Blockly.Flyout.prototype.autoClose = true;
 Blockly.Flyout.prototype.CORNER_RADIUS = 8;
 
 /**
+ * Wrapper function called when a resize occurs.
+ */
+Blockly.Flyout.prototype.onResizeWrapper_ = null;
+
+/**
  * Creates the flyout's DOM.  Only needs to be called once.
  * @return {!Element} The flyout's SVG group.
  */
@@ -57,6 +62,31 @@ Blockly.Flyout.prototype.createDom = function() {
   this.svgOptions_ = Blockly.createSvgElement('g', {}, this.svgGroup_);
   this.svgOptions_.appendChild(this.workspace_.createDom());
   return this.svgGroup_;
+};
+
+/**
+ * Destroy this flyout.
+ * Unlink from all DOM elements to prevent memory leaks.
+ */
+Blockly.Flyout.prototype.destroy = function() {
+  if (this.onResizeWrapper_) {
+    Blockly.unbindEvent_(this.onResizeWrapper_);
+    this.onResizeWrapper_ = null;
+  }
+  if (this.scrollbar_) {
+    this.scrollbar_.destroy();
+    this.scrollbar_ = null;
+  }
+  this.workspace_ = null;
+  if (this.svgGroup_) {
+    this.svgGroup_.parentNode.removeChild(this.svgGroup_);
+    this.svgGroup_ = null;
+  }
+  this.svgBackground_ = null;
+  this.svgOptions_ = null;
+  this.targetWorkspace_ = null;
+  this.targetWorkspaceMetrics_ = null;
+  this.buttons_ = null;
 };
 
 /**
@@ -116,27 +146,33 @@ Blockly.Flyout.prototype.setMetrics = function(yRatio) {
  *     blocks.
  * @param {!Function} workspaceMetrics Function which returns size information
  *     regarding the flyout's target workspace.
+ * @param {boolean} withScrollbar True if a scrollbar should be displayed.
  */
-Blockly.Flyout.prototype.init = function(workspace, workspaceMetrics) {
+Blockly.Flyout.prototype.init =
+    function(workspace, workspaceMetrics, withScrollbar) {
   this.targetWorkspace_ = workspace;
   this.targetWorkspaceMetrics_ = workspaceMetrics;
   // Add scrollbars.
   this.width_ = 0;
   this.height_ = 0;
   var flyout = this;
-  new Blockly.Scrollbar(this.svgOptions_,
-      function() {return flyout.getMetrics();},
-      function(ratio) {return flyout.setMetrics(ratio);},
-      false, false);
+  if (withScrollbar) {
+    this.scrollbar_ = new Blockly.Scrollbar(this.svgOptions_,
+        function() {return flyout.getMetrics();},
+        function(ratio) {return flyout.setMetrics(ratio);},
+        false, false);
+  }
 
   // List of background buttons that lurk behind each block to catch clicks
   // landing in the blocks' lakes and bays.
   this.buttons_ = [];
 
   this.position_();
+  this.hide();
 
   // If the document resizes, reposition the toolbox.
-  Blockly.bindEvent_(window, 'resize', this, this.position_);
+  this.onResizeWrapper_ =
+      Blockly.bindEvent_(window, 'resize', this, this.position_);
 };
 
 /**
@@ -179,7 +215,7 @@ Blockly.Flyout.prototype.position_ = function() {
 };
 
 /**
- * Is the flyout visisble?
+ * Is the flyout visible?
  * @return {boolean} True if visible.
  */
 Blockly.Flyout.prototype.isVisible = function() {
@@ -197,9 +233,8 @@ Blockly.Flyout.prototype.hide = function() {
     block.destroy();
   }
   // Delete all the background buttons.
-  for (var x = 0, rect; rect = this.buttons_[x];
-       x++) {
-    Blockly.unbindEvent_(rect, 'mousedown', rect.wrapper_);
+  for (var x = 0, rect; rect = this.buttons_[x]; x++) {
+    Blockly.unbindEvent_(rect.wrapper_);
     rect.parentNode.removeChild(rect);
   }
   this.buttons_ = [];
@@ -278,7 +313,7 @@ Blockly.Flyout.prototype.show = function(names) {
   this.width_ = flyoutWidth;
 
   // Fire a resize event to update the flyout's scrollbar.
-  Blockly.fireUiEvent(Blockly.svgDoc, window, 'resize');
+  Blockly.fireUiEvent(window, 'resize');
 };
 
 /**
@@ -290,7 +325,7 @@ Blockly.Flyout.prototype.show = function(names) {
  */
 Blockly.Flyout.createBlockFunc_ = function(flyout, originBlock) {
   return function(e) {
-    if (e.button == 2) {
+    if (Blockly.isRightButton(e)) {
       // Right-click.  Don't create a block, let the context menu show.
       return;
     }
