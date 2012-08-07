@@ -5,6 +5,7 @@
 <script type="text/javascript" src="../blockly.js"></script>
 <script type="text/javascript" src="../block.js"></script>
 <script type="text/javascript" src="../block_svg.js"></script>
+<script type="text/javascript" src="../bubble.js"></script>
 <script type="text/javascript" src="../comment.js"></script>
 <script type="text/javascript" src="../connection.js"></script>
 <script type="text/javascript" src="../contextmenu.js"></script>
@@ -40,13 +41,13 @@
 <script type="text/javascript" src="../generators/python/variables.js"></script>
 <script type="text/javascript" src="../generators/python/procedures.js"></script>
 <script type="text/javascript" src="../language/en/_messages.js"></script>
-<script type="text/javascript" src="../language/en/control.js"></script>
-<script type="text/javascript" src="../language/en/text.js"></script>
-<script type="text/javascript" src="../language/en/math.js"></script>
-<script type="text/javascript" src="../language/en/logic.js"></script>
-<script type="text/javascript" src="../language/en/lists.js"></script>
-<script type="text/javascript" src="../language/en/variables.js"></script>
-<script type="text/javascript" src="../language/en/procedures.js"></script>
+<script type="text/javascript" src="../language/common/control.js"></script>
+<script type="text/javascript" src="../language/common/logic.js"></script>
+<script type="text/javascript" src="../language/common/math.js"></script>
+<script type="text/javascript" src="../language/common/text.js"></script>
+<script type="text/javascript" src="../language/common/lists.js"></script>
+<script type="text/javascript" src="../language/common/variables.js"></script>
+<script type="text/javascript" src="../language/common/procedures.js"></script>
 <script type="text/javascript" src="../mutator.js"></script>
 <script type="text/javascript" src="../names.js"></script>
 <script type="text/javascript" src="../procedures.js"></script>
@@ -54,7 +55,9 @@
 <script type="text/javascript" src="../toolbox.js"></script>
 <script type="text/javascript" src="../tooltip.js"></script>
 <script type="text/javascript" src="../trashcan.js"></script>
+<script type="text/javascript" src="../utils.js"></script>
 <script type="text/javascript" src="../variables.js"></script>
+<script type="text/javascript" src="../warning.js"></script>
 <script type="text/javascript" src="../workspace.js"></script>
 <script type="text/javascript" src="../xml.js"></script>
 <script type="text/javascript">
@@ -112,7 +115,7 @@ function setNextStatement() {
 
 function setOutput() {
   try {
-    block.setOutput(document.getElementById('output').checked);
+    block.setOutput(document.getElementById('output').checked, null);
   } finally {
     document.getElementById('output').checked = !!block.outputConnection;
   }
@@ -284,7 +287,7 @@ h1 {
     </tr>
     <tr>
       <td>Append input:</td>
-      <td><select id="inputType"><option value=1>Value</option><option value=3>Statement</option><option value=5>Variable</option></select> labled <input type="text" size=10 id="inputLabel"> with ID <input type="text" size=10 id="inputName">
+      <td><select id="inputType"><option value=1>Value</option><option value=3>Statement</option><option value=5>Variable</option><option value=6>None</option></select> labled <input type="text" size=10 id="inputLabel"> with ID <input type="text" size=10 id="inputName">
       <input type="button" onclick="addInput()" value="Add"></td>
     </tr>
     <tr>

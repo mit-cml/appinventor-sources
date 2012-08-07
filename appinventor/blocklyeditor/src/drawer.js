@@ -21,11 +21,11 @@ Blockly.Drawer = {};
  */
 Blockly.Drawer.createDom = function() {
   Blockly.Drawer.flyout_ = new Blockly.Flyout();
-  // insert the flyout after the commentCanvas (except, there's no 
+  // insert the flyout after the bubble canvas (except, there's no 
   // svg.insertAfter method, so we need to insert before the thing following
-  // the commentCanvas. Neil Fraser says: this is "less hacky than it looks".
+  // the bubble canvas. Neil Fraser says: this is "less hacky than it looks".
   var flyoutGroup = Blockly.Drawer.flyout_.createDom();
-  Blockly.svg.insertBefore(flyoutGroup, Blockly.commentCanvas.nextSibling);
+  Blockly.svg.insertBefore(flyoutGroup, Blockly.mainWorkspace.svgGroup_.nextSibling);
 };
 
 /**

@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,23 @@
  * Class for a connection between blocks.
  * @param {!Blockly.Block} source The block establishing this connection.
  * @param {number} type The type of the connection.
+ * @param {string} opt_check Compatible value type or list of value types.
+ *     Null if all types are compatible.
  * @constructor
  */
-Blockly.Connection = function(source, type) {
+Blockly.Connection = function(source, type, opt_check) {
   this.sourceBlock_ = source;
   this.targetConnection = null;
   this.type = type;
+  if (opt_check) {
+    // Ensure that check is in an array.
+    if (!(opt_check instanceof Array)) {
+      opt_check = [opt_check];
+    }
+    this.check_ = opt_check;
+  } else {
+    this.check_ = null;
+  }
   this.x_ = 0;
   this.y_ = 0;
   this.inDB_ = false;
@@ -85,7 +96,8 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
       function singleInput(block) {
         var input = false;
         for (var x = 0; x < block.inputList.length; x++) {
-          if (block.inputList[x].type == Blockly.INPUT_VALUE) {
+          if (block.inputList[x].type == Blockly.INPUT_VALUE &&
+              orphanBlock.outputConnection.checkType_(block.inputList[x])) {
             if (input) {
               return null;  // More than one input.
             }
@@ -165,7 +177,11 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
 
   // Rendering a node will move its connected children into position.
   if (parentBlock.rendered) {
+    parentBlock.svg_.updateDisabled();
     parentBlock.render();
+  }
+  if (childBlock.rendered) {
+    childBlock.svg_.updateDisabled();
   }
 };
 
@@ -183,16 +199,21 @@ Blockly.Connection.prototype.disconnect = function() {
   this.targetConnection = null;
 
   // Rerender the parent so that it may reflow.
-  var parentBlock;
+  var parentBlock, childBlock;
   if (this.type == Blockly.INPUT_VALUE || this.type == Blockly.NEXT_STATEMENT) {
     // Superior block.
     parentBlock = this.sourceBlock_;
+    childBlock = otherConnection.sourceBlock_;
   } else {
     // Inferior block.
     parentBlock = otherConnection.sourceBlock_;
+    childBlock = this.sourceBlock_;
   }
   if (parentBlock.rendered) {
     parentBlock.render();
+  }
+  if (childBlock.rendered) {
+    childBlock.svg_.updateDisabled();
   }
 };
 
@@ -233,7 +254,7 @@ Blockly.Connection.prototype.bumpAwayFrom_ = function(staticConnection) {
     staticConnection = this;
     reverse = true;
   }
-  // Raise it to the top for extra visiblility.
+  // Raise it to the top for extra visibility.
   rootBlock.getSvgRoot().parentNode.appendChild(rootBlock.getSvgRoot());
   var dx = (staticConnection.x_ + Blockly.SNAP_RADIUS) - this.x_;
   var dy = (staticConnection.y_ + Blockly.SNAP_RADIUS * 2) - this.y_;
@@ -365,6 +386,7 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
   pointerMax = pointerMid;
   var closestConnection = null;
   var sourceBlock = this.sourceBlock_;
+  var thisConnection = this;
   if (db.length) {
     while (pointerMin >= 0 && checkConnection_(pointerMin)) {
       pointerMin--;
@@ -379,8 +401,9 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
    * connection.
    * This function is a closure and has access to outside variables.
    * @param {number} yIndex The other connection's index in the database.
-   * @return {boolean} True if the current connection's vertical distance from
-   *     the other connection is less than the allowed radius.
+   * @return {boolean} True if the search needs to continue: either the current
+   *     connection's vertical distance from the other connection is less than
+   *     the allowed radius, or if the connection is not compatible.
    */
   function checkConnection_(yIndex) {
     var connection = db[yIndex];
@@ -397,6 +420,11 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
     // connection is ok, we'll just insert it into the stack.
     // Offering to connect the left (male) of a value block to an already
     // connected value pair is ok, we'll splice it in.
+
+    // Do type checking.
+    if (!thisConnection.checkType_(connection)) {
+      return true;
+    }
 
     // Don't let blocks try to connect to themselves or ones they nest.
     var targetSourceBlock = connection.sourceBlock_;
@@ -420,7 +448,30 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
 };
 
 /**
+ * Is this connection compatible with another connection with respect to the
+ * value type system.  E.g. square_root("Hello") is not compatible.
+ * @param {!Blockly.Connection} otherConnection Connection to compare against.
+ * @return {boolean} True if the connections share a type.
+ * @private
+ */
+Blockly.Connection.prototype.checkType_ = function(otherConnection) {
+  if (!this.check_ || !otherConnection.check_) {
+    // One or both sides are promiscuous enough that anything will fit.
+    return true;
+  }
+  // Find any intersection in the check lists.
+  for (var x = 0; x < this.check_.length; x++) {
+    if (otherConnection.check_.indexOf(this.check_[x]) != -1) {
+      return true;
+    }
+  }
+  // No intersection.
+  return false;
+};
+
+/**
  * Find all nearby compatible connections to this connection.
+ * Type checking does not apply, since this function is used for bumping.
  * @param {number} maxLimit The maximum radius to another connection.
  * @return {!Array.<Blockly.Connection>} List of connections.
  * @private

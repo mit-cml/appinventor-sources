@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,8 +104,9 @@ Blockly.Variables.dropdownChange = function(text) {
   function promptName(promptText, defaultText) {
     Blockly.hideChaff();
     var newVar = window.prompt(promptText, defaultText);
-    // Strip leading and trailing whitespace.  Beyond this, all names are legal.
-    return newVar && newVar.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
+    // Merge runs of whitespace.  Strip leading and trailing whitespace.
+    // Beyond this, all names are legal.
+    return newVar && newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
   }
   if (text == Blockly.MSG_RENAME_VARIABLE) {
     var oldVar = this.getText();
@@ -125,6 +126,7 @@ Blockly.Variables.dropdownChange = function(text) {
       this.setText(text);
     }
   }
+  window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);
 };
 
 /**
@@ -181,5 +183,17 @@ Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
     } else {
       gaps.push(margin * 2);
     }
+  }
+};
+
+/**
+ * Refresh the variable flyout if it is open.
+ * Only used if the flyout's autoClose is false.
+ */
+Blockly.Variables.refreshFlyoutCategory = function() {
+  if (Blockly.Toolbox && Blockly.Toolbox.flyout_.isVisible() &&
+      Blockly.Toolbox.selectedOption_.cat == Blockly.MSG_VARIABLE_CATEGORY) {
+    Blockly.Toolbox.flyout_.hide();
+    Blockly.Toolbox.flyout_.show(Blockly.MSG_VARIABLE_CATEGORY);
   }
 };
