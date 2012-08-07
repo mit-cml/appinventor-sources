@@ -9,6 +9,7 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.utils.Uploader;
+import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.FileNode;
@@ -76,8 +77,11 @@ public class FileUploadWizard extends Wizard {
         String uploadFilename = upload.getFilename();
         if (!uploadFilename.isEmpty()) {
           final String filename = makeValidFilename(uploadFilename);
-          if (filename.contains("'") || !filename.equals(URL.encodePathSegment(filename))) {
+          if(!TextValidators.isValidCharFilename(filename)){
             Window.alert(MESSAGES.malformedFilename());
+            return;
+          } else if (!TextValidators.isValidLengthFilename(filename)){
+            Window.alert(MESSAGES.filenameBadSize());
             return;
           }
           if (fileAlreadyExists(folderNode, filename)) {
@@ -104,7 +108,9 @@ public class FileUploadWizard extends Wizard {
                           fileUploadedCallback);
                       break;
                     case FILE_TOO_LARGE:
-                      ErrorReporter.reportError(MESSAGES.fileTooLargeError());
+                      // The user can resolve the problem by
+                      // uploading a smaller file.
+                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
                       break;
                     default:
                       ErrorReporter.reportError(MESSAGES.fileUploadError());

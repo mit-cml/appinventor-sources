@@ -172,8 +172,15 @@ public class YaVersion {
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 56
   // - LOCATIONSENSOR_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 57:
+  // - PLAYER_COMPONENT_VERSION was incremented to 4.
+  // For YOUNG_ANDROID_VERSION 58:
+  // - FORM_COMPONENT_VERSION was incremented to 7.
+  // For YOUNG_ANDROID_VERSION 59:
+  //The Camcorder component was added.
 
-  public static final int YOUNG_ANDROID_VERSION = 56;
+
+  public static final int YOUNG_ANDROID_VERSION = 59;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -293,6 +300,8 @@ public class YaVersion {
   // - The Shape property was added.
   public static final int BUTTON_COMPONENT_VERSION = 4;
 
+  public static final int CAMCORDER_COMPONENT_VERSION = 1;
+  
   public static final int CAMERA_COMPONENT_VERSION = 1;
 
   // For CANVAS_COMPONENT_VERSION 2:
@@ -337,7 +346,9 @@ public class YaVersion {
   // For FORM_COMPONENT_VERSION 6:
   // - The SwitchForm and SwitchFormWithArgs methods were removed and the OtherScreenClosed event
   // was added.
-  public static final int FORM_COMPONENT_VERSION = 6;
+  // For FORM_COMPONENT_VERSION 7:
+  // - The VersionCode and VersionName properties were added.
+  public static final int FORM_COMPONENT_VERSION = 7;
 
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
 
@@ -423,7 +434,13 @@ public class YaVersion {
   // - The Player.PlayerError event was added.
   // For PLAYER_COMPONENT_VERSION 3:
   // - The Player.PlayerError event was marked userVisible false and is no longer used.
-  public static final int PLAYER_COMPONENT_VERSION = 3;
+  // For PLAYER_COMPONENT_VERSION 4:
+  // - The Player.Completed event was added.
+  // - The IsLooping property was added.
+  // - The Volume property was added.
+  // - The IsPlaying method was added.
+
+  public static final int PLAYER_COMPONENT_VERSION = 4;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.

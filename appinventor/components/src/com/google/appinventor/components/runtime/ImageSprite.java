@@ -59,6 +59,7 @@ public class ImageSprite extends Sprite {
 
   private Bitmap unrotatedBitmap;
   private Bitmap rotatedBitmap;
+  private Bitmap scaledBitmap;
 
   private BitmapDrawable rotatedDrawable;
   private double cachedRotationHeading;
@@ -95,15 +96,23 @@ public class ImageSprite extends Sprite {
           // Rotate around the center of the sprite image (w/2, h/2)
           // TODO(halabelson): Add a way for the user to specify the center of rotation.
           mat.setRotate((float) -Heading(), w / 2, h / 2);
+          // We must scale the unrotated Bitmap to be the user specified size before
+          // rotating.
+          if (w != unrotatedBitmap.getWidth() || h != unrotatedBitmap.getHeight()) {
+            scaledBitmap = Bitmap.createScaledBitmap(unrotatedBitmap, w, h, true);
+          }
+          else {
+            scaledBitmap = unrotatedBitmap;
+          }
           // Next create the rotated bitmap
           // Careful: We use getWidth and getHeight of the unrotated bitmap, rather than the
           // Width and Height of the sprite.  Doing the latter produces an illegal argument
           // exception in creating the bitmap, if the user sets the Width or Height of the
           // sprite to be larger than the image size.
           rotatedBitmap = Bitmap.createBitmap(
-              unrotatedBitmap,
+              scaledBitmap,
               0, 0,
-              unrotatedBitmap.getWidth(), unrotatedBitmap.getHeight(),
+              scaledBitmap.getWidth(), scaledBitmap.getHeight(),
               mat, true);
           // make a drawable for the rotated image and cache the heading
           rotatedDrawable = new BitmapDrawable(rotatedBitmap);

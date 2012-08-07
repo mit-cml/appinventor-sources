@@ -689,7 +689,31 @@ public class Form extends Activity
   public void Icon(String name) {
     // We don't actually need to do anything.
   }
-
+  
+  /**
+   * Specifies the Version Code.
+   *
+   * @param vCode the version name of the application
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "1")
+  @SimpleProperty(userVisible = false)
+  public void VersionCode(int vCode) {
+    // We don't actually need to do anything.
+  }
+  
+  /**
+   * Specifies the Version Name.
+   *
+   * @param vName the version name of the application
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "1.0")
+  @SimpleProperty(userVisible = false)
+  public void VersionName(String vName) {
+    // We don't actually need to do anything.
+  }
+  
   /**
    * Width property getter method.
    *

@@ -773,6 +773,8 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Do you want to overwrite your keystore file?\n\n" +
       "If you agree, your old keystore file will be completely removed from the App Inventor " +
       "server.\n\n" +
+      "If you have published applications to the Google Play Store using the keystore you are " +
+      "about to overwrite, you will lose the ability to update your applications.\n\n" +
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
@@ -790,6 +792,8 @@ public interface OdeMessages extends Messages {
       "If you agree, your old keystore file will be completely removed from the App Inventor " +
       "server. A new, but different, keystore file will be created automatically the next time " +
       "you package a project for the phone.\n\n" +
+      "If you have published applications to the Google Play Store using the keystore you are " +
+      "about to delete, you will lose the ability to update your applications.\n\n" +
       "Any projects that you package in the future will be signed using your new keystore file. " +
       "Changing the keystore affects the ability to reinstall previously installed apps. If you " +
       "are not sure that you want to do this, please read the documentation about keystores by " +
@@ -881,6 +885,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
 
+  @DefaultMessage("File names must be between 1 and 100 characters.")
+  @Description("Error message when filenames are 0 or 101+ characters long")
+  String filenameBadSize();
+  
   @DefaultMessage("Uploading {0} to the App Inventor server")
   @Description("Message displayed when an asset is uploaded.")
   String fileUploadingMessage(String filename);

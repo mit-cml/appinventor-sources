@@ -16,11 +16,14 @@ public final class GitBuildId {
   private GitBuildId() {
   }
 
-  public static String getVersion() {
+ public static String getVersion() {
     String version = GIT_BUILD_VERSION;
-    // We can't use isEmpty() here because we want this to run
-    // in jdk 1.5 for the Blocks Editor
-    if (version.equals("")) {
+    // This catches the emptry string or the error returned by git describe
+    // in the case where there is no description.  In general
+    // the version needs to be a string that can be 
+    // embedded into a legal file name.  If it can't, then the
+    // blocks editor won't load.
+    if ((version == "") || version.contains(" ")) {
       return "none" ;
     } else {
       return version;
