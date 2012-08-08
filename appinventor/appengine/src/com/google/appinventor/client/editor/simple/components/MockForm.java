@@ -109,6 +109,8 @@ public final class MockForm extends MockContainer {
   private static final String PROPERTY_NAME_SCREEN_ORIENTATION = "ScreenOrientation";
   private static final String PROPERTY_NAME_SCROLLABLE = "Scrollable";
   private static final String PROPERTY_NAME_ICON = "Icon";
+  private static final String PROPERTY_NAME_VCODE = "VersionCode";
+  private static final String PROPERTY_NAME_VNAME = "VersionName";
 
   // Form UI components
   AbsolutePanel formWidget;
@@ -278,6 +280,16 @@ public final class MockForm extends MockContainer {
       // The Icon property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
+    
+    if (propertyName.equals(PROPERTY_NAME_VNAME)) {
+      // The VersionName property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
+    
+    if (propertyName.equals(PROPERTY_NAME_VCODE)) {
+      // The VersionCode property actually applies to the application and is only visible on Screen1.
+      return editor.isScreen1();
+    }
 
     return super.isPropertyVisible(propertyName);
   }
@@ -343,6 +355,28 @@ public final class MockForm extends MockContainer {
       editor.getProjectEditor().changeProjectSettingsProperty(
           SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
           SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
+    }
+  }
+  
+  private void setVCodeProperty(String vcode) {
+    // The VersionCode property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for VersionCode (1). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, vcode);
+    }
+  }
+  
+  private void setVNameProperty(String vname) {
+    // The VersionName property actually applies to the application and is only visible on Screen1.
+    // When we load a form that is not Screen1, this method will be called with the default value
+    // for VersionName (1.0). We need to ignore that.
+    if (editor.isScreen1()) {
+      editor.getProjectEditor().changeProjectSettingsProperty(
+          SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+          SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME, vname);
     }
   }
 
@@ -534,6 +568,10 @@ public final class MockForm extends MockContainer {
       titleBar.changeTitle(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
       setIconProperty(newValue);
+    }  else if (propertyName.equals(PROPERTY_NAME_VCODE)) {
+      setVCodeProperty(newValue);
+    }  else if (propertyName.equals(PROPERTY_NAME_VNAME)) {
+      setVNameProperty(newValue);
     }
   }
 }

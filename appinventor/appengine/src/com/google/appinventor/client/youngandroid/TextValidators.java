@@ -4,12 +4,16 @@ package com.google.appinventor.client.youngandroid;
 
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Window;
 
 /**
  */
 public final class TextValidators {
 
+  private static final int MAX_FILENAME_SIZE = 100;
+  private static final int MIN_FILENAME_SIZE = 1;
   // This class should never be instantiated.
   private TextValidators() {}
 
@@ -50,5 +54,34 @@ public final class TextValidators {
    */
   public static boolean isValidIdentifier(String text) {
     return text.matches("^[a-zA-Z]\\w*$");
+  }
+  
+  /**
+   * Checks whether the argument is a legal filename, meaning
+   * it is unchanged by URL encoding and it meets the aapt
+   * requirements as follows:
+   * - all characters must be 7-bit printable ASCII
+   * - none of { '/' '\\' ':' }
+   * @param filename The filename (not path) of uploaded file
+   * @return {@code true} if the argument is a legal filename, {@code false}
+   *         otherwise
+   */
+  public static boolean isValidCharFilename(String filename){
+    return !filename.contains("'") && filename.equals(URL.encodePathSegment(filename));
+  }
+  
+  /**
+   * Checks whether the argument is a filename which meets the length
+   * requirement imposed by aapt, which is:
+   * - the filename length must be less than kMaxAssetFileName bytes long
+   *   (and can't be empty)
+   * where kMaxAssetFileName is defined to be 100.
+   * (A legal name, therefore, has length <= kMaxAssetFileNames)
+   * @param filename The filename (not path) of uploaded file
+   * @return {@code true} if the length of the argument is legal, {@code false}
+   *         otherwise
+   */
+  public static boolean isValidLengthFilename(String filename){
+    return !(filename.length() > MAX_FILENAME_SIZE || filename.length() < MIN_FILENAME_SIZE);
   }
 }

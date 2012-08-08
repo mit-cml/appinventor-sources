@@ -58,6 +58,9 @@ public final class Compiler {
 
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
+  
+  private static final String DEFAULT_VERSION_CODE = "1";
+  private static final String DEFAULT_VERSION_NAME = "1.0";
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
@@ -72,6 +75,8 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "android.jar";
   private static final String MAC_AAPT_TOOL =
       "/tools/mac/aapt";
+  private static final String WINDOWS_AAPT_TOOL = 
+      "/tools/windows/aapt";
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
@@ -156,7 +161,11 @@ public final class Compiler {
     String packageName = Signatures.getPackageName(mainClass);
     String className = Signatures.getClassName(mainClass);
     String projectName = project.getProjectName();
-
+    String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
+    String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
+    LOG.log(Level.INFO, "VCode: " + project.getVCode());
+    LOG.log(Level.INFO, "VName: " + project.getVName());
+    
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
@@ -169,7 +178,7 @@ public final class Compiler {
           "package=\"" + packageName + "\" " +
           // TODO(markf): uncomment the following line when we're ready to enable publishing to the
           // Android Market.
-         "android:versionCode=\"3\" " + "android:versionName=\"1.5\" " +
+         "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
@@ -415,6 +424,10 @@ public final class Compiler {
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
             .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+        if (System.getProperty("os.name").startsWith("Windows")){
+        	classFileName = classesDir.getAbsolutePath()
+           .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+        }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
         // a line in the file
@@ -516,6 +529,10 @@ public final class Compiler {
       // This works when a JDK is installed with the JRE.
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
+      if (System.getProperty("os.name").startsWith("Windows")){
+  		jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+            File.separator + "jarsigner.exe");
+      }
       if (!jarsignerFile.exists()) {
         LOG.warning("YAIL compiler - could not find jarsigner.");
         err.println("YAIL compiler - could not find jarsigner.");
@@ -622,7 +639,9 @@ public final class Compiler {
       aaptTool = MAC_AAPT_TOOL;
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
-    } else {
+    } else if (osName.startsWith("Windows")) {
+		aaptTool = WINDOWS_AAPT_TOOL;
+	} else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));

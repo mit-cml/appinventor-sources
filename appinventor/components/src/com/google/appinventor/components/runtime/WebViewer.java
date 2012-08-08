@@ -168,7 +168,7 @@ public final class WebViewer extends AndroidViewComponent {
       "Home URL if new pages were visited by following links.",
       category = PropertyCategory.BEHAVIOR)
   public String CurrentUrl() {
-    return webview.getUrl();
+    return (webview.getUrl() == null) ? "" : webview.getUrl();
   }
 
   /**
@@ -180,7 +180,7 @@ public final class WebViewer extends AndroidViewComponent {
       description = "Title of the page currently viewed",
       category = PropertyCategory.BEHAVIOR)
   public String CurrentPageTitle() {
-    return webview.getTitle();
+    return (webview.getTitle() == null) ? "" : webview.getTitle();
   }
 
 

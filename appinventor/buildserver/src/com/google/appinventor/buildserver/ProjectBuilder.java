@@ -127,6 +127,8 @@ public final class ProjectBuilder {
           // Note that we're using a special result code here for the case of a Yail gen error.
           return new Result(Result.YAIL_GENERATION_ERROR, "", e.getMessage(), e.getFormName());
         } catch (Exception e) {
+          LOG.severe("Unknown exception signalled by genYailFilesIf Necessary");
+          e.printStackTrace();
           return Result.createFailingResult("", "Unexpected problems generating YAIL.");
         }
 
@@ -428,10 +430,16 @@ public final class ProjectBuilder {
       String formName = PathUtil.trimOffExtension(PathUtil.basename(formPropertiesPath));
       if (exitValue == 1) {
         // Failed to generate yail for legitimate reasons, such as empty sockets.
-        throw new YailGenerationException("Unable to generate code for " + formName + ".", formName);
+        throw new YailGenerationException("Unable to generate code for " + formName + "."
+            + "\n -- err is " + err.toString() 
+            + "\n -- out is" + out.toString(),
+            formName);
       } else {
         // Any other exit value is unexpected.
-        throw new RuntimeException("YailGenerator for form " + formName + " exited with code " + exitValue);
+        throw new RuntimeException("YailGenerator for form " + formName 
+            + " exited with code " + exitValue
+            + "\n -- err is " + err.toString() 
+            + "\n -- out is" + out.toString());
       }
     }
   }
@@ -446,7 +454,7 @@ public final class ProjectBuilder {
     }
 
     /**
-     * Return the name of the form that yail generation failed on.
+     * Return the name of the form that Yail generation failed on.
      */
     String getFormName() {
       return formName;

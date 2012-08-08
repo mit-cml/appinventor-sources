@@ -117,11 +117,15 @@ public final class YoungAndroidProjectService extends CommonProjectService {
   /**
    * Returns project settings that can be used when creating a new project.
    */
-  public static String getProjectSettings(String icon) {
+  public static String getProjectSettings(String icon, String vCode, String vName) {
     icon = Strings.nullToEmpty(icon);
+    vCode = Strings.nullToEmpty(vCode);
+    vName = Strings.nullToEmpty(vName);
     return "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":{" +
         "\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"" +
-        icon + "\"}}";
+        icon + "\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE +
+        "\":\"" + vCode +"\",\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME +
+        "\":\"" + vName + "\"}}";
   }
 
   /**
@@ -131,9 +135,11 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param projectName the name of the project
    * @param qualifiedName the qualified name of Screen1 in the project
    * @param icon the name of the asset to use as the application icon
+   * @param vcode the version code
+   * @param vname the version name
    */
   public static String getProjectPropertiesFileContents(String projectName, String qualifiedName,
-      String icon) {
+      String icon, String vcode, String vname) {
     String contents = "main=" + qualifiedName + "\n" +
         "name=" + projectName + '\n' +
         "assets=../" + ASSETS_FOLDER + "\n" +
@@ -141,6 +147,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         "build=../build\n";
     if (icon != null && !icon.isEmpty()) {
       contents += "icon=" + icon + "\n";
+    }
+    if (vcode != null && !vcode.isEmpty()) {
+      contents += "versioncode=" + vcode + "\n";
+    }
+    if (vname != null && !vname.isEmpty()) {
+      contents += "versionname=" + vname + "\n";
     }
     return contents;
   }
@@ -194,6 +206,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String newIcon = Strings.nullToEmpty(settings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON));
+    String newVCode = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE));
+    String newVName = Strings.nullToEmpty(settings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME));
 
     // Extract the old icon from the project.properties file from storageIo.
     String projectProperties = storageIo.downloadFile(userId, projectId,
@@ -207,12 +225,14 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       return;
     }
     String oldIcon = Strings.nullToEmpty(properties.getProperty("icon"));
+    String oldVCode = Strings.nullToEmpty(properties.getProperty("versioncode"));
+    String oldVName = Strings.nullToEmpty(properties.getProperty("versionname"));
 
-    if (!newIcon.equals(oldIcon)) {
+    if (!newIcon.equals(oldIcon) || !newVCode.equals(oldVCode) || !newVName.equals(oldVName)) {
       // Recreate the project.properties and upload it to storageIo.
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
-      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon);
+      String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon, newVCode, newVName);
       storageIo.uploadFile(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
@@ -231,7 +251,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
     String propertiesFileName = PROJECT_PROPERTIES_FILE_NAME;
     String propertiesFileContents = getProjectPropertiesFileContents(projectName,
-        qualifiedFormName, null);
+        qualifiedFormName, null, null, null);
 
     String formFileName = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
     String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
@@ -247,7 +267,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     project.addTextFile(new TextFile(codeblocksFileName, codeblocksFileContents));
 
     // Create new project
-    return storageIo.createProject(userId, project, getProjectSettings(""));
+    return storageIo.createProject(userId, project, getProjectSettings("", "1", "1.0"));
   }
 
   @Override
@@ -259,6 +279,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String icon = oldSettings.getSetting(
         SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
         SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON);
+    String vcode = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE);
+    String vname = oldSettings.getSetting(
+        SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
+        SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_NAME);
 
     Project newProject = new Project(newName);
     newProject.setProjectType(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE);
@@ -277,7 +303,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
         // name and qualified name.
         String qualifiedFormName = StringUtils.getQualifiedFormName(
             storageIo.getUser(userId).getUserEmail(), newName);
-        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon);
+        newContents = getProjectPropertiesFileContents(newName, qualifiedFormName, icon, vcode, vname);
       } else {
         // This is some file other than the project properties file.
         // oldSourceFileName may contain the old project name as a path segment, surrounded by /.
@@ -300,7 +326,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     }
 
     // Create the new project and return the new project's id.
-    return storageIo.createProject(userId, newProject, getProjectSettings(icon));
+    return storageIo.createProject(userId, newProject, getProjectSettings(icon, vcode, vname));
   }
 
   @Override

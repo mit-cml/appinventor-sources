@@ -561,6 +561,11 @@ public final class YoungAndroidFormUpgrader {
       // was added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The VersionCode and VersionName properties were added. No properties need to be modified
+      // to update to version 7.
+      srcCompVersion = 7;
+    }
     return srcCompVersion;
   }
 
@@ -700,6 +705,13 @@ public final class YoungAndroidFormUpgrader {
       // The Player.PlayerError event was marked userVisible false and is no longer used.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    if (srcCompVersion < 4) {
+      // The Looping and Volume properties were added.
+      // The Completed Event was added.
+      // The IsPlaying method was added.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

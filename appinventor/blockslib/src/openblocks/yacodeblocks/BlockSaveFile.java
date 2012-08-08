@@ -719,6 +719,11 @@ public class BlockSaveFile {
       // was added.
       blkCompVersion = 6;
     }
+    if (blkCompVersion < 7) {
+      // The VersionCode and VersionName properties were added. No blocks need to be modified
+      // to update to version 7.
+      blkCompVersion = 7;
+    }
     return blkCompVersion;
   }
 
@@ -862,6 +867,13 @@ public class BlockSaveFile {
             "Please use the Screen.ErrorOccurred event instead.");
       }
       blkCompVersion = 3;
+    }
+    if (blkCompVersion < 4) {
+      // The Looping and Volume properties were added.
+      // The Completed Event was added.
+      // The IsPlaying method was added.
+      // No properties need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
     }
     return blkCompVersion;
   }
