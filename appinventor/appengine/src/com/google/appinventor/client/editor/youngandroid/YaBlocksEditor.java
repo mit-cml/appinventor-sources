@@ -119,7 +119,7 @@ public final class YaBlocksEditor extends FileEditor
     OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(MESSAGES.loadError()) {
       @Override
       public void onSuccess(String blkFileContent) {
-        // TODO(BLOCKS-IN-BROWSER) - create the visual blocks.
+        blocksArea.loadBlocksContent(blkFileContent);
         loadComplete = true;
         selectedDrawer = null;
         if (afterFileLoaded != null) {
@@ -224,13 +224,12 @@ public final class YaBlocksEditor extends FileEditor
   // detached from the parent document. Note that this is not for saving the blocks file itself.
   // We use EditorManager.scheduleAutoSave for that.
   public void prepareForUnload() {
-    blocksArea.saveComponents();
+    blocksArea.saveComponentsAndBlocks();
   }
 
   @Override
   public String getRawFileContent() {
-    // TODO(BLOCKS-IN-BROWSER) - return the content that should be saved in the .blk file
-    throw new RuntimeException("YaBlocksEditor.getRawFileContent is not implemented yet!");
+    return blocksArea.getBlocksContent();
   }
 
   @Override

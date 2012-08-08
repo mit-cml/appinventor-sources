@@ -6,6 +6,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -247,6 +248,32 @@ public final class EditorManager {
     for (ProjectSettings projectSettings : projectSettingsToSave) {
       projectSettings.saveSettings(callAfterSavingCommand);
     }
+  }
+  
+  /**
+   * Mark any open blocks editors for the current project as dirty and then save all dirty editors
+   * and project settings. Needed at least temporarily until Blockly code can let us know when a 
+   * blocks workspace is dirty.
+   *
+   * @param afterSaving  optional command to be executed after project
+   *                     settings and file editors are saved successfully
+
+   */
+  public void saveDirtyEditorsAndBlocksEditors(final Command afterSaving) {
+    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    for (long projectId : openProjectEditors.keySet()) {
+      if (projectId == currentProjectId) {
+        // mark as dirty any open blocks editors for the current project
+        ProjectEditor projectEditor = openProjectEditors.get(projectId);
+        for (FileEditor fileEditor : projectEditor.getOpenFileEditors()) {
+          if (fileEditor instanceof YaBlocksEditor) {
+            dirtyFileEditors.add(fileEditor);
+          }
+        }
+        break;
+      }
+    }
+    saveDirtyEditors(afterSaving);
   }
 
   /**

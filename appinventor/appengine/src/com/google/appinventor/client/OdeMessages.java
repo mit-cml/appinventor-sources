@@ -286,6 +286,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
+  
+  // Used in SaveAllEditorsCommand.java
+  
+  @DefaultMessage("Saved project at {0}")
+  @Description("Message reported when project was saved successfully.")
+  String savedProject(String saveTime);
 
   // Used in editor/EditorManager.java
 

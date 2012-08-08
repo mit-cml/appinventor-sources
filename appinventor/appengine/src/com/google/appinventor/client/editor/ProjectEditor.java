@@ -14,6 +14,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -160,6 +161,13 @@ public abstract class ProjectEditor extends Composite {
    */
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
+  }
+  
+  /**
+   * Returns the set of open file editors
+   */
+  public final Iterable<FileEditor> getOpenFileEditors() {
+    return Collections.unmodifiableCollection(openFileEditors.values());
   }
   
   /**
