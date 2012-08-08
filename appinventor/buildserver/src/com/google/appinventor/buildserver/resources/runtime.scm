@@ -1787,14 +1787,14 @@ list, use the make-yail-list constructor with no arguments.
            (format #f
                    "Insert list item: Attempt to insert item ~A into the list ~A.  The maximum valid item number is ~A."
                    index2
+                   (get-display-representation yail-list)
                    len+1)
-                   (get-display-representation yail-list))
            "List index too large"))
       (let ((contents (yail-list-contents yail-list)))
         (if (= index2 1)
             (set-yail-list-contents! yail-list (cons item contents))
             (let ((at-item (list-tail contents (- index2 2))))
-              (set-cdr! at-item (cons item (cdr at-item))))))))
+              (set-cdr! at-item (cons item (cdr at-item)))))))))
 
 ;; Extends list A by appending the elements of list B to it
 ;; Modifies list A

@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,19 +26,18 @@
 
 /**
  * Class for an editable dropdown field.
- * @param {!Function} menuGenerator A function that returns an array of options
- *     for a dropdown list.
+ * @param {(!Array.<string>|!Function)} menuGenerator An array of options
+ *     for a dropdown list, or a function which generates these options.
  * @param {Function} opt_changeHandler A function that is executed when a new
  *     option is selected.
  * @constructor
  */
 Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
-  var options = menuGenerator.call(this);
-  firstOption = options[0][0];
-  // Call parent's constructor.
-  Blockly.Field.call(this, firstOption);
   this.menuGenerator_ = menuGenerator;
   this.changeHandler_ = opt_changeHandler;
+  var firstText = this.getOptions_()[0][0];
+  // Call parent's constructor.
+  Blockly.Field.call(this, firstText);
 };
 
 // FieldDropdown is a subclass of Field.
@@ -111,7 +110,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   var maxWidth = 0;
   var resizeList = [];
   var checkElement = null;
-  var options = this.menuGenerator_();
+  var options = this.getOptions_();
   for (var x = 0; x < options.length; x++) {
     var text = options[x][0];  // Human-readable text.
     var value = options[x][1]; // Language-neutral value.
@@ -187,10 +186,16 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
 };
 
 /**
- * Hide the dropdown menu.
+ * Return a list of the options for this dropdown.
+ * @return {!Array.<!Array.<string>>} Array of option tuples:
+ *     (human-readable text, language-neutral name).
+ * @private
  */
-Blockly.FieldDropdown.hideMenu = function() {
-  Blockly.FieldDropdown.svgGroup_.style.display = 'none';
+Blockly.FieldDropdown.prototype.getOptions_ = function() {
+  if (typeof this.menuGenerator_ == 'function') {
+    return this.menuGenerator_.call(this);
+  }
+  return this.menuGenerator_;
 };
 
 /**
@@ -199,7 +204,7 @@ Blockly.FieldDropdown.hideMenu = function() {
  */
 Blockly.FieldDropdown.prototype.getValue = function() {
   var selectedText = this.text_;
-  var options = this.menuGenerator_();
+  var options = this.getOptions_();
   for (var x = 0; x < options.length; x++) {
     // Options are tuples of human-readable text and language-neutral values.
     if (options[x][0] == selectedText) {
@@ -214,7 +219,7 @@ Blockly.FieldDropdown.prototype.getValue = function() {
  * @param {string} newValue New value to set.
  */
 Blockly.FieldDropdown.prototype.setValue = function(newValue) {
-  var options = this.menuGenerator_();
+  var options = this.getOptions_();
   for (var x = 0; x < options.length; x++) {
     // Options are tuples of human-readable text and language-neutral values.
     if (options[x][1] == newValue) {
@@ -222,6 +227,14 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
       return;
     }
   }
-  throw '"' + newValue + '" not found in dropdown.';
+  // Value not found.  Add it, maybe it will become valid once set
+  // (like variable names).
+  this.setText(newValue);
 };
 
+/**
+ * Hide the dropdown menu.
+ */
+Blockly.FieldDropdown.hideMenu = function() {
+  Blockly.FieldDropdown.svgGroup_.style.display = 'none';
+};

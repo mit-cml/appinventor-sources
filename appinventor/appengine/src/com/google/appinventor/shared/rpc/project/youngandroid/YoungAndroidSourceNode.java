@@ -50,7 +50,8 @@ public abstract class YoungAndroidSourceNode extends SourceNode {
   public static String getQualifiedName(String sourceFileId) {
     Preconditions.checkArgument(sourceFileId.startsWith(SRC_PREFIX) && (
         sourceFileId.endsWith(YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION) ||
-        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION)));
+        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION) ||
+        sourceFileId.endsWith(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION)));
 
     String name = sourceFileId.substring(SRC_PREFIX.length());
     name = StorageUtil.trimOffExtension(name);

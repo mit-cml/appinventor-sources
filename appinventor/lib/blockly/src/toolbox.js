@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ Blockly.Toolbox.setMetrics = function(yRatio) {
  */
 Blockly.Toolbox.init = function() {
   Blockly.Toolbox.flyout_.init(Blockly.mainWorkspace,
-                               Blockly.getMainWorkspaceMetrics);
+                               Blockly.getMainWorkspaceMetrics, true);
   Blockly.Toolbox.languageTree = Blockly.Toolbox.buildTree_();
   Blockly.Toolbox.redraw();
 
@@ -200,12 +200,14 @@ Blockly.Toolbox.redraw = function() {
                   cat: Blockly.MSG_PROCEDURE_CATEGORY});
   }
 
-  function callbackFactory(cat, element) {
+  function callbackFactory(element) {
     return function(e) {
       var oldSelectedOption = Blockly.Toolbox.selectedOption_;
       Blockly.hideChaff();
-      if (oldSelectedOption != element) {
-        Blockly.Toolbox.selectOption_(cat, element);
+      if (oldSelectedOption == element) {
+        Blockly.Toolbox.clearSelection();
+      } else {
+        Blockly.Toolbox.selectOption_(element);
       }
       // This mouse click has been handled, don't bubble up to document.
       e.stopPropagation();
@@ -226,8 +228,9 @@ Blockly.Toolbox.redraw = function() {
 
     gElement.setAttribute('transform', 'translate(0, ' +
         (x * Blockly.ContextMenu.Y_HEIGHT + TOP_MARGIN) + ')');
+    gElement.cat = option.cat;
     Blockly.bindEvent_(gElement, 'mousedown', null,
-                       callbackFactory(option.cat, gElement));
+                       callbackFactory(gElement));
     resizeList.push(rectElement);
     // Compute the length of the longest text length.
     maxWidth = Math.max(maxWidth, textElement.getComputedTextLength());
@@ -251,28 +254,28 @@ Blockly.Toolbox.redraw = function() {
   // Right-click on empty areas of the toolbox does not generate a context menu.
   Blockly.bindEvent_(Blockly.Toolbox.svgGroup_, 'mousedown', null,
       function(e) {
-        if (e.button == 2) {
+        if (Blockly.isRightButton(e)) {
           Blockly.hideChaff(true);
           e.stopPropagation();
         }
       });
 
   // Fire a resize event since the toolbox may have changed width and height.
-  Blockly.fireUiEvent(Blockly.svgDoc, window, 'resize');
+  Blockly.fireUiEvent(window, 'resize');
 };
 
 /**
  * Highlight the specified option.
- * @param {?string} cat The category name of the newly specified option,
- *     or null to select nothing.
  * @param {Element} newSelectedOption The SVG group for the selected option,
  *     or null to select nothing.
  * @private
  */
-Blockly.Toolbox.selectOption_ = function(cat, newSelectedOption) {
+Blockly.Toolbox.selectOption_ = function(newSelectedOption) {
+  Blockly.Toolbox.clearSelection();
   Blockly.Toolbox.selectedOption_ = newSelectedOption;
   if (newSelectedOption) {
     Blockly.addClass_(newSelectedOption, 'blocklyMenuSelected');
+    var cat = newSelectedOption.cat;
     var blockSet = Blockly.Toolbox.languageTree[cat] || cat;
     Blockly.Toolbox.flyout_.show(blockSet);
   }

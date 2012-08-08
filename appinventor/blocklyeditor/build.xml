@@ -29,6 +29,13 @@
     <concat destfile="${public.build.dir}/blockly-all.js">
       <fileset file="${blockly.src.dir}/blockly.js"/>
     </concat>
+    <!-- language/en/*.js has to come next (for constants) -->
+    <concat destfile="${public.build.dir}/blockly-all.js"
+            append="true">
+      <fileset dir="${blockly.src.dir}/language/en">
+        <include name="*.js"/>
+      </fileset>
+    </concat>
     <!-- the rest of the blockly .js files can come in any order -->
     <concat destfile="${public.build.dir}/blockly-all.js"
             append="true">
@@ -37,7 +44,10 @@
         <exclude name="blockly.js"/>
         <!-- leave out the toolbox. it is replaced by our drawer.js -->
         <exclude name="toolbox.js"/> 
-        <include name="language/en/*.js"/>
+        <!-- exclude the language/en files that we've already appended -->
+        <exclude name="language/en/*.js"/>
+        <!-- include the common language files -->
+        <include name="language/common/*.js"/>
       </fileset>
     </concat>
     <!-- finally, include any of our own .js file in any order -->

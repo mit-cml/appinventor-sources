@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/google-blockly/
+ * http://code.google.com/p/blockly/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,21 @@ Blockly.Trashcan.prototype.init = function() {
   this.position_();
   // If the document resizes, reposition the trash can.
   Blockly.bindEvent_(window, 'resize', this, this.position_);
+};
+
+/**
+ * Destroy this trash can.
+ * Unlink from all DOM elements to prevent memory leaks.
+ */
+Blockly.Trashcan.prototype.destroy = function() {
+  if (this.svgGroup_) {
+    this.svgGroup_.parentNode.removeChild(this.svgGroup_);
+    this.svgGroup_ = null;
+  }
+  this.svgBody_ = null;
+  this.svgLid_ = null;
+  this.getMetrics_ = null;
+  window.clearTimeout(this.lidTask_);
 };
 
 /**

@@ -33,7 +33,7 @@ public class BlocklyPanel extends HTMLPanel {
     public String oldName;          // for RENAME
   }
   
-  static final String EDITOR_HTML = 
+  private static final String EDITOR_HTML = 
       "<style>\n" +
       ".svg {\n" +
       "  height: 100%;\n" +
@@ -70,7 +70,11 @@ public class BlocklyPanel extends HTMLPanel {
   // is re-inited. This component state is updated as components are added, 
   // removed, and renamed. The outer map is keyed by form name, and the 
   // inner map is keyed by component uid.
-  private static Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
+  private static final Map<String, Map<String, ComponentOp>> currentComponents = Maps.newHashMap();
+  
+  // Pending blocks file content, indexed by form name. Waiting to be loaded when the corresponding
+  // blocks area is initialized.
+  private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
 
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
@@ -88,7 +92,7 @@ public class BlocklyPanel extends HTMLPanel {
    * get called back from the Blockly Javascript when it finishes loading.
    */
   public static void initUi() {
-    exportInitComponentsMethod();
+    exportInitBlocksAreaMethod();
   }
   
   /*
@@ -99,11 +103,12 @@ public class BlocklyPanel extends HTMLPanel {
    * after it finishes loading. We export this method to Javascript in
    * exportInitComponentsMethod().
    */
-  private static void initComponents(String formName) {
-    // TODO(sharon): check whether we stashed away components from a previous 
-    // initialization and restore if necessary. works in conjunction with 
-    // saveComponents.
-    OdeLog.log("BlocklyPanel: Got initComponents call for " + formName);
+  private static void initBlocksArea(String formName) {
+    OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
+
+    // if there are any components added, add them first before we load
+    // block content that might reference them
+    
     Map<String, ComponentOp> savedComponents = currentComponents.get(formName);
     if (savedComponents != null) { // shouldn't be!
       OdeLog.log("Restoring " + savedComponents.size() + 
@@ -132,6 +137,14 @@ public class BlocklyPanel extends HTMLPanel {
         }
       }
       componentOps.remove(formName);
+    }
+    
+    // If we've gotten any block content to load, load it now
+    // Note: Map.remove() returns the value (null if not present), as well as removing the mapping
+    String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
+    if (pendingBlocksContent != null) {
+      OdeLog.log("Loading blocks area content for " + formName);
+      doLoadBlocksContent(formName, pendingBlocksContent);
     }
   }
   
@@ -308,13 +321,17 @@ public class BlocklyPanel extends HTMLPanel {
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
    * our parent object and then our blocks editor gets loaded
-   * again later).
+   * again later). Also, remember the current state of the blocks
+   * area in case we get reloaded.
    */
-  public void saveComponents() {
+  public void saveComponentsAndBlocks() {
     // Actually, we already have the components saved, but take this as an 
     // indication that we are going to reinit the blocks editor the next
     // time it is shown.
     OdeLog.log("BlocklyEditor: prepared for reinit for form " + formName);
+    // Get blocks content before putting anything in the componentOps map since an entry in
+    // the componentOps map is taken as an indication that the blocks area has not initialized yet.
+    pendingBlocksContentMap.put(formName, getBlocksContent());
     componentOps.put(formName, new ArrayList<ComponentOp>());
   }
   
@@ -329,11 +346,40 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
   
+  /**
+   * Load the blocks described by blocksContent into the blocks workspace.
+   * 
+   * @param blocksContent  XML description of a blocks workspace in format expected by Blockly
+   */
+  public void loadBlocksContent(String blocksContent) {
+    if (blocksInited(formName)) {
+      OdeLog.log("Loading blocks content for " + formName);
+      doLoadBlocksContent(formName, blocksContent);
+    } else {
+      // save it to load when the blocks area is initialized
+      OdeLog.log("Caching blocks content for " + formName + " for loading when blocks area inited");
+      pendingBlocksContentMap.put(formName, blocksContent);
+    }
+  }
+  
+  /**
+   * Return the XML string describing the current state of the blocks workspace
+   */
+  public String getBlocksContent() {
+    if (blocksInited(formName)) {
+      return doGetBlocksContent(formName);
+    } else {
+      // in case someone clicks Save before the blocks area is inited
+      String blocksContent = pendingBlocksContentMap.get(formName);
+      return (blocksContent != null) ? blocksContent : "";
+    }
+  }
+  
   // ------------ Native methods ------------
   
-  private static native void exportInitComponentsMethod() /*-{ 
-    $wnd.BlocklyPanel_initComponents = 
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initComponents(Ljava/lang/String;));
+  private static native void exportInitBlocksAreaMethod() /*-{ 
+    $wnd.BlocklyPanel_initBlocksArea = 
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
     // Note: above line is longer than 100 chars but I'm not sure whether it can be split
   }-*/;
   
@@ -379,5 +425,12 @@ public class BlocklyPanel extends HTMLPanel {
   public static native boolean doDrawerShowing(String formName) /*-{
     return $wnd.Blocklies[formName].Drawer.isShowing();
   }-*/;
-
+  
+  public static native void doLoadBlocksContent(String formName, String blocksContent) /*-{
+    $wnd.Blocklies[formName].SaveFile.load(blocksContent);
+  }-*/;
+  
+  public static native String doGetBlocksContent(String formName) /*-{
+    return $wnd.Blocklies[formName].SaveFile.get();
+  }-*/;
 }

@@ -2,9 +2,14 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.Command;
+
+import java.util.Date;
 
 /**
  * Command for saving all editors.
@@ -29,9 +34,12 @@ public class SaveAllEditorsCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+    // Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+    Ode.getInstance().getEditorManager().saveDirtyEditorsAndBlocksEditors(new Command() {
       @Override
       public void execute() {
+        ErrorReporter.reportInfo(MESSAGES.savedProject(
+            DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
         executeNextCommand(node);
       }
     });

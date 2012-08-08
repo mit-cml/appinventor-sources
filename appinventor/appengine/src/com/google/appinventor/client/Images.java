@@ -79,6 +79,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/camera.png")
   ImageResource camera();
+  
+  /**
+   * Designer palette item: camcorder declaration
+   */
+  @Source("com/google/appinventor/images/camcorder.png")
+  ImageResource camcorder();
 
   /**
    * Designer palette item: canvas component
