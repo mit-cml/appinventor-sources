@@ -143,7 +143,7 @@ public class BlocklyPanel extends HTMLPanel {
     // Note: Map.remove() returns the value (null if not present), as well as removing the mapping
     String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
     if (pendingBlocksContent != null) {
-      OdeLog.log("Loading blocks area content");
+      OdeLog.log("Loading blocks area content for " + formName);
       doLoadBlocksContent(formName, pendingBlocksContent);
     }
   }
@@ -329,8 +329,10 @@ public class BlocklyPanel extends HTMLPanel {
     // indication that we are going to reinit the blocks editor the next
     // time it is shown.
     OdeLog.log("BlocklyEditor: prepared for reinit for form " + formName);
-    componentOps.put(formName, new ArrayList<ComponentOp>());
+    // Get blocks content before putting anything in the componentOps map since an entry in
+    // the componentOps map is taken as an indication that the blocks area has not initialized yet.
     pendingBlocksContentMap.put(formName, getBlocksContent());
+    componentOps.put(formName, new ArrayList<ComponentOp>());
   }
   
   /**
@@ -368,7 +370,8 @@ public class BlocklyPanel extends HTMLPanel {
       return doGetBlocksContent(formName);
     } else {
       // in case someone clicks Save before the blocks area is inited
-      return pendingBlocksContentMap.get(formName);
+      String blocksContent = pendingBlocksContentMap.get(formName);
+      return (blocksContent != null) ? blocksContent : "";
     }
   }
   
