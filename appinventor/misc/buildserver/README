@@ -1,0 +1,31 @@
+The files in this directory are for supporting an App Inventor
+buildserver on a Ubuntu Linux server.[*] What you do:
+
+ * Create an account named "buildserver":
+
+   prompt% sudo adduser buildserver --system
+
+ * copy launch-buildserver and buildmonitor.py to
+   /home/buildserver/
+
+ * Create /home/buildserver/lib
+
+ * Copy file files from
+   ${ROOT}/appinventor/buildserver/build/run/lib/*
+   to /home/buildserver/lib/
+
+   (${ROOT} is the source root directory)
+
+ * Copy buildserver.conf to /etc/init/buildserver.conf
+
+You can now start the buildserver via:
+
+   prompt% sudo start buildserver
+
+Note: The buildserver will now automatically start when the server
+boots. The buildmonitor.py script arranges to restart the buildserver
+if it exits. So you cannot just kill the buildserver java
+program. Instead you "sudo stop buildserver" which instructs "upstart"
+(the Ubuntu daemon management program) to shut it down.
+
+[*] Valid at least as of Ubuntu 12.04LTS
