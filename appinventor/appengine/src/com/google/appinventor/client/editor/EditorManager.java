@@ -4,9 +4,11 @@ package com.google.appinventor.client.editor;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -275,6 +277,50 @@ public final class EditorManager {
     }
     saveDirtyEditors(afterSaving);
   }
+  
+  /**
+   * For each block editor (screen) in the current project, generate
+   * and save yail code for the blocks.
+   *
+   * @param nextCommand  optional command to be executed after yail generation
+   *                     succeeds. note that the command will not be executed if there's 
+   *                     an error generating the yail.
+   */
+  public void generateYailForBlocksEditors(final Command nextCommand) {
+    List<FileDescriptorWithContent> yailFiles =  new ArrayList<FileDescriptorWithContent>();
+    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    for (long projectId : openProjectEditors.keySet()) {
+      if (projectId == currentProjectId) {
+        // Generate yail for each blocks editor in this project and add it to the list of 
+        // yail files. If an error occurs we stop the generation process, report the error, 
+        // and return without executing nextCommand.
+        ProjectEditor projectEditor = openProjectEditors.get(projectId);
+        for (FileEditor fileEditor : projectEditor.getOpenFileEditors()) {
+          if (fileEditor instanceof YaBlocksEditor) {
+            YaBlocksEditor yaBlocksEditor = (YaBlocksEditor) fileEditor;
+            try {
+              yailFiles.add(yaBlocksEditor.getYail());
+            } catch (YailGenerationException e) {
+              ErrorReporter.reportInfo(MESSAGES.yailGenerationError(e.getFormName()));
+              return;
+            }
+          }
+        }
+        break;
+      }
+    }
+   
+    Ode.getInstance().getProjectService().save(yailFiles,
+        new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
+      @Override
+      public void onSuccess(Long date) {
+        if (nextCommand != null) {
+          nextCommand.execute();
+        }
+      }
+    });
+  }
+
 
   /**
    * Saves multiple files to the ODE server and calls the afterSavingFiles

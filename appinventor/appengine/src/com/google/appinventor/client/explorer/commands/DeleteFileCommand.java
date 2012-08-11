@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidYailNode;
 import com.google.gwt.user.client.Window;
 
 /**
@@ -41,6 +42,7 @@ public class DeleteFileCommand extends ChainableCommand {
         final String qualifiedFormName = ((YoungAndroidSourceNode) node).getQualifiedName();
         final String formFileId = YoungAndroidFormNode.getFormFileId(qualifiedFormName);
         final String blocksFileId = YoungAndroidBlocksNode.getBlocklyFileId(qualifiedFormName);
+        final String yailFileId = YoungAndroidYailNode.getYailFileId(qualifiedFormName);
         final long projectId = node.getProjectId();
         String fileIds[] = new String[2];
         fileIds[0] = formFileId;
@@ -48,18 +50,19 @@ public class DeleteFileCommand extends ChainableCommand {
         ode.getEditorManager().closeFileEditors(projectId, fileIds);
 
         // When we tell the project service to delete either the form (.scm) file or the blocks
-        // (.bky) file, it will delete both of them
+        // (.bky) file, it will delete both of them, and also the yail (.yail) file.
         ode.getProjectService().deleteFile(projectId, node.getFileId(),
             new OdeAsyncCallback<Long>(
         // message on failure
             MESSAGES.deleteFileError()) {
           @Override
           public void onSuccess(Long date) {
-            // Remove both nodes (form and blocks) from the project.
+            // Remove all related nodes (form, blocks, yail) from the project.
             Project project = getProject(node);
             for (ProjectNode sourceNode : node.getProjectRoot().getAllSourceNodes()) {
               if (sourceNode.getFileId().equals(formFileId) ||
-                  sourceNode.getFileId().equals(blocksFileId)) {
+                  sourceNode.getFileId().equals(blocksFileId) ||
+                  sourceNode.getFileId().equals(yailFileId)) {
                 project.deleteNode(sourceNode);
               }
             }

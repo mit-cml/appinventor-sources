@@ -3,7 +3,17 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.output.MessagesOutput;
+import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.i18n.client.DateTimeFormat;
+
+import java.util.Date;
 
 /**
  * Command for building a target in a project.
@@ -41,10 +51,6 @@ public class BuildCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    ErrorReporter.reportError("Can't build with new block editor yet");
-    executionFailedOrCanceled();
-
-    /*
     final Ode ode = Ode.getInstance();
     final MessagesOutput messagesOutput = MessagesOutput.getMessagesOutput();
     messagesOutput.clear();
@@ -101,6 +107,5 @@ public class BuildCommand extends ChainableCommand {
     };
 
     ode.getProjectService().build(node.getProjectId(), target, callback);
-    */
   }
 }

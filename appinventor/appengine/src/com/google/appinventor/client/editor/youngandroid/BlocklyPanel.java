@@ -375,6 +375,19 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
   
+  /**
+   * Get Yail code for current blocks workspace
+   * 
+   * @return the yail code as a String
+   * @throws YailGenerationException if there was a problem generating the Yail
+   */
+  public String getYail() throws YailGenerationException {
+    if (!blocksInited(formName)) {
+      throw new YailGenerationException("Blocks area is not initialized yet", formName);
+    }
+    return doGetYail(formName);
+  }
+  
   // ------------ Native methods ------------
   
   private static native void exportInitBlocksAreaMethod() /*-{ 
@@ -432,5 +445,31 @@ public class BlocklyPanel extends HTMLPanel {
   
   public static native String doGetBlocksContent(String formName) /*-{
     return $wnd.Blocklies[formName].SaveFile.get();
+  }-*/;
+  
+  public static native String doGetYail(String formName) /*-{
+    // TODO(sharon): obviously the code below is a hack for now, until we get the actual
+    // yail generation code in. This allows us to build one specific app, that contains
+    // one label whose text is set to "Hello World" in the Screen1.Intialize event. It
+    // allow us to test that the workflow throught the GWT parts and servers works.
+    // return $wnd.Blocklies[formName].Generator.workspaceToCode('Yail');
+    return "#|\n" +
+"$Source $Yail\n" +
+"|#\n" +
+"\n" +
+"(define-form appinventor.ai_sharon.testcodegen.Screen1 Screen1)\n" +
+"(require <com.google.youngandroid.runtime>)\n" +
+";;; Screen1\n" +
+"(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title \"Screen1\" 'text)\n" +
+")\n" +
+"(define-event Screen1 Initialize()\n" +
+" (set-this-form)\n" +
+" (set-and-coerce-property! 'Label1 'Text \"Hello World\" 'text)\n" +
+"\n" +
+")\n" +
+";;; Label1\n" +
+"(add-component Screen1 Label Label1 (set-and-coerce-property! 'Label1 'Text \"Text for Label1\" 'text)\n" +
+")\n" +
+"(init-runtime)\n";
   }-*/;
 }
