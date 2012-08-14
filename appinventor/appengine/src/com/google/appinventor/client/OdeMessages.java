@@ -284,7 +284,7 @@ public interface OdeMessages extends Messages {
 
   // Used in editor/simple/SimpleVisibleComponentsPanel.java
 
-  @DefaultMessage("Display Hidden Components in Viewer")
+  @DefaultMessage("Display hidden components in Viewer")
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
