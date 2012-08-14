@@ -47,22 +47,25 @@ public abstract class AndroidViewComponent extends VisibleComponent {
    * Returns true iff the component is visible.
    * @return  true iff the component is visible
    */
-  @SimpleProperty(description = "Whether the component is visible",
+  @SimpleProperty(
       category = PropertyCategory.APPEARANCE)
   public boolean Visible() {
     return getView().getVisibility() == View.VISIBLE;
   }
 
   /**
-   * Specifies whether the component should be visible
+   * Specifies whether the component should be visible on the screen.  Value is true if the 
+   * component is showing and false if hidden.
    * @param  visible desired state
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
-  @SimpleProperty
-  public void Visible(boolean visible) {
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
+      defaultValue = "True")
+  @SimpleProperty(description = "Specifies whether the component should be visible on the screen. "
+      + "Value is true if the component is showing and false if hidden.")
+  public void Visible(Boolean visibility) {
     // The principle of least astonishment suggests we not offer the
     // Android option INVISIBLE.
-    getView().setVisibility(visible ? View.VISIBLE : View.GONE);
+    getView().setVisibility(visibility ? View.VISIBLE : View.GONE);
   }
 
   /**

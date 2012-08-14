@@ -131,4 +131,10 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor}.
    */
   public static final String PROPERTY_TYPE_TYPEFACE = "typeface";
+  
+  /**
+   * Choices of visibility for view components offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVisibilityChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_VISIBILITY = "visibility";
 }
