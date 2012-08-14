@@ -13,9 +13,9 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
  */
 public class YoungAndroidVisibilityChoicePropertyEditor extends ChoicePropertyEditor {
 
-  //TODO(hal): The values must be True and False. Losercase true and fale do not work here:
+  // TODO(hal): The values must be True and False. Lowercase true and false do not work here:
   // they are not transformed from strings to booleans when passed to the property.
-  // Figure out why not.
+  // Figure out why not and explain in a comment.
   
   private static final Choice[] visibility = new Choice[] {
     new Choice("showing", "True"),
