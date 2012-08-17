@@ -27,6 +27,7 @@ import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -116,11 +117,46 @@ public class MediaUtil {
     return MediaSource.ASSET;
   }
 
+  private static String findCaseinsensitivePath(Form form, String mediaPath)
+      throws IOException{
+    String[] mediaPathlist = form.getAssets().list("");
+    int l = Array.getLength(mediaPathlist);
+    for (int i=0; i<l; i++){
+      String temp = mediaPathlist[i];
+      if (temp.equalsIgnoreCase(mediaPath)){
+        return temp;
+      }
+    }
+    return null;
+  }
+
+  /**
+   * find path of an asset from a mediaPath using case-insensitive comparison,
+   * return type InputStream.
+   * Throws IOException if there is no matching path
+   * @param form the Form
+   * @param mediaPath the path to the media
+   */
+  private static InputStream getAssetsIgnoreCaseInputStream(Form form, String mediaPath)
+      throws IOException{
+    try {
+      return form.getAssets().open(mediaPath);
+
+    } catch (IOException e) {
+        if (findCaseinsensitivePath(form, mediaPath) == null){
+          throw e;
+        } else {
+        String path = findCaseinsensitivePath(form, mediaPath);
+        return form.getAssets().open(path);
+        }
+    }
+  }
+
   private static InputStream openMedia(Form form, String mediaPath, MediaSource mediaSource)
       throws IOException {
     switch (mediaSource) {
       case ASSET:
-        return form.getAssets().open(mediaPath);
+        return getAssetsIgnoreCaseInputStream(form,mediaPath);
 
       case REPL_ASSET:
         return new FileInputStream(replAssetPath(mediaPath));
@@ -320,6 +356,28 @@ public class MediaUtil {
   // SoundPool related methods
 
   /**
+   * find path of an asset from a mediaPath using case-insensitive comparison,
+   * return AssetFileDescriptor of that asset
+   * Throws IOException if there is no matching path
+   * @param form the Form
+   * @param mediaPath the path to the media
+   */
+  private static AssetFileDescriptor getAssetsIgnoreCaseAfd(Form form, String mediaPath)
+      throws IOException{
+    try {
+      return form.getAssets().openFd(mediaPath);
+
+    } catch (IOException e) {
+      if (findCaseinsensitivePath(form, mediaPath) == null){
+        throw e;
+      } else {
+      String path = findCaseinsensitivePath(form, mediaPath);
+      return form.getAssets().openFd(path);
+      }
+    }
+  }
+
+  /**
    * Loads the audio specified by mediaPath into the given SoundPool and
    * returns the sound id.
    *
@@ -336,7 +394,7 @@ public class MediaUtil {
     MediaSource mediaSource = determineMediaSource(form, mediaPath);
     switch (mediaSource) {
       case ASSET:
-        return soundPool.load(form.getAssets().openFd(mediaPath), 1);
+        return soundPool.load(getAssetsIgnoreCaseAfd(form,mediaPath), 1);
 
       case REPL_ASSET:
         return soundPool.load(replAssetPath(mediaPath), 1);
@@ -374,7 +432,7 @@ public class MediaUtil {
     MediaSource mediaSource = determineMediaSource(form, mediaPath);
     switch (mediaSource) {
       case ASSET:
-        AssetFileDescriptor afd = form.getAssets().openFd(mediaPath);
+        AssetFileDescriptor afd = getAssetsIgnoreCaseAfd(form,mediaPath);
         try {
           FileDescriptor fd = afd.getFileDescriptor();
           long offset = afd.getStartOffset();
@@ -384,6 +442,7 @@ public class MediaUtil {
           afd.close();
         }
         return;
+
 
       case REPL_ASSET:
         mediaPlayer.setDataSource(replAssetPath(mediaPath));

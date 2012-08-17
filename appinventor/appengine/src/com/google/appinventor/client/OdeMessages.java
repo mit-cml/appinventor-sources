@@ -905,10 +905,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
 
-  @DefaultMessage("A file named {0} already exists in this project. Do you want to overwrite " +
-      "the old file?")
-  @Description("Confirmation message shown when a file is about to be overwritten.")
-  String confirmOverwrite(String filename);
+  @DefaultMessage("A file named {0} already exists in this project. Do you want to remove " +
+      "this old file? This will also remove any other files whose names conflict with {1}.")
+  @Description("Confirmation message shown when conflicting files are about to be deleted.")
+  String confirmOverwrite(String newFile, String existingFile);
 
   // Used in wizards/KeystoreUploadWizard.java
 

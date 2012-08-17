@@ -4,6 +4,8 @@ package com.google.appinventor.client.wizards;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import java.io.File;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
 
 /**
  * Wizard for uploading individual files.
@@ -87,12 +90,32 @@ public class FileUploadWizard extends Wizard {
             Window.alert(MESSAGES.filenameBadSize());
             return;
           }
-          if (fileAlreadyExists(folderNode, filename)) {
-            if (!confirmOverwrite(folderNode, filename)) {
-              return;
+          String fn = conflictingExistingFile(folderNode, filename);
+          if (fn != null && !confirmOverwrite(folderNode, fn, filename)) {
+            return;
+          } else {
+            String fileId = folderNode.getFileId() + "/" + filename;
+            // We delete all the conflicting files.
+            for (ProjectNode child : folderNode.getChildren()) {
+              if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
+                final ProjectNode node = child;
+                Ode ode = Ode.getInstance();
+                ode.getEditorManager().closeFileEditor(node.getProjectId(), node.getFileId());
+                ode.getProjectService().deleteFile(
+                    node.getProjectId(), node.getFileId(),
+                    new OdeAsyncCallback<Long>(
+                        // message on failure
+                        MESSAGES.deleteFileError()) {
+                      @Override
+                      public void onSuccess(Long date) {
+                        Ode.getInstance().getProjectManager().getProject(node).deleteNode(node);
+                        Ode.getInstance().updateModificationDate(node.getProjectId(), date);
+
+                      }
+                    });
+              }
             }
           }
-
           ErrorReporter.reportInfo(MESSAGES.fileUploadingMessage(filename));
 
           // Use the folderNode's project id and file id in the upload URL so that the file is
@@ -102,25 +125,25 @@ public class FileUploadWizard extends Wizard {
               folderNode.getFileId() + "/" + filename;
           Uploader.getInstance().upload(upload, uploadUrl,
               new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-                @Override
-                public void onSuccess(UploadResponse uploadResponse) {
-                  switch (uploadResponse.getStatus()) {
-                    case SUCCESS:
-                      ErrorReporter.hide();
-                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                          fileUploadedCallback);
-                      break;
-                    case FILE_TOO_LARGE:
-                      // The user can resolve the problem by
-                      // uploading a smaller file.
-                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                      break;
-                    default:
-                      ErrorReporter.reportError(MESSAGES.fileUploadError());
-                      break;
-                  }
-                }
-              });
+            @Override
+            public void onSuccess(UploadResponse uploadResponse) {
+              switch (uploadResponse.getStatus()) {
+              case SUCCESS:
+                ErrorReporter.hide();
+                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                    fileUploadedCallback);
+                break;
+              case FILE_TOO_LARGE:
+                // The user can resolve the problem by
+                // uploading a smaller file.
+                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                break;
+              default:
+                ErrorReporter.reportError(MESSAGES.fileUploadError());
+                break;
+              }
+            }
+          });
         } else {
           Window.alert(MESSAGES.noFileSelected());
           new FileUploadWizard(folderNode, fileUploadedCallback).show();
@@ -150,18 +173,24 @@ public class FileUploadWizard extends Wizard {
     return filename;
   }
 
-  private boolean fileAlreadyExists(FolderNode folderNode, String filename) {
+  private String conflictingExistingFile(FolderNode folderNode, String filename) {
     String fileId = folderNode.getFileId() + "/" + filename;
     for (ProjectNode child : folderNode.getChildren()) {
-      if (fileId.equals(child.getFileId())) {
-        return true;
+      if (fileId.equalsIgnoreCase(child.getFileId())) {
+        // we want to return kitty.png rather than assets/kitty.png
+        return lastPathComponent(child.getFileId());
       }
     }
-    return false;
+    return null;
   }
 
-  private boolean confirmOverwrite(FolderNode folderNode, String filename) {
-    return Window.confirm(MESSAGES.confirmOverwrite(filename));
+  private String lastPathComponent (String path) {
+    String [] pieces = path.split("/");
+    return pieces[pieces.length - 1];
+  }
+
+  private boolean confirmOverwrite(FolderNode folderNode, String newFile, String existingFile) {
+    return Window.confirm(MESSAGES.confirmOverwrite(newFile, existingFile));
   }
 
   private void onUploadSuccess(final FolderNode folderNode, final String filename,
