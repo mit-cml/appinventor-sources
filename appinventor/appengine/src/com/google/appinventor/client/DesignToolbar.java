@@ -299,9 +299,9 @@ public class DesignToolbar extends Toolbar {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateYailCommand(
-              new BuildCommand(target,
-                   new WaitForBuildResultCommand(target,
-                       new ShowBarcodeCommand(target)))));
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new ShowBarcodeCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -321,9 +321,10 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new BuildCommand(target,
-                new WaitForBuildResultCommand(target,
-                    new DownloadProjectOutputCommand(target))));
+            new GenerateYailCommand(
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new DownloadProjectOutputCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {

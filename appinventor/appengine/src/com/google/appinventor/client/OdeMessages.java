@@ -299,9 +299,9 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when one or more file couldn't be saved to the server.")
   String saveErrorMultipleFiles();
 
-  @DefaultMessage("Error generating Yail for screen {0}. Please fix and try packaging again.")
+  @DefaultMessage("Error generating Yail for screen {0}: {1}. Please fix and try packaging again.")
   @Description("Error message reported when yail generation fails for a screen")
-  String yailGenerationError(String formName);
+  String yailGenerationError(String formName, String description);
 
   // Used in editor/simple/SimpleNonVisibleComponentsPanel.java
 

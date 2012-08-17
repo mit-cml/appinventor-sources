@@ -3,6 +3,7 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.Command;
 
@@ -31,11 +32,18 @@ public class GenerateYailCommand extends ChainableCommand {
 
   @Override
   protected void execute(final ProjectNode node) {
-    Ode.getInstance().getEditorManager().generateYailForBlocksEditors(new Command() {
-      @Override
-      public void execute() {
-        executeNextCommand(node);
-      }
-    });
+    Ode.getInstance().getEditorManager().generateYailForBlocksEditors(
+        new Command() {
+          @Override
+          public void execute() {
+            executeNextCommand(node);
+          }
+        },
+        new Command() {
+          @Override
+          public void execute() {
+            executionFailedOrCanceled();
+          }
+        });
   }
 }

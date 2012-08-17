@@ -279,14 +279,14 @@ public final class EditorManager {
   }
   
   /**
-   * For each block editor (screen) in the current project, generate
-   * and save yail code for the blocks.
+   * For each block editor (screen) in the current project, generate and save yail code for the 
+   * blocks.
    *
-   * @param nextCommand  optional command to be executed after yail generation
-   *                     succeeds. note that the command will not be executed if there's 
-   *                     an error generating the yail.
+   * @param successCommand  optional command to be executed if yail generation and saving succeeds.
+   * @param failureCommand  optional command to be executed if yail generation and saving fails.
    */
-  public void generateYailForBlocksEditors(final Command nextCommand) {
+  public void generateYailForBlocksEditors(final Command successCommand, 
+      final Command failureCommand) {
     List<FileDescriptorWithContent> yailFiles =  new ArrayList<FileDescriptorWithContent>();
     long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
     for (long projectId : openProjectEditors.keySet()) {
@@ -301,7 +301,11 @@ public final class EditorManager {
             try {
               yailFiles.add(yaBlocksEditor.getYail());
             } catch (YailGenerationException e) {
-              ErrorReporter.reportInfo(MESSAGES.yailGenerationError(e.getFormName()));
+              ErrorReporter.reportInfo(MESSAGES.yailGenerationError(e.getFormName(), 
+                  e.getMessage()));
+              if (failureCommand != null) {
+                failureCommand.execute();
+              }
               return;
             }
           }
@@ -314,8 +318,16 @@ public final class EditorManager {
         new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
       @Override
       public void onSuccess(Long date) {
-        if (nextCommand != null) {
-          nextCommand.execute();
+        if (successCommand != null) {
+          successCommand.execute();
+        }
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        if (failureCommand != null) {
+          failureCommand.execute();
         }
       }
     });
