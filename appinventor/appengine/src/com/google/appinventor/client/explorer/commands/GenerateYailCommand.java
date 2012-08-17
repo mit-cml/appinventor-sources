@@ -3,7 +3,6 @@
 package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.Ode;
-import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 import com.google.gwt.user.client.Command;
 
