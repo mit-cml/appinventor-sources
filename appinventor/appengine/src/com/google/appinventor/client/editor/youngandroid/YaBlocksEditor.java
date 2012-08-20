@@ -18,7 +18,9 @@ import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
+import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
+import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 
@@ -231,6 +233,10 @@ public final class YaBlocksEditor extends FileEditor
   public String getRawFileContent() {
     return blocksArea.getBlocksContent();
   }
+  
+  public FileDescriptorWithContent getYail() throws YailGenerationException {
+    return new FileDescriptorWithContent(getProjectId(), yailFileName(), blocksArea.getYail());
+  }
 
   @Override
   public void onSave() {
@@ -296,6 +302,12 @@ public final class YaBlocksEditor extends FileEditor
     } else {
       return null;
     }
+  }
+  
+  private String yailFileName() {
+    String fileId = getFileId();
+    return fileId.replace(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION, 
+        YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION);
   }
 
   // FormChangeListener implementation

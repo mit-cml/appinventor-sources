@@ -12,6 +12,7 @@ import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
 import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
@@ -297,9 +298,10 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new BuildCommand(target,
-                new WaitForBuildResultCommand(target,
-                    new ShowBarcodeCommand(target))));
+            new GenerateYailCommand(
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new ShowBarcodeCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -319,9 +321,10 @@ public class DesignToolbar extends Toolbar {
       if (projectRootNode != null) {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
-            new BuildCommand(target,
-                new WaitForBuildResultCommand(target,
-                    new DownloadProjectOutputCommand(target))));
+            new GenerateYailCommand(
+                new BuildCommand(target,
+                    new WaitForBuildResultCommand(target,
+                        new DownloadProjectOutputCommand(target)))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
