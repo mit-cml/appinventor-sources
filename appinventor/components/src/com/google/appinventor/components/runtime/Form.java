@@ -599,7 +599,7 @@ public class Form extends Activity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"behind\".")
+      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"user\".")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:

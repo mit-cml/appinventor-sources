@@ -507,6 +507,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Landscape")
   @Description("Text for screen orientation choice 'Landscape '")
   String landscapeScreenOrientation();
+  
+  @DefaultMessage("Sensor")
+  @Description("Text for screen orientation choice 'Sensor '")
+  String sensorScreenOrientation();
+  
+  @DefaultMessage("User")
+  @Description("Text for screen orientation choice 'User '")
+  String userScreenOrientation();
 
   // Used in explorer/SourceStructureExplorer.java
 
