@@ -139,12 +139,14 @@ Blockly.Generator.workspaceToCode = function(name) {
       // Top-level blocks don't care about operator order.
       line = line[0];
     }
-    if (block.outputConnection && generator.scrubNakedValue && line) {
-      // This block is a naked value.  Ask the language's code generator if
-      // it wants to append a semicolon, or something.
-      line = generator.scrubNakedValue(line);
+    if (line) {
+      if (block.outputConnection && generator.scrubNakedValue) {
+        // This block is a naked value.  Ask the language's code generator if
+        // it wants to append a semicolon, or something.
+        line = generator.scrubNakedValue(line);
+      }
+      code.push(line);
     }
-    code.push(line);
   }
   code = code.join('\n');  // Blank line between each section.
   code = generator.finish(code);

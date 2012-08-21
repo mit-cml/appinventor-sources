@@ -136,6 +136,37 @@ Blockly.Language.text_create_join_item = {
   }
 };
 
+Blockly.Language.text_append = {
+  // Append to a variable in place.
+  category: Blockly.LANG_CATEGORY_TEXT,
+  helpUrl: Blockly.LANG_TEXT_APPEND_HELPURL,
+  init: function() {
+    this.setColour(160);
+    this.appendTitle(Blockly.LANG_TEXT_APPEND_TO);
+    this.appendTitle(new Blockly.FieldDropdown(
+        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange),
+        'VAR').setText(Blockly.LANG_TEXT_APPEND_VARIABLE);
+    this.appendInput(Blockly.LANG_TEXT_APPEND_APPENDTEXT,
+        Blockly.INPUT_VALUE, 'TEXT', null);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      return Blockly.LANG_TEXT_APPEND_TOOLTIP_1.replace('%1',
+          thisBlock.getTitleText('VAR'));
+    });
+  },
+  getVars: function() {
+    return [this.getTitleText('VAR')];
+  },
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getTitleText('VAR'))) {
+      this.setTitleText(newName, 'VAR');
+    }
+  }
+};
+
 Blockly.Language.text_length = {
   // String length.
   category: Blockly.LANG_CATEGORY_TEXT,

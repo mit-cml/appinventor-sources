@@ -62,6 +62,15 @@ Blockly.Python.text_join = function() {
   }
 };
 
+Blockly.Python.text_append = function() {
+  // Append to a variable in place.
+  var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+      Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.Python.valueToCode(this, 'TEXT',
+      Blockly.Python.ORDER_NONE) || '\'\'';
+  return code = varName + ' = str(' + varName + ') + str(' + argument0 + ')\n';
+};
+
 Blockly.Python.text_length = function() {
   // String length.
   var argument0 = Blockly.Python.valueToCode(this, 'VALUE',

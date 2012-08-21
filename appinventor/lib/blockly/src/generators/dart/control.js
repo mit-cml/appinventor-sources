@@ -68,18 +68,34 @@ Blockly.Dart.controls_for = function() {
       Blockly.Dart.ORDER_ASSIGNMENT) || '0';
   var branch0 = Blockly.Dart.statementToCode(this, 'DO');
   var code;
-  if (argument1.match(/^\w+$/)) {
+  if (argument0.match(/^-?\d+(\.\d+)?$/) &&
+      argument1.match(/^-?\d+(\.\d+)?$/)) {
+    // Both arguments are simple numbers.
+    var up = parseFloat(argument0) <= parseFloat(argument1);
     code = 'for (' + variable0 + ' = ' + argument0 + '; ' +
-        variable0 + ' <= ' + argument1 + '; ' + variable0 + '++) {\n' +
+        variable0 + (up ? ' <= ' : ' >= ') + argument1 + '; ' +
+        variable0 + (up ? '++' : '--') + ') {\n' +
         branch0 + '}\n';
   } else {
-    // The end value appears to be more complicated than a simple variable.
-    // Cache it to a variable to prevent repeated look-ups.
-    var endVar = Blockly.Dart.variableDB_.getDistinctName(
-        variable0 + '_end', Blockly.Variables.NAME_TYPE);
-    code = 'var ' + endVar + ' = ' + argument1 + ';\n' +
-        'for (' + variable0 + ' = ' + argument0 + '; ' +
-        variable0 + ' <= ' + endVar + '; ' + variable0 + '++) {\n' +
+    code = '';
+    // Cache non-trivial values to variables to prevent repeated look-ups.
+    var startVar = argument0;
+    if (!argument0.match(/^\w+$/) && !argument0.match(/^-?\d+(\.\d+)?$/)) {
+      var startVar = Blockly.Dart.variableDB_.getDistinctName(
+          variable0 + '_start', Blockly.Variables.NAME_TYPE);
+      code += 'var ' + startVar + ' = ' + argument0 + ';\n';
+    }
+    var endVar = argument1;
+    if (!argument1.match(/^\w+$/) && !argument1.match(/^-?\d+(\.\d+)?$/)) {
+      var endVar = Blockly.Dart.variableDB_.getDistinctName(
+          variable0 + '_end', Blockly.Variables.NAME_TYPE);
+      code += 'var ' + endVar + ' = ' + argument1 + ';\n';
+    }
+    code += 'for (' + variable0 + ' = ' + startVar + ';\n' +
+        '    (' + startVar + ' <= ' + endVar + ') ? ' +
+        variable0 + ' <= ' + endVar + ' : ' +
+        variable0 + ' >= ' + endVar + ';\n' +
+        '    ' + variable0 + ' += (' + startVar + ' <= ' + endVar + ') ? 1 : -1) {\n' +
         branch0 + '}\n';
   }
   return code;

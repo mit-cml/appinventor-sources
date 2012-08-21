@@ -360,3 +360,16 @@ Blockly.Xml.isFirstRealChild_ = function(parentNode, tagName) {
   }
   return false;
 };
+
+/**
+ * Remove any 'next' block (statements in a stack).
+ * @param {!Element} xmlBlock XML block element.
+ */
+Blockly.Xml.deleteNext = function(xmlBlock) {
+  for (var x = 0, child; child = xmlBlock.childNodes[x]; x++) {
+    if (child.tagName.toLowerCase() == 'next') {
+      xmlBlock.removeChild(child);
+      break;
+    }
+  }
+};

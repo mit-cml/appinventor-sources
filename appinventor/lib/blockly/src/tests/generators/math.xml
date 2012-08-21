@@ -1,0 +1,138 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="unittest_main" x="0" y="1">
+    <statement name="DO">
+      <block type="procedures_callnoreturn">
+        <mutation name="test arithmetic"></mutation>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="0" y="119">
+    <mutation></mutation>
+    <title name="NAME">test arithmetic</title>
+    <statement name="STACK">
+      <block type="unittest_assertequals" inline="false">
+        <title name="MESSAGE">add</title>
+        <value name="ACTUAL">
+          <block type="math_arithmetic" inline="true">
+            <title name="OP">ADD</title>
+            <value name="A">
+              <block type="math_number">
+                <title name="NUM">1</title>
+              </block>
+            </value>
+            <value name="B">
+              <block type="math_number">
+                <title name="NUM">2</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="EXPECTED">
+          <block type="math_number">
+            <title name="NUM">3</title>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_assertequals" inline="false">
+            <title name="MESSAGE">subtract</title>
+            <value name="ACTUAL">
+              <block type="math_arithmetic" inline="true">
+                <title name="OP">MINUS</title>
+                <value name="A">
+                  <block type="math_number">
+                    <title name="NUM">1</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="math_number">
+                    <title name="NUM">2</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="EXPECTED">
+              <block type="math_number">
+                <title name="NUM">-1</title>
+              </block>
+            </value>
+            <next>
+              <block type="unittest_assertequals" inline="false">
+                <title name="MESSAGE">multiply</title>
+                <value name="ACTUAL">
+                  <block type="math_arithmetic" inline="true">
+                    <title name="OP">MULTIPLY</title>
+                    <value name="A">
+                      <block type="math_number">
+                        <title name="NUM">4</title>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="math_number">
+                        <title name="NUM">2.5</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="EXPECTED">
+                  <block type="math_number">
+                    <title name="NUM">10</title>
+                  </block>
+                </value>
+                <next>
+                  <block type="unittest_assertequals" inline="false">
+                    <title name="MESSAGE">divide</title>
+                    <value name="ACTUAL">
+                      <block type="math_arithmetic" inline="true">
+                        <title name="OP">DIVIDE</title>
+                        <value name="A">
+                          <block type="math_number">
+                            <title name="NUM">8.2</title>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="math_number">
+                            <title name="NUM">-5</title>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                    <value name="EXPECTED">
+                      <block type="math_number">
+                        <title name="NUM">-1.64</title>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="unittest_assertequals" inline="false">
+                        <title name="MESSAGE">power</title>
+                        <value name="ACTUAL">
+                          <block type="math_arithmetic" inline="true">
+                            <title name="OP">POWER</title>
+                            <value name="A">
+                              <block type="math_number">
+                                <title name="NUM">10</title>
+                              </block>
+                            </value>
+                            <value name="B">
+                              <block type="math_number">
+                                <title name="NUM">4</title>
+                              </block>
+                            </value>
+                          </block>
+                        </value>
+                        <value name="EXPECTED">
+                          <block type="math_number">
+                            <title name="NUM">10000</title>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

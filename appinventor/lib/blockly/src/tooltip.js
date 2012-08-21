@@ -222,11 +222,13 @@ Blockly.Tooltip.show_ = function() {
     left += Blockly.Tooltip.OFFSET_X;
   }
   var top = Blockly.Tooltip.lastY + Blockly.Tooltip.OFFSET_Y;
-  // Update Blockly's knowledge of its own location.
-  Blockly.svgResize();
-  var svgSize = Blockly.svgSize();
-  left -= svgSize.left;
-  top -= svgSize.top;
+  // Measure the offset of the SVG.
+  var node = Blockly.svg.parentNode;
+  while (node) {
+    left -= node.offsetLeft;
+    top -= node.offsetTop;
+    node = node.offsetParent;
+  }
   Blockly.Tooltip.svgGroup_.setAttribute('transform',
       'translate(' + left + ',' + top + ')');
 };

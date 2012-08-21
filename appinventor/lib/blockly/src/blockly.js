@@ -189,6 +189,12 @@ Blockly.svgDoc = null;
 Blockly.mainWorkspace = null;
 
 /**
+ * Contents of the local clipboard.
+ * @type {Element}
+ */
+Blockly.clipboard_ = null;
+
+/**
  * Returns the dimensions of the current SVG image.
  * @return {!Object} Contains width, height, top and left properties.
  */
@@ -227,7 +233,6 @@ Blockly.svgResize = function() {
 Blockly.onMouseDown_ = function(e) {
   Blockly.Block.terminateDrag_();
   Blockly.hideChaff();
-  Blockly.removeAllRanges();
   if (Blockly.isTargetInput_(e) ||
       (Blockly.Mutator && Blockly.Mutator.isOpen)) {
     return;
@@ -318,7 +323,42 @@ Blockly.onKeyDown_ = function(e) {
     }
     // Stop the browser from going back to the previous page.
     e.preventDefault();
+  } else if (e.altKey || e.ctrlKey || e.metaKey) {
+    if (Blockly.selected && Blockly.selected.editable &&
+        Blockly.selected.workspace == Blockly.mainWorkspace) {
+      Blockly.hideChaff();
+      if (e.keyCode == 67) {
+        // 'c' for copy.
+        Blockly.copy_(Blockly.selected);
+      } else if (e.keyCode == 88) {
+        // 'x' for cut.
+        Blockly.copy_(Blockly.selected);
+        Blockly.playAudio('delete');
+        Blockly.selected.destroy(true);
+      }
+    }
+    if (e.keyCode == 86) {
+      // 'v' for paste.
+      if (Blockly.clipboard_) {
+        Blockly.mainWorkspace.paste(Blockly.clipboard_);
+      }
+    }
   }
+};
+
+/**
+ * Copy a block onto the local clipboard.
+ * @param {!Blockly.Block} block Block to be copied.
+ * @private
+ */
+Blockly.copy_ = function(block) {
+  var xmlBlock = Blockly.Xml.blockToDom_(block);
+  Blockly.Xml.deleteNext(xmlBlock);
+  // Encode start position in XML.
+  var xy = block.getRelativeToSurfaceXY();
+  xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
+  xmlBlock.setAttribute('y', xy.y);
+  Blockly.clipboard_ = xmlBlock;
 };
 
 /**

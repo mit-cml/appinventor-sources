@@ -53,6 +53,16 @@ Blockly.Dart.text_join = function() {
   }
 };
 
+Blockly.Dart.text_append = function() {
+  // Append to a variable in place.
+  var varName = Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
+      Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.Dart.valueToCode(this, 'TEXT',
+      Blockly.Dart.ORDER_UNARY_POSTFIX) || '\'\'';
+  return code = varName + ' = new StringBuffer(' + varName +
+      ').add(' + argument0 + ').toString();\n';
+};
+
 Blockly.Dart.text_length = function() {
   // String length.
   var argument0 = Blockly.Dart.valueToCode(this, 'VALUE',

@@ -58,6 +58,16 @@ Blockly.JavaScript.text_join = function() {
   }
 };
 
+Blockly.JavaScript.text_append = function() {
+  // Append to a variable in place.
+  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleText('VAR'),
+      Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT',
+      Blockly.JavaScript.ORDER_NONE) || '\'\'';
+  return code = varName +
+      ' = String(' + varName + ') + String(' + argument0 + ');\n';
+};
+
 Blockly.JavaScript.text_length = function() {
   // String length.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'VALUE',

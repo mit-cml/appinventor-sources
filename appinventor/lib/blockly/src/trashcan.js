@@ -179,10 +179,16 @@ Blockly.Trashcan.prototype.onMouseMove = function(e) {
   if (!this.svgGroup_) {
     return;
   }
-  var hwView = Blockly.svgSize();
   var xy = Blockly.getAbsoluteXY_(this.svgGroup_);
-  var left = xy.x + hwView.left;
-  var top = xy.y + hwView.top;
+  var left = xy.x;
+  var top = xy.y;
+  // Measure the offset of the SVG.
+  var node = Blockly.svg.parentNode;
+  while (node) {
+    left += node.offsetLeft;
+    top += node.offsetTop;
+    node = node.offsetParent;
+  }
   var over = (e.clientX > left) &&
              (e.clientX < left + this.WIDTH_) &&
              (e.clientY > top) &&

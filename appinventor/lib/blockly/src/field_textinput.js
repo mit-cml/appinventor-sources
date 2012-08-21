@@ -220,6 +220,9 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   if (Blockly.RTL) {
     // In RTL mode the left edge moves, whereas the right edge is fixed.
     var xy = Blockly.getAbsoluteXY_(this.group_);
+    var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
+    var baseXy = Blockly.getAbsoluteXY_(workspaceSvg);
+    xy.x -= baseXy.x;
     htmlInputFrame.setAttribute('x', xy.x - 4);
   }
 };

@@ -256,3 +256,39 @@ Blockly.Workspace.prototype.fireChangeEvent = function() {
       }, 0);
   }
 };
+
+/**
+ * Paste the provided block onto the workspace.
+ */
+Blockly.Workspace.prototype.paste = function(xmlBlock) {
+  var block =
+      Blockly.Xml.domToBlock_(this, xmlBlock);
+  // Move the duplicate to original position.
+  var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
+  var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
+  if (!isNaN(blockX) && !isNaN(blockY)) {
+    if (Blockly.RTL) {
+      blockX = -blockX;
+    }
+    // Offset block until not clobering another block.
+    do {
+      var collide = false;
+      var allBlocks = this.getAllBlocks();
+      for (var x = 0, otherBlock; otherBlock = allBlocks[x]; x++) {
+        var otherXY = otherBlock.getRelativeToSurfaceXY();
+        if (Math.abs(blockX - otherXY.x) <= 1 &&
+            Math.abs(blockY - otherXY.y) <= 1) {
+          if (Blockly.RTL) {
+            blockX -= Blockly.SNAP_RADIUS;
+          } else {
+            blockX += Blockly.SNAP_RADIUS;
+          }
+          blockY += Blockly.SNAP_RADIUS * 2;
+          collide = true;
+        }
+      }
+    } while (collide);
+    block.moveBy(blockX, blockY);
+  }
+  block.select();
+};

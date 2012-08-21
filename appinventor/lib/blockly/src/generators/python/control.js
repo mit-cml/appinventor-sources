@@ -41,7 +41,7 @@ Blockly.Python.controls_if = function() {
     branch = Blockly.Python.statementToCode(this, 'ELSE') || '  pass\n';
     code += 'else:\n' + branch;
   }
-  return code + '\n';
+  return code;
 };
 
 Blockly.Python.controls_whileUntil = function() {
@@ -57,7 +57,7 @@ Blockly.Python.controls_whileUntil = function() {
     }
     argument0 = 'not ' + argument0;
   }
-  return 'while ' + argument0 + ':\n' + branch0 + '\n';
+  return 'while ' + argument0 + ':\n' + branch0;
 };
 
 Blockly.Python.controls_for = function() {
@@ -66,20 +66,52 @@ Blockly.Python.controls_for = function() {
       this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Python.valueToCode(this, 'FROM',
       Blockly.Python.ORDER_NONE) || '0';
-  // If starting index is 0, omit it.
-  argument0 = (parseInt(argument0, 10) === 0) ? '' : argument0 + ', ';
   var argument1 = Blockly.Python.valueToCode(this, 'TO',
-      Blockly.Python.ORDER_ADDITIVE) || '0';
-  if (argument1.match(/^\d+$/)) {
-    // If the index is a naked number, increment it right now.
-    argument1 = parseInt(argument1, 10) + 1;
-  } else {
-    // If the index is dynamic, increment it in code.
-    argument1 += ' + 1';
-  }
+      Blockly.Python.ORDER_NONE) || '0';
   var branch0 = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
-  var code = 'for ' + variable0 + ' in range(' + argument0 +
-      argument1 + '):\n' + branch0 + '\n';
+
+  var code = '';
+  var range;
+  if (argument0.match(/^-?\d+$/) &&
+      argument1.match(/^-?\d+$/)) {
+    // Both arguments are simple integers.
+    argument0 = parseInt(argument0, 10);
+    argument1 = parseInt(argument1, 10);
+    if (argument0 <= argument1) {
+      // Count up.
+      argument1++;
+      if (argument0 == 0) {
+        // If starting index is 0, omit it.
+        range = argument1;
+      } else {
+        range = argument0 + ', ' + argument1;
+      }
+    } else {
+      // Count down.
+      argument1--;
+      range = argument0 + ', ' + argument1 + ', -1';
+    }
+    range = 'range(' + range + ')';
+  } else {
+    // Cache non-trivial values to variables to prevent repeated look-ups.
+    var startVar = argument0;
+    if (!argument0.match(/^\w+$/) && !argument0.match(/^-?\d+$/)) {
+      var startVar = Blockly.Python.variableDB_.getDistinctName(
+          variable0 + '_start', Blockly.Variables.NAME_TYPE);
+      code += startVar + ' = ' + argument0 + '\n';
+    }
+    var endVar = argument1;
+    if (!argument1.match(/^\w+$/) && !argument1.match(/^-?\d+$/)) {
+      var endVar = Blockly.Python.variableDB_.getDistinctName(
+          variable0 + '_end', Blockly.Variables.NAME_TYPE);
+      code += endVar + ' = ' + argument1 + '\n';
+    }
+    range = '(' + startVar + ' <= ' + endVar + ') and ' +
+        'range(' + startVar + ', ' + endVar + ' + 1) or ' +
+        'range(' + startVar + ', ' + endVar + ' - 1, -1)'
+  }
+  code += 'for ' + variable0 + ' in ' + range + ':\n' +
+      branch0;
   return code;
 };
 
@@ -90,7 +122,7 @@ Blockly.Python.controls_forEach = function() {
   var argument0 = Blockly.Python.valueToCode(this, 'LIST',
       Blockly.Python.ORDER_RELATIONAL) || '[]';
   var branch0 = Blockly.Python.statementToCode(this, 'DO') || '  pass\n';
-  var code = 'for ' + variable0 + ' in ' + argument0 + ':\n' + branch0 + '\n';
+  var code = 'for ' + variable0 + ' in ' + argument0 + ':\n' + branch0;
   return code;
 };
 

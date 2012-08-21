@@ -6,17 +6,17 @@
  */
 
 // Context menus.
-Blockly.MSG_DUPLICATE_BLOCK = 'Duplicate';
-Blockly.MSG_REMOVE_COMMENT = 'Remove Comment';
-Blockly.MSG_ADD_COMMENT = 'Add Comment';
-Blockly.MSG_EXTERNAL_INPUTS = 'External Inputs';
-Blockly.MSG_INLINE_INPUTS = 'Inline Inputs';
-Blockly.MSG_DELETE_BLOCK = 'Delete Block';
-Blockly.MSG_DELETE_X_BLOCKS = 'Delete %1 Blocks';
-Blockly.MSG_COLLAPSE_BLOCK = 'Collapse Block';
-Blockly.MSG_EXPAND_BLOCK = 'Expand Block';
-Blockly.MSG_DISABLE_BLOCK = 'Disable Block';
-Blockly.MSG_ENABLE_BLOCK = 'Enable Block';
+Blockly.MSG_DUPLICATE_BLOCK = '複製';
+Blockly.MSG_REMOVE_COMMENT = '移除註解';
+Blockly.MSG_ADD_COMMENT = '加入註解';
+Blockly.MSG_EXTERNAL_INPUTS = '多行輸入';
+Blockly.MSG_INLINE_INPUTS = '單行輸入';
+Blockly.MSG_DELETE_BLOCK = '刪除積木';
+Blockly.MSG_DELETE_X_BLOCKS = '刪除 %1 塊積木';
+Blockly.MSG_COLLAPSE_BLOCK = '收合積木';
+Blockly.MSG_EXPAND_BLOCK = '展開積木';
+Blockly.MSG_DISABLE_BLOCK = '停用積木';
+Blockly.MSG_ENABLE_BLOCK = '啟用積木';
 Blockly.MSG_HELP = '說明';
 
 // Variable renaming.
@@ -24,7 +24,7 @@ Blockly.MSG_CHANGE_VALUE_TITLE = '修改值:';
 Blockly.MSG_NEW_VARIABLE = '新變量...';
 Blockly.MSG_NEW_VARIABLE_TITLE = '新變量名稱:';
 Blockly.MSG_RENAME_VARIABLE = '重新命名變量...';
-Blockly.MSG_RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
+Blockly.MSG_RENAME_VARIABLE_TITLE = '將所有 "%1" 變量重新命名為:';
 
 // Toolbox.
 Blockly.MSG_VARIABLE_CATEGORY = '變量';
@@ -226,6 +226,12 @@ Blockly.LANG_TEXT_CREATE_JOIN_TOOLTIP_1 = 'Add, remove, or reorder sections to r
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TITLE_ITEM = '字串';
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TOOLTIP_1 = 'Add an item to the text.';
 
+Blockly.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
+Blockly.LANG_TEXT_APPEND_TO = '在';
+Blockly.LANG_TEXT_APPEND_APPENDTEXT = '後加入文字';
+Blockly.LANG_TEXT_APPEND_VARIABLE = '變量';
+Blockly.LANG_TEXT_APPEND_TOOLTIP_1 = 'Append some text to variable "%1".';
+
 Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
 Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH = '長度';
 Blockly.LANG_TEXT_LENGTH_TOOLTIP_1 = 'Returns number of letters (including spaces)\n' +
@@ -281,7 +287,7 @@ Blockly.LANG_TEXT_PRINT_TOOLTIP_1 = 'Print the specified text, number or other v
 
 Blockly.LANG_TEXT_PROMPT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode92.html';
 Blockly.LANG_TEXT_PROMPT_TITLE_PROMPT_FOR = '輸入';
-Blockly.LANG_TEXT_PROMPT_TITILE_WITH_MESSAGE = '附提示字串';
+Blockly.LANG_TEXT_PROMPT_TITILE_WITH_MESSAGE = '並顯示提示訊息';
 Blockly.LANG_TEXT_PROMPT_TOOLTIP_1 = 'Prompt for user input with the specified text.';
 Blockly.LANG_TEXT_PROMPT_TYPE_TEXT = '文字';
 Blockly.LANG_TEXT_PROMPT_TYPE_NUMBER = '數字';
@@ -377,7 +383,7 @@ Blockly.LANG_PROCEDURES_CALLRETURN_CALL = Blockly.LANG_PROCEDURES_CALLNORETURN_C
 Blockly.LANG_PROCEDURES_CALLRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_CALLNORETURN_PROCEDURE;
 Blockly.LANG_PROCEDURES_CALLRETURN_TOOLTIP_1 = 'Call a procedure with a return value.';
 
-Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'parameters';
-Blockly.LANG_PROCEDURES_MUTATORARG_TITLE = 'variable:';
+Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = '參數';
+Blockly.LANG_PROCEDURES_MUTATORARG_TITLE = '變量:';
 
 Blockly.LANG_PROCEDURES_HIGHLIGHT_DEF = 'Highlight Procedure';

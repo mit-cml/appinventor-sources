@@ -77,6 +77,7 @@ Blockly.ContextMenu.createDom = function() {
 Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
   if (options.length == 0) {
     Blockly.ContextMenu.hide();
+    return;
   }
   /* Here's what one option object looks like:
     {text: 'Make It So',
@@ -137,8 +138,15 @@ Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
   // Measure the menu's size and position it so that it does not go off-screen.
   var bBox = Blockly.ContextMenu.svgGroup.getBBox();
   var svgSize = Blockly.svgSize();
-  anchorX -= svgSize.left;
-  anchorY -= svgSize.top;
+  // Measure the offset of the SVG.
+  var node = Blockly.svg.parentNode;
+  while (node) {
+    anchorX -= node.offsetLeft;
+    anchorY -= node.offsetTop;
+    node = node.offsetParent;
+  }
+  var width = Blockly.svg.parentNode.offsetWidth;
+  var height = Blockly.svg.parentNode.offsetHeight;
   if (anchorY + bBox.height > svgSize.height) {
     // Falling off the bottom of the screen; shift the menu up.
     anchorY -= bBox.height - 10;
