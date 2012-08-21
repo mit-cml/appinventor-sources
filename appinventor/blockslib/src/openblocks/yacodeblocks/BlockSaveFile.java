@@ -258,7 +258,7 @@ public class BlockSaveFile {
       }
       if (blkLangVersion < 17) {
         // In BLOCKS_LANGUAGE_VERSION 17.
-        // Changed open-screen to open-another-screen 
+        // Changed open-screen to open-another-screen
         // Changed open-screen-with-start-text to open-another-screen-with-start-value
         // Marked get-startup-text as a bad block
         // Added get-start-value
@@ -268,8 +268,8 @@ public class BlockSaveFile {
         // Added close-screen-with-plain-text
         changeGetStartTextAndOpenCloseScreenBlocks();
         blkLangVersion = 17;
-      } 
-      
+      }
+
       if (blkLangVersion < sysLangVersion) {
         // If we got here, the blocks language needed to be upgraded, but nothing handled it.
         // NOTE(lizlooney,user) - we need to make sure that this situation does not happen by
@@ -381,10 +381,10 @@ public class BlockSaveFile {
       // NOTE(lizlooney,user) - when a component changes, increment the component's version
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade blocks
       // as necessary.
-      
+
       if(genus.equals("AccelerometerSensor")){
-    	blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
-    	
+        blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("ActivityStarter")) {
         blkCompVersion = upgradeActivityStarterBlocks(blkCompVersion, componentName);
 
@@ -427,9 +427,9 @@ public class BlockSaveFile {
       } else if (genus.equals("ListPicker")) {
         blkCompVersion = upgradeListPickerBlocks(blkCompVersion, componentName);
 
-      } else if (genus.equals("LocationSensor")) { 
+      } else if (genus.equals("LocationSensor")) {
         blkCompVersion = upgradeLocationSensorBlocks(blkCompVersion, componentName);
-    	  
+
       } else if (genus.equals("OrientationSensor")) {
         blkCompVersion = upgradeOrientationSensorBlocks(blkCompVersion, componentName);
 
@@ -500,14 +500,14 @@ public class BlockSaveFile {
       changeFirstMatchingSocketBlockConnectorLabel(block, oldConnectorLabel, newConnectorLabel);
     }
   }
-  
+
   private int upgradeAccelerometerSensorBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The AccelerometerSensor.MinimumInterval property was added.
-  	  // No blocks need to be modified to upgrade to version 2.
-	  blkCompVersion = 2;
+          // No blocks need to be modified to upgrade to version 2.
+          blkCompVersion = 2;
     }
-	return blkCompVersion;
+        return blkCompVersion;
   }
 
   private int upgradeActivityStarterBlocks(int blkCompVersion, String componentName) {
@@ -951,6 +951,11 @@ public class BlockSaveFile {
       }
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The VideoPlayer.height and VideoPlayer.width getter and setters were marked as
+      // visible to the user
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
@@ -1162,7 +1167,7 @@ public class BlockSaveFile {
       changeBlockLabel(block, oldLabel, newLabel);
     }
   }
-   
+
   private void changeGetStartTextAndOpenCloseScreenBlocks() {
     String oldLabel = "open screen";
     String newLabel = "open another screen";
@@ -1176,7 +1181,7 @@ public class BlockSaveFile {
       changeBlockLabel(block, oldLabel, newLabel);
       changeBlockGenusName(block, "open-another-screen-with-start-value");
       changeFirstMatchingSocketBlockConnectorLabel(block, "startText", "startValue");
-    }     
+    }
     for (Element block : getAllMatchingGenusBlocks("get-startup-text")) {
       markBlockBad(block, "The get startup text block is no longer used. " +
           "Instead, please use get start value in multiple screen apps, " +
@@ -1186,7 +1191,7 @@ public class BlockSaveFile {
       markBlockBad(block, "The close screen with result block is no longer used. " +
           "Instead, please use close screen with value in multiple screen apps, " +
           "or close screen with plain text for returning to other apps.");
-    }   
+    }
   }
 
   /*

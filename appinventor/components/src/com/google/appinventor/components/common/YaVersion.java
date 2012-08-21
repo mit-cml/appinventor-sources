@@ -176,11 +176,12 @@ public class YaVersion {
   // - PLAYER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 58:
   // - FORM_COMPONENT_VERSION was incremented to 7.
-  // For YOUNG_ANDROID_VERSION 59:
-  //The Camcorder component was added.
+  // For YOUNG_ANDROID_VERION 59:
+  // The Camcorder component was added.
+  // For YOUNG_ANDROID_VERION 60:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 4.
 
-
-  public static final int YOUNG_ANDROID_VERSION = 59;
+  public static final int YOUNG_ANDROID_VERSION = 60;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -499,7 +500,10 @@ public class YaVersion {
   // - The VideoPlayer.VideoPlayerError event was added.
   // For VIDEOPLAYER_COMPONENT_VERSION 3:
   // - The VideoPlayer.VideoPlayerError event was marked userVisible false and is no longer used.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 3;
+  // For VIDEOPLAYER_COMPONENT_VERSION 4:
+  // - The VideoPlayer.width and VideoPlayer.height variables were marked as user visible.
+  // - The FullScreen property was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 4;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 

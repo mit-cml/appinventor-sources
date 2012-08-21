@@ -6,7 +6,6 @@ import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
@@ -18,6 +17,7 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
@@ -25,6 +25,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -131,6 +132,8 @@ public class Form extends Activity
   // event.
   private String nextFormName;
 
+  private FullScreenVideoUtil fullScreenVideoUtil;
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -154,6 +157,8 @@ public class Form extends Activity
     if (startIntent != null && startIntent.hasExtra(ARGUMENT_NAME)) {
       startupValue = startIntent.getStringExtra(ARGUMENT_NAME);
     }
+
+    fullScreenVideoUtil = new FullScreenVideoUtil(this, androidUIHandler);
 
     // Add application components to the form
     $define();
@@ -350,6 +355,25 @@ public class Form extends Activity
     onDestroyListeners.add(component);
   }
 
+  public Dialog onCreateDialog(int id, Bundle args) {
+    switch(id) {
+    case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
+      return fullScreenVideoUtil.createFullScreenVideoDialog(args);
+    default:
+      return super.onCreateDialog(id, args);
+    }
+  }
+
+  public void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+    switch(id) {
+    case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
+      fullScreenVideoUtil.prepareFullScreenVideoDialog(dialog, args);
+      break;
+    default:
+      super.onPrepareDialog(id, dialog, args);
+    }
+  }
+
   /**
    * Compiler-generated method to initialize and add application components to
    * the form.  We just provide an implementation here to artificially make
@@ -494,6 +518,7 @@ public class Form extends Activity
     if (backgroundDrawable != null) {
       ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
     }
+
     setContentView(frameLayout);
     frameLayout.requestLayout();
   }
@@ -1116,5 +1141,42 @@ public class Form extends Activity
       Log.i(LOG_TAG, "invoke exception: " + e.getMessage());
       throw e.getTargetException();
     }
+  }
+
+  /**
+   * Perform some action related to fullscreen video display.
+   * @param action
+   *          Can be any of the following:
+   *          <ul>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_DURATION}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_FULLSCREEN}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PAUSE}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PLAY}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SEEK}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SOURCE}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_STOP}
+   *          </li>
+   *          </ul>
+   * @param source
+   *          The VideoPlayer to use in some actions.
+   * @param data
+   *          Used by the method. This object varies depending on the action.
+   * @return Varies depending on what action was passed in.
+   */
+  public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
+    return fullScreenVideoUtil.performAction(action, source, data);
   }
 }

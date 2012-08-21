@@ -753,6 +753,13 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The VideoPlayer.height and VideoPlayer.width getter and setters were marked as
+      // visible to the user.
+      // The FullScreen property was created.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 

@@ -115,8 +115,10 @@ public final class ErrorMessages {
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
   //Camcorder errors
   public static final int ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201;
-  
-  // Please start the next group of error numbers at 1301.
+  // VideoPlayer errors
+  public static final int ERROR_VIDEOPLAYER_FULLSCREEN_UNAVAILBLE = 1301;
+  public static final int ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT = 1302;
+  //Please start the next group of error numbers at 1401.
   
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -315,6 +317,11 @@ public final class ErrorMessages {
     // Camcorder errors
     errorMessages.put(ERROR_CAMCORDER_NO_CLIP_RETURNED,
         "The camcorder did not return a clip.");
+    // VideoPlayer errors
+    errorMessages.put(ERROR_VIDEOPLAYER_FULLSCREEN_UNAVAILBLE,
+        "Cannot start fullscreen mode.");
+    errorMessages.put(ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT,
+        "Cannot exit fullscreen mode.");
   }
 
   private ErrorMessages() {
