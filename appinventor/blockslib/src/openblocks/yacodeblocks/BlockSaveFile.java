@@ -351,6 +351,7 @@ public class BlockSaveFile {
 
   private void upgradeComponentBlocks(String componentName, String genus, int blkCompVersion,
       final int sysCompVersion, Element uuidEntry) throws LoadException {
+
     // Compare the .blk file's component version with the system's component version.
     if (blkCompVersion > sysCompVersion) {
       // This shouldn't happen because we should have already detected that the project is a newer
@@ -382,7 +383,7 @@ public class BlockSaveFile {
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade blocks
       // as necessary.
 
-      if(genus.equals("AccelerometerSensor")){
+      if (genus.equals("AccelerometerSensor")){
         blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
 
       } else if (genus.equals("ActivityStarter")) {
@@ -412,8 +413,13 @@ public class BlockSaveFile {
       } else if (genus.equals("EmailPicker")) {
         blkCompVersion = upgradeEmailPickerBlocks(blkCompVersion, componentName);
 
+        // Note that "Form" is converted to "Screen" above
+
       } else if (genus.equals("Screen")) {
         blkCompVersion = upgradeScreenBlocks(blkCompVersion, componentName);
+
+      } else if (genus.equals("HorizontalArrangement")) {
+        blkCompVersion = upgradeHorizontalArrangementBlocks(blkCompVersion, componentName);
 
       } else if (genus.equals("ImagePicker")) {
         blkCompVersion = upgradeImagePickerBlocks(blkCompVersion, componentName);
@@ -454,6 +460,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Twitter")) {
         blkCompVersion = upgradeTwitterBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("VerticalArrangement")) {
+        blkCompVersion = upgradeVerticalArrangementBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("VideoPlayer")) {
         blkCompVersion = upgradeVideoPlayerBlocks(blkCompVersion, componentName);
 
@@ -468,7 +477,7 @@ public class BlockSaveFile {
         // If we got here, a component needed to be upgraded, but nothing handled it.
         // NOTE(lizlooney,user) - we need to make sure that this situation does not happen by
         // adding the appropriate code above to handle all component upgrades.
-        throw new IllegalStateException("No upgrade strategy exists for " + genus +
+        throw new IllegalStateException("No block upgrade strategy exists for " + genus +
             " from version " + blkCompVersion + " to " + sysCompVersion + ".");
       }
 
@@ -724,8 +733,23 @@ public class BlockSaveFile {
       // to update to version 7.
       blkCompVersion = 7;
     }
+    if (blkCompVersion < 8) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrade to version 8.
+      blkCompVersion = 8;
+    }
     return blkCompVersion;
   }
+
+  private int upgradeHorizontalArrangementBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrqde to version 2.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+
 
   private int upgradeImagePickerBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
@@ -931,6 +955,15 @@ public class BlockSaveFile {
             "TinyWebDB.ShowAlert has been removed. Please use Notifier.ShowAlert instead.");
       }
       // Blocks related to this component have now been upgraded to version 2.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+
+  private int upgradeVerticalArrangementBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrade to version 2.
       blkCompVersion = 2;
     }
     return blkCompVersion;

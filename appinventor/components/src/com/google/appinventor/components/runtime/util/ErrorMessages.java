@@ -113,13 +113,16 @@ public final class ErrorMessages {
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
-  //Camcorder errors
+  // Camcorder errors
   public static final int ERROR_CAMCORDER_NO_CLIP_RETURNED = 1201;
   // VideoPlayer errors
   public static final int ERROR_VIDEOPLAYER_FULLSCREEN_UNAVAILBLE = 1301;
   public static final int ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT = 1302;
-  //Please start the next group of error numbers at 1401.
-  
+  // Arrangement errors
+  public static final int ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT = 1401;
+  public static final int ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT = 1402;
+  // Please start the next group of error numbers at 1501.
+
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
   static {
@@ -322,6 +325,14 @@ public final class ErrorMessages {
         "Cannot start fullscreen mode.");
     errorMessages.put(ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT,
         "Cannot exit fullscreen mode.");
+    // Arrangement errors
+    errorMessages.put(ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT,
+        "The value -- %s -- provided for HorizontalAlignment was bad.  The only legal values " +
+                        "are 1, 2, or 3.");
+    errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
+        "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
+            "are 1 or 2.");
+
   }
 
   private ErrorMessages() {

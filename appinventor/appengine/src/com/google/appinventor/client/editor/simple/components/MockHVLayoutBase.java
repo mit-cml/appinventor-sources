@@ -2,22 +2,29 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import java.util.Map;
+
+import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 
-import java.util.Map;
+
 
 /**
  * A base class for layouts that arrange the children of a container in a single
- * column or a single row. This base class does not allow changing the
- * orientation dynamically.
+ * column or a single row.
  *
  * @author markf@google.com (Mark Friedman)
  * @author sharon@google.com (Sharon Perl)
  * @author lizlooney@google.com (Liz Looney)
+ * @author hal@mit.edu (Hal Abelson)
  */
 abstract class MockHVLayoutBase extends MockLayout {
+
   // Gap between adjacent components to allow for the insertion divider
   private static final int COMPONENT_SPACING = 5;
 
@@ -28,6 +35,8 @@ abstract class MockHVLayoutBase extends MockLayout {
   private static final int EMPTY_HEIGHT = ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT;
 
   protected final int orientation;
+
+
 
   // Possible locations for the insertion divider;
   // calculated in layoutContainer.
@@ -52,6 +61,14 @@ abstract class MockHVLayoutBase extends MockLayout {
   // drop location for a component dropped onto this layout's container
   private int[] childMidpoints;
 
+  // constants to indicate horizontal and vertical alignment
+  private enum HorizontalAlignment {Left, Center, Right};
+  private HorizontalAlignment alignH;
+
+  private enum VerticalAlignment {Top, Center, Bottom};
+  private VerticalAlignment alignV;
+
+
   /**
    * Creates a new linear layout with the specified orientation.
    */
@@ -64,6 +81,11 @@ abstract class MockHVLayoutBase extends MockLayout {
     layoutWidth = EMPTY_WIDTH;
     layoutHeight = EMPTY_HEIGHT;
     dividerPos = -1;
+
+    // These initial values are assuming that the default values in ComponentConstants are
+    // defined as LEFT and TOP
+    alignH = HorizontalAlignment.Left;
+    alignV = VerticalAlignment.Top;
   }
 
   // Divider
@@ -136,7 +158,11 @@ abstract class MockHVLayoutBase extends MockLayout {
   // occupied by other components.
 
   // In a HorizontalArrangement, components are arranged along the horizontal axis, vertically
-  // center-aligned.
+  // center-aligned, even if the vertical aligned is "top", in which case they are
+  // center-aligned at the top of the arrangement.  This is unlike VerticalArrangement, where
+  // the components are flush-left at the left of the arrangement if the horizontal alignment
+  // is "left".
+
   // If a HorizontalArrangement's Height property is set to Automatic, the actual height of the
   // arrangement is determined by the tallest component whose Height property is not set to Fill
   // Parent. If a HorizontalArrangement's Height property is set to Automatic and it contains only
@@ -272,9 +298,14 @@ abstract class MockHVLayoutBase extends MockLayout {
   }
 
   private void layoutVertical(LayoutInfo containerLayoutInfo) {
-    // Components are arranged along the vertical axis, left-aligned.
+    // Components are arranged along the vertical axis.  They are left-justified and
+    // at the top of the arrangement by default, but this can be changed with the
+    // contentCentering property.  Note that the screen itself does a vertical layout
 
     // Calculate the height used up by children whose height is not fill parent.
+    // NOTE(halabelson) Here and in calculateAutomaticHeightVertical, we're putting
+    // COMPONENT_SPACING above the first child and below the last child.  We probably don't
+    // really want to do this, but need to think about it.
     int usedHeight = 0;
     int countFillParent = 0;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
@@ -287,12 +318,18 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
     }
     usedHeight += COMPONENT_SPACING;
+
+    // The remaining height, after allocating vertical space for the contents
     int remainingHeight = containerLayoutInfo.height - usedHeight;
     if (remainingHeight < 0) {
       remainingHeight = 0;
     }
 
-    // Resolve any child's width or height that is fill parent, and call layoutChildren for
+    // The final remaining height, which will be zero if any of the components have height
+    // fill-parent
+   int finalRemainingHeight = remainingHeight;
+
+    // Resolve any child's width or height that is fill-parent, and call layoutChildren for
     // children that are containers.
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
@@ -301,6 +338,8 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = remainingHeight / countFillParent - BORDER_SIZE;
+        // if any component has height fill-parent then there's no remaining height
+        finalRemainingHeight = 0;
       }
 
       // If the child is a container call layoutChildren for it.
@@ -309,28 +348,70 @@ abstract class MockHVLayoutBase extends MockLayout {
       }
     }
 
-    // Position the children and update layoutWidth and layoutHeight.
-    layoutWidth = 0;
-    int x = 0;
-    int y = 0;
+    // topY is where the top of each component goes.  It starts out either at zero, or offset
+    // so the entire stack is vertically centered in the arrangement (i.e., offset by
+    // finalRemainingHeight/2) or offset so that the bottom of the stack of components is at
+    // the bottom of the layout (i.e., offset by finalRemainingHeight).
+    int topY = 0;
+
+    switch (alignV) {
+    case Top:
+      topY = 0;
+      break;
+    case Center:
+      topY = finalRemainingHeight / 2;
+      break;
+    case Bottom:
+      topY = finalRemainingHeight;
+      break;
+    default:
+      OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+    }
+
     int index = 0;
+
+    // Position the children and update layoutWidth and layoutHeight.
+
+    // NOTE(halabelson)  What is this for?
+    layoutWidth = 0;
+
+    // iterate through the children, setting the leftX and topY positions
+
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
-      dividerLocations[index] = y;
-      y += COMPONENT_SPACING;
+      dividerLocations[index] = topY;
+      topY += COMPONENT_SPACING;
 
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
       int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
 
-      container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
-      layoutWidth = Math.max(layoutWidth, x + childWidthWithBorder);
-      childMidpoints[index] = y + (childHeightWithBorder / 2);
-      y += childHeightWithBorder;
+      // leftX is where the left edge of the child should be.  For a vertical alignment
+      // it's either zero (left align) or set so the center of child is at the centered
+      // (center-align) or set so the right edge of the child is at the right edge of the
+      // layout (right-align).
+      int leftX = 0;
+      switch (alignH) {
+      case Left:
+        leftX = 0;
+        break;
+      case Center:
+        leftX = (containerLayoutInfo.width - childWidthWithBorder) / 2 ;
+        break;
+      case Right:
+        leftX = containerLayoutInfo.width - childWidthWithBorder;
+        break;
+      default:
+        OdeLog.elog("System error: Bad value for horizontal alignment -- MockHVLayoutBase");
+      }
+
+      container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
+      childMidpoints[index] = topY + (childHeightWithBorder / 2);
+      topY += childHeightWithBorder;
       index++;
     }
-    dividerLocations[index] = y;
-    y += COMPONENT_SPACING;
-    layoutHeight = y;
+    dividerLocations[index] = topY;
+    topY += COMPONENT_SPACING;
+    layoutHeight = topY;
   }
 
   private int calculateAutomaticHeightHorizontal(LayoutInfo containerLayoutInfo) {
@@ -356,30 +437,52 @@ abstract class MockHVLayoutBase extends MockLayout {
     return height;
   }
 
+  // TODO: (hal)  This next method is incorrect because the width need to be constrained by
+  // the room remaining in the parent container.  The overall automatic layout algorithms
+  // need to be reviewed.
+
   private int calculateAutomaticWidthHorizontal(LayoutInfo containerLayoutInfo) {
     // The width will be the sum of the child widths.
     int width = 0;
+    boolean firstChild = true;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
-      width += COMPONENT_SPACING;
+      // add spacing, but not before first child
+      if (firstChild) {
+        firstChild = false;
+      } else {
+        width += COMPONENT_SPACING;
+      }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       // If the width is fill parent, use automatic width.
       int childWidth = (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT)
           ? childLayoutInfo.calculateAutomaticWidth()
-          : childLayoutInfo.width;
-      width += childWidth + BORDER_SIZE;
+              : childLayoutInfo.width;
+          width += childWidth + BORDER_SIZE;
     }
-    width += COMPONENT_SPACING;
     return width;
   }
 
+  // TODO(hal): Check this to see if we're putting the component vertical spacing in the right
+  // places and think about rewriting this to match how layoutHorizontal handles width.
+
   private void layoutHorizontal(LayoutInfo containerLayoutInfo) {
-    // Components are arranged along the horizontal axis, vertically center-aligned.
+    // Children are arranged along the horizontal axis.   They are
+    // and vertically center-aligned at the top of the arrangement by default, and at vertical
+    // center of the arrangement if vertical contentCentering is specified.
+    // Horizontally, they can be left-aligned, centered, or right-aligned.
+    int usedWidth = 0;
+    boolean firstChild = true;
+    int countFillParent = 0;
 
     // Calculate the width used up by children whose width is not fill parent.
-    int usedWidth = 0;
-    int countFillParent = 0;
+    // Include spacing between the children
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
-      usedWidth += COMPONENT_SPACING;
+      // add spacing, but not before first child
+      if (firstChild) {
+        firstChild = false;
+      } else {
+        usedWidth += COMPONENT_SPACING;
+      }
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
         countFillParent++;
@@ -387,20 +490,34 @@ abstract class MockHVLayoutBase extends MockLayout {
         usedWidth += childLayoutInfo.width + BORDER_SIZE;
       }
     }
-    usedWidth += COMPONENT_SPACING;
+
+    // The remaining width, after allocating horizontal space for the
+    // contents, not counting the width of fill-parent children
+    // If there are fill-parent children, this remaining width will be
+    // divided equally among them.
     int remainingWidth = containerLayoutInfo.width - usedWidth;
     if (remainingWidth < 0) {
       remainingWidth = 0;
     }
 
+    // The final remaining width after all children have been accounted for.  This will be 0 if
+    // any of the children have width fill-parent
+    int finalRemainingWidth = remainingWidth;
+
     // Resolve any child's width or height that is fill parent, and call layoutChildren for
     // children that are containers.
-    // Figure out the height of the largest child so we can center-align all the children.
+    // Figure out the height of the largest child so we can middle-align all the children.
+    // Note that layoutVertical does not do the analogous center aligning unless horizontal
+    // centering is explicitly specified.
     int maxHeight = 0;
     for (MockComponent child : containerLayoutInfo.visibleChildren) {
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       if (childLayoutInfo.width == MockVisibleComponent.LENGTH_FILL_PARENT) {
+        // at this point, remaining width is too small and gets smaller if there
+        // are more components
         childLayoutInfo.width = remainingWidth / countFillParent - BORDER_SIZE;
+        // if any component has width fill parent then there will be no final remaining width
+        finalRemainingWidth = 0;
       }
       if (childLayoutInfo.height == MockVisibleComponent.LENGTH_FILL_PARENT) {
         childLayoutInfo.height = containerLayoutInfo.height - BORDER_SIZE;
@@ -408,36 +525,84 @@ abstract class MockHVLayoutBase extends MockLayout {
 
       maxHeight = Math.max(maxHeight, childLayoutInfo.height + BORDER_SIZE);
 
-      // If the child is a container call layoutChildren for it.
+      // If the child is a container then call layoutChildren for it.
       if (child instanceof MockContainer) {
         ((MockContainer) child).getLayout().layoutChildren(childLayoutInfo);
       }
     }
 
-    int centerY = maxHeight / 2;
+    // centerY is where the middle of each child should be: either vertically
+    // centered at the top of the arrangement, or each child at the middle of the
+    // arrangement.
 
-    // Position the children and update layoutWidth and layoutHeight.
+   //we have to initialize this, or else Eclipse will whine at us
+    int centerY = 0;
+
+    switch (alignV) {
+    case Top:
+      centerY = maxHeight / 2;
+      break;
+    case Center:
+      centerY = containerLayoutInfo.height / 2;
+      break;
+    case Bottom:
+      centerY = containerLayoutInfo.height - (maxHeight / 2);
+    default:
+      OdeLog.elog("System error: Bad value for vertical alignment -- MockHVLayoutBase");
+    }
+
+
+    // NOTE(hal) What is this for?
     layoutHeight = 0;
-    int x = 0;
-    int index = 0;
-    for (MockComponent child : containerLayoutInfo.visibleChildren) {
-      dividerLocations[index] = x;
-      x += COMPONENT_SPACING;
 
+    // Now we've computed the actual widths of the components, so we can lay them out.
+
+    // leftX is where the left edge of the next child should be.  For a horizontal alignment
+    // leftX starts out either at zero (left align) or set so the center of the arrangement
+    // is at the center of the layout (center-align) or set so the right edge of the arrangement
+    // child is at the right edge of the layout (right-align).
+    int leftX = 0;
+    switch (alignH) {
+    case Left:
+      leftX = 0;
+      break;
+    case Center:
+      leftX = finalRemainingWidth / 2;
+      break;
+    case Right:
+      leftX = finalRemainingWidth;
+      break;
+    default:
+      OdeLog.elog("System error: Bad value for horizontal justification -- MockHVLayoutBase");
+    }
+
+    // Position each child and update layoutWidth and layoutHeight.
+    int index = 0;
+    firstChild = true;
+    for (MockComponent child : containerLayoutInfo.visibleChildren) {
+      // add spacing, but not before first child
+      if (firstChild) {
+        firstChild = false;
+      } else {
+        leftX += COMPONENT_SPACING;
+      }
+      dividerLocations[index] = leftX;
       LayoutInfo childLayoutInfo = containerLayoutInfo.layoutInfoMap.get(child);
       int childWidthWithBorder = childLayoutInfo.width + BORDER_SIZE;
       int childHeightWithBorder = childLayoutInfo.height + BORDER_SIZE;
 
-      int y = centerY - (childHeightWithBorder / 2);
-      container.setChildSizeAndPosition(child, childLayoutInfo, x, y);
-      layoutHeight = Math.max(layoutHeight, y + childHeightWithBorder);
-      childMidpoints[index] = x + (childWidthWithBorder / 2);
-      x += childWidthWithBorder;
+      // The middle of the child needs to be at centerY, so the
+      // top of the child is above that by childHeightWithBorder/2
+      int topY = centerY - (childHeightWithBorder / 2);
+
+      container.setChildSizeAndPosition(child, childLayoutInfo, leftX, topY);
+      layoutHeight = Math.max(layoutHeight, topY + childHeightWithBorder);
+      childMidpoints[index] = leftX + (childWidthWithBorder / 2);
+      leftX += childWidthWithBorder;
       index++;
     }
-    dividerLocations[index] = x;
-    x += COMPONENT_SPACING;
-    layoutWidth = x;
+    dividerLocations[index] = leftX;
+    layoutWidth = leftX;
   }
 
   @Override
@@ -505,4 +670,58 @@ abstract class MockHVLayoutBase extends MockLayout {
       DOM.removeChild(container.getRootPanel().getElement(), dividerElement);
     }
   }
+
+  /**
+   * Set the layout flags centerH and centerV that govern whether the layout performs
+   * horizontal or vertical centering.   Called by the arrangement that uses this layout
+   * @param centering is the string value of the centering property "0", "1", "2", or "3"
+   */
+
+
+  public void setHAlignmentFlags(String alignment) {
+    try {
+      switch (Integer.parseInt(alignment)) {
+      case ComponentConstants.GRAVITY_LEFT:
+        alignH = HorizontalAlignment.Left;
+        break;
+      case ComponentConstants.GRAVITY_CENTER_HORIZONTAL:
+        alignH = HorizontalAlignment.Center;
+        break;
+      case ComponentConstants.GRAVITY_RIGHT:
+        alignH = HorizontalAlignment.Right;
+        break;
+      default:
+        // This error should not happen because the higher level
+        // setter for HorizontalAlignment should screen out illegal inputs.
+        ErrorReporter.reportError(MESSAGES.badValueForHorizontalAlignment(alignment));
+      }
+    } catch (NumberFormatException e) {
+      // As above, this error should not happen
+      ErrorReporter.reportError(MESSAGES.badValueForHorizontalAlignment(alignment));
+    }
+  }
+
+  public void setVAlignmentFlags(String alignment) {
+    try {
+      switch (Integer.parseInt(alignment)) {
+      case ComponentConstants.GRAVITY_TOP:
+        alignV = VerticalAlignment.Top;
+        break;
+      case ComponentConstants.GRAVITY_CENTER_VERTICAL:
+        alignV = VerticalAlignment.Center;
+        break;
+      case ComponentConstants.GRAVITY_BOTTOM:
+        alignV = VerticalAlignment.Bottom;
+        break;
+      default:
+        // This error should not happen because the higher level
+        // setter for VerticalAlignment should screen out illegal inputs.
+        ErrorReporter.reportError(MESSAGES.badValueForVerticalAlignment(alignment));
+      }
+    } catch (NumberFormatException e) {
+      // As above, this error should not happen
+      ErrorReporter.reportError(MESSAGES.badValueForVerticalAlignment(alignment));
+    }
+  }
+
 }

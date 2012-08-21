@@ -2,12 +2,18 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.runtime.util.ViewUtil;
-
 import android.app.Activity;
 import android.view.View;
+
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
  * A container for components that arranges them linearly, either
@@ -23,6 +29,13 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Layout
   private final int orientation;
   private final LinearLayout viewLayout;
+
+  // translates App Inventor alignment codes to Android gravity
+  private final AlignmentUtil alignmentSetter;
+
+  // the alignment for this component's LinearLayout
+  private int horizontalAlignment;
+  private int verticalAlignment;
 
   /**
    * Creates a new HVArrangement component.
@@ -40,6 +53,12 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
+    alignmentSetter = new AlignmentUtil(viewLayout);
+
+    horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
+    verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
+    alignmentSetter.setHorizontalAlignment(horizontalAlignment);
+    alignmentSetter.setVerticalAlignment(verticalAlignment);
 
     container.$add(this);
   }
@@ -85,4 +104,78 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   public View getView() {
     return viewLayout.getLayoutManager();
   }
+
+ // These property definitions are duplicated in Form.java
+
+  // The numeric encodings are defined Component Constants
+
+  /**
+   * Returns a number that encodes how contents of the arrangement are aligned horizontally.
+   * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how contents of the arrangement are aligned " +
+          " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
+          " 3 = right aligned.  Alignment has no effect with the arrangement's width is " +
+          "automatic.")
+  public int AlignHorizontal() {
+    return horizontalAlignment;
+  }
+
+  /**
+   * Sets the horizontal alignment for contents of the arrangement
+   *
+   * @param alignment
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
+      defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignHorizontal(int alignment) {
+    try {
+      // notice that the throw will prevent the alignment from being changed
+      // if the argument is illegal
+      alignmentSetter.setHorizontalAlignment(alignment);
+      horizontalAlignment = alignment;
+    } catch (IllegalArgumentException e) {
+      container.$form().dispatchErrorOccurredEvent(this, "HorizontalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+    }
+  }
+
+  /**
+   * Returns a number that encodes how contents of the arrangement are aligned vertically.
+   * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom.
+   * Alignment has no effect if the arrangement's height is automatic.
+   */
+   @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how the contents of the arrangement are aligned " +
+          " vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
+          "3 = aligned at the bottom.  Alignment has no effect if the arrangement's height " +
+          "is automatic.")
+  public int AlignVertical() {
+    return verticalAlignment;
+  }
+
+  /**
+   * Sets the vertical alignment for contents of the arrangement
+   *
+   * @param alignment
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+      defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
+  @SimpleProperty
+  public void AlignVertical(int alignment) {
+    try {
+      // notice that the throw will prevent the alignment from being changed
+      // if the argument is illegal
+      alignmentSetter.setVerticalAlignment(alignment);
+      verticalAlignment = alignment;
+    } catch (IllegalArgumentException e) {
+      container.$form().dispatchErrorOccurredEvent(this, "VerticalAlignment",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+    }
+  }
+
 }

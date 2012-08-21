@@ -316,6 +316,15 @@ public interface OdeMessages extends Messages {
   @Description("Default value for Text property")
   String textPropertyValue(String componentName);
 
+  // Used in editor/simple/components/MockButtonBase.java, MockHVLayoutBase.java
+  @DefaultMessage("System error: Bad value - {0} - for Horizontal Alignment.")
+  @Description("Default message for bad value for Horizontal Alignment")
+  String badValueForHorizontalAlignment(String componentName);
+
+  @DefaultMessage("System error: Bad value - {0} - for Vertical Alignment.")
+  @Description("Default message for bad value for Vartical Alignment")
+  String badValueForVerticalAlignment(String componentName);
+
   // Used in editor/simple/components/MockVisibleComponent.java
 
   @DefaultMessage("Width")
@@ -361,6 +370,36 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("right")
   @Description("Text for text alignment choice 'right'")
   String rightTextAlignment();
+
+  // Used in
+  // editor/youngandroid/properties/YoungAndroidHorizontalAlignmentChoicePropertyEditor.java
+
+  @DefaultMessage("Left")
+  @Description("Text for horizontal alignment choice 'Left")
+  String horizontalAlignmentChoiceLeft();
+
+  @DefaultMessage("Right")
+  @Description("Text for horizontal alignemt choice 'Right'")
+  String horizontalAlignmentChoiceRight();
+
+  @DefaultMessage("Center")
+  @Description("Text for horizontal alignment choice 'Center'")
+  String horizontalAlignmentChoiceCenter();
+
+  // Used in
+  // editor/youngandroid/properties/YoungAndroidVerticalAlignmentChoicePropertyEditor.java
+
+  @DefaultMessage("Top")
+  @Description("Text for vertical alignment choice 'Top'")
+  String verticalAlignmentChoiceTop();
+
+  @DefaultMessage("Center")
+  @Description("Text for vertical alignment choice 'Center'")
+  String verticalAlignmentChoiceCenter();
+
+  @DefaultMessage("Bottom")
+  @Description("Text for vertical alignment choice 'Bottom'")
+  String verticalAlignmentChoiceBottom();
 
   // Used in editor/youngandroid/properties/YoungAndroidButtonShapeChoicePropertyEditor.java
 
@@ -507,11 +546,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Landscape")
   @Description("Text for screen orientation choice 'Landscape '")
   String landscapeScreenOrientation();
-  
+
   @DefaultMessage("Sensor")
   @Description("Text for screen orientation choice 'Sensor '")
   String sensorScreenOrientation();
-  
+
   @DefaultMessage("User")
   @Description("Text for screen orientation choice 'User '")
   String userScreenOrientation();
@@ -896,7 +935,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("File names must be between 1 and 100 characters.")
   @Description("Error message when filenames are 0 or 101+ characters long")
   String filenameBadSize();
-  
+
   @DefaultMessage("Uploading {0} to the App Inventor server")
   @Description("Message displayed when an asset is uploaded.")
   String fileUploadingMessage(String filename);

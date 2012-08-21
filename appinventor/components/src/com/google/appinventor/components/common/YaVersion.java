@@ -178,10 +178,15 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 7.
   // For YOUNG_ANDROID_VERION 59:
   // The Camcorder component was added.
-  // For YOUNG_ANDROID_VERION 60:
+  // For YOUNG_ANDROID_VERSION 60:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 4.
+  // For YOUNG_ANDROID_VERSION 61:
+  // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 2
+  // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 2
+  // - FORM_COMPONENT_VERSION was incremented to 8
 
-  public static final int YOUNG_ANDROID_VERSION = 60;
+    public static final int YOUNG_ANDROID_VERSION = 61;
+
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -189,7 +194,7 @@ public class YaVersion {
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
   // 3. Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
-  // See also
+  // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -225,14 +230,14 @@ public class YaVersion {
   // For BLOCKS_LANGUAGE_VERSION 16:
   // - Added make-color and split-color to Color drawer.
   // For BLOCKS_LANGUAGE_VERSION 17:
-  // Changed open-screen to open-another-screen
-  // Changed open-screen-with-start-text to open-another-screen-with-start-value
-  // Marked get-startup-text as a bad block
-  // Added get-start-value
-  // Added get-plain-start-text
-  // Marked close-screen-with-result as a bad block
-  // Added close-screen-with-value
-  // Added close-screen-with-plain-text
+  // - Changed open-screen to open-another-screen
+  // - Changed open-screen-with-start-text to open-another-screen-with-start-value
+  // - Marked get-startup-text as a bad block
+  // - Added get-start-value
+  // - Added get-plain-start-text
+  // - Marked close-screen-with-result as a bad block
+  // - Added close-screen-with-value
+  // - Added close-screen-with-plain-text
   public static final int BLOCKS_LANGUAGE_VERSION = 17;
 
   // ................................. Component Version Numbers ..................................
@@ -349,13 +354,19 @@ public class YaVersion {
   // was added.
   // For FORM_COMPONENT_VERSION 7:
   // - The VersionCode and VersionName properties were added.
-  public static final int FORM_COMPONENT_VERSION = 7;
+  // For FROM_COMPONENT_VERSION 8:
+  // - The AlignHorizontal property was added
+  // - The AlignVertical property was added
+  public static final int FORM_COMPONENT_VERSION = 8;
 
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
-  public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 1;
+  // For HORIZONTALARRANGEMENT_COMPONENT_VERSION 2:
+  // - The AlignHorizontal property was added
+  // - The AlignVertical property was added
+    public static final int HORIZONTALARRANGEMENT_COMPONENT_VERSION = 2;
 
   public static final int IMAGE_COMPONENT_VERSION = 1;
 
@@ -494,7 +505,10 @@ public class YaVersion {
   //   of messages and didn't include the username associated with each message.
   public static final int TWITTER_COMPONENT_VERSION = 2;
 
-  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 1;
+  // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
+  // - The AlignHorizontal property was added
+  // - The AlignVertical property was added
+  public static final int VERTICALARRANGEMENT_COMPONENT_VERSION = 2;
 
   // For VIDEOPLAYER_COMPONENT_VERSION 2:
   // - The VideoPlayer.VideoPlayerError event was added.

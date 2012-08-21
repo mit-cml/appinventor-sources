@@ -197,7 +197,7 @@ public final class YoungAndroidFormUpgrader {
       // properties as necessary.
       if (componentType.equals("AccelerometerSensor")){
         srcCompVersion = upgradeAccelerometerSensorProperties(componentProperties, srcCompVersion);
-        
+
       } else if (componentType.equals("ActivityStarter")) {
         srcCompVersion = upgradeActivityStarterProperties(componentProperties, srcCompVersion);
 
@@ -228,6 +228,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("HorizontalArrangement")) {
+        srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("ImagePicker")) {
         srcCompVersion = upgradeImagePickerProperties(componentProperties, srcCompVersion);
 
@@ -240,9 +243,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ListPicker")) {
         srcCompVersion = upgradeListPickerProperties(componentProperties, srcCompVersion);
 
-      } else if (componentType.equals("LocationSensor")) { 
-    	srcCompVersion = upgradeLocationSensorProperties(componentProperties, srcCompVersion);
-    	
+      } else if (componentType.equals("LocationSensor")) {
+        srcCompVersion = upgradeLocationSensorProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("OrientationSensor")) {
         srcCompVersion = upgradeOrientationSensorProperties(componentProperties, srcCompVersion);
 
@@ -260,6 +263,9 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("TinyWebDB")) {
         srcCompVersion = upgradeTinyWebDBProperties(componentProperties, srcCompVersion);
+
+      } else if (componentType.equals("VerticalArrangement")) {
+        srcCompVersion = upgradeVerticalArrangementProperties(componentProperties, srcCompVersion);
 
       } else if (componentType.equals("VideoPlayer")) {
         srcCompVersion = upgradeVideoPlayerProperties(componentProperties, srcCompVersion);
@@ -329,13 +335,13 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-	  // The AccelerometerSensor.MinimumInterval property was added.
-	  // No properties need to be modified to upgrade to version 2.
-	  srcCompVersion = 2;
+          // The AccelerometerSensor.MinimumInterval property was added.
+          // No properties need to be modified to upgrade to version 2.
+          srcCompVersion = 2;
     }
-	return srcCompVersion;
+        return srcCompVersion;
   }
-  
+
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -566,6 +572,22 @@ public final class YoungAndroidFormUpgrader {
       // to update to version 7.
       srcCompVersion = 7;
     }
+
+    if (srcCompVersion < 8) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrade to version 8.
+      srcCompVersion = 8;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeHorizontalArrangementProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrqde to version 2.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -736,6 +758,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // The TinyWebDB.ShowAlert method was removed. Notifier.ShowAlert should be used instead.
       // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeVerticalArrangementProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrqde to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;

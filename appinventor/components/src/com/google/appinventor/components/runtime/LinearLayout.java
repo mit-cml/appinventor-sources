@@ -107,4 +107,13 @@ public final class LinearLayout implements Layout {
         ViewGroup.LayoutParams.WRAP_CONTENT,  // height
         0f));                                 // weight
   }
+
+  public void setHorizontalGravity(int gravity) {
+    layoutManager.setHorizontalGravity(gravity);
+  }
+
+  public void setVerticalGravity(int gravity) {
+    layoutManager.setVerticalGravity(gravity);
+  }
+
 }
