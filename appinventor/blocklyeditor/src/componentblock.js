@@ -1,8 +1,7 @@
 // Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Visual blocks editor for App Inventor
- * Methods for creating the different kinds of blocks for App Inventor 
+ * @fileoverview Methods for creating the different kinds of blocks for App Inventor 
  * components: events, methods, property getters and setters, component
  * 
  * TODO(sharon): add support for generic component blocks (per component type)
@@ -11,6 +10,12 @@
  */
 
 Blockly.ComponentBlock = {};
+
+/* 
+ * All component blocks have category=='Component'. In addition to the standard blocks fields,
+ * all component blocks have a field instanceName whose value is the name of their component. For
+ * example, the blocks representing a Button1.Click event has instanceName=='Button1'.
+ */ 
 
 /**
  * Block Colors Hues (See blockly.js for Saturation and Value - fixed for 
@@ -31,13 +36,17 @@ Blockly.ComponentBlock.COLOUR_COMPONENT = 180;
 Blockly.ComponentBlock.event = function(eventType, instanceName) {
   this.category = 'Component',
   this.helpUrl = 'http://foo', // TODO: fix
+  this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
     this.appendTitle('when');
     this.appendTitle(instanceName + '.' + eventType.name); 
+    // TODO: implement event parameters
+    /*
     for (var i = 0, param; param = eventType.params[i]; i++) {
       this.appendInput('', Blockly.LOCAL_VARIABLE, this.paramName(i)).setText(param.name); 
     }
+    */
     this.appendInput('do', Blockly.NEXT_STATEMENT, "DO");
     this.setPreviousStatement(false);
     this.setNextStatement(false);
@@ -64,19 +73,21 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
 };
 
 /**
- * Create an method block of the given type for a component with the given 
- * instance name. methodType is one of the "methods" objects in a typeJsonString
- * passed to Blockly.Component.add.
+ * Create a method block of the given type for a component with the given instance name. methodType
+ * is one of the "methods" objects in a typeJsonString passed to Blockly.Component.add.
  */
 Blockly.ComponentBlock.method = function(methodType, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
+  this.instanceName = instanceName;
+  this.params = [];
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
     this.appendTitle('call');
     this.appendTitle(instanceName + '.' + methodType.name);
     for (var i = 0, param; param = methodType.params[i]; i++) {
-      this.appendInput(param.name, Blockly.INPUT_VALUE, "PARAM" + i);
+      this.appendInput(param.name, Blockly.INPUT_VALUE, "ARG" + i);
+      this.params.push(param.name);
     }
     if (methodType.returnType) {
       this.setOutput(true);
@@ -85,7 +96,7 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
       this.setNextStatement(true);
     }
   };
-};
+}
 
 /**
  * Create a property getter block for a component with the given 
@@ -95,13 +106,14 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
 Blockly.ComponentBlock.getter = function(propNames, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
+  this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
     this.appendTitle(instanceName + '.');
     var dropdown = new Blockly.FieldDropdown(function() {
       return propNames;
     });
-    this.appendTitle(dropdown);
+    this.appendTitle(dropdown, "PROP");
     this.setOutput(true);
   };
 };
@@ -114,6 +126,7 @@ Blockly.ComponentBlock.getter = function(propNames, instanceName) {
 Blockly.ComponentBlock.setter = function(propNames, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
+  this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
     this.appendTitle('set');
@@ -121,7 +134,7 @@ Blockly.ComponentBlock.setter = function(propNames, instanceName) {
     var dropdown = new Blockly.FieldDropdown(function() {
       return propNames;
     });
-    this.appendTitle(dropdown);
+    this.appendTitle(dropdown, "PROP");
     this.appendTitle('to');
     this.appendInput('', Blockly.INPUT_VALUE, "VALUE");
     this.setPreviousStatement(true);
@@ -133,13 +146,14 @@ Blockly.ComponentBlock.setter = function(propNames, instanceName) {
  * Create a component (object) block for a component with the given 
  * instance name. 
  */
-Blockly.ComponentBlock.component = function(name) {
+Blockly.ComponentBlock.component = function(instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
+  this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_COMPONENT);
     this.appendTitle('component');
-    this.appendTitle(name);
+    this.appendTitle(instanceName);
     this.setOutput(true);
   };
 };

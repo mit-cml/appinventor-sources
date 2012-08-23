@@ -13,7 +13,7 @@
   </description>
 
   <target name="all"
-          depends="BlocklyCompile">
+          depends="BlocklyCompile,BlocklyTestbed">
   </target>
 
   <!-- =====================================================================
@@ -44,10 +44,8 @@
         <exclude name="blockly.js"/>
         <!-- leave out the toolbox. it is replaced by our drawer.js -->
         <exclude name="toolbox.js"/> 
-        <!-- exclude the language/en files that we've already appended -->
-        <exclude name="language/en/*.js"/>
-        <!-- include the common language files -->
-        <include name="language/common/*.js"/>
+         <!-- note that we don't include the blockly built-in blocks since 
+             we have our own versions of them -->
       </fileset>
     </concat>
     <!-- finally, include any of our own .js file in any order -->
@@ -55,8 +53,39 @@
             append="true">
       <fileset dir="${src.dir}">
         <include name="**/*.js"/>
+        <exclude name="demos/**/*"/>
       </fileset>
     </concat>
+  </target>
+
+  <target name="BlocklyTestbed"  
+          description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser">
+    <!-- blockly.js has to come first -->
+    <concat destfile="${public.build.dir}/blockly-lib.js">
+      <fileset file="${blockly.src.dir}/blockly.js"/>
+    </concat>
+    <!-- the rest of the blockly .js files can come in any order -->
+    <concat destfile="${public.build.dir}/blockly-lib.js"
+            append="true">
+      <fileset dir="${blockly.src.dir}">
+        <include name="*.js"/>
+        <exclude name="blockly.js"/>
+        <!-- leave out the toolbox. it is replaced by our drawer.js -->
+        <exclude name="toolbox.js"/> 
+        <!-- note that we also don't include the blockly built-in blocks since 
+             we have our own versions of them -->
+      </fileset>
+    </concat>
+    <echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
+    <concat destfile="${public.build.dir}/component-types.js" append="true">
+      <fileset file="${build.dir}/components/simple_components.json" />
+    </concat>
+    <copy file="${blockly.src.dir}/blockly.css" todir="${public.build.dir}" />
+    <copy file="${blockly.src.dir}/1x1.gif" todir="${public.build.dir}" />
+    <mkdir dir="${public.build.dir}/media" />
+    <copy todir="${public.build.dir}/media" >
+      <fileset dir="${blockly.src.dir}/media" />
+    </copy>
   </target>
 
   <target name="tests">

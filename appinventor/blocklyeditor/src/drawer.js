@@ -15,6 +15,12 @@
 
 Blockly.Drawer = {};
 
+// Some block drawers need to be initialized after all the javascript source is loaded because they
+// use utility functions that may not yet be defined at the time their source is read in. They
+// can do this by adding a field to Blockly.DrawerInit whose value is their initialization function.
+// For example, see language/common/math.js.
+if (!Blockly.DrawerInit) Blockly.DrawerInit = {};
+
 /**
  * Create the dom for the drawer. Creates a flyout Blockly.Drawer.flyout_,
  * and initializes its dom.
@@ -34,7 +40,12 @@ Blockly.Drawer.createDom = function() {
  */
 Blockly.Drawer.init = function() {
   Blockly.Drawer.flyout_.init(Blockly.mainWorkspace,
-                              Blockly.getMainWorkspaceMetrics);
+                              Blockly.getMainWorkspaceMetrics,
+                              true /*withScrollbar*/);
+  for (var name in Blockly.DrawerInit) {
+    Blockly.DrawerInit[name]();
+  }
+  
   Blockly.Drawer.languageTree = Blockly.Drawer.buildTree_();
 };
 
@@ -80,7 +91,10 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
       drawerName != Blockly.MSG_PROCEDURE_CATEGORY) {
       drawerName = Blockly.Drawer.PREFIX_ + drawerName;
   }
-  var blockSet = Blockly.Drawer.languageTree[drawerName] || drawerName;
+  var blockSet = Blockly.Drawer.languageTree[drawerName];
+  if (!blockSet) {
+    throw "no such drawer: " + drawerName;
+  }
   Blockly.Drawer.flyout_.show(blockSet);
 };
 

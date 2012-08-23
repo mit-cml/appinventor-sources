@@ -70,6 +70,9 @@ public final class YaBlocksEditor extends FileEditor
   // moved from one container to another). In that case we do not want to add it to the
   // blocks area again.
   private Set<String> componentUuids = new HashSet<String>();
+  
+  // The form editor associated with this blocks editor
+  private YaFormEditor myFormEditor;
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -97,7 +100,7 @@ public final class YaBlocksEditor extends FileEditor
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
 
     // Create palettePanel, which will be used as the content of the PaletteBox.
-    YaFormEditor myFormEditor = projectEditor.getFormFileEditor(blocksNode.getFormName());
+    myFormEditor = projectEditor.getFormFileEditor(blocksNode.getFormName());
     if (myFormEditor != null) {
       palettePanel = new YoungAndroidPalettePanel(myFormEditor);
       palettePanel.loadComponents(new DropTargetProvider() {
@@ -235,7 +238,25 @@ public final class YaBlocksEditor extends FileEditor
   }
   
   public FileDescriptorWithContent getYail() throws YailGenerationException {
-    return new FileDescriptorWithContent(getProjectId(), yailFileName(), blocksArea.getYail());
+    return new FileDescriptorWithContent(getProjectId(), yailFileName(), 
+        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(), 
+            packageNameFromPath(getFileId())));
+  }
+
+  /**
+   * Converts a source file path (e.g., 
+   * src/com/gmail/username/project1/Form.extension) into a package
+   * name (e.g., com.gmail.username.project1.Form)
+   * @param path the path to convert.
+   * @return a dot separated package name.
+   */
+  private static String packageNameFromPath(String path) {
+    path = path.replaceFirst("src/", "");
+    int extensionIndex = path.lastIndexOf(".");
+    if (extensionIndex != -1) {
+      path = path.substring(0, extensionIndex);
+    }
+    return path.replaceAll("/", ".");
   }
 
   @Override

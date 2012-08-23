@@ -2,8 +2,10 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
@@ -303,8 +305,12 @@ public class BlocklyPanel extends HTMLPanel {
    * @param drawerName
    */
   public void showBuiltinBlocks(String drawerName) {
-    if (blocksInited(formName)) {
-      doShowBuiltinBlocks(formName, drawerName);
+    try {
+      if (blocksInited(formName)) {
+        doShowBuiltinBlocks(formName, drawerName);
+      }
+    } catch (JavaScriptException e) {
+      ErrorReporter.reportInfo("Not yet implemented: " + drawerName);
     }
   }
   
@@ -381,11 +387,15 @@ public class BlocklyPanel extends HTMLPanel {
    * @return the yail code as a String
    * @throws YailGenerationException if there was a problem generating the Yail
    */
-  public String getYail() throws YailGenerationException {
+  public String getYail(String formJson, String packageName) throws YailGenerationException {
     if (!blocksInited(formName)) {
       throw new YailGenerationException("Blocks area is not initialized yet", formName);
     }
-    return doGetYail(formName);
+    try {
+      return doGetYail(formName, formJson, packageName);
+    } catch (JavaScriptException e) {
+      throw new YailGenerationException(e.getDescription(), formName);
+    }
   }
   
   // ------------ Native methods ------------
@@ -447,29 +457,7 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.Blocklies[formName].SaveFile.get();
   }-*/;
   
-  public static native String doGetYail(String formName) /*-{
-    // TODO(sharon): obviously the code below is a hack for now, until we get the actual
-    // yail generation code in. This allows us to build one specific app, that contains
-    // one label whose text is set to "Hello World" in the Screen1.Intialize event. It
-    // allow us to test that the workflow throught the GWT parts and servers works.
-    // return $wnd.Blocklies[formName].Generator.workspaceToCode('Yail');
-    return "#|\n" +
-"$Source $Yail\n" +
-"|#\n" +
-"\n" +
-"(define-form appinventor.ai_sharon.testcodegen.Screen1 Screen1)\n" +
-"(require <com.google.youngandroid.runtime>)\n" +
-";;; Screen1\n" +
-"(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title \"Screen1\" 'text)\n" +
-")\n" +
-"(define-event Screen1 Initialize()\n" +
-" (set-this-form)\n" +
-" (set-and-coerce-property! 'Label1 'Text \"Hello World\" 'text)\n" +
-"\n" +
-")\n" +
-";;; Label1\n" +
-"(add-component Screen1 Label Label1 (set-and-coerce-property! 'Label1 'Text \"Text for Label1\" 'text)\n" +
-")\n" +
-"(init-runtime)\n";
+  public static native String doGetYail(String formName, String formJson, String packageName) /*-{
+    return $wnd.Blocklies[formName].Yail.getFormYail(formJson, packageName);
   }-*/;
 }

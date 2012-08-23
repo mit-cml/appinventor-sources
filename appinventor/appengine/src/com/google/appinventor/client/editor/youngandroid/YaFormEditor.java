@@ -205,7 +205,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public String getRawFileContent() {
-    String encodedProperties = '{' + encodeFormAsJsonString() + '}';
+    String encodedProperties = encodeFormAsJsonString();
     JSONObject propertiesObject = JSON_PARSER.parse(encodedProperties).asObject();
     return YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
   }
@@ -506,14 +506,17 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   }
 
   /*
-   * Encodes the form's properties as a JSON encoded string.
+   * Encodes the form's properties as a JSON encoded string. Used by YaBlocksEditor as well,
+   * to send the form info to the blockly world during code generation.
    */
-  private String encodeFormAsJsonString() {
+  protected String encodeFormAsJsonString() {
     StringBuilder sb = new StringBuilder();
+    sb.append("{");
     sb.append("\"YaVersion\":\"").append(YaVersion.YOUNG_ANDROID_VERSION).append("\",");
     sb.append("\"Source\":\"Form\",");
     sb.append("\"Properties\":");
     encodeComponentProperties(form, sb);
+    sb.append("}");
     return sb.toString();
   }
 
