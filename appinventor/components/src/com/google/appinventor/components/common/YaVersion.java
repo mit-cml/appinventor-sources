@@ -155,7 +155,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 50:
   // - TEXTBOX_COMPONENT_VERSION was incremented to 4:
   // For YOUNG_ANDROID_VERSION 51:
-  // - CANVAS_VERSION was incremented to 5.
+  // - CANVAS_COMPONENT_VERSION was incremented to 5.
   // - BLOCKS_LANGUAGE_VERSION was incremented to 16.
   // For YOUNG_ANDROID_VERSION 52:
   // - BLOCKS_LANGUAGE_VERSION was incremented to 17.
@@ -177,16 +177,19 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 58:
   // - FORM_COMPONENT_VERSION was incremented to 7.
   // For YOUNG_ANDROID_VERION 59:
-  // The Camcorder component was added.
+  // - The Camcorder component was added.
   // For YOUNG_ANDROID_VERSION 60:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 4.
   // For YOUNG_ANDROID_VERSION 61:
   // - HORIZONTALARRANGEMENT_COMPONENT_VERSION was incremented to 2
   // - VERTICALARRANGEMENT_COMPONENT_VERSION was incremented to 2
   // - FORM_COMPONENT_VERSION was incremented to 8
+  // For YOUNG_ANDROID_VERSION 62:
+  // - BALL_COMPONENT_VERSION was incremented to 4.
+  // - CANVAS_COMPONENT_VERSION was incremented to 6.
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 5.
 
-    public static final int YOUNG_ANDROID_VERSION = 61;
-
+    public static final int YOUNG_ANDROID_VERSION = 62;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -253,7 +256,7 @@ public class YaVersion {
   //    upgradeComponentProperties to upgrade the .scm file contents
   // 4. Add code in openblocks.yacodeblocks.BlockSaveFile#upgradeComponentBlocks to
   //    upgrade the .blk file contents
-  
+
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 2:
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
@@ -271,10 +274,12 @@ public class YaVersion {
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
-  // - The heading property was changed from int to double (for all sprites
+  // - The heading property was changed from int to double (for all sprites)
   // For BALL_COMPONENT_VERSION 3:
   // - The Z property was added (also for ImageSprite)
-  public static final int BALL_COMPONENT_VERSION = 3;
+  // For BALL_COMPONENT_VERSION 4:
+  // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+  public static final int BALL_COMPONENT_VERSION = 4;
 
   public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
 
@@ -307,7 +312,7 @@ public class YaVersion {
   public static final int BUTTON_COMPONENT_VERSION = 4;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
-  
+
   public static final int CAMERA_COMPONENT_VERSION = 1;
 
   // For CANVAS_COMPONENT_VERSION 2:
@@ -321,7 +326,9 @@ public class YaVersion {
   // - Added Save and SaveAs methods
   // For CANVAS_COMPONENT_VERSION 5:
   // - Added GetBackgroundPixelColor, GetPixelColor, and SetBackgroundPixelColor methods.
-  public static final int CANVAS_COMPONENT_VERSION = 5;
+  // For CANVAS_COMPONENT_VERSION 6:
+  // - Added TouchDown, TouchUp, and Flung events.
+  public static final int CANVAS_COMPONENT_VERSION = 6;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -385,7 +392,9 @@ public class YaVersion {
   // - The heading property was changed from int to double (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 4:
   // - The Z property was added (also for Ball)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 4;
+  // For IMAGESPRITE_COMPONENT_VERSION 5:
+  // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 5;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

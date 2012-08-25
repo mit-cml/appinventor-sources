@@ -31,6 +31,7 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -62,7 +63,8 @@ import java.util.List;
  * To the user, the first three layers are all the background, in terms
  * of the behavior of {@link #SetBackgroundPixelColor(int,int,int)} and
  * {@link #GetBackgroundPixelColor(int,int)}.  For historical reasons,
- * changing the background color or image clears the drawing layer.
+ * changing the background color or image clears the drawing layer
+ * {@link #ClearDrawingLayer()}.
  */
 @DesignerComponent(version = YaVersion.CANVAS_COMPONENT_VERSION,
     description = "<p>A two-dimensional touch-sensitive rectangular panel on " +
@@ -113,6 +115,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   // Handle touches and drags
   private final MotionEventParser motionEventParser;
+
+  // Handle fling events
+  private final GestureDetector mGestureDetector;
 
   /**
    * Parser for Android {@link android.view.MotionEvent} sequences, which calls
@@ -222,8 +227,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           for (Sprite sprite : sprites) {
             if (sprite.Enabled() && sprite.Visible() && sprite.intersectsWith(rect)) {
               draggedSprites.add(sprite);
+              sprite.TouchDown(startX, startY);
             }
           }
+          TouchDown(startX, startY);
           break;
 
         case MotionEvent.ACTION_MOVE:
@@ -277,12 +284,25 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             for (Sprite sprite : draggedSprites) {
               if (sprite.Enabled() && sprite.Visible()) {
                 sprite.Touched(startX, startY);
+                sprite.TouchUp(startX, startY);
                 handled = true;
               }
             }
             // Last argument indicates that one or more sprites handled the tap
             Touched(startX, startY, handled);
           }
+          else {
+            for (Sprite sprite : draggedSprites) {
+              if (sprite.Enabled() && sprite.Visible()) {
+                sprite.Touched(startX, startY);
+                sprite.TouchUp(startX, startY);
+              }
+            }
+          }
+          // This is intentionally outside the if (!drag) block.
+          // Even the release of a drag on the canvas should fire
+          // a touch-up event.
+          TouchUp(startX, startY);
 
           // Prepare for next drag
           drag = false;
@@ -463,6 +483,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       // to be called here, so that it happens for each touch-drag sequence.
       container.$form().dontGrabTouchEventsForComponent();
       motionEventParser.parse(event);
+      mGestureDetector.onTouchEvent(event); // handle onFling here
       return true;
     }
 
@@ -631,6 +652,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
+    mGestureDetector = new GestureDetector(context, new FlingGestureListener());
   }
 
   @Override
@@ -975,6 +997,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * When the user touches a canvas, providing the (x, y) position of
    * the touch relative to the upper left corner of the canvas.  The
    * value "touchedSprite" is true if a sprite was also in this position.
+   * This event is only fired once touch-down AND touch-up have occurred.
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
@@ -984,6 +1007,54 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleEvent
   public void Touched(float x, float y, boolean touchedSprite) {
     EventDispatcher.dispatchEvent(this, "Touched", x, y, touchedSprite);
+  }
+
+  /**
+   * When the user starts touching the canvas (putting finger down for the
+   * first time).
+   * Provides the (x,y) position of the touch relative to the upper-left
+   * corner of the canvas.
+   *
+   * @param x  x-coordinate of the point that was touched
+   * @param y  y-coordinate of the point that was touched
+   */
+  @SimpleEvent
+  public void TouchDown(float x, float y) {
+    EventDispatcher.dispatchEvent(this, "TouchDown", x, y);
+  }
+
+  /**
+   * When the user stops touching the canvas (lifting his/her finger up).
+   * Provides the (x, y) position of the touch relative to the upper
+   * left corner of the canvas.
+   *
+   * @param x  x-coordinate of the point that was touched
+   * @param y  y-coordinate of the point that was touched
+   */
+  @SimpleEvent
+  public void TouchUp(float x, float y) {
+    EventDispatcher.dispatchEvent(this, "TouchUp", x, y);
+  }
+
+  /**
+   * When the user performs a fling (quick swipe) on the screen.
+   * Provides the (x, y) position of the start of the swing,
+   * relative to the upper left of the canvas. Also provides
+   * the x velocity and y velocity of the fling. The value
+   * "flungSprite" is true if a sprite was also in this
+   * position when the fling occurred.
+   *
+   * @param x  x-coordinate of the point that was touched
+   * @param y  y-coordinate of the point that was touched
+   * @param xvel  the velocity of the fling in the x direction
+   * @param yvel  the velocity of the fling in the y direction
+   * @param flungSprite  {@code true} if a sprite was flung,
+   *        {@code false} otherwise
+   */
+  @SimpleEvent
+  public void Flung(float x, float y, float xvel, float yvel,
+      boolean flungSprite) {
+    EventDispatcher.dispatchEvent(this, "Flung", x, y, xvel, yvel, flungSprite);
   }
 
   /**
@@ -1227,5 +1298,36 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
           ErrorMessages.ERROR_MEDIA_FILE_ERROR, e.getMessage());
     }
     return "";
+  }
+  class FlingGestureListener extends GestureDetector.SimpleOnGestureListener {
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+        float velocityY) {
+      float x = Math.max(0, (int) e1.getX()); // set to zero if negative
+      float y = Math.max(0, (int) e1.getY()); // set to zero if negative
+
+      int width = Width();
+      int height = Height();
+
+      // Also make sure that by adding or subtracting a half finger that
+      // we don't go out of bounds.
+      BoundingBox rect = new BoundingBox(
+          Math.max(0, (int) x - MotionEventParser.HALF_FINGER_HEIGHT),
+          Math.max(0, (int) y - MotionEventParser.HALF_FINGER_WIDTH),
+          Math.min(width - 1, (int) x + MotionEventParser.HALF_FINGER_WIDTH),
+          Math.min(height - 1, (int) y + MotionEventParser.HALF_FINGER_HEIGHT));
+
+      boolean spriteHandledFling = false;
+
+      for (Sprite sprite : sprites) {
+        if (sprite.Enabled() && sprite.Visible() &&
+            sprite.intersectsWith(rect)) {
+          sprite.Flung(x, y, velocityX, velocityY);
+          spriteHandledFling = true;
+        }
+      }
+      Flung(x, y, velocityX, velocityY, spriteHandledFling);
+      return true;
+    }
   }
 }

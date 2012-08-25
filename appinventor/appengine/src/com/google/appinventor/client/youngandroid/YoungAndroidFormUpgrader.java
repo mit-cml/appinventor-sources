@@ -371,6 +371,11 @@ public final class YoungAndroidFormUpgrader {
       // The Z property was added
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -470,6 +475,11 @@ public final class YoungAndroidFormUpgrader {
       // The methods GetBackgroundPixelColor, GetPixelColor, and
       // SetBackgroundPixelColor were added.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // No properties need to be modified to upgrade to version 6.
+      // The events TouchDown, TouchUp, and Flung were added.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -625,6 +635,11 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 4) {
       // The Z property was added
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

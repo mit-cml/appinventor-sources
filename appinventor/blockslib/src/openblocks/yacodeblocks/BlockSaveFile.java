@@ -553,6 +553,11 @@ public class BlockSaveFile {
       // The Z property was added (also for ImageSprite)
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
@@ -658,6 +663,11 @@ public class BlockSaveFile {
       // The GetBackgroundPixelColor, GetPixelColor, and
       // SetBackgroundPixelColor methods were added.
       blkCompVersion = 5;
+    }
+    if (blkCompVersion < 6) {
+      // No blocks need to be modified to upgrade to version 6.
+      // The TouchUp and TouchDown events were added.
+      blkCompVersion = 6;
     }
     return blkCompVersion;
   }
@@ -785,6 +795,11 @@ public class BlockSaveFile {
     if (blkCompVersion < 4) {
       // The Z property was added (also for Ball)
       blkCompVersion = 4;
+    }
+    if (blkCompVersion < 5) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No blocks need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
     }
     return blkCompVersion;
   }
