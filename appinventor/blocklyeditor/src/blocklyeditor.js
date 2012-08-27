@@ -9,8 +9,13 @@
 
 Blockly.BlocklyEditor = {};
 
-Blockly.BlocklyEditor.startup = function(documentBody) {
+Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.inject(documentBody);
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
+  Blockly.BlocklyEditor.formName_ = formName;
+  Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
+      function() { 
+        window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_); 
+      });
 };

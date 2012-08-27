@@ -21,10 +21,12 @@ import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -41,6 +43,14 @@ public final class YaBlocksEditor extends FileEditor
   // Database of component type descriptions
   private static final SimpleComponentDatabase COMPONENT_DATABASE =
       SimpleComponentDatabase.getInstance();
+
+  // Keep a map from projectid_formname -> YaBlocksEditor for handling blocks workspace changed
+  // callbacks from the BlocklyPanel objects. This has to be static because it is used by 
+  // static methods that are called from the Javascript Blockly world.
+  private static final Map<String, YaBlocksEditor> formToBlocksEditor = Maps.newHashMap();
+
+  // projectid_formname for this blocks editor. Our index into the static formToBlocksEditor map.
+  private String fullFormName;
 
   private final YoungAndroidBlocksNode blocksNode;
 
@@ -79,7 +89,9 @@ public final class YaBlocksEditor extends FileEditor
 
     this.blocksNode = blocksNode;
 
-    blocksArea = new BlocklyPanel(blocksNode.getProjectId() + "_" + blocksNode.getFormName());
+    fullFormName = blocksNode.getProjectId() + "_" + blocksNode.getFormName();
+    formToBlocksEditor.put(fullFormName, this);
+    blocksArea = new BlocklyPanel(fullFormName);
     
     // We would like the blocks area to fill the available space automatically,
     // but apparently we need to give it a height or else it ends up too short.
@@ -198,6 +210,7 @@ public final class YaBlocksEditor extends FileEditor
     // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
     getForm().removeFormChangeListener(this);
     BlockSelectorBox.getBlockSelectorBox().removeBlockDrawerSelectionListener(this);
+    formToBlocksEditor.remove(fullFormName);
   }
 
   private void unloadBlocksEditor() {
@@ -216,6 +229,14 @@ public final class YaBlocksEditor extends FileEditor
     assetListBox.setVisible(false);
 
     hideComponentBlocks();
+  }
+  
+  public static void onBlocksAreaChanged(String formName) {
+    YaBlocksEditor editor = formToBlocksEditor.get(formName);
+    if (editor != null) {
+      OdeLog.log("Got blocks area changed for " + formName);
+      Ode.getInstance().getEditorManager().scheduleAutoSave(editor);
+    }
   }
 
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {

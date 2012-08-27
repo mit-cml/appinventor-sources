@@ -24,7 +24,7 @@
         // projectId_formName, and to be unique among
         // all the Blockly instances created in this App Inventor session. 
         var formName = window.location.hash.substr(1);
-        Blockly.BlocklyEditor.startup(document.body);
+        Blockly.BlocklyEditor.startup(document.body, formName);
         if (!window.parent.Blocklies) {
           // We keep a set of Blockly objects indexed by name
           // of the form for which they are the blocks editor

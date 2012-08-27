@@ -253,32 +253,6 @@ public final class EditorManager {
   }
   
   /**
-   * Mark any open blocks editors for the current project as dirty and then save all dirty editors
-   * and project settings. Needed at least temporarily until Blockly code can let us know when a 
-   * blocks workspace is dirty.
-   *
-   * @param afterSaving  optional command to be executed after project
-   *                     settings and file editors are saved successfully
-
-   */
-  public void saveDirtyEditorsAndBlocksEditors(final Command afterSaving) {
-    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
-    for (long projectId : openProjectEditors.keySet()) {
-      if (projectId == currentProjectId) {
-        // mark as dirty any open blocks editors for the current project
-        ProjectEditor projectEditor = openProjectEditors.get(projectId);
-        for (FileEditor fileEditor : projectEditor.getOpenFileEditors()) {
-          if (fileEditor instanceof YaBlocksEditor) {
-            dirtyFileEditors.add(fileEditor);
-          }
-        }
-        break;
-      }
-    }
-    saveDirtyEditors(afterSaving);
-  }
-  
-  /**
    * For each block editor (screen) in the current project, generate and save yail code for the 
    * blocks.
    *

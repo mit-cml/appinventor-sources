@@ -35,7 +35,7 @@ public class SaveAllEditorsCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     // Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-    Ode.getInstance().getEditorManager().saveDirtyEditorsAndBlocksEditors(new Command() {
+    Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
         ErrorReporter.reportInfo(MESSAGES.savedProject(

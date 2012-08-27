@@ -94,7 +94,7 @@ public class BlocklyPanel extends HTMLPanel {
    * get called back from the Blockly Javascript when it finishes loading.
    */
   public static void initUi() {
-    exportInitBlocksAreaMethod();
+    exportMethodsToJavascript();
   }
   
   /*
@@ -148,6 +148,10 @@ public class BlocklyPanel extends HTMLPanel {
       OdeLog.log("Loading blocks area content for " + formName);
       doLoadBlocksContent(formName, pendingBlocksContent);
     }
+  }
+  
+  private static void blocklyWorkspaceChanged(String formName) {
+    YaBlocksEditor.onBlocksAreaChanged(formName);
   }
   
   // Returns true if the blocks for formName have been initialized (i.e.,
@@ -400,10 +404,12 @@ public class BlocklyPanel extends HTMLPanel {
   
   // ------------ Native methods ------------
   
-  private static native void exportInitBlocksAreaMethod() /*-{ 
+  private static native void exportMethodsToJavascript() /*-{ 
     $wnd.BlocklyPanel_initBlocksArea = 
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
-    // Note: above line is longer than 100 chars but I'm not sure whether it can be split
+    $wnd.BlocklyPanel_blocklyWorkspaceChanged = 
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
+    // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
   }-*/;
   
   private native void initJS() /*-{
