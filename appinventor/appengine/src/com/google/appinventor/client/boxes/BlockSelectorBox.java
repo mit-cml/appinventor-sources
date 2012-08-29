@@ -4,28 +4,58 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 
 /**
  * Box implementation for block selector. Shows a tree containing the
  * built-in blocks as well as the components for the current form. 
- * Clicking on an item toggles the blocks drawer for the item. This box 
- * shares screen real estate with the SourceStructureBox. It uses a 
+ * Clicking on an item opens the blocks drawer for the item (or closes it if it
+ * was already open). This box shares screen real estate with the SourceStructureBox. It uses a 
  * SourceStructureExplorer to handle the components part of the tree.
  * 
  * @author sharon@google.com (Sharon Perl)
  *
  */
 public final class BlockSelectorBox extends Box {
+  private static class BlockSelectorItem implements SourceStructureExplorerItem {
+    BlockSelectorItem() { }
+    
+    @Override
+    public void onSelected() { }
+    
+    @Override
+    public void onStateChange(boolean open) { }
+
+    @Override
+    public boolean canRename() {
+      return false;
+    }
+
+    @Override
+    public void rename() { }
+
+    @Override
+    public boolean canDelete() {
+      return false;
+    }
+
+    @Override
+    public void delete() { }
+  }
+
   // Singleton block selector box instance
   // Starts out not visible. call setVisible(true) to make it visible
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
@@ -80,39 +110,17 @@ public final class BlockSelectorBox extends Box {
   /**
    * Constructs a tree item for built-in blocks.
    *
-   * @return  tree item for this component
+   * @return  tree item
    */
   public TreeItem getBuiltInBlocksTree() {
     TreeItem builtinNode = new TreeItem(new HTML("<span>" 
         + MESSAGES.builtinBlocksLabel() + "</span>"));
     for (final String drawerName : BUILTIN_DRAWER_NAMES) {
       TreeItem itemNode = new TreeItem(new HTML("<span>" + drawerName + "</span>"));
-      SourceStructureExplorerItem sourceItem = new SourceStructureExplorerItem() {
+      SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected() {
           fireBuiltinDrawerSelected(drawerName);
-        }
-
-        @Override
-        public void onStateChange(boolean open) {
-        }
-
-        @Override
-        public boolean canRename() {
-          return false;
-        }
-
-        @Override
-        public void rename() {
-        }
-
-        @Override
-        public boolean canDelete() {
-          return false;
-        }
-
-        @Override
-        public void delete() {
         }
       };
       itemNode.setUserObject(sourceItem);
@@ -122,6 +130,34 @@ public final class BlockSelectorBox extends Box {
     return builtinNode;
   }
   
+  /**
+   * Constructs a tree item for generic ("Advanced") component blocks for component types that
+   * appear in form.
+   *
+   * @param  form  only component types that appear in this Form will be included
+   * @return  tree item for this form
+   */
+  public TreeItem getGenericComponentsTree(MockForm form) {
+    Map<String, String> typesAndIcons = Maps.newHashMap();
+    form.collectTypesAndIcons(typesAndIcons);
+    TreeItem advanced = new TreeItem(new HTML("<span>" + "Any component" + "</span>"));
+    List<String> typeList = new ArrayList<String>(typesAndIcons.keySet());
+    Collections.sort(typeList);
+    for (final String typeName : typeList) {
+      TreeItem itemNode = new TreeItem(new HTML("<span>" + typesAndIcons.get(typeName) 
+          + "Any " + typeName + "</span>"));
+      SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
+        @Override
+        public void onSelected() {
+          fireGenericDrawerSelected(typeName);
+        }
+      };
+      itemNode.setUserObject(sourceItem);
+      advanced.addItem(itemNode);
+    }
+    return advanced;
+  }
+
   public void addBlockDrawerSelectionListener(BlockDrawerSelectionListener listener) {
     drawerListeners.add(listener);
   }
@@ -135,5 +171,12 @@ public final class BlockSelectorBox extends Box {
       listener.onBuiltinDrawerSelected(drawerName);
     }
   }
+
+  private void fireGenericDrawerSelected(String drawerName) {
+    for (BlockDrawerSelectionListener listener : drawerListeners) {
+      listener.onGenericDrawerSelected(drawerName);
+    }
+  }
+
 }
 

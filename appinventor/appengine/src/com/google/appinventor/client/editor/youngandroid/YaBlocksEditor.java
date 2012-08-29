@@ -240,9 +240,10 @@ public final class YaBlocksEditor extends FileEditor
   }
 
   private void updateBlocksTree(MockForm form, SourceStructureExplorerItem itemToSelect) {
-    TreeItem items[] = new TreeItem[2];
+    TreeItem items[] = new TreeItem[3];
     items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
     items[1] = form.buildComponentsTree();
+    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);    
     sourceStructureExplorer.updateTree(items, itemToSelect);
   }
 
@@ -328,6 +329,19 @@ public final class YaBlocksEditor extends FileEditor
       selectedDrawer = builtinDrawer;
     } else {
       blocksArea.hideBuiltinBlocks();
+      selectedDrawer = null;
+    }
+  }
+
+  public void showGenericBlocks(String drawerName) {
+    OdeLog.log("Showing generic drawer " + drawerName);
+    String genericDrawer = "generic_" + drawerName;
+    if (selectedDrawer == null || !blocksArea.drawerShowing()
+        || !selectedDrawer.equals(genericDrawer)) {
+      blocksArea.showGenericBlocks(drawerName);
+      selectedDrawer = genericDrawer;
+    } else {
+      blocksArea.hideGenericBlocks();
       selectedDrawer = null;
     }
   }
@@ -442,4 +456,17 @@ public final class YaBlocksEditor extends FileEditor
       showBuiltinBlocks(drawerName);
     }
   }
+  
+  /*
+   * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
+   * onBlockDrawerSelected(java.lang.String)
+   */
+  @Override
+  public void onGenericDrawerSelected(String drawerName) {
+    // Only do something if we are the current file editor
+    if (Ode.getInstance().getCurrentFileEditor() == this) {
+      showGenericBlocks(drawerName);
+    }
+  }
+
 }

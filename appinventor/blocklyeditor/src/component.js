@@ -7,35 +7,19 @@
  * @author sharon@google.com (Sharon Perl)
  */
 
-if (!Blockly.Language) {
-  Blockly.Language = {};
-}
-
 if (!Blockly.Component) {
   Blockly.Component = {};
 }
 
-/**
- * Object whose fields are names of component instances and whose field values
- * are objects with a blocks field containing an array of block names for the
- * instance.
- * For example:
- *    Blockly.ComponentInstances['Canvas1'].blocks = ['Canvas1_Touched', 
- *        'Canvas1_DrawCircle', 'Canvas1_getproperty', 'Canvas1_setproperty']
- * Blockly.ComponentInstances is populated by the Blockly.Component.add method.
- */
-Blockly.ComponentInstances = {};
-
-/**
- * Object whose fields are names of component types and whose field values are the parsed JSON type
- * objects for the component type. Populated by the Blockly.Component.add method.
- */
-Blockly.ComponentTypes = {};
+if (!Blockly.Language) {
+  Blockly.Language = {};
+}
 
 /** 
  * Add block prototypes for a component of the given type (described in 
  * typeJsonString) and instance name with given unique id uid to 
- * Blockly.Language and add the names of the blocks to ComponentInstances[name].
+ * Blockly.Language and add the names of the blocks to ComponentInstances[name]. Also
+ * add the generic blocks for this component's type if we don't already have them.
  * 
  * typeJsonString has the following format (where upper-case strings are
  * non-terminals and lower-case strings are literals):
@@ -75,12 +59,14 @@ Blockly.ComponentTypes = {};
  *   ]
  * }
  * 
+ * TODO(hal):  fix the block constructors so that they accept Yail types (as they do currently) and
+ * handle the conversion to Blockly types, and the add the type constraints on the sockets.
+ * 
  * TODO: May want to save (and return) result of parsing typeJsonString if it
  * is too inefficient to do this for each added component
  */
 Blockly.Component.add = function(typeJsonString, name, uid) {
-  if (Blockly.ComponentInstances[name] != undefined 
-      && Blockly.ComponentInstances[name].uid == uid) {
+  if (Blockly.ComponentInstances.haveInstance(name, uid)) {
     return;
   }
   // TODO(sharon): deal with case where name is there but with a different uid
@@ -91,39 +77,57 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   // TODO: figure out the type name before we reparse the json string so that we can avoid 
   // reparsing if we already have it.
   var typeDescription = JSON.parse(typeJsonString);
-  if (!Blockly.ComponentTypes[typeDescription.name]) {
-    Blockly.ComponentTypes[typeDescription.name] = typeDescription;
+  var typeName = typeDescription.name;
+  var makeGenerics = false;  // make the generic blocks only if they don't already exist
+  if (!Blockly.ComponentTypes.haveType(typeName)) {
+    Blockly.ComponentTypes.addType(typeName, typeDescription);
+    // TODO: reconsider whether we actually do want generic blocks for forms. Hal says:
+    // It might be that even though there is only one form, a person might prefer to write code in 
+    // the generic style. It seems pointless for now, but it might become an issue when we 
+    // implement libraries. Similarly, it might be related to other possible "one of" components. 
+    // We don't have any of those now, but we might want to restrict to having only one TinyDB, 
+    // for example.
+    if (typeName != "Form") {  // don't include generic blocks for the Form. There's only one!
+      makeGenerics = true;
+    }
   }
-  Blockly.ComponentInstances[name] = {};
-  Blockly.ComponentInstances[name].uid = uid;
-  Blockly.ComponentInstances[name].blocks = [];
+  
+  Blockly.ComponentInstances.addInstance(name, uid);
   
   // Add event blocks
   for (var i = 0, eventType; eventType = typeDescription.events[i]; i++) {
-    var elementName = name + '_' + eventType.name;
-    Blockly.Language[elementName] = new Blockly.ComponentBlock.event(eventType, name);
-    Blockly.Yail[elementName] = Blockly.Yail.event(name, eventType.name);
-    Blockly.ComponentInstances[name].blocks.push(elementName);
+    Blockly.Component.addBlockAndGenerator(name,
+      name + '_' + eventType.name,
+      new Blockly.ComponentBlock.event(eventType, name),
+      Blockly.Yail.event(name, eventType.name));
+    // TODO: consider adding generic event blocks. We don't have them for now (since the original
+    // App Inventor didn't have them).
   }
   
   // Add method blocks
   for (var i = 0, methodType; methodType = typeDescription.methods[i]; i++) {
-    var elementName = name + '_' + methodType.name;
-    Blockly.Language[elementName] = new Blockly.ComponentBlock.method(methodType, name);
-    if (methodType.returnType) {
-      Blockly.Yail[elementName] = Blockly.Yail.methodWithReturn(name, methodType.name);
-    } else {
-      Blockly.Yail[elementName] = Blockly.Yail.methodNoReturn(name, methodType.name);
+    Blockly.Component.addBlockAndGenerator(name, 
+      name + '_' + methodType.name,
+      new Blockly.ComponentBlock.method(methodType, name), 
+      (methodType.returnType
+        ? Blockly.Yail.methodWithReturn(name, methodType.name)
+        : Blockly.Yail.methodNoReturn(name, methodType.name)));
+    if (makeGenerics) {
+      // Need to distinguish names of generic blocks from regular component blocks. Since
+      // a component instance name can be the same as a component type name, but it cannot start 
+      // with "_", we add a prefix to the type name that starts with "_" to make it unique (and
+      // the "any" is to make it clearer when debugging).
+      Blockly.Component.addGenericBlockAndGenerator(typeName,
+        "_any_" + typeName + '_' + methodType.name,
+        new Blockly.ComponentBlock.genericMethod(methodType, typeName),
+        methodType.returnType
+          ? Blockly.Yail.genericMethodWithReturn(typeName, methodType.name)
+          : Blockly.Yail.genericMethodNoReturn(typeName, methodType.name));
     }
-    Blockly.ComponentInstances[name].blocks.push(elementName);
   }
   // Add getter and setter blocks with drop-downs containing relevant property names
   var getters = [], setters = [];
-  var propSetterName = name + '_setproperty'
-  var propGetterName = name + '_getproperty'
-  Blockly.Yail[propSetterName] = Blockly.Yail.setproperty(name);
-  Blockly.Yail[propSetterName].propTypes = {};
-  Blockly.Yail[propGetterName] = Blockly.Yail.getproperty(name);
+  var propTypes = {};
   for (var i = 0, propType; propType = typeDescription.blockProperties[i]; i++) {
     // Note: an items in the menu is a two-element array with a human-readable
     // text and a language-neutral value. For now we leave this the same,
@@ -138,24 +142,46 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
       setters.push(propItem);
     }  // some properites have rw = "invisible". ignore those.
     
-    Blockly.Yail[propSetterName].propTypes[propType.name] = propType.type;
+    propTypes[propType.name] = propType.type;
+  }
+
+  Blockly.Component.addBlockAndGenerator(name, 
+    name + '_getproperty', 
+    new Blockly.ComponentBlock.getter(getters, propTypes, name), 
+    Blockly.Yail.getproperty(name));
+  
+  Blockly.Component.addBlockAndGenerator(name,
+    name + '_setproperty',
+    new Blockly.ComponentBlock.setter(setters, propTypes, name),
+    Blockly.Yail.setproperty(name));
+
+  if (makeGenerics) {
+    Blockly.Component.addGenericBlockAndGenerator(typeName,
+      typeName + '_getproperty',
+      new Blockly.ComponentBlock.genericGetter(getters, propTypes, typeName),
+      Blockly.Yail.genericGetproperty(typeName));
+
+    Blockly.Component.addGenericBlockAndGenerator(typeName,
+      typeName + '_setproperty',
+      new Blockly.ComponentBlock.genericSetter(setters, propTypes, typeName),
+      Blockly.Yail.genericSetproperty(typeName));
   }
   
-  Blockly.Language[propGetterName] = new Blockly.ComponentBlock.getter(getters, name);
-  Blockly.ComponentInstances[name].blocks.push(name + '_getproperty');
-  Blockly.Language[propSetterName] = new Blockly.ComponentBlock.setter(setters, name);
-  Blockly.ComponentInstances[name].blocks.push(name + '_setproperty');
-  // Add "component" block
-  Blockly.Language[name + '_component'] = new Blockly.ComponentBlock.component(name);
-  Blockly.Yail[name + '_component'] = Blockly.Yail.componentObject(name);
-  Blockly.ComponentInstances[name].blocks.push(name + '_component');
+  Blockly.Component.addBlockAndGenerator(name,
+    name + '_component',
+    new Blockly.ComponentBlock.component(name),
+    Blockly.Yail.componentObject(name));
 };
-
 /**
  * Rename component with given uid and instance name oldname to newname
  */
 Blockly.Component.rename = function(oldname, newname, uid) {
   // TODO(sharon): implement this!
+  // Note: component instance names are used in the fields for Blockly.ComponentInstances (as the 
+  // full field name), Blockly.Language (as the first part of the name preceding "_"), and 
+  // Blockly.Yail (as the first part of the name preceding "_"). They also appear in titles for 
+  // blocks related to that component instance, and in the instanceName field of those blocks.
+
   console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + 
     ", " + uid + ") - not yet implemented");
 };
@@ -224,6 +250,13 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       // TODO: eventually deal with variable declarations, once we have them
     } else if (block.category == 'Component') {
       var instanceName = block.instanceName;
+      if (!instanceName) {
+        // Most likely a generic component-related block. There are currently no generic component
+        // blocks that are valid top-level blocks. This could change if we implement generic 
+        // event blocks. 
+        // TODO: flag this block as invalid at the top level.
+        continue;
+      }
       if (!map.components[instanceName]) {
         map.components[instanceName] = [];  // first block we've found for this component
       }
@@ -244,7 +277,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  *    (from the JSON component description passed to Blockly.Component.add).
  */
 Blockly.Component.getPropertyType = function(componentTypeName, propertyName) {
-  var componentType = Blockly.ComponentTypes[componentTypeName];
+  var componentType = Blockly.ComponentTypes.getType(componentTypeName);
   if (!componentType) {
     throw "Can't find component type info for " + componentTypeName;
   }
@@ -258,6 +291,91 @@ Blockly.Component.getPropertyType = function(componentTypeName, propertyName) {
   throw "Can't find property type for " + componentType + "." + propertyName;
 }
 
+/**
+ * Blockly.ComponentTypes 
+ * 
+ * Object whose fields are names of component types. For a given component type object, the "type"
+ * field is the parsed JSON type object for the component type and the "blocks" field is an array 
+ * of block names for the generic blocks for that type. 
+ * For example:
+ *    Blockly.ComponentTypes['Canvas'].type = the JSON object from parsing the typeJsonString
+ *      argument passed to Blockly.Component.add for a Canvas component instance
+ *    Blockly.ComponentTypes['Canvas'].blocks = ['Canvas_Touched', 'Canvas_DrawCircle', ...]
+ * Populated by Blockly.Component.add.
+ */
+Blockly.ComponentTypes = {};
+
+Blockly.ComponentTypes.haveType = function(typeName) {
+  return Blockly.ComponentTypes[typeName] != undefined;
+}
+
+Blockly.ComponentTypes.addType = function(typeName, typeDescription) {
+  Blockly.ComponentTypes[typeName] = {};
+  Blockly.ComponentTypes[typeName].type = typeDescription;
+  Blockly.ComponentTypes[typeName].blocks = [];
+}
+
+Blockly.ComponentTypes.addBlockName = function(typeName, blockName) {
+  Blockly.ComponentTypes[typeName].blocks.push(blockName);
+}
+
+Blockly.ComponentTypes.getType = function(typeName) {
+  return Blockly.ComponentTypes[typeName].type;
+}
+
+/**
+ * Blockly.ComponentInstances
+ * 
+ * Object whose fields are names of component instances and whose field values
+ * are objects with a blocks field containing an array of block names for the
+ * instance.
+ * For example:
+ *    Blockly.ComponentInstances['Canvas1'].blocks = ['Canvas1_Touched', 
+ *        'Canvas1_DrawCircle', 'Canvas1_getproperty', 'Canvas1_setproperty', ...]
+ * Blockly.ComponentInstances is populated by the Blockly.Component.add method.
+ */
+Blockly.ComponentInstances = {};
+
+Blockly.ComponentInstances.addInstance = function(name, uid) {
+  Blockly.ComponentInstances[name] = {};
+  Blockly.ComponentInstances[name].uid = uid;
+  Blockly.ComponentInstances[name].blocks = [];
+}
+
+Blockly.ComponentInstances.haveInstance = function(name, uid) {
+  return Blockly.ComponentInstances[name] != undefined 
+      && Blockly.ComponentInstances[name].uid == uid;
+}
+
+Blockly.ComponentInstances.addBlockName = function(name, blockName) {
+  Blockly.ComponentInstances[name].blocks.push(blockName);
+}
+
+/**
+ * Add a component-related block to the language
+ * @param instanceName component instance name
+ * @param langName the name that identifies this block in Blockly.Language and Blockly.Yail
+ * @param langBlock the language block (a Blockly.Block)
+ * @param generator the Yail generation function for this block
+ */
+Blockly.Component.addBlockAndGenerator = function(instanceName, langName, langBlock, generator) {
+  Blockly.Language[langName] = langBlock;
+  Blockly.Yail[langName] = generator;
+  Blockly.ComponentInstances.addBlockName(instanceName, langName);
+}
+
+/**
+ * Add a generic component-related block to the language
+ * @param typeName component type name
+ * @param langName the name that identifies this block in Blockly.Language and Blockly.Yail
+ * @param langBlock the language block (a Blockly.Block)
+ * @param generator the Yail generation function for this block
+ */
+Blockly.Component.addGenericBlockAndGenerator = function(typeName, langName, langBlock, generator) {
+  Blockly.Language[langName] = langBlock;
+  Blockly.Yail[langName] = generator;
+  Blockly.ComponentTypes.addBlockName(typeName, langName);
+}
 
 
 

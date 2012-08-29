@@ -12,5 +12,7 @@ package com.google.appinventor.client.editor.youngandroid;
 public interface BlockDrawerSelectionListener {
   
   void onBuiltinDrawerSelected(String drawerName);
+  
+  void onGenericDrawerSelected(String drawerName);
 
 }

@@ -13,8 +13,10 @@ Blockly.ComponentBlock = {};
 
 /* 
  * All component blocks have category=='Component'. In addition to the standard blocks fields,
- * all component blocks have a field instanceName whose value is the name of their component. For
- * example, the blocks representing a Button1.Click event has instanceName=='Button1'.
+ * All regular component blocks have a field instanceName whose value is the name of their 
+ * component. For example, the blocks representing a Button1.Click event has 
+ * instanceName=='Button1'. All generic component blocks have a field typeName whose value is 
+ * the name of their component type.
  */ 
 
 /**
@@ -50,14 +52,14 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
     this.appendInput('do', Blockly.NEXT_STATEMENT, "DO");
     this.setPreviousStatement(false);
     this.setNextStatement(false);
-  },
+  };
   this.getVars = function() {
     var varList = [];
     for (var i = 0, input; input = this.getInputVariable(this.paramName(i)); i++) {
       varList.push(input);
     }
     return varList;
-  },
+  };
   this.renameVar = function(oldName, newName) {
     for (var i = 0, param = this.paramName(i), input 
          ; input = this.getInputVariable(param)
@@ -66,7 +68,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
         this.setInputVariable(param, newName);
       }
     }
-  },
+  };
   this.paramName = function(i) {
     return "PARAM" + i;
   };
@@ -80,14 +82,53 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
   this.instanceName = instanceName;
+  // Note: the params and paramTypes arrays are initialized for the language block,
+  // and these will be shared with each instance of this block type in the workspace.
   this.params = [];
+  this.paramTypes = [];
+  for (var i = 0, param; param = methodType.params[i]; i++) {
+    this.params.push(param.name);
+    this.paramTypes.push(param.type);
+  }
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
     this.appendTitle('call');
     this.appendTitle(instanceName + '.' + methodType.name);
     for (var i = 0, param; param = methodType.params[i]; i++) {
       this.appendInput(param.name, Blockly.INPUT_VALUE, "ARG" + i);
-      this.params.push(param.name);
+    }
+    if (methodType.returnType) {
+      this.setOutput(true);
+    } else {
+      this.setPreviousStatement(true);
+      this.setNextStatement(true);
+    }
+  };
+}
+
+/**
+ * Create a generic method block of the given type for a component type with the given name. 
+ * methodType is one of the "methods" objects in a typeJsonString passed to Blockly.Component.add.
+ */
+Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
+  this.category = 'Component';
+  this.helpUrl = "http://foo";  // TODO: fix
+  this.typeName = typeName;
+  // Note: the params and paramTypes arrays are initialized for the language block,
+  // and these will be shared with each instance of this block type in the workspace.
+  this.params = [];
+  this.paramTypes = [];
+  for (var i = 0, param; param = methodType.params[i]; i++) {
+    this.params.push(param.name);
+    this.paramTypes.push(param.type);
+  }
+  this.init = function() {
+    this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
+    this.appendTitle('call');
+    this.appendTitle(typeName + '.' + methodType.name);
+    this.appendInput('component', Blockly.INPUT_VALUE, "COMPONENT");
+    for (var i = 0, param; param = methodType.params[i]; i++) {
+      this.appendInput(param.name, Blockly.INPUT_VALUE, "ARG" + i);
     }
     if (methodType.returnType) {
       this.setOutput(true);
@@ -103,10 +144,11 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
  * instance name. propNames is the list of property names to appear in the 
  * dropdown menu for the getter block.
  */
-Blockly.ComponentBlock.getter = function(propNames, instanceName) {
+Blockly.ComponentBlock.getter = function(propNames, propTypes, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
   this.instanceName = instanceName;
+  this.propTypes = propTypes;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
     this.appendTitle(instanceName + '.');
@@ -119,14 +161,39 @@ Blockly.ComponentBlock.getter = function(propNames, instanceName) {
 };
 
 /**
+ * Create a generic property getter block for a component with the given 
+ * type name. propNames is the list of property names to appear in the 
+ * dropdown menu for the getter block.
+ */
+Blockly.ComponentBlock.genericGetter = function(propNames, propTypes, typeName) {
+  this.category = 'Component';
+  this.helpUrl = "http://foo";  // TODO: fix
+  this.typeName = typeName;
+  this.propTypes = propTypes;
+  this.init = function() {
+    this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
+    this.appendTitle(typeName + '.');
+    var dropdown = new Blockly.FieldDropdown(function() {
+      return propNames;
+    });
+    this.appendTitle(dropdown, "PROP");
+    this.appendInput('of component', Blockly.INPUT_VALUE, "COMPONENT");
+    this.setOutput(true);
+  };
+};
+
+/**
  * Create a property setter block for a component with the given 
  * instance name. propNames is the list of property names to appear in the 
  * dropdown menu for the setter block.
+ * 
+ * TODO(hal): implement the type constraints on the sockets
  */
-Blockly.ComponentBlock.setter = function(propNames, instanceName) {
+Blockly.ComponentBlock.setter = function(propNames, propTypes, instanceName) {
   this.category = 'Component';
   this.helpUrl = "http://foo";  // TODO: fix
   this.instanceName = instanceName;
+  this.propTypes = propTypes;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
     this.appendTitle('set');
@@ -135,8 +202,34 @@ Blockly.ComponentBlock.setter = function(propNames, instanceName) {
       return propNames;
     });
     this.appendTitle(dropdown, "PROP");
-    this.appendTitle('to');
-    this.appendInput('', Blockly.INPUT_VALUE, "VALUE");
+    // this.appendTitle('to');
+    this.appendInput('to', Blockly.INPUT_VALUE, "VALUE");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  };
+};
+
+/**
+ * Create a generic property setter block for a component with the given 
+ * type name. propNames is the list of property names to appear in the 
+ * dropdown menu for the setter block.
+ */
+Blockly.ComponentBlock.genericSetter = function(propNames, propTypes, typeName) {
+  this.category = 'Component';
+  this.helpUrl = "http://foo";  // TODO: fix
+  this.typeName = typeName;
+  this.propTypes = propTypes;
+  this.init = function() {
+    this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
+    this.appendTitle('set');
+    this.appendTitle(typeName + '.');
+    var dropdown = new Blockly.FieldDropdown(function() {
+      return propNames;
+    });
+    this.appendTitle(dropdown, "PROP");
+    this.appendInput('for component', Blockly.INPUT_VALUE, "COMPONENT");
+    // this.appendTitle('to');
+    this.appendInput('to', Blockly.INPUT_VALUE, "VALUE");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
   };
@@ -152,7 +245,6 @@ Blockly.ComponentBlock.component = function(instanceName) {
   this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_COMPONENT);
-    this.appendTitle('component');
     this.appendTitle(instanceName);
     this.setOutput(true);
   };

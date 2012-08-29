@@ -37,6 +37,7 @@ Blockly.Yail.YAIL_CLOSE_COMBINATION = ")\n";
 Blockly.Yail.YAIL_CLOSE_BLOCK = ")\n";
 Blockly.Yail.YAIL_COMMENT_MAJOR = ";;; ";
 Blockly.Yail.YAIL_COMPONENT_REMOVE = "(remove-component ";
+Blockly.Yail.YAIL_COMPONENT_TYPE = "component";
 Blockly.Yail.YAIL_DEFINE = "(def ";
 Blockly.Yail.YAIL_DEFINE_EVENT = "(define-event ";
 Blockly.Yail.YAIL_DEFINE_FORM = "(define-form ";
@@ -113,7 +114,7 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
   
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
-    code = code.concat(Blockly.Yail.blockToCode(block));
+    code.push(Blockly.Yail.blockToCode(block));
   }
   
   if (formProperties) {
@@ -126,7 +127,7 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
     }
   
     // Add runtime initializations
-    code = code.concat(Blockly.Yail.YAIL_INIT_RUNTIME);
+    code.push(Blockly.Yail.YAIL_INIT_RUNTIME);
   
     if (forRepl) {
       code = Blockly.Yail.wrapForRepl(formName, code, componentMap);
@@ -228,10 +229,9 @@ Blockly.Yail.getComponentLines = function(formName, componentJson, parentName, c
   var code = [];
   var componentName = componentJson.$Name;
   if (componentJson.$Type == 'Form') {
-    code = code.concat(Blockly.Yail.getFormPropertiesLines(formName, componentJson, !forRepl));
+    code = Blockly.Yail.getFormPropertiesLines(formName, componentJson, !forRepl);
   } else {
-    code = code.concat(Blockly.Yail.getComponentPropertiesLines(formName, componentJson, parentName, 
-      !forRepl));
+    code = Blockly.Yail.getComponentPropertiesLines(formName, componentJson, parentName, !forRepl);
   }
   // Generate code for all top-level blocks related to this component
   if (componentMap.components && componentMap.components[componentName]) {
@@ -244,8 +244,8 @@ Blockly.Yail.getComponentLines = function(formName, componentJson, parentName, c
   if (componentJson.$Components) {
     var children = componentJson.$Components;
     for (var i = 0, child; child = children[i]; i++) {
-      code = code.concat(Blockly.Yail.getComponentLines(formName, child, componentName, componentMap, 
-        forRepl));
+      code = code.concat(Blockly.Yail.getComponentLines(formName, child, componentName, 
+        componentMap, forRepl));
     }
   }
   return code;  
@@ -293,11 +293,11 @@ Blockly.Yail.getComponentPropertiesLines = function(formName, componentJson, par
 Blockly.Yail.getFormPropertiesLines = function(formName, componentJson, includeComments) {
   var code = [];
   if (includeComments) {
-    code = code.concat(Blockly.Yail.YAIL_COMMENT_MAJOR + formName + Blockly.Yail.YAIL_LINE_FEED);
+    code.push(Blockly.Yail.YAIL_COMMENT_MAJOR + formName + Blockly.Yail.YAIL_LINE_FEED);
   }
   var yailForComponentProperties = Blockly.Yail.getPropertySettersLines(componentJson, formName);
   if (yailForComponentProperties.length > 0) {
-    code = code.concat(Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION + yailForComponentProperties + 
+    code.push(Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION + yailForComponentProperties + 
       Blockly.Yail.YAIL_CLOSE_BLOCK);
   }
   return code;
@@ -479,10 +479,13 @@ Blockly.Yail.scrubNakedValue = function(line) {
  * Calls any statements following this block.
  * @param {!Blockly.Block} block The current block.
  * @param {string} code The Yail code created for this block.
+ * @param {thisOnly} if true, only return code for this block and not any following statements
+ *   note that calls of scrub_ with no 3rd parameter are equivalent to thisOnly=false, which
+ *   was the behavior before this parameter was added.
  * @return {string} Yail code with comments and subsequent blocks added.
  * @private
  */
-Blockly.Yail.scrub_ = function(block, code) {
+Blockly.Yail.scrub_ = function(block, code, thisOnly) {
   if (code === null) {
     // Block has handled code generation itself.
     return '';
@@ -511,6 +514,60 @@ Blockly.Yail.scrub_ = function(block, code) {
     }
   }*/
   var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
-  var nextCode = this.blockToCode(nextBlock);
+  var nextCode = thisOnly ? "" : this.blockToCode(nextBlock);
   return commentCode + code + nextCode;
 };
+
+Blockly.Yail.getDebuggingYail = function() {
+  var code = [];
+  var componentMap = Blockly.Component.buildComponentMap([], [], false, false);
+  
+  var globalBlocks = componentMap.globals;
+  for (var i = 0, block; block = globalBlocks[i]; i++) {
+    code.push(Blockly.Yail.blockToCode(block));
+  }
+  
+  var blocks = Blockly.mainWorkspace.getTopBlocks(true);
+  for (var x = 0, block; block = blocks[x]; x++) {
+    
+    // generate Yail for each top-level language block
+    if (!block.category) {
+      continue;
+    }
+    code.push(Blockly.Yail.blockToCode(block));
+  }
+  return code.join('\n\n');
+};
+
+/**
+ * Generate code for the specified block but *not* attached blocks.
+ * @param {Blockly.Block} block The block to generate code for.
+ * @return {string|!Array} For statement blocks, the generated code.
+ *     For value blocks, an array containing the generated code and an
+ *     operator order value.  Returns '' if block is null.
+ */
+Blockly.Yail.blockToCode1 = function(block) {
+  if (!block) {
+    return '';
+  }
+  var func = this[block.type];
+  if (!func) {
+    throw 'Language "' + name + '" does not know how to generate code ' +
+        'for block type "' + block.type + '".';
+  }
+  var code = func.call(block);
+  if (code instanceof Array) {
+    // Value blocks return tuples of code and operator order.
+    if (block.disabled) {
+      code[0] = '';
+    }
+    return [this.scrub_(block, code[0], true), code[1]];
+  } else {
+    if (block.disabled) {
+      code = '';
+    }
+    return this.scrub_(block, code, true);
+  }
+};
+
+

@@ -323,7 +323,26 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public void hideBuiltinBlocks() {
     if (blocksInited(formName)) {
-      doHideBuiltinBlocks(formName);
+      doHideBlocks(formName);
+    }
+  }
+
+  /**
+   * Show the generic blocks drawer with the specified name
+   * @param drawerName
+   */
+  public void showGenericBlocks(String drawerName) {
+    if (blocksInited(formName)) {
+      doShowGenericBlocks(formName, drawerName);
+    }
+  }
+  
+  /**
+   * Hide the generic blocks drawer
+   */
+  public void hideGenericBlocks() {
+    if (blocksInited(formName)) {
+      doHideBlocks(formName);
     }
   }
 
@@ -447,10 +466,16 @@ public class BlocklyPanel extends HTMLPanel {
     myBlockly.Drawer.showBuiltin(drawerName);
   }-*/;
 
-  public static native void doHideBuiltinBlocks(String formName) /*-{
+  public static native void doHideBlocks(String formName) /*-{
     $wnd.Blocklies[formName].Drawer.hide();
   }-*/;
   
+  private static native void doShowGenericBlocks(String formName, String drawerName) /*-{
+    var myBlockly = $wnd.Blocklies[formName];
+    myBlockly.Drawer.hide();
+    myBlockly.Drawer.showGeneric(drawerName);
+  }-*/;
+
   public static native boolean doDrawerShowing(String formName) /*-{
     return $wnd.Blocklies[formName].Drawer.isShowing();
   }-*/;

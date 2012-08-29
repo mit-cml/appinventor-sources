@@ -64,6 +64,13 @@
     <concat destfile="${public.build.dir}/blockly-lib.js">
       <fileset file="${blockly.src.dir}/blockly.js"/>
     </concat>
+    <!-- language/en/*.js has to come next (for constants) -->
+    <concat destfile="${public.build.dir}/blockly-lib.js"
+            append="true">
+      <fileset dir="${blockly.src.dir}/language/en">
+        <include name="*.js"/>
+      </fileset>
+    </concat>
     <!-- the rest of the blockly .js files can come in any order -->
     <concat destfile="${public.build.dir}/blockly-lib.js"
             append="true">

@@ -101,6 +101,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_BUILD = "Build";
   private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
   private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
+  private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
@@ -160,6 +161,10 @@ public class DesignToolbar extends Toolbar {
         MESSAGES.showBarcodeButton(), new BarcodeAction()));
     buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_DOWNLOAD,
         MESSAGES.downloadToComputerButton(), new DownloadAction()));
+    if (AppInventorFeatures.hasYailGenerationOption()) {
+      buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_YAIL,
+          MESSAGES.generateYailButton(), new GenerateYailAction()));
+    }
     addDropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(), buildItems, true);
 
   }
@@ -305,11 +310,11 @@ public class DesignToolbar extends Toolbar {
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
-          @Override
-          public void execute() {
-            updateBuildButton(false);
-          }
-        });
+              @Override
+              public void execute() {
+                updateBuildButton(false);
+              }
+            });
       }
     }
   }
@@ -328,11 +333,35 @@ public class DesignToolbar extends Toolbar {
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
-          @Override
-          public void execute() {
-            updateBuildButton(false);
-          }
-        });
+              @Override
+              public void execute() {
+                updateBuildButton(false);
+              }
+            });
+      }
+    }
+  }
+
+  /**
+   * Implements the action to generate the ".yail" file for each screen in the current project.
+   * It does not build the entire project. The intention is that this will be helpful for 
+   * debugging during development, and will most likely be disabled in the production system.
+   */
+  private class GenerateYailAction implements Command {
+    @Override
+    public void execute() {
+      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+      if (projectRootNode != null) {
+        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+        ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateYailCommand(null));
+        updateBuildButton(true);
+        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,
+            new Command() {
+              @Override
+              public void execute() {
+                updateBuildButton(false);
+              }
+            });
       }
     }
   }

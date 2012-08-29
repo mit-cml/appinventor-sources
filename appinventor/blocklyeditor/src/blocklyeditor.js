@@ -19,3 +19,19 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
         window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_); 
       });
 };
+
+/**
+ * Add a "Generate Yail" option to the context menu for every block. The generated yail will go in
+ * the block's comment (if it has one) for now. 
+ * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into 
+ * the bubble for "do it" output once we hook up to the REPL.
+ */ 
+Blockly.Block.prototype.customContextMenu = function(options) {
+  var yailOption = {enabled: true};
+  yailOption.text = "Generate Yail";
+  var myBlock = this;
+  yailOption.callback = function() {
+    myBlock.setCommentText(Blockly.Yail.blockToCode1(myBlock));
+  };
+  options.push(yailOption);
+};

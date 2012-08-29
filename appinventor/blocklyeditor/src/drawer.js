@@ -6,10 +6,7 @@
  * other blocks when dragged onto the workspace). The set of drawers
  * includes the built-in drawers that we get from the blocks language, as
  * well as a drawer per component instance that was added to this workspace.
- * 
- * TODO(sharon): add support for advanced drawer that contains generic
- * component blocks
- * 
+ *
  * @author Sharon Perl (sharon@google.com)
  */
 
@@ -108,9 +105,25 @@ Blockly.Drawer.showComponent = function(instanceName) {
     Blockly.Drawer.flyout_.hide();
     Blockly.Drawer.flyout_.show(Blockly.ComponentInstances[instanceName].blocks);
   } else {
-    //throw 'Error: "' + name + '" is an unknown component name.';
-    console.log("Got call to Blockly.Component.show(" +  name + 
+    console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName + 
                 ") - unknown component name");
+  }
+};
+
+/**
+ * Show the contents of the generic component drawer named drawerName. (This is under the 
+ * "Any components" section in App Inventor). drawerName should be the name of a component type for 
+ * which we have at least one component instance in the blocks workspace. If no such component
+ * type is found, currently we just log a message to the console and do nothing.
+ * @param drawerName
+ */
+Blockly.Drawer.showGeneric = function(typeName) {
+  if (Blockly.ComponentTypes[typeName] && Blockly.ComponentTypes[typeName].blocks) {
+    Blockly.Drawer.flyout_.hide();
+    Blockly.Drawer.flyout_.show(Blockly.ComponentTypes[typeName].blocks);
+  } else {
+    console.log("Got call to Blockly.Drawer.showGeneric(" +  typeName + 
+                ") - unknown component type name");
   }
 };
 

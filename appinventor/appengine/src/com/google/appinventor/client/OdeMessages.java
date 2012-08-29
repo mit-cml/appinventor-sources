@@ -99,6 +99,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the cascade item for building a project and downloading")
   String downloadToComputerButton();
 
+  @DefaultMessage("Generate YAIL")
+  @Description("Label of the cascade item for generating YAIL for a project")
+  String generateYailButton();
+
   @DefaultMessage("Package for Phone")
   @Description("Label of the button leading to build related cascade items")
   String buildButton();

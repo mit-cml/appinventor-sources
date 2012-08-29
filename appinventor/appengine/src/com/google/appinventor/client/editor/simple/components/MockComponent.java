@@ -629,6 +629,22 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     itemNode.setUserObject(sourceStructureExplorerItem);
     return itemNode;
   }
+  
+  /**
+   * If this component isn't a Form, and this component's type isn't already in typesAndIcons,
+   * adds this component's type name as a key to typesAndIcons, mapped to the HTML string used
+   * to display the component type's icon. Subclasses that contain components should override
+   * this to add their own info as well as that for their contained components.
+   * @param typesAndIcons
+   */
+  public void collectTypesAndIcons(Map<String, String> typesAndIcons) {
+    String name = getVisibleTypeName();
+    if (!isForm() && !typesAndIcons.containsKey(name)) {
+      String imageHTML = new ClippedImagePrototype(iconImage.getUrl(), iconImage.getOriginLeft(),
+          iconImage.getOriginTop(), iconImage.getWidth(), iconImage.getHeight()).getHTML();
+      typesAndIcons.put(name, imageHTML);
+    }
+  }
 
   /**
    * Returns the source structure explorer item for this component.
