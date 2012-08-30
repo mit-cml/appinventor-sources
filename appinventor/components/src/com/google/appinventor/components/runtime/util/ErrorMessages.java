@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2010 Google Inc. All Rights Reserved.
 
 package com.google.appinventor.components.runtime.util;
@@ -118,6 +119,7 @@ public final class ErrorMessages {
   // VideoPlayer errors
   public static final int ERROR_VIDEOPLAYER_FULLSCREEN_UNAVAILBLE = 1301;
   public static final int ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT = 1302;
+  public static final int ERROR_VIDEOPLAYER_FULLSCREEN_UNSUPPORTED = 1303;
   // Arrangement errors
   public static final int ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT = 1401;
   public static final int ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT = 1402;
@@ -325,6 +327,8 @@ public final class ErrorMessages {
         "Cannot start fullscreen mode.");
     errorMessages.put(ERROR_VIDEOPLAYER_FULLSCREEN_CANT_EXIT,
         "Cannot exit fullscreen mode.");
+    errorMessages.put(ERROR_VIDEOPLAYER_FULLSCREEN_UNSUPPORTED,
+        "Fullscreen mode not supported on this version of Android.");
     // Arrangement errors
     errorMessages.put(ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT,
         "The value -- %s -- provided for HorizontalAlignment was bad.  The only legal values " +

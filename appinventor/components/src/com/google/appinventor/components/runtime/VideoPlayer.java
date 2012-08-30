@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2008-2009 Google Inc. All Rights Reserved.
 
 package com.google.appinventor.components.runtime;
@@ -17,6 +18,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -437,6 +439,13 @@ public final class VideoPlayer extends AndroidViewComponent implements
    */
   @SimpleProperty(userVisible = true)
   public void FullScreen(boolean value) {
+
+    if (value && (SdkLevel.getLevel() <= SdkLevel.LEVEL_DONUT)) {
+      container.$form().dispatchErrorOccurredEvent(this, "FullScreen(true)",
+        ErrorMessages.ERROR_VIDEOPLAYER_FULLSCREEN_UNSUPPORTED);
+      return;
+    }
+
     if (value != inFullScreen) {
       if (value) {
         Bundle data = new Bundle();

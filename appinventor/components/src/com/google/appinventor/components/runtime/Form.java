@@ -366,22 +366,22 @@ public class Form extends Activity
     onDestroyListeners.add(component);
   }
 
-  public Dialog onCreateDialog(int id, Bundle args) {
+  public Dialog onCreateDialog(int id) {
     switch(id) {
     case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
-      return fullScreenVideoUtil.createFullScreenVideoDialog(args);
+      return fullScreenVideoUtil.createFullScreenVideoDialog();
     default:
-      return super.onCreateDialog(id, args);
+      return super.onCreateDialog(id);
     }
   }
 
-  public void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+  public void onPrepareDialog(int id, Dialog dialog) {
     switch(id) {
     case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
-      fullScreenVideoUtil.prepareFullScreenVideoDialog(dialog, args);
+      fullScreenVideoUtil.prepareFullScreenVideoDialog(dialog);
       break;
     default:
-      super.onPrepareDialog(id, dialog, args);
+      super.onPrepareDialog(id, dialog);
     }
   }
 

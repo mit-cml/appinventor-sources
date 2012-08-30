@@ -1,9 +1,11 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright MIT
 
 package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.VideoPlayer;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.R;
 import android.app.Dialog;
@@ -99,22 +101,38 @@ public class FullScreenVideoUtil implements OnCompletionListener,
     mForm = form;
     mHandler = handler;
 
-    mFullScreenVideoDialog = new Dialog(mForm,
-        R.style.Theme_NoTitleBar_Fullscreen) {
-      public void onBackPressed() {
-        // Allows the user to force exiting full-screen.
-        Bundle values = new Bundle();
-        values.putInt(VIDEOPLAYER_POSITION,
-            mFullScreenVideoView.getCurrentPosition());
-        values.putBoolean(VIDEOPLAYER_PLAYING,
-            mFullScreenVideoView.isPlaying());
-        values.putString(VIDEOPLAYER_SOURCE,
-            mFullScreenVideoBundle
-                .getString(VIDEOPLAYER_SOURCE));
-        mFullScreenPlayer.fullScreenKilled(values);
-        super.onBackPressed();
-      }
-    };
+    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
+      mFullScreenVideoDialog = new Dialog(mForm,
+          R.style.Theme_NoTitleBar_Fullscreen) {
+          public void onBackPressed() {
+            // Allows the user to force exiting full-screen.
+            Bundle values = new Bundle();
+            values.putInt(VIDEOPLAYER_POSITION,
+              mFullScreenVideoView.getCurrentPosition());
+            values.putBoolean(VIDEOPLAYER_PLAYING,
+              mFullScreenVideoView.isPlaying());
+            values.putString(VIDEOPLAYER_SOURCE,
+              mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
+            mFullScreenPlayer.fullScreenKilled(values);
+              super.onBackPressed();
+          }
+        };
+    } else {
+      mFullScreenVideoDialog = new Dialog(mForm,
+          R.style.Theme_NoTitleBar_Fullscreen) {
+          protected void onStop() {
+            Bundle values = new Bundle();
+            values.putInt(VIDEOPLAYER_POSITION,
+              mFullScreenVideoView.getCurrentPosition());
+            values.putBoolean(VIDEOPLAYER_PLAYING,
+              mFullScreenVideoView.isPlaying());
+            values.putString(VIDEOPLAYER_SOURCE,
+             mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
+            mFullScreenPlayer.fullScreenKilled(values);
+            super.onStop();
+          }
+        };
+    }
   }
 
   /**
@@ -237,8 +255,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
       mFullScreenPlayer = source;
       mFullScreenVideoBundle = data;
       if (!mFullScreenVideoDialog.isShowing()) {
-        mForm.showDialog(FULLSCREEN_VIDEO_DIALOG_FLAG,
-            (Bundle) data);
+        mForm.showDialog(FULLSCREEN_VIDEO_DIALOG_FLAG);
         return result;
       } else {
         mFullScreenVideoView.pause();
@@ -270,13 +287,12 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   /**
    * Creates the dialog for displaying a fullscreen VideoView.
    *
-   * @param data
-   *          The data to be used by this class in displaying the fullscreen
-   *          video.
    * @return The created Dialog
    */
-  public Dialog createFullScreenVideoDialog(final Bundle data) {
-    mFullScreenVideoBundle = data;
+  public Dialog createFullScreenVideoDialog() {
+
+    if (mFullScreenVideoBundle == null)
+      Log.i("Form.createFullScreenVideoDialog", "mFullScreenVideoBundle is null");
 
     mFullScreenVideoView = new VideoView(mForm);
     mFullScreenVideoHolder = new FrameLayout(mForm);
@@ -330,9 +346,8 @@ public class FullScreenVideoUtil implements OnCompletionListener,
    *
    * @param dia
    *          The dialog that will display the video.
-   * @param data
    */
-  public void prepareFullScreenVideoDialog(Dialog dia, Bundle data) {
+  public void prepareFullScreenVideoDialog(Dialog dia) {
     dia.setOnShowListener(this);
     mFullScreenVideoView.setOnPreparedListener(this);
     mFullScreenVideoView.setOnCompletionListener(this);
