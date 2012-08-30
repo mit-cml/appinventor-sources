@@ -257,6 +257,7 @@ public class ProjectServiceTest {
     // Check the contents of each file in the new project.
     Map<String, String> expectedYaFiles = new HashMap<String, String>();
     expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.bky", "");
+    expectedYaFiles.put("src/com/domain/noname/Project1/Screen1.yail", "");
     expectedYaFiles.put("youngandroidproject/project.properties",
         "main=com.domain.noname.Project1.Screen1\n" +
         "name=Project1\n" +
@@ -293,6 +294,7 @@ public class ProjectServiceTest {
     // Check the contents of each file in the new project.
     Map<String, String> expectedYaFiles1 = new HashMap<String, String>();
     expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.bky", "");
+    expectedYaFiles1.put("src/com/domain/noname/Project1/Screen1.yail", "");
     expectedYaFiles1.put("youngandroidproject/project.properties",
         "main=com.domain.noname.Project1.Screen1\n" +
         "name=Project1\n" +
@@ -315,6 +317,7 @@ public class ProjectServiceTest {
     // Check the contents of each file in the new project.
     Map<String, String> expectedYaFiles2 = new HashMap<String, String>();
     expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.bky", "");
+    expectedYaFiles2.put("src/com/domain/noname/Project2/Screen1.yail", "");
     expectedYaFiles2.put("youngandroidproject/project.properties",
         "main=appinventor.ai_noname1.Project2.Screen1\n" +
         "name=Project2\n" +
