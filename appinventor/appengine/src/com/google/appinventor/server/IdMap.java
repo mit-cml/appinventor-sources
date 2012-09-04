@@ -40,7 +40,7 @@ import java.util.regex.Pattern;
  * entries may be quoted, but do not have to be.  The first is the
  * email address to map and the other is what it maps to.
  *
- * @author jis@mit.edu (Jeffrey I. Schiller) 
+ * @author jis@mit.edu (Jeffrey I. Schiller)
  *
  * Based on code from Whitelist.java authored by kerr@google.com (Debby Wallach)
  *
@@ -64,7 +64,9 @@ public class IdMap {
   IdMap() {
     validfixId = false;
     try {
-      parseToMap(new CsvParser(new FileInputStream(pathTofixId)));
+      FileInputStream mapfile = new FileInputStream(pathTofixId);
+      parseToMap(new CsvParser(mapfile));
+      mapfile.close();          // Avoid file descriptor leak, expicitly close the mapfile once we no longer need it.
       if (addresses.size() == 0) {
         LOG.severe("fixid list contained no entries.");
       } else {
@@ -80,7 +82,7 @@ public class IdMap {
     } catch (IOException e) {
       LOG.log(Level.SEVERE, "Unexpected fixid list error", e);
     } catch (Exception e) {
-      LOG.log(Level.SEVERE, "Error parsing fixids file.", e); 
+      LOG.log(Level.SEVERE, "Error parsing fixids file.", e);
     }
   }
 
@@ -88,7 +90,7 @@ public class IdMap {
   public String get(String email) {
     if (! validfixId) {
       if (DEBUG)
-	LOG.info("IdMap.get called for " + email + " but no valid map exists.");
+        LOG.info("IdMap.get called for " + email + " but no valid map exists.");
       // If we have not loaded a valid fixid list, no mappings
       return email;
     }
@@ -96,9 +98,9 @@ public class IdMap {
     String retval = addresses.get(email);
     if (DEBUG) {
       if (retval == null) {
-	LOG.info("No mapping found for " + email);
+        LOG.info("No mapping found for " + email);
       } else {
-	LOG.info("Mapping " + email + " to " + retval);
+        LOG.info("Mapping " + email + " to " + retval);
       }
     }
     if (retval == null)
