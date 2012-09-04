@@ -24,6 +24,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -36,6 +37,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -46,6 +48,7 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
@@ -119,6 +122,9 @@ public class Form extends Activity
   private int horizontalAlignment;
   private int verticalAlignment;
 
+  // String representing the transition animation type
+  private String openAnimType;
+  private String closeAnimType;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -223,6 +229,22 @@ public class Form extends Activity
         }
       });
     }
+  }
+
+  /*
+   * Here we override the hardware back button, just to make sure
+   * that the closing screen animation is applied. (In API level
+   * 5, we can simply override the onBackPressed method rather
+   * than bothering with onKeyDown)
+   */
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_BACK) {
+      boolean handled = super.onKeyDown(keyCode, event);
+      AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+      return handled;
+    }
+    return super.onKeyDown(keyCode, event);
   }
 
   // onActivityResult should be triggered in only two cases:
@@ -788,7 +810,41 @@ public class Form extends Activity
    }
  }
 
+  /**
+   * Sets the animation type for the transition to another screen.
+   *
+   * @param animType the type of animation to use for the transition
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+      defaultValue = "default")
+  @SimpleFunction(description = "Sets the animation for switching to another screen. Valid" +
+ 		" options are default, fade, zoom, slidehorizontal, slidevertical, and none")
+  public void OpenScreenAnimation(String animType) {
+    openAnimType = animType;
+  }
 
+  /**
+   * Sets the animation type for the transition of this form closing and returning
+   * to a form behind it in the activity stack.
+   *
+   * @param animType the type of animation to use for the transition
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+      defaultValue = "default")
+  @SimpleFunction(description = "Sets the animation for closing current screen and returning " +
+     " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
+     "slidevertical, and none")
+  public void CloseScreenAnimation(String animType) {
+    closeAnimType = animType;
+  }
+
+  /*
+   * Used by ListPicker, and ActivityStarter to get this Form's current opening transition
+   * animation
+   */
+  public String getOpenAnimType() {
+    return openAnimType;
+  }
 
   /**
    * Specifies the name of the application icon.
@@ -902,6 +958,7 @@ public class Form extends Activity
     try {
       Log.i(LOG_TAG, "startNewForm starting activity:" + activityIntent);
       startActivityForResult(activityIntent, SWITCH_FORM_REQUEST_CODE);
+      AnimationUtil.ApplyOpenScreenAnimation(this, openAnimType);
     } catch (ActivityNotFoundException e) {
       dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_SCREEN_NOT_FOUND, nextFormName);
@@ -1062,6 +1119,7 @@ public class Form extends Activity
       setResult(Activity.RESULT_OK, resultIntent);
     }
     finish();
+    AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
   }
 
   // This is called from runtime.scm when a "close application" block is executed.

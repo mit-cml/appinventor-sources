@@ -102,6 +102,12 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_SCREEN_ORIENTATION = "screen_orientation";
 
+  /**
+   * Choices of screen animations offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_SCREEN_ANIMATION = "screen_animation";
+
    /**
     * Minimum distance interval, in meters, that the location sensor will try to use
     * for sending out location updates. See {@link com.google.appinventor.components.runtime.LocationSensor}.

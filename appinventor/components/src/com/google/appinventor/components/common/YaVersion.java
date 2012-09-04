@@ -188,8 +188,12 @@ public class YaVersion {
   // - BALL_COMPONENT_VERSION was incremented to 4.
   // - CANVAS_COMPONENT_VERSION was incremented to 6.
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 63:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 4.
+  // - FORM_COMPONENT_VERSION was incremented to 9.
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 6.
 
-    public static final int YOUNG_ANDROID_VERSION = 62;
+    public static final int YOUNG_ANDROID_VERSION = 63;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -270,7 +274,10 @@ public class YaVersion {
   // - The ActivityStarter.ActivityError event was added.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 3:
   // - The ActivityStarter.ActivityError event was marked userVisible false and is no longer used.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 3;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 4:
+  // - The ActivityStarter.StartActivity was edited to use the parent Form's open screen
+  //   animation to transition to next activity.
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -364,7 +371,10 @@ public class YaVersion {
   // For FROM_COMPONENT_VERSION 8:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  public static final int FORM_COMPONENT_VERSION = 8;
+  // For FORM_COMPONENT_VERSION 9:
+  // - The OpenScreenAnimation property was added
+  // - The CloseScreenAnimation property was added
+  public static final int FORM_COMPONENT_VERSION = 9;
 
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
 
@@ -422,7 +432,10 @@ public class YaVersion {
   // - The method Open was added.
   // For LISTPICKER_COMPONENT_VERSION 5:
   // - The Shape property was added.
-  public static final int LISTPICKER_COMPONENT_VERSION = 5;
+  // For LISTPICKER_COMPONENT_VERSION 6:
+  // - The getIntent method was modified to provide the ListPickerActivity
+  //   with the parent Form's open screen animation.
+  public static final int LISTPICKER_COMPONENT_VERSION = 6;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.

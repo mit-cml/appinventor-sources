@@ -26,7 +26,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -297,6 +299,13 @@ public final class Compiler {
       return false;
     }
 
+    // Create anim directory and animation xml files
+    out.println("________Creating animation xml");
+    File animDir = createDirectory(resDir, "anim");
+    if (!compiler.createAnimationXml(animDir)) {
+      return false;
+    }
+
     // Determine android permissions.
     out.println("________Determining permissions");
     Set<String> permissionsNeeded = compiler.generatePermissions();
@@ -361,6 +370,54 @@ public final class Compiler {
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
+    return true;
+  }
+
+  /*
+   * Creates all the animation xml files.
+   */
+  private boolean createAnimationXml(File animDir) {
+    // Store the filenames, and their contents into a HashMap
+    // so that we can easily add more, and also to iterate
+    // through creating the files.
+    Map<String, String> files = new HashMap<String, String>();
+    files.put("fadein.xml", AnimationXmlConstants.FADE_IN_XML);
+    files.put("fadeout.xml", AnimationXmlConstants.FADE_OUT_XML);
+    files.put("hold.xml", AnimationXmlConstants.HOLD_XML);
+    files.put("zoom_enter.xml", AnimationXmlConstants.ZOOM_ENTER);
+    files.put("zoom_exit.xml", AnimationXmlConstants.ZOOM_EXIT);
+    files.put("zoom_enter_reverse.xml", AnimationXmlConstants.ZOOM_ENTER_REVERSE);
+    files.put("zoom_exit_reverse.xml", AnimationXmlConstants.ZOOM_EXIT_REVERSE);
+    files.put("slide_exit.xml", AnimationXmlConstants.SLIDE_EXIT);
+    files.put("slide_enter.xml", AnimationXmlConstants.SLIDE_ENTER);
+    files.put("slide_exit_reverse.xml", AnimationXmlConstants.SLIDE_EXIT_REVERSE);
+    files.put("slide_enter_reverse.xml", AnimationXmlConstants.SLIDE_ENTER_REVERSE);
+    files.put("slide_v_exit.xml", AnimationXmlConstants.SLIDE_V_EXIT);
+    files.put("slide_v_enter.xml", AnimationXmlConstants.SLIDE_V_ENTER);
+    files.put("slide_v_exit_reverse.xml", AnimationXmlConstants.SLIDE_V_EXIT_REVERSE);
+    files.put("slide_v_enter_reverse.xml", AnimationXmlConstants.SLIDE_V_ENTER_REVERSE);
+
+    for (String filename : files.keySet()) {
+      File file = new File(animDir, filename);
+      if (!writeXmlFile(file, files.get(filename))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Writes the given string input to the provided file.
+   */
+  private boolean writeXmlFile(File file, String input) {
+    try {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+      writer.write(input);
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
     return true;
   }
 

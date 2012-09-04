@@ -12,8 +12,8 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
@@ -393,6 +393,8 @@ public class ActivityStarter extends AndroidNonvisibleComponent
 
     try {
       container.$context().startActivityForResult(intent, requestCode);
+      String openAnim = container.$form().getOpenAnimType();
+      AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
     } catch (ActivityNotFoundException e) {
       form.dispatchErrorOccurredEvent(this, "StartActivity",
           ErrorMessages.ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY);

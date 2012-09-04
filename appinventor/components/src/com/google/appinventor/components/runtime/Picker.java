@@ -5,7 +5,7 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.content.Intent;
 
 /**
@@ -37,6 +37,8 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(getIntent(), requestCode);
+    String openAnim = container.$form().getOpenAnimType();
+    AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
   }
 
   // Functions

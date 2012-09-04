@@ -533,6 +533,32 @@ public interface OdeMessages extends Messages {
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
 
+  // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
+
+  @DefaultMessage("Default")
+  @Description("Text for screen animation choice 'Default '")
+  String defaultScreenAnimation();
+
+  @DefaultMessage("Fade")
+  @Description("Text for screen animation choice 'Fade '")
+  String fadeScreenAnimation();
+
+  @DefaultMessage("Zoom")
+  @Description("Text for screen animation choice 'Zoom '")
+  String zoomScreenAnimation();
+
+  @DefaultMessage("SlideHorizontal")
+  @Description("Text for screen animation choice 'SlideHorizontal '")
+  String slideHorizontalScreenAnimation();
+
+  @DefaultMessage("SlideVertical")
+  @Description("Text for screen animation choice 'SlideVertical '")
+  String slideVerticalScreenAnimation();
+
+  @DefaultMessage("None")
+  @Description("Text for screen animation choice 'None '")
+  String noneScreenAnimation();
+
   // Used in editor/youngandroid/properties/YoungAndroidScreenOrientationChoicePropertyEditor.java
 
   @DefaultMessage("Unspecified")
