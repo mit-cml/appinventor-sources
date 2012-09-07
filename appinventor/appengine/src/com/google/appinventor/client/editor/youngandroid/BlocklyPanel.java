@@ -2,6 +2,8 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
@@ -35,6 +37,11 @@ public class BlocklyPanel extends HTMLPanel {
     public String oldName;          // for RENAME
   }
   
+  private static class LoadStatus {
+    public boolean complete = false; // true if loading blocks completed
+    public boolean error = false;     // true if got an error loading blocks
+  }
+  
   private static final String EDITOR_HTML = 
       "<style>\n" +
       ".svg {\n" +
@@ -45,9 +52,6 @@ public class BlocklyPanel extends HTMLPanel {
       "</style>\n" +
       "<iframe src=\"blocklyframe.html#FORM_NAME\" class=\"svg\">";
     
-  // My form name
-  private final String formName;
-  
   // Keep track of component additions/removals/renames that happen before
   // blocks editor is inited for the first time, or before reinitialization
   // after the blocks editor's project has been detached from the document. 
@@ -58,7 +62,7 @@ public class BlocklyPanel extends HTMLPanel {
   // into Javascript, we don't need to worry about concurrent access to 
   // this map.
   private static Map<String, List<ComponentOp>> componentOps = Maps.newHashMap();
-  
+
   // When a user switches projects, the ProjectEditor widget gets detached
   // from the main document in the browser. If the user switches back to a 
   // previously open project (in the same session), when the ProjectEditor
@@ -77,7 +81,13 @@ public class BlocklyPanel extends HTMLPanel {
   // Pending blocks file content, indexed by form name. Waiting to be loaded when the corresponding
   // blocks area is initialized.
   private static final Map<String, String> pendingBlocksContentMap = Maps.newHashMap();
+  
+  // Status of blocks loading, indexed by form name.
+  private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
 
+  // My form name
+  private final String formName;
+  
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
     this.formName = formName;
@@ -146,12 +156,21 @@ public class BlocklyPanel extends HTMLPanel {
     String pendingBlocksContent = pendingBlocksContentMap.remove(formName);
     if (pendingBlocksContent != null) {
       OdeLog.log("Loading blocks area content for " + formName);
-      doLoadBlocksContent(formName, pendingBlocksContent);
+      loadBlocksContentNow(formName, pendingBlocksContent);
     }
   }
   
   private static void blocklyWorkspaceChanged(String formName) {
-    YaBlocksEditor.onBlocksAreaChanged(formName);
+    LoadStatus loadStat = loadStatusMap.get(formName);
+    // ignore workspaceChanged events until after the load finishes.
+    if (loadStat == null || !loadStat.complete) {
+      return;
+    }
+    if (loadStat.error) {
+      ErrorReporter.reportError(MESSAGES.blocksNotSaved(formName));
+    } else {
+      YaBlocksEditor.onBlocksAreaChanged(formName);
+    }
   }
   
   // Returns true if the blocks for formName have been initialized (i.e.,
@@ -381,14 +400,29 @@ public class BlocklyPanel extends HTMLPanel {
    * @param blocksContent  XML description of a blocks workspace in format expected by Blockly
    */
   public void loadBlocksContent(String blocksContent) {
+    LoadStatus loadStat = new LoadStatus();
+    loadStatusMap.put(formName, loadStat);
     if (blocksInited(formName)) {
       OdeLog.log("Loading blocks content for " + formName);
-      doLoadBlocksContent(formName, blocksContent);
+      loadBlocksContentNow(formName, blocksContent);
     } else {
       // save it to load when the blocks area is initialized
       OdeLog.log("Caching blocks content for " + formName + " for loading when blocks area inited");
       pendingBlocksContentMap.put(formName, blocksContent);
     }
+  }
+  
+  public static void loadBlocksContentNow(String formName, String blocksContent) {
+    LoadStatus loadStat = loadStatusMap.get(formName);  // should not be null!
+    try {
+      doLoadBlocksContent(formName, blocksContent);
+    } catch (JavaScriptException e) {
+      ErrorReporter.reportError(MESSAGES.blocksLoadFailure(formName));
+      OdeLog.elog("Error loading blocks for screen " + formName + ": "
+          + e.getDescription());
+      loadStat.error = true;
+    }
+    loadStat.complete = true;
   }
   
   /**

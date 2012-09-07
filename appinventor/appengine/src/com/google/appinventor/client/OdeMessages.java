@@ -382,7 +382,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("{0} blocks")
   @Description("Tab name for blocks editor")
   String blocksEditorTabName(String formName);
-
+  
+  // Used in editor/youngandroid/BlocklyPanel.java
+  
+  @DefaultMessage("The blocks area did not load properly. Changes to the blocks for screen {0} will not be saved.")
+  @Description("Message indicating that blocks changes were not saved")
+  String blocksNotSaved(String formName);
+  
+  @DefaultMessage("The blocks for screen {0} did not load properly. "
+      + "You will not be able to edit using the blocks editor until the problem is corrected.")
+  @Description("Message when blocks fail to load properly")
+  String blocksLoadFailure(String formName);
+  
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
   @DefaultMessage("left")

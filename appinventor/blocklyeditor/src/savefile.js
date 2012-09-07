@@ -10,7 +10,8 @@
 Blockly.SaveFile = {};
 
 Blockly.SaveFile.load = function(blocksContent) {
-  // TODO(sharon): deal with errors
+  // We leave it to our caller to catch JavaScriptException and deal with
+  // errors loading the block space.
   if (blocksContent.length != 0) {
     var xml = Blockly.Xml.textToDom(blocksContent);
     Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
