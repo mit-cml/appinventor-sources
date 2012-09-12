@@ -64,10 +64,16 @@ import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DeckPanel;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
+import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -559,6 +565,22 @@ public class Ode implements EntryPoint {
       }
     });
 
+    // Check if the user has any saved projects.
+    // If the user has no saved projects, then show the welcome dialog.
+    getProjectService().getProjects(new AsyncCallback<long[]>() {
+      @Override
+      public void onSuccess(long[] projectIds) {
+        if (projectIds.length == 0) {
+          createWelcomeDialog(true);
+        }
+      }
+
+      @Override
+      public void onFailure(Throwable projectIds) {
+        OdeLog.elog("Could not get project list");
+      }
+    });
+
     setupMotd();
   }
 
@@ -800,5 +822,67 @@ public class Ode implements EntryPoint {
       }
       */
     }
+  }
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createWelcomeDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(true);
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Welcome to App Inventor!");
+
+    Grid mainGrid = new Grid(2, 2);
+    mainGrid.getCellFormatter().setAlignment(0,
+        0,
+        HasHorizontalAlignment.ALIGN_CENTER,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(0,
+        1,
+        HasHorizontalAlignment.ALIGN_CENTER,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+    mainGrid.getCellFormatter().setAlignment(1,
+        1,
+        HasHorizontalAlignment.ALIGN_RIGHT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+
+    Image dialogImage = new Image(Ode.getImageBundle().androidGreenSmall());
+
+    Grid messageGrid = new Grid(2, 1);
+    messageGrid.getCellFormatter().setAlignment(0,
+        0,
+        HasHorizontalAlignment.ALIGN_JUSTIFY,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+    messageGrid.getCellFormatter().setAlignment(1,
+        0,
+        HasHorizontalAlignment.ALIGN_LEFT,
+        HasVerticalAlignment.ALIGN_MIDDLE);
+
+    Label messageChunk1 = new Label("You don't have any projects yet."
+        + " To learn how to use App Inventor, click the \"Learn\" item"
+        + " at the top of the window; or to start your first project, click "
+        + " the \"New\" button at the upper left of the window.");
+    messageChunk1.setWidth("23em");
+    Label messageChunk2 = new Label("Happy Inventing!");
+
+    // Add the elements to the grids and DialogBox.
+    messageGrid.setWidget(0, 0, messageChunk1);
+    messageGrid.setWidget(1, 0, messageChunk2);
+
+    mainGrid.setWidget(0, 0, dialogImage);
+    mainGrid.setWidget(0, 1, messageGrid);
+
+    dialogBox.setWidget(mainGrid);
+
+    dialogBox.center();
+    if (showDialog) {
+      dialogBox.show();
+    }
+    return dialogBox;
   }
 }

@@ -193,6 +193,11 @@ public class ProjectToolbar extends Toolbar {
         @Override
         public void onSuccess(Void result) {
           Ode.getInstance().getProjectManager().removeProject(projectId);
+          // Show a welcome dialog in case there are no
+          // projects saved.
+          if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+            Ode.getInstance().createWelcomeDialog(true);
+          }
         }
       });
     }

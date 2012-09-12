@@ -18,6 +18,13 @@ import com.google.gwt.user.client.ui.Tree.Resources;
 public interface Images extends Resources {
 
   /**
+   * Android with arms raised for the welcome dialog created by
+   * {@link Ode#createWelcomeDialog(boolean)}
+   */
+  @Source("com/google/appinventor/images/androidGreenSmall.png")
+  ImageResource androidGreenSmall();
+
+  /**
    * Close button image for the box widget
    */
   @Source("com/google/appinventor/images/boxClose.png")
