@@ -95,6 +95,22 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       mockCanvas.reorderComponents(this);
     }
   }
+  
+  private void setXProperty(String text) {
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockBall on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
+  }
+  
+  private void setYProperty(String text) {
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockBall on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
+  }
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
@@ -127,6 +143,10 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       setColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_Z)) {
       setZProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_X)) {
+      setXProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_Y)) {
+      setYProperty(newValue);
     }
   }
 }
