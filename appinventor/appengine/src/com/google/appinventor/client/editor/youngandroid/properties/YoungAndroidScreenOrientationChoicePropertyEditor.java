@@ -18,6 +18,8 @@ public class YoungAndroidScreenOrientationChoicePropertyEditor extends ChoicePro
     new Choice(MESSAGES.unspecifiedScreenOrientation(), "unspecified"),
     new Choice(MESSAGES.portraitScreenOrientation(), "portrait"),
     new Choice(MESSAGES.landscapeScreenOrientation(), "landscape"),
+    new Choice(MESSAGES.sensorScreenOrientation(), "sensor"),
+    new Choice(MESSAGES.userScreenOrientation(), "user"),
   };
 
   public YoungAndroidScreenOrientationChoicePropertyEditor() {

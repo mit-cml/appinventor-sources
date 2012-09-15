@@ -2,29 +2,19 @@
 
 package com.google.appinventor.components.runtime;
 
-import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
-import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
-import com.google.appinventor.components.annotations.UsesPermissions;
-import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.ComponentConstants;
-import com.google.appinventor.components.common.PropertyTypeConstants;
-import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.collect.Lists;
-import com.google.appinventor.components.runtime.collect.Maps;
-import com.google.appinventor.components.runtime.collect.Sets;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.JsonUtil;
-import com.google.appinventor.components.runtime.util.MediaUtil;
-import com.google.appinventor.components.runtime.util.SdkLevel;
-import com.google.appinventor.components.runtime.util.ViewUtil;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.JSONException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -41,15 +31,27 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.common.PropertyTypeConstants;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.collect.Lists;
+import com.google.appinventor.components.runtime.collect.Maps;
+import com.google.appinventor.components.runtime.collect.Sets;
+import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
+import com.google.appinventor.components.runtime.util.JsonUtil;
+import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.ViewUtil;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -70,7 +72,7 @@ import java.util.Set;
 public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
-  
+
   // *** set this back to false after review
   private static final boolean DEBUG = true;
 
@@ -108,7 +110,16 @@ public class Form extends Activity
   private Drawable backgroundDrawable;
 
   // Layout
-  private Layout viewLayout;
+  private LinearLayout viewLayout;
+
+  // translates App Inventor alignment codes to Android gravity
+  private AlignmentUtil alignmentSetter;
+
+  // the alignment for this component's LinearLayout
+  private int horizontalAlignment;
+  private int verticalAlignment;
+
+
   private FrameLayout frameLayout;
   private boolean scrollable;
 
@@ -131,6 +142,8 @@ public class Form extends Activity
   // event.
   private String nextFormName;
 
+  private FullScreenVideoUtil fullScreenVideoUtil;
+
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -146,6 +159,7 @@ public class Form extends Activity
     Log.i(LOG_TAG, "activeForm is now " + activeForm.formName);
 
     viewLayout = new LinearLayout(this, ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
+    alignmentSetter = new AlignmentUtil(viewLayout);
 
     defaultPropertyValues();
 
@@ -154,6 +168,8 @@ public class Form extends Activity
     if (startIntent != null && startIntent.hasExtra(ARGUMENT_NAME)) {
       startupValue = startIntent.getStringExtra(ARGUMENT_NAME);
     }
+
+    fullScreenVideoUtil = new FullScreenVideoUtil(this, androidUIHandler);
 
     // Add application components to the form
     $define();
@@ -228,11 +244,11 @@ public class Form extends Activity
         resultString = data.getStringExtra(RESULT_NAME);
       } else {
         resultString = "";
-      }  
+      }
       Object decodedResult = decodeJSONStringForForm(resultString, "other screen closed");
       // nextFormName was set when this screen opened the secondary screen
-      OtherScreenClosed(nextFormName, decodedResult); 
-    } else { 
+      OtherScreenClosed(nextFormName, decodedResult);
+    } else {
       // Another component (such as a ListPicker, ActivityStarter, etc) is expecting this result.
       ActivityResultListener component = activityResultMap.get(requestCode);
       if (component != null) {
@@ -240,7 +256,7 @@ public class Form extends Activity
       }
     }
   }
-  
+
   // functionName is a string to include in the error message that will be shown
   // if the JSON decoding fails
   private  static Object decodeJSONStringForForm(String jsonString, String functionName) {
@@ -348,6 +364,25 @@ public class Form extends Activity
 
   public void registerForOnDestroy(OnDestroyListener component) {
     onDestroyListeners.add(component);
+  }
+
+  public Dialog onCreateDialog(int id) {
+    switch(id) {
+    case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
+      return fullScreenVideoUtil.createFullScreenVideoDialog();
+    default:
+      return super.onCreateDialog(id);
+    }
+  }
+
+  public void onPrepareDialog(int id, Dialog dialog) {
+    switch(id) {
+    case FullScreenVideoUtil.FULLSCREEN_VIDEO_DIALOG_FLAG:
+      fullScreenVideoUtil.prepareFullScreenVideoDialog(dialog);
+      break;
+    default:
+      super.onPrepareDialog(id, dialog);
+    }
   }
 
   /**
@@ -494,6 +529,7 @@ public class Form extends Activity
     if (backgroundDrawable != null) {
       ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
     }
+
     setContentView(frameLayout);
     frameLayout.requestLayout();
   }
@@ -599,7 +635,7 @@ public class Form extends Activity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"behind\".")
+      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"user\".")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
@@ -678,6 +714,82 @@ public class Form extends Activity
     }
   }
 
+
+  // Note(halabelson): This section on centering is duplicated between Form and HVArrangement
+  // I did not see a clean way to abstract it.  Someone should have a look.
+
+  // Note(halabelson): The numeric encodings of the alignment specifications are specified
+  // in ComponentConstants
+
+  /**
+  * Returns a number that encodes how contents of the screen are aligned horizontally.
+  * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
+  */
+  @SimpleProperty(
+     category = PropertyCategory.APPEARANCE,
+     description = "A number that encodes how contents of the screen are aligned " +
+         " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
+         " 3 = right aligned.")
+ public int AlignHorizontal() {
+   return horizontalAlignment;
+ }
+
+ /**
+  * Sets the horizontal alignment for contents of the screen
+  *
+  * @param alignment
+  */
+ @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
+     defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
+ @SimpleProperty
+ public void AlignHorizontal(int alignment) {
+   try {
+     // notice that the throw will prevent the alignment from being changed
+     // if the argument is illegal
+     alignmentSetter.setHorizontalAlignment(alignment);
+     horizontalAlignment = alignment;
+   } catch (IllegalArgumentException e) {
+     this.dispatchErrorOccurredEvent(this, "HorizontalAlignment",
+         ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
+   }
+ }
+
+ /**
+  * Returns a number that encodes how contents of the arrangement are aligned vertically.
+  * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom.
+  * Vertical alignment has no effect if the screen is scrollable.
+  */
+ @SimpleProperty(
+     category = PropertyCategory.APPEARANCE,
+     description = "A number that encodes how the contents of the arrangement are aligned " +
+     "vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, " +
+     "3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.")
+ public int AlignVertical() {
+   return verticalAlignment;
+ }
+
+ /**
+  * Sets the vertical alignment for contents of the screen
+  *
+  * @param alignment
+  */
+ @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
+     defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
+ @SimpleProperty
+ public void AlignVertical(int alignment) {
+   try {
+     // notice that the throw will prevent the alignment from being changed
+     // if the argument is illegal
+     alignmentSetter.setVerticalAlignment(alignment);
+     verticalAlignment = alignment;
+   } catch (IllegalArgumentException e) {
+     this.dispatchErrorOccurredEvent(this, "VerticalAlignment",
+         ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
+   }
+ }
+
+
+
   /**
    * Specifies the name of the application icon.
    *
@@ -689,7 +801,7 @@ public class Form extends Activity
   public void Icon(String name) {
     // We don't actually need to do anything.
   }
-  
+
   /**
    * Specifies the Version Code.
    *
@@ -701,7 +813,7 @@ public class Form extends Activity
   public void VersionCode(int vCode) {
     // We don't actually need to do anything.
   }
-  
+
   /**
    * Specifies the Version Name.
    *
@@ -713,7 +825,7 @@ public class Form extends Activity
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
-  
+
   /**
    * Width property getter method.
    *
@@ -817,12 +929,12 @@ public class Form extends Activity
     }
     return jsonResult;
   }
-  
+
   @SimpleEvent(description = "Event raised when another screen has closed and control has " +
       "returned to this screen.")
   public void OtherScreenClosed(String otherScreenName, Object result) {
     if (DEBUG) {
-      Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " + 
+      Log.i(LOG_TAG, "Form " + formName + " OtherScreenClosed, otherScreenName = " +
           otherScreenName + ", result = " + result.toString());
     }
     EventDispatcher.dispatchEvent(this, "OtherScreenClosed", otherScreenName, result);
@@ -902,12 +1014,12 @@ public class Form extends Activity
   public static Object getStartValue() {
     if (activeForm != null) {
       return decodeJSONStringForForm(activeForm.startupValue, "get start value");
-    } else { 
+    } else {
       throw new IllegalStateException("activeForm is null");
     }
   }
-  
- 
+
+
   /**
    * Closes the current screen, as opposed to finishApplication, which
    * exits the entire application.
@@ -944,7 +1056,7 @@ public class Form extends Activity
     }
   }
 
-  
+
   protected void closeForm(Intent resultIntent) {
     if (resultIntent != null) {
       setResult(Activity.RESULT_OK, resultIntent);
@@ -1116,5 +1228,42 @@ public class Form extends Activity
       Log.i(LOG_TAG, "invoke exception: " + e.getMessage());
       throw e.getTargetException();
     }
+  }
+
+  /**
+   * Perform some action related to fullscreen video display.
+   * @param action
+   *          Can be any of the following:
+   *          <ul>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_DURATION}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_FULLSCREEN}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PAUSE}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_PLAY}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SEEK}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_SOURCE}
+   *          </li>
+   *          <li>
+   *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#FULLSCREEN_VIDEO_ACTION_STOP}
+   *          </li>
+   *          </ul>
+   * @param source
+   *          The VideoPlayer to use in some actions.
+   * @param data
+   *          Used by the method. This object varies depending on the action.
+   * @return Varies depending on what action was passed in.
+   */
+  public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
+    return fullScreenVideoUtil.performAction(action, source, data);
   }
 }

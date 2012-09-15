@@ -258,7 +258,7 @@ public class BlockSaveFile {
       }
       if (blkLangVersion < 17) {
         // In BLOCKS_LANGUAGE_VERSION 17.
-        // Changed open-screen to open-another-screen 
+        // Changed open-screen to open-another-screen
         // Changed open-screen-with-start-text to open-another-screen-with-start-value
         // Marked get-startup-text as a bad block
         // Added get-start-value
@@ -268,8 +268,8 @@ public class BlockSaveFile {
         // Added close-screen-with-plain-text
         changeGetStartTextAndOpenCloseScreenBlocks();
         blkLangVersion = 17;
-      } 
-      
+      }
+
       if (blkLangVersion < sysLangVersion) {
         // If we got here, the blocks language needed to be upgraded, but nothing handled it.
         // NOTE(lizlooney,user) - we need to make sure that this situation does not happen by
@@ -351,6 +351,7 @@ public class BlockSaveFile {
 
   private void upgradeComponentBlocks(String componentName, String genus, int blkCompVersion,
       final int sysCompVersion, Element uuidEntry) throws LoadException {
+
     // Compare the .blk file's component version with the system's component version.
     if (blkCompVersion > sysCompVersion) {
       // This shouldn't happen because we should have already detected that the project is a newer
@@ -381,10 +382,10 @@ public class BlockSaveFile {
       // NOTE(lizlooney,user) - when a component changes, increment the component's version
       // number in com.google.appinventor.components.common.YaVersion and add code here to upgrade blocks
       // as necessary.
-      
-      if(genus.equals("AccelerometerSensor")){
-    	blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
-    	
+
+      if (genus.equals("AccelerometerSensor")){
+        blkCompVersion = upgradeAccelerometerSensorBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("ActivityStarter")) {
         blkCompVersion = upgradeActivityStarterBlocks(blkCompVersion, componentName);
 
@@ -412,8 +413,13 @@ public class BlockSaveFile {
       } else if (genus.equals("EmailPicker")) {
         blkCompVersion = upgradeEmailPickerBlocks(blkCompVersion, componentName);
 
+        // Note that "Form" is converted to "Screen" above
+
       } else if (genus.equals("Screen")) {
         blkCompVersion = upgradeScreenBlocks(blkCompVersion, componentName);
+
+      } else if (genus.equals("HorizontalArrangement")) {
+        blkCompVersion = upgradeHorizontalArrangementBlocks(blkCompVersion, componentName);
 
       } else if (genus.equals("ImagePicker")) {
         blkCompVersion = upgradeImagePickerBlocks(blkCompVersion, componentName);
@@ -427,9 +433,9 @@ public class BlockSaveFile {
       } else if (genus.equals("ListPicker")) {
         blkCompVersion = upgradeListPickerBlocks(blkCompVersion, componentName);
 
-      } else if (genus.equals("LocationSensor")) { 
+      } else if (genus.equals("LocationSensor")) {
         blkCompVersion = upgradeLocationSensorBlocks(blkCompVersion, componentName);
-    	  
+
       } else if (genus.equals("OrientationSensor")) {
         blkCompVersion = upgradeOrientationSensorBlocks(blkCompVersion, componentName);
 
@@ -454,6 +460,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Twitter")) {
         blkCompVersion = upgradeTwitterBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("VerticalArrangement")) {
+        blkCompVersion = upgradeVerticalArrangementBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("VideoPlayer")) {
         blkCompVersion = upgradeVideoPlayerBlocks(blkCompVersion, componentName);
 
@@ -468,7 +477,7 @@ public class BlockSaveFile {
         // If we got here, a component needed to be upgraded, but nothing handled it.
         // NOTE(lizlooney,user) - we need to make sure that this situation does not happen by
         // adding the appropriate code above to handle all component upgrades.
-        throw new IllegalStateException("No upgrade strategy exists for " + genus +
+        throw new IllegalStateException("No block upgrade strategy exists for " + genus +
             " from version " + blkCompVersion + " to " + sysCompVersion + ".");
       }
 
@@ -500,14 +509,14 @@ public class BlockSaveFile {
       changeFirstMatchingSocketBlockConnectorLabel(block, oldConnectorLabel, newConnectorLabel);
     }
   }
-  
+
   private int upgradeAccelerometerSensorBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The AccelerometerSensor.MinimumInterval property was added.
-  	  // No blocks need to be modified to upgrade to version 2.
-	  blkCompVersion = 2;
+          // No blocks need to be modified to upgrade to version 2.
+          blkCompVersion = 2;
     }
-	return blkCompVersion;
+        return blkCompVersion;
   }
 
   private int upgradeActivityStarterBlocks(int blkCompVersion, String componentName) {
@@ -543,6 +552,11 @@ public class BlockSaveFile {
     if (blkCompVersion < 3) {
       // The Z property was added (also for ImageSprite)
       blkCompVersion = 3;
+    }
+    if (blkCompVersion < 4) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No blocks need to be modified to upgrade to version 4.
+      blkCompVersion = 4;
     }
     return blkCompVersion;
   }
@@ -650,6 +664,11 @@ public class BlockSaveFile {
       // SetBackgroundPixelColor methods were added.
       blkCompVersion = 5;
     }
+    if (blkCompVersion < 6) {
+      // No blocks need to be modified to upgrade to version 6.
+      // The TouchUp and TouchDown events were added.
+      blkCompVersion = 6;
+    }
     return blkCompVersion;
   }
 
@@ -724,8 +743,23 @@ public class BlockSaveFile {
       // to update to version 7.
       blkCompVersion = 7;
     }
+    if (blkCompVersion < 8) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrade to version 8.
+      blkCompVersion = 8;
+    }
     return blkCompVersion;
   }
+
+  private int upgradeHorizontalArrangementBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrqde to version 2.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+
 
   private int upgradeImagePickerBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
@@ -761,6 +795,11 @@ public class BlockSaveFile {
     if (blkCompVersion < 4) {
       // The Z property was added (also for Ball)
       blkCompVersion = 4;
+    }
+    if (blkCompVersion < 5) {
+      // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
+      // No blocks need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
     }
     return blkCompVersion;
   }
@@ -936,6 +975,15 @@ public class BlockSaveFile {
     return blkCompVersion;
   }
 
+  private int upgradeVerticalArrangementBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
+      // to upgrade to version 2.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+
   private int upgradeVideoPlayerBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The VideoPlayer.VideoPlayerError event was added.
@@ -950,6 +998,11 @@ public class BlockSaveFile {
             "Please use the Screen.ErrorOccurred event instead.");
       }
       blkCompVersion = 3;
+    }
+    if (blkCompVersion < 4) {
+      // The VideoPlayer.height and VideoPlayer.width getter and setters were marked as
+      // visible to the user
+      blkCompVersion = 4;
     }
     return blkCompVersion;
   }
@@ -1162,7 +1215,7 @@ public class BlockSaveFile {
       changeBlockLabel(block, oldLabel, newLabel);
     }
   }
-   
+
   private void changeGetStartTextAndOpenCloseScreenBlocks() {
     String oldLabel = "open screen";
     String newLabel = "open another screen";
@@ -1176,7 +1229,7 @@ public class BlockSaveFile {
       changeBlockLabel(block, oldLabel, newLabel);
       changeBlockGenusName(block, "open-another-screen-with-start-value");
       changeFirstMatchingSocketBlockConnectorLabel(block, "startText", "startValue");
-    }     
+    }
     for (Element block : getAllMatchingGenusBlocks("get-startup-text")) {
       markBlockBad(block, "The get startup text block is no longer used. " +
           "Instead, please use get start value in multiple screen apps, " +
@@ -1186,7 +1239,7 @@ public class BlockSaveFile {
       markBlockBad(block, "The close screen with result block is no longer used. " +
           "Instead, please use close screen with value in multiple screen apps, " +
           "or close screen with plain text for returning to other apps.");
-    }   
+    }
   }
 
   /*

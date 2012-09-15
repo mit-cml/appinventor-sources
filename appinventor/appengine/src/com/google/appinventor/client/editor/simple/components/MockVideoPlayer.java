@@ -77,10 +77,6 @@ public final class MockVideoPlayer extends MockVisibleComponent {
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
-    if (propertyName.equals(PROPERTY_NAME_WIDTH) ||
-        propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-      return false;
-    }
     return super.isPropertyVisible(propertyName);
   }
 }

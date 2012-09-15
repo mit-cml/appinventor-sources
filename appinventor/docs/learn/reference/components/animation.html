@@ -249,23 +249,58 @@
        <dl>
         <dt>
          <code>
+          Flung(number startX, number startY, number xSpeed, number ySpeed)
+         </code>
+        </dt>
+        <dd>
+         When the user performs a fling (quick swipe) on the ball. Provides
+                  the (x, y) position of the ball at the start of the fling,
+                  relative to the upper left of the canvas. Also provides
+                  the x velocity and y velocity of the fling.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
           NoLongerCollidingWith(component other)
          </code>
         </dt>
         <dd>
          Called when two animated components have stopped colliding.
         </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          TouchDown(number x, number y)
+         </code>
+        </dt>
         <dd>
-         <dl>
-          <dt>
-           <code>
-            Touched(number x, number y)
-           </code>
-          </dt>
-          <dd>
-           Called when user touches the ball.
-          </dd>
-         </dl>
+         When the user starts touching the ball (putting finger down for the first time).
+                  Provides the (x,y) position of the touch relative to the upper-left
+                  corner of the canvas.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          Touched(number x, number y)
+         </code>
+        </dt>
+        <dd>
+         Called when user touches the ball.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          TouchUp(number x, number y)
+         </code>
+        </dt>
+        <dd>
+         When the user stops touching the canvas (lifting his/her finger up). Provides
+                  the (x, y) position of the touch relative to the upper left corner
+                  of the canvas.
         </dd>
        </dl>
        <h3>

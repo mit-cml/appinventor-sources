@@ -39,4 +39,19 @@ public class ComponentConstants {
    * TextBox, PasswordTextBox, and EmailPicker components.
    */
   public static final int TEXTBOX_PREFERRED_WIDTH = 160;
+
+   /**
+   * HorizontalArrangement, VerticalArrangement, and Screen
+   */
+  public static final int GRAVITY_LEFT = 1;
+  public static final int GRAVITY_RIGHT = 2;
+  public static final int GRAVITY_CENTER_HORIZONTAL = 3;
+
+  public static final int GRAVITY_TOP = 1;
+  public static final int GRAVITY_CENTER_VERTICAL = 2;
+  public static final int GRAVITY_BOTTOM = 3;
+
+  public static final int HORIZONTAL_ALIGNMENT_DEFAULT = GRAVITY_LEFT;
+  public static final int VERTICAL_ALIGNMENT_DEFAULT = GRAVITY_TOP;
+
 }

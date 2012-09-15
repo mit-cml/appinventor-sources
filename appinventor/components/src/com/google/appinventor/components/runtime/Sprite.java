@@ -341,7 +341,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   // Methods for event handling: general purpose method postEvent() and
-  // Simple events: CollidedWith, Dragged, EdgeReached, Touched, NoLongeCollidingWith.
+  // Simple events: CollidedWith, Dragged, EdgeReached, Touched, NoLongeCollidingWith,
+  // Flung, TouchUp, and TouchDown.
 
   /**
    * <p>Posts a dispatch for the specified event.  This guarantees that event
@@ -446,7 +447,9 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * Handler for Touched events.
+   * When the user touches a canvas, providing the (x, y) position of
+   * the touch relative to the upper left corner of the canvas.
+   * This event is only fired once touch-down AND touch-up have occurred.
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
@@ -456,6 +459,47 @@ public abstract class Sprite extends VisibleComponent
     postEvent(this, "Touched", x, y);
   }
 
+  /**
+   * When the user performs a fling (quick swipe) on the sprite.
+   * Provides the (x, y) position of the start of the swing,
+   * relative to the upper left of the canvas. Also provides
+   * the x velocity and y velocity of the fling.
+   *
+   * @param x  x-coordinate of touched point
+   * @param y  y-coordinate of touched point
+   * @param xspeed  the speed in x-direction of the fling
+   * @param yspeed  the speed in y-direction of the fling
+   */
+  @SimpleEvent
+  public void Flung(float x, float y, float xspeed, float yspeed) {
+    postEvent(this, "Flung", x, y, xspeed, yspeed);
+  }
+
+  /**
+   * When the user stops touching the sprite (lifting his/her finger up).
+   * Provides the (x, y) position of the touch relative to the upper
+   * left corner of the canvas.
+   *
+   * @param x  x-coordinate of touched point
+   * @param y  y-coordinate of touched point
+   */
+  @SimpleEvent
+  public void TouchUp(float x, float y) {
+    postEvent(this, "TouchUp", x, y);
+  }
+
+  /**
+   * When the user starts touching the canvas (putting finger down for the
+   * first time). Provides the (x,y) position of the touch relative to
+   * the upper-left corner of the canvas.
+   *
+   * @param x  x-coordinate of touched point
+   * @param y  y-coordinate of touched point
+   */
+  @SimpleEvent
+  public void TouchDown(float x, float y) {
+    postEvent(this, "TouchDown", x, y);
+  }
 
   // Methods providing Simple functions:
   // Bounce, CollidingWith, MoveIntoBounds, MoveTo, PointTowards.

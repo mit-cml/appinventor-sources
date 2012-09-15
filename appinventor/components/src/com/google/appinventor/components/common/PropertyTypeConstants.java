@@ -30,6 +30,15 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_BOOLEAN = "boolean";
 
   /**
+   * Arrangement alignment.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_HORIZONTAL_ALIGNMENT = "horizontal_alignment";
+  public static final String PROPERTY_TYPE_VERTICAL_ALIGNMENT = "vertical_alignment";
+
+
+  /**
    * Button shapes.
    * @see
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidButtonShapeChoicePropertyEditor
@@ -93,7 +102,7 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_SCREEN_ORIENTATION = "screen_orientation";
 
-   /** 
+   /**
     * Minimum distance interval, in meters, that the location sensor will try to use
     * for sending out location updates. See {@link com.google.appinventor.components.runtime.LocationSensor}.
     */
@@ -131,4 +140,10 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor}.
    */
   public static final String PROPERTY_TYPE_TYPEFACE = "typeface";
+
+  /**
+   * Choices of visibility for view components offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVisibilityChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_VISIBILITY = "visibility";
 }

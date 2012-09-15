@@ -2,6 +2,10 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
 import com.google.appinventor.shared.settings.SettingsConstants;
@@ -17,10 +21,6 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.ScrollPanel;
 import com.google.gwt.user.client.ui.TreeItem;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 
 /**
  * Mock Form component.
@@ -128,13 +128,27 @@ public final class MockForm extends MockContainer {
   // Don't access the verticalScrollbarWidth field directly. Use getVerticalScrollbarWidth().
   private static int verticalScrollbarWidth;
 
+  private MockFormLayout myLayout;
+
+  private static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
+  private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
+
   /**
    * Creates a new MockForm component.
    *
    * @param editor  editor of source file the component belongs to
    */
   public MockForm(SimpleEditor editor) {
-    super(editor, TYPE, images.form(), new MockFormLayout());
+    // Note(Hal): This helper thing is a kludge because I really want to write:
+    // myLayout = new MockHVLayout(orientation);
+    // super(editor, type, icon, myLayout);
+    // but Java won't let me do that.
+
+    super(editor, TYPE, images.form(), MockFormHelper.makeLayout());
+    // Note(hal): There better not be any calls to MockFormHelper before the
+    // next instruction.  Note that the Helper methods are synchronized to avoid possible
+    // future problems if we ever have threads creating forms in parallel.
+    myLayout = MockFormHelper.getLayout();
 
     formWidget = new AbsolutePanel();
     formWidget.setStylePrimaryName("ode-SimpleMockForm");
@@ -280,12 +294,12 @@ public final class MockForm extends MockContainer {
       // The Icon property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
-    
+
     if (propertyName.equals(PROPERTY_NAME_VNAME)) {
       // The VersionName property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
     }
-    
+
     if (propertyName.equals(PROPERTY_NAME_VCODE)) {
       // The VersionCode property actually applies to the application and is only visible on Screen1.
       return editor.isScreen1();
@@ -357,7 +371,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON, icon);
     }
   }
-  
+
   private void setVCodeProperty(String vcode) {
     // The VersionCode property actually applies to the application and is only visible on Screen1.
     // When we load a form that is not Screen1, this method will be called with the default value
@@ -368,7 +382,7 @@ public final class MockForm extends MockContainer {
           SettingsConstants.YOUNG_ANDROID_SETTINGS_VERSION_CODE, vcode);
     }
   }
-  
+
   private void setVNameProperty(String vname) {
     // The VersionName property actually applies to the application and is only visible on Screen1.
     // When we load a form that is not Screen1, this method will be called with the default value
@@ -568,10 +582,17 @@ public final class MockForm extends MockContainer {
       titleBar.changeTitle(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
       setIconProperty(newValue);
-    }  else if (propertyName.equals(PROPERTY_NAME_VCODE)) {
+    } else if (propertyName.equals(PROPERTY_NAME_VCODE)) {
       setVCodeProperty(newValue);
-    }  else if (propertyName.equals(PROPERTY_NAME_VNAME)) {
-      setVNameProperty(newValue);
     }
+    else if (propertyName.equals(PROPERTY_NAME_VNAME)) {
+      setVNameProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_HORIZONTAL_ALIGNMENT)) {
+      myLayout.setHAlignmentFlags(newValue);
+      refreshForm();
+    } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
+    myLayout.setVAlignmentFlags(newValue);
+    refreshForm();
+  }
   }
 }

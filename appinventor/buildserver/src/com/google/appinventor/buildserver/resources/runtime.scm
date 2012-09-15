@@ -423,6 +423,8 @@
                                  (exception java.lang.Throwable
                                   (begin
                                     (android-log-form (exception:getMessage))
+;;; Uncomment the line below to obtain a stack trace on a RunTimeError
+;;;                                 (exception:printStackTrace)
                                     (process-exception exception)
                                     #f))))
                         #f)
