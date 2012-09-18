@@ -304,6 +304,13 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component name would be the same as an existing one")
   String duplicateComponentNameError();
 
+  @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
+      "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
+      "Pattern, YailList, YailNumberToString, YailRuntimeError")
+  @Description("Error shown when a new component name is a variable name already used in the" +
+      "Yail code")
+  String badComponentNameError();
+
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
   @Description("Confirmation query for removing a component")
