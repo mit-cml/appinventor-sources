@@ -147,8 +147,8 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     // Right-align the text.
     for (var x = 0, gElement; gElement = svgOptions.childNodes[x]; x++) {
       var textElement = gElement.lastChild;
-      textElement.setAttribute('x', maxWidth -
-          textElement.getComputedTextLength() - Blockly.ContextMenu.X_PADDING);
+      textElement.setAttribute('text-anchor', 'end');
+      textElement.setAttribute('x', maxWidth - Blockly.ContextMenu.X_PADDING);
     }
   }
   if (checkElement) {
@@ -156,8 +156,8 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
       // Research indicates that RTL checkmarks are supposed to be drawn the
       // same in the same direction as LTR checkmarks.  It's only the alignment
       // that needs to change.
-      checkElement.setAttribute('x',
-          maxWidth - 5 - checkElement.getComputedTextLength());
+      checkElement.setAttribute('text-anchor', 'end');
+      checkElement.setAttribute('x', maxWidth - 5);
     } else {
       checkElement.setAttribute('x', 5);
     }

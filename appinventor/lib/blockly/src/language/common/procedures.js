@@ -117,7 +117,7 @@ Blockly.Language.procedures_defnoreturn = {
     var editable = this.editable;
     var workspace = this.workspace;
     // Call parent's destructor.
-    Blockly.Block.prototype.destroy.call(this);
+    Blockly.Block.prototype.destroy.apply(this, arguments);
     if (this.editable) {
       // Destroy any callers.
       Blockly.Procedures.destroyCallers(name, workspace);

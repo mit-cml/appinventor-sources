@@ -245,7 +245,7 @@ Blockly.Language.controls_for = {
     this.appendTitle(Blockly.LANG_CONTROLS_FOR_TITLE_COUNT);
     this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_WITH,
         Blockly.LOCAL_VARIABLE, 'VAR').setText(
-        Blockly.LANG_CONTROLS_FOR_INPUT_VAR);
+        Blockly.Variables.generateUniqueName());
     this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_FROM,
         Blockly.INPUT_VALUE, 'FROM', Number);
     this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_TO,
@@ -281,7 +281,7 @@ Blockly.Language.controls_forEach = {
     this.appendTitle(Blockly.LANG_CONTROLS_FOREACH_TITLE_FOREACH);
     this.appendInput(Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM,
         Blockly.LOCAL_VARIABLE, 'VAR').setText(
-        Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR);
+        Blockly.Variables.generateUniqueName());
     this.appendInput(Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST,
         Blockly.INPUT_VALUE, 'LIST', Array);
     this.appendInput(Blockly.LANG_CONTROLS_FOREACH_INPUT_DO,

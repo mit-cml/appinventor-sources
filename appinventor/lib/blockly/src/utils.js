@@ -308,3 +308,17 @@ Blockly.isRightButton = function(e) {
   // Control-clicking in WebKit on Mac OS X fails to change button to 2.
   return e.button == 2 || e.ctrlKey;
 };
+
+/**
+ * Convert the mouse coordinates into SVG coordinates.
+ * @param {number} x X mouse coordinate.
+ * @param {number} y Y mouse coordinate.
+ * @return {!SVGPoint} Object with x and y properties in SVG coordinates.
+ */
+Blockly.mouseToSvg = function(x, y) {
+  var svgPoint = Blockly.svg.createSVGPoint();
+  svgPoint.x = x;
+  svgPoint.y = y;
+  var matrix = Blockly.svg.getScreenCTM().inverse();
+  return svgPoint = svgPoint.matrixTransform(matrix);
+};

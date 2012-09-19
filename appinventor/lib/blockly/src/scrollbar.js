@@ -904,6 +904,13 @@ Blockly.Scrollbar = {};
   }
 })();
 
+/**
+ * Insert a node after a reference node.
+ * Contrast with node.insertBefore function.
+ * @param {!Element} newNode New element to insert.
+ * @param {!Element} refNode Existing element to preceed new node.
+ * @private
+ */
 Blockly.Scrollbar.insertAfter_ = function(newNode, refNode) {
   var siblingNode = refNode.nextSibling;
   var parentNode = refNode.parentNode;

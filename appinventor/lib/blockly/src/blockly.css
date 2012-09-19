@@ -76,11 +76,8 @@
   font-size: 11pt;
   fill: #fff;
 }
-.blocklyHeader {
-  cursor: default !important;
-  font-family: sans-serif;
-  font-size: 15pt;
-  fill: #000;
+.blocklyNonEditableText>text {
+  pointer-events: none;
 }
 .blocklyNonEditableText>rect,
 .blocklyEditableText>rect {
@@ -191,7 +188,7 @@
   fill: #000;
 }
 .blocklyContextMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText,
-.blocklydropdownMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText {
+.blocklyDropdownMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText {
   fill: #fff;
 }
 .blocklyMenuSelected>.blocklyMenuText {
@@ -221,37 +218,4 @@
 }
 .blocklyInvalidInput {
   background: #faa;
-}
-.blocklyScreenShadow {
-  fill: #000;
-  fill-opacity: 0.3;
-}
-.blocklyButtonBackground {
-  fill: #eee;
-  stroke: #ddd;
-  stroke-width: 1;
-}
-.blocklyButton:active>.blocklyButtonBackground {
-  stroke: #00f;
-  stroke-width: 1;
-}
-.blocklyButtonText {
-  cursor: default !important;
-  font-family: sans-serif;
-  font-size: 13pt;
-  fill: #000;
-}
-.blocklyLaunchButton>.blocklyButtonBackground {
-  fill: #d43;
-}
-.blocklyLaunchButton>.blocklyButtonText {
-  fill: #fff;
-}
-.blocklyButtonShadow {
-  fill: #bbb;
-  filter: url(#blocklyShadowFilter);
-  display: none;
-}
-.blocklyButton:hover>.blocklyButtonShadow {
-  display: block;
 }

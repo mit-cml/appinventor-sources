@@ -1,0 +1,44 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Block Factory</title>
+  <script type="text/javascript" src="../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../language/en/_messages.js"></script>
+  <script type="text/javascript" src="blocks.js"></script>
+  <style>
+    html, body {
+      background-color: #fff;
+      margin: 0;
+      padding:0;
+      overflow: hidden;
+    }
+    .blocklySvg {
+      height: 100%;
+      width: 100%;
+    }
+  </style>
+  <script>
+    function init() {
+      Blockly.inject(document.body, {path: '../../'});
+
+      if (window.parent.initEditor) {
+        // Let the top-level application know that Blockly is ready.
+        window.parent.initEditor(Blockly);
+      } else {
+        // Attempt to diagnose the problem.
+        var msg = 'Error: Unable to communicate between frames.\n\n';
+        if (window.parent == window) {
+          msg += 'Try loading index.html instead of frame.html';
+        } else if (window.location.protocol == 'file:') {
+          msg += 'This may be due to a security restriction preventing\n' +
+              'access when using the file:// protocol.\n' +
+              'http://code.google.com/p/chromium/issues/detail?id=47416';
+        }
+        alert(msg);
+      }
+    }
+  </script>
+</head>
+<body onload="init()">
+</body>
+</html>

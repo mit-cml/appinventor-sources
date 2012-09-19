@@ -197,3 +197,52 @@ Blockly.Variables.refreshFlyoutCategory = function() {
     Blockly.Toolbox.flyout_.show(Blockly.MSG_VARIABLE_CATEGORY);
   }
 };
+
+/**
+* Return a new variable name that is not yet being used. This will try to
+* generate single letter variable names in the range 'i' to 'z' to start with.
+* If no unique name is located it will try 'i1' to 'z1', then 'i2' to 'z2' etc.
+* @return {string} New variable name.
+*/
+Blockly.Variables.generateUniqueName = function() {
+  var variableList = Blockly.Variables.allVariables();
+  var newName = '';
+  if (variableList.length) {
+    variableList.sort(Blockly.caseInsensitiveComparator);
+    var nameSuffix = 0, potName = 'i', i = 0, inUse = false;
+    while (!newName) {
+      i = 0;
+      inUse = false;
+      while (i < variableList.length && !inUse) {
+        if (variableList[i].toLowerCase() == potName) {
+          // This potential name is already used.
+          inUse = true;
+        }
+        i++;
+      }
+      if (inUse) {
+        // Try the next potential name.
+        if (potName.charAt(0) === 'z') {
+          // Reached the end of the character sequence so back to 'i' but with a new suffix.
+          nameSuffix++;
+          potName = 'i';
+        } else {
+          potName = String.fromCharCode(potName.charCodeAt(0) + 1);
+          if (potName.charAt(0) == 'l') {
+            // Avoid using variable 'l' because of ambiguity with '1'.
+            potName = String.fromCharCode(potName.charCodeAt(0) + 1);
+          }
+        }
+        if (nameSuffix > 0) {
+          potName += nameSuffix;
+        }
+      } else {
+        // We can use the current potential name.
+        newName = potName;
+      }
+    }
+  } else {
+    newName = 'i';
+  }
+  return newName;
+};

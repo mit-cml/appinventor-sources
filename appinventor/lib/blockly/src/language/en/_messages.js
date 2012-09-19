@@ -374,7 +374,7 @@ Blockly.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +
     'duplicate parameters.';
 
 Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL = 'http://en.wikipedia.org/wiki/Procedure_%28computer_science%29';
-Blockly.LANG_PROCEDURES_CALLNORETURN_CALL = 'call';
+Blockly.LANG_PROCEDURES_CALLNORETURN_CALL = 'do';
 Blockly.LANG_PROCEDURES_CALLNORETURN_PROCEDURE = 'procedure';
 Blockly.LANG_PROCEDURES_CALLNORETURN_TOOLTIP_1 = 'Call a procedure with no return value.';
 
