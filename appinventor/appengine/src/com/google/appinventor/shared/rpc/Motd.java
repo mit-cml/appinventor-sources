@@ -3,13 +3,14 @@
 package com.google.appinventor.shared.rpc;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
 
 /**
  * Data Transfer Object representing motd.
  *
  * @author kerr@google.com (Debby Wallach)
  */
-public class Motd implements IsSerializable, MotdProvider {
+public class Motd implements IsSerializable, MotdProvider, Serializable {
   private long id;
 
   // Caption of the MOTD
@@ -87,7 +88,7 @@ public class Motd implements IsSerializable, MotdProvider {
     Motd motd = (Motd) obj;
     if (!motd.getCaption().equals(this.caption)) return false;
     if (!(motd.hasContent() == this.hasContent())) return false;
-    return motd.hasContent() ? motd.getContent().equals(this.content) : true; 
+    return motd.hasContent() ? motd.getContent().equals(this.content) : true;
   }
 
   @Override
