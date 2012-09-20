@@ -421,6 +421,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Screen")) {
         blkCompVersion = upgradeScreenBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("FusiontablesControl")) {
+        blkCompVersion = upgradeFusiontablesControlBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("HorizontalArrangement")) {
         blkCompVersion = upgradeHorizontalArrangementBlocks(blkCompVersion, componentName);
 
@@ -764,6 +767,15 @@ public class BlockSaveFile {
     return blkCompVersion;
   }
 
+  private int upgradeFusiontablesControlBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // No changes required
+      // The ApiKey property and the SendQuery and ForgetLogin methods were added.
+      blkCompVersion = 2;
+    }
+    return blkCompVersion;
+  }
+  
   private int upgradeHorizontalArrangementBlocks(int blkCompVersion, String componentName) {
     if (blkCompVersion < 2) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified

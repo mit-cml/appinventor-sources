@@ -605,6 +605,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeFusiontablesControlProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // No properties need to be modified to upgrade to version 2.
+      // The ApiKey property and the SendQuery and ForgetLogin methods were added.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeHorizontalArrangementProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {

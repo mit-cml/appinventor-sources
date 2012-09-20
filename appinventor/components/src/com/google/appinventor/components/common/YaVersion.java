@@ -195,8 +195,10 @@ public class YaVersion {
   // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 4.
   // - FORM_COMPONENT_VERSION was incremented to 9.
   // - LISTPICKER_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 64:
+  // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 2.
 
-    public static final int YOUNG_ANDROID_VERSION = 63;
+    public static final int YOUNG_ANDROID_VERSION = 64;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -379,7 +381,9 @@ public class YaVersion {
   // - The CloseScreenAnimation property was added
   public static final int FORM_COMPONENT_VERSION = 9;
 
-  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
+  // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
+  // - The Fusiontables API was migrated from SQL to V1
+  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 2;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 

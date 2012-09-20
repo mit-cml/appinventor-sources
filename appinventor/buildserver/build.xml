@@ -58,7 +58,8 @@
       <classpath>
         <pathelement location="${build.dir}/blockslib/OpenBlocks.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
       </classpath>
@@ -71,7 +72,8 @@
       <fileset dir="${YailGenerator-class.dir}" />
       <zipfileset src="${build.dir}/blockslib/OpenBlocks.jar"/>
       <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-10.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-11.0.1.jar" />
+      <zipfileset src="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
     </jar>
@@ -127,6 +129,14 @@
     <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+    <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/fusiontables/google-api-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/fusiontables/google-http-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-android-beta.jar" file="${lib.dir}/fusiontables/google-api-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/fusiontables/google-http-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/fusiontables/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/fusiontables/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" /> 
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
 
@@ -154,7 +164,8 @@
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
-      <fileset dir="${lib.dir}" includes="guava/guava-10.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-11.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
     </copy>
@@ -263,7 +274,8 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+    <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
   </path>
