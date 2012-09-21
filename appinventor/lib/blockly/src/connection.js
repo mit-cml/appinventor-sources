@@ -70,15 +70,6 @@ Blockly.Connection.prototype.destroy = function() {
 };
 
 /**
- * Does the connection belong to a superior block (higher in the source stack)?
- * @return {boolean} True if connection faces down or right.
- */
-Blockly.Connection.prototype.isSuperior = function() {
-  return this.type == Blockly.INPUT_VALUE ||
-      this.type == Blockly.NEXT_STATEMENT;
-};
-
-/**
  * Connect this connection to another connection.
  * @param {!Blockly.Connection} otherConnection Connection to connect to.
  */
@@ -165,9 +156,9 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
     }
   }
 
-  // Determine which block is superior (higher in the source stack).
+  // Determine which block is superior (higher in the source stack)
   var parentBlock, childBlock;
-  if (this.isSuperior()) {
+  if (this.type == Blockly.INPUT_VALUE || this.type == Blockly.NEXT_STATEMENT) {
     // Superior block.
     parentBlock = this.sourceBlock_;
     childBlock = otherConnection.sourceBlock_;
@@ -209,7 +200,7 @@ Blockly.Connection.prototype.disconnect = function() {
 
   // Rerender the parent so that it may reflow.
   var parentBlock, childBlock;
-  if (this.isSuperior()) {
+  if (this.type == Blockly.INPUT_VALUE || this.type == Blockly.NEXT_STATEMENT) {
     // Superior block.
     parentBlock = this.sourceBlock_;
     childBlock = otherConnection.sourceBlock_;

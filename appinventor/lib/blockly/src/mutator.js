@@ -213,9 +213,7 @@ Blockly.Mutator.prototype.isPinned = function() {
 Blockly.Mutator.prototype.setPinned = function(pinned) {
   this.isPinned_ = pinned;
   this.iconMark_.style.fill = pinned ? '#fff' : '';
-  if (this.bubble_) {
-    this.bubble_.setDisabled(!this.isPinned_);
-  }
+  this.setVisible_(pinned);
 };
 
 /**
@@ -279,7 +277,6 @@ Blockly.Mutator.prototype.setVisible_ = function(visible) {
             thisObj.block_.compose(thisObj.rootBlock_)
           }
         });
-    this.bubble_.setDisabled(!this.isPinned_);
     this.updateColour();
   } else {
     // Destroy the bubble.

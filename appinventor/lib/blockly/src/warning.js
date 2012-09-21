@@ -147,9 +147,7 @@ Blockly.Warning.prototype.isPinned = function() {
 Blockly.Warning.prototype.setPinned = function(pinned) {
   this.isPinned_ = pinned;
   this.iconMark_.style.fill = pinned ? '#fff' : '';
-  if (this.bubble_) {
-    this.bubble_.setDisabled(!this.isPinned_);
-  }
+  this.setVisible_(pinned);
 };
 
 /**
@@ -182,11 +180,10 @@ Blockly.Warning.prototype.setVisible_ = function(visible) {
       // This cannot be done until the bubble is rendered on screen.
       var maxWidth = paragraph.getBBox().width;
       for (var x = 0, textElement; textElement = paragraph.childNodes[x]; x++) {
-        textElement.setAttribute('text-anchor', 'end');
-        textElement.setAttribute('x', maxWidth + Blockly.Bubble.BORDER_WIDTH);
+        textElement.setAttribute('x', maxWidth -
+            textElement.getComputedTextLength() + Blockly.Bubble.BORDER_WIDTH);
       }
     }
-    this.bubble_.setDisabled(!this.isPinned_);
     this.updateColour();
   } else {
     // Destroy the bubble.

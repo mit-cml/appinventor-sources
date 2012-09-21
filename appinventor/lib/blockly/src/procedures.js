@@ -231,7 +231,7 @@ Blockly.Procedures.getCallers = function(name, workspace) {
 Blockly.Procedures.destroyCallers = function(name, workspace) {
   var callers = Blockly.Procedures.getCallers(name, workspace);
   for (var x = 0; x < callers.length; x++) {
-    callers[x].destroy(true, false);
+    callers[x].destroy(true);
   }
   window.setTimeout(Blockly.Procedures.refreshFlyoutCategory, 1);
 };
