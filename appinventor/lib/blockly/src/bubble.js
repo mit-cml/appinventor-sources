@@ -343,6 +343,18 @@ Blockly.Bubble.prototype.promote_ = function() {
 };
 
 /**
+ * Change the bubble to be enabled or disabled.
+ * @param {boolean} disabled True if disabled.
+ */
+Blockly.Bubble.prototype.setDisabled = function(disabled) {
+  if (disabled) {
+    this.bubbleGroup_.setAttribute('filter', 'url(#blocklyGrayscale)');
+  } else {
+    this.bubbleGroup_.removeAttribute('filter');
+  }
+};
+
+/**
  * Notification that the anchor has moved.
  * Update the arrow and bubble accordingly.
  * @param {number} x Absolute horizontal location.

@@ -26,7 +26,7 @@ Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.lists_create_empty = function() {
   // Create an empty list.
-  return ['[]', Blockly.JavaScript.ORDER_ATOMIC];
+  return ['[]', Blockly.Python.ORDER_ATOMIC];
 };
 
 Blockly.Python.lists_create_with = function() {
@@ -34,20 +34,20 @@ Blockly.Python.lists_create_with = function() {
   var code = new Array(this.itemCount_);
   for (var n = 0; n < this.itemCount_; n++) {
     code[n] = Blockly.Python.valueToCode(this, 'ADD' + n,
-        Blockly.JavaScript.ORDER_NONE) || 'None';
+        Blockly.Python.ORDER_NONE) || 'None';
   }
   code = '[' + code.join(', ') + ']';
-  return [code, Blockly.JavaScript.ORDER_ATOMIC];
+  return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
 Blockly.Python.lists_repeat = function() {
   // Create a list with one element repeated.
   var argument0 = Blockly.Python.valueToCode(this, 'ITEM',
-      Blockly.JavaScript.ORDER_NONE) || 'None';
+      Blockly.Python.ORDER_NONE) || 'None';
   var argument1 = Blockly.Python.valueToCode(this, 'NUM',
-      Blockly.JavaScript.ORDER_MULTIPLICATIVE) || '0';
+      Blockly.Python.ORDER_MULTIPLICATIVE) || '0';
   var code = '[' + argument0 + '] * ' + argument1;
-  return [code, Blockly.JavaScript.ORDER_MULTIPLICATIVE];
+  return [code, Blockly.Python.ORDER_MULTIPLICATIVE];
 };
 
 Blockly.Python.lists_length = function() {

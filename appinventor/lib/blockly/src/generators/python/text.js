@@ -167,13 +167,25 @@ Blockly.Python.text_print = function() {
   // Print statement.
   var argument0 = Blockly.Python.valueToCode(this, 'TEXT',
       Blockly.Python.ORDER_NONE) || '\'\'';
-  return 'print ' + argument0 + '\n';
+  return 'print(' + argument0 + ')\n';
 };
 
 Blockly.Python.text_prompt = function() {
   // Prompt function.
+  if (!Blockly.Python.definitions_['text_prompt']) {
+    var functionName = Blockly.Python.variableDB_.getDistinctName(
+        'text_prompt', Blockly.Generator.NAME_TYPE);
+    Blockly.Python.text_prompt.text_prompt = functionName;
+    var func = [];
+    func.push('def ' + functionName + '(msg):');
+    func.push('  try:');
+    func.push('    return raw_input(msg)');
+    func.push('  except NameError:');
+    func.push('    return input(msg)');
+    Blockly.Python.definitions_['text_prompt'] = func.join('\n');
+  }
   var msg = Blockly.Python.quote_(this.getTitleValue('TEXT'));
-  var code = 'raw_input(' + msg + ')';
+  var code = Blockly.Python.text_prompt.text_prompt + '(' + msg + ')';
   var toNumber = this.getTitleValue('TYPE') == 'NUMBER';
   if (toNumber) {
     code = 'float(' + code + ')';

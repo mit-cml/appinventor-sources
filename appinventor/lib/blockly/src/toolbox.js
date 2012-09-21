@@ -245,8 +245,8 @@ Blockly.Toolbox.redraw = function() {
     for (var x = 0, gElement;
          gElement = Blockly.Toolbox.svgOptions_.childNodes[x]; x++) {
       var textElement = gElement.lastChild;
-      textElement.setAttribute('x', maxWidth -
-          textElement.getComputedTextLength() - Blockly.ContextMenu.X_PADDING);
+      textElement.setAttribute('text-anchor', 'end');
+      textElement.setAttribute('x', maxWidth - Blockly.ContextMenu.X_PADDING);
     }
   }
   Blockly.Toolbox.width = maxWidth;

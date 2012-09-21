@@ -182,17 +182,16 @@ Blockly.Trashcan.prototype.onMouseMove = function(e) {
   var xy = Blockly.getAbsoluteXY_(this.svgGroup_);
   var left = xy.x;
   var top = xy.y;
-  // Measure the offset of the SVG.
-  var node = Blockly.svg.parentNode;
-  while (node) {
-    left += node.offsetLeft;
-    top += node.offsetTop;
-    node = node.offsetParent;
-  }
-  var over = (e.clientX > left) &&
-             (e.clientX < left + this.WIDTH_) &&
-             (e.clientY > top) &&
-             (e.clientY < top + this.BODY_HEIGHT_ + this.LID_HEIGHT_);
+
+  // Convert the mouse coordinates into SVG coordinates.
+  xy = Blockly.mouseToSvg(e.clientX, e.clientY);
+  var mouseX = xy.x;
+  var mouseY = xy.y;
+
+  var over = (mouseX > left) &&
+             (mouseX < left + this.WIDTH_) &&
+             (mouseY > top) &&
+             (mouseY < top + this.BODY_HEIGHT_ + this.LID_HEIGHT_);
   // For bonus points we might want to match the trapezoidal outline.
   if (this.isOpen != over) {
     this.setOpen_(over);

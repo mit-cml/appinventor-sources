@@ -1,0 +1,87 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Block Factory</title>
+  <script type="text/javascript" src="factory.js"></script>
+  <style>
+    body {
+      background-color: white;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    h3 {
+      margin-bottom: 1px;
+    }
+    iframe {
+      border: 1px solid #ccc;
+    }
+    td {
+      vertical-align: top;
+    }
+    iframe, textarea, table {
+      height: 100%;
+      width: 100%;
+      resize: none;
+    }
+  </style>
+</head>
+<body>
+  <table>
+    <tr>
+      <td colspan=2>
+        <h1><a href="http://code.google.com/p/blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Block Factory</h1>
+      </td>
+    </tr>
+    <tr>
+      <td height="99%">
+        <iframe src="frame.html"></iframe>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <td height="4%">
+              <h3>Preview:</h3>
+            </td>
+          </tr>
+          <tr>
+            <td height="30%">
+              <iframe src="preview.html"></iframe>
+            </td>
+          </tr>
+          <tr>
+            <td height="3%">
+              <h3>Language code:</h3>
+            </td>
+          </tr>
+          <tr>
+            <td height="30%">
+              <textarea id="languageTextarea" readonly="readonly" wrap="off"
+              onfocus="this.select()"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td height="3%">
+              <h3>Generator stub:
+                <select id="language" onchange="updateGenerator()">
+                  <option value="JavaScript">JavaScript</option>
+                  <option value="Dart">Dart</option>
+                  <option value="Python">Python</option>
+                </select>
+              </h3>
+            </td>
+          </tr>
+          <tr>
+            <td height="30%">
+              <textarea id="generatorTextarea" readonly="readonly" wrap="off"
+              onfocus="this.select()"></textarea>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

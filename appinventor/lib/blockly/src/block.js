@@ -206,8 +206,9 @@ Blockly.Block.prototype.unselect = function() {
  * @param {boolean} gentle If gentle, then try to heal any gap by connecting
  *     the next statement with the previous statement.  Otherwise, destroy all
  *     children of this block.
+ * @param {boolean} animate If true, show a destroy animation and sound.
  */
-Blockly.Block.prototype.destroy = function(gentle) {
+Blockly.Block.prototype.destroy = function(gentle, animate) {
   if (this.outputConnection) {
     // Detach this block from the parent's tree.
     this.setParent(null);
@@ -231,6 +232,10 @@ Blockly.Block.prototype.destroy = function(gentle) {
         previousTarget.connect(nextTarget);
       }
     }
+  }
+
+  if (animate && this.svg_) {
+    this.svg_.destroyUiEffect();
   }
 
   //This block is now at the top of the workspace.
@@ -399,36 +404,32 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
  * @private
  */
 Blockly.Block.prototype.onMouseUp_ = function(e) {
-  /*
-  if (Blockly.Block.dragMode_ == 2) {
-    if (Blockly.selected != this) {
-      throw 'Dragging no object?';
-    }
-    this.setDragging_(false);
-    // Update the connection locations.
-    var xy = this.getRelativeToSurfaceXY();
-    var dx = xy.x - this.startDragX;
-    var dy = xy.y - this.startDragY;
-    this.moveConnections_(dx, dy);
-  }
-  */
   Blockly.Block.terminateDrag_();
   if (Blockly.selected && Blockly.highlightedConnection_) {
-    Blockly.playAudio('click');
     // Connect two blocks together.
     Blockly.localConnection_.connect(Blockly.highlightedConnection_);
+    if (this.svg_) {
+      // Trigger a connection animation.
+      // Determine which connection is inferior (lower in the source stack).
+      var inferiorConnection;
+      if (Blockly.localConnection_.isSuperior()) {
+        inferiorConnection = Blockly.highlightedConnection_;
+      } else {
+        inferiorConnection = Blockly.localConnection_;
+      }
+      inferiorConnection.sourceBlock_.svg_.connectionUiEffect();
+    }
     if (this.workspace.trashcan && this.workspace.trashcan.isOpen) {
       // Don't throw an object in the trash can if it just got connected.
       Blockly.Trashcan.close(this.workspace.trashcan);
     }
   } else if (this.workspace.trashcan && this.workspace.trashcan.isOpen) {
-    Blockly.playAudio('delete');
     var trashcan = this.workspace.trashcan;
     var closure = function() {
       Blockly.Trashcan.close(trashcan);
     };
     window.setTimeout(closure, 100);
-    Blockly.selected.destroy(false);
+    Blockly.selected.destroy(false, true);
     // Dropping a block on the trash can will usually cause the workspace to
     // resize to contain the newly positioned block.  Force a second resize now
     // that the block has been deleted.
@@ -572,8 +573,7 @@ Blockly.Block.prototype.showContextMenu_ = function(x, y) {
           Blockly.MSG_DELETE_X_BLOCKS.replace('%1', descendantCount),
       enabled: true,
       callback: function() {
-        Blockly.playAudio('delete');
-        block.destroy(true);
+        block.destroy(true, true);
       }
     };
     options.push(deleteOption);
@@ -769,9 +769,7 @@ Blockly.Block.prototype.bumpNeighbours_ = function() {
   for (var x = 0; x < myConnections.length; x++) {
     var connection = myConnections[x];
     // Spider down from this block bumping all sub-blocks.
-    if (connection.targetConnection &&
-        (connection.type == Blockly.INPUT_VALUE ||
-         connection.type == Blockly.NEXT_STATEMENT)) {
+    if (connection.targetConnection && connection.isSuperior()) {
       connection.targetBlock().bumpNeighbours_();
     }
 
@@ -783,7 +781,12 @@ Blockly.Block.prototype.bumpNeighbours_ = function() {
       if (!connection.targetConnection || !otherConnection.targetConnection) {
         // Only bump blocks if they are from different tree structures.
         if (otherConnection.sourceBlock_.getRootBlock() != rootBlock) {
-          otherConnection.bumpAwayFrom_(connection);
+          // Always bump the inferior block.
+          if (connection.isSuperior()) {
+            otherConnection.bumpAwayFrom_(connection);
+          } else {
+            connection.bumpAwayFrom_(otherConnection);
+          }
         }
       }
     }
@@ -1059,8 +1062,10 @@ Blockly.Block.prototype.setTooltip = function(newTip) {
 /**
  * Set whether this block can chain onto the bottom of another block.
  * @param {boolean} newBoolean True if there can be a previous statement.
+ * @param {Object} opt_check Statement type or list of statement types.
+ *     Null or undefined if any type could be connected.
  */
-Blockly.Block.prototype.setPreviousStatement = function(newBoolean) {
+Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
   if (this.previousConnection) {
     if (this.previousConnection.targetConnection) {
       throw 'Must disconnect previous statement before removing connection.';
@@ -1072,8 +1077,11 @@ Blockly.Block.prototype.setPreviousStatement = function(newBoolean) {
     if (this.outputConnection) {
       throw 'Remove output connection prior to adding previous connection.';
     }
+    if (opt_check === undefined) {
+      opt_check = null;
+    }
     this.previousConnection =
-        new Blockly.Connection(this, Blockly.PREVIOUS_STATEMENT, null);
+        new Blockly.Connection(this, Blockly.PREVIOUS_STATEMENT, opt_check);
   }
   if (this.rendered) {
     this.render();
@@ -1084,8 +1092,10 @@ Blockly.Block.prototype.setPreviousStatement = function(newBoolean) {
 /**
  * Set whether another block can chain onto the bottom of this block.
  * @param {boolean} newBoolean True if there can be a next statement.
+ * @param {Object} opt_check Statement type or list of statement types.
+ *     Null or undefined if any type could be connected.
  */
-Blockly.Block.prototype.setNextStatement = function(newBoolean) {
+Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
   if (this.nextConnection) {
     if (this.nextConnection.targetConnection) {
       throw 'Must disconnect next statement before removing connection.';
@@ -1094,8 +1104,11 @@ Blockly.Block.prototype.setNextStatement = function(newBoolean) {
     this.nextConnection = null;
   }
   if (newBoolean) {
+    if (opt_check === undefined) {
+      opt_check = null;
+    }
     this.nextConnection =
-        new Blockly.Connection(this, Blockly.NEXT_STATEMENT, null);
+        new Blockly.Connection(this, Blockly.NEXT_STATEMENT, opt_check);
   }
   if (this.rendered) {
     this.render();
@@ -1106,10 +1119,10 @@ Blockly.Block.prototype.setNextStatement = function(newBoolean) {
 /**
  * Set whether this block returns a value.
  * @param {boolean} newBoolean True if there is an output.
- * @param {Object} check Returned type or list of returned types.
- *     Null if any type could be returned (e.g. variable get).
+ * @param {Object} opt_check Returned type or list of returned types.
+ *     Null or undefined if any type could be returned (e.g. variable get).
  */
-Blockly.Block.prototype.setOutput = function(newBoolean, check) {
+Blockly.Block.prototype.setOutput = function(newBoolean, opt_check) {
   if (this.outputConnection) {
     if (this.outputConnection.targetConnection) {
       throw 'Must disconnect output value before removing connection.';
@@ -1121,8 +1134,11 @@ Blockly.Block.prototype.setOutput = function(newBoolean, check) {
     if (this.previousConnection) {
       throw 'Remove previous connection prior to adding output connection.';
     }
+    if (opt_check === undefined) {
+      opt_check = null;
+    }
     this.outputConnection =
-        new Blockly.Connection(this, Blockly.OUTPUT_VALUE, check);
+        new Blockly.Connection(this, Blockly.OUTPUT_VALUE, opt_check);
   }
   if (this.rendered) {
     this.render();

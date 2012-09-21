@@ -318,8 +318,7 @@ Blockly.onKeyDown_ = function(e) {
     if (Blockly.selected && Blockly.selected.editable &&
         (!Blockly.Mutator || !Blockly.Mutator.isOpen)) {
       Blockly.hideChaff();
-      Blockly.playAudio('delete');
-      Blockly.selected.destroy(true);
+      Blockly.selected.destroy(true, true);
     }
     // Stop the browser from going back to the previous page.
     e.preventDefault();
@@ -333,8 +332,7 @@ Blockly.onKeyDown_ = function(e) {
       } else if (e.keyCode == 88) {
         // 'x' for cut.
         Blockly.copy_(Blockly.selected);
-        Blockly.playAudio('delete');
-        Blockly.selected.destroy(true);
+        Blockly.selected.destroy(true, true);
       }
     }
     if (e.keyCode == 86) {

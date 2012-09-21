@@ -31,7 +31,11 @@ Blockly.Python = Blockly.Generator.get('Python');
  * accidentally clobbering a built-in object or function.
  * @private
  */
-Blockly.Python.RESERVED_WORDS_ =
+if (!Blockly.Python.RESERVED_WORDS_) {
+  Blockly.Python.RESERVED_WORDS_ = '';
+}
+
+Blockly.Python.RESERVED_WORDS_ +=
     // import keyword
     // print ','.join(keyword.kwlist)
     // http://docs.python.org/reference/lexical_analysis.html#keywords
@@ -39,7 +43,7 @@ Blockly.Python.RESERVED_WORDS_ =
     //http://docs.python.org/library/constants.html
     'True,False,None,NotImplemented,Ellipsis,__debug__,quit,exit,copyright,license,credits,' +
     // http://docs.python.org/library/functions.html
-    'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,coerce,dir,id,oct,sorted,intern';
+    'abs,divmod,input,open,staticmethod,all,enumerate,int,ord,str,any,eval,isinstance,pow,sum,basestring,execfile,issubclass,print,super,bin,file,iter,property,tuple,bool,filter,len,range,type,bytearray,float,list,raw_input,unichr,callable,format,locals,reduce,unicode,chr,frozenset,long,reload,vars,classmethod,getattr,map,repr,xrange,cmp,globals,max,reversed,zip,compile,hasattr,memoryview,round,__import__,complex,hash,min,set,apply,delattr,help,next,setattr,buffer,dict,hex,object,slice,coerce,dir,id,oct,sorted,intern,';
 
 /**
  * Order of operation ENUMs.
