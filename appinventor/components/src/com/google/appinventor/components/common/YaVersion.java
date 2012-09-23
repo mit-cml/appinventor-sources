@@ -203,8 +203,10 @@ public class YaVersion {
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 6.
   // For YOUNG_ANDROID_VERSION 66:
   // - FORM_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 67:
+  // - TEXTING_COMPONENT_VERSION was incremented to 2.
 
-    public static final int YOUNG_ANDROID_VERSION = 66;
+    public static final int YOUNG_ANDROID_VERSION = 67;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -520,7 +522,13 @@ public class YaVersion {
 
   public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
 
-  public static final int TEXTING_COMPONENT_VERSION = 1;
+  // For TEXTING_COMPONENT_VERSION 2:
+  // Texting over Wifi was implemented using Google Voice
+  // This works only on phones with 2.0 (Eclair) or higher.
+  // It requires that the user has a Google Voice account
+  // and has the mobile Voice app installed on the phone.
+  // Access to Google Voice is controlled through OAuth 2.
+  public static final int TEXTING_COMPONENT_VERSION = 2;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 

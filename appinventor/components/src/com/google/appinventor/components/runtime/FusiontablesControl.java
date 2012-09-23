@@ -118,7 +118,7 @@ import java.util.ArrayList;
 @UsesLibraries(libraries = 
     "fusiontables.jar," +
     "google-api-client-beta.jar," +
-    "google-api-client-android-beta.jar," +
+    "google-api-client-android2-beta.jar," +
     "google-http-client-beta.jar," +
     "google-http-client-android2-beta.jar," +
     "google-http-client-android3-beta.jar," +

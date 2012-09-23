@@ -134,7 +134,11 @@ public class ClientLoginHelper implements IClientLoginHelper {
     }
   }
 
-  private String getAuthToken() throws ClientProtocolException {
+  /**
+   * Uses Google Account Manager to retrieve auth token that can
+   * be used to access various Google APIs -- e.g., the Google Voice api.
+   */
+  public String getAuthToken() throws ClientProtocolException {
     Account account = accountChooser.findAccount();
     if (account != null) {
       AccountManagerFuture<Bundle> future;

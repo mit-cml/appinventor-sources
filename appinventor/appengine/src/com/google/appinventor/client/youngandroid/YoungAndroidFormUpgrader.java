@@ -231,6 +231,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FusiontablesControl")) {
+        srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("HorizontalArrangement")) {
         srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
 
@@ -276,6 +279,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("TextBox")) {
         srcCompVersion = upgradeTextBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Texting")) {
+        srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("Twitter")) {
         srcCompVersion = upgradeTwitterProperties(componentProperties, srcCompVersion);
 
@@ -866,6 +872,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeTextingProperties(Map<String, JSONValue> componentProperties,
+                                              int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The designer property GoogleVoiceEnabled was added
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }  
+  
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {

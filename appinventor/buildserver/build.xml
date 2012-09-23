@@ -130,12 +130,12 @@
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
-    <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/fusiontables/google-api-client-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/fusiontables/google-http-client-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-api-client-android-beta.jar" file="${lib.dir}/fusiontables/google-api-client-android2-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/fusiontables/google-http-client-android2-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/fusiontables/google-http-client-android3-1.10.3-beta.jar" />
-    <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/fusiontables/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" /> 
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />

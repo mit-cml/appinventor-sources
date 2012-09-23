@@ -460,6 +460,9 @@ public class BlockSaveFile {
       } else if (genus.equals("TextBox")) {
         blkCompVersion = upgradeTextBoxBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("Texting")) {
+        blkCompVersion = upgradeTextingBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("TinyWebDB")) {
         blkCompVersion = upgradeTinyWebDBBlocks(blkCompVersion, componentName);
 
@@ -1031,6 +1034,15 @@ public class BlockSaveFile {
       // block need to have MultiLine explicitly set to true, since the new default
       // is false (see YoungAndroidFormUpgrade).
       blkCompVersion = 4;
+    }
+    return blkCompVersion;
+  }
+  
+  private int upgradeTextingBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 2) {
+      // No changes required
+      // The GoogleVoiceEnabled property was added.
+      blkCompVersion = 2;
     }
     return blkCompVersion;
   }

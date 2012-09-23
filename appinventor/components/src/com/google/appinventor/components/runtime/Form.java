@@ -56,6 +56,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
@@ -138,6 +139,9 @@ public class Form extends Activity
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+  
+  // AppInventor lifecycle: listeners for the Initialize Event
+  private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   private String startupValue = "";
@@ -355,6 +359,16 @@ public class Form extends Activity
   public void registerForOnResume(OnResumeListener component) {
     onResumeListeners.add(component);
   }
+  
+  /**
+   * An app can register to be notified when App Inventor's Initialize
+   * block has fired.  They will be called in Initialize().
+   * 
+   * @param component
+   */
+  public void registerForOnInitialize(OnInitializeListener component) {
+    onInitializeListeners.add(component);
+  }
 
   @Override
   protected void onPause() {
@@ -473,6 +487,12 @@ public class Form extends Activity
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
           screenInitialized = true;
+          
+          //  Call all apps registered to be notified when Initialize Event is dispatched
+          for (OnInitializeListener onInitializeListener : onInitializeListeners) {
+            onInitializeListener.onInitialize();
+          }
+          
         } else {
           // Try again later.
           androidUIHandler.post(this);

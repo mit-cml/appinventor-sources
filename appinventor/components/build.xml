@@ -120,12 +120,12 @@
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-api-client-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-api-client-android2-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-http-client-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-http-client-android2-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-http-client-android3-1.10.3-beta.jar" />
-        <pathelement location="${lib.dir}/fusiontables/google-oauth-client-1.10.1-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
         <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
       </classpath>
     </ai.javac>
@@ -214,12 +214,12 @@
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
 	  <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-api-client-1.10.3-beta.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-api-client-android2-1.10.3-beta.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-http-client-1.10.3-beta.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-http-client-android2-1.10.3-beta.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-http-client-android3-1.10.3-beta.jar" />
-	  <pathelement location="${lib.dir}/fusiontables/google-oauth-client-1.10.1-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
 	  <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>

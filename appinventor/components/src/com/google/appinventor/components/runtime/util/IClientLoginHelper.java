@@ -34,4 +34,15 @@ public interface IClientLoginHelper {
    * this service is associated with.
    */
   public void forgetAccountName();
+ 
+  /**
+   * Uses AccountManager to retrieve an accessToken that can be
+   * used to access Google APIs.
+   * 
+   * Added to support Texting Component. Allows the authToken to
+   * be requested by external objects.
+   */
+
+  public String getAuthToken() throws ClientProtocolException; 
+
 }

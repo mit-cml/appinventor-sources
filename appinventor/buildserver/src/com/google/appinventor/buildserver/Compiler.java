@@ -63,7 +63,7 @@ public final class Compiler {
 
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
-
+  
   public static final String RUNTIME_FILES_DIR = "/files/";
 
   private static final String DEFAULT_ICON =
@@ -302,6 +302,23 @@ public final class Compiler {
       out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
       out.write("      </intent-filter>\n");
       out.write("    </activity>\n");
+
+      // BroadcastReceiver for Texting Component
+      if (componentTypes.contains("Texting")) {
+        System.out.println("Android Manifest: including <receiver> tag");
+        out.write(
+            "<receiver \n" +   
+            "android:name=\"com.google.appinventor.components.runtime.util.SmsBroadcastReceiver\" \n" +
+            "android:enabled=\"true\" \n" +
+            "android:exported=\"true\" >\n "  +
+            "<intent-filter> \n" +
+            "<action android:name=\"android.provider.Telephony.SMS_RECEIVED\" /> \n" +
+            "<action \n" +
+            "android:name=\"com.google.android.apps.googlevoice.SMS_RECEIVED\" \n" +
+            "android:permission=\"com.google.android.apps.googlevoice.permission.RECEIVE_SMS\" /> \n" +
+            "</intent-filter>  \n" +
+        "</receiver> \n");
+      }
 
       out.write("  </application>\n");
       out.write("</manifest>\n");
@@ -782,6 +799,7 @@ public final class Compiler {
 
   private boolean runDx(File classesDir, String dexedClasses) {
     int mx = childProcessRamMb - 200;
+
     List<String> commandLineList = new ArrayList<String>();
     commandLineList.add(System.getProperty("java.home") + "/bin/java");
     commandLineList.add("-mx" + mx + "M");

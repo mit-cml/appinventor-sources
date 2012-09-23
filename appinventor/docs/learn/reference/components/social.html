@@ -808,7 +808,10 @@
        </h2>
        <img alt="" src="images/texting.png" />
        <p>
-        Use this non-visible component to allow users to send and receive text messages.
+        Use this non-visible component to allow users to send and receive text messages. If the
+        <code>GoogleVoiceEnabled</code> property is true, messages can be sent and received over Wifi. This
+        option requires that the user have a Google Voice account and that the mobile Voice app is installed
+        on the phone. This option works only on phones that support Android 2.0 (Eclair) or higher.
        </p>
        <p>
         When the
@@ -889,6 +892,14 @@
         </dt>
         <dd>
          If set, this component can receive text messages.
+        </dd>
+        <dt>
+         <code>
+          GoogleVoiceEnabled
+         </code>
+        </dt>
+        <dd>
+         If set, this component can receive messages over Wifi through Google Voice.
         </dd>
        </dl>
        <h3>
