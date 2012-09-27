@@ -31,7 +31,7 @@ Blockly.Python.RESERVED_WORDS_ += 'math,random,';
 
 Blockly.Python.math_number = function() {
   // Numeric value.
-  var code = window.parseFloat(this.getTitleText('NUM'));
+  var code = window.parseFloat(this.getTitleValue('NUM'));
   return [code, Blockly.Python.ORDER_UNARY_SIGN];
 };
 
@@ -65,7 +65,7 @@ Blockly.Python.math_change = function() {
   // Add to a variable in place.
   var argument0 = Blockly.Python.valueToCode(this, 'DELTA',
       Blockly.Python.ORDER_ADDITIVE) || '0';
-  var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = (' + varName + ' if type(' + varName +
       ') in (int, float) else 0) + ' + argument0 + '\n';
@@ -73,18 +73,18 @@ Blockly.Python.math_change = function() {
 
 Blockly.Python.math_single = function() {
   // Math operators with single operand.
+  var operator = this.getTitleValue('OP');
+  var code;
   if (operator == 'NEG') {
-    var argNeg = Blockly.Python.valueToCode(this, 'NUM',
+    var code = Blockly.Python.valueToCode(this, 'NUM',
         Blockly.Python.ORDER_UNARY_SIGN) || '0';
-    return ['-' + argNeg, Blockly.Python.ORDER_UNARY_SIGN];
+    return ['-' + code, Blockly.Python.ORDER_UNARY_SIGN];
   }
   Blockly.Python.definitions_['import_math'] = 'import math';
   var argNaked = Blockly.Python.valueToCode(this, 'NUM',
       Blockly.Python.ORDER_NONE) || '0';
   var argParen = Blockly.Python.valueToCode(this, 'NUM',
       Blockly.Python.ORDER_MULTIPLICATIVE) || '0';
-  var operator = this.getTitleValue('OP');
-  var code;
   // First, handle cases which generate values that don't need parentheses
   // wrapping the code.
   switch (operator) {
@@ -103,7 +103,7 @@ Blockly.Python.math_single = function() {
     case 'EXP':
       code = 'math.exp(' + argNaked + ')';
       break;
-    case '10POW':
+    case 'POW10':
       code = 'math.pow(10,' + argNaked + ')';
       break;
     case 'ROUND':
@@ -116,13 +116,13 @@ Blockly.Python.math_single = function() {
       code = 'math.floor(' + argNaked + ')';
       break;
     case 'SIN':
-      code = 'math.sin(' + argParen + ' / 180 * math.pi)';
+      code = 'math.sin(' + argParen + ' / 180.0 * math.pi)';
       break;
     case 'COS':
-      code = 'math.cos(' + argParen + ' / 180 * math.pi)';
+      code = 'math.cos(' + argParen + ' / 180.0 * math.pi)';
       break;
     case 'TAN':
-      code = 'math.tan(' + argParen + ' / 180 * math.pi)';
+      code = 'math.tan(' + argParen + ' / 180.0 * math.pi)';
       break;
   }
   if (code) {
@@ -141,7 +141,7 @@ Blockly.Python.math_single = function() {
       code = 'math.atan(' + argNaked + ') / math.pi * 180';
       break;
     default:
-      throw 'Unknown math operator.';
+      throw 'Unknown math operator: ' + operator;
   }
   return [code, Blockly.Python.ORDER_MULTIPLICATIVE];
 };
@@ -179,7 +179,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  localList = [e for e in myList ' +
             'if type(e) in [int, float]]');
         func.push('  if not localList: return');
-        func.push('  return float(sum(localList)) / len(localList)');
+        func.push('  return float(sum(localList)) / len(localList)\n');
         Blockly.Python.definitions_['math_mean'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_mean + '(' + list + ')';
@@ -200,7 +200,7 @@ Blockly.Python.math_on_list = function() {
         func.push('    return (localList[len(localList) / 2 - 1] + ' +
             'localList[len(localList) / 2]) / 2.0');
         func.push('  else:');
-        func.push('    return localList[(len(localList) - 1) / 2]');
+        func.push('    return localList[(len(localList) - 1) / 2]\n');
         Blockly.Python.definitions_['math_median'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_median + '(' + list + ')';
@@ -234,7 +234,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  for counted_item, item_count in counts:');
         func.push('    if item_count == maxCount:');
         func.push('      modes.append(counted_item)');
-        func.push('  return modes');
+        func.push('  return modes\n');
         Blockly.Python.definitions_['math_modes'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_modes + '(' + list + ')';
@@ -252,7 +252,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  mean = float(sum(numbers)) / n');
         func.push('  variance = sum((x - mean) ** 2 for x in numbers) / n');
         func.push('  standard_dev = math.sqrt(variance)');
-        func.push('  return standard_dev');
+        func.push('  return standard_dev\n');
         Blockly.Python.definitions_['math_standard_deviation'] =
             func.join('\n');
       }
@@ -264,7 +264,7 @@ Blockly.Python.math_on_list = function() {
       code = 'random.choice(' + list + ')';
       break;
     default:
-      throw 'Unknown operator.';
+      throw 'Unknown operator: ' + func;
   }
   return [code, Blockly.Python.ORDER_FUNCTION_CALL];
 };

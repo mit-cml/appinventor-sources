@@ -26,7 +26,7 @@ Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.text = function() {
   // Text value.
-  var code = Blockly.Python.quote_(this.getTitleText('TEXT'));
+  var code = Blockly.Python.quote_(this.getTitleValue('TEXT'));
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
 
@@ -64,7 +64,7 @@ Blockly.Python.text_join = function() {
 
 Blockly.Python.text_append = function() {
   // Append to a variable in place.
-  var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Python.valueToCode(this, 'TEXT',
       Blockly.Python.ORDER_NONE) || '\'\'';
@@ -117,9 +117,9 @@ Blockly.Python.text_charAt = function() {
   var argument0 = Blockly.Python.valueToCode(this, 'AT',
       Blockly.Python.ORDER_NONE) || '1';
   var argument1 = Blockly.Python.valueToCode(this, 'VALUE',
-      Blockly.Python.ORDER_MEMBER) || '[]';
+      Blockly.Python.ORDER_MEMBER) || '\'\'';
   // Blockly uses one-based indicies.
-  if (argument0.match(/^\d+$/)) {
+  if (argument0.match(/^-?\d+$/)) {
     // If the index is a naked number, decrement it right now.
     // Except not allowing negative index by constraining at 0.
     argument0 = Math.max(0, parseInt(argument0, 10) - 1);

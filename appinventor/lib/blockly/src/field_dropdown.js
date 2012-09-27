@@ -71,6 +71,17 @@ Blockly.FieldDropdown.createDom = function() {
 };
 
 /**
+ * Close the dropdown and destroy all UI.
+ */
+Blockly.FieldDropdown.prototype.destroy = function() {
+  if (Blockly.FieldDropdown.openDropdown_ == this) {
+    Blockly.FieldDropdown.hideMenu();
+  }
+  // Call parent's destructor.
+  Blockly.Field.prototype.destroy.call(this);
+};
+
+/**
  * Corner radius of the dropdown background.
  */
 Blockly.FieldDropdown.CORNER_RADIUS = 2;
@@ -79,6 +90,13 @@ Blockly.FieldDropdown.CORNER_RADIUS = 2;
  * Mouse cursor style when over the hotspot that initiates the editor.
  */
 Blockly.FieldDropdown.prototype.CURSOR = 'default';
+
+/**
+ * Which block is the dropdown attached to?
+ * @type {Blockly.FieldDropdown}
+ * @private
+ */
+Blockly.FieldDropdown.openDropdown_ = null;
 
 /**
  * Create a dropdown menu under the text.
@@ -94,6 +112,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   // The menu must be made visible early since otherwise BBox and
   // getComputedTextLength will return 0.
   svgGroup.style.display = 'block';
+  Blockly.FieldDropdown.openDropdown_ = this;
 
   function callbackFactory(text) {
     return function(e) {
@@ -237,4 +256,5 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
  */
 Blockly.FieldDropdown.hideMenu = function() {
   Blockly.FieldDropdown.svgGroup_.style.display = 'none';
+  Blockly.FieldDropdown.openDropdown_ = null;
 };

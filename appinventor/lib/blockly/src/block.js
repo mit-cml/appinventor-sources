@@ -274,14 +274,8 @@ Blockly.Block.prototype.destroy = function(gentle, animate) {
     this.warning.destroy();
   }
   // Destroy all inputs and their labels.
-  for (var x = 0; x < this.inputList.length; x++) {
-    var input = this.inputList[x];
-    if (input.label) {
-      input.label.destroy();
-    }
-    if (input.destroy) {
-      input.destroy();
-    }
+  for (var x = 0, input; input = this.inputList[x]; x++) {
+    input.destroy();
   }
   this.inputList = [];
   // Destroy any remaining connections (next/previous/output).
@@ -617,9 +611,8 @@ Blockly.Block.prototype.getConnections_ = function(all) {
     }
     if (all || !this.collapsed) {
       for (var x = 0, input; input = this.inputList[x]; x++) {
-        if (input.type != Blockly.LOCAL_VARIABLE &&
-            input.type != Blockly.DUMMY_INPUT) {
-          myConnections.push(input);
+        if (input.connection) {
+          myConnections.push(input.connection);
         }
       }
     }
@@ -989,22 +982,11 @@ Blockly.Block.prototype.getTitle_ = function(name) {
     }
   }
   for (var x = 0, input; input = this.inputList[x]; x++) {
-    if (input.label && input.label.name === name) {
-      return input.label;
+    for (var y = 0, title; title = input.titleRow[y]; y++) {
+      if (title.name === name) {
+        return title;
+      }
     }
-  }
-  return null;
-};
-
-/**
- * Returns the human-readable text from the title of a block.
- * @param {string} name The name of the title.
- * @return {!string} Text from the title or null if title does not exist.
- */
-Blockly.Block.prototype.getTitleText = function(name) {
-  var title = this.getTitle_(name);
-  if (title) {
-    return title.getText();
   }
   return null;
 };
@@ -1023,20 +1005,6 @@ Blockly.Block.prototype.getTitleValue = function(name) {
 };
 
 /**
- * Change the title text for a block (e.g. 'choose' or 'remove list item').
- * @param {string} newText Text to be the new title.
- * @param {string} name The name of the title.
- */
-Blockly.Block.prototype.setTitleText = function(newText, name) {
-  var title = this.getTitle_(name);
-  if (title) {
-    title.setText(newText);
-  } else {
-    throw 'Title "' + name + '" not found.';
-  }
-};
-
-/**
  * Change the title value for a block (e.g. 'CHOOSE' or 'REMOVE').
  * @param {string} newValue Value to be the new title.
  * @param {string} name The name of the title.
@@ -1045,6 +1013,41 @@ Blockly.Block.prototype.setTitleValue = function(newValue, name) {
   var title = this.getTitle_(name);
   if (title) {
     title.setValue(newValue);
+  } else {
+    throw 'Title "' + name + '" not found.';
+  }
+};
+
+/**
+ * Returns the human-readable text from the title of a block.
+ * @param {string} name The name of the title.
+ * @return {!string} Text from the title or null if title does not exist.
+ * @deprecated
+ */
+Blockly.Block.prototype.getTitleText = function(name) {
+  // In September 2012 getTitleText was deprecated in favour of getTitleValue.
+  // At some future date this section should be deleted.
+  console.log('Obsolete call to getTitleText.  Please use getTitleValue.');
+  var title = this.getTitle_(name);
+  if (title) {
+    return title.getText();
+  }
+  return null;
+};
+
+/**
+ * Change the title text for a block (e.g. 'choose' or 'remove list item').
+ * @param {string} newText Text to be the new title.
+ * @param {string} name The name of the title.
+ * @deprecated
+ */
+Blockly.Block.prototype.setTitleText = function(newText, name) {
+  // In September 2012 setTitleText was deprecated in favour of setTitleValue.
+  // At some future date this section should be deleted.
+  console.log('Obsolete call to setTitleText.  Please use setTitleValue.');
+  var title = this.getTitle_(name);
+  if (title) {
+    title.setText(newText);
   } else {
     throw 'Title "' + name + '" not found.';
   }
@@ -1202,9 +1205,9 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
   var display = collapsed ? 'none' : 'block';
   var renderList = [];
   for (var x = 0, input; input = this.inputList[x]; x++) {
-    if (input.label) {
-      var labelElement = input.label.getRootElement ?
-          input.label.getRootElement() : input.label;
+    for (var y = 0, title; title = input.titleRow[y]; y++) {
+      var labelElement = title.getRootElement ?
+          title.getRootElement() : title;
       labelElement.style.display = display;
     }
     if (input.targetBlock) {
@@ -1251,55 +1254,20 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
 
 /**
  * Add a value input, statement input or local variable to this block.
- * @param {string|Array} label Printed next to the input (e.g. 'x' or 'do').
- *     If the label is an editable field, this argument should be a tuple with
- *     the field and its name.
  * @param {number} type Either Blockly.INPUT_VALUE or Blockly.NEXT_STATEMENT or
- *     Blockly.LOCAL_VARIABLE, or Blockly.DUMMY_INPUT.
+ *     Blockly.DUMMY_INPUT.
  * @param {string} name Language-neutral identifier which may used to find this
  *     input again.  Should be unique to this block.
  * @param {Object} opt_check Acceptable value type, or list of value types.
  *     Null or undefined means all values are acceptable.
  * @return {!Object} The input object created.
  */
-Blockly.Block.prototype.appendInput = function(label, type, name, opt_check) {
-  // Create descriptive text element.
-  var textElement = null;
-  if (label) {
-    var labelElement = label;
-    var labelName = null;
-    if (label instanceof Array) {
-      // Editable label with name.
-      labelElement = label[0];
-      labelName = label[1];
-    }
-    if (typeof labelElement == 'string') {
-      // Text label.
-      labelElement = new Blockly.FieldLabel(labelElement);
-    }
-    textElement = labelElement;
-    textElement.name = labelName;
-    if (this.svg_) {
-      textElement.init(this);
-    }
+Blockly.Block.prototype.appendInput = function(type, name, opt_check) {
+  var connection = null;
+  if (type == Blockly.INPUT_VALUE || type == Blockly.NEXT_STATEMENT) {
+    connection = new Blockly.Connection(this, type, opt_check);
   }
-  var input;
-  if (type == Blockly.DUMMY_INPUT) {
-    // Dummy input is used to show a label.
-    input = {};
-    input.type = type;
-  } else if (type == Blockly.LOCAL_VARIABLE) {
-    input = new Blockly.FieldDropdown(
-        Blockly.Variables.dropdownCreate, Blockly.Variables.dropdownChange);
-    if (this.svg_) {
-      input.init(this);
-    }
-    input.type = Blockly.LOCAL_VARIABLE;
-  } else {
-    input = new Blockly.Connection(this, type, opt_check);
-  }
-  input.label = textElement;
-  input.name = name;
+  var input = new Blockly.Input(type, name, this, connection);
   // Append input to list.
   this.inputList.push(input);
   if (this.rendered) {
@@ -1362,17 +1330,11 @@ Blockly.Block.prototype.moveInputBefore = function(name, refName) {
 Blockly.Block.prototype.removeInput = function(name) {
   for (var x = 0, input; input = this.inputList[x]; x++) {
     if (input.name == name) {
-      if (input.targetConnection) {
+      if (input.connection && input.connection.targetConnection) {
         // Disconnect any attached block.
-        input.targetBlock().setParent(null);
+        input.connection.targetBlock().setParent(null);
       }
-      var field = input.label;
-      if (field) {
-        field.destroy();
-      }
-      if (input.destroy) {
-        input.destroy();
-      }
+      input.destroy();
       this.inputList.splice(x, 1);
       if (this.rendered) {
         this.render();
@@ -1408,30 +1370,7 @@ Blockly.Block.prototype.getInput = function(name) {
  */
 Blockly.Block.prototype.getInputTargetBlock = function(name) {
   var input = this.getInput(name);
-  return input && input.targetBlock();
-};
-
-/**
- * Gets the variable name attached to the named variable input.
- * @param {string} name The name of the input.
- * @return {string} The variable name, or null if the input does not exist.
- */
-Blockly.Block.prototype.getInputVariable = function(name) {
-  var input = this.getInput(name);
-  return input && input.getText();
-};
-
-/**
- * Sets the variable name attached to the named variable input.
- * @param {string} name The name of the input.
- * @param {string} text The new variable name.
- */
-Blockly.Block.prototype.setInputVariable = function(name, text) {
-  var input = this.getInput(name);
-  if (!input) {
-    throw 'Input does not exist.';
-  }
-  input.setText(text);
+  return input && input.connection && input.connection.targetBlock();
 };
 
 /**

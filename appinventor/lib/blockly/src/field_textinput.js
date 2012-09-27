@@ -217,14 +217,13 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var htmlInputFrame = Blockly.FieldTextInput.svgForeignObject_;
   htmlInputFrame.setAttribute('width', bBox.width);
   htmlInput.style.width = (bBox.width - 2) + 'px';
-  if (Blockly.RTL) {
-    // In RTL mode the left edge moves, whereas the right edge is fixed.
-    var xy = Blockly.getAbsoluteXY_(this.group_);
-    var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
-    var baseXy = Blockly.getAbsoluteXY_(workspaceSvg);
-    xy.x -= baseXy.x;
-    htmlInputFrame.setAttribute('x', xy.x - 4);
-  }
+  // In RTL mode block titles and LTR input titles the left edge moves,
+  // whereas the right edge is fixed.  Reposition the editor.
+  var xy = Blockly.getAbsoluteXY_(this.group_);
+  var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
+  var baseXy = Blockly.getAbsoluteXY_(workspaceSvg);
+  xy.x -= baseXy.x;
+  htmlInputFrame.setAttribute('x', xy.x - 4);
 };
 
 /**

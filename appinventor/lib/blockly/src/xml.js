@@ -71,8 +71,8 @@ Blockly.Xml.blockToDom_ = function(block) {
     titleToDom(title);
   }
   for (var x = 0, input; input = block.inputList[x]; x++) {
-    if (input.label) {
-      titleToDom(input.label);
+    for (var y = 0, title; title = input.titleRow[y]; y++) {
+      titleToDom(title);
     }
   }
 
@@ -96,12 +96,8 @@ Blockly.Xml.blockToDom_ = function(block) {
     var empty = true;
     if (input.type == Blockly.DUMMY_INPUT) {
       continue;
-    } else if (input.type == Blockly.LOCAL_VARIABLE) {
-      container = document.createElement('variable');
-      container.setAttribute('data', input.getText());
-      empty = false;
     } else {
-      var childBlock = input.targetBlock();
+      var childBlock = input.connection.targetBlock();
       if (input.type == Blockly.INPUT_VALUE) {
         container = document.createElement('value');
         hasValues = true;
@@ -277,28 +273,28 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
         block.setTitleValue(xmlChild.textContent, name);
         break;
       case 'variable':
+        // In September 2012 the <variable data="x" name="VAR"> tag was
+        // replaced by <title name="VAR">x</title>.
+        // At some future date this section should be deleted.
+        console.log('Obsolete variable tag.  Please regenerate XML.');
         var data = xmlChild.getAttribute('data');
         if (data !== null) {
-          input = block.getInput(name);
-          if (!input) {
-            throw 'Variable input does not exist.';
-          }
-          input.setText(data);
+          block.setTitleValue(data, name);
         }
         break;
       case 'value':
       case 'statement':
         input = block.getInput(name);
         if (!input) {
-          throw 'Input does not exist.';
+          throw 'Input does not exist: ' + name;
         }
         if (firstRealGrandchild && firstRealGrandchild.tagName &&
             firstRealGrandchild.tagName.toLowerCase() == 'block') {
           blockChild = Blockly.Xml.domToBlock_(workspace, firstRealGrandchild);
           if (blockChild.outputConnection) {
-            input.connect(blockChild.outputConnection);
+            input.connection.connect(blockChild.outputConnection);
           } else if (blockChild.previousConnection) {
-            input.connect(blockChild.previousConnection);
+            input.connection.connect(blockChild.previousConnection);
           } else {
             throw 'Child block does not have output or previous statement.';
           }

@@ -83,7 +83,7 @@ Blockly.Dart.unittest_assertequals = function() {
   // Asserts that a value equals another value.
   var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Dart.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Dart.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Dart.definitions_['unittest_assertequals']) {
     var functionName = Blockly.Dart.variableDB_.getDistinctName(
         'assertEquals', Blockly.Generator.NAME_TYPE);
@@ -117,7 +117,7 @@ Blockly.Dart.unittest_asserttrue = function() {
   // Asserts that a value is true.
   var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Dart.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Dart.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Dart.definitions_['unittest_asserttrue']) {
     var functionName = Blockly.Dart.variableDB_.getDistinctName(
         'assertTrue', Blockly.Generator.NAME_TYPE);
@@ -148,7 +148,7 @@ Blockly.Dart.unittest_assertfalse = function() {
   // Asserts that a value is false.
   var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Dart.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Dart.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Dart.definitions_['unittest_assertfalse']) {
     var functionName = Blockly.Dart.variableDB_.getDistinctName(
         'assertFalse', Blockly.Generator.NAME_TYPE);
@@ -179,7 +179,7 @@ Blockly.Dart.unittest_fail = function() {
   // Always assert an error.
   var resultsVar = Blockly.Dart.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Dart.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Dart.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Dart.definitions_['unittest_fail']) {
     var functionName = Blockly.Dart.variableDB_.getDistinctName(
         'fail', Blockly.Generator.NAME_TYPE);

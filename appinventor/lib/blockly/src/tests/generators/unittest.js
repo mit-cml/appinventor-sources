@@ -30,7 +30,7 @@ Blockly.Language.unittest_main = {
   init: function() {
     this.setColour(65);
     this.appendTitle('run tests');
-    this.appendInput('', Blockly.NEXT_STATEMENT, 'DO');
+    this.appendInput(Blockly.NEXT_STATEMENT, 'DO');
     this.setTooltip('Executes the enclosed unit tests,\n' +
                     'then prints a summary.');
   },
@@ -47,8 +47,10 @@ Blockly.Language.unittest_assertequals = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendTitle(new Blockly.FieldTextInput('test name'), 'MESSAGE');
-    this.appendInput('actual', Blockly.INPUT_VALUE, 'ACTUAL', null);
-    this.appendInput('expected', Blockly.INPUT_VALUE, 'EXPECTED', null);
+    this.appendInput(Blockly.INPUT_VALUE, 'ACTUAL', null)
+        .appendTitle('actual');
+    this.appendInput(Blockly.INPUT_VALUE, 'EXPECTED', null)
+        .appendTitle('expected');
     this.setTooltip('Tests that "actual == expected".');
   }
 };
@@ -61,7 +63,8 @@ Blockly.Language.unittest_asserttrue = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendTitle(new Blockly.FieldTextInput('test name'), 'MESSAGE');
-    this.appendInput('assert true', Blockly.INPUT_VALUE, 'ACTUAL', Boolean);
+    this.appendInput(Blockly.INPUT_VALUE, 'ACTUAL', Boolean)
+        .appendTitle('assert true');
     this.setTooltip('Tests that the value is true.');
   }
 };
@@ -74,7 +77,8 @@ Blockly.Language.unittest_assertfalse = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.appendTitle(new Blockly.FieldTextInput('test name'), 'MESSAGE');
-    this.appendInput('assert false', Blockly.INPUT_VALUE, 'ACTUAL', Boolean);
+    this.appendInput(Blockly.INPUT_VALUE, 'ACTUAL', Boolean)
+        .appendTitle('assert false');
     this.setTooltip('Tests that the value is false.');
   }
 };

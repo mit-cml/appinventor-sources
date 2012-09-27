@@ -78,7 +78,7 @@ Blockly.Python.unittest_assertequals = function() {
   var resultsVar = Blockly.Python.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
   // Asserts that a value equals another value.
-  var message = Blockly.Python.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Python.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Python.definitions_['unittest_assertequals']) {
     var functionName = Blockly.Python.variableDB_.getDistinctName(
         'assertEquals', Blockly.Generator.NAME_TYPE);
@@ -108,7 +108,7 @@ Blockly.Python.unittest_asserttrue = function() {
   var resultsVar = Blockly.Python.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
   // Asserts that a value is true.
-  var message = Blockly.Python.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Python.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Python.definitions_['unittest_asserttrue']) {
     var functionName = Blockly.Python.variableDB_.getDistinctName(
         'assertTrue', Blockly.Generator.NAME_TYPE);
@@ -136,7 +136,7 @@ Blockly.Python.unittest_assertfalse = function() {
   var resultsVar = Blockly.Python.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
   // Asserts that a value is false.
-  var message = Blockly.Python.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Python.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Python.definitions_['unittest_assertfalse']) {
     var functionName = Blockly.Python.variableDB_.getDistinctName(
         'assertFalse', Blockly.Generator.NAME_TYPE);
@@ -164,7 +164,7 @@ Blockly.Python.unittest_fail = function() {
   // Always assert an error.
   var resultsVar = Blockly.Python.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.Python.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.Python.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.Python.definitions_['unittest_fail']) {
     var functionName = Blockly.Python.variableDB_.getDistinctName(
         'fail', Blockly.Generator.NAME_TYPE);

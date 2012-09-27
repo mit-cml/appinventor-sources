@@ -267,10 +267,8 @@ Maze.init = function(blockly) {
     for (var x = 0; x < Maze.COLS; x++) {
       if (Maze.MAP[y][x] == 2) {
         Maze.start_ = {x: x, y: y};
-        console.log('Maze.start_ = ' + Maze.start_.x + Maze.start_.y)
       } else if (Maze.MAP[y][x] == 3) {
         Maze.finish_ = {x: x, y: y};
-        console.log('Maze.finish_ = ' + Maze.finish_.x + Maze.finish_.y)
       }
     }
   }

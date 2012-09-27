@@ -224,7 +224,7 @@
         </value>
         <next>
           <block type="controls_forEach" inline="false">
-            <variable data="x" name="VAR"></variable>
+            <title name="VAR">x</title>
             <value name="LIST">
               <block type="lists_create_with" inline="false">
                 <mutation items="3"></mutation>
@@ -464,7 +464,7 @@
         </value>
         <next>
           <block type="controls_for" inline="true">
-            <variable data="x" name="VAR"></variable>
+            <title name="VAR">x</title>
             <value name="FROM">
               <block type="math_number">
                 <title name="NUM">1</title>
@@ -508,7 +508,7 @@
                     </value>
                     <next>
                       <block type="controls_for" inline="true">
-                        <variable data="x" name="VAR"></variable>
+                        <title name="VAR">x</title>
                         <value name="FROM">
                           <block type="math_number">
                             <title name="NUM">8</title>
@@ -552,7 +552,7 @@
                                 </value>
                                 <next>
                                   <block type="controls_for" inline="true">
-                                    <variable data="x" name="VAR"></variable>
+                                    <title name="VAR">x</title>
                                     <value name="FROM">
                                       <block type="math_arithmetic" inline="true">
                                         <title name="OP">ADD</title>
@@ -616,7 +616,7 @@
                                             </value>
                                             <next>
                                               <block type="controls_for" inline="true">
-                                                <variable data="x" name="VAR"></variable>
+                                                <title name="VAR">x</title>
                                                 <value name="FROM">
                                                   <block type="math_arithmetic" inline="true">
                                                     <title name="OP">ADD</title>
@@ -854,7 +854,7 @@
                                 </value>
                                 <next>
                                   <block type="controls_for" inline="true">
-                                    <variable data="x" name="VAR"></variable>
+                                    <title name="VAR">x</title>
                                     <value name="FROM">
                                       <block type="math_number">
                                         <title name="NUM">1</title>
@@ -922,7 +922,7 @@
                                             </value>
                                             <next>
                                               <block type="controls_forEach" inline="false">
-                                                <variable data="x" name="VAR"></variable>
+                                                <title name="VAR">x</title>
                                                 <value name="LIST">
                                                   <block type="lists_create_with" inline="false">
                                                     <mutation items="4"></mutation>
@@ -1215,7 +1215,7 @@
                                         </value>
                                         <next>
                                           <block type="controls_for" inline="true">
-                                            <variable data="x" name="VAR"></variable>
+                                            <title name="VAR">x</title>
                                             <value name="FROM">
                                               <block type="math_number">
                                                 <title name="NUM">1</title>
@@ -1283,7 +1283,7 @@
                                                     </value>
                                                     <next>
                                                       <block type="controls_forEach" inline="false">
-                                                        <variable data="x" name="VAR"></variable>
+                                                        <title name="VAR">x</title>
                                                         <value name="LIST">
                                                           <block type="lists_create_with" inline="false">
                                                             <mutation items="4"></mutation>

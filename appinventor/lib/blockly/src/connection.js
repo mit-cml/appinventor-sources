@@ -102,22 +102,23 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
       orphanBlock.setParent(null);
       // Attempt to reattach the orphan at the end of the newly inserted
       // block.  Since this block may be a row, walk down to the end.
-      function singleInput(block) {
-        var input = false;
+      function singleConnection(block) {
+        var connection = false;
         for (var x = 0; x < block.inputList.length; x++) {
-          if (block.inputList[x].type == Blockly.INPUT_VALUE &&
-              orphanBlock.outputConnection.checkType_(block.inputList[x])) {
-            if (input) {
-              return null;  // More than one input.
+          var thisConnection = block.inputList[x].connection;
+          if (thisConnection && thisConnection.type == Blockly.INPUT_VALUE &&
+              orphanBlock.outputConnection.checkType_(thisConnection)) {
+            if (connection) {
+              return null;  // More than one connection.
             }
-            input = block.inputList[x];
+            connection = thisConnection;
           }
         }
-        return input;
+        return connection;
       };
       var newBlock = this.sourceBlock_;
       var connection;
-      while (connection = singleInput(newBlock)) {  // '=' is intentional.
+      while (connection = singleConnection(newBlock)) {  // '=' is intentional.
         if (connection.targetBlock()) {
           newBlock = connection.targetBlock();
         } else {

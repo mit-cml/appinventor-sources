@@ -26,7 +26,7 @@ Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.variables_get = function() {
   // Variable getter.
-  code = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+  code = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return [code, Blockly.Python.ORDER_ATOMIC];
 };
@@ -35,7 +35,7 @@ Blockly.Python.variables_set = function() {
   // Variable setter.
   var argument0 = Blockly.Python.valueToCode(this, 'VALUE',
       Blockly.Python.ORDER_NONE) || '0';
-  var varName = Blockly.Python.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = ' + argument0 + '\n';
 };

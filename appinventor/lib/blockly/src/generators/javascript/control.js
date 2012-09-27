@@ -60,7 +60,7 @@ Blockly.JavaScript.controls_whileUntil = function() {
 Blockly.JavaScript.controls_for = function() {
   // For loop.
   var variable0 = Blockly.JavaScript.variableDB_.getName(
-      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+      this.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.JavaScript.valueToCode(this, 'FROM',
       Blockly.JavaScript.ORDER_ASSIGNMENT) || '0';
   var argument1 = Blockly.JavaScript.valueToCode(this, 'TO',
@@ -103,7 +103,7 @@ Blockly.JavaScript.controls_for = function() {
 Blockly.JavaScript.controls_forEach = function() {
   // For each loop.
   var variable0 = Blockly.JavaScript.variableDB_.getName(
-      this.getInputVariable('VAR'), Blockly.Variables.NAME_TYPE);
+      this.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.JavaScript.valueToCode(this, 'LIST',
       Blockly.JavaScript.ORDER_ASSIGNMENT) || '[]';
   var branch0 = Blockly.JavaScript.statementToCode(this, 'DO');

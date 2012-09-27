@@ -26,7 +26,7 @@ Blockly.Dart = Blockly.Generator.get('Dart');
 
 Blockly.Dart.math_number = function() {
   // Numeric value.
-  var code = window.parseFloat(this.getTitleText('NUM'));
+  var code = window.parseFloat(this.getTitleValue('NUM'));
   // -4.abs() returns -4 in Dart due to strange order of operation choices.
   // -4 is actually an operator and a number.  Reflect this in the order.
   var order = code < 0 ?
@@ -63,7 +63,7 @@ Blockly.Dart.math_change = function() {
   // Add to a variable in place.
   var argument0 = Blockly.Dart.valueToCode(this, 'DELTA',
       Blockly.Dart.ORDER_ADDITIVE) || '0';
-  var varName = Blockly.Dart.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.Dart.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = (' + varName + ' is num ? ' + varName + ' : 0) + ' +
       argument0 + ';\n';
@@ -104,7 +104,7 @@ Blockly.Dart.math_single = function() {
     case 'EXP':
       code = 'Math.exp(' + argNaked + ')';
       break;
-    case '10POW':
+    case 'POW10':
       code = 'Math.pow(10,' + argNaked + ')';
     case 'ROUND':
       code = argPostfix + '.round()';
@@ -143,7 +143,7 @@ Blockly.Dart.math_single = function() {
       code = 'Math.atan(' + argNaked + ') / Math.PI * 180';
       break;
     default:
-      throw 'Unknown math operator.';
+      throw 'Unknown math operator: ' + operator;
   }
   return [code, Blockly.Dart.ORDER_MULTIPLICATIVE];
 };
@@ -330,7 +330,7 @@ Blockly.Dart.math_on_list = function() {
       code = Blockly.Dart.math_on_list.math_random_item + '(' + list + ')';
       break;
     default:
-      throw 'Unknown operator.';
+      throw 'Unknown operator: ' + func;
   }
   return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
 };

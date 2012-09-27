@@ -442,6 +442,11 @@ Blockly.Bubble.prototype.setBubbleSize = function(width, height) {
     }
   }
   if (this.rendered_) {
+    if (Blockly.RTL) {
+      // In RTL mode a bubble should resize to the left, not to the right.
+      // Bump the location to put it in the right place.
+      this.positionBubble_();
+    }
     this.renderArrow_();
   }
   // Fire an event to allow the contents to resize.

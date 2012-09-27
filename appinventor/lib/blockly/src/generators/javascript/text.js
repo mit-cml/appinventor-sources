@@ -26,7 +26,7 @@ Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
 Blockly.JavaScript.text = function() {
   // Text value.
-  var code = Blockly.JavaScript.quote_(this.getTitleText('TEXT'));
+  var code = Blockly.JavaScript.quote_(this.getTitleValue('TEXT'));
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -60,7 +60,7 @@ Blockly.JavaScript.text_join = function() {
 
 Blockly.JavaScript.text_append = function() {
   // Append to a variable in place.
-  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT',
       Blockly.JavaScript.ORDER_NONE) || '\'\'';

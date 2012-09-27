@@ -32,10 +32,10 @@ Blockly.Language.text_charAt = {
     this.setColour(160);
     //this.appendTitle(Blockly.LANG_TEXT_CHARAT_TITLE_LETTER);
     this.setOutput(true, String);
-    this.appendInput(Blockly.LANG_TEXT_CHARAT_INPUT_AT,
-        Blockly.INPUT_VALUE, 'AT', Number);
-    this.appendInput(Blockly.LANG_TEXT_CHARAT_INPUT_INTEXT,
-        Blockly.INPUT_VALUE, 'VALUE', String);
+    this.appendInput(Blockly.INPUT_VALUE, 'AT', Number)
+        .appendTitle(Blockly.LANG_TEXT_CHARAT_INPUT_AT);
+    this.appendInput(Blockly.INPUT_VALUE, 'VALUE', String)
+        .appendTitle(Blockly.LANG_TEXT_CHARAT_INPUT_INTEXT);
     this.setInputsInline(true);
     this.setTooltip(Blockly.LANG_TEXT_CHARAT_TOOLTIP_1);
   }

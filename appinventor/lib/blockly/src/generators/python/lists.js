@@ -61,8 +61,21 @@ Blockly.Python.lists_isEmpty = function() {
 };
 
 Blockly.Python.lists_indexOf = function() {
-  // Searching a list for a value is the same as search for a substring.
-  return Blockly.Python.text_indexOf.call(this);
+  // Searching a list for a value is NOT the same as search for a substring.
+  var argument0 = Blockly.Python.valueToCode(this, 'FIND',
+      Blockly.Python.ORDER_NONE) || '[]';
+  var argument1 = Blockly.Python.valueToCode(this, 'VALUE',
+      Blockly.Python.ORDER_MEMBER) || '\'\'';
+  var code;
+  if (this.getTitleValue('END') == 'FIRST') {
+    code = argument1 + '.index(' + argument0 + ') + 1';
+    return [code, Blockly.Python.ORDER_MEMBER];
+  }
+  else {
+    code = 'len(' + argument1 + ') - ' + argument1 + '[::-1].index(' +
+        argument0 + ')';
+    return [code, Blockly.Python.ORDER_ADDITIVE];
+  }
 };
 
 Blockly.Python.lists_getIndex = function() {

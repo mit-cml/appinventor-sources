@@ -60,15 +60,10 @@ Blockly.BlockSvg.prototype.init = function() {
   var block = this.block_;
   this.updateColour();
   for (var x = 0; x < block.titleRow.length; x++) {
-    block.titleRow[x].init(block, this);
+    block.titleRow[x].init(block);
   }
   for (var x = 0, input; input = block.inputList[x]; x++) {
-    if (input.label) {
-      input.label.init(block, this);
-    }
-    if (input.type == Blockly.LOCAL_VARIABLE) {
-      input.init(block, this);
-    }
+    input.init();
   }
   if (block.mutator) {
     block.mutator.createIcon();
@@ -178,9 +173,10 @@ Blockly.BlockSvg.destroyUiStep_ = function(clone) {
   if (percent > 1) {
     clone.parentNode.removeChild(clone);
   } else {
-    var translate =
-        (clone.translateX_ + clone.bBox_.width / 2 * percent) + ', ' +
-        (clone.translateY_ + clone.bBox_.height * percent);
+    var x = clone.translateX_ +
+        (Blockly.RTL ? -1 : 1) * clone.bBox_.width / 2 * percent;
+    var y = clone.translateY_ + clone.bBox_.height * percent;
+    var translate = x + ', ' + y;
     var scale = 1 - percent;
     clone.setAttribute('transform', 'translate(' + translate + ')' +
         ' scale(' + scale + ')');
@@ -311,20 +307,18 @@ Blockly.BlockSvg.prototype.removeDragging = function() {
 Blockly.BlockSvg.prototype.render = function() {
   this.block_.rendered = true;
   var titleY = 18;
-  if (!this.block_.collapsed && this.block_.inputsInline &&
-      this.block_.inputList.length) {
+  if (!this.block_.collapsed && this.block_.inputsInline) {
     // Determine if this block will have inline inputs in the top row.
-    var x = 0;
-    do {
-      var input = this.block_.inputList[x];
-      if (input && input.type == Blockly.INPUT_VALUE) {
+    for (var i = 0, input; input = this.block_.inputList[i]; i++) {
+      if (input.type == Blockly.INPUT_VALUE) {
         // Lower the title elements a bit in order to line up with the first
         // row of inline labels.
         titleY += Blockly.BlockSvg.SEP_SPACE_Y;
         break;
+      } else if (input.type == Blockly.NEXT_STATEMENT) {
+        break;
       }
-      x++;
-    } while (input && input.type == Blockly.LOCAL_VARIABLE);
+    }
   }
   var titleX = Blockly.RTL ?
       this.renderTitleRTL_(titleY) : this.renderTitleLTR_(titleY);
@@ -373,15 +367,7 @@ Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
   }
 
   // Move the title element(s) into position.
-  for (var x = 0, title; title = this.block_.titleRow[x]; x++) {
-    var titleWidth = title.width();
-    titleX -= titleWidth;
-    title.getRootElement().setAttribute('transform',
-        'translate(' + titleX + ', ' + titleY + ')');
-    if (titleWidth) {
-      titleX -= Blockly.BlockSvg.SEP_SPACE_X;
-    }
-  }
+  titleX = this.renderTitles_(this.block_.titleRow, titleX, titleY);
 
   if (this.block_.previousConnection || this.block_.nextConnection) {
     titleX = Math.min(titleX, -Blockly.BlockSvg.NOTCH_WIDTH -
@@ -422,20 +408,44 @@ Blockly.BlockSvg.prototype.renderTitleLTR_ = function(titleY) {
   }
 
   // Move the title element(s) into position.
-  for (var x = 0, title; title = this.block_.titleRow[x]; x++) {
-    title.getRootElement().setAttribute('transform',
-        'translate(' + titleX + ', ' + titleY + ')');
-    var titleWidth = title.width();
-    if (titleWidth) {
-      titleX += titleWidth + Blockly.BlockSvg.SEP_SPACE_X;
-    }
-  }
+  titleX = this.renderTitles_(this.block_.titleRow, titleX, titleY);
 
   if (this.block_.previousConnection || this.block_.nextConnection) {
     titleX = Math.max(titleX, Blockly.BlockSvg.NOTCH_WIDTH +
                               Blockly.BlockSvg.SEP_SPACE_X);
   }
   return titleX;
+};
+
+/**
+ * Render a list of titles starting at the specified location.
+ * @param {!Array.<!Blockly.Field>} titleList List of titles.
+ * @param {number} cursorX X-coordinate to start the titles.
+ * @param {number} cursorY Y-coordinate to start the titles.
+ * @return {number} The final X-coordinate of the last title's end, plus a gap.
+ * @private
+ */
+Blockly.BlockSvg.prototype.renderTitles_ = function(titleList,
+                                                    cursorX, cursorY) {
+  for (var t = 0, title; title = titleList[t]; t++) {
+    if (Blockly.RTL) {
+      var titleWidth = title.width();
+      cursorX -= titleWidth;
+      title.getRootElement().setAttribute('transform',
+          'translate(' + cursorX + ', ' + cursorY + ')');
+      if (titleWidth) {
+        cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
+      }
+    } else {
+      title.getRootElement().setAttribute('transform',
+          'translate(' + cursorX + ', ' + cursorY + ')');
+      var titleWidth = title.width();
+      if (titleWidth) {
+        cursorX += titleWidth + Blockly.BlockSvg.SEP_SPACE_X;
+      }
+    }
+  }
+  return cursorX;
 };
 
 /**
@@ -449,10 +459,8 @@ Blockly.BlockSvg.prototype.renderTitleLTR_ = function(titleY) {
 Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
   var inputRows = [];
   inputRows.labelValueWidth = 0;  // Width of longest value 1st input label.
-  inputRows.labelVariableWidth = 0;  // Width of longest variable label.
   inputRows.labelStatementWidth = 0;  // Width of longest statement label.
   inputRows.hasValue = false;
-  inputRows.hasVariable = false;
   inputRows.hasStatement = false;
   var lastType = undefined;
   if (this.block_.collapsed) {
@@ -463,17 +471,14 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
     var row;
     if (!this.block_.inputsInline ||
         !(lastType == Blockly.INPUT_VALUE ||
-          lastType == Blockly.LOCAL_VARIABLE ||
           lastType == Blockly.DUMMY_INPUT) ||
         !(input.type == Blockly.INPUT_VALUE ||
-          input.type == Blockly.LOCAL_VARIABLE ||
           input.type == Blockly.DUMMY_INPUT)) {
       // Create new row.
       lastType = input.type;
       row = [];
       if (this.block_.inputsInline &&
           (input.type == Blockly.INPUT_VALUE ||
-           input.type == Blockly.LOCAL_VARIABLE ||
            input.type == Blockly.DUMMY_INPUT)) {
         row.type = Blockly.BlockSvg.INLINE;
       } else {
@@ -494,15 +499,13 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
       if (input.type == Blockly.INPUT_VALUE) {
         input.renderWidth = Blockly.BlockSvg.TAB_WIDTH +
             Blockly.BlockSvg.SEP_SPACE_X;
-      } else if (input.type == Blockly.LOCAL_VARIABLE) {
-        input.renderWidth = input.width() + Blockly.BlockSvg.SEP_SPACE_X;
       } else if (input.type == Blockly.DUMMY_INPUT) {
         input.renderWidth = 0;
       }
     }
     // Expand input size if there is a connection.
-    if (input.targetConnection) {
-      var linkedBlock = input.targetBlock().getSvgRoot();
+    if (input.connection && input.connection.targetConnection) {
+      var linkedBlock = input.connection.targetBlock().getSvgRoot();
       try {
         var bBox = linkedBlock.getBBox();
       } catch (e) {
@@ -524,18 +527,19 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
     }
 
     row.height = Math.max(row.height, input.renderHeight);
-    if (input.label) {
-      if (input.label.getComputedTextLength) {
+    input.labelWidth = 0;
+    for (var j = 0, title; title = input.titleRow[j]; j++) {
+      if (j != 0) {
+        input.labelWidth += Blockly.BlockSvg.SEP_SPACE_X;
+      }
+      if (title.getComputedTextLength) {
         // Plain text label.
-        input.labelWidth = input.label.getComputedTextLength();
+        input.labelWidth += title.getComputedTextLength();
       } else {
         // Editable label.
-        var labelBox = input.label.render();
-        input.labelWidth = labelBox ? labelBox.width : 0;
+        var labelBox = title.render();
+        input.labelWidth += labelBox ? labelBox.width : 0;
       }
-    } else {
-      // No label.
-      input.labelWidth = 0;
     }
 
     if (row.type == Blockly.BlockSvg.INLINE) {
@@ -543,10 +547,8 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
         inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
                                              input.labelWidth);
       }
-    } else if (row.type == Blockly.DUMMY_INPUT) {
-      inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
-                                           input.labelWidth);
-    } else if (row.type == Blockly.INPUT_VALUE) {
+    } else if (row.type == Blockly.INPUT_VALUE ||
+               row.type == Blockly.DUMMY_INPUT) {
       inputRows.hasValue = true;
       inputRows.labelValueWidth = Math.max(inputRows.labelValueWidth,
                                            input.labelWidth);
@@ -554,24 +556,18 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
       inputRows.hasStatement = true;
       inputRows.labelStatementWidth = Math.max(inputRows.labelStatementWidth,
                                                input.labelWidth);
-    } else if (row.type == Blockly.LOCAL_VARIABLE) {
-      inputRows.hasVariable = true;
-      inputRows.labelVariableWidth = Math.max(inputRows.labelVariableWidth,
-                                              input.labelWidth);
     }
   }
 
   // Make inline rows a bit thicker in order to enclose the values.
-  if (this.block_.inputsInline) {
-    for (var y = 0; y < inputRows.length; y++) {
-      var row = inputRows[y];
-      if (row.type == Blockly.BlockSvg.INLINE) {
-        for (var z = 0; z < row.length; z++) {
-          var input = row[z];
-          if (input.type == Blockly.INPUT_VALUE) {
-            row.height += 2 * Blockly.BlockSvg.SEP_SPACE_Y;
-            break;
-          }
+  for (var y = 0, row; row = inputRows[y]; y++) {
+    row.thicker = false;
+    if (this.block_.inputsInline && row.type == Blockly.BlockSvg.INLINE) {
+      for (var z = 0, input; input = row[z]; z++) {
+        if (input.type == Blockly.INPUT_VALUE) {
+          row.height += 2 * Blockly.BlockSvg.SEP_SPACE_Y;
+          row.thicker = true;
+          break;
         }
       }
     }
@@ -589,6 +585,13 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(inputList) {
  * @private
  */
 Blockly.BlockSvg.prototype.renderDraw_ = function(titleX, inputRows) {
+  if (this.block_.inputsInline && inputRows.hasStatement) {
+    // The 'rightEdge' is not used for inline blocks.
+    // Set a minimum title size to prevent ugly collapses on pathological
+    // blocks where a statement input is wider than a value or dummy input.
+    titleX = Math.max(titleX, Blockly.BlockSvg.NOTCH_WIDTH +
+                              Blockly.BlockSvg.SEP_SPACE_X);
+  }
   // Fetch the block's coordinates on the surface for use in anchoring
   // the connections.
   var connectionsXY = this.block_.getRelativeToSurfaceXY();
@@ -602,11 +605,6 @@ Blockly.BlockSvg.prototype.renderDraw_ = function(titleX, inputRows) {
   if (inputRows.hasValue) {
     rightEdge = Math.max(rightEdge, titleX +
         (inputRows.labelValueWidth ? inputRows.labelValueWidth +
-        Blockly.BlockSvg.SEP_SPACE_X : 0) + Blockly.BlockSvg.TAB_WIDTH);
-  }
-  if (inputRows.hasVariable) {
-    rightEdge = Math.max(rightEdge, titleX +
-        (inputRows.labelVariableWidth ? inputRows.labelVariableWidth +
         Blockly.BlockSvg.SEP_SPACE_X : 0) + Blockly.BlockSvg.TAB_WIDTH);
   }
 
@@ -708,24 +706,21 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
   var cursorX = 0;
   var cursorY = 0;
   var connectionX, connectionY;
-  for (var y = 0; y < inputRows.length; y++) {
+  for (var y = 0, row; row = inputRows[y]; y++) {
     highlightSteps.push('M', (rightEdge - 1) + ',' + (cursorY + 1));
-    var row = inputRows[y];
     if (row.type == Blockly.BlockSvg.INLINE) {
-      // Inline inputs and/or variables.
+      // Inline inputs and/or dummy inputs.
       cursorX = Math.max(titleX + inputRows.labelValueWidth,
                          inputRows.labelStatementWidth);
       cursorX -= row[0].labelWidth;
-      for (var x = 0; x < row.length; x++) {
-        var input = row[x];
-        if (input.label) {
-          var labelElement = input.label.getRootElement();
-          var labelX = Blockly.RTL ? -cursorX - input.labelWidth : cursorX;
-          var labelY = cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y;
-          labelElement.setAttribute('transform',
-              'translate(' + labelX + ',' + labelY + ')');
-          cursorX += input.labelWidth + Blockly.BlockSvg.SEP_SPACE_X;
+      for (var x = 0, input; input = row[x]; x++) {
+        var labelX = Blockly.RTL ? -cursorX : cursorX;
+        var labelY = cursorY + 18;
+        if (row.thicker) {
+          // Lower the label slightly.
+          labelY += Blockly.BlockSvg.SEP_SPACE_Y;
         }
+        cursorX = this.renderTitles_(input.titleRow, labelX, labelY);
         if (input.type != Blockly.DUMMY_INPUT) {
           cursorX += input.renderWidth + Blockly.BlockSvg.SEP_SPACE_X;
         }
@@ -777,23 +772,10 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
           }
           connectionY = connectionsXY.y + cursorY +
               Blockly.BlockSvg.SEP_SPACE_Y;
-          input.moveTo(connectionX, connectionY);
-          if (input.targetConnection) {
-            input.tighten_();
+          input.connection.moveTo(connectionX, connectionY);
+          if (input.connection.targetConnection) {
+            input.connection.tighten_();
           }
-        } else if (input.type == Blockly.LOCAL_VARIABLE) {
-          var fieldGroup = input.getRootElement();
-          var fieldWidth = input.width();
-          if (Blockly.RTL) {
-            fieldGroup.setAttribute('transform', 'translate(' +
-                (-cursorX + Blockly.BlockSvg.SEP_SPACE_X * 1.5) +
-                ', ' + (cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y) + ')');
-          } else {
-            fieldGroup.setAttribute('transform', 'translate(' +
-                (cursorX - fieldWidth - Blockly.BlockSvg.SEP_SPACE_X * 1.5) +
-                ', ' + (cursorY + 18 + Blockly.BlockSvg.SEP_SPACE_Y) + ')');
-          }
-          fieldWidth += Blockly.BlockSvg.SEP_SPACE_X / 2;
         }
       }
       steps.push('H', cursorX);
@@ -805,16 +787,13 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
     } else if (row.type == Blockly.INPUT_VALUE) {
       // External input.
       var input = row[0];
-      if (input.label) {
-        var labelElement = input.label.getRootElement();
-        var labelX = Blockly.RTL ? -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
-            Blockly.BlockSvg.SEP_SPACE_X :
-            rightEdge - Blockly.BlockSvg.TAB_WIDTH -
-            Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
-        var labelY = cursorY + 18;
-        labelElement.setAttribute('transform',
-            'translate(' + labelX + ',' + labelY + ')');
+      var labelX = rightEdge - Blockly.BlockSvg.TAB_WIDTH -
+          Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
+      if (Blockly.RTL) {
+        labelX = -labelX;
       }
+      var labelY = cursorY + 18;
+      this.renderTitles_(input.titleRow, labelX, labelY);
       steps.push(Blockly.BlockSvg.TAB_PATH_DOWN);
       steps.push('v', row.height - Blockly.BlockSvg.TAB_HEIGHT);
       if (Blockly.RTL) {
@@ -832,65 +811,23 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       connectionX = connectionsXY.x +
           (Blockly.RTL ? -rightEdge - 1 : rightEdge + 1);
       connectionY = connectionsXY.y + cursorY;
-      input.moveTo(connectionX, connectionY);
-      if (input.targetConnection) {
-        input.tighten_();
+      input.connection.moveTo(connectionX, connectionY);
+      if (input.connection.targetConnection) {
+        input.connection.tighten_();
       }
     } else if (row.type == Blockly.DUMMY_INPUT) {
       // External naked label.
       var input = row[0];
-      if (input.label) {
-        var labelElement = input.label.getRootElement();
-        var labelX = Blockly.RTL ? -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
-            Blockly.BlockSvg.SEP_SPACE_X :
-            rightEdge - Blockly.BlockSvg.TAB_WIDTH -
-            Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
-        var labelY = cursorY + 18;
-        labelElement.setAttribute('transform',
-            'translate(' + labelX + ',' + labelY + ')');
+      var labelX = rightEdge - Blockly.BlockSvg.TAB_WIDTH -
+          Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
+      if (Blockly.RTL) {
+        labelX = -labelX;
       }
+      var labelY = cursorY + 18;
+      cursorX = this.renderTitles_(input.titleRow, labelX, labelY);
       steps.push('v', row.height);
       if (Blockly.RTL) {
         highlightSteps.push('v', row.height - 2);
-      }
-    } else if (row.type == Blockly.LOCAL_VARIABLE) {
-      // External variable.
-      var input = row[0];
-      if (input.label) {
-        var labelElement = input.label.getRootElement();
-        var labelX;
-        var labelY = cursorY + 18;
-        if (Blockly.RTL) {
-          labelX = -rightEdge + Blockly.BlockSvg.TAB_WIDTH +
-                   Blockly.BlockSvg.SEP_SPACE_X;
-        } else {
-          labelX = rightEdge - Blockly.BlockSvg.TAB_WIDTH -
-                   Blockly.BlockSvg.SEP_SPACE_X - input.labelWidth;
-        }
-        labelElement.setAttribute('transform',
-            'translate(' + labelX + ',' + labelY + ')');
-      }
-      var fieldGroup = input.getRootElement();
-      var fieldWidth = input.width();
-      if (Blockly.RTL) {
-        fieldGroup.setAttribute('transform', 'translate(' +
-            (-rightEdge - fieldWidth + Blockly.BlockSvg.SEP_SPACE_X / 2) +
-            ', ' + (cursorY + 18) + ')');
-      } else {
-        fieldGroup.setAttribute('transform', 'translate(' +
-            (rightEdge - Blockly.BlockSvg.SEP_SPACE_X / 2) +
-            ', ' + (cursorY + 18) + ')');
-      }
-      fieldWidth += Blockly.BlockSvg.SEP_SPACE_X / 2;
-      steps.push('H', rightEdge + fieldWidth);
-      steps.push('v', row.height);
-      steps.push('h', -fieldWidth);
-      if (Blockly.RTL) {
-        highlightSteps.push('h', fieldWidth);
-        highlightSteps.push('v', row.height - 2);
-        highlightSteps.push('m', -fieldWidth + ',0');
-      } else {
-        highlightSteps.push('h', fieldWidth + 1);
       }
     } else if (row.type == Blockly.NEXT_STATEMENT) {
       // Nested statement.
@@ -903,17 +840,13 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
         }
         cursorY += Blockly.BlockSvg.MIN_BLOCK_Y;
       }
-      if (input.label) {
-        var labelElement = input.label.getRootElement();
-        if (Blockly.RTL) {
-          labelElement.setAttribute('x', -Blockly.BlockSvg.SEP_SPACE_X -
-              inputRows.labelStatementWidth);
-        } else {
-          labelElement.setAttribute('x', Blockly.BlockSvg.SEP_SPACE_X +
-              inputRows.labelStatementWidth - input.labelWidth);
-        }
-        labelElement.setAttribute('y', cursorY + 18);
+      var labelX = Blockly.BlockSvg.SEP_SPACE_X +
+          inputRows.labelStatementWidth - input.labelWidth;
+      if (Blockly.RTL) {
+        labelX = -labelX;
       }
+      var labelY = cursorY + 18;
+      cursorX = this.renderTitles_(input.titleRow, labelX, labelY);
       cursorX = Blockly.BlockSvg.SEP_SPACE_X + inputRows.labelStatementWidth +
                 Blockly.BlockSvg.SEP_SPACE_X + Blockly.BlockSvg.NOTCH_WIDTH;
       steps.push('H', cursorX);
@@ -967,9 +900,9 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       // Create statement connection.
       connectionX = connectionsXY.x + (Blockly.RTL ? -cursorX : cursorX);
       connectionY = connectionsXY.y + cursorY + 1;
-      input.moveTo(connectionX, connectionY);
-      if (input.targetConnection) {
-        input.tighten_();
+      input.connection.moveTo(connectionX, connectionY);
+      if (input.connection.targetConnection) {
+        input.connection.tighten_();
       }
       if (y == inputRows.length - 1 ||
           inputRows[y + 1].type == Blockly.NEXT_STATEMENT) {

@@ -26,7 +26,7 @@ Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
 Blockly.JavaScript.math_number = function() {
   // Numeric value.
-  var code = window.parseFloat(this.getTitleText('NUM'));
+  var code = window.parseFloat(this.getTitleValue('NUM'));
   return [code, Blockly.JavaScript.ORDER_ATOMIC];
 };
 
@@ -59,7 +59,7 @@ Blockly.JavaScript.math_change = function() {
   // Add to a variable in place.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'DELTA',
       Blockly.JavaScript.ORDER_ADDITION) || '0';
-  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleText('VAR'),
+  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return varName + ' = (typeof ' + varName + ' == \'number\' ? ' + varName +
       ' : 0) + ' + argument0 + ';\n';
@@ -99,7 +99,7 @@ Blockly.JavaScript.math_single = function() {
     case 'EXP':
       code = 'Math.exp(' + argNaked + ')';
       break;
-    case '10POW':
+    case 'POW10':
       code = 'Math.pow(10,' + argNaked + ')';
       break;
     case 'ROUND':
@@ -140,7 +140,7 @@ Blockly.JavaScript.math_single = function() {
       code = 'Math.atan(' + argNaked + ') / Math.PI * 180';
       break;
     default:
-      throw 'Unknown math operator.';
+      throw 'Unknown math operator: ' + operator;
   }
   return [code, Blockly.JavaScript.ORDER_DIVISION];
 };
@@ -300,7 +300,7 @@ Blockly.JavaScript.math_on_list = function() {
           '(' + list + ')';
       break;
     default:
-      throw 'Unknown operator.';
+      throw 'Unknown operator: ' + func;
   }
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };

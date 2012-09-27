@@ -83,7 +83,7 @@ Blockly.JavaScript.unittest_assertequals = function() {
   // Asserts that a value equals another value.
   var resultsVar = Blockly.JavaScript.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.JavaScript.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.JavaScript.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.JavaScript.definitions_['unittest_assertequals']) {
     var functionName = Blockly.JavaScript.variableDB_.getDistinctName(
         'assertEquals', Blockly.Generator.NAME_TYPE);
@@ -116,7 +116,7 @@ Blockly.JavaScript.unittest_asserttrue = function() {
   // Asserts that a value is true.
   var resultsVar = Blockly.JavaScript.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.JavaScript.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.JavaScript.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.JavaScript.definitions_['unittest_asserttrue']) {
     var functionName = Blockly.JavaScript.variableDB_.getDistinctName(
         'assertTrue', Blockly.Generator.NAME_TYPE);
@@ -147,7 +147,7 @@ Blockly.JavaScript.unittest_assertfalse = function() {
   // Asserts that a value is false.
   var resultsVar = Blockly.JavaScript.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.JavaScript.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.JavaScript.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.JavaScript.definitions_['unittest_assertfalse']) {
     var functionName = Blockly.JavaScript.variableDB_.getDistinctName(
         'assertFalse', Blockly.Generator.NAME_TYPE);
@@ -178,7 +178,7 @@ Blockly.JavaScript.unittest_fail = function() {
   // Always assert an error.
   var resultsVar = Blockly.JavaScript.variableDB_.getName('unittestResults',
       Blockly.Variables.NAME_TYPE);
-  var message = Blockly.JavaScript.quote_(this.getTitleText('MESSAGE'));
+  var message = Blockly.JavaScript.quote_(this.getTitleValue('MESSAGE'));
   if (!Blockly.JavaScript.definitions_['unittest_fail']) {
     var functionName = Blockly.JavaScript.variableDB_.getDistinctName(
         'fail', Blockly.Generator.NAME_TYPE);

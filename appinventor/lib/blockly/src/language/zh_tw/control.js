@@ -31,15 +31,15 @@ Blockly.Language.controls_for = {
   init: function() {
     this.setColour(120);
     //this.appendTitle(Blockly.LANG_CONTROLS_FOR_TITLE_COUNT);
-    this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_WITH,
-        Blockly.LOCAL_VARIABLE, 'VAR').setText(
-        Blockly.Variables.generateUniqueName());
-    this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_FROM,
-        Blockly.INPUT_VALUE, 'FROM', Number);
-    this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_TO,
-        Blockly.INPUT_VALUE, 'TO', Number);
-    this.appendInput(Blockly.LANG_CONTROLS_FOR_INPUT_DO,
-        Blockly.NEXT_STATEMENT, 'DO');
+    var input = this.appendInput(Blockly.DUMMY_INPUT, '');
+    input.appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_WITH);
+    input.appendTitle(new Blockly.FieldVariable(null), 'VAR');
+    this.appendInput(Blockly.INPUT_VALUE, 'FROM', Number)
+        .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_FROM);
+    this.appendInput(Blockly.INPUT_VALUE, 'TO', Number)
+        .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_TO);
+    this.appendInput(Blockly.NEXT_STATEMENT, 'DO')
+        .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_DO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setInputsInline(true);
@@ -47,15 +47,15 @@ Blockly.Language.controls_for = {
     var thisBlock = this;
     this.setTooltip(function() {
       return Blockly.LANG_CONTROLS_FOR_TOOLTIP_1.replace('%1',
-          thisBlock.getInputVariable('VAR'));
+          thisBlock.getTitleValue('VAR'));
     });
   },
   getVars: function() {
-    return [this.getInputVariable('VAR')];
+    return [this.getTitleValue('VAR')];
   },
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getInputVariable('VAR'))) {
-      this.setInputVariable('VAR', newName);
+    if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
+      this.setTitleValue(newName, 'VAR');
     }
   }
 };

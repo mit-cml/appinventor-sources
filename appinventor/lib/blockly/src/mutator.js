@@ -163,7 +163,7 @@ Blockly.Mutator.prototype.createEditor_ = function() {
 
 /**
  * Callback function triggered when the bubble has resized.
- * Resize the text area accordingly.
+ * Resize the workspace accordingly.
  */
 Blockly.Mutator.prototype.resizeBubble_ = function() {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
@@ -273,12 +273,7 @@ Blockly.Mutator.prototype.setVisible_ = function(visible) {
     this.resizeBubble_();
     // When the mutator's workspace changes, update the source block.
     Blockly.bindEvent_(this.workspace_.getCanvas(), 'blocklyWorkspaceChange',
-        this.block_, function() {
-          if (thisObj.rootBlock_.workspace == thisObj.workspace_) {
-            thisObj.resizeBubble_();
-            thisObj.block_.compose(thisObj.rootBlock_)
-          }
-        });
+        this.block_, function() {thisObj.workspaceChanged_();});
     this.bubble_.setDisabled(!this.isPinned_);
     this.updateColour();
   } else {
@@ -301,6 +296,43 @@ Blockly.Mutator.prototype.setVisible_ = function(visible) {
   }
   // Restore the bubble location after the visibility switch.
   this.setBubbleLocation(relativeXY.x, relativeXY.y);
+};
+
+/**
+ * Update the source block when the mutator's blocks are changed.
+ * Delete any block that's out of bounds.
+ * Fired whenever a change is made to the mutator's workspace.
+ * @private
+ */
+Blockly.Mutator.prototype.workspaceChanged_ = function() {
+  // Delete any block that's sitting on top of the flyout, or above the window.
+  if (Blockly.Block.dragMode_ == 0) {
+    var blocks = this.workspace_.getTopBlocks(false);
+    for (var b = 0, block; block = blocks[b]; b++) {
+      var xy = block.getRelativeToSurfaceXY();
+      if (xy.y < 0 || (Blockly.RTL ?
+          xy.x > -this.flyout_.width_ : xy.x < this.flyout_.width_)) {
+        block.destroy(false, false);
+      }
+    }
+  }
+ 
+  // When the mutator's workspace changes, update the source block.
+  if (this.rootBlock_.workspace == this.workspace_) {
+    this.resizeBubble_();
+    // Switch off rendering while the source block is rebuilt.
+    var savedRendered = this.block_.rendered;
+    this.block_.rendered = false;
+    // Allow the source block to rebuild itself.
+    this.block_.compose(this.rootBlock_)
+    // Restore rendering and show the changes.
+    this.block_.rendered = savedRendered;
+    if (this.block_.rendered) {
+      this.block_.render();
+    }
+    // The source block may have changed, notify its workspace.
+    this.block_.workspace.fireChangeEvent();
+  }
 };
 
 /**
