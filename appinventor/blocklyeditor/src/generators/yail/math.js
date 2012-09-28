@@ -28,7 +28,7 @@ Blockly.Yail = Blockly.Generator.get('Yail');
 
 Blockly.Yail.math_number = function() {
   // Numeric value.
-  var code = window.parseFloat(this.getTitleText('NUM'));
+  var code = window.parseFloat(this.getTitleValue('NUM'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 

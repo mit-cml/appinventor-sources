@@ -30,7 +30,7 @@ Blockly.Yail = Blockly.Generator.get('Yail');
 
 Blockly.Yail.text = function() {
   // Text value.
-  var code = Blockly.Yail.quote_(this.getTitleText('TEXT'));
+  var code = Blockly.Yail.quote_(this.getTitleValue('TEXT'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 

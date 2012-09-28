@@ -60,7 +60,8 @@ Blockly.Language.logic_negate = {
   init : function() {
     this.setColour(120);
     this.setOutput(true, Boolean);
-    this.appendInput('not', Blockly.INPUT_VALUE, 'BOOL', Boolean);
+    this.appendInput(Blockly.INPUT_VALUE, 'BOOL', Boolean)
+        .appendTitle('not');
     this.setTooltip('Returns true if the input is false.\n' +
         'Returns false if the input is true.');
   }
@@ -72,8 +73,9 @@ Blockly.Language.logic_compare = {
   helpUrl : '',
   init : function() {
     this.setColour(120);
-    this.appendInput('', Blockly.INPUT_VALUE, 'A', null);
-    this.appendInput('=', Blockly.INPUT_VALUE, 'B', null);
+    this.appendInput(Blockly.INPUT_VALUE, 'A', null);
+    this.appendInput(Blockly.INPUT_VALUE, 'B', null)
+        .appendTitle('=');
     this.setInputsInline(true);
     this.setOutput(true, Boolean);
     this.setTooltip('Tests whether two things are equal. \n' +
@@ -83,17 +85,17 @@ Blockly.Language.logic_compare = {
 
 Blockly.Language.logic_operation = {
   // Logical operations: 'and', 'or'.
-  // TODO: (Andrew) Make these take multiple arguments.
   category : Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_LOGIC_OPERATION_HELPURL,
   init : function() {
     this.setColour(120);
     this.setOutput(true, Boolean);
-    this.appendInput('', Blockly.INPUT_VALUE, 'A', Boolean);
+    this.appendInput(Blockly.INPUT_VALUE, 'A', Boolean);
     var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
-    this.appendInput([ dropdown, 'OP' ], Blockly.INPUT_VALUE, 'B', Boolean);
+    this.appendInput(Blockly.INPUT_VALUE, 'B', Boolean)
+        .appendTitle(dropdown, 'OP');
     this.setInputsInline(true);
-    // Assign 'this' to a variable for use in the tooltip closure below.
+    // Assign 'this' to a variable for use in the tooltip closure below. 
     var thisBlock = this;
     this.setTooltip(function() {
       var op = thisBlock.getTitleValue('OP');
@@ -102,9 +104,9 @@ Blockly.Language.logic_operation = {
   }
 };
 
-Blockly.Language.logic_operation.OPERATORS = [
-    [ Blockly.LANG_LOGIC_OPERATION_AND, 'AND' ],
-    [ Blockly.LANG_LOGIC_OPERATION_OR, 'OR' ] ];
+Blockly.Language.logic_operation.OPERATORS =
+    [[Blockly.LANG_LOGIC_OPERATION_AND, 'AND'],
+     [Blockly.LANG_LOGIC_OPERATION_OR, 'OR']];
 
 Blockly.Language.logic_operation.TOOLTIPS = {
   AND : 'Returns true if all inputs are true.',
