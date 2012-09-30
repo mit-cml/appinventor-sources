@@ -126,6 +126,7 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   // and Yail type of the property
   var getters = [], setters = [] ;
   var propYailTypes = {};
+  var propTooltips = {};
   for (var i = 0, propType; propType = typeDescription.blockProperties[i]; i++) {
     // Note: Each item in the menu is a two-element array with a human-readable
     // text and a language-neutral value. For now we leave these the same,
@@ -145,35 +146,45 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
       // The contructors will convert them to Blockly types to use in
       // the socket restrictions
       propYailTypes[propType.name] = propType.type;
+      propTooltips[propType.name] = propType.description;
   }
 
+  if (getters.length > 0) {
   Blockly.Component.addBlockAndGenerator(name,
     name + '_getproperty',
-    new Blockly.ComponentBlock.getter(getters, propYailTypes, name),
+    new Blockly.ComponentBlock.getter(getters, propYailTypes, propTooltips, name),
     Blockly.Yail.getproperty(name));
+  };
 
+   if (setters.length > 0) {
   Blockly.Component.addBlockAndGenerator(name,
     name + '_setproperty',
-    new Blockly.ComponentBlock.setter(setters, propYailTypes, name),
+    new Blockly.ComponentBlock.setter(setters, propYailTypes, propTooltips, name),
     Blockly.Yail.setproperty(name));
+   };
 
   if (makeGenerics) {
 
+    if (getters.length > 0) {
     Blockly.Component.addGenericBlockAndGenerator(typeName,
       typeName + '_getproperty',
-      new Blockly.ComponentBlock.genericGetter(getters, propYailTypes, typeName),
+      new Blockly.ComponentBlock.genericGetter(getters, propYailTypes, propTooltips, typeName),
       Blockly.Yail.genericGetproperty(typeName));
+    }
 
+    if (setters.length > 0) {
     Blockly.Component.addGenericBlockAndGenerator(typeName,
       typeName + '_setproperty',
-      new Blockly.ComponentBlock.genericSetter(setters, propYailTypes, typeName),
+      new Blockly.ComponentBlock.genericSetter(setters, propYailTypes, propTooltips, typeName),
       Blockly.Yail.genericSetproperty(typeName));
+    }
   }
 
   Blockly.Component.addBlockAndGenerator(name,
     name + '_component',
     new Blockly.ComponentBlock.component(name),
     Blockly.Yail.componentObject(name));
+
 };
 /**
  * Rename component with given uid and instance name oldname to newname

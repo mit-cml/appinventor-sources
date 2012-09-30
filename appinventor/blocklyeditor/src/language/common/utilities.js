@@ -53,4 +53,29 @@ Blockly.Language.YailTypeToBlocklyType = function(yail) {
 }
 
 
+// Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter
+// that wraps to length 60.
+
+Blockly.Language.setTooltip = function(block, tooltip) {
+    block.setTooltip(Blockly.Language.wrapSentence(tooltip, 60));
+}
+
+// Wrap a string by splitting at spaces. Permit long chunks if there
+// are no spaces.
+
+Blockly.Language.wrapSentence = function(str, len) {
+  str = str.trim();
+  if (str.length < len) return str;
+  place = (str.lastIndexOf(" ",len));
+  if (place == -1) {
+    return str.substring(0,len).trim() + Blockly.Language.wrapSentence(str.substring(len),len);
+  } else {
+    return str.substring(0,place).trim() + "\n" + Blockly.Language.wrapSentence(str.substring(place),len);
+  }
+}
+
+
+
+
+
 

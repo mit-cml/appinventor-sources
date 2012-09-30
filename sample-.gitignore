@@ -6,4 +6,6 @@
 bin/
 build/
 reports/
+*~
+*.out
 .DS_Store*
