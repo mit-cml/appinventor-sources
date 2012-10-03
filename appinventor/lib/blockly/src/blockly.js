@@ -187,6 +187,7 @@ Blockly.mainWorkspace = null;
 /**
  * Contents of the local clipboard.
  * @type {Element}
+ * @private
  */
 Blockly.clipboard_ = null;
 

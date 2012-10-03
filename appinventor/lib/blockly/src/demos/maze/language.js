@@ -140,10 +140,10 @@ Blockly.Language.controls_forever = {
   helpUrl: 'http://code.google.com/p/blockly/wiki/Repeat',
   init: function() {
     this.setColour(120);
-    this.appendTitle('repeat forever');
+    this.appendTitle('repeat until finished');
     this.appendInput(Blockly.NEXT_STATEMENT, 'DO').appendTitle('do');
     this.setPreviousStatement(true);
-    this.setTooltip('Do the enclosed statements forever.');
+    this.setTooltip('Repeat the enclosed steps until finish point is reached.');
   }
 };
 

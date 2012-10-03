@@ -57,7 +57,7 @@ Blockly.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = 'else';
 Blockly.LANG_CONTROLS_IF_ELSE_TOOLTIP_1 = 'Add a final, catch-all condition to the if block.';
 
 Blockly.LANG_CONTROLS_WHILEUNTIL_HELPURL = 'http://code.google.com/p/blockly/wiki/Repeat';
-Blockly.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT= 'repeat';
+Blockly.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = 'repeat';
 Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = 'do';
 Blockly.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = 'while';
 Blockly.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = 'until';
@@ -73,11 +73,11 @@ Blockly.LANG_CONTROLS_FOR_INPUT_TO = 'to';
 Blockly.LANG_CONTROLS_FOR_INPUT_DO = 'do';
 Blockly.LANG_CONTROLS_FOR_TOOLTIP_1 = 'Count from a start number to an end number.\n' +
     'For each count, set the current count number to\n' +
-    'variable "%1", and then do some statements.';        
+    'variable "%1", and then do some statements.';
 
 Blockly.LANG_CONTROLS_FOREACH_HELPURL = 'http://en.wikipedia.org/wiki/For_loop';
 Blockly.LANG_CONTROLS_FOREACH_TITLE_FOREACH = 'for each';
-Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'item'; 
+Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'item';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR = 'x';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'in list';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_DO = 'do';
@@ -171,7 +171,7 @@ Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN = 'Return the arctangent of a number.';
 
 Blockly.LANG_MATH_ONLIST_HELPURL = '';
 Blockly.LANG_MATH_ONLIST_INPUT_OFLIST = 'of list';
-Blockly.LANG_MATH_ONLIST_OPERATOR_SUM = 'sum'; 
+Blockly.LANG_MATH_ONLIST_OPERATOR_SUM = 'sum';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
 Blockly.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'average';
@@ -226,17 +226,17 @@ Blockly.LANG_TEXT_CREATE_JOIN_TOOLTIP_1 = 'Add, remove, or reorder sections to r
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TITLE_ITEM = 'item';
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TOOLTIP_1 = 'Add an item to the text.';
 
-Blockly.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
+Blockly.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_APPEND_TO = 'to';
 Blockly.LANG_TEXT_APPEND_APPENDTEXT = 'append text';
 Blockly.LANG_TEXT_APPEND_VARIABLE = 'item';
 Blockly.LANG_TEXT_APPEND_TOOLTIP_1 = 'Append some text to variable "%1".';
 
-Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
+Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH = 'length';
 Blockly.LANG_TEXT_LENGTH_TOOLTIP_1 = 'Returns number of letters (including spaces)\n' +
                     'in the provided text.';
-                    
+
 Blockly.LANG_TEXT_ISEMPTY_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = 'is empty';
 Blockly.LANG_TEXT_ISEMPTY_TOOLTIP_1 = 'Returns true if the provided text is empty.';
@@ -257,7 +257,7 @@ Blockly.LANG_TEXT_INDEXOF_TOOLTIP_1 = 'Returns the index of the first/last occur
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_FIRST = 'first';
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_LAST = 'last';
 
-Blockly.LANG_TEXT_CHARAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm'
+Blockly.LANG_TEXT_CHARAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
 Blockly.LANG_TEXT_CHARAT_TITLE_LETTER = 'letter';
 Blockly.LANG_TEXT_CHARAT_INPUT_AT = 'at';
 Blockly.LANG_TEXT_CHARAT_INPUT_INTEXT = 'in text';

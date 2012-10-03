@@ -40,7 +40,7 @@ Blockly.JavaScript.procedures_defreturn = function() {
         Blockly.Variables.NAME_TYPE);
   }
   var code = 'function ' + funcName + '(' + args.join(', ') + ') {\n' +
-      branch + returnValue + '}\n';
+      branch + returnValue + '}';
   code = Blockly.JavaScript.scrub_(this, code);
   Blockly.JavaScript.definitions_[funcName] = code;
   return null;

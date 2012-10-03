@@ -57,7 +57,7 @@ Blockly.LANG_CONTROLS_IF_ELSE_TITLE_ELSE = '否則';
 Blockly.LANG_CONTROLS_IF_ELSE_TOOLTIP_1 = 'Add a final, catch-all condition to the if block.';
 
 Blockly.LANG_CONTROLS_WHILEUNTIL_HELPURL = 'http://code.google.com/p/blockly/wiki/Repeat';
-Blockly.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT= '重複';
+Blockly.LANG_CONTROLS_WHILEUNTIL_TITLE_REPEAT = '重複';
 Blockly.LANG_CONTROLS_WHILEUNTIL_INPUT_DO = '執行';
 Blockly.LANG_CONTROLS_WHILEUNTIL_OPERATOR_WHILE = '當';
 Blockly.LANG_CONTROLS_WHILEUNTIL_OPERATOR_UNTIL = '直到';
@@ -73,11 +73,11 @@ Blockly.LANG_CONTROLS_FOR_INPUT_TO = '到';
 Blockly.LANG_CONTROLS_FOR_INPUT_DO = '執行';
 Blockly.LANG_CONTROLS_FOR_TOOLTIP_1 = 'Count from a start number to an end number.\n' +
     'For each count, set the current count number to\n' +
-    'variable "%1", and then do some statements.';        
+    'variable "%1", and then do some statements.';
 
 Blockly.LANG_CONTROLS_FOREACH_HELPURL = 'http://en.wikipedia.org/wiki/For_loop';
 Blockly.LANG_CONTROLS_FOREACH_TITLE_FOREACH = '取出每個';
-Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = ''; 
+Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = '';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR = '變量';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST = '自列表';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_DO = '執行';
@@ -171,7 +171,7 @@ Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN = 'Return the arctangent of a number.';
 
 Blockly.LANG_MATH_ONLIST_HELPURL = '';
 Blockly.LANG_MATH_ONLIST_INPUT_OFLIST = '自列表';
-Blockly.LANG_MATH_ONLIST_OPERATOR_SUM = '總和'; 
+Blockly.LANG_MATH_ONLIST_OPERATOR_SUM = '總和';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MIN = '最小值';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MAX = '最大值';
 Blockly.LANG_MATH_ONLIST_OPERATOR_AVERAGE = '平均值';
@@ -226,17 +226,17 @@ Blockly.LANG_TEXT_CREATE_JOIN_TOOLTIP_1 = 'Add, remove, or reorder sections to r
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TITLE_ITEM = '字串';
 Blockly.LANG_TEXT_CREATE_JOIN_ITEM_TOOLTIP_1 = 'Add an item to the text.';
 
-Blockly.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
+Blockly.LANG_TEXT_APPEND_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_APPEND_TO = '在';
 Blockly.LANG_TEXT_APPEND_APPENDTEXT = '後加入文字';
 Blockly.LANG_TEXT_APPEND_VARIABLE = '變量';
 Blockly.LANG_TEXT_APPEND_TOOLTIP_1 = 'Append some text to variable "%1".';
 
-Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html'; 
+Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH = '長度';
 Blockly.LANG_TEXT_LENGTH_TOOLTIP_1 = 'Returns number of letters (including spaces)\n' +
                     'in the provided text.';
-                    
+
 Blockly.LANG_TEXT_ISEMPTY_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = '為空';
 Blockly.LANG_TEXT_ISEMPTY_TOOLTIP_1 = 'Returns true if the provided text is empty.';
@@ -257,7 +257,7 @@ Blockly.LANG_TEXT_INDEXOF_TOOLTIP_1 = 'Returns the index of the first/last occur
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_FIRST = '第一個';
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_LAST = '最後一個';
 
-Blockly.LANG_TEXT_CHARAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm'
+Blockly.LANG_TEXT_CHARAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
 Blockly.LANG_TEXT_CHARAT_TITLE_LETTER = '';
 Blockly.LANG_TEXT_CHARAT_INPUT_AT = '尋找位於';
 Blockly.LANG_TEXT_CHARAT_INPUT_INTEXT = '的字元在字串';

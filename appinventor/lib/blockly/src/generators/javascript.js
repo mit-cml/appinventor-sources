@@ -106,7 +106,7 @@ Blockly.JavaScript.init = function() {
   if (Blockly.Variables) {
     if (!Blockly.JavaScript.variableDB_) {
       Blockly.JavaScript.variableDB_ =
-          new Blockly.Names(Blockly.JavaScript.RESERVED_WORDS_.split(','));
+          new Blockly.Names(Blockly.JavaScript.RESERVED_WORDS_);
     } else {
       Blockly.JavaScript.variableDB_.reset();
     }
@@ -133,7 +133,7 @@ Blockly.JavaScript.finish = function(code) {
   for (var name in Blockly.JavaScript.definitions_) {
     definitions.push(Blockly.JavaScript.definitions_[name]);
   }
-  return definitions.join('\n') + '\n\n' + code;
+  return definitions.join('\n\n') + '\n\n\n' + code;
 };
 
 /**

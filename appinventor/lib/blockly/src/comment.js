@@ -159,6 +159,7 @@ Blockly.Comment.prototype.createEditor_ = function() {
 /**
  * Callback function triggered when the bubble has resized.
  * Resize the text area accordingly.
+ * @private
  */
 Blockly.Comment.prototype.resizeBubble_ = function() {
   var size = this.bubble_.getBubbleSize();

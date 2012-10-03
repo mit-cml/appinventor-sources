@@ -121,8 +121,7 @@ Blockly.Python.text_charAt = function() {
   // Blockly uses one-based indicies.
   if (argument0.match(/^-?\d+$/)) {
     // If the index is a naked number, decrement it right now.
-    // Except not allowing negative index by constraining at 0.
-    argument0 = Math.max(0, parseInt(argument0, 10) - 1);
+    argument0 = parseInt(argument0, 10) - 1;
   } else {
     // If the index is dynamic, decrement it in code.
     argument0 += ' - 1';

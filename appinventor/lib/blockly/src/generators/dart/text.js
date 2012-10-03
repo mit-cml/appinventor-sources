@@ -126,9 +126,9 @@ Blockly.Dart.text_charAt = function() {
   var argument0 = Blockly.Dart.valueToCode(this, 'AT',
       Blockly.Dart.ORDER_NONE) || '1';
   var argument1 = Blockly.Dart.valueToCode(this, 'VALUE',
-      Blockly.Dart.ORDER_UNARY_POSTFIX) || '[]';
+      Blockly.Dart.ORDER_UNARY_POSTFIX) || '\'\'';
   // Blockly uses one-based arrays.
-  if (argument0.match(/^\d+$/)) {
+  if (argument0.match(/^-?\d+$/)) {
     // If the index is a naked number, decrement it right now.
     argument0 = parseInt(argument0, 10) - 1;
   } else {

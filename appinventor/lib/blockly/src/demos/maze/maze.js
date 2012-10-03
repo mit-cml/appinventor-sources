@@ -58,6 +58,8 @@ Maze.MAP = [
 Maze.ROWS = Maze.MAP.length;
 Maze.COLS = Maze.MAP[0].length;
 Maze.SQUARE_SIZE = 50;
+Maze.PEGMAN_HEIGHT = 52;
+Maze.PEGMAN_WIDTH = 49;
 
 Maze.MAZE_WIDTH = Maze.SQUARE_SIZE * Maze.COLS;
 Maze.MAZE_HEIGHT = Maze.SQUARE_SIZE * Maze.ROWS;
@@ -196,18 +198,19 @@ Maze.draw_map = function() {
   for (var y = 0; y < Maze.ROWS; y++) {
     for (var x = 0; x < Maze.COLS; x++) {
       var tile = String(Math.min(1, Maze.MAP[y][x])) +
-          (y == 0 ? 0 : Math.min(1, Maze.MAP[y - 1][x])) +  
-          (x == Maze.COLS - 1 ? 0 : Math.min(1, Maze.MAP[y][x + 1])) + 
+          (y == 0 ? 0 : Math.min(1, Maze.MAP[y - 1][x])) +
+          (x == Maze.COLS - 1 ? 0 : Math.min(1, Maze.MAP[y][x + 1])) +
           (y == Maze.ROWS - 1 ? 0 : Math.min(1, Maze.MAP[y + 1][x])) +
           (x == 0 ? 0 : Math.min(1, Maze.MAP[y][x - 1]));
 
       if (Maze.tile_SHAPES[tile]) {
         var shape = Maze.tile_SHAPES[tile][0];
         var angle = Maze.tile_SHAPES[tile][1];
-        svg.appendChild(shape(x * Maze.SQUARE_SIZE, y * Maze.SQUARE_SIZE, angle));
+        svg.appendChild(shape(x * Maze.SQUARE_SIZE,
+                              y * Maze.SQUARE_SIZE, angle));
       }
-    } 
-  } 
+    }
+  }
 
   // Draw the grid lines.
   for (var k = 1; k < Maze.ROWS; k++) {
@@ -226,8 +229,37 @@ Maze.draw_map = function() {
     v_line.setAttribute('y2', Maze.MAZE_HEIGHT);
     v_line.setAttribute('stroke', '#C8BEAE');
     v_line.setAttribute('stroke-width', 2);
-    svg.appendChild(v_line);   
+    svg.appendChild(v_line);
   }
+
+  // Add finish marker.
+  var finishMarker = document.createElementNS(Blockly.SVG_NS, 'image');
+  finishMarker.setAttribute('id', 'finish');
+  finishMarker.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
+      'marker.png');
+  finishMarker.setAttribute('height', 34);
+  finishMarker.setAttribute('width', 20);
+  svg.appendChild(finishMarker);
+
+  // Add pegman.
+  var pegmanIcon = document.createElementNS(Blockly.SVG_NS, 'image');
+  pegmanIcon.setAttribute('id', 'pegman');
+  pegmanIcon.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href',
+      'pegman.png');
+  pegmanIcon.setAttribute('height', Maze.PEGMAN_HEIGHT);
+  pegmanIcon.setAttribute('width', Maze.PEGMAN_WIDTH * 18); //49 * 18 = 882
+  pegmanIcon.setAttribute('clip-path', 'url(#pegmanClipPath)');
+  svg.appendChild(pegmanIcon);
+
+  // Pegman's clipPath element, whose (x, y) is reset by Maze.displayPegman
+  var pegmanClip = document.createElementNS(Blockly.SVG_NS, 'clipPath');
+  pegmanClip.setAttribute('id', 'pegmanClipPath');
+  var clipRect = document.createElementNS(Blockly.SVG_NS, 'rect');
+  clipRect.setAttribute('id', 'clipRect');
+  clipRect.setAttribute('width', Maze.PEGMAN_WIDTH);
+  clipRect.setAttribute('height', Maze.PEGMAN_HEIGHT);
+  pegmanClip.appendChild(clipRect);
+  svg.appendChild(pegmanClip);
 };
 
 /**
@@ -288,10 +320,10 @@ Maze.reset = function() {
 
   // Move the finish icon into position.
   var finishIcon = document.getElementById('finish');
-  finishIcon.style.top = Maze.mapOffsetTop_ +
-      Maze.SQUARE_SIZE * (Maze.finish_.y + 0.5) - finishIcon.offsetHeight;
-  finishIcon.style.left = Maze.mapOffsetLeft_ +
-      Maze.SQUARE_SIZE * (Maze.finish_.x + 0.5) - finishIcon.offsetWidth / 2;
+  finishIcon.setAttribute('x', Maze.SQUARE_SIZE * (Maze.finish_.x + 0.5) -
+      finishIcon.getAttribute('width') / 2);
+  finishIcon.setAttribute('y', Maze.SQUARE_SIZE * (Maze.finish_.y + 0.6) -
+      finishIcon.getAttribute('height'));
 
   // Kill all tasks.
   for (var x = 0; x < Maze.pidList.length; x++) {
@@ -534,11 +566,13 @@ Maze.scheduleFinish = function() {
  */
 Maze.displayPegman = function(x, y, d) {
   var pegmanIcon = document.getElementById('pegman');
-  pegmanIcon.style.top = Maze.mapOffsetTop_ +
-      Maze.SQUARE_SIZE * (y + 0.5) - pegmanIcon.offsetHeight / 2 - 8;
-  pegmanIcon.style.left = Maze.mapOffsetLeft_ +
-      Maze.SQUARE_SIZE * (x + 0.5) - pegmanIcon.offsetHeight / 2 + 2;
-  pegmanIcon.style.backgroundPosition = -d * pegmanIcon.offsetWidth;
+  pegmanIcon.setAttribute('x', x * Maze.SQUARE_SIZE - d * Maze.PEGMAN_WIDTH);
+  pegmanIcon.setAttribute('y', Maze.SQUARE_SIZE * (y + 0.5) -
+      Maze.PEGMAN_HEIGHT / 2 - 8);
+
+  var clipRect = document.getElementById('clipRect');
+  clipRect.setAttribute('x', x * Maze.SQUARE_SIZE);
+  clipRect.setAttribute('y', pegmanIcon.getAttribute('y'));
 };
 
 /**

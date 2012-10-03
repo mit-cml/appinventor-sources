@@ -447,7 +447,7 @@
                             </value>
                             <next>
                               <block type="unittest_assertequals" inline="false">
-                                <title name="MESSAGE">exp</title>
+                                <title name="MESSAGE">power10</title>
                                 <value name="ACTUAL">
                                   <block type="math_single" inline="false">
                                     <title name="OP">POW10</title>
@@ -682,7 +682,7 @@
             </value>
             <next>
               <block type="unittest_assertequals" inline="false">
-                <title name="MESSAGE">round up</title>
+                <title name="MESSAGE">round down</title>
                 <value name="ACTUAL">
                   <block type="math_round" inline="false">
                     <title name="OP">ROUNDDOWN</title>

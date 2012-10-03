@@ -30,7 +30,7 @@
  * @param {number} anchorY Absolute vertical position of bubbles anchor point.
  * @param {number} relativeX Distance between anchorX and bubble center.
  * @param {number} relativeY Distance between anchorY and bubble center.
- * @param {?number} bubblewidth Width of bubble, or null if not resizable.
+ * @param {?number} bubbleWidth Width of bubble, or null if not resizable.
  * @param {?number} bubbleHeight Height of bubble, or null if not resizable.
  * @constructor
  */
@@ -423,7 +423,7 @@ Blockly.Bubble.prototype.setBubbleSize = function(width, height) {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
   // Minimum size of a bubble.
   width = Math.max(width, doubleBorderWidth + 45);
-  height = Math.max(height, doubleBorderWidth + 18);
+  height = Math.max(height, doubleBorderWidth + Blockly.BlockSvg.TITLE_HEIGHT);
   this.width_ = width;
   this.height_ = height;
   this.bubbleBack_.setAttribute('width', width);

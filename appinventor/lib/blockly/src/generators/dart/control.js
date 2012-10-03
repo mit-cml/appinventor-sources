@@ -95,7 +95,8 @@ Blockly.Dart.controls_for = function() {
         '    (' + startVar + ' <= ' + endVar + ') ? ' +
         variable0 + ' <= ' + endVar + ' : ' +
         variable0 + ' >= ' + endVar + ';\n' +
-        '    ' + variable0 + ' += (' + startVar + ' <= ' + endVar + ') ? 1 : -1) {\n' +
+        '    ' + variable0 + ' += (' + startVar + ' <= ' + endVar +
+            ') ? 1 : -1) {\n' +
         branch0 + '}\n';
   }
   return code;
@@ -108,25 +109,8 @@ Blockly.Dart.controls_forEach = function() {
   var argument0 = Blockly.Dart.valueToCode(this, 'LIST',
       Blockly.Dart.ORDER_ASSIGNMENT) || '[]';
   var branch0 = Blockly.Dart.statementToCode(this, 'DO');
-  var code;
-  var indexVar = Blockly.Dart.variableDB_.getDistinctName(
-      variable0 + '_index', Blockly.Variables.NAME_TYPE);
-  if (argument0.match(/^\w+$/)) {
-    branch0 = '  ' + variable0 + ' = ' + argument0 + '[' + indexVar + '];\n' +
-        branch0;
-    code = 'for (var ' + indexVar + ' in  ' + argument0 + ') {\n' +
-        branch0 + '}\n';
-  } else {
-    // The list appears to be more complicated than a simple variable.
-    // Cache it to a variable to prevent repeated look-ups.
-    var listVar = Blockly.Dart.variableDB_.getDistinctName(
-        variable0 + '_list', Blockly.Variables.NAME_TYPE);
-    branch0 = '  ' + variable0 + ' = ' + listVar + '[' + indexVar + '];\n' +
-        branch0;
-    code = 'var ' + listVar + ' = ' + argument0 + ';\n' +
-        'for (var ' + indexVar + ' in ' + listVar + ') {\n' +
-        branch0 + '}\n';
-  }
+  var code = 'for (var ' + variable0 + ' in  ' + argument0 + ') {\n' +
+      branch0 + '}\n';
   return code;
 };
 

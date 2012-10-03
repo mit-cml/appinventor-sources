@@ -211,14 +211,21 @@ Blockly.Language.math_on_list = {
   category: Blockly.LANG_CATEGORY_MATH,
   helpUrl: Blockly.LANG_MATH_ONLIST_HELPURL,
   init: function() {
+    // Assign 'this' to a variable for use in the closures below.
+    var thisBlock = this;
     this.setColour(230);
-    this.setOutput(true, [Number, Array]);
-    var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
+    this.setOutput(true, Number);
+    var dropdown = new Blockly.FieldDropdown(this.OPERATORS, function(newOp) {
+      if (newOp == Blockly.LANG_MATH_ONLIST_OPERATOR_MODE) {
+        thisBlock.outputConnection.setCheck(Array);
+      } else {
+        thisBlock.outputConnection.setCheck(Number);
+      }
+      this.setText(newOp);
+    });
     this.appendTitle(dropdown, 'OP');
     this.appendInput(Blockly.INPUT_VALUE, 'LIST', Array)
         .appendTitle(Blockly.LANG_MATH_ONLIST_INPUT_OFLIST);
-    // Assign 'this' to a variable for use in the tooltip closure below.
-    var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.math_on_list.TOOLTIPS[mode];

@@ -24,15 +24,16 @@
 
 /**
  * Class for a database of entity names (variables, functions, etc).
- * @param {Array.<string>} reservedWords An array of words that are illegal for
- *     use as names in a language (e.g. ['new', 'if', 'this', ...]).
+ * @param {string} reservedWords A comma-separated string of words that are
+ *     illegal for use as names in a language (e.g. 'new,if,this,...').
  * @constructor
  */
 Blockly.Names = function(reservedWords) {
   this.reservedDict_ = {};
   if (reservedWords) {
-    for (var x = 0; x < reservedWords.length; x++) {
-      this.reservedDict_[Blockly.Names.PREFIX_ + reservedWords[x]] = true;
+    var splitWords = reservedWords.split(',');
+    for (var x = 0; x < splitWords.length; x++) {
+      this.reservedDict_[Blockly.Names.PREFIX_ + splitWords[x]] = true;
     }
   }
   this.reset();

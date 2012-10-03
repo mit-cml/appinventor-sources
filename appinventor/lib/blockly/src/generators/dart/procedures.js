@@ -41,7 +41,7 @@ Blockly.Dart.procedures_defreturn = function() {
         Blockly.Variables.NAME_TYPE);
   }
   var code = returnType + ' ' + funcName + '(' + args.join(', ') + ') {\n' +
-      branch + returnValue + '}\n';
+      branch + returnValue + '}';
   code = Blockly.Dart.scrub_(this, code);
   Blockly.Dart.definitions_[funcName] = code;
   return null;

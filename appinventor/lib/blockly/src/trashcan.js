@@ -228,7 +228,7 @@ Blockly.Trashcan.animateLid_ = function(trashcan) {
     var closure = function() {
       Blockly.Trashcan.animateLid_(trashcan);
     };
-    this.lidTask_ = window.setTimeout(closure, 5);
+    trashcan.lidTask_ = window.setTimeout(closure, 5);
   }
 };
 

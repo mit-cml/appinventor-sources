@@ -155,11 +155,8 @@ Blockly.Block.terminateDrag_ = function(e) {
     Blockly.unbindEvent_(Blockly.Block.onMouseMoveWrapper_);
     Blockly.Block.onMouseMoveWrapper_ = null;
   }
-  if (Blockly.Block.dragMode_ != 0) {
-    // Terminate a drag operation that started but never finished.
-    // This should never happen, but sometimes a browser will miss a mouse-up.
-    // Touch events often do this on Android.
-    Blockly.Block.dragMode_ = 0;
+  if (Blockly.Block.dragMode_ == 2) {
+    // Terminate a drag operation.
     if (Blockly.selected) {
       var selected = Blockly.selected;
       // Update the connection locations.
@@ -177,6 +174,7 @@ Blockly.Block.terminateDrag_ = function(e) {
       selected.workspace.fireChangeEvent();
     }
   }
+  Blockly.Block.dragMode_ = 0;
 };
 
 /**
@@ -581,7 +579,7 @@ Blockly.Block.prototype.showContextMenu_ = function(x, y) {
     block.showHelp_();
   };
   options.push(helpOption);
-  
+
   // Allow the block to add or modify options.
   if (this.customContextMenu) {
     this.customContextMenu(options);
@@ -1022,7 +1020,7 @@ Blockly.Block.prototype.setTitleValue = function(newValue, name) {
  * Returns the human-readable text from the title of a block.
  * @param {string} name The name of the title.
  * @return {!string} Text from the title or null if title does not exist.
- * @deprecated
+ * @deprecated Use getValueText instead.
  */
 Blockly.Block.prototype.getTitleText = function(name) {
   // In September 2012 getTitleText was deprecated in favour of getTitleValue.
@@ -1039,7 +1037,7 @@ Blockly.Block.prototype.getTitleText = function(name) {
  * Change the title text for a block (e.g. 'choose' or 'remove list item').
  * @param {string} newText Text to be the new title.
  * @param {string} name The name of the title.
- * @deprecated
+ * @deprecated Use setValueText instead.
  */
 Blockly.Block.prototype.setTitleText = function(newText, name) {
   // In September 2012 setTitleText was deprecated in favour of setTitleValue.
@@ -1258,9 +1256,9 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
  *     Blockly.DUMMY_INPUT.
  * @param {string} name Language-neutral identifier which may used to find this
  *     input again.  Should be unique to this block.
- * @param {Object} opt_check Acceptable value type, or list of value types.
+ * @param {*} opt_check Acceptable value type, or list of value types.
  *     Null or undefined means all values are acceptable.
- * @return {!Object} The input object created.
+ * @return {!Blockly.Input} The input object created.
  */
 Blockly.Block.prototype.appendInput = function(type, name, opt_check) {
   var connection = null;
@@ -1280,8 +1278,8 @@ Blockly.Block.prototype.appendInput = function(type, name, opt_check) {
 
 /**
  * Move an input to a different location on this block.
- * @param {string} name The name of the input.
- * @param {number} index New index.
+ * @param {string} name The name of the input to move.
+ * @param {string} refName Name of input that should be after the moved input.
  */
 Blockly.Block.prototype.moveInputBefore = function(name, refName) {
   if (name == refName) {

@@ -42,6 +42,7 @@ Blockly.Flyout.prototype.CORNER_RADIUS = 8;
 
 /**
  * Wrapper function called when a resize occurs.
+ * @private
  */
 Blockly.Flyout.prototype.onResizeWrapper_ = null;
 

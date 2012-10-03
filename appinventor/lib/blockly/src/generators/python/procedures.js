@@ -56,7 +56,7 @@ Blockly.Python.procedures_defreturn = function() {
         Blockly.Variables.NAME_TYPE);
   }
   var code = 'def ' + funcName + '(' + args.join(', ') + '):\n' +
-      globals + branch + returnValue + '\n';
+      globals + branch + returnValue;
   code = Blockly.Python.scrub_(this, code);
   Blockly.Python.definitions_[funcName] = code;
   return null;

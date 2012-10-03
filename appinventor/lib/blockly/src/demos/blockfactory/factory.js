@@ -190,22 +190,22 @@ function getTitles(block) {
     switch (block.type) {
       case 'title_static':
         // Result: .appendTitle('hello');
-        titles.push('.appendTitle(' + escapeString(block.getTitleValue('TEXT')) +
-                    ');');
+        titles.push('.appendTitle(' +
+            escapeString(block.getTitleValue('TEXT')) + ');');
         break;
       case 'title_input':
         // Result: .appendTitle(new Blockly.FieldTextInput('Hello'), 'GREET');
         titles.push('.appendTitle(new Blockly.FieldTextInput(' +
-                    escapeString(block.getTitleValue('TEXT')) + '), ' +
-                    escapeString(block.getTitleValue('TITLENAME')) + ');');
+            escapeString(block.getTitleValue('TEXT')) + '), ' +
+            escapeString(block.getTitleValue('TITLENAME')) + ');');
         break;
       case 'title_variable':
         // Result:
         // .appendTitle(new Blockly.FieldVariable('item'), 'VAR');
         var varname = block.getTitleValue('TEXT');
         varname = varname ? escapeString(varname) : 'null';
-        titles.push('.appendTitle(new Blockly.FieldVariable(' +
-            varname + '), ' + escapeString(block.getTitleValue('TITLENAME')) + ');');
+        titles.push('.appendTitle(new Blockly.FieldVariable(' + varname +
+            '), ' + escapeString(block.getTitleValue('TITLENAME')) + ');');
         break;
       case 'title_dropdown':
         // Result:
@@ -222,6 +222,14 @@ function getTitles(block) {
               escapeString(block.getTitleValue('TITLENAME')) + ');');
         }
         break;
+      case 'title_image':
+        // Result: .appendTitle(new Blockly.FieldImage('http://...'));
+        var src = escapeString(block.getTitleValue('SRC'));
+        var width = Number(block.getTitleValue('WIDTH'));
+        var height = Number(block.getTitleValue('HEIGHT'));
+        titles.push('.appendTitle(new Blockly.FieldImage(' +
+            src + ', ' + width + ', ' + height + '));');
+        break;
     }
     block = block.nextConnection && block.nextConnection.targetBlock();
   }
@@ -230,7 +238,7 @@ function getTitles(block) {
 
 /**
  * Escape a string.
- * @param {string} String to escape.
+ * @param {string} string String to escape.
  * @return {string} Escaped string surrouned by quotes.
  */
 function escapeString(string) {
@@ -244,7 +252,7 @@ function escapeString(string) {
 /**
  * Fetch the type(s) defined in the given input.
  * Format as a string for appending to the generated code.
- * @param {!Blockly.Block} block Block with input. 
+ * @param {!Blockly.Block} block Block with input.
  * @param {string} name Name of the input.
  * @return {string} String defining the types.
  */
@@ -255,7 +263,7 @@ function getOptTypesFrom(block, name) {
   } else if (types.length == 1) {
     return ', ' + types[0];
   } else if (types.indexOf('null') != -1) {
-    return ['null'];
+    return ', null';
   } else {
     return ', [' + types.join(', ') + ']';
   }
@@ -263,7 +271,7 @@ function getOptTypesFrom(block, name) {
 
 /**
  * Fetch the type(s) defined in the given input.
- * @param {!Blockly.Block} block Block with input. 
+ * @param {!Blockly.Block} block Block with input.
  * @param {string} name Name of the input.
  * @return {!Array.<string>} List of types.
  * @private
@@ -305,7 +313,7 @@ function updateGenerator() {
   }
   var language = document.getElementById('language').value;
   var code = [];
-  code.push('Blockly.' + language + '.' + blockType + ' = {');
+  code.push('Blockly.' + language + '.' + blockType + ' = function() {');
   // Loop through every block, and generate getters for any fields or inputs.
   var blocks = rootBlock.getDescendants();
   for (var x = 0, block; block = blocks[x]; x++) {

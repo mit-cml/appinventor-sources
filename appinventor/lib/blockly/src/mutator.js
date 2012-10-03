@@ -164,6 +164,7 @@ Blockly.Mutator.prototype.createEditor_ = function() {
 /**
  * Callback function triggered when the bubble has resized.
  * Resize the workspace accordingly.
+ * @private
  */
 Blockly.Mutator.prototype.resizeBubble_ = function() {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
@@ -316,7 +317,7 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
       }
     }
   }
- 
+
   // When the mutator's workspace changes, update the source block.
   if (this.rootBlock_.workspace == this.workspace_) {
     this.resizeBubble_();
@@ -324,7 +325,7 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     var savedRendered = this.block_.rendered;
     this.block_.rendered = false;
     // Allow the source block to rebuild itself.
-    this.block_.compose(this.rootBlock_)
+    this.block_.compose(this.rootBlock_);
     // Restore rendering and show the changes.
     this.block_.rendered = savedRendered;
     if (this.block_.rendered) {

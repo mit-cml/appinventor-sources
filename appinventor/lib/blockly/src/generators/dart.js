@@ -73,7 +73,7 @@ Blockly.Dart.init = function() {
   if (Blockly.Variables) {
     if (!Blockly.Dart.variableDB_) {
       Blockly.Dart.variableDB_ =
-          new Blockly.Names(Blockly.Dart.RESERVED_WORDS_.split(','));
+          new Blockly.Names(Blockly.Dart.RESERVED_WORDS_);
     } else {
       Blockly.Dart.variableDB_.reset();
     }
@@ -105,7 +105,7 @@ Blockly.Dart.finish = function(code) {
   for (var name in Blockly.Dart.definitions_) {
     definitions.push(Blockly.Dart.definitions_[name]);
   }
-  return definitions.join('\n') + '\n\n' + code;
+  return definitions.join('\n\n') + '\n\n\n' + code;
 };
 
 /**

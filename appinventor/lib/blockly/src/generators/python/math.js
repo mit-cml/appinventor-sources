@@ -45,7 +45,7 @@ Blockly.Python.math_arithmetic = function() {
   var argument1 = Blockly.Python.valueToCode(this, 'B', order) || '0';
   var code = argument0 + operator + argument1;
   return [code, order];
-  // In case of 'DIVIDE', division between integers returns different results 
+  // In case of 'DIVIDE', division between integers returns different results
   // in Python 2 and 3. However, is not an issue since Blockly does not
   // guarantee identical results in all languages.  To do otherwise would
   // require every operator to be wrapped in a function call.  This would kill
@@ -169,8 +169,8 @@ Blockly.Python.math_on_list = function() {
       break;
     case 'AVERAGE':
       if (!Blockly.Python.definitions_['math_mean']) {
-        // This operation exclude null values:
-        //   math_mean([null,null,1,9]) == 5.0.
+        // This operation exclude null and values that are not int or float:
+        //   math_mean([null,null,"aString",1,9]) == 5.0.
         var functionName = Blockly.Python.variableDB_.getDistinctName(
             'math_mean', Blockly.Generator.NAME_TYPE);
         Blockly.Python.math_on_list.math_mean = functionName;
@@ -179,7 +179,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  localList = [e for e in myList ' +
             'if type(e) in [int, float]]');
         func.push('  if not localList: return');
-        func.push('  return float(sum(localList)) / len(localList)\n');
+        func.push('  return float(sum(localList)) / len(localList)');
         Blockly.Python.definitions_['math_mean'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_mean + '(' + list + ')';
@@ -200,7 +200,7 @@ Blockly.Python.math_on_list = function() {
         func.push('    return (localList[len(localList) / 2 - 1] + ' +
             'localList[len(localList) / 2]) / 2.0');
         func.push('  else:');
-        func.push('    return localList[(len(localList) - 1) / 2]\n');
+        func.push('    return localList[(len(localList) - 1) / 2]');
         Blockly.Python.definitions_['math_median'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_median + '(' + list + ')';
@@ -234,7 +234,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  for counted_item, item_count in counts:');
         func.push('    if item_count == maxCount:');
         func.push('      modes.append(counted_item)');
-        func.push('  return modes\n');
+        func.push('  return modes');
         Blockly.Python.definitions_['math_modes'] = func.join('\n');
       }
       code = Blockly.Python.math_on_list.math_modes + '(' + list + ')';
@@ -252,7 +252,7 @@ Blockly.Python.math_on_list = function() {
         func.push('  mean = float(sum(numbers)) / n');
         func.push('  variance = sum((x - mean) ** 2 for x in numbers) / n');
         func.push('  standard_dev = math.sqrt(variance)');
-        func.push('  return standard_dev\n');
+        func.push('  return standard_dev');
         Blockly.Python.definitions_['math_standard_deviation'] =
             func.join('\n');
       }

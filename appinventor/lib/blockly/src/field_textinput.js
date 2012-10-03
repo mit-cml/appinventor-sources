@@ -107,7 +107,7 @@ Blockly.FieldTextInput.prototype.CURSOR = 'text';
 Blockly.FieldTextInput.prototype.showEditor_ = function() {
   if (window.opera) {
     /* HACK:
-     The current version of Opera (11.61) does not support foreignObject
+     The current version of Opera (12.00) does not support foreignObject
      content.  Instead of presenting an inline editor, use a modal prompt.
      If Opera starts supporting foreignObjects, then delete this entire hack.
     */
@@ -146,13 +146,15 @@ Blockly.FieldTextInput.prototype.showEditor_ = function() {
       Blockly.bindEvent_(htmlInput, 'blur', this, this.onHtmlInputBlur_);
   // Bind to keyup -- trap Enter and Esc; resize after every keystroke.
   htmlInput.onKeyUpWrapper_ =
-      Blockly.bindEvent_(htmlInput, 'keyup', this,
-                         this.onHtmlInputKeyUp_);
+      Blockly.bindEvent_(htmlInput, 'keyup', this, this.onHtmlInputChange_);
   // Bind to keyPress -- repeatedly resize when holding down a key.
   htmlInput.onKeyPressWrapper_ =
-      Blockly.bindEvent_(htmlInput, 'keypress', this, this.resizeEditor_);
-  this.resizeEditor_();
+      Blockly.bindEvent_(htmlInput, 'keypress', this, this.onHtmlInputChange_);
+  htmlInput.onWorkspaceChangeWrapper_ =
+      Blockly.bindEvent_(workspaceSvg, 'blocklyWorkspaceChange', this,
+      this.resizeEditor_);
   this.validate_();
+  this.resizeEditor_();
 };
 
 /**
@@ -165,11 +167,11 @@ Blockly.FieldTextInput.prototype.onHtmlInputBlur_ = function(e) {
 };
 
 /**
- * Handle a key up event on an editor.
- * @param {!Event} e Key up event.
+ * Handle a change to the editor.
+ * @param {!Event} e Keyboard event.
  * @private
  */
-Blockly.FieldTextInput.prototype.onHtmlInputKeyUp_ = function(e) {
+Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
   if (e.keyCode == 13) {
     // Enter
     this.closeEditor_(true);
@@ -177,8 +179,14 @@ Blockly.FieldTextInput.prototype.onHtmlInputKeyUp_ = function(e) {
     // Esc
     this.closeEditor_(false);
   } else {
-    this.resizeEditor_();
-    this.validate_();
+    // Update source block.
+    var htmlInput = Blockly.FieldTextInput.htmlInput_;
+    var text = htmlInput.value;
+    if (text !== htmlInput.oldValue_) {
+      htmlInput.oldValue_ = text;
+      this.setText(text);
+      this.validate_();
+    }
   }
 };
 
@@ -206,13 +214,6 @@ Blockly.FieldTextInput.prototype.validate_ = function() {
  */
 Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   var htmlInput = Blockly.FieldTextInput.htmlInput_;
-  var text = htmlInput.value;
-  if (text === htmlInput.oldValue_) {
-    // There has been no change.
-    return;
-  }
-  htmlInput.oldValue_ = text;
-  this.setText(text);
   var bBox = this.group_.getBBox();
   var htmlInputFrame = Blockly.FieldTextInput.svgForeignObject_;
   htmlInputFrame.setAttribute('width', bBox.width);
@@ -236,6 +237,7 @@ Blockly.FieldTextInput.prototype.closeEditor_ = function(save) {
   Blockly.unbindEvent_(htmlInput.onBlurWrapper_);
   Blockly.unbindEvent_(htmlInput.onKeyUpWrapper_);
   Blockly.unbindEvent_(htmlInput.onKeyPressWrapper_);
+  Blockly.unbindEvent_(htmlInput.onWorkspaceChangeWrapper_);
 
   var text;
   if (save) {

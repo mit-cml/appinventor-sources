@@ -42,10 +42,11 @@ function save() {
   var builder = new BlobBuilder();
   builder.append(data);
   saveAs(builder.getBlob('text/plain;charset=utf-8'), 'block.xml');
-};
+}
 
 /**
  * Load blocks from local file.
+ * @param {!Event} event Upload event.
  */
 function load(event) {
   var files = event.target.files;
@@ -77,7 +78,7 @@ function load(event) {
     document.getElementById('load').value = '';
   };
   reader.readAsText(files[0]);
-};
+}
 
 /**
  * Discard all blocks from the workspace.

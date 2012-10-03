@@ -18,7 +18,7 @@
  */
 
 function test_safeName() {
-  var varDB = new Blockly.Names(['window', 'door']);
+  var varDB = new Blockly.Names('window,door');
   assertEquals('SafeName empty.', 'unnamed', varDB.safeName_(''));
   assertEquals('SafeName ok.', 'foobar', varDB.safeName_('foobar'));
   assertEquals('SafeName number start.', 'my_9lives',
@@ -29,7 +29,7 @@ function test_safeName() {
 }
 
 function test_getName() {
-  var varDB = new Blockly.Names(['window', 'door']);
+  var varDB = new Blockly.Names('window,door');
   assertEquals('Name add #1.', 'Foo_bar', varDB.getName('Foo.bar', 'var'));
   assertEquals('Name get #1.', 'Foo_bar', varDB.getName('Foo.bar', 'var'));
   assertEquals('Name add #2.', 'Foo_bar2', varDB.getName('Foo bar', 'var'));
@@ -41,7 +41,7 @@ function test_getName() {
 }
 
 function test_getDistinctName() {
-  var varDB = new Blockly.Names(['window', 'door']);
+  var varDB = new Blockly.Names('window,door');
   assertEquals('Name distinct #1.', 'Foo_bar',
                varDB.getDistinctName('Foo.bar', 'var'));
   assertEquals('Name distinct #2.', 'Foo_bar2',

@@ -32,6 +32,7 @@ Blockly.FieldLabel = function(text) {
   // Build the DOM.
   this.textElement_ = Blockly.createSvgElement('text',
       {'class': 'blocklyText'}, null);
+  this.size_ = {height: Blockly.BlockSvg.TITLE_HEIGHT, width: 0};
   this.setText(text);
 };
 
@@ -74,23 +75,6 @@ Blockly.FieldLabel.prototype.destroy = function() {
  */
 Blockly.FieldLabel.prototype.getRootElement = function() {
   return this.textElement_;
-};
-
-/**
- * Returns the resulting bounding box.
- * @return {Object} Object containing width/height/x/y properties.
- */
-Blockly.FieldLabel.prototype.render = function() {
-  try {
-    var bBox = this.textElement_.getBBox();
-  } catch (e) {
-    // Firefox has trouble with hidden elements (Bug 528969).
-    return null;
-  }
-  if (bBox.height == 0) {
-    bBox.height = 18;
-  }
-  return bBox;
 };
 
 /**

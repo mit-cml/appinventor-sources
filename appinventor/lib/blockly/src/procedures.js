@@ -123,6 +123,7 @@ Blockly.Procedures.isLegalName = function(name, workspace, opt_exclude) {
  * Rename a procedure.  Called by the editable field.
  * @param {string} text The proposed new name.
  * @return {?string} The accepted name, or null if rejected.
+ * @this {!Blockly.FieldVariable}
  */
 Blockly.Procedures.rename = function(text) {
   if (!this.sourceBlock_.editable) {

@@ -220,7 +220,7 @@ Blockly.Language.procedures_mutatorarg = {
 Blockly.Language.procedures_mutatorarg.validator = function(newVar) {
   // Merge runs of whitespace.  Strip leading and trailing whitespace.
   // Beyond this, all names are legal.
-  newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');;
+  newVar = newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
   return newVar || null;
 };
 
@@ -275,7 +275,7 @@ Blockly.Language.procedures_callnoreturn = {
     var savedRendered = this.rendered;
     this.rendered = false;
     // Disconnect all argument blocks and destroy all inputs.
-    for (var x = this.arguments_.length - 1; x >= 0 ; x--) {
+    for (var x = this.arguments_.length - 1; x >= 0; x--) {
       this.removeInput('ARG' + x);
     }
     // Rebuild the block's arguments.

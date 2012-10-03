@@ -28,6 +28,7 @@ filenames = [
     'contextmenu.js',
     'field.js',
     'field_dropdown.js',
+    'field_image.js',
     'field_label.js',
     'field_textinput.js',
     'field_variable.js',
