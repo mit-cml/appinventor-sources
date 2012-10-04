@@ -32,7 +32,7 @@ Blockly.FieldLabel = function(text) {
   // Build the DOM.
   this.textElement_ = Blockly.createSvgElement('text',
       {'class': 'blocklyText'}, null);
-  this.size_ = {height: Blockly.BlockSvg.TITLE_HEIGHT, width: 0};
+  this.size_ = {height: 25, width: 0};
   this.setText(text);
 };
 

@@ -168,6 +168,7 @@ Blockly.JavaScript.quote_ = function(string) {
  * @param {!Blockly.Block} block The current block.
  * @param {string} code The JavaScript code created for this block.
  * @return {string} JavaScript code with comments and subsequent blocks added.
+ * @this {Blockly.CodeGenerator}
  * @private
  */
 Blockly.JavaScript.scrub_ = function(block, code) {

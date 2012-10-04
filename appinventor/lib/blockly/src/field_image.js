@@ -34,7 +34,7 @@ Blockly.FieldImage = function(src, width, height) {
   // Ensure height and width are numbers.  Strings are bad at math.
   height = Number(height);
   width = Number(width);
-  this.size_ = {height: height, width: width};
+  this.size_ = {height: height + 10, width: width};
   // Build the DOM.
   var offsetY = 6 - Blockly.BlockSvg.TITLE_HEIGHT;
   this.group_ = Blockly.createSvgElement('g', {}, null);

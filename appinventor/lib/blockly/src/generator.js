@@ -39,84 +39,7 @@ Blockly.Generator.languages = {};
  */
 Blockly.Generator.get = function(name) {
   if (!(name in Blockly.Generator.languages)) {
-    var generator = {};
-    /**
-     * Generate code for the specified block (and attached blocks).
-     * @param {Blockly.Block} block The block to generate code for.
-     * @return {string|!Array} For statement blocks, the generated code.
-     *     For value blocks, an array containing the generated code and an
-     *     operator order value.  Returns '' if block is null.
-     */
-    generator.blockToCode = function(block) {
-      if (!block) {
-        return '';
-      }
-      var func = this[block.type];
-      if (!func) {
-        throw 'Language "' + name + '" does not know how to generate code ' +
-            'for block type "' + block.type + '".';
-      }
-      var code = func.call(block);
-      if (code instanceof Array) {
-        // Value blocks return tuples of code and operator order.
-        if (block.disabled) {
-          code[0] = '';
-        }
-        return [this.scrub_(block, code[0]), code[1]];
-      } else {
-        if (block.disabled) {
-          code = '';
-        }
-        return this.scrub_(block, code);
-      }
-    };
-
-    /**
-     * Generate code representing the specified value input.
-     * @param {!Blockly.Block} block The block containing the input.
-     * @param {string} name The name of the input.
-     * @param {integer} order Order of operations rank of this input's context.
-     * @return {string} Generated code or '' if no blocks are connected.
-     */
-    generator.valueToCode = function(block, name, order) {
-      var input = block.getInputTargetBlock(name);
-      if (!input) {
-        return '';
-      }
-      var tuple = this.blockToCode(input);
-      if (!(tuple instanceof Array)) {
-        // Value blocks must return code and order of operations info.
-        // Statement blocks must only return code.
-        throw 'Expecting tuple from value block "' + input.type + '".';
-      }
-      var code = tuple[0];
-      var innerOrder = tuple[1];
-      if (code && order <= innerOrder) {
-        code = '(' + code + ')';
-      }
-      return code;
-    };
-
-    /**
-     * Generate code representing the statement.  Indent the code.
-     * @param {!Blockly.Block} block The block containing the input.
-     * @param {string} name The name of the input.
-     * @return {string} Generated code or '' if no blocks are connected.
-     */
-    generator.statementToCode = function(block, name) {
-      var input = block.getInputTargetBlock(name);
-      var code = this.blockToCode(input);
-      if (typeof code != 'string') {
-        // Value blocks must return code and order of operations info.
-        // Statement blocks must only return code.
-        throw 'Expecting code from statement block "' + input.type + '".';
-      }
-      if (code) {
-        code = Blockly.Generator.prefixLines(code, '  ');
-      }
-      return code;
-    };
-
+    var generator = new Blockly.CodeGenerator();
     Blockly.Generator.languages[name] = generator;
   }
   return Blockly.Generator.languages[name];
@@ -189,4 +112,87 @@ Blockly.Generator.allNestedComments = function(block) {
     comments.push('');
   }
   return comments.join('\n');
+};
+
+/**
+ * Class for a code generator that translates the blocks into a language.
+ * @constructor
+ */
+Blockly.CodeGenerator = function() {};
+
+/**
+ * Generate code for the specified block (and attached blocks).
+ * @param {Blockly.Block} block The block to generate code for.
+ * @return {string|!Array} For statement blocks, the generated code.
+ *     For value blocks, an array containing the generated code and an
+ *     operator order value.  Returns '' if block is null.
+ */
+Blockly.CodeGenerator.prototype.blockToCode = function(block) {
+  if (!block) {
+    return '';
+  }
+  var func = this[block.type];
+  if (!func) {
+    throw 'Language "' + name + '" does not know how to generate code ' +
+        'for block type "' + block.type + '".';
+  }
+  var code = func.call(block);
+  if (code instanceof Array) {
+    // Value blocks return tuples of code and operator order.
+    if (block.disabled) {
+      code[0] = '';
+    }
+    return [this.scrub_(block, code[0]), code[1]];
+  } else {
+    if (block.disabled) {
+      code = '';
+    }
+    return this.scrub_(block, code);
+  }
+};
+
+/**
+ * Generate code representing the specified value input.
+ * @param {!Blockly.Block} block The block containing the input.
+ * @param {string} name The name of the input.
+ * @param {integer} order Order of operations rank of this input's context.
+ * @return {string} Generated code or '' if no blocks are connected.
+ */
+Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
+  var input = block.getInputTargetBlock(name);
+  if (!input) {
+    return '';
+  }
+  var tuple = this.blockToCode(input);
+  if (!(tuple instanceof Array)) {
+    // Value blocks must return code and order of operations info.
+    // Statement blocks must only return code.
+    throw 'Expecting tuple from value block "' + input.type + '".';
+  }
+  var code = tuple[0];
+  var innerOrder = tuple[1];
+  if (code && order <= innerOrder) {
+    code = '(' + code + ')';
+  }
+  return code;
+};
+
+/**
+ * Generate code representing the statement.  Indent the code.
+ * @param {!Blockly.Block} block The block containing the input.
+ * @param {string} name The name of the input.
+ * @return {string} Generated code or '' if no blocks are connected.
+ */
+Blockly.CodeGenerator.prototype.statementToCode = function(block, name) {
+  var input = block.getInputTargetBlock(name);
+  var code = this.blockToCode(input);
+  if (typeof code != 'string') {
+    // Value blocks must return code and order of operations info.
+    // Statement blocks must only return code.
+    throw 'Expecting code from statement block "' + input.type + '".';
+  }
+  if (code) {
+    code = Blockly.Generator.prefixLines(code, '  ');
+  }
+  return code;
 };

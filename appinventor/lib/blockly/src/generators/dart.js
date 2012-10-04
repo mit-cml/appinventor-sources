@@ -140,6 +140,7 @@ Blockly.Dart.quote_ = function(string) {
  * @param {!Blockly.Block} block The current block.
  * @param {string} code The Dart code created for this block.
  * @return {string} Dart code with comments and subsequent blocks added.
+ * @this {Blockly.CodeGenerator}
  * @private
  */
 Blockly.Dart.scrub_ = function(block, code) {

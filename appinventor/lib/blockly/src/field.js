@@ -49,7 +49,7 @@ Blockly.Field = function(text) {
     // Different field types show different cursor hints.
     this.group_.style.cursor = this.CURSOR;
   }
-  this.size_ = {height: Blockly.BlockSvg.TITLE_HEIGHT, width: 0};
+  this.size_ = {height: 25, width: 0};
   this.setText(text);
 };
 
@@ -178,9 +178,8 @@ Blockly.Field.prototype.setText = function(text) {
   var textNode = Blockly.svgDoc.createTextNode(text);
   this.textElement_.appendChild(textNode);
 
-  // Cached size is obsolete.  Clear it.
+  // Cached width is obsolete.  Clear it.
   this.size_.width = 0;
-  this.size_.height = 0;
 
   if (this.sourceBlock_ && this.sourceBlock_.rendered) {
     this.sourceBlock_.render();

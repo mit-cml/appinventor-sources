@@ -150,6 +150,7 @@ Blockly.Python.quote_ = function(string) {
  * @param {!Blockly.Block} block The current block.
  * @param {string} code The Python code created for this block.
  * @return {string} Python code with comments and subsequent blocks added.
+ * @this {Blockly.CodeGenerator}
  * @private
  */
 Blockly.Python.scrub_ = function(block, code) {

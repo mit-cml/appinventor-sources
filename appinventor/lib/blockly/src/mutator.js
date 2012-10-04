@@ -177,7 +177,7 @@ Blockly.Mutator.prototype.resizeBubble_ = function() {
     width = workspaceSize.width + workspaceSize.x;
   }
   var height = Math.max(workspaceSize.height + doubleBorderWidth * 3,
-                        flyoutMetrics.contentHeight);
+                        flyoutMetrics.contentHeight + 20);
   width += doubleBorderWidth * 3;
   // Only resize if the size difference is significant.  Eliminates shuddering.
   if (Math.abs(this.workspaceWidth_ - width) > doubleBorderWidth ||
@@ -442,12 +442,12 @@ Blockly.Mutator.prototype.destroy = function() {
 /**
  * Render the icon for this mutator.
  * @param {number} titleX Horizontal offset at which to position the icon.
- * @return {number} Width of icon.
+ * @return {Object} Height and width of icon, or null if not displayed.
  */
 Blockly.Mutator.prototype.renderIcon = function(titleX) {
   if (this.block_.collapsed) {
     this.iconGroup_.setAttribute('display', 'none');
-    return 0;
+    return null;
   }
   this.iconGroup_.setAttribute('display', 'block');
 
@@ -458,7 +458,7 @@ Blockly.Mutator.prototype.renderIcon = function(titleX) {
   this.iconGroup_.setAttribute('transform',
                                'translate(' + titleX + ', ' + TOP_MARGIN + ')');
   this.computeIconLocation();
-  return Blockly.Mutator.ICON_SIZE;
+  return {x: Blockly.Mutator.ICON_SIZE, y: Blockly.Mutator.ICON_SIZE};
 };
 
 /**

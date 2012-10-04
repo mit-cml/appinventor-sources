@@ -285,11 +285,10 @@ Blockly.Language.controls_forEach = {
   init: function() {
     this.setColour(120);
     this.appendTitle(Blockly.LANG_CONTROLS_FOREACH_TITLE_FOREACH);
-    var input = this.appendInput(Blockly.DUMMY_INPUT, '');
+    var input = this.appendInput(Blockly.INPUT_VALUE, 'LIST', Array);
     input.appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM);
     input.appendTitle(new Blockly.FieldVariable(null), 'VAR');
-    this.appendInput(Blockly.INPUT_VALUE, 'LIST', Array)
-        .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST);
+    input.appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST);
     this.appendInput(Blockly.NEXT_STATEMENT, 'DO')
         .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_DO);
     this.setPreviousStatement(true);

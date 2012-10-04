@@ -345,38 +345,43 @@ Blockly.BlockSvg.prototype.render = function() {
  */
 Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
   var titleX = -Blockly.BlockSvg.SEP_SPACE_X;
-  var iconWidth;
+  var maxHeight = 0;
+  var xy;
   // Move the mutator icon into position.
   if (this.block_.mutator) {
-    iconWidth = this.block_.mutator.renderIcon(titleX);
-    if (iconWidth) {
-      titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.mutator.renderIcon(titleX);
+    if (xy) {
+      titleX -= xy.width + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.height);
     }
   }
   // Move the comment icon into position.
   if (this.block_.comment) {
-    iconWidth = this.block_.comment.renderIcon(titleX);
-    if (iconWidth) {
-      titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.comment.renderIcon(titleX);
+    if (xy) {
+      titleX -= xy.width + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.height);
     }
   }
   // Move the warning icon into position.
   if (this.block_.warning) {
-    iconWidth = this.block_.warning.renderIcon(titleX);
-    if (iconWidth) {
-      titleX -= iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.warning.renderIcon(titleX);
+    if (xy) {
+      titleX -= xy.width + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.height);
     }
   }
 
   // Move the title element(s) into position.
-  var xy = this.renderTitles_(this.block_.titleRow, titleX, titleY);
+  xy = this.renderTitles_(this.block_.titleRow, titleX, titleY);
   titleX = xy.x;
+  maxHeight = Math.max(maxHeight, xy.y);
 
   if (this.block_.previousConnection || this.block_.nextConnection) {
     titleX = Math.min(titleX, -Blockly.BlockSvg.NOTCH_WIDTH -
                               Blockly.BlockSvg.SEP_SPACE_X);
   }
-  return {x: -titleX, y: xy.y};
+  return {x: -titleX, y: maxHeight};
 };
 
 /**
@@ -388,38 +393,43 @@ Blockly.BlockSvg.prototype.renderTitleRTL_ = function(titleY) {
  */
 Blockly.BlockSvg.prototype.renderTitleLTR_ = function(titleY) {
   var titleX = Blockly.BlockSvg.SEP_SPACE_X;
-  var iconWidth;
+  var maxHeight = 0;
+  var xy;
   // Move the mutator icon into position.
   if (this.block_.mutator) {
-    iconWidth = this.block_.mutator.renderIcon(titleX);
-    if (iconWidth) {
-      titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.mutator.renderIcon(titleX);
+    if (xy) {
+      titleX += xy.x + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.y + Blockly.BlockSvg.SEP_SPACE_Y);
     }
   }
   // Move the comment icon into position.
   if (this.block_.comment) {
-    iconWidth = this.block_.comment.renderIcon(titleX);
-    if (iconWidth) {
-      titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.comment.renderIcon(titleX);
+    if (xy) {
+      titleX += xy.x + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.y + Blockly.BlockSvg.SEP_SPACE_Y);
     }
   }
   // Move the warning icon into position.
   if (this.block_.warning) {
-    iconWidth = this.block_.warning.renderIcon(titleX);
-    if (iconWidth) {
-      titleX += iconWidth + Blockly.BlockSvg.SEP_SPACE_X;
+    xy = this.block_.warning.renderIcon(titleX);
+    if (xy) {
+      titleX += xy.x + Blockly.BlockSvg.SEP_SPACE_X;
+      maxHeight = Math.max(maxHeight, xy.y + Blockly.BlockSvg.SEP_SPACE_Y);
     }
   }
 
   // Move the title element(s) into position.
-  var xy = this.renderTitles_(this.block_.titleRow, titleX, titleY);
+  xy = this.renderTitles_(this.block_.titleRow, titleX, titleY);
   titleX = xy.x;
+  maxHeight = Math.max(maxHeight, xy.y);
 
   if (this.block_.previousConnection || this.block_.nextConnection) {
     titleX = Math.max(titleX, Blockly.BlockSvg.NOTCH_WIDTH +
                               Blockly.BlockSvg.SEP_SPACE_X);
   }
-  return {x: titleX, y: xy.y};
+  return {x: titleX, y: maxHeight};
 };
 
 /**
