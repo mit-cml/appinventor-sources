@@ -40,15 +40,15 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
   this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
-    this.appendTitle('when');
-    this.appendTitle(instanceName + '.' + eventType.name);
-    // TODO: implement event parameters
-    /*
+    this.appendTitle('when ' + instanceName + '.' + eventType.name);
+    this.appendTitle('Callback parameters not yet implemented!');
+    // TODO: implement event callback parameters.  Need to figure out how to do procedures and 
+    // make callback parameters consistent with that.
     for (var i = 0, param; param = eventType.params[i]; i++) {
-      this.appendInput('', Blockly.LOCAL_VARIABLE, this.paramName(i)).setText(param.name);
+      this.appendInput(Blockly.INPUT_VALUE, this.paramName(i)).appendTitle(param.name);
     }
-    */
     this.appendInput(Blockly.NEXT_STATEMENT, "DO").appendTitle('do');
+    Blockly.Language.setTooltip(this, eventType.description);
     this.setPreviousStatement(false);
     this.setNextStatement(false);
   };
@@ -83,20 +83,23 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
   this.instanceName = instanceName;
   // Note: the params and paramTypes arrays are initialized for the language block,
   // and these will be shared with each instance of this block type in the workspace.
-  this.params = [];
-  this.paramTypes = [];
+  params = [];
+  paramTypes = [];
   for (var i = 0, param; param = methodType.params[i]; i++) {
-    this.params.push(param.name);
-    this.paramTypes.push(param.type);
+    params.push(param.name);
+    // param.type is a yail type, and so must be converted to a Blockly type
+    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type));
   }
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
     this.appendTitle('call ' + instanceName + '.' + methodType.name);
-    for (var i = 0, param; param = methodType.params[i]; i++) {
-        this.appendInput(Blockly.INPUT_VALUE, "ARG" + i).appendTitle(param.name);
+    Blockly.Language.setTooltip(this, methodType.description);
+    for (var i = 0, param; param = params[i]; i++) {
+        this.appendInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
     }
+    // methodType.returnType is a Yail type
     if (methodType.returnType) {
-      this.setOutput(true);
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(methodType.returnType));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
@@ -114,32 +117,31 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
   this.typeName = typeName;
   // Note: the params and paramTypes arrays are initialized for the language block,
   // and these will be shared with each instance of this block type in the workspace.
-  this.params = [];
-  this.paramTypes = [];
+  params = [];
+  paramTypes = [];
   for (var i = 0, param; param = methodType.params[i]; i++) {
-    this.params.push(param.name);
-    this.paramTypes.push(param.type);
+    params.push(param.name);
+    // param.type is a yail type, and so must be converted to a Blockly type
+    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type));
   }
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
     this.appendTitle('call');
     this.appendTitle(typeName + '.' + methodType.name);
-    this.appendInput('component', Blockly.INPUT_VALUE, "COMPONENT");
-    for (var i = 0, param; param = methodType.params[i]; i++) {
-      this.appendInput(param.name, Blockly.INPUT_VALUE, "ARG" + i);
+
+    this.appendInput(Blockly.INPUT_VALUE, "COMPONENT").appendTitle('for component');
+    for (var i = 0, param; param = params[i]; i++) {
+      this.appendInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
     }
+    // methodType.returnType is a Yail type
     if (methodType.returnType) {
-      this.setOutput(true);
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(methodType.returnType));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
   };
 }
-
-// TODO(hal): Handle the case where we change the dropdown for a block already
-// plugged in to an unnacceptable type.   Blocky currently throws a warning in
-// this case and ends up in a slightly inconsistent state.
 
 
 /**
@@ -165,7 +167,9 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
         function(selection)
           {this.setText(selection);
           var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
-          thisBlock.setOutput(true, newType);
+	  // this will disconnect the block if the new outputType doesn't match the
+	  // socket the block is plugged into
+          thisBlock.outputConnection.setCheck(newType);
           Blockly.Language.setTooltip(
               thisBlock,
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
@@ -204,6 +208,9 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
         function(selection)
           {this.setText(selection);
           var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
+	  // this will disconnect the block if the new outputType doesn't match the
+	  // socket the block is plugged into
+          thisBlock.outputConnection.setCheck(newType);
           thisBlock.setOutput(true, newType);
           Blockly.Language.setTooltip(
               thisBlock,
@@ -250,7 +257,9 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
           // change the input type to match the new selection
           {this.setText(selection);
           var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
-          thisBlock.getInput("VALUE").connection.check_[0] = newType;
+	  // this will set the socket arg type and also disconnect any plugged in block
+          // where the type doesn't match the socket type
+          thisBlock.getInput("VALUE").connection.setCheck(newType);
           Blockly.Language.setTooltip(
               thisBlock,
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
@@ -267,9 +276,8 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
   };
 };
 
-
 /**
- * Create A generic property setter block for a component with the given
+ * Create a generic property setter block for a component with the given
  * type name. propNames is the list of property names to appear in the
  * dropdown menu for the setter block.
  * propYailTypes is a table that maps each property name to the corresponding
@@ -294,7 +302,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
           // change the input type to match the new selection
           {this.setText(selection);
           var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
-          thisBlock.getInput("VALUE").connection.check_[0] = newType;
+	  // this will set the socket arg type and also disconnect any plugged in block
+          // where the type doesn't match the socket type
+          thisBlock.getInput("VALUE").connection.setCheck(newType);
           Blockly.Language.setTooltip(
               thisBlock,
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));

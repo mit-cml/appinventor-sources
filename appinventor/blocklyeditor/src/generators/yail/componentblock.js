@@ -164,7 +164,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
  */
 Blockly.Yail.setproperty = function(instanceName) {
   return function() {
-    var propName = this.getTitleText("PROP");
+    var propName = this.getTitleValue("PROP");
     var propType = this.propTypes[propName];
     var assignLabel = Blockly.Yail.YAIL_QUOTE + instanceName + Blockly.Yail.YAIL_SPACER 
       + Blockly.Yail.YAIL_QUOTE + propName;
@@ -186,7 +186,7 @@ Blockly.Yail.setproperty = function(instanceName) {
  */
 Blockly.Yail.genericSetproperty = function(typeName) {
   return function() {
-    var propName = this.getTitleText("PROP");
+    var propName = this.getTitleValue("PROP");
     var propType = this.propTypes[propName];
     var assignLabel = Blockly.Yail.YAIL_QUOTE + typeName + Blockly.Yail.YAIL_SPACER 
       + Blockly.Yail.YAIL_QUOTE + propName;
@@ -214,7 +214,7 @@ Blockly.Yail.genericSetproperty = function(typeName) {
  */
 Blockly.Yail.getproperty = function(instanceName) {
   return function() {
-    var propName = this.getTitleText("PROP");
+    var propName = this.getTitleValue("PROP");
     var propType = this.propTypes[propName];
     var code = Blockly.Yail.YAIL_GET_PROPERTY
       + Blockly.Yail.YAIL_QUOTE
@@ -237,7 +237,7 @@ Blockly.Yail.getproperty = function(instanceName) {
  */
 Blockly.Yail.genericGetproperty = function(typeName) {
   return function() {
-    var propName = this.getTitleText("PROP");
+    var propName = this.getTitleValue("PROP");
     var propType = this.propTypes[propName];
     var code = Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY
       // TODO(hal, andrew): check for empty socket and generate error if necessary
