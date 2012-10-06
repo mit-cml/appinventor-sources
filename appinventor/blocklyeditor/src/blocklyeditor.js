@@ -31,7 +31,16 @@ Blockly.Block.prototype.customContextMenu = function(options) {
   yailOption.text = "Generate Yail";
   var myBlock = this;
   yailOption.callback = function() {
-    myBlock.setCommentText(Blockly.Yail.blockToCode1(myBlock));
+    var yailText;
+    //Blockly.Yail.blockToCode1 returns a string if the block is a statement
+    //and an array if the block is a value
+    var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
+    if(yailTextOrArray instanceof Array){
+    	yailText = yailTextOrArray[0];
+    } else {
+    	yailText = yailTextOrArray;
+    }
+    myBlock.setCommentText(yailText);
   };
   options.push(yailOption);
 };
