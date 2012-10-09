@@ -63,6 +63,7 @@ import javax.ws.rs.core.Response;
 // The Java class will be hosted at the URI path "/buildserver"
 @Path("/buildserver")
 public class BuildServer {
+  private ProjectBuilder projectBuilder = new ProjectBuilder();
 
   static class CommandLineOptions {
     @Option(name = "--childProcessRamMb",
@@ -320,122 +321,127 @@ public class BuildServer {
   @POST
   @Path("build-all-from-zip-async")
   @Produces(MediaType.TEXT_PLAIN)
-  public Response buildAllFromZipFileAsync(@QueryParam("uname") final String userName,
-      @QueryParam("callback") final String callbackUrlStr,
-      @QueryParam("gitBuildVersion") final String gitBuildVersion,
-      final File inputZipFile) throws IOException {
-    // Set the inputZip field so we can delete the input zip file later in cleanUp.
+  public Response buildAllFromZipFileAsync(
+    @QueryParam("uname") final String userName,
+    @QueryParam("callback") final String callbackUrlStr,
+    @QueryParam("gitBuildVersion") final String gitBuildVersion,
+    final File inputZipFile) throws IOException {
+    // Set the inputZip field so we can delete the input zip file later in
+    // cleanUp.
     inputZip = inputZipFile;
-    inputZip.deleteOnExit();  // In case build server is killed before cleanUp executes.
-
+    inputZip.deleteOnExit(); // In case build server is killed before cleanUp executes.
     String requesting_host = (new URL(callbackUrlStr)).getHost();
 
-    if (commandLineOptions.requiredHosts != null) {
-        boolean oktoproceed = false;
-        for (String host : commandLineOptions.requiredHosts) {
-            if (host.equals(requesting_host)) {
-                oktoproceed = true;
-                break;
-            }
-        }
-
-        if (oktoproceed) {
-            LOG.info("requesting host (" + requesting_host + ") is in the allowed host list request will be honored.");
-        } else {
-            // Return an error
-            LOG.info("requesting host (" + requesting_host + ") is NOT in the allowed host list request will be rejected.");
-            return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE)
-                .entity("You are not permitted to use this build server.").build();
-        }
+    //for the request for update part, the file should be empty
+    if (inputZip.length() == 0L) {
     } else {
-        LOG.info("requiredHosts is not set, no restriction on callback url.");
-    }
+      if (commandLineOptions.requiredHosts != null) {
+      boolean oktoproceed = false;
+      for (String host : commandLineOptions.requiredHosts) {
+        if (host.equals(requesting_host)) {
+          oktoproceed = true;
+          break;}
+       }
 
-
-    asyncBuildRequests.incrementAndGet();
-
-    if (gitBuildVersion != null && !gitBuildVersion.isEmpty()) {
-      if (!gitBuildVersion.equals(GitBuildId.getVersion())) {
-        // This build server is not compatible with the App Inventor instance. Log this as severe
-        // so the owner of the build server will know about it.
-        String errorMessage = "Build server version " + GitBuildId.getVersion() +
-            " is not compatible with App Inventor version " + gitBuildVersion + ".";
-        LOG.severe(errorMessage);
-        // This request was rejected because the gitBuildVersion parameter did not equal the
-        // expected value.
-        rejectedAsyncBuildRequests.incrementAndGet();
-        cleanUp();
-        // Here, we use CONFLICT (response code 409), which means (according to rfc2616, section
-        // 10) "The request could not be completed due to a conflict with the current state of the
-        // resource."
-        return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN_TYPE)
-            .entity(errorMessage).build();
+      if (oktoproceed) {
+        LOG.info("requesting host (" + requesting_host + ") is in the allowed host list request will be honored.");
+      } else {
+        // Return an error
+        LOG.info("requesting host (" + requesting_host + ") is NOT in the allowed host list request will be rejected.");
+        return Response.status(Response.Status.FORBIDDEN).type(MediaType.TEXT_PLAIN_TYPE).entity("You are not permitted to use this build server.").build();
       }
-    }
+    } else {
+             LOG.info("requiredHosts is not set, no restriction on callback url.");
+          }
 
-    Runnable buildTask = new Runnable() {
-      @Override
-      public void run() {
-        int count = buildCount.incrementAndGet();
-        try {
-          LOG.info("START NEW BUILD " + count);
-          checkMemory();
-          buildAndCreateZip(userName, inputZipFile);
-          // Send zip back to the callbackUrl
-          LOG.info("CallbackURL: " + callbackUrlStr);
-          URL callbackUrl = new URL(callbackUrlStr);
-          HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
-          connection.setDoOutput(true);
-          connection.setRequestMethod("POST");
-          // Make sure we aren't misinterpreted as form-url-encoded
-          connection.addRequestProperty("Content-Type", "application/zip; charset=utf-8");
-          connection.setConnectTimeout(60000);
-          connection.setReadTimeout(60000);
-          BufferedOutputStream bufferedOutputStream =
-              new BufferedOutputStream(connection.getOutputStream());
-          try {
-            BufferedInputStream bufferedInputStream =
-                new BufferedInputStream(new FileInputStream(outputZip));
-            try {
-              ByteStreams.copy(bufferedInputStream, bufferedOutputStream);
-              checkMemory();
-              bufferedOutputStream.flush();
-            } finally {
-              bufferedInputStream.close();
+          asyncBuildRequests.incrementAndGet();
+
+          if (gitBuildVersion != null && !gitBuildVersion.isEmpty()) {
+            if (!gitBuildVersion.equals(GitBuildId.getVersion())) {
+              // This build server is not compatible with the App Inventor instance. Log this as severe
+              // so the owner of the build server will know about it.
+              String errorMessage = "Build server version " + GitBuildId.getVersion() +
+                    " is not compatible with App Inventor version " + gitBuildVersion + ".";
+              LOG.severe(errorMessage);
+            // This request was rejected because the gitBuildVersion parameter did not equal the
+            // expected value.
+              rejectedAsyncBuildRequests.incrementAndGet();
+            cleanUp();
+            // Here, we use CONFLICT (response code 409), which means (according to rfc2616, section
+            // 10) "The request could not be completed due to a conflict with the current state of the
+            // resource."
+                return Response.status(Response.Status.CONFLICT).type(MediaType.TEXT_PLAIN_TYPE).entity(errorMessage).build();
+              }
             }
-          } finally {
-            bufferedOutputStream.close();
-          }
 
-          if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-            LOG.severe("Bad Response Code!: " + connection.getResponseCode());
-            // TODO(user) Maybe do some retries
+          Runnable buildTask = new Runnable() {
+            @Override
+            public void run() {
+              int count = buildCount.incrementAndGet();
+              try {
+                LOG.info("START NEW BUILD " + count);
+                checkMemory();
+                buildAndCreateZip(userName, inputZipFile);
+                // Send zip back to the callbackUrl
+                LOG.info("CallbackURL: " + callbackUrlStr);
+                URL callbackUrl = new URL(callbackUrlStr);
+                HttpURLConnection connection = (HttpURLConnection) callbackUrl.openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("POST");
+                // Make sure we aren't misinterpreted as
+                // form-url-encoded
+                connection.addRequestProperty("Content-Type","application/zip; charset=utf-8");
+                connection.setConnectTimeout(60000);
+                connection.setReadTimeout(60000);
+                BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
+                try {
+                  BufferedInputStream bufferedInputStream = new BufferedInputStream(
+                  new FileInputStream(outputZip));
+                  try {
+                    ByteStreams.copy(bufferedInputStream,bufferedOutputStream);
+                    checkMemory();
+                    bufferedOutputStream.flush();
+                  } finally {
+                     bufferedInputStream.close();
+                  }
+                } finally {
+                   bufferedOutputStream.close();
+                }
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {LOG.severe("Bad Response Code!: "+ connection.getResponseCode());
+                  // TODO(user) Maybe do some retries
+                }
+             } catch (Exception e) {
+                // TODO(user): Maybe send a failure callback
+                LOG.severe("Exception: " + e.getMessage()+ " and the length is of inputZip is "+ inputZip.length());
+             } finally {
+               cleanUp();
+               checkMemory();
+               LOG.info("BUILD " + count + " FINISHED");
+             }
           }
-
-        } catch (Exception e) {
-          // TODO(user): Maybe send a failure callback
-          LOG.severe("Exception: " + e.getMessage());
-        } finally {
+        };
+        try {
+          buildExecutor.execute(buildTask);
+        } catch (RejectedExecutionException e) {
+          // This request was rejected because all threads in the build
+          // executor are busy.
+          rejectedAsyncBuildRequests.incrementAndGet();
           cleanUp();
-          checkMemory();
-          LOG.info("BUILD " + count + " FINISHED");
+          // Here, we use SERVICE_UNAVAILABLE (response code 503), which
+          // means
+          // (according to rfc2616,
+          // section 10) "The server is currently unable to handle the
+          // request
+          // due to a temporary
+          // overloading or maintenance of the server. The implication is
+          // that
+          // this is a temporary
+          // condition which will be alleviated after some delay."
+          return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN_TYPE).entity("The build server is currently at maximum capacity.").build();
         }
       }
-    };
-    try {
-      buildExecutor.execute(buildTask);
-    } catch (RejectedExecutionException e) {
-      // This request was rejected because all threads in the build executor are busy.
-      rejectedAsyncBuildRequests.incrementAndGet();
-      cleanUp();
-      // Here, we use SERVICE_UNAVAILABLE (response code 503), which means (according to rfc2616,
-      // section 10) "The server is currently unable to handle the request due to a temporary
-      // overloading or maintenance of the server. The implication is that this is a temporary
-      // condition which will be alleviated after some delay."
-      return Response.status(Response.Status.SERVICE_UNAVAILABLE).type(MediaType.TEXT_PLAIN_TYPE)
-          .entity("The build server is currently at maximum capacity.").build();
-    }
-    return Response.ok().build();
+      return Response.ok().type(MediaType.TEXT_PLAIN_TYPE)
+              .entity("" + projectBuilder.getProgress()).build();
   }
 
   private void buildAndCreateZip(String userName, File inputZipFile)
@@ -455,8 +461,7 @@ public class BuildServer {
       Files.copy(outputApk, zipOutputStream);
       successfulBuildRequests.getAndIncrement();
     } else {
-      LOG.severe("Build " + buildCount.get() + " Failed: " + buildResult.getResult() + 
-          " " + buildResult.getError());
+      LOG.severe("Build " + buildCount.get() + " Failed: " + buildResult.getResult() + " " + buildResult.getError());
       failedBuildRequests.getAndIncrement();
     }
     zipOutputStream.putNextEntry(new ZipEntry("build.out"));
@@ -480,7 +485,6 @@ public class BuildServer {
   }
 
   private Result build(String userName, File zipFile) throws IOException {
-    ProjectBuilder projectBuilder = new ProjectBuilder();
     outputDir = Files.createTempDir();
     // We call outputDir.deleteOnExit() here, in case build server is killed before cleanUp
     // executes. However, it is likely that the directory won't be empty and therefore, won't

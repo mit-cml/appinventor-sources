@@ -468,4 +468,8 @@ public final class ProjectBuilder {
       return formName;
     }
   }
+
+  public int getProgress() {
+    return Compiler.getProgress();
+  }
 }

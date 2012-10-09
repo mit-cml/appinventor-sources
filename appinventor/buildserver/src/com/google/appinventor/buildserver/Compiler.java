@@ -50,6 +50,8 @@ import javax.imageio.ImageIO;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class Compiler {
+  public static int currentProgress = 10;
+
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
@@ -64,13 +66,13 @@ public final class Compiler {
 
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
-  
+
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
-  
+
   private static final String COMPONENT_LIBRARIES =
     RUNTIME_FILES_DIR + "simple_components_libraries.json";
 
@@ -84,7 +86,7 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "android.jar";
   private static final String MAC_AAPT_TOOL =
       "/tools/mac/aapt";
-  private static final String WINDOWS_AAPT_TOOL = 
+  private static final String WINDOWS_AAPT_TOOL =
       "/tools/windows/aapt";
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
@@ -92,7 +94,7 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
-  
+
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
@@ -105,7 +107,7 @@ public final class Compiler {
 
   private static final ConcurrentMap<String, Set<String>> componentLibraries =
     new ConcurrentHashMap<String, Set<String>>();
-  
+
   /**
    * Map used to hold the names and paths of resources that we've written out
    * as temp files.
@@ -163,7 +165,7 @@ public final class Compiler {
     }
     return permissions;
   }
-  
+
   /*
    * Generate the set of Android permissions needed by this project.
    */
@@ -184,14 +186,14 @@ public final class Compiler {
       return null;
     }
 
-    
+
     Set<String> libraries = Sets.newHashSet();
     for (String componentType : componentTypes) {
       libraries.addAll(componentLibraries.get(componentType));
     }
     return libraries;
   }
-  
+
 
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
@@ -206,7 +208,7 @@ public final class Compiler {
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
-    
+
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
@@ -317,12 +319,14 @@ public final class Compiler {
    * @param keystoreFilePath
    * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
+ * @throws JSONException
+ * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, String keystoreFilePath, int childProcessRam) {
+                                boolean isForRepl, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
     long start = System.currentTimeMillis();
-    
+
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
@@ -341,6 +345,7 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
+    setProgress(10);
 
     // Create anim directory and animation xml files
     out.println("________Creating animation xml");
@@ -355,6 +360,7 @@ public final class Compiler {
     if (permissionsNeeded == null) {
       return false;
     }
+    setProgress(15);
 
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
@@ -362,6 +368,7 @@ public final class Compiler {
     if (!compiler.writeAndroidManifest(manifestFile, permissionsNeeded)) {
       return false;
     }
+    setProgress(20);
 
     // Create class files.
     out.println("________Compiling source files");
@@ -369,6 +376,7 @@ public final class Compiler {
     if (!compiler.generateClasses(classesDir)) {
       return false;
     }
+    setProgress(35);
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -386,6 +394,7 @@ public final class Compiler {
     if (!compiler.runDx(classesDir, dexedClasses)) {
       return false;
     }
+    setProgress(85);
 
     // Invoke aapt to package everything up
     out.println("________Invoking AAPT");
@@ -395,6 +404,7 @@ public final class Compiler {
     if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName)) {
       return false;
     }
+    setProgress(90);
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
@@ -403,13 +413,14 @@ public final class Compiler {
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClasses)) {
       return false;
     }
+    setProgress(95);
 
     // Sign the apk file
     out.println("________Signing the apk file");
     if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
       return false;
     }
-
+    setProgress(100);
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
@@ -526,7 +537,7 @@ public final class Compiler {
         .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
           classFileName = classesDir.getAbsolutePath()
-          .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
@@ -558,14 +569,14 @@ public final class Compiler {
       // Construct the class path including component libraries (jars)
       String classpath =
         getResource(KAWA_RUNTIME) + File.pathSeparator +
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator; 
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
       for (String library : librariesNeeded) {
         classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
       }
-      
-      classpath += 
+
+      classpath +=
         getResource(ANDROID_RUNTIME);
 
       String yailRuntime = getResource(YAIL_RUNTIME);
@@ -638,7 +649,7 @@ public final class Compiler {
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
       if (System.getProperty("os.name").startsWith("Windows")){
-  		jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+        jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
             File.separator + "jarsigner.exe");
       }
       if (!jarsignerFile.exists()) {
@@ -715,22 +726,24 @@ public final class Compiler {
     commandLineList.add(classesDir.getAbsolutePath());
     commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
     commandLineList.add(getResource(KAWA_RUNTIME));
-    
+
     // Add libraries to command line arguments
     for (String library : librariesNeeded) {
       commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
     }
-    
+
     // Convert command line to an array
     String[] dxCommandLine = new String[commandLineList.size()];
     commandLineList.toArray(dxCommandLine);
-    
+
    long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
     // tools output
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
+      setProgress(50);
       dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+      setProgress(75);
     }
     if (!dxSuccess) {
       LOG.warning("YAIL compiler - DX execution failed.");
@@ -745,7 +758,7 @@ public final class Compiler {
 
     return true;
   }
-  
+
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     createDirectory(project.getAssetsDirectory());
@@ -756,8 +769,8 @@ public final class Compiler {
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
     } else if (osName.startsWith("Windows")) {
-		aaptTool = WINDOWS_AAPT_TOOL;
-	} else {
+        aaptTool = WINDOWS_AAPT_TOOL;
+    } else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
@@ -855,11 +868,11 @@ public final class Compiler {
       }
     }
   }
-  
+
   /**
    * Loads the names of library jars for each component and stores them in
    * componentLibraries.
-   * 
+   *
    * @throws IOException
    * @throws JSONException
    */
@@ -915,5 +928,21 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static int setProgress(int increments){
+    Compiler.currentProgress = increments;
+    LOG.info("The current progress is "
+              + Compiler.currentProgress + "%");
+    return Compiler.currentProgress;
+  }
+
+  public static int getProgress(){
+    if (Compiler.currentProgress==100){
+      Compiler.currentProgress = 10;
+      return 100;
+    }else{
+      return Compiler.currentProgress;
+    }
   }
 }

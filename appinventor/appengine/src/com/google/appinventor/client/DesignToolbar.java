@@ -18,6 +18,7 @@ import com.google.appinventor.client.explorer.commands.EnsurePhoneConnectedComma
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.SaveBlocksCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.Toolbar;
@@ -58,13 +59,11 @@ public class DesignToolbar extends Toolbar {
    */
   public DesignToolbar() {
     super();
-
     projectName = new Label();
     projectName.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
     toolbar.insert(projectName, 0);
-    toolbar.setCellWidth(projectName, "222px"); // width of palette minus
-                                                // cellspacing/border of buttons
+    toolbar.setCellWidth(projectName, "222px"); 
 
     addButton(new ToolbarItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
         new SaveAction()));
@@ -167,68 +166,70 @@ public class DesignToolbar extends Toolbar {
         String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new SaveBlocksCommand(
-                new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new ShowBarcodeCommand(target)))));
+               new BuildCommand(target,
+                   new ShowProgressBarCommand(target,
+                       new WaitForBuildResultCommand(target,
+                          new ShowBarcodeCommand(target)), "BarcodeAction"))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
-            new Command() {
+          new Command() {
           @Override
           public void execute() {
             updateBuildButton(false);
           }
-        });
+         });
+        }
       }
     }
-  }
 
-  private class DownloadAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new SaveBlocksCommand(
-                new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new DownloadProjectOutputCommand(target)))));
-        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
-            new Command() {
-          @Override
-          public void execute() {
-            updateBuildButton(false);
-          }
-        });
+    private class DownloadAction implements Command {
+      @Override
+      public void execute() {
+        ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+        if (projectRootNode != null) {
+          String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+          ChainableCommand cmd = new SaveAllEditorsCommand(
+              new SaveBlocksCommand(
+                  new BuildCommand(target,
+                     new ShowProgressBarCommand(target,
+                         new WaitForBuildResultCommand(target,
+                             new DownloadProjectOutputCommand(target)), "DownloadAction"))));
+          updateBuildButton(true);
+          cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
+              new Command() {
+            @Override
+            public void execute() {
+              updateBuildButton(false);
+            }
+          });
+        }
       }
     }
-  }
 
-  private class DownloadToPhoneAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new EnsurePhoneConnectedCommand(
-            new SaveAllEditorsCommand(
-                new SaveBlocksCommand(
-                    new BuildCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadToPhoneCommand(target))))));
-        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_TO_PHONE_YA, projectRootNode,
-            new Command() {
-          @Override
-          public void execute() {
-            updateBuildButton(false);
-          }
-        });
+    private class DownloadToPhoneAction implements Command {
+      @Override
+      public void execute() {
+        ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+        if (projectRootNode != null) {
+          String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+                  ChainableCommand cmd = new EnsurePhoneConnectedCommand(
+                      new SaveAllEditorsCommand(
+                          new SaveBlocksCommand(
+                              new BuildCommand(target,
+                                  new ShowProgressBarCommand(target,
+                                      new WaitForBuildResultCommand(target,
+                                          new DownloadToPhoneCommand(target)), "DownloadToPhoneAction")))));
+          updateBuildButton(true);
+          cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_TO_PHONE_YA, projectRootNode,
+              new Command() {
+            @Override
+            public void execute() {
+              updateBuildButton(false);
+            }
+          });
+        }
       }
     }
-  }
-
   private class OpenBlocksEditorAction implements Command {
     @Override
     public void execute() {

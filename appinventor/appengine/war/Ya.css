@@ -748,3 +748,24 @@ body {
   color: black;
   padding: 4px;
 }
+
+.gwt-ProgressBar-shell {
+  border: 2px solid #faf9f7;
+  border-right: 2px solid #848280;
+  border-bottom: 2px solid #848280;
+  background-color: #AAAAAA;
+  height: 30pt;
+  width: 100%;
+}
+.gwt-ProgressBar-shell .gwt-ProgressBar-bar {
+  background-color: #A4C639;
+}
+.gwt-ProgressBar-shell .gwt-ProgressBar-text {
+  position: absolute;
+  top:0; left:0;
+  padding-top: 10px;
+  color: #fff;
+  text-align: center;
+  width: 100%;
+  font-size:large;
+}

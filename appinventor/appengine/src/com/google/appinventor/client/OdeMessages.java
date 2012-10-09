@@ -22,6 +22,10 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'OK' button.")
   String okButton();
 
+  @DefaultMessage("Dimiss")
+  @Description("Text on 'Dimiss' button.")
+  String dimissButton();
+
   @DefaultMessage("Old name:")
   @Description("Label next to the old name in a rename dialog")
   String oldNameLabel();
