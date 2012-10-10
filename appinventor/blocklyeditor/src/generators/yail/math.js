@@ -168,7 +168,7 @@ Blockly.Yail.math_random_set_seed = function() {
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "random set seed"
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_NONE ];
+  return code;
 };
 
 Blockly.Yail.math_round = function() {

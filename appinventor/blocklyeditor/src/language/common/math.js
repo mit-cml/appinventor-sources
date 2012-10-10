@@ -1,5 +1,5 @@
 /**
- * Visual Blocks Language
+.setAlign(Blockly.ALIGN_RIGHT) * Visual Blocks Language
  *
  * Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
  *
@@ -31,12 +31,12 @@ if (!Blockly.Language) Blockly.Language = {};
 
 Blockly.Language.math_number = {
   // Numeric value.
-  category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
-  init: function() {
+  category : Blockly.LANG_CATEGORY_MATH,
+  helpUrl : '',
+  init : function() {
     this.setColour(230);
-    this.appendTitle(new Blockly.FieldTextInput('0',
-        Blockly.Language.math_number.validator), 'NUM');
+    this.appendDummyInput().appendTitle(
+        new Blockly.FieldTextInput('0', Blockly.Language.math_number.validator), 'NUM');
     this.setOutput(true, Number);
     this.setTooltip("Report the number shown.");
   }
@@ -57,9 +57,8 @@ Blockly.Language.math_compare = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Boolean);
-    this.appendInput(Blockly.INPUT_VALUE, 'A', Number);
-    var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
-    this.appendInput(Blockly.INPUT_VALUE, 'B', Number).appendTitle(dropdown, 'OP');
+    this.appendValueInput('A').setCheck(Number);
+    this.appendValueInput('B').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -98,9 +97,8 @@ Blockly.Language.math_arithmetic = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendInput(Blockly.INPUT_VALUE, 'A', Number);
-    var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
-    this.appendInput(Blockly.INPUT_VALUE, 'B', Number).appendTitle(dropdown, 'OP');
+    this.appendValueInput('A').setCheck(Number);
+    this.appendValueInput('B').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -134,8 +132,7 @@ Blockly.Language.math_single = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number).appendTitle(dropdown, 'OP');
+    this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -167,9 +164,8 @@ Blockly.Language.math_random_int = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendTitle('random integer');
-    this.appendInput(Blockly.INPUT_VALUE, 'FROM', Number).appendTitle('from');
-    this.appendInput(Blockly.INPUT_VALUE, 'TO', Number).appendTitle('to');
+    this.appendValueInput('FROM').setCheck(Number).appendTitle('random integer').appendTitle('from');
+    this.appendValueInput('TO').setCheck(Number).appendTitle('to');
     this.setInputsInline(true);
     this.setTooltip('Returns a random integer between the upper bound\n' +
         'and the lower bound. The bounds will be clipped to be smaller\n' +
@@ -184,7 +180,7 @@ Blockly.Language.math_random_float = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendTitle('random fraction');
+    this.appendDummyInput().appendTitle('random fraction');
     this.setTooltip('Return a random number between 0 and 1.');
   }
 };
@@ -196,8 +192,9 @@ Blockly.Language.math_random_set_seed = {
   init: function() {
     this.setColour(230);
     this.setOutput(false, Number);
-    this.appendTitle('random set seed');
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number).appendTitle('to');
+    this.appendValueInput('NUM').setCheck(Number).appendTitle('random set seed').appendTitle('to');
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
     this.setTooltip('specifies a numeric seed\n' +
         'for the random number generator');
   }
@@ -210,8 +207,7 @@ Blockly.Language.math_round = {
   init: function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    var dropdown = new Blockly.FieldDropdown(this.OPERATORS);
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number).appendTitle(dropdown, 'OP');
+    this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -244,12 +240,8 @@ Blockly.Language.math_on_list = {
     var thisBlock = this;
     this.setColour(230);
     this.setOutput(true, Number);
-    var dropdown = new Blockly.FieldDropdown(function() {
-      return Blockly.Language.math_on_list.OPERATORS;
-    });
-    this.appendTitle(dropdown, 'OP');
-    this.appendInput(Blockly.INPUT_VALUE, 'A', Number);
-    this.appendInput(Blockly.INPUT_VALUE, 'B', Number);
+    this.appendValueInput('A').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('B').setCheck(Number);
     this.setInputsInline(false);
     this.setTooltip(function() {
       var mode = thisBlock.getTitleValue('OP');
@@ -274,12 +266,8 @@ Blockly.Language.math_divide = {
   init : function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    var dropdown = new Blockly.FieldDropdown(function() {
-      return Blockly.Language.math_divide.OPERATORS;
-    });
-    this.appendTitle(dropdown, 'OP');
-    this.appendInput(Blockly.INPUT_VALUE, 'DIVIDEND', Number);
-    this.appendInput(Blockly.INPUT_VALUE, 'DIVISOR', Number).appendTitle('\u00F7');
+    this.appendValueInput('DIVIDEND').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('DIVISOR').setCheck(Number).appendTitle('\u00F7');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -304,15 +292,11 @@ Blockly.Language.math_divide.TOOLTIPS = {
 Blockly.Language.math_trig = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : 'http://en.wikipedia.org/wiki/Trigonometric_functions',
+  helpUrl : '',
   init : function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    var dropdown = new Blockly.FieldDropdown(function() {
-      return Blockly.Language.math_trig.OPERATORS;
-    });
-    this.appendTitle(dropdown, 'OP');
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number);
+    this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -349,9 +333,9 @@ Blockly.Language.math_atan2 = {
   init : function() {
     this.setColour(230);
     this.setOutput(true);
-    this.appendTitle('atan2');
-    this.appendInput(Blockly.INPUT_VALUE, 'Y', Number).appendTitle('y');
-    this.appendInput(Blockly.INPUT_VALUE, 'X', Number).appendTitle('x');
+    this.appendDummyInput().appendTitle('atan2')
+    this.appendValueInput('Y').setCheck(Number).appendTitle('y').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('X').setCheck(Number).appendTitle('x').setAlign(Blockly.ALIGN_RIGHT);
     this.setInputsInline(false);
     this.setTooltip('Provides the angle in the range (-180, +180]\n' +
         'degrees with the given rectangular coordinates.');
@@ -365,11 +349,7 @@ Blockly.Language.math_convert_angles = {
   init : function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendTitle('convert');
-    var dropdown = new Blockly.FieldDropdown(function() {
-        return Blockly.Language.math_convert_angles.OPERATORS;
-    });
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number).appendTitle(dropdown, 'OP');
+    this.appendValueInput('NUM').setCheck(Number).appendTitle('convert').appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -390,16 +370,15 @@ Blockly.Language.math_convert_angles.TOOLTIPS = {
       '[-\u03C0, +\u03C0) corresponding to its degrees argument.'
 };
 
-
 Blockly.Language.math_format_as_decimal = {
   category : Blockly.LANG_CATEGORY_MATH,
   helpUrl : '',
   init : function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendTitle('format as decimal');
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM', Number).appendTitle('number');
-    this.appendInput(Blockly.INPUT_VALUE, 'PLACES', Number).appendTitle('places');
+    this.appendDummyInput().appendTitle('format as decimal');
+    this.appendValueInput('NUM').setCheck(Number).appendTitle('number').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('PLACES').setCheck(Number).appendTitle('places').setAlign(Blockly.ALIGN_RIGHT);
     this.setInputsInline(false);
     this.setTooltip('Returns the number formatted as a decimal\n' +
         'with a specified number of places.');
@@ -412,7 +391,7 @@ Blockly.Language.math_is_a_number = {
   init : function() {
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendInput(Blockly.INPUT_VALUE, 'NUM').appendTitle('is a number?');
+    this.appendValueInput('NUM').appendTitle('is a number?');
     this.setTooltip(function() {
       return 'Tests if something is a number.';
     });
