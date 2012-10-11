@@ -26,15 +26,12 @@
  * Class for a connection between blocks.
  * @param {!Blockly.Block} source The block establishing this connection.
  * @param {number} type The type of the connection.
- * @param {*} opt_check Compatible value type or list of value types.
- *     Null if all types are compatible.
  * @constructor
  */
-Blockly.Connection = function(source, type, opt_check) {
+Blockly.Connection = function(source, type) {
   this.sourceBlock_ = source;
   this.targetConnection = null;
   this.type = type;
-  this.setCheck(opt_check);
   this.x_ = 0;
   this.y_ = 0;
   this.inDB_ = false;
@@ -477,6 +474,8 @@ Blockly.Connection.prototype.checkType_ = function(otherConnection) {
  * Change a connection's compatibility.
  * @param {*} check Compatible value type or list of value types.
  *     Null if all types are compatible.
+ * @return {!Blockly.Connection} The connection being modified
+ *     (to allow chaining).
  */
 Blockly.Connection.prototype.setCheck = function(check) {
   if (check) {
@@ -498,6 +497,7 @@ Blockly.Connection.prototype.setCheck = function(check) {
   } else {
     this.check_ = null;
   }
+  return this;
 };
 
 /**

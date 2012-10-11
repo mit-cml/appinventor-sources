@@ -75,54 +75,59 @@ Blockly.Python.math_single = function() {
   // Math operators with single operand.
   var operator = this.getTitleValue('OP');
   var code;
+  var arg;
   if (operator == 'NEG') {
+    // Negation is a special case given its different operator precedence.
     var code = Blockly.Python.valueToCode(this, 'NUM',
         Blockly.Python.ORDER_UNARY_SIGN) || '0';
     return ['-' + code, Blockly.Python.ORDER_UNARY_SIGN];
   }
   Blockly.Python.definitions_['import_math'] = 'import math';
-  var argNaked = Blockly.Python.valueToCode(this, 'NUM',
-      Blockly.Python.ORDER_NONE) || '0';
-  var argParen = Blockly.Python.valueToCode(this, 'NUM',
-      Blockly.Python.ORDER_MULTIPLICATIVE) || '0';
+  if (operator == 'SIN' || operator == 'COS' || operator == 'TAN') {
+    arg = Blockly.Python.valueToCode(this, 'NUM',
+        Blockly.Python.ORDER_MULTIPLICATIVE) || '0';
+  } else {
+    arg = Blockly.Python.valueToCode(this, 'NUM',
+        Blockly.Python.ORDER_NONE) || '0';
+  }
   // First, handle cases which generate values that don't need parentheses
   // wrapping the code.
   switch (operator) {
     case 'ABS':
-      code = 'math.fabs(' + argNaked + ')';
+      code = 'math.fabs(' + arg + ')';
       break;
     case 'ROOT':
-      code = 'math.sqrt(' + argNaked + ')';
+      code = 'math.sqrt(' + arg + ')';
       break;
     case 'LN':
-      code = 'math.log(' + argNaked + ')';
+      code = 'math.log(' + arg + ')';
       break;
     case 'LOG10':
-      code = 'math.log10(' + argNaked + ')';
+      code = 'math.log10(' + arg + ')';
       break;
     case 'EXP':
-      code = 'math.exp(' + argNaked + ')';
+      code = 'math.exp(' + arg + ')';
       break;
     case 'POW10':
-      code = 'math.pow(10,' + argNaked + ')';
+      code = 'math.pow(10,' + arg + ')';
       break;
     case 'ROUND':
-      code = 'round(' + argNaked + ')';
+      code = 'round(' + arg + ')';
       break;
     case 'ROUNDUP':
-      code = 'math.ceil(' + argNaked + ')';
+      code = 'math.ceil(' + arg + ')';
       break;
     case 'ROUNDDOWN':
-      code = 'math.floor(' + argNaked + ')';
+      code = 'math.floor(' + arg + ')';
       break;
     case 'SIN':
-      code = 'math.sin(' + argParen + ' / 180.0 * math.pi)';
+      code = 'math.sin(' + arg + ' / 180.0 * math.pi)';
       break;
     case 'COS':
-      code = 'math.cos(' + argParen + ' / 180.0 * math.pi)';
+      code = 'math.cos(' + arg + ' / 180.0 * math.pi)';
       break;
     case 'TAN':
-      code = 'math.tan(' + argParen + ' / 180.0 * math.pi)';
+      code = 'math.tan(' + arg + ' / 180.0 * math.pi)';
       break;
   }
   if (code) {
@@ -132,13 +137,13 @@ Blockly.Python.math_single = function() {
   // wrapping the code.
   switch (operator) {
     case 'ASIN':
-      code = 'math.asin(' + argNaked + ') / math.pi * 180';
+      code = 'math.asin(' + arg + ') / math.pi * 180';
       break;
     case 'ACOS':
-      code = 'math.acos(' + argNaked + ') / math.pi * 180';
+      code = 'math.acos(' + arg + ') / math.pi * 180';
       break;
     case 'ATAN':
-      code = 'math.atan(' + argNaked + ') / math.pi * 180';
+      code = 'math.atan(' + arg + ') / math.pi * 180';
       break;
     default:
       throw 'Unknown math operator: ' + operator;

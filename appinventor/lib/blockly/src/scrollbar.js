@@ -436,8 +436,7 @@ Blockly.ScrollbarNative.prototype.set = function(value, fireEvents) {
   // and the value needs to be scaled accordingly.
   if (!fireEvents) {
     // Temporarily suppress the onscroll event handler.
-    var scrollFunc = this.onScrollWrapper_[0][2];
-    Blockly.unbindEvent_(this.onScrollWrapper_);
+    var scrollFunc = Blockly.unbindEvent_(this.onScrollWrapper_);
   }
   // Move the scrollbar slider.
   if (this.horizontal_) {

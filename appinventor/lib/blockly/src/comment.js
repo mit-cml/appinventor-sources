@@ -30,8 +30,6 @@
 Blockly.Comment = function(block) {
   this.block_ = block;
   this.createIcon_();
-
-  this.setPinned(false);
 };
 
 /**
@@ -92,12 +90,6 @@ Blockly.Comment.prototype.width_ = 160;
 Blockly.Comment.prototype.height_ = 80;
 
 /**
- * Is the comment always visible?
- * @private
- */
-Blockly.Comment.prototype.isPinned_ = false;
-
-/**
  * Create the icon on the block.
  * @private
  */
@@ -122,8 +114,6 @@ Blockly.Comment.prototype.createIcon_ = function() {
   this.iconMark_.appendChild(Blockly.svgDoc.createTextNode('?'));
   this.block_.getSvgRoot().appendChild(this.iconGroup_);
   Blockly.bindEvent_(this.iconGroup_, 'mouseup', this, this.iconClick_);
-  Blockly.bindEvent_(this.iconGroup_, 'mouseover', this, this.iconMouseOver_);
-  Blockly.bindEvent_(this.iconGroup_, 'mouseout', this, this.iconMouseOut_);
 };
 
 /**
@@ -171,41 +161,19 @@ Blockly.Comment.prototype.resizeBubble_ = function() {
 };
 
 /**
- * Is the comment bubble always visible?
- * @return {boolean} True if the bubble should be always visible.
- */
-Blockly.Comment.prototype.isPinned = function() {
-  return this.isPinned_;
-};
-
-/**
- * Set whether the comment bubble is always visible or not.
- * @param {boolean} pinned True if the bubble should be always visible.
- */
-Blockly.Comment.prototype.setPinned = function(pinned) {
-  this.isPinned_ = pinned;
-  this.iconMark_.style.fill = pinned ? '#fff' : '';
-  if (this.bubble_) {
-    this.bubble_.setDisabled(!this.isPinned_);
-  }
-};
-
-/**
  * Is the comment bubble visible?
  * @return {boolean} True if the bubble is visible.
- * @private
  */
-Blockly.Comment.prototype.isVisible_ = function() {
+Blockly.Comment.prototype.isVisible = function() {
   return !!this.bubble_;
 };
 
 /**
  * Show or hide the comment bubble.
  * @param {boolean} visible True if the bubble should be visible.
- * @private
  */
-Blockly.Comment.prototype.setVisible_ = function(visible) {
-  if (visible == this.isVisible_()) {
+Blockly.Comment.prototype.setVisible = function(visible) {
+  if (visible == this.isVisible()) {
     // No change.
     return;
   }
@@ -219,7 +187,6 @@ Blockly.Comment.prototype.setVisible_ = function(visible) {
         this.createEditor_(), this.iconX_, this.iconY_,
         this.relativeLeft_, this.relativeTop_, this.width_, this.height_);
     this.bubble_.registerResizeEvent(this, this.resizeBubble_);
-    this.bubble_.setDisabled(!this.isPinned_);
     this.updateColour();
     this.text_ = null;
   } else {
@@ -236,35 +203,14 @@ Blockly.Comment.prototype.setVisible_ = function(visible) {
 };
 
 /**
- * Clicking on the icon toggles if the bubble is pinned.
+ * Clicking on the icon toggles if the bubble is visible.
  * @param {!Event} e Mouse click event.
  * @private
  */
 Blockly.Comment.prototype.iconClick_ = function(e) {
-  this.setPinned(!this.isPinned_);
+  this.setVisible(!this.isVisible());
 };
 
-/**
- * Mousing over the icon makes the bubble visible.
- * @param {!Event} e Mouse over event.
- * @private
- */
-Blockly.Comment.prototype.iconMouseOver_ = function(e) {
-  if (!this.isPinned_ && Blockly.Block.dragMode_ == 0) {
-    this.setVisible_(true);
-  }
-};
-
-/**
- * Mousing off of the icon hides the bubble (unless it is pinned).
- * @param {!Event} e Mouse out event.
- * @private
- */
-Blockly.Comment.prototype.iconMouseOut_ = function(e) {
-  if (!this.isPinned_ && Blockly.Block.dragMode_ == 0) {
-    this.setVisible_(false);
-  }
-};
 
 /**
  * Bring the comment to the top of the stack when clicked on.
@@ -286,7 +232,7 @@ Blockly.Comment.prototype.textareaFocus_ = function(e) {
  * @return {!Object} Object with x and y properties.
  */
 Blockly.Comment.prototype.getBubbleLocation = function() {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     return this.bubble_.getBubbleLocation();
   } else {
     return {x: this.relativeLeft_, y: this.relativeTop_};
@@ -299,7 +245,7 @@ Blockly.Comment.prototype.getBubbleLocation = function() {
  * @param {number} y Vertical offset from block.
  */
 Blockly.Comment.prototype.setBubbleLocation = function(x, y) {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     this.bubble_.setBubbleLocation(x, y);
   } else {
     this.relativeLeft_ = x;
@@ -312,7 +258,7 @@ Blockly.Comment.prototype.setBubbleLocation = function(x, y) {
  * @return {!Object} Object with width and height properties.
  */
 Blockly.Comment.prototype.getBubbleSize = function() {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     return this.bubble_.getBubbleSize();
   } else {
     return {width: this.width_, height: this.height_};
@@ -325,7 +271,7 @@ Blockly.Comment.prototype.getBubbleSize = function() {
  * @param {number} height Height of the bubble.
  */
 Blockly.Comment.prototype.setBubbleSize = function(width, height) {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     this.bubble_.setBubbleSize(width, height);
   } else {
     this.width_ = width;
@@ -338,7 +284,7 @@ Blockly.Comment.prototype.setBubbleSize = function(width, height) {
  * @return {string} Comment text.
  */
 Blockly.Comment.prototype.getText = function() {
-  return this.isVisible_() ? this.textarea_.value : this.text_;
+  return this.isVisible() ? this.textarea_.value : this.text_;
 };
 
 /**
@@ -346,7 +292,7 @@ Blockly.Comment.prototype.getText = function() {
  * @param {string} text Comment text.
  */
 Blockly.Comment.prototype.setText = function(text) {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     this.textarea_.value = text;
   } else {
     this.text_ = text;
@@ -357,7 +303,7 @@ Blockly.Comment.prototype.setText = function(text) {
  * Change the colour of a comment to match its block.
  */
 Blockly.Comment.prototype.updateColour = function() {
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     var hexColour = Blockly.makeColour(this.block_.getColour());
     this.bubble_.setColour(hexColour);
   }
@@ -371,7 +317,7 @@ Blockly.Comment.prototype.destroy = function() {
   this.iconGroup_.parentNode.removeChild(this.iconGroup_);
   this.iconGroup_ = null;
   // Destroy and unlink the bubble.
-  this.setVisible_(false);
+  this.setVisible(false);
   // Disconnect links between the block and the comment.
   this.block_.comment = null;
   this.block_ = null;
@@ -379,25 +325,30 @@ Blockly.Comment.prototype.destroy = function() {
 
 /**
  * Render the icon for this comment.
- * @param {number} titleX Horizontal offset at which to position the icon.
- * @return {Object} Height and width of icon, or null if not displayed.
+ * @param {number} cursorX Horizontal offset at which to position the icon.
+ * @return {number} Horizontal offset for next item to draw.
  */
-Blockly.Comment.prototype.renderIcon = function(titleX) {
+Blockly.Comment.prototype.renderIcon = function(cursorX) {
   if (this.block_.collapsed) {
     this.iconGroup_.setAttribute('display', 'none');
-    return null;
+    return cursorX;
   }
   this.iconGroup_.setAttribute('display', 'block');
 
   var TOP_MARGIN = 5;
   var diameter = 2 * Blockly.Comment.ICON_RADIUS;
   if (Blockly.RTL) {
-    titleX -= diameter;
+    cursorX -= diameter;
   }
   this.iconGroup_.setAttribute('transform',
-                               'translate(' + titleX + ', ' + TOP_MARGIN + ')');
+      'translate(' + cursorX + ', ' + TOP_MARGIN + ')');
   this.computeIconLocation();
-  return {x: diameter, y: diameter};
+  if (Blockly.RTL) {
+    cursorX -= Blockly.BlockSvg.SEP_SPACE_X;
+  } else {
+    cursorX += diameter + Blockly.BlockSvg.SEP_SPACE_X;
+  }
+  return cursorX;
 };
 
 /**
@@ -408,7 +359,7 @@ Blockly.Comment.prototype.renderIcon = function(titleX) {
 Blockly.Comment.prototype.setIconLocation = function(x, y) {
   this.iconX_ = x;
   this.iconY_ = y;
-  if (this.isVisible_()) {
+  if (this.isVisible()) {
     this.bubble_.setAnchorLocation(x, y);
   }
 };

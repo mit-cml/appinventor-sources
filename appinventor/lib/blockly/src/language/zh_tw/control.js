@@ -31,14 +31,16 @@ Blockly.Language.controls_for = {
   init: function() {
     this.setColour(120);
     //this.appendTitle(Blockly.LANG_CONTROLS_FOR_TITLE_COUNT);
-    var input = this.appendInput(Blockly.DUMMY_INPUT, '');
-    input.appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_WITH);
-    input.appendTitle(new Blockly.FieldVariable(null), 'VAR');
-    this.appendInput(Blockly.INPUT_VALUE, 'FROM', Number)
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_WITH)
+        .appendTitle(new Blockly.FieldVariable(null), 'VAR');
+    this.appendValueInput('FROM')
+        .setCheck(Number)
         .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_FROM);
-    this.appendInput(Blockly.INPUT_VALUE, 'TO', Number)
+    this.appendValueInput('TO')
+        .setCheck(Number)
         .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_TO);
-    this.appendInput(Blockly.NEXT_STATEMENT, 'DO')
+    this.appendStatementInput('DO')
         .appendTitle(Blockly.LANG_CONTROLS_FOR_INPUT_DO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);

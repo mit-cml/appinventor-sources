@@ -133,6 +133,9 @@
   fill: #00f;
   stroke: #fff;
 }
+.blocklyIconGroup:hover>.blocklyIconMark {
+  fill: #fff;
+}
 .blocklyIconMark {
   cursor: default !important;
   font-family: sans-serif;

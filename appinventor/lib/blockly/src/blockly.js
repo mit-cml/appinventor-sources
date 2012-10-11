@@ -115,6 +115,19 @@ Blockly.PREVIOUS_STATEMENT = 4;
 Blockly.DUMMY_INPUT = 5;
 
 /**
+ * ENUM for left alignment.
+ */
+Blockly.ALIGN_LEFT = -1;
+/**
+ * ENUM for centre alignment.
+ */
+Blockly.ALIGN_CENTRE = 0;
+/**
+ * ENUM for right alignment.
+ */
+Blockly.ALIGN_RIGHT = 1;
+
+/**
  * Lookup table for determining the opposite type of a connection.
  */
 Blockly.OPPOSITE_TYPE = [];

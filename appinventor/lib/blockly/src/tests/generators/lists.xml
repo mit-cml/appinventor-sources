@@ -26,7 +26,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" inline="false" x="329" y="3">
+  <block type="procedures_defreturn" inline="false" x="241" y="4">
     <mutation>
       <arg name="a"></arg>
       <arg name="b"></arg>
@@ -185,7 +185,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defnoreturn" x="27" y="455">
+  <block type="procedures_defnoreturn" x="36" y="439">
     <mutation></mutation>
     <title name="NAME">test create</title>
     <statement name="STACK">
@@ -300,7 +300,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="26" y="773">
+  <block type="procedures_defnoreturn" x="33" y="965">
     <mutation></mutation>
     <title name="NAME">test empty</title>
     <statement name="STACK">
@@ -335,7 +335,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="25" y="884">
+  <block type="procedures_defnoreturn" x="25" y="1181">
     <mutation></mutation>
     <title name="NAME">test length</title>
     <statement name="STACK">
@@ -412,136 +412,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="24" y="1667">
-    <mutation></mutation>
-    <title name="NAME">test get</title>
-    <statement name="STACK">
-      <block type="unittest_assertequals" inline="false">
-        <title name="MESSAGE">test name</title>
-        <value name="ACTUAL">
-          <block type="lists_getIndex" inline="false">
-            <value name="AT">
-              <block type="math_number">
-                <title name="NUM">2</title>
-              </block>
-            </value>
-            <value name="VALUE">
-              <block type="lists_create_with" inline="false">
-                <mutation items="3"></mutation>
-                <value name="ADD0">
-                  <block type="text">
-                    <title name="TEXT">Kirk</title>
-                  </block>
-                </value>
-                <value name="ADD1">
-                  <block type="text">
-                    <title name="TEXT">Spock</title>
-                  </block>
-                </value>
-                <value name="ADD2">
-                  <block type="text">
-                    <title name="TEXT">McCoy</title>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="EXPECTED">
-          <block type="text">
-            <title name="TEXT">Spock</title>
-          </block>
-        </value>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="28" y="1877">
-    <mutation></mutation>
-    <title name="NAME">test set</title>
-    <statement name="STACK">
-      <block type="variables_set" inline="false">
-        <title name="VAR">x</title>
-        <value name="VALUE">
-          <block type="lists_create_with" inline="false">
-            <mutation items="3"></mutation>
-            <value name="ADD0">
-              <block type="text">
-                <title name="TEXT">Picard</title>
-              </block>
-            </value>
-            <value name="ADD1">
-              <block type="text">
-                <title name="TEXT">Riker</title>
-              </block>
-            </value>
-            <value name="ADD2">
-              <block type="text">
-                <title name="TEXT">Crusher</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="lists_setIndex" inline="true">
-            <value name="AT">
-              <block type="math_number">
-                <title name="NUM">3</title>
-              </block>
-            </value>
-            <value name="LIST">
-              <block type="variables_get">
-                <title name="VAR">x</title>
-              </block>
-            </value>
-            <value name="TO">
-              <block type="text">
-                <title name="TEXT">Pulaski</title>
-              </block>
-            </value>
-            <next>
-              <block type="unittest_asserttrue" inline="false">
-                <title name="MESSAGE">test name</title>
-                <value name="ACTUAL">
-                  <block type="procedures_callreturn" inline="false">
-                    <mutation name="assert list equal">
-                      <arg name="a"></arg>
-                      <arg name="b"></arg>
-                    </mutation>
-                    <value name="ARG0">
-                      <block type="variables_get">
-                        <title name="VAR">x</title>
-                      </block>
-                    </value>
-                    <value name="ARG1">
-                      <block type="lists_create_with" inline="false">
-                        <mutation items="3"></mutation>
-                        <value name="ADD0">
-                          <block type="text">
-                            <title name="TEXT">Picard</title>
-                          </block>
-                        </value>
-                        <value name="ADD1">
-                          <block type="text">
-                            <title name="TEXT">Riker</title>
-                          </block>
-                        </value>
-                        <value name="ADD2">
-                          <block type="text">
-                            <title name="TEXT">Pulaski</title>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="35" y="1151">
+  <block type="procedures_defnoreturn" x="24" y="1556">
     <mutation></mutation>
     <title name="NAME">test find</title>
     <statement name="STACK">
@@ -671,6 +542,135 @@
                 <value name="EXPECTED">
                   <block type="math_number">
                     <title name="NUM">0</title>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="25" y="2199">
+    <mutation></mutation>
+    <title name="NAME">test get</title>
+    <statement name="STACK">
+      <block type="unittest_assertequals" inline="false">
+        <title name="MESSAGE">test name</title>
+        <value name="ACTUAL">
+          <block type="lists_getIndex" inline="false">
+            <value name="AT">
+              <block type="math_number">
+                <title name="NUM">2</title>
+              </block>
+            </value>
+            <value name="VALUE">
+              <block type="lists_create_with" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="text">
+                    <title name="TEXT">Kirk</title>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text">
+                    <title name="TEXT">Spock</title>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text">
+                    <title name="TEXT">McCoy</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="EXPECTED">
+          <block type="text">
+            <title name="TEXT">Spock</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="21" y="2469">
+    <mutation></mutation>
+    <title name="NAME">test set</title>
+    <statement name="STACK">
+      <block type="variables_set" inline="false">
+        <title name="VAR">x</title>
+        <value name="VALUE">
+          <block type="lists_create_with" inline="false">
+            <mutation items="3"></mutation>
+            <value name="ADD0">
+              <block type="text">
+                <title name="TEXT">Picard</title>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="text">
+                <title name="TEXT">Riker</title>
+              </block>
+            </value>
+            <value name="ADD2">
+              <block type="text">
+                <title name="TEXT">Crusher</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="lists_setIndex" inline="true">
+            <value name="AT">
+              <block type="math_number">
+                <title name="NUM">3</title>
+              </block>
+            </value>
+            <value name="LIST">
+              <block type="variables_get">
+                <title name="VAR">x</title>
+              </block>
+            </value>
+            <value name="TO">
+              <block type="text">
+                <title name="TEXT">Pulaski</title>
+              </block>
+            </value>
+            <next>
+              <block type="unittest_asserttrue" inline="false">
+                <title name="MESSAGE">test name</title>
+                <value name="ACTUAL">
+                  <block type="procedures_callreturn" inline="false">
+                    <mutation name="assert list equal">
+                      <arg name="a"></arg>
+                      <arg name="b"></arg>
+                    </mutation>
+                    <value name="ARG0">
+                      <block type="variables_get">
+                        <title name="VAR">x</title>
+                      </block>
+                    </value>
+                    <value name="ARG1">
+                      <block type="lists_create_with" inline="false">
+                        <mutation items="3"></mutation>
+                        <value name="ADD0">
+                          <block type="text">
+                            <title name="TEXT">Picard</title>
+                          </block>
+                        </value>
+                        <value name="ADD1">
+                          <block type="text">
+                            <title name="TEXT">Riker</title>
+                          </block>
+                        </value>
+                        <value name="ADD2">
+                          <block type="text">
+                            <title name="TEXT">Pulaski</title>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
                   </block>
                 </value>
               </block>

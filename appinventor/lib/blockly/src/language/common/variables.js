@@ -30,8 +30,9 @@ Blockly.Language.variables_get = {
   helpUrl: Blockly.LANG_VARIABLES_GET_HELPURL,
   init: function() {
     this.setColour(330);
-    this.appendTitle(Blockly.LANG_VARIABLES_GET_TITLE_1);
-    this.appendTitle(new Blockly.FieldVariable(
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_VARIABLES_GET_TITLE_1)
+        .appendTitle(new Blockly.FieldVariable(
         Blockly.LANG_VARIABLES_GET_ITEM), 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
@@ -52,10 +53,10 @@ Blockly.Language.variables_set = {
   helpUrl: Blockly.LANG_VARIABLES_SET_HELPURL,
   init: function() {
     this.setColour(330);
-    this.appendTitle(Blockly.LANG_VARIABLES_SET_TITLE_1);
-    this.appendTitle(new Blockly.FieldVariable(
+    this.appendValueInput('VALUE')
+        .appendTitle(Blockly.LANG_VARIABLES_SET_TITLE_1)
+        .appendTitle(new Blockly.FieldVariable(
         Blockly.LANG_VARIABLES_SET_ITEM), 'VAR');
-    this.appendInput(Blockly.INPUT_VALUE, 'VALUE', null);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP_1);

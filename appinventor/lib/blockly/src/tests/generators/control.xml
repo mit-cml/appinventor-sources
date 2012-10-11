@@ -211,70 +211,6 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="377" y="750">
-    <mutation></mutation>
-    <title name="NAME">test for</title>
-    <statement name="STACK">
-      <block type="variables_set" inline="false">
-        <title name="VAR">log</title>
-        <value name="VALUE">
-          <block type="text">
-            <title name="TEXT"></title>
-          </block>
-        </value>
-        <next>
-          <block type="controls_forEach" inline="false">
-            <title name="VAR">x</title>
-            <value name="LIST">
-              <block type="lists_create_with" inline="false">
-                <mutation items="3"></mutation>
-                <value name="ADD0">
-                  <block type="text">
-                    <title name="TEXT">a</title>
-                  </block>
-                </value>
-                <value name="ADD1">
-                  <block type="text">
-                    <title name="TEXT">b</title>
-                  </block>
-                </value>
-                <value name="ADD2">
-                  <block type="text">
-                    <title name="TEXT">c</title>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <statement name="DO">
-              <block type="text_append" inline="false">
-                <title name="VAR">log</title>
-                <value name="TEXT">
-                  <block type="variables_get">
-                    <title name="VAR">x</title>
-                  </block>
-                </value>
-              </block>
-            </statement>
-            <next>
-              <block type="unittest_assertequals" inline="false">
-                <title name="MESSAGE">for loop</title>
-                <value name="ACTUAL">
-                  <block type="variables_get">
-                    <title name="VAR">log</title>
-                  </block>
-                </value>
-                <value name="EXPECTED">
-                  <block type="text">
-                    <title name="TEXT">abc</title>
-                  </block>
-                </value>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
   <block type="unittest_main" x="-5" y="-29">
     <statement name="DO">
       <block type="procedures_callnoreturn">
@@ -307,7 +243,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-4" y="191">
+  <block type="procedures_defnoreturn" x="0" y="231">
     <mutation></mutation>
     <title name="NAME">test repeat</title>
     <statement name="STACK">
@@ -451,7 +387,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-5" y="660">
+  <block type="procedures_defnoreturn" x="2" y="813">
     <mutation></mutation>
     <title name="NAME">test count</title>
     <statement name="STACK">
@@ -695,7 +631,71 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-2" y="1336">
+  <block type="procedures_defnoreturn" x="374" y="811">
+    <mutation></mutation>
+    <title name="NAME">test for</title>
+    <statement name="STACK">
+      <block type="variables_set" inline="false">
+        <title name="VAR">log</title>
+        <value name="VALUE">
+          <block type="text">
+            <title name="TEXT"></title>
+          </block>
+        </value>
+        <next>
+          <block type="controls_forEach" inline="false">
+            <title name="VAR">x</title>
+            <value name="LIST">
+              <block type="lists_create_with" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="text">
+                    <title name="TEXT">a</title>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="text">
+                    <title name="TEXT">b</title>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="text">
+                    <title name="TEXT">c</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO">
+              <block type="text_append" inline="false">
+                <title name="VAR">log</title>
+                <value name="TEXT">
+                  <block type="variables_get">
+                    <title name="VAR">x</title>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <next>
+              <block type="unittest_assertequals" inline="false">
+                <title name="MESSAGE">for loop</title>
+                <value name="ACTUAL">
+                  <block type="variables_get">
+                    <title name="VAR">log</title>
+                  </block>
+                </value>
+                <value name="EXPECTED">
+                  <block type="text">
+                    <title name="TEXT">abc</title>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="4" y="1653">
     <mutation></mutation>
     <title name="NAME">test break</title>
     <statement name="STACK">
@@ -1020,7 +1020,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="405" y="1342">
+  <block type="procedures_defnoreturn" x="480" y="1531">
     <mutation></mutation>
     <title name="NAME">test continue</title>
     <statement name="STACK">

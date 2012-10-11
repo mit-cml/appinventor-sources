@@ -43,6 +43,7 @@ Blockly.Dart.math_arithmetic = function() {
   var argument0 = Blockly.Dart.valueToCode(this, 'A', order) || '0';
   var argument1 = Blockly.Dart.valueToCode(this, 'B', order) || '0';
   var code;
+  // Power in Dart requires a special case since it has no operator.
   if (!operator) {
     code = 'Math.pow(' + argument0 + ', ' + argument1 + ')';
     return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];
@@ -56,7 +57,7 @@ Blockly.Dart.math_arithmetic.OPERATORS = {
   MINUS: [' - ', Blockly.Dart.ORDER_ADDITIVE],
   MULTIPLY: [' * ', Blockly.Dart.ORDER_MULTIPLICATIVE],
   DIVIDE: [' / ', Blockly.Dart.ORDER_MULTIPLICATIVE],
-  POWER: [null, Blockly.Dart.ORDER_NONE]
+  POWER: [null, Blockly.Dart.ORDER_NONE]  // Handle power separately.
 };
 
 Blockly.Dart.math_change = function() {
@@ -73,57 +74,62 @@ Blockly.Dart.math_single = function() {
   // Math operators with single operand.
   var operator = this.getTitleValue('OP');
   var code;
+  var arg;
   if (operator == 'NEG') {
-    // Negation is a special case given its different operator precedents.
-    var argument = Blockly.Dart.valueToCode(this, 'NUM',
+    // Negation is a special case given its different operator precedence.
+    arg = Blockly.Dart.valueToCode(this, 'NUM',
         Blockly.Dart.ORDER_UNARY_PREFIX) || '0';
-    if (argument.charAt(0) == '-') {
+    if (arg.charAt(0) == '-') {
       // --3 is not legal in Dart.
-      argument = ' ' + argument;
+      arg = ' ' + arg;
     }
-    code = '-' + argument;
+    code = '-' + arg;
     return [code, Blockly.Dart.ORDER_UNARY_PREFIX];
   }
-  var argNaked = Blockly.Dart.valueToCode(this, 'NUM',
-      Blockly.Dart.ORDER_NONE) || '0';
-  var argMultiplicative = Blockly.Dart.valueToCode(this, 'NUM',
-      Blockly.Dart.ORDER_MULTIPLICATIVE) || '0';
-  var argPostfix = Blockly.Dart.valueToCode(this, 'NUM',
-      Blockly.Dart.ORDER_UNARY_POSTFIX) || '0';
+  if (operator == 'ABS' || operator.substring(0, 5) == 'ROUND') {
+    arg = Blockly.Dart.valueToCode(this, 'NUM',
+        Blockly.Dart.ORDER_UNARY_POSTFIX) || '0';
+  } else if (operator == 'SIN' || operator == 'COS' || operator == 'TAN') {
+    arg = Blockly.Dart.valueToCode(this, 'NUM',
+        Blockly.Dart.ORDER_MULTIPLICATIVE) || '0';
+  } else {
+    arg = Blockly.Dart.valueToCode(this, 'NUM',
+        Blockly.Dart.ORDER_NONE) || '0';
+  }
   // First, handle cases which generate values that don't need parentheses.
   switch (operator) {
     case 'ABS':
-      code = argPostfix + '.abs()';
+      code = arg + '.abs()';
       break;
     case 'ROOT':
-      code = 'Math.sqrt(' + argNaked + ')';
+      code = 'Math.sqrt(' + arg + ')';
       break;
     case 'LN':
-      code = 'Math.log(' + argNaked + ')';
+      code = 'Math.log(' + arg + ')';
       break;
     case 'EXP':
-      code = 'Math.exp(' + argNaked + ')';
+      code = 'Math.exp(' + arg + ')';
       break;
     case 'POW10':
-      code = 'Math.pow(10,' + argNaked + ')';
+      code = 'Math.pow(10,' + arg + ')';
       break;
     case 'ROUND':
-      code = argPostfix + '.round()';
+      code = arg + '.round()';
       break;
     case 'ROUNDUP':
-      code = argPostfix + '.ceil()';
+      code = arg + '.ceil()';
       break;
     case 'ROUNDDOWN':
-      code = argPostfix + '.floor()';
+      code = arg + '.floor()';
       break;
     case 'SIN':
-      code = 'Math.sin(' + argMultiplicative + ' / 180 * Math.PI)';
+      code = 'Math.sin(' + arg + ' / 180 * Math.PI)';
       break;
     case 'COS':
-      code = 'Math.cos(' + argMultiplicative + ' / 180 * Math.PI)';
+      code = 'Math.cos(' + arg + ' / 180 * Math.PI)';
       break;
     case 'TAN':
-      code = 'Math.tan(' + argMultiplicative + ' / 180 * Math.PI)';
+      code = 'Math.tan(' + arg + ' / 180 * Math.PI)';
       break;
   }
   if (code) {
@@ -132,16 +138,16 @@ Blockly.Dart.math_single = function() {
   // Second, handle cases which generate values that may need parentheses.
   switch (operator) {
     case 'LOG10':
-      code = 'Math.log(' + argNaked + ') / Math.log(10)';
+      code = 'Math.log(' + arg + ') / Math.log(10)';
       break;
     case 'ASIN':
-      code = 'Math.asin(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.asin(' + arg + ') / Math.PI * 180';
       break;
     case 'ACOS':
-      code = 'Math.acos(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.acos(' + arg + ') / Math.PI * 180';
       break;
     case 'ATAN':
-      code = 'Math.atan(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.atan(' + arg + ') / Math.PI * 180';
       break;
     default:
       throw 'Unknown math operator: ' + operator;
@@ -328,7 +334,7 @@ Blockly.Dart.math_on_list = function() {
         Blockly.Dart.math_on_list.math_random_item = functionName;
         var func = [];
         func.push('Dynamic ' + functionName + '(List myList) {');
-        func.push('  int x = (Math.random() * myList.length).floor().toInt();');
+        func.push('  int x = (Math.random() * myList.length).toInt();');
         func.push('  return myList[x];');
         func.push('}');
         Blockly.Dart.definitions_['math_random_item'] = func.join('\n');
@@ -382,7 +388,7 @@ Blockly.Dart.math_random_int = function() {
     func.push('    a = b;');
     func.push('    b = c;');
     func.push('  }');
-    func.push('  return (Math.random() * (b - a + 1) + a).floor();');
+    func.push('  return (Math.random() * (b - a + 1) + a).toInt();');
     func.push('}');
     Blockly.Dart.definitions_['math_random_int'] = func.join('\n');
   }

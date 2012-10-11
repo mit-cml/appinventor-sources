@@ -64,7 +64,175 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="368" y="-3">
+  <block type="procedures_defnoreturn" x="-4" y="1067">
+    <mutation></mutation>
+    <title name="NAME">test and</title>
+    <statement name="STACK">
+      <block type="unittest_asserttrue" inline="false">
+        <title name="MESSAGE">And true/true</title>
+        <value name="ACTUAL">
+          <block type="logic_operation" inline="true">
+            <title name="OP">AND</title>
+            <value name="A">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+            <value name="B">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_assertfalse" inline="false">
+            <title name="MESSAGE">And false/true</title>
+            <value name="ACTUAL">
+              <block type="logic_operation" inline="true">
+                <title name="OP">AND</title>
+                <value name="A">
+                  <block type="logic_boolean">
+                    <title name="BOOL">FALSE</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="logic_boolean">
+                    <title name="BOOL">TRUE</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="unittest_assertfalse" inline="false">
+                <title name="MESSAGE">And true/false</title>
+                <value name="ACTUAL">
+                  <block type="logic_operation" inline="true">
+                    <title name="OP">AND</title>
+                    <value name="A">
+                      <block type="logic_boolean">
+                        <title name="BOOL">TRUE</title>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="logic_boolean">
+                        <title name="BOOL">FALSE</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="unittest_assertfalse" inline="false">
+                    <title name="MESSAGE">And false/false</title>
+                    <value name="ACTUAL">
+                      <block type="logic_operation" inline="true">
+                        <title name="OP">AND</title>
+                        <value name="A">
+                          <block type="logic_boolean">
+                            <title name="BOOL">FALSE</title>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="logic_boolean">
+                            <title name="BOOL">FALSE</title>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-2" y="814">
+    <mutation></mutation>
+    <title name="NAME">test or</title>
+    <statement name="STACK">
+      <block type="unittest_asserttrue" inline="false">
+        <title name="MESSAGE">Or true/true</title>
+        <value name="ACTUAL">
+          <block type="logic_operation" inline="true">
+            <title name="OP">OR</title>
+            <value name="A">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+            <value name="B">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_asserttrue" inline="false">
+            <title name="MESSAGE">Or false/true</title>
+            <value name="ACTUAL">
+              <block type="logic_operation" inline="true">
+                <title name="OP">OR</title>
+                <value name="A">
+                  <block type="logic_boolean">
+                    <title name="BOOL">FALSE</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="logic_boolean">
+                    <title name="BOOL">TRUE</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <next>
+              <block type="unittest_asserttrue" inline="false">
+                <title name="MESSAGE">Or true/false</title>
+                <value name="ACTUAL">
+                  <block type="logic_operation" inline="true">
+                    <title name="OP">OR</title>
+                    <value name="A">
+                      <block type="logic_boolean">
+                        <title name="BOOL">TRUE</title>
+                      </block>
+                    </value>
+                    <value name="B">
+                      <block type="logic_boolean">
+                        <title name="BOOL">FALSE</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="unittest_assertfalse" inline="false">
+                    <title name="MESSAGE">Or false/false</title>
+                    <value name="ACTUAL">
+                      <block type="logic_operation" inline="true">
+                        <title name="OP">OR</title>
+                        <value name="A">
+                          <block type="logic_boolean">
+                            <title name="BOOL">FALSE</title>
+                          </block>
+                        </value>
+                        <value name="B">
+                          <block type="logic_boolean">
+                            <title name="BOOL">FALSE</title>
+                          </block>
+                        </value>
+                      </block>
+                    </value>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-4" y="286">
     <mutation></mutation>
     <title name="NAME">test equalities</title>
     <statement name="STACK">
@@ -299,174 +467,6 @@
                         </next>
                       </block>
                     </next>
-                  </block>
-                </next>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="8" y="445">
-    <mutation></mutation>
-    <title name="NAME">test or</title>
-    <statement name="STACK">
-      <block type="unittest_asserttrue" inline="false">
-        <title name="MESSAGE">Or true/true</title>
-        <value name="ACTUAL">
-          <block type="logic_operation" inline="true">
-            <title name="OP">OR</title>
-            <value name="A">
-              <block type="logic_boolean">
-                <title name="BOOL">TRUE</title>
-              </block>
-            </value>
-            <value name="B">
-              <block type="logic_boolean">
-                <title name="BOOL">TRUE</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="unittest_asserttrue" inline="false">
-            <title name="MESSAGE">Or false/true</title>
-            <value name="ACTUAL">
-              <block type="logic_operation" inline="true">
-                <title name="OP">OR</title>
-                <value name="A">
-                  <block type="logic_boolean">
-                    <title name="BOOL">FALSE</title>
-                  </block>
-                </value>
-                <value name="B">
-                  <block type="logic_boolean">
-                    <title name="BOOL">TRUE</title>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <next>
-              <block type="unittest_asserttrue" inline="false">
-                <title name="MESSAGE">Or true/false</title>
-                <value name="ACTUAL">
-                  <block type="logic_operation" inline="true">
-                    <title name="OP">OR</title>
-                    <value name="A">
-                      <block type="logic_boolean">
-                        <title name="BOOL">TRUE</title>
-                      </block>
-                    </value>
-                    <value name="B">
-                      <block type="logic_boolean">
-                        <title name="BOOL">FALSE</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <next>
-                  <block type="unittest_assertfalse" inline="false">
-                    <title name="MESSAGE">Or false/false</title>
-                    <value name="ACTUAL">
-                      <block type="logic_operation" inline="true">
-                        <title name="OP">OR</title>
-                        <value name="A">
-                          <block type="logic_boolean">
-                            <title name="BOOL">FALSE</title>
-                          </block>
-                        </value>
-                        <value name="B">
-                          <block type="logic_boolean">
-                            <title name="BOOL">FALSE</title>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
-                  </block>
-                </next>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="171" y="631">
-    <mutation></mutation>
-    <title name="NAME">test and</title>
-    <statement name="STACK">
-      <block type="unittest_asserttrue" inline="false">
-        <title name="MESSAGE">And true/true</title>
-        <value name="ACTUAL">
-          <block type="logic_operation" inline="true">
-            <title name="OP">AND</title>
-            <value name="A">
-              <block type="logic_boolean">
-                <title name="BOOL">TRUE</title>
-              </block>
-            </value>
-            <value name="B">
-              <block type="logic_boolean">
-                <title name="BOOL">TRUE</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="unittest_assertfalse" inline="false">
-            <title name="MESSAGE">And false/true</title>
-            <value name="ACTUAL">
-              <block type="logic_operation" inline="true">
-                <title name="OP">AND</title>
-                <value name="A">
-                  <block type="logic_boolean">
-                    <title name="BOOL">FALSE</title>
-                  </block>
-                </value>
-                <value name="B">
-                  <block type="logic_boolean">
-                    <title name="BOOL">TRUE</title>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <next>
-              <block type="unittest_assertfalse" inline="false">
-                <title name="MESSAGE">And true/false</title>
-                <value name="ACTUAL">
-                  <block type="logic_operation" inline="true">
-                    <title name="OP">AND</title>
-                    <value name="A">
-                      <block type="logic_boolean">
-                        <title name="BOOL">TRUE</title>
-                      </block>
-                    </value>
-                    <value name="B">
-                      <block type="logic_boolean">
-                        <title name="BOOL">FALSE</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <next>
-                  <block type="unittest_assertfalse" inline="false">
-                    <title name="MESSAGE">And false/false</title>
-                    <value name="ACTUAL">
-                      <block type="logic_operation" inline="true">
-                        <title name="OP">AND</title>
-                        <value name="A">
-                          <block type="logic_boolean">
-                            <title name="BOOL">FALSE</title>
-                          </block>
-                        </value>
-                        <value name="B">
-                          <block type="logic_boolean">
-                            <title name="BOOL">FALSE</title>
-                          </block>
-                        </value>
-                      </block>
-                    </value>
                   </block>
                 </next>
               </block>

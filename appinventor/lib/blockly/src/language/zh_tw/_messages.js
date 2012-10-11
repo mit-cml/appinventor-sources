@@ -35,12 +35,12 @@ Blockly.LANG_CATEGORY_CONTROLS = '控制';
 Blockly.LANG_CONTROLS_IF_HELPURL = 'http://code.google.com/p/blockly/wiki/If_Then';
 Blockly.LANG_CONTROLS_IF_TOOLTIP_1 = 'If a value is true, then do some statements.';
 Blockly.LANG_CONTROLS_IF_TOOLTIP_2 = 'If a value is true, then do the first block of statements.\n' +
-               'Otherwise, do the second block of statements.';
+    'Otherwise, do the second block of statements.';
 Blockly.LANG_CONTROLS_IF_TOOLTIP_3 = 'If the first value is true, then do the first block of statements.\n' +
-               'Otherwise, if the second value is true, do the second block of statements.';
+    'Otherwise, if the second value is true, do the second block of statements.';
 Blockly.LANG_CONTROLS_IF_TOOLTIP_4 = 'If the first value is true, then do the first block of statements.\n' +
-               'Otherwise, if the second value is true, do the second block of statements.\n' +
-               'If none of the values are true, do the last block of statements.';
+    'Otherwise, if the second value is true, do the second block of statements.\n' +
+    'If none of the values are true, do the last block of statements.';
 Blockly.LANG_CONTROLS_IF_MSG_IF = '如果';
 Blockly.LANG_CONTROLS_IF_MSG_ELSEIF = '否則如果';
 Blockly.LANG_CONTROLS_IF_MSG_ELSE = '否則';
@@ -48,7 +48,7 @@ Blockly.LANG_CONTROLS_IF_MSG_THEN = '就';
 
 Blockly.LANG_CONTROLS_IF_IF_TITLE_IF = '如果';
 Blockly.LANG_CONTROLS_IF_IF_TOOLTIP_1 = 'Add, remove, or reorder sections\n' +
-                    'to reconfigure this if block.';
+    'to reconfigure this if block.';
 
 Blockly.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF = '否則如果';
 Blockly.LANG_CONTROLS_IF_ELSEIF_TOOLTIP_1 = 'Add a condition to the if block.';
@@ -65,7 +65,6 @@ Blockly.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_WHILE = 'While a value is true, then do
 Blockly.LANG_CONTROLS_WHILEUNTIL_TOOLTIP_UNTIL = 'While a value is false, then do some statements.';
 
 Blockly.LANG_CONTROLS_FOR_HELPURL = 'http://en.wikipedia.org/wiki/For_loop';
-Blockly.LANG_CONTROLS_FOR_TITLE_COUNT = '';
 Blockly.LANG_CONTROLS_FOR_INPUT_WITH = '使用';
 Blockly.LANG_CONTROLS_FOR_INPUT_VAR = '變量';
 Blockly.LANG_CONTROLS_FOR_INPUT_FROM = '從範圍';
@@ -76,8 +75,7 @@ Blockly.LANG_CONTROLS_FOR_TOOLTIP_1 = 'Count from a start number to an end numbe
     'variable "%1", and then do some statements.';
 
 Blockly.LANG_CONTROLS_FOREACH_HELPURL = 'http://en.wikipedia.org/wiki/For_loop';
-Blockly.LANG_CONTROLS_FOREACH_TITLE_FOREACH = '取出每個';
-Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = '';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = '取出每個';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR = '變量';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST = '自列表';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_DO = '執行';
@@ -101,13 +99,13 @@ Blockly.LANG_LOGIC_COMPARE_HELPURL = 'http://en.wikipedia.org/wiki/Inequality_(m
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_EQ = 'Return true if both inputs equal each other.';
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_NEQ = 'Return true if both inputs are not equal to each other.';
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_LT = 'Return true if the first input is smaller\n' +
-      'than the second input.';
+    'than the second input.';
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_LTE = 'Return true if the first input is smaller\n' +
-       'than or equal to the second input.';
+    'than or equal to the second input.';
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_GT = 'Return true if the first input is greater\n' +
-      'than the second input.';
+    'than the second input.';
 Blockly.LANG_LOGIC_COMPARE_TOOLTIP_GTE = 'Return true if the first input is greater\n' +
-       'than or equal to the second input.';
+    'than or equal to the second input.';
 
 Blockly.LANG_LOGIC_OPERATION_HELPURL = 'http://code.google.com/p/blockly/wiki/And_Or';
 Blockly.LANG_LOGIC_OPERATION_AND = '且';
@@ -118,7 +116,7 @@ Blockly.LANG_LOGIC_OPERATION_TOOLTIP_OR = 'Return true if either inputs are true
 Blockly.LANG_LOGIC_NEGATE_HELPURL = 'http://code.google.com/p/blockly/wiki/Not';
 Blockly.LANG_LOGIC_NEGATE_INPUT_NOT = '非';
 Blockly.LANG_LOGIC_NEGATE_TOOLTIP_1 = 'Returns true if the input is false.\n' +
-                    'Returns false if the input is true.';
+    'Returns false if the input is true.';
 
 Blockly.LANG_LOGIC_BOOLEAN_HELPURL = 'http://code.google.com/p/blockly/wiki/True_False';
 Blockly.LANG_LOGIC_BOOLEAN_TRUE = '是';
@@ -199,8 +197,7 @@ Blockly.LANG_MATH_MODULO_INPUT_DIVIDEND = '取餘數自';
 Blockly.LANG_MATH_MODULO_TOOLTIP_1 = 'Return the remainder of dividing both numbers.';
 
 Blockly.LANG_MATH_RANDOM_INT_HELPURL = 'http://en.wikipedia.org/wiki/Random_number_generation';
-Blockly.LANG_MATH_RANDOM_INT_TITLE_RANDOM = '取隨機整數';
-Blockly.LANG_MATH_RANDOM_INT_INPUT_FROM = '介於 (低)';
+Blockly.LANG_MATH_RANDOM_INT_INPUT_FROM = '取隨機整數介於 (低)';
 Blockly.LANG_MATH_RANDOM_INT_INPUT_TO = '到 (高)';
 Blockly.LANG_MATH_RANDOM_INT_TOOLTIP_1 = 'Return a random integer between the two\n' +
     'specified limits, inclusive.';
@@ -218,7 +215,7 @@ Blockly.LANG_TEXT_TEXT_TOOLTIP_1 = 'A letter, word, or line of text.';
 Blockly.LANG_TEXT_JOIN_HELPURL = '';
 Blockly.LANG_TEXT_JOIN_TITLE_CREATEWITH = '建立字串使用';
 Blockly.LANG_TEXT_JOIN_TOOLTIP_1 = 'Create a piece of text by joining\n' +
-                    'together any number of items.';
+    'together any number of items.';
 
 Blockly.LANG_TEXT_CREATE_JOIN_TITLE_JOIN = '加入';
 Blockly.LANG_TEXT_CREATE_JOIN_TOOLTIP_1 = 'Add, remove, or reorder sections to reconfigure this text block.';
@@ -235,7 +232,7 @@ Blockly.LANG_TEXT_APPEND_TOOLTIP_1 = 'Append some text to variable "%1".';
 Blockly.LANG_TEXT_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH = '長度';
 Blockly.LANG_TEXT_LENGTH_TOOLTIP_1 = 'Returns number of letters (including spaces)\n' +
-                    'in the provided text.';
+    'in the provided text.';
 
 Blockly.LANG_TEXT_ISEMPTY_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY = '為空';
@@ -252,13 +249,12 @@ Blockly.LANG_TEXT_INDEXOF_TITLE_FIND = '尋找';
 Blockly.LANG_TEXT_INDEXOF_INPUT_OCCURRENCE = '出現的字串';
 Blockly.LANG_TEXT_INDEXOF_INPUT_INTEXT = '在字串';
 Blockly.LANG_TEXT_INDEXOF_TOOLTIP_1 = 'Returns the index of the first/last occurrence\n' +
-                    'of first text in the second text.\n' +
-                    'Returns 0 if text is not found.';
+    'of first text in the second text.\n' +
+    'Returns 0 if text is not found.';
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_FIRST = '第一個';
 Blockly.LANG_TEXT_INDEXOF_OPERATOR_LAST = '最後一個';
 
 Blockly.LANG_TEXT_CHARAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
-Blockly.LANG_TEXT_CHARAT_TITLE_LETTER = '';
 Blockly.LANG_TEXT_CHARAT_INPUT_AT = '尋找位於';
 Blockly.LANG_TEXT_CHARAT_INPUT_INTEXT = '的字元在字串';
 Blockly.LANG_TEXT_CHARAT_TOOLTIP_1 = 'Returns the letter at the specified position.';
@@ -274,7 +270,7 @@ Blockly.LANG_TEXT_TRIM_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90
 Blockly.LANG_TEXT_TRIM_TITLE_SPACE = '從';
 Blockly.LANG_TEXT_TRIM_TITLE_SIDES = '消除空格';
 Blockly.LANG_TEXT_TRIM_TOOLTIP_1 = 'Return a copy of the text with spaces\n' +
-                    'removed from one or both ends.';
+    'removed from one or both ends.';
 Blockly.LANG_TEXT_TRIM_TITLE_SIDES = '消除空格';
 Blockly.LANG_TEXT_TRIM_TITLE_SIDE = '消除空格';
 Blockly.LANG_TEXT_TRIM_OPERATOR_BOTH = '兩側';
@@ -308,12 +304,11 @@ Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE = '項目';
 Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1 = 'Add an item to the list.';
 
 Blockly.LANG_LISTS_REPEAT_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
-Blockly.LANG_LISTS_REPEAT_TITLE_CREATELIST = '建立列表';
-Blockly.LANG_LISTS_REPEAT_INPUT_WITH = '使用項目';
-Blockly.LANG_LISTS_REPEAT_INPIT_REPEATED = '重複';
-Blockly.LANG_LISTS_REPEAT_INPIT_TIMES = '次數';
+Blockly.LANG_LISTS_REPEAT_INPUT_WITH = '建立列表使用項目';
+Blockly.LANG_LISTS_REPEAT_INPUT_REPEATED = '重複';
+Blockly.LANG_LISTS_REPEAT_INPUT_TIMES = '次數';
 Blockly.LANG_LISTS_REPEAT_TOOLTIP_1 = 'Creates a list consisting of the given value\n' +
-                    'repeated the specified number of times.';
+    'repeated the specified number of times.';
 
 Blockly.LANG_LISTS_LENGTH_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
 Blockly.LANG_LISTS_LENGTH_INPUT_LENGTH = '長度';
@@ -328,20 +323,18 @@ Blockly.LANG_LISTS_INDEX_OF_TITLE_FIND = '找出';
 Blockly.LANG_LISTS_INDEX_OF_INPUT_OCCURRENCE = '項目出現';
 Blockly.LANG_LISTS_INDEX_OF_INPUT_IN_LIST = '在列表';
 Blockly.LANG_LISTS_INDEX_OF_TOOLTIP_1 = 'Returns the index of the first/last occurrence\n' +
-                    'of the item in the list.\n' +
-                    'Returns 0 if text is not found.';
+    'of the item in the list.\n' +
+    'Returns 0 if text is not found.';
 Blockly.LANG_LISTS_INDEX_OF_FIRST = '第一個';
 Blockly.LANG_LISTS_INDEX_OF_LAST = '最後一個';
 
 Blockly.LANG_LISTS_GET_INDEX_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
-Blockly.LANG_LISTS_GET_INDEX_TITLE = '取得項目';
-Blockly.LANG_LISTS_GET_INDEX_INPUT_AT = '取得項目自';
+Blockly.LANG_LISTS_GET_INDEX_INPUT_AT = '取得項目取得項目自';
 Blockly.LANG_LISTS_GET_INDEX_INPUT_IN_LIST = '從列表';
 Blockly.LANG_LISTS_GET_INDEX_TOOLTIP_1 = 'Returns the value at the specified position in a list.';
 
 Blockly.LANG_LISTS_SET_INDEX_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
-Blockly.LANG_LISTS_SET_INDEX_TITLE = '設定項目';
-Blockly.LANG_LISTS_SET_INDEX_INPUT_AT = '設定項目';
+Blockly.LANG_LISTS_SET_INDEX_INPUT_AT = '設定項目設定項目';
 Blockly.LANG_LISTS_SET_INDEX_INPUT_IN_LIST = '從列表';
 Blockly.LANG_LISTS_SET_INDEX_INPUT_TO = '為';
 Blockly.LANG_LISTS_SET_INDEX_TOOLTIP_1 = 'Sets the value at the specified position in a list.';

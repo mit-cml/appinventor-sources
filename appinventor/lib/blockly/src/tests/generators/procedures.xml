@@ -33,7 +33,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="2" y="172">
+  <block type="procedures_defnoreturn" x="-3" y="249">
     <mutation></mutation>
     <title name="NAME">test procedure</title>
     <statement name="STACK">
@@ -70,7 +70,34 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-1" y="446">
+  <block type="procedures_defnoreturn" x="-3" y="484">
+    <mutation>
+      <arg name="proc x"></arg>
+      <arg name="proc y"></arg>
+    </mutation>
+    <title name="NAME">procedure 1</title>
+    <statement name="STACK">
+      <block type="variables_set" inline="false">
+        <title name="VAR">proc z</title>
+        <value name="VALUE">
+          <block type="math_arithmetic" inline="true">
+            <title name="OP">DIVIDE</title>
+            <value name="A">
+              <block type="variables_get">
+                <title name="VAR">proc x</title>
+              </block>
+            </value>
+            <value name="B">
+              <block type="variables_get">
+                <title name="VAR">proc y</title>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-3" y="669">
     <mutation></mutation>
     <title name="NAME">test function</title>
     <statement name="STACK">
@@ -174,7 +201,39 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defreturn" inline="false" x="7" y="1087">
+  <block type="procedures_defreturn" inline="false" x="-1" y="1196">
+    <mutation>
+      <arg name="func x"></arg>
+      <arg name="func y"></arg>
+    </mutation>
+    <title name="NAME">function 1</title>
+    <statement name="STACK">
+      <block type="variables_set" inline="false">
+        <title name="VAR">func z</title>
+        <value name="VALUE">
+          <block type="text">
+            <title name="TEXT">side effect</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+    <value name="RETURN">
+      <block type="math_arithmetic" inline="true">
+        <title name="OP">MINUS</title>
+        <value name="A">
+          <block type="variables_get">
+            <title name="VAR">func x</title>
+          </block>
+        </value>
+        <value name="B">
+          <block type="variables_get">
+            <title name="VAR">func y</title>
+          </block>
+        </value>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defreturn" inline="false" x="2" y="1591">
     <mutation>
       <arg name="n"></arg>
     </mutation>
@@ -274,66 +333,7 @@
       </block>
     </value>
   </block>
-  <block type="procedures_defnoreturn" x="47" y="338">
-    <mutation>
-      <arg name="proc x"></arg>
-      <arg name="proc y"></arg>
-    </mutation>
-    <title name="NAME">procedure 1</title>
-    <statement name="STACK">
-      <block type="variables_set" inline="false">
-        <title name="VAR">proc z</title>
-        <value name="VALUE">
-          <block type="math_arithmetic" inline="true">
-            <title name="OP">DIVIDE</title>
-            <value name="A">
-              <block type="variables_get">
-                <title name="VAR">proc x</title>
-              </block>
-            </value>
-            <value name="B">
-              <block type="variables_get">
-                <title name="VAR">proc y</title>
-              </block>
-            </value>
-          </block>
-        </value>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defreturn" inline="false" x="45" y="807">
-    <mutation>
-      <arg name="func x"></arg>
-      <arg name="func y"></arg>
-    </mutation>
-    <title name="NAME">function 1</title>
-    <statement name="STACK">
-      <block type="variables_set" inline="false">
-        <title name="VAR">func z</title>
-        <value name="VALUE">
-          <block type="text">
-            <title name="TEXT">side effect</title>
-          </block>
-        </value>
-      </block>
-    </statement>
-    <value name="RETURN">
-      <block type="math_arithmetic" inline="true">
-        <title name="OP">MINUS</title>
-        <value name="A">
-          <block type="variables_get">
-            <title name="VAR">func x</title>
-          </block>
-        </value>
-        <value name="B">
-          <block type="variables_get">
-            <title name="VAR">func y</title>
-          </block>
-        </value>
-      </block>
-    </value>
-  </block>
-  <block type="procedures_defreturn" inline="false" x="43" y="937">
+  <block type="procedures_defreturn" inline="false" x="0" y="1344">
     <mutation>
       <arg name="func a"></arg>
     </mutation>

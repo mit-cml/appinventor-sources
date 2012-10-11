@@ -39,6 +39,7 @@ Blockly.JavaScript.math_arithmetic = function() {
   var argument0 = Blockly.JavaScript.valueToCode(this, 'A', order) || '0';
   var argument1 = Blockly.JavaScript.valueToCode(this, 'B', order) || '0';
   var code;
+  // Power in JavaScript requires a special case since it has no operator.
   if (!operator) {
     code = 'Math.pow(' + argument0 + ', ' + argument1 + ')';
     return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
@@ -52,7 +53,7 @@ Blockly.JavaScript.math_arithmetic.OPERATORS = {
   MINUS: [' - ', Blockly.JavaScript.ORDER_SUBTRACTION],
   MULTIPLY: [' * ', Blockly.JavaScript.ORDER_MULTIPLICATION],
   DIVIDE: [' / ', Blockly.JavaScript.ORDER_DIVISION],
-  POWER: [null, Blockly.JavaScript.ORDER_COMMA]
+  POWER: [null, Blockly.JavaScript.ORDER_COMMA]  // Handle power separately.
 };
 
 Blockly.JavaScript.math_change = function() {
@@ -69,56 +70,60 @@ Blockly.JavaScript.math_single = function() {
   // Math operators with single operand.
   var operator = this.getTitleValue('OP');
   var code;
+  var arg;
   if (operator == 'NEG') {
-    // Negation is a special case given its different operator precedents.
-    var argument = Blockly.JavaScript.valueToCode(this, 'NUM',
+    // Negation is a special case given its different operator precedence.
+    arg = Blockly.JavaScript.valueToCode(this, 'NUM',
         Blockly.JavaScript.ORDER_UNARY_NEGATION) || '0';
-    if (argument.charAt(0) == '-') {
+    if (arg.charAt(0) == '-') {
       // --3 is not legal in JS.
-      argument = ' ' + argument;
+      arg = ' ' + arg;
     }
-    code = '-' + argument;
+    code = '-' + arg;
     return [code, Blockly.JavaScript.ORDER_UNARY_NEGATION];
   }
-  var argNaked = Blockly.JavaScript.valueToCode(this, 'NUM',
-      Blockly.JavaScript.ORDER_NONE) || '0';
-  var argParen = Blockly.JavaScript.valueToCode(this, 'NUM',
-      Blockly.JavaScript.ORDER_DIVISION) || '0';
+  if (operator == 'SIN' || operator == 'COS' || operator == 'TAN') {
+    arg = Blockly.JavaScript.valueToCode(this, 'NUM',
+        Blockly.JavaScript.ORDER_DIVISION) || '0';
+  } else {
+    arg = Blockly.JavaScript.valueToCode(this, 'NUM',
+        Blockly.JavaScript.ORDER_NONE) || '0';
+  }
   // First, handle cases which generate values that don't need parentheses
   // wrapping the code.
   switch (operator) {
     case 'ABS':
-      code = 'Math.abs(' + argNaked + ')';
+      code = 'Math.abs(' + arg + ')';
       break;
     case 'ROOT':
-      code = 'Math.sqrt(' + argNaked + ')';
+      code = 'Math.sqrt(' + arg + ')';
       break;
     case 'LN':
-      code = 'Math.log(' + argNaked + ')';
+      code = 'Math.log(' + arg + ')';
       break;
     case 'EXP':
-      code = 'Math.exp(' + argNaked + ')';
+      code = 'Math.exp(' + arg + ')';
       break;
     case 'POW10':
-      code = 'Math.pow(10,' + argNaked + ')';
+      code = 'Math.pow(10,' + arg + ')';
       break;
     case 'ROUND':
-      code = 'Math.round(' + argNaked + ')';
+      code = 'Math.round(' + arg + ')';
       break;
     case 'ROUNDUP':
-      code = 'Math.ceil(' + argNaked + ')';
+      code = 'Math.ceil(' + arg + ')';
       break;
     case 'ROUNDDOWN':
-      code = 'Math.floor(' + argNaked + ')';
+      code = 'Math.floor(' + arg + ')';
       break;
     case 'SIN':
-      code = 'Math.sin(' + argParen + ' / 180 * Math.PI)';
+      code = 'Math.sin(' + arg + ' / 180 * Math.PI)';
       break;
     case 'COS':
-      code = 'Math.cos(' + argParen + ' / 180 * Math.PI)';
+      code = 'Math.cos(' + arg + ' / 180 * Math.PI)';
       break;
     case 'TAN':
-      code = 'Math.tan(' + argParen + ' / 180 * Math.PI)';
+      code = 'Math.tan(' + arg + ' / 180 * Math.PI)';
       break;
   }
   if (code) {
@@ -128,16 +133,16 @@ Blockly.JavaScript.math_single = function() {
   // wrapping the code.
   switch (operator) {
     case 'LOG10':
-      code = 'Math.log(' + argNaked + ') / Math.log(10)';
+      code = 'Math.log(' + arg + ') / Math.log(10)';
       break;
     case 'ASIN':
-      code = 'Math.asin(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.asin(' + arg + ') / Math.PI * 180';
       break;
     case 'ACOS':
-      code = 'Math.acos(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.acos(' + arg + ') / Math.PI * 180';
       break;
     case 'ATAN':
-      code = 'Math.atan(' + argNaked + ') / Math.PI * 180';
+      code = 'Math.atan(' + arg + ') / Math.PI * 180';
       break;
     default:
       throw 'Unknown math operator: ' + operator;

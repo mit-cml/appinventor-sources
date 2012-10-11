@@ -36,9 +36,9 @@ Blockly.Language.maze_move = {
   helpUrl: 'http://code.google.com/p/blockly/wiki/Move',
   init: function() {
     this.setColour(290);
-    this.appendTitle('move');
-    var dropdown = new Blockly.FieldDropdown(this.DIRECTIONS);
-    this.appendTitle(dropdown, 'DIR');
+    this.appendDummyInput()
+        .appendTitle('move')
+        .appendTitle(new Blockly.FieldDropdown(this.DIRECTIONS), 'DIR');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('Moves Pegman forward or backward one space.');
@@ -59,9 +59,9 @@ Blockly.Language.maze_turnLeft = {
   helpUrl: 'http://code.google.com/p/blockly/wiki/Turn',
   init: function() {
     this.setColour(290);
-    this.appendTitle('turn');
-    var dropdown = new Blockly.FieldDropdown(this.DIRECTIONS);
-    this.appendTitle(dropdown, 'DIR');
+    this.appendDummyInput()
+        .appendTitle('turn')
+        .appendTitle(new Blockly.FieldDropdown(this.DIRECTIONS), 'DIR');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip('Turns Pegman left or right by 90 degrees.');
@@ -77,10 +77,10 @@ Blockly.Language.maze_turnRight = {
   helpUrl: null,
   init: function() {
     this.setColour(290);
-    this.appendTitle('turn');
-    var dropdown =
-        new Blockly.FieldDropdown(Blockly.Language.maze_turnLeft.DIRECTIONS);
-    this.appendTitle(dropdown, 'DIR');
+    this.appendDummyInput()
+        .appendTitle('turn')
+        .appendTitle(new Blockly.FieldDropdown(
+                     Blockly.Language.maze_turnLeft.DIRECTIONS), 'DIR');
     this.setTitleValue(Blockly.Language.maze_turnLeft.DIRECTIONS[1][1], 'DIR');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -114,11 +114,11 @@ Blockly.Language.maze_isWall = {
   init: function() {
     this.setColour(120);
     this.setOutput(true, Boolean);
-    this.appendTitle('wall');
-    var dropdown = new Blockly.FieldDropdown(this.DIRECTIONS);
-    this.appendTitle(dropdown, 'DIR');
-    this.setTooltip('Returns true if there is a wall in ' +
-                    'the specified direction.');
+    this.appendDummyInput()
+        .appendTitle('wall')
+        .appendTitle(new Blockly.FieldDropdown(this.DIRECTIONS), 'DIR');
+    this.setTooltip('Returns true if there is a wall\n' +
+                    'in the specified direction.');
   }
 };
 
@@ -140,8 +140,9 @@ Blockly.Language.controls_forever = {
   helpUrl: 'http://code.google.com/p/blockly/wiki/Repeat',
   init: function() {
     this.setColour(120);
-    this.appendTitle('repeat until finished');
-    this.appendInput(Blockly.NEXT_STATEMENT, 'DO').appendTitle('do');
+    this.appendDummyInput()
+        .appendTitle('repeat until finished');
+    this.appendStatementInput('DO').appendTitle('do');
     this.setPreviousStatement(true);
     this.setTooltip('Repeat the enclosed steps until finish point is reached.');
   }

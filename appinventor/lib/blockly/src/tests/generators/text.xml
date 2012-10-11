@@ -46,7 +46,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="206" y="-16">
+  <block type="procedures_defnoreturn" x="-21" y="342">
     <mutation></mutation>
     <title name="NAME">test create text</title>
     <statement name="STACK">
@@ -125,7 +125,81 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="206" y="277">
+  <block type="procedures_defnoreturn" x="266" y="219">
+    <mutation></mutation>
+    <title name="NAME">test empty</title>
+    <statement name="STACK">
+      <block type="unittest_assertfalse" inline="false">
+        <title name="MESSAGE">not empty</title>
+        <value name="ACTUAL">
+          <block type="text_isEmpty" inline="false">
+            <value name="VALUE">
+              <block type="text">
+                <title name="TEXT">Google</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_asserttrue" inline="false">
+            <title name="MESSAGE">empty</title>
+            <value name="ACTUAL">
+              <block type="text_isEmpty" inline="false">
+                <value name="VALUE">
+                  <block type="text">
+                    <title name="TEXT"></title>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="261" y="3">
+    <mutation></mutation>
+    <title name="NAME">test length</title>
+    <statement name="STACK">
+      <block type="unittest_assertequals" inline="false">
+        <title name="MESSAGE">length</title>
+        <value name="ACTUAL">
+          <block type="text_length" inline="false">
+            <value name="VALUE">
+              <block type="text">
+                <title name="TEXT">Google</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="EXPECTED">
+          <block type="math_number">
+            <title name="NUM">6</title>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_assertequals" inline="false">
+            <title name="MESSAGE">length</title>
+            <value name="ACTUAL">
+              <block type="text_length" inline="false">
+                <value name="VALUE">
+                  <block type="text">
+                    <title name="TEXT"></title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="EXPECTED">
+              <block type="math_number">
+                <title name="NUM">0</title>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-23" y="733">
     <mutation></mutation>
     <title name="NAME">test append item</title>
     <statement name="STACK">
@@ -199,81 +273,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-9" y="532">
-    <mutation></mutation>
-    <title name="NAME">test length</title>
-    <statement name="STACK">
-      <block type="unittest_assertequals" inline="false">
-        <title name="MESSAGE">length</title>
-        <value name="ACTUAL">
-          <block type="text_length" inline="false">
-            <value name="VALUE">
-              <block type="text">
-                <title name="TEXT">Google</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="EXPECTED">
-          <block type="math_number">
-            <title name="NUM">6</title>
-          </block>
-        </value>
-        <next>
-          <block type="unittest_assertequals" inline="false">
-            <title name="MESSAGE">length</title>
-            <value name="ACTUAL">
-              <block type="text_length" inline="false">
-                <value name="VALUE">
-                  <block type="text">
-                    <title name="TEXT"></title>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="EXPECTED">
-              <block type="math_number">
-                <title name="NUM">0</title>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="367" y="536">
-    <mutation></mutation>
-    <title name="NAME">test empty</title>
-    <statement name="STACK">
-      <block type="unittest_assertfalse" inline="false">
-        <title name="MESSAGE">not empty</title>
-        <value name="ACTUAL">
-          <block type="text_isEmpty" inline="false">
-            <value name="VALUE">
-              <block type="text">
-                <title name="TEXT">Google</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="unittest_asserttrue" inline="false">
-            <title name="MESSAGE">empty</title>
-            <value name="ACTUAL">
-              <block type="text_isEmpty" inline="false">
-                <value name="VALUE">
-                  <block type="text">
-                    <title name="TEXT"></title>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="-9" y="704">
+  <block type="procedures_defnoreturn" x="-24" y="1082">
     <mutation></mutation>
     <title name="NAME">test end substrings</title>
     <statement name="STACK">
@@ -352,7 +352,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="-4" y="941">
+  <block type="procedures_defnoreturn" x="-24" y="1429">
     <mutation></mutation>
     <title name="NAME">test find</title>
     <statement name="STACK">
@@ -431,7 +431,99 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="0" y="1498">
+  <block type="procedures_defnoreturn" x="-22" y="1789">
+    <mutation></mutation>
+    <title name="NAME">test letter</title>
+    <statement name="STACK">
+      <block type="unittest_assertequals" inline="false">
+        <title name="MESSAGE">letter</title>
+        <value name="ACTUAL">
+          <block type="text_charAt" inline="true">
+            <value name="AT">
+              <block type="math_number">
+                <title name="NUM">4</title>
+              </block>
+            </value>
+            <value name="VALUE">
+              <block type="text">
+                <title name="TEXT">Blockly</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="EXPECTED">
+          <block type="text">
+            <title name="TEXT">c</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-17" y="1989">
+    <mutation></mutation>
+    <title name="NAME">test case</title>
+    <statement name="STACK">
+      <block type="unittest_assertequals" inline="false">
+        <title name="MESSAGE">uppercase</title>
+        <value name="ACTUAL">
+          <block type="text_changeCase" inline="false">
+            <title name="CASE">UPPERCASE</title>
+            <value name="TEXT">
+              <block type="text">
+                <title name="TEXT">Hello World</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="EXPECTED">
+          <block type="text">
+            <title name="TEXT">HELLO WORLD</title>
+          </block>
+        </value>
+        <next>
+          <block type="unittest_assertequals" inline="false">
+            <title name="MESSAGE">lowercase</title>
+            <value name="ACTUAL">
+              <block type="text_changeCase" inline="false">
+                <title name="CASE">LOWERCASE</title>
+                <value name="TEXT">
+                  <block type="text">
+                    <title name="TEXT">Hello World</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <value name="EXPECTED">
+              <block type="text">
+                <title name="TEXT">hello world</title>
+              </block>
+            </value>
+            <next>
+              <block type="unittest_assertequals" inline="false">
+                <title name="MESSAGE">titlecase</title>
+                <value name="ACTUAL">
+                  <block type="text_changeCase" inline="false">
+                    <title name="CASE">TITLECASE</title>
+                    <value name="TEXT">
+                      <block type="text">
+                        <title name="TEXT">heLLo WorlD</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="EXPECTED">
+                  <block type="text">
+                    <title name="TEXT">Hello World</title>
+                  </block>
+                </value>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-18" y="2313">
     <mutation></mutation>
     <title name="NAME">test trim</title>
     <statement name="STACK">
@@ -489,98 +581,6 @@
                 <value name="EXPECTED">
                   <block type="text">
                     <title name="TEXT">   abc def</title>
-                  </block>
-                </value>
-              </block>
-            </next>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="-2" y="1177">
-    <mutation></mutation>
-    <title name="NAME">test letter</title>
-    <statement name="STACK">
-      <block type="unittest_assertequals" inline="false">
-        <title name="MESSAGE">letter</title>
-        <value name="ACTUAL">
-          <block type="text_charAt" inline="true">
-            <value name="AT">
-              <block type="math_number">
-                <title name="NUM">4</title>
-              </block>
-            </value>
-            <value name="VALUE">
-              <block type="text">
-                <title name="TEXT">Blockly</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="EXPECTED">
-          <block type="text">
-            <title name="TEXT">c</title>
-          </block>
-        </value>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="-3" y="1298">
-    <mutation></mutation>
-    <title name="NAME">test case</title>
-    <statement name="STACK">
-      <block type="unittest_assertequals" inline="false">
-        <title name="MESSAGE">uppercase</title>
-        <value name="ACTUAL">
-          <block type="text_changeCase" inline="false">
-            <title name="CASE">UPPERCASE</title>
-            <value name="TEXT">
-              <block type="text">
-                <title name="TEXT">Hello World</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <value name="EXPECTED">
-          <block type="text">
-            <title name="TEXT">HELLO WORLD</title>
-          </block>
-        </value>
-        <next>
-          <block type="unittest_assertequals" inline="false">
-            <title name="MESSAGE">lowercase</title>
-            <value name="ACTUAL">
-              <block type="text_changeCase" inline="false">
-                <title name="CASE">LOWERCASE</title>
-                <value name="TEXT">
-                  <block type="text">
-                    <title name="TEXT">Hello World</title>
-                  </block>
-                </value>
-              </block>
-            </value>
-            <value name="EXPECTED">
-              <block type="text">
-                <title name="TEXT">hello world</title>
-              </block>
-            </value>
-            <next>
-              <block type="unittest_assertequals" inline="false">
-                <title name="MESSAGE">titlecase</title>
-                <value name="ACTUAL">
-                  <block type="text_changeCase" inline="false">
-                    <title name="CASE">TITLECASE</title>
-                    <value name="TEXT">
-                      <block type="text">
-                        <title name="TEXT">heLLo WorlD</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <value name="EXPECTED">
-                  <block type="text">
-                    <title name="TEXT">Hello World</title>
                   </block>
                 </value>
               </block>

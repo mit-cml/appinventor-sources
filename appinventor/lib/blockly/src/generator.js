@@ -155,7 +155,8 @@ Blockly.CodeGenerator.prototype.blockToCode = function(block) {
  * Generate code representing the specified value input.
  * @param {!Blockly.Block} block The block containing the input.
  * @param {string} name The name of the input.
- * @param {integer} order Order of operations rank of this input's context.
+ * @param {integer} order The maximum binding strength (minimum order value)
+ *     of any operators adjacent to "block".
  * @return {string} Generated code or '' if no blocks are connected.
  */
 Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {

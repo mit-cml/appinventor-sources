@@ -37,6 +37,7 @@ Blockly.Input = function(type, name, block, connection) {
   this.sourceBlock_ = block;
   this.connection = connection;
   this.titleRow = [];
+  this.align = Blockly.ALIGN_LEFT;
 };
 
 /**
@@ -44,7 +45,7 @@ Blockly.Input = function(type, name, block, connection) {
  * @param {*} title Something to add as a title.
  * @param {string} opt_name Language-neutral identifier which may used to find
  *     this title again.  Should be unique to the host block.
- * @return {!Blockly.Field} The title object created.
+ * @return {!Blockly.Input} The input being append to (to allow chaining).
  */
 Blockly.Input.prototype.appendTitle = function(title, opt_name) {
   // Generate a FieldLabel when given a plain text title.
@@ -63,7 +64,35 @@ Blockly.Input.prototype.appendTitle = function(title, opt_name) {
     // Adding a title will cause the block to change shape.
     this.sourceBlock_.bumpNeighbours_();
   }
-  return title;
+  return this;
+};
+
+/**
+ * Change a connection's compatibility.
+ * @param {*} check Compatible value type or list of value types.
+ *     Null if all types are compatible.
+ * @return {!Blockly.Input} The input being modified (to allow chaining).
+ */
+Blockly.Input.prototype.setCheck = function(check) {
+  if (!this.connection) {
+    throw 'This input does not have a connection.';
+  }
+  this.connection.setCheck(check);
+  return this;
+};
+
+/**
+ * Change the alignment of the connection's title(s).
+ * @param {number} align One of Blockly.ALIGN_LEFT, ALIGN_CENTRE, ALIGN_RIGHT.
+ *   In RTL mode directions are reversed, and ALIGN_RIGHT aligns to the left.
+ * @return {!Blockly.Input} The input being modified (to allow chaining).
+ */
+Blockly.Input.prototype.setAlign = function(align) {
+  this.align = align;
+  if (this.sourceBlock_.rendered) {
+    this.sourceBlock_.render();
+  }
+  return this;
 };
 
 /**

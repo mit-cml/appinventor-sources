@@ -81,10 +81,12 @@ Blockly.removeClass_ = function(node, className) {
 
 /**
  * Bind an event to a function call.
- * @param {!Element} element Element upon which to listen to.
+ * @param {!Element} element Element upon which to listen.
  * @param {string} name Event name to listen to (e.g. 'mousedown').
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
+ *     W3 browsers will call the function with the event object as a parameter,
+ *     MSIE will not.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */
@@ -142,6 +144,7 @@ if ('ontouchstart' in document.documentElement) {
  * Unbind one or more events event from a function call.
  * @param {!Array.<!Array>} bindData Opaque data from bindEvent_.  This list is
  *     emptied during the course of calling this function.
+ * @return {!Function} The function call.
  * @private
  */
 Blockly.unbindEvent_ = function(bindData) {
@@ -156,6 +159,7 @@ Blockly.unbindEvent_ = function(bindData) {
       element.detachEvent('on' + name, func);
     }
   }
+  return func;
 };
 
 /**
@@ -278,7 +282,8 @@ Blockly.caseInsensitiveComparator = function(a, b) {
 };
 
 /**
- * Return a random id that's 8 letters long.
+ * Return a random id that's 8 letters long and conforms to the W3 spec for
+ * ID names: http://www.w3.org/TR/html401/types.html#type-id
  * 26*(26+10+4)^7 = 4,259,840,000,000
  * @return {string} Random id.
  */

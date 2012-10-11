@@ -16,6 +16,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# This script generates two files:
+#   demos/blockly_compressed.js
+#   demos/blockly_uncompressed.js
+# The compressed file is a concatenation of all of Blockly's core files which
+# have been run through Google's Closure Compiler.  This is done using the
+# online API (which takes a few seconds and requires an Internet connection).
+# The uncompressed file is a script that loads in each of Blockly's core files
+# one by one.  This takes much longer for a browser to load, but may be useful
+# when debugging code since line numbers are meaningful and variables haven't
+# been renamed.  The oncompressed file also allows for a faster developement
+# cycle since there is no need to rebuild or recompile, just reload.
+
 import httplib, json, urllib, sys
 
 filenames = [
