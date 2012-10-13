@@ -13,6 +13,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -73,6 +74,7 @@ import java.util.List;
     iconName = "images/twitter.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries(libraries = "twitter4j.jar")
 public final class Twitter extends AndroidNonvisibleComponent
     implements ActivityResultListener, Component {
   private static final String ACCESS_TOKEN_TAG = "TwitterOauthAccessToken";

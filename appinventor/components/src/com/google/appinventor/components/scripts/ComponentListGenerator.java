@@ -22,6 +22,8 @@ public final class ComponentListGenerator extends ComponentProcessor {
   private static final String COMPONENT_LIST_OUTPUT_FILE_NAME = "simple_components.txt";
   private static final String COMPONENT_PERMISIONS_OUTPUT_FILE_NAME =
       "simple_components_permissions.json";
+  private static final String COMPONENT_LIBRARIES_OUTPUT_FILE_NAME =
+    "simple_components_libraries.json";
 
   @Override
   protected void outputResults() throws IOException {
@@ -29,6 +31,9 @@ public final class ComponentListGenerator extends ComponentProcessor {
     StringBuilder componentList = new StringBuilder();
     StringBuilder componentPermissions = new StringBuilder();
     componentPermissions.append("[\n");
+    StringBuilder componentLibraries = new StringBuilder();
+    componentLibraries.append("[\n");
+   
 
     // Components are already sorted.
     String listSeparator = "";
@@ -41,10 +46,16 @@ public final class ComponentListGenerator extends ComponentProcessor {
 
       componentPermissions.append(jsonSeparator);
       outputComponentPermissions(component, componentPermissions);
+      
+      componentLibraries.append(jsonSeparator);
+      outputComponentLibraries(component, componentLibraries);
+      
       jsonSeparator = ",\n";
+     
     }
 
     componentPermissions.append("\n]");
+    componentLibraries.append("\n]");
 
     FileObject src = createOutputFileObject(COMPONENT_LIST_OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
@@ -65,6 +76,17 @@ public final class ComponentListGenerator extends ComponentProcessor {
       writer.close();
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
+    
+    src = createOutputFileObject(COMPONENT_LIBRARIES_OUTPUT_FILE_NAME);
+    writer = src.openWriter();
+    try {
+      writer.write(componentLibraries.toString());
+      writer.flush();
+    } finally {
+      writer.close();
+    }
+    messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
+    
   }
 
   private static void outputComponentPermissions(ComponentInfo component, StringBuilder sb) {
@@ -74,6 +96,18 @@ public final class ComponentListGenerator extends ComponentProcessor {
     String separator = "";
     for (String permission : component.permissions) {
       sb.append(separator).append("\"").append(permission).append("\"");
+      separator = ", ";
+    }
+    sb.append("]}");
+  }
+  
+  private static void outputComponentLibraries(ComponentInfo component, StringBuilder sb) {
+    sb.append("{\"name\": \"");
+    sb.append(component.name);
+    sb.append("\", \"libraries\": [");
+    String separator = "";
+    for (String library : component.libraries) {
+      sb.append(separator).append("\"").append(library).append("\"");
       separator = ", ";
     }
     sb.append("]}");

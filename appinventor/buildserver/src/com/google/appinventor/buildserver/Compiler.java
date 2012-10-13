@@ -28,6 +28,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,9 @@ public final class Compiler {
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
+  
+  private static final String COMPONENT_LIBRARIES =
+    RUNTIME_FILES_DIR + "simple_components_libraries.json";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -86,10 +90,9 @@ public final class Compiler {
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
-  private static final String TWITTER_RUNTIME =
-      RUNTIME_FILES_DIR + "twitter4j.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
+  
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
@@ -100,6 +103,9 @@ public final class Compiler {
   private static final ConcurrentMap<String, Set<String>> componentPermissions =
       new ConcurrentHashMap<String, Set<String>>();
 
+  private static final ConcurrentMap<String, Set<String>> componentLibraries =
+    new ConcurrentHashMap<String, Set<String>>();
+  
   /**
    * Map used to hold the names and paths of resources that we've written out
    * as temp files.
@@ -128,6 +134,7 @@ public final class Compiler {
   private final boolean isForRepl;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
+  private static Set<String> librariesNeeded; // Set of component libraries
 
 
   /*
@@ -156,6 +163,35 @@ public final class Compiler {
     }
     return permissions;
   }
+  
+  /*
+   * Generate the set of Android permissions needed by this project.
+   */
+  @VisibleForTesting
+  Set<String> generateLibraryNames() {
+    // Before we can use componentLibraries, we have to call loadComponentLibraries().
+    try {
+      loadComponentLibraryNames();
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+      return null;
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+      return null;
+    }
+
+    
+    Set<String> libraries = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      libraries.addAll(componentLibraries.get(componentType));
+    }
+    return libraries;
+  }
+  
 
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
@@ -286,10 +322,14 @@ public final class Compiler {
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForRepl, String keystoreFilePath, int childProcessRam) {
     long start = System.currentTimeMillis();
+    
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
                                      childProcessRam);
+
+    // Get the names of component libraries for classpath and dx command line
+    librariesNeeded = compiler.generateLibraryNames();
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -483,10 +523,10 @@ public final class Compiler {
         int srcIndex = sourceFileName.indexOf("/../src/");
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
-            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+        .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
-        	classFileName = classesDir.getAbsolutePath()
-           .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+          classFileName = classesDir.getAbsolutePath()
+          .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
@@ -515,11 +555,19 @@ public final class Compiler {
         return false;
       }
 
+      // Construct the class path including component libraries (jars)
       String classpath =
-          getResource(KAWA_RUNTIME) + File.pathSeparator +
-          getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator +
-          getResource(TWITTER_RUNTIME) + File.pathSeparator +
-          getResource(ANDROID_RUNTIME);
+        getResource(KAWA_RUNTIME) + File.pathSeparator +
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator; 
+
+      // Add component library names to classpath
+      for (String library : librariesNeeded) {
+        classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
+      }
+      
+      classpath += 
+        getResource(ANDROID_RUNTIME);
+
       String yailRuntime = getResource(YAIL_RUNTIME);
       List<String> kawaCommandArgs = Lists.newArrayList();
       int mx = childProcessRamMb - 200;
@@ -554,7 +602,7 @@ public final class Compiler {
       String kawaOutput = kawaOutputStream.toString();
       out.print(kawaOutput);
       String kawaCompileTimeMessage = "Kawa compile time: " +
-          ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
+      ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
       out.println(kawaCompileTimeMessage);
       LOG.info(kawaCompileTimeMessage);
 
@@ -656,20 +704,28 @@ public final class Compiler {
 
   private boolean runDx(File classesDir, String dexedClasses) {
     int mx = childProcessRamMb - 200;
-    String[] dxCommandLine = {
-        System.getProperty("java.home") + "/bin/java",
-        "-mx" + mx + "M",
-        "-jar",
-        getResource(DX_JAR),
-        "--dex",
-        "--positions=lines",
-        "--output=" + dexedClasses,
-        classesDir.getAbsolutePath(),
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR),
-        getResource(KAWA_RUNTIME),
-        getResource(TWITTER_RUNTIME),
-    };
-    long startDx = System.currentTimeMillis();
+    List<String> commandLineList = new ArrayList<String>();
+    commandLineList.add(System.getProperty("java.home") + "/bin/java");
+    commandLineList.add("-mx" + mx + "M");
+    commandLineList.add("-jar");
+    commandLineList.add(getResource(DX_JAR));
+    commandLineList.add("--dex");
+    commandLineList.add("--positions=lines");
+    commandLineList.add("--output=" + dexedClasses);
+    commandLineList.add(classesDir.getAbsolutePath());
+    commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    commandLineList.add(getResource(KAWA_RUNTIME));
+    
+    // Add libraries to command line arguments
+    for (String library : librariesNeeded) {
+      commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
+    }
+    
+    // Convert command line to an array
+    String[] dxCommandLine = new String[commandLineList.size()];
+    commandLineList.toArray(dxCommandLine);
+    
+   long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
     // tools output
     boolean dxSuccess;
@@ -689,7 +745,7 @@ public final class Compiler {
 
     return true;
   }
-
+  
   private boolean runAaptPackage(File manifestFile, File resDir, String tmpPackageName) {
     // Need to make sure assets directory exists otherwise aapt will fail.
     createDirectory(project.getAssetsDirectory());
@@ -795,6 +851,39 @@ public final class Compiler {
           }
 
           componentPermissions.put(name, permissionsForThisComponent);
+        }
+      }
+    }
+  }
+  
+  /**
+   * Loads the names of library jars for each component and stores them in
+   * componentLibraries.
+   * 
+   * @throws IOException
+   * @throws JSONException
+   */
+  private static void loadComponentLibraryNames() throws IOException, JSONException {
+    synchronized (componentLibraries) {
+      if (componentLibraries.isEmpty()) {
+        String librariesJson = Resources.toString(
+            Compiler.class.getResource(COMPONENT_LIBRARIES), Charsets.UTF_8);
+
+        JSONArray componentsArray = new JSONArray(librariesJson);
+        int componentslength = componentsArray.length();
+        for (int componentsIndex = 0; componentsIndex < componentslength; componentsIndex++) {
+          JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
+          String name = componentObject.getString("name");
+
+          Set<String> librariesForThisComponent = Sets.newHashSet();
+
+          JSONArray librariesArray = componentObject.getJSONArray("libraries");
+          int librariesLength = librariesArray.length();
+          for (int librariesIndex = 0; librariesIndex < librariesLength; librariesIndex++) {
+            String libraryName = librariesArray.getString(librariesIndex);
+            librariesForThisComponent.add(libraryName);
+          }
+          componentLibraries.put(name, librariesForThisComponent);
         }
       }
     }
