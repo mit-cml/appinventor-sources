@@ -40,14 +40,14 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
   this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
-    this.appendTitle('when ' + instanceName + '.' + eventType.name);
-    this.appendTitle('Callback parameters not yet implemented!');
+    this.appendDummyInput().appendTitle('when ' + instanceName + '.' + eventType.name);
+    this.appendDummyInput().appendTitle('Callback parameters not yet implemented!');
     // TODO: implement event callback parameters.  Need to figure out how to do procedures and 
     // make callback parameters consistent with that.
     for (var i = 0, param; param = eventType.params[i]; i++) {
-      this.appendInput(Blockly.INPUT_VALUE, this.paramName(i)).appendTitle(param.name);
+      this.appendValueInput(Blockly.INPUT_VALUE, this.paramName(i)).appendTitle(param.name);
     }
-    this.appendInput(Blockly.NEXT_STATEMENT, "DO").appendTitle('do');
+    this.appendStatementInput(Blockly.NEXT_STATEMENT, "DO").appendTitle('do');
     Blockly.Language.setTooltip(this, eventType.description);
     this.setPreviousStatement(false);
     this.setNextStatement(false);
@@ -92,10 +92,10 @@ Blockly.ComponentBlock.method = function(methodType, instanceName) {
   }
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
-    this.appendTitle('call ' + instanceName + '.' + methodType.name);
+    this.appendDummyInput().appendTitle('call ' + instanceName + '.' + methodType.name);
     Blockly.Language.setTooltip(this, methodType.description);
     for (var i = 0, param; param = params[i]; i++) {
-        this.appendInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
+        this.appendValueInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
     }
     // methodType.returnType is a Yail type
     if (methodType.returnType) {
@@ -126,12 +126,12 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
   }
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_METHOD);
-    this.appendTitle('call');
-    this.appendTitle(typeName + '.' + methodType.name);
+    this.appendDummyInput().appendTitle('call');
+    this.appendDummyInput().appendTitle(typeName + '.' + methodType.name);
 
-    this.appendInput(Blockly.INPUT_VALUE, "COMPONENT").appendTitle('for component');
+    this.appendValueInput(Blockly.INPUT_VALUE, "COMPONENT").appendTitle('for component');
     for (var i = 0, param; param = params[i]; i++) {
-      this.appendInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
+      this.appendValueInput(Blockly.INPUT_VALUE, "ARG" + i, paramTypes[i]).appendTitle(param);
     }
     // methodType.returnType is a Yail type
     if (methodType.returnType) {
@@ -159,7 +159,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
     this.helpUrl = "http://foo";  // TODO: fix
     this.init = function() {
       this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
-      this.appendTitle(instanceName + '.');
+      this.appendDummyInput().appendTitle(instanceName + '.');
       var thisBlock = this;
       var dropdown = new Blockly.FieldDropdown(
         function() {return propNames; },
@@ -175,7 +175,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
           }
           );
-    this.appendTitle(dropdown, "PROP");
+    this.appendDummyInput().appendTitle(dropdown, "PROP");
     // Set the initial output type and tooltip since they won't be set in the dropdown callback
     var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
     thisBlock.setOutput(true, newType);
@@ -200,7 +200,7 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
   this.helpUrl = "http://foo";  // TODO: fix
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
-    this.appendTitle(typeName + '.');
+    this.appendDummyInput().appendTitle(typeName + '.');
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
         function() {return propNames; },
@@ -217,9 +217,9 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
           }
         );
-    this.appendTitle(dropdown, "PROP");
+    this.appendDummyInput().appendTitle(dropdown, "PROP");
     // the argument input type on the COMPONENT socket is COMPONENT
-    this.appendInput(Blockly.INPUT_VALUE, "COMPONENT", "COMPONENT").appendTitle('of component');
+    this.appendValueInput(Blockly.INPUT_VALUE, "COMPONENT", "COMPONENT").appendTitle('of component');
     // Set the initial and tooltip type since they won't be set in the dropdown callback
     var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
     thisBlock.setOutput(true, newType);
@@ -248,8 +248,8 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
   this.propTooltips = propTooltips;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
-    this.appendTitle('set');
-    this.appendTitle(instanceName + '.');
+    this.appendDummyInput().appendTitle('set');
+    this.appendDummyInput().appendTitle(instanceName + '.');
     var thisBlock = this;
     var dropdown = new Blockly.FieldDropdown(
         function() {return propNames; },
@@ -265,9 +265,9 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
          }
         );
-    this.appendTitle(dropdown, "PROP");
+    this.appendDummyInput().appendTitle(dropdown, "PROP");
     var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
-    this.appendInput(Blockly.INPUT_VALUE, "VALUE", initialArgType).appendTitle('to');
+    this.appendValueInput(Blockly.INPUT_VALUE, "VALUE", initialArgType).appendTitle('to');
     Blockly.Language.setTooltip(
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
@@ -294,8 +294,8 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
   this.init = function() {
     var thisBlock = this;
     this.setColour(Blockly.ComponentBlock.COLOUR_GETSET);
-    this.appendTitle('set');
-    this.appendTitle(typeName + '.');
+    this.appendDummyInput().appendTitle('set');
+    this.appendDummyInput().appendTitle(typeName + '.');
     var dropdown = new Blockly.FieldDropdown(
         function() {return propNames; },
         function(selection)
@@ -310,11 +310,11 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
               Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
          }
         );
-    this.appendTitle(dropdown, "PROP");
+    this.appendDummyInput().appendTitle(dropdown, "PROP");
     // the argument input type on the COMPONENT socket is COMPONENT
-    this.appendInput(Blockly.INPUT_VALUE, "COMPONENT", "COMPONENT").appendTitle('of component');
+    this.appendValueInput(Blockly.INPUT_VALUE, "COMPONENT", "COMPONENT").appendTitle('of component');
     var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
-    this.appendInput(Blockly.INPUT_VALUE, "VALUE", initialArgType).appendTitle('to');
+    this.appendValueInput(Blockly.INPUT_VALUE, "VALUE", initialArgType).appendTitle('to');
     Blockly.Language.setTooltip(
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
@@ -348,7 +348,7 @@ Blockly.ComponentBlock.component = function(instanceName) {
   this.instanceName = instanceName;
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_COMPONENT);
-    this.appendTitle(instanceName);
+    this.appendDummyInput().appendTitle(instanceName);
     this.setOutput(true, "COMPONENT");
   };
 };
