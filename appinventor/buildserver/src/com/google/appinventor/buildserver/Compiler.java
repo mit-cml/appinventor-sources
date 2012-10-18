@@ -247,7 +247,7 @@ public final class Compiler {
       // http://developer.android.com/guide/publishing/preparing.html suggests removing the
       // 'debuggable=true' but I'm not sure that our users would want that while they're still
       // testing their packaged apps.  Maybe we should make that an option, somehow.
-      out.write("android:debuggable=\"true\" ");
+      out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
       out.write(">\n");
