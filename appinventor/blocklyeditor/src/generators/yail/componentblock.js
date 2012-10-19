@@ -27,12 +27,17 @@ Blockly.Yail = Blockly.Generator.get('Yail');
 Blockly.Yail.event = function(instanceName, eventName) {
   return function() {
     var body = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE);
+    if(body == ""){
+      body = Blockly.Yail.YAIL_NULL;
+    }
+
     var code = Blockly.Yail.YAIL_DEFINE_EVENT
       + instanceName
       + Blockly.Yail.YAIL_SPACER 
       + eventName
       + Blockly.Yail.YAIL_OPEN_COMBINATION 
       // TODO: formal params go here
+      + this.getVarString()
       + Blockly.Yail.YAIL_CLOSE_COMBINATION
       + Blockly.Yail.YAIL_SET_THIS_FORM 
       + Blockly.Yail.YAIL_SPACER
@@ -113,27 +118,25 @@ Blockly.Yail.genericMethodNoReturn = function(typeName, methodName) {
  */
 Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
   var args = [];
-  var yailTypes = [];
+// TODO: the following line  may be a bit of a hack because it hard-codes "component" as the
+// first argument type when we're generating yail for a generic block, instead of using
+// type information associated with the socket. The component parameter is treated differently
+// here than the other method parameters. This may be fine, but consider whether
+// to get the type for the first socket in a more general way in this case. 
+  var yailTypes = (generic ? [Blockly.Yail.YAIL_COMPONENT_TYPE] : []).concat(methodBlock.yailTypes);
   var callPrefix;
   if (generic) {
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_TYPE_METHOD 
         // TODO(hal, andrew): check for empty socket and generate error if necessary
         + Blockly.Yail.valueToCode(methodBlock, 'COMPONENT', Blockly.Yail.ORDER_NONE)
         + Blockly.Yail.YAIL_SPACER;
-    // TODO: the following line  may be a bit of a hack because it hard-codes "component" as the
-    // first argument type when we're generating yail for a generic block, instead of using
-    // type information associated with the socket. The component parameter is treated differently
-    // here than the other method parameters. This may be fine, but consider whether
-    // to get the type for the first socket in a more general way in this case. 
-    yailTypes.push(Blockly.Yail.YAIL_COMPONENT_TYPE);
   } else {
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD; 
   }
-  for (var x = 0; x < methodBlock.params.length; x++) {
+  for (var x = 0; x < methodBlock.inputList.length; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
     args.push(Blockly.Yail.YAIL_SPACER 
               + Blockly.Yail.valueToCode(methodBlock, 'ARG' + x, Blockly.Yail.ORDER_NONE));
-    yailTypes.push(methodBlock.paramTypes[x]);
   }
 
   return callPrefix
@@ -165,7 +168,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
 Blockly.Yail.setproperty = function(instanceName) {
   return function() {
     var propName = this.getTitleValue("PROP");
-    var propType = this.propTypes[propName];
+    var propType = this.propYailTypes[propName];
     var assignLabel = Blockly.Yail.YAIL_QUOTE + instanceName + Blockly.Yail.YAIL_SPACER 
       + Blockly.Yail.YAIL_QUOTE + propName;
     var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + Blockly.Yail.YAIL_SPACER;
@@ -187,7 +190,7 @@ Blockly.Yail.setproperty = function(instanceName) {
 Blockly.Yail.genericSetproperty = function(typeName) {
   return function() {
     var propName = this.getTitleValue("PROP");
-    var propType = this.propTypes[propName];
+    var propType = this.propYailTypes[propName];
     var assignLabel = Blockly.Yail.YAIL_QUOTE + typeName + Blockly.Yail.YAIL_SPACER 
       + Blockly.Yail.YAIL_QUOTE + propName;
     var code = Blockly.Yail.YAIL_SET_AND_COERCE_COMPONENT_TYPE_PROPERTY 
@@ -215,7 +218,7 @@ Blockly.Yail.genericSetproperty = function(typeName) {
 Blockly.Yail.getproperty = function(instanceName) {
   return function() {
     var propName = this.getTitleValue("PROP");
-    var propType = this.propTypes[propName];
+    var propType = this.propYailTypes[propName];
     var code = Blockly.Yail.YAIL_GET_PROPERTY
       + Blockly.Yail.YAIL_QUOTE
       + instanceName
@@ -238,7 +241,7 @@ Blockly.Yail.getproperty = function(instanceName) {
 Blockly.Yail.genericGetproperty = function(typeName) {
   return function() {
     var propName = this.getTitleValue("PROP");
-    var propType = this.propTypes[propName];
+    var propType = this.propYailTypes[propName];
     var code = Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY
       // TODO(hal, andrew): check for empty socket and generate error if necessary
       + Blockly.Yail.valueToCode(this, 'COMPONENT', Blockly.Yail.ORDER_NONE)
