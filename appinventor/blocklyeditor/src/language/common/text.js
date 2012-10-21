@@ -46,10 +46,10 @@ Blockly.Language.text_join = {
   init : function() {
     this.setColour(160);
     this.setOutput(true, String);
-    this.appendValueInput('ADD0').appendTitle('join');
-    this.appendValueInput('ADD1');
-    this.setTooltip('Appends all of the arguments to form a single text string.\n'
-        + 'If there are no arguments, makes an empty text.');
+    this.appendValueInput('ADD0').setCheck(String).appendTitle('join');
+    this.appendValueInput('ADD1').setCheck(String);
+    this.setTooltip('Appends all the inputs to form a single text string.\n'
+        + 'If there are no inputs, makes an empty text.');
   }
 };
 
@@ -99,10 +99,10 @@ Blockly.Language.text_compare = {
 Blockly.Language.text_compare.OPERATORS = [ [ '<', 'LT' ], [ '=', 'EQUAL' ], [ '>', 'GT' ] ];
 
 Blockly.Language.text_compare.TOOLTIPS = {
-  LT : 'Test whether text1 is lexicographically less than text2.\n'
+  LT : 'Tests whether text1 is lexicographically less than text2.\n'
       + 'if one text is the prefix of the other, the shorter text is\n'
       + 'considered smaller. Uppercase characters precede lowercase characters.',
-  EQUAL : 'Test whether text strings are identical, ie., have the same\n'
+  EQUAL : 'Tests whether text strings are identical, ie., have the same\n'
       + 'characters in the same order. This is different from ordinary =\n'
       + 'in the case where the text strings are numbers: 123 and 0123 are =\n' + 'but not text =.',
   GT : 'Reports whether text1 is lexicographically greater than text2.\n'

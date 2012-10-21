@@ -24,6 +24,10 @@
 
 if (!Blockly.Language) Blockly.Language = {};
 
+// Create a unique object to represent the type InstantInTime,
+// used in the Clock component
+Blockly.Language.InstantInTime = function () { return 'InstantInTime'; };
+
 
 // Convert Yail types to Blockly types
 // Yail types are represented by strings: number, text, list, any, ...
@@ -38,6 +42,7 @@ Blockly.Language.YailTypeToBlocklyTypeMap =
         'boolean':Boolean,
         'list':Array,
         'component':"COMPONENT",
+	'InstantInTime':Blockly.Language.InstantInTime,
         'any':null
 
         //add  more types here
@@ -66,11 +71,12 @@ Blockly.Language.setTooltip = function(block, tooltip) {
 Blockly.Language.wrapSentence = function(str, len) {
   str = str.trim();
   if (str.length < len) return str;
-  place = (str.lastIndexOf(" ",len));
+  place = (str.lastIndexOf(" ", len));
   if (place == -1) {
-    return str.substring(0,len).trim() + Blockly.Language.wrapSentence(str.substring(len),len);
+    return str.substring(0, len).trim() + Blockly.Language.wrapSentence(str.substring(len), len);
   } else {
-    return str.substring(0,place).trim() + "\n" + Blockly.Language.wrapSentence(str.substring(place),len);
+    return str.substring(0, place).trim() + "\n" + 
+           Blockly.Language.wrapSentence(str.substring(place), len);
   }
 }
 
