@@ -11,8 +11,6 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.R;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnShowListener;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnPreparedListener;
@@ -37,7 +35,7 @@ import java.io.IOException;
  * @author Vance Turnewitsch
  */
 public class FullScreenVideoUtil implements OnCompletionListener,
-    OnPreparedListener, OnShowListener {
+    OnPreparedListener {
 
   // Constants
   public static final int FULLSCREEN_VIDEO_DIALOG_FLAG = 189;
@@ -118,6 +116,12 @@ public class FullScreenVideoUtil implements OnCompletionListener,
             mFullScreenPlayer.fullScreenKilled(values);
               super.onBackPressed();
           }
+
+          public void onStart() {
+            super.onStart();
+            // Prepare the Dialog media.
+            startDialog();
+          }
         };
     } else {
       mFullScreenVideoDialog = new Dialog(mForm,
@@ -132,6 +136,12 @@ public class FullScreenVideoUtil implements OnCompletionListener,
              mFullScreenVideoBundle.getString(VIDEOPLAYER_SOURCE));
             mFullScreenPlayer.fullScreenKilled(values);
             super.onStop();
+          }
+
+          public void onStart() {
+            super.onStart();
+            // Prepare the Dialog media.
+            startDialog();
           }
         };
     }
@@ -350,7 +360,6 @@ public class FullScreenVideoUtil implements OnCompletionListener,
    *          The dialog that will display the video.
    */
   public void prepareFullScreenVideoDialog(Dialog dia) {
-    dia.setOnShowListener(this);
     mFullScreenVideoView.setOnPreparedListener(this);
     mFullScreenVideoView.setOnCompletionListener(this);
   }
@@ -444,8 +453,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
   /**
    * Called when the Dialog is about to be shown.
    */
-  @Override
-  public void onShow(DialogInterface arg0) {
+  public void startDialog() {
     try {
       MediaUtil.loadVideoView(mFullScreenVideoView, mForm,
           mFullScreenVideoBundle
