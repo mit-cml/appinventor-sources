@@ -421,10 +421,7 @@ public class YABlockCompiler {
    * @return a dot separated package name.
    */
   public static String packageNameFromPath(String path) {
-    path = path.replaceFirst(".*?/?src/", "");
-    if (System.getProperty("os.name").startsWith("Windows")){
-   	  path = path.replace("/","\\").replaceFirst(".*?/?src/", "");
-    }
+    path = path.replace("\\","/").replaceFirst(".*?/?src/", ""); // ggf support Windows
     int extensionIndex = path.lastIndexOf(".");
     if (extensionIndex != -1) {
       return path.substring(0, extensionIndex).replaceAll("/", ".");

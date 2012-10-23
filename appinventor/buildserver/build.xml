@@ -131,9 +131,9 @@
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
-      <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
+      <fileset dir="${lib.dir}/android/tools" includes="*/aapt*" />
     </copy>
-    <chmod dir="${classes.tools.dir}" includes="*/aapt" perm="ugo+rx"/>
+    <chmod dir="${classes.tools.dir}" includes="*/aapt*" perm="ugo+rx"/>
 
     <!-- jar up the classes and resource files -->
     <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">

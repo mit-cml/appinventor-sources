@@ -76,7 +76,7 @@ public final class Compiler {
   private static final String MAC_AAPT_TOOL =
       "/tools/mac/aapt";
   private static final String WINDOWS_AAPT_TOOL = 
-      "/tools/windows/aapt";
+      "/tools/windows/aapt.exe";
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
@@ -418,7 +418,7 @@ public final class Compiler {
       List<String> classFileNames = Lists.newArrayListWithCapacity(sources.size());
       boolean userCodeExists = false;
       for (Project.SourceDescriptor source : sources) {
-        String sourceFileName = source.getFile().getAbsolutePath();
+        String sourceFileName = source.getFile().getAbsolutePath().replace('\\', '/'); // ggf support Windows
         LOG.log(Level.INFO, "source file: " + sourceFileName);
         int srcIndex = sourceFileName.indexOf("/../src/");
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
@@ -521,25 +521,50 @@ public final class Compiler {
 
   private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
     // TODO(user): maybe make a command line flag for the jarsigner location
-    String javaHome = System.getProperty("java.home");
-    // This works on Mac OS X.
-    File jarsignerFile = new File(javaHome + File.separator + "bin" +
-        File.separator + "jarsigner");
+    //String javaHome = System.getProperty("java.home");
+    // TODO(ggf) using System.getenv("JAVA_HOME"). The user has to set the env var
+    // but we know for sure it is pointing to java and the jarsigner.
+    String javaHome = System.getenv("JAVA_HOME");
+    String jarsigner = "jarsigner";
+    if (System.getProperty("os.name").contains("Windows")) {
+        jarsigner = "jarsigner.exe";
+    }
+    /*File jarsignerFile = new File("C:/Program Files/Java/jdk1.7.0_07/bin/jarsigner.exe");
     if (!jarsignerFile.exists()) {
-      // This works when a JDK is installed with the JRE.
-      jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
-          File.separator + "jarsigner");
-      if (System.getProperty("os.name").startsWith("Windows")){
-  		jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
-            File.separator + "jarsigner.exe");
-      }
-      if (!jarsignerFile.exists()) {
         LOG.warning("YAIL compiler - could not find jarsigner.");
         err.println("YAIL compiler - could not find jarsigner.");
         userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
         return false;
       }
+      */
+    
+    // This works on Mac OS X.
+    File jarsignerFile = new File(javaHome + File.separator + "bin" +
+        File.separator + jarsigner);
+    LOG.warning("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
+    err.println("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
+    if (!jarsignerFile.exists()) {
+      // This works when a JDK is installed with the JRE.
+      jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+          File.separator + jarsigner);
+      LOG.warning("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
+      err.println("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
+      //if (System.getProperty("os.name").startsWith("Windows")){
+      // .contains("WINDOWS")
+  		//jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+        //    File.separator + "jarsigner.exe");
+      //}
+      
+      if (!jarsignerFile.exists()) {
+        LOG.warning("YAIL compiler - could not find the " + jarsigner + ".");
+        LOG.warning("looked in " + System.getProperty("os.name") + ".");
+        err.println("YAIL compiler - could not find the " + jarsigner + ".");
+        err.println("looked in " + System.getProperty("os.name") + ".");
+        userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
+        return false;
+      }
     }
+    
 
     String[] jarsignerCommandLine = {
         jarsignerFile.getAbsolutePath(),
@@ -707,7 +732,7 @@ public final class Compiler {
             file);
         resources.put(resourcePath, file);
       }
-      return file.getAbsolutePath();
+      return file.getAbsolutePath().replace("\\", "/"); // ggf support Windows
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
