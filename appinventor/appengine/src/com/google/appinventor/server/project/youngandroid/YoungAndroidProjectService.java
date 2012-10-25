@@ -524,9 +524,9 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       Throwable wrappedException = e;
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
         int zipFileLength = zipFile.getContent().length;
-        if (zipFileLength >= (50 * 1024 * 1024) - 200 /* ~50 MB */) {
+        if (zipFileLength >= (5 * 1024 * 1024) /* ~5 MB */) {
           wrappedException = new IllegalArgumentException(
-              "Sorry, can't package projects larger than 50MB."
+              "Sorry, can't package projects larger than 5MB."
               + " Yours is " + zipFileLength + " bytes.", e);
         } else {
           wrappedException = new IllegalArgumentException(

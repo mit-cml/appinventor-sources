@@ -521,47 +521,37 @@ public final class Compiler {
 
   private boolean runJarSigner(String apkAbsolutePath, String keystoreAbsolutePath) {
     // TODO(user): maybe make a command line flag for the jarsigner location
-    //String javaHome = System.getProperty("java.home");
-    // TODO(ggf) using System.getenv("JAVA_HOME"). The user has to set the env var
-    // but we know for sure it is pointing to java and the jarsigner.
-    String javaHome = System.getenv("JAVA_HOME");
+    String javaHome = System.getProperty("java.home");
+    
+    // TODO(ggf): add Windows support
     String jarsigner = "jarsigner";
     if (System.getProperty("os.name").contains("Windows")) {
         jarsigner = "jarsigner.exe";
     }
-    /*File jarsignerFile = new File("C:/Program Files/Java/jdk1.7.0_07/bin/jarsigner.exe");
-    if (!jarsignerFile.exists()) {
-        LOG.warning("YAIL compiler - could not find jarsigner.");
-        err.println("YAIL compiler - could not find jarsigner.");
-        userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
-        return false;
-      }
-      */
+    String jarsignerLocation = System.getenv("JARSIGNERLOCATION");
+    File jarsignerFile = new File(jarsignerLocation);
     
-    // This works on Mac OS X.
-    File jarsignerFile = new File(javaHome + File.separator + "bin" +
-        File.separator + jarsigner);
-    LOG.warning("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
-    err.println("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
     if (!jarsignerFile.exists()) {
-      // This works when a JDK is installed with the JRE.
-      jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+      // This works on Mac OS X.
+      jarsignerFile = new File(javaHome + File.separator + "bin" +
           File.separator + jarsigner);
-      LOG.warning("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
-      err.println("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
-      //if (System.getProperty("os.name").startsWith("Windows")){
-      // .contains("WINDOWS")
-  		//jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
-        //    File.separator + "jarsigner.exe");
-      //}
-      
+      LOG.warning("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
+      err.println("first jarsigner:"+ javaHome + File.separator + "bin" + File.separator + jarsigner);
       if (!jarsignerFile.exists()) {
-        LOG.warning("YAIL compiler - could not find the " + jarsigner + ".");
-        LOG.warning("looked in " + System.getProperty("os.name") + ".");
-        err.println("YAIL compiler - could not find the " + jarsigner + ".");
-        err.println("looked in " + System.getProperty("os.name") + ".");
-        userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
-        return false;
+        // This works when a JDK is installed with the JRE.
+        jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+            File.separator + jarsigner);
+        LOG.warning("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
+        err.println("second jarsigner:"+ javaHome + File.separator + ".." + File.separator + "bin" + File.separator + jarsigner);
+        
+        if (!jarsignerFile.exists()) {
+          LOG.warning("YAIL compiler - could not find the " + jarsigner + ".");
+          LOG.warning("looked in " + System.getProperty("os.name") + ".");
+          err.println("YAIL compiler - could not find the " + jarsigner + ".");
+          err.println("looked in " + System.getProperty("os.name") + ".");
+          userErrors.print(String.format(ERROR_IN_STAGE, "JarSigner"));
+          return false;
+        }
       }
     }
     
