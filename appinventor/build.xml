@@ -72,7 +72,7 @@
         <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-        <pathelement location="lib/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+        <pathelement location="lib/twitter/twitter4j-core-android-2.2.6.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
