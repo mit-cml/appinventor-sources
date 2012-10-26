@@ -384,6 +384,10 @@ public final class YoungAndroidFormUpgrader {
       // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+      }
+    if (srcCompVersion < 5) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -490,6 +494,10 @@ public final class YoungAndroidFormUpgrader {
       // The events TouchDown, TouchUp, and Flung were added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 7;
+    } 
     return srcCompVersion;
   }
 
@@ -664,6 +672,10 @@ public final class YoungAndroidFormUpgrader {
       // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }

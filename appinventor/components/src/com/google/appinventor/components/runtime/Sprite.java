@@ -450,9 +450,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * When the user touches a canvas, providing the (x, y) position of
-   * the touch relative to the upper left corner of the canvas.
-   * This event is only fired once touch-down AND touch-up have occurred.
+   * When the user touches the sprite and then immediately lifts finger: provides 
+   * the (x,y) position of the touch, relative to the upper left of the canvas
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
@@ -463,25 +462,29 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * When the user performs a fling (quick swipe) on the sprite.
-   * Provides the (x, y) position of the start of the swing,
-   * relative to the upper left of the canvas. Also provides
-   * the x velocity and y velocity of the fling.
+   * When a fling gesture (quick swipe) is made on the sprite: provides
+   * the (x,y) position of the start of the fling, relative to the upper
+   * left of the canvas. Also provides the speed (pixels per millisecond) and heading
+   * (0-360 degrees) of the fling, as well as the x velocity and y velocity
+   * components of the fling's vector.
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
-   * @param xspeed  the speed in x-direction of the fling
-   * @param yspeed  the speed in y-direction of the fling
+   * * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
+   * @param heading  the heading of the fling 
+   * @param xvel  the speed in x-direction of the fling
+   * @param yvel  the speed in y-direction of the fling
+   
    */
   @SimpleEvent
-  public void Flung(float x, float y, float xspeed, float yspeed) {
-    postEvent(this, "Flung", x, y, xspeed, yspeed);
+  public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
+    postEvent(this, "Flung", x, y, speed, heading, xvel, yvel);
   }
 
   /**
-   * When the user stops touching the sprite (lifting his/her finger up).
-   * Provides the (x, y) position of the touch relative to the upper
-   * left corner of the canvas.
+   * When the user stops touching the sprite (lifts finger after a
+   * TouchDown event): provides the (x,y) position of the touch, relative
+   * to the upper left of the canvas
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
@@ -492,9 +495,9 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * When the user starts touching the canvas (putting finger down for the
-   * first time). Provides the (x,y) position of the touch relative to
-   * the upper-left corner of the canvas.
+   * When the user begins touching the sprite (places finger on sprite and
+   * leaves it there): provides the (x,y) position of the touch, relative
+   * to the upper left of the canvas
    *
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
@@ -605,20 +608,35 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Turns this sprite to point towards a given other sprite.
    *
-   * @param target the other sprite to point towards
+   * @param sprite the other sprite to point towards
    */
   @SimpleFunction(
     description = "<p>Turns the sprite to point towards a designated " +
     "target sprite. The new heading will be parallel to the line joining " +
     "the centerpoints of the two sprites.</p>")
-  public void PointTowards(Sprite target) {
+  public void PointTowards(Sprite sprite) {
     Heading(-Math.toDegrees(Math.atan2(
         // we adjust for the fact that the sprites' X() and Y()
         // are not the center points.
-        target.Y() - Y() + (target.Height() - Height()) / 2,
-        target.X() - X() + (target.Width() - Width()) / 2)));
+        sprite.Y() - Y() + (sprite.Height() - Height()) / 2,
+        sprite.X() - X() + (sprite.Width() - Width()) / 2)));
   }
 
+  /**
+   * Turns this sprite to point towards a given point.
+   *
+   * @param target the other sprite to point towards
+   */
+  @SimpleFunction(
+    description = "<p>Turns the sprite to point towards the point " +
+    "with coordinates as (x, y).</p>")
+  public void PointInDirection(double x, double y) {
+    Heading(-Math.toDegrees(Math.atan2(
+        // we adjust for the fact that the sprite's X() and Y()
+        // is not the center point.
+        y - Y() - Height() / 2,
+        x - X() - Width() / 2)));
+  } 
 
   // Internal methods supporting move-related functionality
 

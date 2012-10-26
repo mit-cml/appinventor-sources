@@ -569,6 +569,19 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    
+    if (blkCompVersion < 5) {
+      // speed and hearing were added to the Flung event (for all sprites)
+      // speed and heading were added to the Flung event
+      final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
+          "include speed and heading. Please change your program " +
+          "by deleting this old version of the block and pick a new Flung block" +
+          "from the drawer";
+      for (Element block : getAllMatchingGenusBlocks("Ball-Flung")) {
+        markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
+        blkCompVersion = 5;
+      }
+    }
     return blkCompVersion;
   }
 
@@ -679,6 +692,18 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 6.
       // The TouchUp and TouchDown events were added.
       blkCompVersion = 6;
+    }
+    
+    if (blkCompVersion < 7) {
+      // speed and heading were added to the Flung event
+      final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
+          "include speed and heading. Please change your program " +
+          "by deleting this old version of the block and pick a new Flung block" +
+          "from the drawer";
+      for (Element block : getAllMatchingGenusBlocks("Canvas-Flung")) {
+        markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
+      }    
+      blkCompVersion = 7;
     }
     return blkCompVersion;
   }
@@ -826,6 +851,24 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 5.
       blkCompVersion = 5;
     }
+    if (blkCompVersion < 6) {
+      // speed and heading were added to the Flung event(for all sprites)
+      if (blkCompVersion < 5) {
+        // speed and hearing were added to the Flung event (for all sprites)
+        // speed and heading were added to the Flung event
+        final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
+            "include speed and heading. Please change your program " +
+            "by deleting this old version of the block and pick a new Flung block" +
+            "from the drawer";
+        for (Element block : getAllMatchingGenusBlocks("ImageSprite-Flung")) {
+          markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
+          blkCompVersion = 5;
+        }
+      }
+      blkCompVersion = 6;
+    }  
+    
+    
     return blkCompVersion;
   }
 
