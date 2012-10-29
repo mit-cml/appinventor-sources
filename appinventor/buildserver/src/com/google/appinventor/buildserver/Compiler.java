@@ -23,6 +23,8 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -98,6 +100,12 @@ public final class Compiler {
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
+  private static final String MAC_ZIPALIGN_TOOL =
+      "/tools/mac/zipalign";
+  private static final String WINDOWS_ZIPALIGN_TOOL =
+      "/tools/windows/zipalign";
+  private static final String LINUX_ZIPALIGN_TOOL =
+      "/tools/linux/zipalign";
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
@@ -420,7 +428,15 @@ public final class Compiler {
     if (!compiler.runJarSigner(apkAbsolutePath, keystoreFilePath)) {
       return false;
     }
+
+    // ZipAlign the apk file
+    out.println("________ZipAligning the apk file");
+    if (!compiler.runZipAlign(apkAbsolutePath, tmpDir)) {
+      return false;
+    }
+
     setProgress(100);
+
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
@@ -679,6 +695,57 @@ public final class Compiler {
     return true;
   }
 
+  private boolean runZipAlign(String apkAbsolutePath, File tmpDir) {
+    // TODO(user): add zipalign tool appinventor->lib->android->tools->linux and windows
+    // Need to make sure assets directory exists otherwise zipalign will fail.
+    createDirectory(project.getAssetsDirectory());
+    String zipAlignTool;
+    String osName = System.getProperty("os.name");
+    if (osName.equals("Mac OS X")) {
+      zipAlignTool = MAC_ZIPALIGN_TOOL;
+    } else if (osName.equals("Linux")) {
+      zipAlignTool = LINUX_ZIPALIGN_TOOL;
+    } else if (osName.startsWith("Windows")) {
+      zipAlignTool = WINDOWS_ZIPALIGN_TOOL;
+    } else {
+      LOG.warning("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      err.println("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    // TODO: create tmp file for zipaling result
+    String zipAlignedPath = tmpDir.getAbsolutePath() + File.separator + "zipaligned.apk";
+    // zipalign -f -v 4 infile.zip outfile.zip
+    String[] zipAlignCommandLine = {
+        getResource(zipAlignTool),
+        "-f",
+        "4",
+        apkAbsolutePath,
+        zipAlignedPath
+    };
+    long startAapt = System.currentTimeMillis();
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
+    // tools output
+    if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - ZIPALIGN execution failed.");
+      err.println("YAIL compiler - ZIPALIGN execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    if(!copyFile(zipAlignedPath, apkAbsolutePath)) {
+      LOG.warning("YAIL compiler - ZIPALIGN file copy failed.");
+      err.println("YAIL compiler - ZIPALIGN file copy failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    String zipALignTimeMessage = "ZIPALIGN time: " +
+        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+    out.println(zipALignTimeMessage);
+    LOG.info(zipALignTimeMessage);
+    return true;
+  }
+
+
   /*
    * Loads the icon for the application, either a user provided one or the default one.
    */
@@ -900,6 +967,32 @@ public final class Compiler {
         }
       }
     }
+  }
+
+  /**
+   * Copy one file to another. If destination file does not exist, it is created.
+   *
+   * @param srcPath absolute path to source file
+   * @param dstPath absolute path to destination file
+   * @return  {@code true} if the copy succeeds, {@code false} otherwise
+   */
+  private static Boolean copyFile(String srcPath, String dstPath) {
+    try{
+      FileInputStream in = new FileInputStream(srcPath);
+      FileOutputStream out = new FileOutputStream(dstPath);
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+      in.close();
+      out.close();
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
   }
 
   /**

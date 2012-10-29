@@ -145,7 +145,11 @@
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
     </copy>
     <chmod dir="${classes.tools.dir}" includes="*/aapt" perm="ugo+rx"/>
-
+    <copy todir="${classes.tools.dir}">
+      <fileset dir="${lib.dir}/android/tools" includes="*/zipalign" />
+    </copy>
+    <chmod dir="${classes.tools.dir}" includes="*/zipalign" perm="ugo+rx"/>
+    
     <!-- jar up the classes and resource files -->
     <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">
       <fileset dir="${BuildServer-class.dir}" />
