@@ -464,9 +464,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
-
-      BufferedOutputStream bufferedOutputStream =
-          new BufferedOutputStream(connection.getOutputStream());
+      
+      BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
@@ -475,7 +474,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
 
-      int responseCode = connection.getResponseCode();
+      int responseCode = 0;
+      try {
+          responseCode = connection.getResponseCode();
+      } catch (IOException e) {
+          throw new CouldNotFetchException();
+      }
       if (responseCode != HttpURLConnection.HTTP_OK) {
         // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
         // can provide an appropriate error message to the user.
@@ -517,6 +521,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       CrashReport.createAndLogError(LOG, null, 
           buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
+    } catch (CouldNotFetchException e) {
+        CrashReport.createAndLogError(LOG, null, 
+                buildErrorMsg("CouldNotFetchException", buildServerUrl, userId, projectId), e);
+      return new RpcResult(false, "", " Can not contact the BuildServer at " + buildServerUrl.getHost());
     } catch (EncryptionException e) {
       CrashReport.createAndLogError(LOG, null, 
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
@@ -630,5 +638,16 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       }
     }
     return buildResult;
+  }
+  
+  /**
+   * Special Exception for the open connect
+   */
+  class CouldNotFetchException extends Exception {
+      String mistake;
+      public CouldNotFetchException() {
+          super();
+          mistake = "Could not fetch the Build Server URL";
+      }
   }
 }
