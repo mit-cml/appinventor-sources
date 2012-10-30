@@ -217,8 +217,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     TextView textView = new TextView(activity);
     textView.setBackgroundColor(Color.DKGRAY);
     textView.setTextColor(Color.WHITE);
-    textView.setTextSize(30);
-    Typeface typeface = Typeface.create("serif", Typeface.BOLD);
+    textView.setTextSize(20);
+    Typeface typeface = Typeface.create("serif", Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
     textView.setText(message);
