@@ -42,7 +42,7 @@ public class ReplCommController {
   // this should agree with the value used in yacodeblocks.PhoneCommManager
   // TODO(user): consider whether we'd want to let this port
   // change dynamically.
-  public static final int BLOCKS_EDITOR_PORT = 9997;
+  public static final int BLOCKS_EDITOR_PORT = 9987;
 
   private REPLServerController blocksEditorReplController;
 

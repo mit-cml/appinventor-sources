@@ -29,7 +29,7 @@ public class PhoneCommManager {
 
   // The port for communicating with the phone for the ReplCommController
   // Note: This should reference the same definition as in ReplCommController.
-  public static final int REPL_COMMUNICATION_PORT = 9997;
+  public static final int REPL_COMMUNICATION_PORT = 9987;
 
   // procedure (macro) defined in runtime.scm for transforming ReplCommController input
   // before evaluation
