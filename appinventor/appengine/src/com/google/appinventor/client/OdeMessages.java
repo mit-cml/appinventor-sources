@@ -38,7 +38,7 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'Delete' button")
   String deleteButton();
 
-  @DefaultMessage("Add...")
+  @DefaultMessage("Upload new...")
   @Description("Text on 'Add...' button")
   String addButton();
 
