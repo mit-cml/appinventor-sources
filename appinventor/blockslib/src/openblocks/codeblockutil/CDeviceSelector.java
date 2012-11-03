@@ -32,6 +32,8 @@ import javax.swing.JMenuItem;
 public class CDeviceSelector extends JMenuBar {
   private static final boolean DEBUG = true;
   
+  private static final String EXPAND_SYMBOL = "\u25BE";
+  
   private Color background = CGraphite.white;
   
   private volatile Map<String, JMenuItem> availableDevices;
@@ -150,7 +152,7 @@ public class CDeviceSelector extends JMenuBar {
   
   @Override
  public void setEnabled(boolean enabled) {
-    menu.setText("Connect to Device...");
+    menu.setText("Connect to Device..." + " " + EXPAND_SYMBOL + " ");
     menu.setEnabled(enabled);
   }
 
