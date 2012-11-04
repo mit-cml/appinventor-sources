@@ -610,6 +610,10 @@ public final class YoungAndroidFormUpgrader {
       // to be modified to upgrade to version 9.
       srcCompVersion = 9;
     }
+    if (srcCompVersion < 10) {
+      // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
+      srcCompVersion = 10;
+    }
     return srcCompVersion;
   }
 

@@ -789,6 +789,10 @@ public class BlockSaveFile {
       // to be modified to upgrade to version 9.
       blkCompVersion = 9;
     }
+    if (blkCompVersion < 10) {
+      // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
+      blkCompVersion = 10;
+    }
     return blkCompVersion;
   }
 

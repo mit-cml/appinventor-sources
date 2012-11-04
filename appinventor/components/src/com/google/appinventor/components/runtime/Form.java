@@ -242,14 +242,23 @@ public class Form extends Activity
    */
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {
-      boolean handled = super.onKeyDown(keyCode, event);
-      AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-      return handled;
+    if (keyCode == KeyEvent.KEYCODE_BACK) {      
+      if (!BackPressed()) {
+        boolean handled = super.onKeyDown(keyCode, event);
+        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+        return handled;
+      } else {
+        return true;
+      }      
     }
     return super.onKeyDown(keyCode, event);
   }
 
+  @SimpleEvent(description = "Device back button pressed.")
+  public boolean BackPressed() {
+    return EventDispatcher.dispatchEvent(this, "BackPressed");
+  }
+  
   // onActivityResult should be triggered in only two cases:
   // (1) The result is for some other component in the app, not this Form itself
   // (2) This page started another page, and that page is closing, and passing
