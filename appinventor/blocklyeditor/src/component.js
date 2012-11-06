@@ -1,4 +1,4 @@
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+//Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Methods for manipulating App Inventor components - adding, removing,
@@ -93,10 +93,9 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
 
   // Add event blocks
   for (var i = 0, eventType; eventType = typeDescription.events[i]; i++) {
-    Blockly.Component.addBlockAndGenerator(name,
-      name + '_' + eventType.name,
-      new Blockly.ComponentBlock.event(eventType, name),
-      Blockly.Yail.event(name, eventType.name));
+    Blockly.Component.addBlockAndGenerator(name, name + '_' + eventType.name,
+        new Blockly.ComponentBlock.event(eventType, name),
+        Blockly.Yail.event(name, eventType.name));
     // TODO: consider adding generic event blocks. We don't have them for now (since the original
     // App Inventor didn't have them).
   }
@@ -104,22 +103,22 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   // Add method blocks
   for (var i = 0, methodType; methodType = typeDescription.methods[i]; i++) {
     Blockly.Component.addBlockAndGenerator(name,
-      name + '_' + methodType.name,
-      new Blockly.ComponentBlock.method(methodType, name),
-      (methodType.returnType
-        ? Blockly.Yail.methodWithReturn(name, methodType.name)
-        : Blockly.Yail.methodNoReturn(name, methodType.name)));
+        name + '_' + methodType.name,
+        new Blockly.ComponentBlock.method(methodType, name),
+        (methodType.returnType
+            ? Blockly.Yail.methodWithReturn(name, methodType.name)
+                : Blockly.Yail.methodNoReturn(name, methodType.name)));
     if (makeGenerics) {
       // Need to distinguish names of generic blocks from regular component blocks. Since
       // a component instance name can be the same as a component type name, but it cannot start
       // with "_", we add a prefix to the type name that starts with "_" to make it unique (and
       // the "any" is to make it clearer when debugging).
       Blockly.Component.addGenericBlockAndGenerator(typeName,
-        "_any_" + typeName + '_' + methodType.name,
-        new Blockly.ComponentBlock.genericMethod(methodType, typeName),
-        methodType.returnType
+          "_any_" + typeName + '_' + methodType.name,
+          new Blockly.ComponentBlock.genericMethod(methodType, typeName),
+          methodType.returnType
           ? Blockly.Yail.genericMethodWithReturn(typeName, methodType.name)
-          : Blockly.Yail.genericMethodNoReturn(typeName, methodType.name));
+              : Blockly.Yail.genericMethodNoReturn(typeName, methodType.name));
     }
   }
   // Add getter and setter blocks with drop-downs containing relevant property names
@@ -142,91 +141,253 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
 
     }  // some properites have rw = "invisible". ignore those.
 
-      // We pass the Yail types to the property block constructors.
-      // The contructors will convert them to Blockly types to use in
-      // the socket restrictions
-      propYailTypes[propType.name] = propType.type;
-      propTooltips[propType.name] = propType.description;
+    // We pass the Yail types to the property block constructors.
+    // The contructors will convert them to Blockly types to use in
+    // the socket restrictions
+    propYailTypes[propType.name] = propType.type;
+    propTooltips[propType.name] = propType.description;
   }
 
   if (getters.length > 0) {
-  Blockly.Component.addBlockAndGenerator(name,
-    name + '_getproperty',
-    new Blockly.ComponentBlock.getter(getters, propYailTypes, propTooltips, name),
-    Blockly.Yail.getproperty(name));
+    Blockly.Component.addBlockAndGenerator(name,
+        name + '_getproperty',
+        new Blockly.ComponentBlock.getter(getters, propYailTypes, propTooltips, name),
+        Blockly.Yail.getproperty(name));
   };
 
-   if (setters.length > 0) {
-  Blockly.Component.addBlockAndGenerator(name,
-    name + '_setproperty',
-    new Blockly.ComponentBlock.setter(setters, propYailTypes, propTooltips, name),
-    Blockly.Yail.setproperty(name));
-   };
+  if (setters.length > 0) {
+    Blockly.Component.addBlockAndGenerator(name,
+        name + '_setproperty',
+        new Blockly.ComponentBlock.setter(setters, propYailTypes, propTooltips, name),
+        Blockly.Yail.setproperty(name));
+  };
 
   if (makeGenerics) {
 
     if (getters.length > 0) {
-    Blockly.Component.addGenericBlockAndGenerator(typeName,
-      typeName + '_getproperty',
-      new Blockly.ComponentBlock.genericGetter(getters, propYailTypes, propTooltips, typeName),
-      Blockly.Yail.genericGetproperty(typeName));
+      Blockly.Component.addGenericBlockAndGenerator(typeName,
+          typeName + '_getproperty',
+          new Blockly.ComponentBlock.genericGetter(getters, propYailTypes, propTooltips, typeName),
+          Blockly.Yail.genericGetproperty(typeName));
     }
 
     if (setters.length > 0) {
-    Blockly.Component.addGenericBlockAndGenerator(typeName,
-      typeName + '_setproperty',
-      new Blockly.ComponentBlock.genericSetter(setters, propYailTypes, propTooltips, typeName),
-      Blockly.Yail.genericSetproperty(typeName));
+      Blockly.Component.addGenericBlockAndGenerator(typeName,
+          typeName + '_setproperty',
+          new Blockly.ComponentBlock.genericSetter(setters, propYailTypes, propTooltips, typeName),
+          Blockly.Yail.genericSetproperty(typeName));
     }
   }
 
   Blockly.Component.addBlockAndGenerator(name,
-    name + '_component',
-    new Blockly.ComponentBlock.component(name),
-    Blockly.Yail.componentObject(name));
+      name + '_component',
+      new Blockly.ComponentBlock.component(name),
+      Blockly.Yail.componentObject(name));
 
+  // For debugging purposes
+  Blockly.Component.display(name);
 };
+
+
+/**
+ * Displays a component's name in the various structures that contain it.
+ * @param instanceName the component's current name, e.g., Button1
+ */
+Blockly.Component.display = function(instanceName) {
+  console.log("RAM Iterating through Blockly.ComponentInstances");
+  var blocks = Blockly.ComponentInstances[instanceName].blocks;
+  for (var i = 0; i < blocks.length; i++) { 
+    var blockname = blocks[i];
+    var blocklyblock = Blockly.Language[blockname];
+    console.log("RAM blockname: " + blockname);
+    console.log("RAM >> Blockly.Language block: category = " + blocklyblock.category + " name = " + blocklyblock.instanceName);
+    console.log("RAM >> Blockly.Yail generator: " + Blockly.Yail[blockname]);
+  }
+  console.log("RAM Iterating through workspace top level blocks");
+  var wsblocks = Blockly.mainWorkspace.getTopBlocks(true);
+  for (var x= 0;  x < wsblocks.length; x++) {
+    if (!wsblocks[x].category) {
+      continue;
+    } else if (wsblocks[x].category == 'Component') {
+      console.log("RAM top level block name = " + wsblocks[x]);
+    }
+  }
+}
+
 /**
  * Rename component with given uid and instance name oldname to newname
+ * @param oldname the Component's current name, e.g., Button1
+ * @param newname the newname the component will be given, e.g., Button2
+ * @param uid the component's unique id
+ * 
+ * Here are the various places that a component's name must be changed, using Button1
+ *  as an example name.
+ * Blockly.ComponentInstances -- an index containing an entry for each Component used by the app
+ *  keyed on its oldname and containing the names of all of the Component's blocks
+ *  e.g., ComponentInstances['Button1'].blocks: ['Button1_Click', 'Button1_LongClick',...]
+ *  >>    ComponentInstances['Button2'].blocks: ['Button2_Click', 'Button2_LongClick',...]
+
+ * Blockly.Language: a dictionary that contains definitions of all Component blocks used by the 
+ *  app keyed by their block name and pointing to objects that represent the various block types
+ *  e.g., Blockly.Language['Button1_Click'], Blockly.Language['Button1_LongClick'], ...
+ *  where Blockly.Language['Button1_Click'] --> ComponentBlock.instanceName='Button1_Click'
+ *  >>    Blockly.Language['Button2_Click'], Blockly.Language['Button2_LongClick'], ...
+ *  >>    Blockly.Language['Button2_Click'] --> ComponentBlock.instanceName='Button2_Click'
+ *
+ * Blockly.Yail: a dictionary of code generators for each type of block used by the app
+ *  e.g., Blockly.Yail['Button1_Click'], Blockly.Yail['Button1_LongClick'], ...
+ *  >>    Blockly.Yail['Button2_Click'], Blockly.Yail['Button2_LongClick'], ...
+ *  >>    Blockly.Yail['Button2_Click'] = Blackly.Yail.<codegenerator>  -- revise the code generator
+
+ * Blockly.mainWorkspace: a list of all the actual BlocklyBlocks created and currently in the workspace
+ *  e.g., Blockly.mainWorkspace[].instanceName='Button1' 
+ *        Blockly.mainWorkspace[].type='Button1_Click' 
+ *        Blockly.mainWorkspace[].inputList[0].titleRow[0].text_ = 'when Button1.Click'
  */
 Blockly.Component.rename = function(oldname, newname, uid) {
-  // TODO(sharon): implement this!
-  // Note: component instance names are used in the fields for Blockly.ComponentInstances (as the
-  // full field name), Blockly.Language (as the first part of the name preceding "_"), and
-  // Blockly.Yail (as the first part of the name preceding "_"). They also appear in titles for
-  // blocks related to that component instance, and in the instanceName field of those blocks.
+  console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + ", " + uid + ")");
 
-  console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname +
-    ", " + uid + ") - not yet implemented");
+  if (!Blockly.ComponentInstances.haveInstance(oldname, uid)) {
+    console.log("Renaming, No such Component instance " + oldname + " aborting");
+    return;
+  }
+
+  // Create an entry in Blockly.ComponentInstances for the block's newname and delete oldname (below)
+  Blockly.ComponentInstances[newname] = {}
+  Blockly.ComponentInstances[newname].uid = uid;
+  Blockly.ComponentInstances[newname].blocks = [];
+
+  // Construct new names for each of the Component's block types -- e.g., Button1_Click
+  var blocks = Blockly.ComponentInstances[oldname].blocks;
+  for (var i = 0; i < blocks.length; i++) { 
+    var oldblockname = blocks[i];                       // E.g. Button1_Click
+    var blocklyblock = Blockly.Language[oldblockname];  // Get the block's definition from Blockly.Language
+
+    // Construct the new name and push it onto the ComponentInstances[newname].blocks list
+    var newblockname = newname + "_" + oldblockname.substring(oldblockname.indexOf('_') + 1);
+    console.log("Renaming " + oldblockname + " to " + newblockname);
+    Blockly.ComponentInstances[newname].blocks.push(newblockname);
+
+    // Modify the block type's entry in Blockly.Language
+    Blockly.Language[newblockname] = {}
+    var temp = Blockly.Language[oldblockname];
+    Blockly.Language[oldblockname] = null;
+    delete Blockly.Language[oldblockname]; 
+    Blockly.Language[newblockname] = temp;
+    Blockly.Language[newblockname].instanceName = newname;
+
+    // Modify the block type's entry in Blockly.Yail
+    temp = Blockly.Yail[oldblockname];
+    Blockly.Yail[oldblockname] = null;
+    delete Blockly.Yail[oldblockname];
+    Blockly.Yail[newblockname] = temp;
+
+    // Regenerate the code
+    console.log("Regenerating code for " + newname + " blocks");
+
+    var blocktype = Blockly.Language[newblockname].blockType;
+    if (blocktype == 'event') {
+      console.log("Generating event code for " + newname + " of type " + Blockly.Language[newblockname].eventType.name);
+      Blockly.Yail[newblockname] = Blockly.Yail.event(newname, Blockly.Language[newblockname].eventType.name);
+    }
+    else if (blocktype == 'methodwithreturn') {
+      console.log("Generating methodwithreturn code for " + newname + " of type " + Blockly.Language[newblockname].methodType.name);
+      Blockly.Yail[newblockname] = Blockly.Yail.methodWithReturn(newname, Blockly.Language[newblockname].methodType.name);
+    }
+    else if (blocktype == 'methodnoreturn') {
+      console.log("Generating methodnoreturn code for " + newname + " of type " + Blockly.Language[newblockname].methodType.name);
+      Blockly.Yail[newblockname] = Blockly.Yail.methodNoReturn(newname, Blockly.Language[newblockname].methodType.name);
+    }
+    else if (blocktype == 'genericmethod') {
+      var typename = Blockly.Lanaguage[newblockname].typeName;
+      console.log("Generating generic  methodnoreturn code for " + typename + " of type " + Blockly.Language[newblockname].methodType.name);
+      Blockly.Yail[newblockname] = Blockly.Yail.genericMethodNoReturn(typename, Blockly.Language[newblockname].methodType.name);
+    }
+    else if (blocktype == 'genericmethod') {
+      var typename = Blockly.Lanaguage[newblockname].typeName;
+      console.log("Generating generic methodwithreturn code for " + typename + " of type " + Blockly.Language[newblockname].methodType.name);
+      Blockly.Yail[newblockname] = Blockly.Yail.genericMethodWithReturn(typename, Blockly.Language[newblockname].methodType.name);
+    }
+    else if (blocktype == 'getter') {
+      console.log("Generating getter code for " + newname);
+      Blockly.Yail[newblockname] = Blockly.Yail.getproperty(newname);
+    }
+    else if (blocktype == 'setter') {
+      console.log("Generating setter code for " + newname);
+      Blockly.Yail[newblockname] = Blockly.Yail.setproperty(newname);
+    }
+    else if (blocktype == 'genericgetter') {
+      console.log("RAM generating genericgetter  block code for " + Blockly.Language[newblockname].typeName);
+      Blockly.Yail[newblockname] = Blockly.Yail.genericGetproperty(Blockly.Language[newblockname].typeName);
+    }
+    else if (blocktype == 'genericsetter') {
+      console.log("Generating genericsetter code for " + Blockly.Language[newblockname].typeName);
+      Blockly.Yail[newblockname] = Blockly.Yail.genericSetproperty(Blockly.Language[newblockname].typeName);
+    }
+    else if (blocktype == 'component') {
+      console.log("Generating component block code for " + newname);
+      Blockly.Yail[newblockname] = Blockly.Yail.componentObject(newname);
+    }
+  }
+
+  // Delete the index entry for the oldname
+  Blockly.ComponentInstances[oldname] = null;
+  delete Blockly.ComponentInstances[oldname];
+
+  console.log("Revised Blockly.ComponentInstances, Blockly.Language, Blockly.Yail for " + newname);
+
+  // Revise names, types, and block titles for all blocks containing newname in Blockly.mainWorkspace
+  blocks = Blockly.mainWorkspace.getAllBlocks();
+  for (var x = 0, block; block = blocks[x]; x++) {
+    if (!block.category) {
+      continue;
+    } else if (block.category == 'Component') {
+      block.rename(oldname, newname);      // Changes block's instanceName, typeName, and current title
+    }
+  }
+
+  console.log("Revised Blockly.mainWorkspace for " + newname);
 };
 
 /**
  * Remove component with given type and instance name and unique id uid
+ * @param type, Component's type -- e.g., Button
+ * @param name, Component's name == e.g., Buton1
+ * @param uid, Component's unique id -- not currently used
+ *
+ * The component should be listed in the ComponentInstances list.
+ * For each of its Component (prototype) blocks -- e.g., Button1_OnClick, Button1_OnLongClick, etc.
+ *   - delete the block's  structure from Blockly.Language
+ *   - delete the block's structure from Blockly.Yail
+ *   - For each instance of the block in the Blockly.mainWorkspace
+ *     -- Call its BlocklyBlock.destroy() method to remove the block
+ *        from the workspace and adjust enclosed or enclosing blocks.
+ * Remove the block's entry from ComponentInstances
+ *
  */
 Blockly.Component.remove = function(type, name, uid) {
-  // TODO(sharon): implement this!
-  console.log("Got call to Blockly.Component.remove(" + type + ", " + name +
-    ", " + uid + ") - not yet implemented");
+  console.log("Got call to Blockly.Component.remove(" + type + ", " + name + ", " + uid + ")");
 
-  /* TBD...ignore this code for now.
-  // remove all blocks related to the component from the language
-  if (!ComponentTypeElements[type]) {
-    // throw 'Error: "' + type + '" is an unknown component type';
-    console.log("Got call to Blockly.Component.remove(" + type + ", " + name +
-      ", " + uid + ") - unknown type");
-    return;
-  }
-  for (var i in Blockly.ComponentTypeElements[type]) {
-    // elements are events, methods, property setter/getter, component block
-    // remove blocks for the elements for this component instance from the language
-    var element = Blockly.ComponentTypeElements[type][i];
-    var elementName = name + '_' + element;
+  for (var i=0; i < Blockly.ComponentInstances[name].blocks.length; i++) {
+    var elementName = Blockly.ComponentInstances[name].blocks[i]
+    console.log("Deleting " + elementName + " from Blockly.Lanaguage");
     delete Blockly.Language[elementName];
-  }
+    console.log("Deleting " + elementName + " from Blockly.Yail");
+    delete Blockly.Yail[elementName];
 
-  // remove the component instance
-  Blockly.ComponentInstances[name] = null;
-  */
+    // Delete instances of this type of block from the workspace
+    var allblocks = Blockly.mainWorkspace.getAllBlocks();
+    for (var x = 0, block; block = allblocks[x]; x++) {
+      if (!block.category) {
+        continue;
+      } else if (block.category == 'Component' && block.type == elementName) {
+        block.dispose(true);     // Destroy the block gently
+      }
+    }
+  }
+  // Remove the component instance
+  console.log("Deleting " + name + " from Blockly.ComponentInstances");
+  delete Blockly.ComponentInstances[name];
 };
 
 /**
@@ -324,6 +485,7 @@ Blockly.ComponentTypes.haveType = function(typeName) {
 }
 
 Blockly.ComponentTypes.addType = function(typeName, typeDescription) {
+  console.log("In Blockly.ComponentTypes.addType " +  typeName);
   Blockly.ComponentTypes[typeName] = {};
   Blockly.ComponentTypes[typeName].type = typeDescription;
   Blockly.ComponentTypes[typeName].blocks = [];
@@ -351,6 +513,7 @@ Blockly.ComponentTypes.getType = function(typeName) {
 Blockly.ComponentInstances = {};
 
 Blockly.ComponentInstances.addInstance = function(name, uid) {
+  console.log("RAM In Blockly.ComponentInsance.addInstance " + name);
   Blockly.ComponentInstances[name] = {};
   Blockly.ComponentInstances[name].uid = uid;
   Blockly.ComponentInstances[name].blocks = [];
@@ -358,7 +521,7 @@ Blockly.ComponentInstances.addInstance = function(name, uid) {
 
 Blockly.ComponentInstances.haveInstance = function(name, uid) {
   return Blockly.ComponentInstances[name] != undefined
-      && Blockly.ComponentInstances[name].uid == uid;
+  && Blockly.ComponentInstances[name].uid == uid;
 }
 
 Blockly.ComponentInstances.addBlockName = function(name, blockName) {

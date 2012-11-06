@@ -1,4 +1,4 @@
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+//Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Visual blocks editor for App Inventor
@@ -16,8 +16,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.BlocklyEditor.formName_ = formName;
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
       function() { 
-        window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_); 
-      });
+    window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_); 
+  });
 };
 
 /**
@@ -36,9 +36,9 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     //and an array if the block is a value
     var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
     if(yailTextOrArray instanceof Array){
-    	yailText = yailTextOrArray[0];
+      yailText = yailTextOrArray[0];
     } else {
-    	yailText = yailTextOrArray;
+      yailText = yailTextOrArray;
     }
     myBlock.setCommentText(yailText);
   };

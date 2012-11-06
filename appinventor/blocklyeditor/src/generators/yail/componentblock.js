@@ -20,8 +20,8 @@ Blockly.Yail = Blockly.Generator.get('Yail');
  * Returns a function that takes no arguments, generates Yail for an event handler declaration block
  * and returns the generated code string.
  *
- * @param {String} instanceName
- * @param {String} eventName
+ * @param {String} instanceName the block's instance name, e.g., Button1
+ * @param {String} eventName  the type of event, e.g., Click
  * @returns {Function} event code generation function with instanceName and eventName bound in
  */
 Blockly.Yail.event = function(instanceName, eventName) {
