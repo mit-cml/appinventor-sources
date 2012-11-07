@@ -37,18 +37,49 @@
      <div class="content-body">
 
                 <h2>Release Notes</h2>
-                
-                <h3>Version 130, November 6, 2012</h3>
+                <h3>Version 130, November 9, 2012</h3>
                 <ul>
+                  <li>
+                    Migrated FusiontablesControl to the new V1 API library.<p>
+                    The implementation follows V1 migration guide:<br>
+                    https://developers.google.com/fusiontables/docs/v1/migration_guide
+                    <p>
+                    The main changes are:
+                    <ul>
+                      <li>The API has a new URL: https://www.googleapis.com/fusiontables/v1/query</li>
+                      <li>Oauth 2.0 authentication is used with an API key. Developers must now
+                        register with Google and get an API key.</li>
+                      <li>The Google AccountManager is used to select an account and obtain
+                        an access_token that is used in all queries. (Similar to old approach)</li>
+                      <li>Google API client libraries are used in the implementation.</li>
+                      <li>All queries use the client library's Sql object to make the actual requests.
+                        This is similar to the deprecated version.</li>
+                      <li>A new method, SendQuery, is added to perform API v1 requests. The updated
+                        FusiontablesControl is backwards compatible. Previously written
+                        applications, using DoQuery, will still work until the end of the year.</li>
+                    </ul>
+                    <p>
+                  </li>
+                  <li>
+                    Modified Texting component.<p>
+                    The main changes are:
+                    <ul>
+                      <li>Now works with Wifi. This solution using Google Voice. It requires 
+                        users to sign up online for Google Voice and to download and install 
+                        the Google Voice mobile application. The mobile application is used 
+                        for incoming messages. For outgoing messages the application uses 
+                        Google AccountManager to authenticate the user and then uses their 
+                        Google Voice account to send messages.</li>
+                      <li>Applications that include the revised component can receive text messages 
+                          even when they are not running, with the user being notified on the status 
+                          bar of incoming messages.</li>
+                      <li>Component now uses OAuth2Helper, same as used in FusiontablesControl.</li>
+                    </ul>
+                    <p>
+                  </li>
                   <li>Updated Twitter component with latest version of 
                     twitter4j. Fixing bug that makes some numerical replies 
                     from Twitter fail.
-                  </li>
-                  <li>
-                    Modified texting component to work with Wifi. This 
-                    solution using Google Voice.  It requires users to 
-                    sign up online for Google Voice and to download and 
-                    install the Google Voice mobile application.
                   </li>
                   <li>
                     Added zipalign tool to the packaging process allowing 
@@ -67,25 +98,6 @@
                   </li>
                   <li>
                     Added speed and heading to callback for Sprite.Flung and Canvas.flung.
-                  <li>
-                    Migrated FusiontablesControl to the new V1 API library.<p>
-                    The implementation follows V1 migration guide:<br>
-                    https://developers.google.com/fusiontables/docs/v1/migration_guide
-                    <p>
-                    The main changes are:
-                    <br>
-                      * The API has a new URL: https://www.googleapis.com/fusiontables/v1/query<br>
-                      * Oauth 2.0 authentication is used with an API key. Developers must now
-                        register with Google and get an API key.<br>
-                      * The Google AccountManager is used to select an account and obtain
-                        an access_token that is used in all queries. (Similar to old approach)<br>
-                      * Google API client libraries are used in the implementation.<br>
-                      * The new API uses GET, POST differently than deprecated API.<br>
-                      * All queries use the client library's Sql object to make the actual requests.
-                        This is similar to the deprecated version.<br>
-                      * A new method, SendQuery, is added to perform API v1 requests. The updated
-                        FusiontablesControl is backwards compatible.  Previously written
-                        program, using DoQuery, will still work until the end of the year.
                   </li>
                   <li>
                     Added transition animations to screens.
