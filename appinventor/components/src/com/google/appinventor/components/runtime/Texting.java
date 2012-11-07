@@ -123,6 +123,7 @@ import android.widget.Toast;
   private static final int SERVER_TIMEOUT_MS = 30000;
   private static final String SENT = "SMS_SENT";
   private static final String UTF8 = "UTF-8";
+  private static final String MESSAGE_DELIMITER = "\u0001";
 
   // Google Voice oauth helper
   private GoogleVoiceUtil gvHelper;
@@ -252,7 +253,7 @@ import android.widget.Toast;
    * @param messageText the text of the message.
    */
   @SimpleEvent
-  public static void MessageReceived(Context context, String number, String messageText) {
+  public static void MessageReceived(String number, String messageText) {
     if (receivingEnabled) {
       Log.i(TAG, "MessageReceived from " + number + ":" + messageText);   
       if (EventDispatcher.dispatchEvent(component, "MessageReceived", number, messageText)) {
@@ -260,7 +261,7 @@ import android.widget.Toast;
       } else {
         Log.i(TAG, "Dispatch failed, caching");
         synchronized (cacheLock) {
-          addMessageToCache(context, number, messageText);
+          addMessageToCache(activity, number, messageText);
         }
       }    
     }
@@ -368,7 +369,7 @@ import android.widget.Toast;
       
       // If receiving is not enabled, messages are not dispatched
       if (receivingEnabled && delim != -1) {
-        MessageReceived(activity, phoneAndMessage.substring(0,delim),
+        MessageReceived(phoneAndMessage.substring(0,delim),
             phoneAndMessage.substring(delim+1));
       }
     }
@@ -405,7 +406,7 @@ import android.widget.Toast;
       e.printStackTrace();
       return null;
     } 
-    String messagelist[] = cache.split("\n");
+    String messagelist[] = cache.split(MESSAGE_DELIMITER);
     return messagelist;
   }
   
@@ -455,7 +456,7 @@ import android.widget.Toast;
    */
   public static void handledReceivedMessage(Context context, String phone, String msg) {
     if (isRunning) {
-      MessageReceived(context, phone, msg);
+      MessageReceived(phone, msg);
     } else {
       synchronized (cacheLock) {
         addMessageToCache(context, phone, msg);
@@ -471,7 +472,7 @@ import android.widget.Toast;
    */
   private static void addMessageToCache(Context context, String phone, String msg) {
     try {
-      String cachedMsg = phone + ":" + msg + "\n";
+      String cachedMsg = phone + ":" + msg + MESSAGE_DELIMITER;
       Log.i(TAG, "Caching " + cachedMsg);
       FileOutputStream fos = context.openFileOutput(CACHE_FILE, Context.MODE_APPEND);
       fos.write(cachedMsg.getBytes());
