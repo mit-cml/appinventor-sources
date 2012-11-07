@@ -1,12 +1,16 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 /*
  * This is revised from here: https://github.com/cicada-dev
  * and was original published under Apache 2.0 license.
- * 
+ *
  */
 package com.google.appinventor.components.runtime.util;
 
-
 import com.google.appinventor.components.runtime.Texting;
+import com.google.appinventor.components.runtime.ReplForm;
 
 import android.R;
 import android.app.Notification;
@@ -21,14 +25,14 @@ import android.util.Log;
 
 /**
  * This broadcast receiver accepts incoming SMS messages from either
- * Messaging, the built in Android SMS program or from Google Voice (which 
+ * Messaging, the built in Android SMS program or from Google Voice (which
  * must be installed on the user's phone.  The receiver will be invoked by
- * the system even when the app is not running.  
- * 
+ * the system even when the app is not running.
+ *
  * The receiver does not need to be instantiated in the app.
  * The receiver is declared statically in the <application> tag but
  * outside the <activity> tag in the Manifest:
- * 
+ *
         <receiver
             android:name="org.hfoss.SmsBroadcastReceiver"
             android:enabled="true"
@@ -40,7 +44,7 @@ import android.util.Log;
                     android:permission="com.google.android.apps.googlevoice.permission.RECEIVE_SMS" />
             </intent-filter>
         </receiver>
-        
+
  * @author rmorelli
  *
  */
@@ -52,12 +56,12 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
   /**
    * Called by the system when an incoming SMS is received either from Google Voice
-   * or through the built-in Telephony app. 
-   * 
+   * or through the built-in Telephony app.
+   *
    */
   @Override
   public void onReceive(Context context, Intent intent) {
-    Log.i(TAG, "onReceive");  
+    Log.i(TAG, "onReceive");
 
     // Extract the phone number and message.
     String phone = getPhoneNumber(intent);
@@ -65,15 +69,23 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     Log.i(TAG, "Received " + phone + " : " + msg);
 
-    // If activity is receiving messages, send the message; 
+    // If activity is receiving messages, send the message;
     // It'll be cached if the app isn't running
     if (Texting.receivingEnabled) {
-      Texting.handledReceivedMessage(context, phone, msg);
-      if (!Texting.isRunning()) {
-        // If the app isn't running, send a Notification
-        sendNotification(context, phone, msg);
+      if (isRepl(context)) {    // If we are the Repl, we only handle texts if we are running
+        if (Texting.isRunning()) {
+          Texting.handledReceivedMessage(context, phone, msg);
+        } else {
+          Log.i(TAG, context.getApplicationInfo().packageName + " is not running and we are the repl, ignoring message.");
+        }
       } else {
-        Log.i(TAG, context.getApplicationInfo().packageName + " is running");
+        Texting.handledReceivedMessage(context, phone, msg);
+        if (!Texting.isRunning()) {
+          // If the app isn't running, send a Notification
+          sendNotification(context, phone, msg);
+        } else {
+          Log.i(TAG, context.getApplicationInfo().packageName + " is running");
+        }
       }
     } else {
       Log.i(TAG, context.getApplicationInfo().packageName + " receiving disabled");
@@ -94,7 +106,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
       phone = intent.getExtras().getString(Texting.PHONE_NUMBER_TAG);
       phone = PhoneNumberUtils.formatNumber(phone);
 
-      // For Telephony, phone and msg are stored in PDUs. 
+      // For Telephony, phone and msg are stored in PDUs.
 
     } else {
       Object[] pdus = (Object[]) intent.getExtras().get("pdus");
@@ -115,18 +127,18 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
   private String getMessage(Intent intent) {
     String msg = "";
 
-    // For Google Voice, msg is stored in String extras. 
+    // For Google Voice, msg is stored in String extras.
 
     if (intent.getAction().equals("com.google.android.apps.googlevoice.SMS_RECEIVED")) {
       msg = intent.getExtras().getString(Texting.MESSAGE_TAG);
 
-      // For Telephony, phone and msg are stored in PDUs. 
+      // For Telephony, phone and msg are stored in PDUs.
 
     } else {
       Object[] pdus = (Object[]) intent.getExtras().get("pdus");
       for (Object pdu : pdus) {
         SmsMessage smsMsg = SmsMessage.createFromPdu((byte[]) pdu);
-        msg = smsMsg.getMessageBody();        
+        msg = smsMsg.getMessageBody();
       }
     }
     return msg;
@@ -139,7 +151,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
    * @param msg
    */
   private void sendNotification(Context context, String phone, String msg) {
-    Log.i(TAG, "sendingNotification " + phone + ":" + msg); 
+    Log.i(TAG, "sendingNotification " + phone + ":" + msg);
 
     // Get this app's name
     String packageName = context.getPackageName();
@@ -168,11 +180,27 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
       PendingIntent activity = PendingIntent.getActivity(context, 0, newIntent, PendingIntent.FLAG_UPDATE_CURRENT);
       note.setLatestEventInfo(context, "Sms from " + phone, msg, activity);
       note.number = Texting.getCachedMsgCount();
-      nm.notify(null, NOTIFICATION_ID, note);  
+      nm.notify(null, NOTIFICATION_ID, note);
       Log.i(TAG, "Notification sent, classname: " + classname);
 
     } catch (ClassNotFoundException e) {
       e.printStackTrace();
+    }
+  }
+
+  private boolean isRepl(Context context) {
+    try {
+      String packageName = context.getPackageName();
+      String classname = packageName + ".Screen1";
+      Class appClass = Class.forName(classname);
+      Class superClass = appClass.getSuperclass(); // This should be either Form or ReplForm
+      if (superClass.equals(ReplForm.class))
+        return true;
+      else
+        return false;
+    } catch (ClassNotFoundException e) {
+      e.printStackTrace();
+      return false;             // If we loose, say we are not the repl
     }
   }
 }
