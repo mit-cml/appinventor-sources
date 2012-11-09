@@ -87,7 +87,7 @@ import java.util.ArrayList;
     "<p>In order to develop apps that use Fusiontables, you must obtain an API Key." +
     "<p>To get an API key, follow these instructions.</p> " +
     "<ol>" +
-    "<li>Go to your <a href=\"https://code.google.com/apis/console/\">Google APIs Console</a> and login if necessary.</li>" +
+    "<li>Go to your <a href=\"https://code.google.com/apis/console/\" target=\"_blank\">Google APIs Console</a> and login if necessary.</li>" +
     "<li>Select the <i>Services</i> item from the menu on the left.</li>"   +
     "<li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>" +
     "<li>Go back to the main menu and select the <i>API Access</i> item. </li>" +
@@ -211,7 +211,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   @SimpleProperty(
       description = "The query to send to the Fusion Tables API. " +
       "<p>For legal query formats and examples, see the " +
-      "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\">Fusion Tables API v1.0 reference manual</a>.</p> " +
+      "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API v1.0 reference manual</a>.</p> " +
       "<p>Note that you do not need to worry about UTF-encoding the query. " +
       "But you do need to make sure it follows the syntax described in the reference manual, " +
       "which means that things like capitalization for names of columns matters, " +
