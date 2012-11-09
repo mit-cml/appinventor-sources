@@ -999,7 +999,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   /**
    * When the user touches the canvas and then immediately lifts finger: provides
-   * the (x,y) position of the touch, relative to the upper left of the canvas
+   * the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedSprite
+   * is true if the same touch also touched a sprite, and false otherwise.
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
