@@ -582,8 +582,8 @@ public class BlockSaveFile {
           "from the drawer";
       for (Element block : getAllMatchingGenusBlocks("Ball-Flung")) {
         markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
-        blkCompVersion = 5;
       }
+      blkCompVersion = 5;
     }
     return blkCompVersion;
   }
@@ -859,8 +859,6 @@ public class BlockSaveFile {
       blkCompVersion = 5;
     }
     if (blkCompVersion < 6) {
-      // speed and heading were added to the Flung event(for all sprites)
-      if (blkCompVersion < 5) {
         // speed and hearing were added to the Flung event (for all sprites)
         // speed and heading were added to the Flung event
         final String CHANGED_FLUNG_WARNING = "The %s block has been changed to " +
@@ -869,9 +867,7 @@ public class BlockSaveFile {
             "from the drawer";
         for (Element block : getAllMatchingGenusBlocks("ImageSprite-Flung")) {
           markBlockBad(block, String.format(CHANGED_FLUNG_WARNING, "Flung"));
-          blkCompVersion = 5;
         }
-      }
       blkCompVersion = 6;
     }  
     

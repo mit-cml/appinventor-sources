@@ -608,18 +608,18 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Turns this sprite to point towards a given other sprite.
    *
-   * @param sprite the other sprite to point towards
+   * @param target the other sprite to point towards
    */
   @SimpleFunction(
     description = "<p>Turns the sprite to point towards a designated " +
     "target sprite. The new heading will be parallel to the line joining " +
     "the centerpoints of the two sprites.</p>")
-  public void PointTowards(Sprite sprite) {
+  public void PointTowards(Sprite target) {
     Heading(-Math.toDegrees(Math.atan2(
         // we adjust for the fact that the sprites' X() and Y()
         // are not the center points.
-        sprite.Y() - Y() + (sprite.Height() - Height()) / 2,
-        sprite.X() - X() + (sprite.Width() - Width()) / 2)));
+        target.Y() - Y() + (target.Height() - Height()) / 2,
+        target.X() - X() + (target.Width() - Width()) / 2)));
   }
 
   /**
