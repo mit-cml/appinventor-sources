@@ -16,10 +16,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -213,13 +211,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   // font size.  The default toast is too small.
   private void toastNow (String message) {
     Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
-    toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
-    textView.setBackgroundColor(Color.DKGRAY);
     textView.setTextColor(Color.WHITE);
     textView.setTextSize(20);
-    Typeface typeface = Typeface.create("serif", Typeface.NORMAL);
-    textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
     textView.setText(message);
     toast.setView(textView);
