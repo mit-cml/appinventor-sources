@@ -21,6 +21,7 @@
  * @fileoverview Generating JavaScript for procedure blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
@@ -75,4 +76,17 @@ Blockly.JavaScript.procedures_callnoreturn = function() {
   }
   var code = funcName + '(' + args.join(', ') + ');\n';
   return code;
+};
+
+Blockly.JavaScript.procedures_return = function() {
+  // Return value in a procedure
+  var value = Blockly.JavaScript.valueToCode(this, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+  var code = "return "+value+";\n";
+  return code;
+};
+
+Blockly.JavaScript.procedures_null = function() {
+  // Return nothing
+  var code = 'null';
+  return [code ,Blockly.JavaScript.ORDER_NONE];
 };

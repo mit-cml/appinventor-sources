@@ -21,8 +21,7 @@
  * @fileoverview Logic blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.logic_compare = {
   // Comparison operator.

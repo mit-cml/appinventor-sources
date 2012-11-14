@@ -21,6 +21,7 @@
  * @fileoverview Generating JavaScript for list blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 

@@ -21,8 +21,7 @@
  * @fileoverview Control blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.controls_if = {
   // If/elseif/else condition.
@@ -102,12 +101,12 @@ Blockly.Language.controls_if = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // Disconnect the else input blocks and destroy the inputs.
+    // Disconnect the else input blocks and remove the inputs.
     if (this.elseCount_) {
       this.removeInput('ELSE');
     }
     this.elseCount_ = 0;
-    // Disconnect all the elseif input blocks and destroy the inputs.
+    // Disconnect all the elseif input blocks and remove the inputs.
     for (var x = this.elseifCount_; x > 0; x--) {
       this.removeInput('IF' + x);
       this.removeInput('DO' + x);

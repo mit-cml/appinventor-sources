@@ -21,8 +21,7 @@
  * @fileoverview List blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.lists_create_empty = {
   // Create an empty list.
@@ -87,7 +86,7 @@ Blockly.Language.lists_create_with = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // Disconnect all input blocks and destroy all inputs.
+    // Disconnect all input blocks and remove all inputs.
     if (this.itemCount_ == 0) {
       this.removeInput('EMPTY');
     } else {

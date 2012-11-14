@@ -21,6 +21,7 @@
  * @fileoverview Generating JavaScript for text blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
@@ -64,8 +65,7 @@ Blockly.JavaScript.text_append = function() {
       this.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.JavaScript.valueToCode(this, 'TEXT',
       Blockly.JavaScript.ORDER_NONE) || '\'\'';
-  return code = varName +
-      ' = String(' + varName + ') + String(' + argument0 + ');\n';
+  return varName + ' = String(' + varName + ') + String(' + argument0 + ');\n';
 };
 
 Blockly.JavaScript.text_length = function() {
@@ -86,30 +86,23 @@ Blockly.JavaScript.text_endString = function() {
   // Return a leading or trailing substring.
   var first = this.getTitleValue('END') == 'FIRST';
   var code;
+  var argument0 = Blockly.JavaScript.valueToCode(this, 'NUM',
+      Blockly.JavaScript.ORDER_COMMA) || '1';
+  var argument1 = Blockly.JavaScript.valueToCode(this, 'TEXT',
+      Blockly.JavaScript.ORDER_MEMBER) || '\'\'';
   if (first) {
     var argument0 = Blockly.JavaScript.valueToCode(this, 'NUM',
         Blockly.JavaScript.ORDER_COMMA) || '1';
-    var argument1 = Blockly.JavaScript.valueToCode(this, 'TEXT',
-        Blockly.JavaScript.ORDER_MEMBER) || '\'\'';
     code = argument1 + '.substring(0, ' + argument0 + ')';
   } else {
-    if (!Blockly.JavaScript.definitions_['text_tailString']) {
-      var functionName = Blockly.JavaScript.variableDB_.getDistinctName(
-          'text_tailString', Blockly.Generator.NAME_TYPE);
-      Blockly.JavaScript.text_endString.text_tailString = functionName;
-      var func = [];
-      func.push('function ' + functionName + '(n, myString) {');
-      func.push('  // Return a trailing substring of n characters.');
-      func.push('  return myString.substring(myString.length - n);');
-      func.push('}');
-      Blockly.JavaScript.definitions_['text_tailString'] = func.join('\n');
-    }
     var argument0 = Blockly.JavaScript.valueToCode(this, 'NUM',
-        Blockly.JavaScript.ORDER_COMMA) || '1';
-    var argument1 = Blockly.JavaScript.valueToCode(this, 'TEXT',
-        Blockly.JavaScript.ORDER_COMMA) || '\'\'';
-    code = Blockly.JavaScript.text_endString.text_tailString +
-        '(' + argument0 + ', ' + argument1 + ')';
+        Blockly.JavaScript.ORDER_UNARY_NEGATION) || '1';
+    if (argument0.match(/^\d+$/) && !argument0.match(/^0+$/)) {
+      // Shortcut for a plain positive number.
+      code = argument1 + '.slice(-' + argument0 + ')';
+    } else {
+      code = argument1 + '.slice(- ' + argument0 + ' || Infinity)';
+    }
   }
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };
@@ -163,8 +156,8 @@ Blockly.JavaScript.text_changeCase = function() {
       var func = [];
       func.push('function ' + functionName + '(str) {');
       func.push('  return str.replace(/\\S+/g,');
-      func.push('      function(txt) {return txt.charAt(0).toUpperCase() + ' +
-                'txt.substr(1).toLowerCase();});');
+      func.push('      function(txt) {return txt[0].toUpperCase() + ' +
+                'txt.substring(1).toLowerCase();});');
       func.push('}');
       Blockly.JavaScript.definitions_['text_toTitleCase'] = func.join('\n');
     }

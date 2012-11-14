@@ -21,6 +21,7 @@
  * @fileoverview Generating Python for unit test blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Python = Blockly.Generator.get('Python');
 

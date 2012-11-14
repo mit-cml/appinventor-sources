@@ -110,7 +110,7 @@ Blockly.Yail.text_compare = function() {
 Blockly.Yail.text_compare.OPERATORS = {
   LT: ['string<?', 'text<', Blockly.Yail.ORDER_NONE],
   GT: ['string>?', 'text>', Blockly.Yail.ORDER_NONE],
-  EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE],
+  EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail.text_trim = function() {
@@ -152,7 +152,7 @@ Blockly.Yail.text_changeCase = function() {
 
 Blockly.Yail.text_changeCase.OPERATORS = {
   UPCASE: ['string-to-upper-case', 'upcase', Blockly.Yail.ORDER_NONE],
-  DOWNCASE: ['string-to-lower-case', 'downcase', Blockly.Yail.ORDER_NONE],
+  DOWNCASE: ['string-to-lower-case', 'downcase', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail.text_starts_at = function() {

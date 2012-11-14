@@ -21,6 +21,7 @@
  * @fileoverview Factory for building blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 /**
  * The uneditable container block that everything else attaches to.
@@ -68,9 +69,26 @@ function initEditor(blockly) {
   rootBlock.initSvg();
   rootBlock.render();
   rootBlock.editable = false;
+  rootBlock.deletable = false;
 
-  EditorBlockly.bindEvent_(EditorBlockly.mainWorkspace.getCanvas(),
-      'blocklyWorkspaceChange', null, onchange);
+  bindEvent(EditorBlockly.mainWorkspace.getCanvas(),
+      'blocklyWorkspaceChange', onchange);
+}
+
+/**
+ * Bind an event to a function call.
+ * @param {!Element} element Element upon which to listen.
+ * @param {string} name Event name to listen to (e.g. 'mousedown').
+ * @param {!Function} func Function to call when event is triggered.
+ *     W3 browsers will call the function with the event object as a parameter,
+ *     MSIE will not.
+ */
+function bindEvent(element, name, func) {
+  if (element.addEventListener) {  // W3C
+    element.addEventListener(name, func, false);
+  } else if (element.attachEvent) {  // IE
+    element.attachEvent('on' + name, func);
+  }
 }
 
 /**
@@ -81,10 +99,10 @@ function onchange() {
   var name = rootBlock.getTitleValue('NAME');
   var code = [];
   var type;
-  if (cat) {
+  if (cat && name) {
     type = cat + '_' + name;
   } else {
-    type = name;
+    type = name || cat || '_';
   }
   blockType = type.replace(/\W/g, '_').replace(/^(d)/, '_\\1').toLowerCase();
   updateLanguage();
@@ -112,7 +130,8 @@ function updateLanguage() {
   // Generate colour.
   var colourBlock = rootBlock.getInputTargetBlock('COLOUR');
   if (colourBlock) {
-    code.push('    this.setColour(' + colourBlock.getTitleValue('HUE') + ');');
+    var hue = parseInt(colourBlock.getTitleValue('HUE'), 10);
+    code.push('    this.setColour(' + hue + ');');
   }
   // Generate inputs.
   var TYPES = {'input_value': 'appendValueInput',
@@ -210,6 +229,12 @@ function getTitles(block) {
         // Result: new Blockly.FieldTextInput('Hello'), 'GREET'
         titles.push('new Blockly.FieldTextInput(' +
             escapeString(block.getTitleValue('TEXT')) + '), ' +
+            escapeString(block.getTitleValue('TITLENAME')));
+        break;
+      case 'title_checkbox':
+        // Result: new Blockly.FieldCheckbox('TRUE'), 'CHECK'
+        titles.push('new Blockly.FieldCheckbox(' +
+            escapeString(block.getTitleValue('CHECKED')) + '), ' +
             escapeString(block.getTitleValue('TITLENAME')));
         break;
       case 'title_variable':
@@ -340,6 +365,11 @@ function updateGenerator() {
         code.push(makeVar('dropdown', name) +
                   ' = this.getTitleValue(\'' + name + '\');');
         break;
+      case 'title_checkbox':
+        var name = block.getTitleValue('TITLENAME');
+        code.push(makeVar('checkbox', name) +
+                  ' = this.getTitleValue(\'' + name + '\') == \'TRUE\';');
+        break;
       case 'title_variable':
         var name = block.getTitleValue('TITLENAME');
         code.push(makeVar('variable', name) +
@@ -384,7 +414,7 @@ function updatePreview() {
     return;
   }
   if (previewBlock) {
-    previewBlock.destroy();
+    previewBlock.dispose();
   }
   var type = blockType;
   var code = document.getElementById('languageTextarea').value;
@@ -394,5 +424,6 @@ function updatePreview() {
   previewBlock.initSvg();
   previewBlock.render();
   previewBlock.editable = false;
+  previewBlock.deletable = false;
 }
 

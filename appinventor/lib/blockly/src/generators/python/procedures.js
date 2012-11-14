@@ -21,6 +21,7 @@
  * @fileoverview Generating Python for variable blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Python = Blockly.Generator.get('Python');
 
@@ -34,8 +35,8 @@ Blockly.Python.procedures_defreturn = function() {
       globals[i] = Blockly.Python.variableDB_.getName(varName,
           Blockly.Variables.NAME_TYPE);
     } else {
-      // This variable has been explicitly passed to the function.
-      // Do not include it in the list of globals.
+      // This variable is actually a parameter name.  Do not include it in
+      // the list of globals, thus allowing it be of local scope.
       globals.splice(i, 1);
     }
   }
@@ -91,4 +92,17 @@ Blockly.Python.procedures_callnoreturn = function() {
   }
   var code = funcName + '(' + args.join(', ') + ')\n';
   return code;
+};
+
+Blockly.Python.procedures_return = function() {
+  // Return value in a procedure
+  var value = Blockly.Python.valueToCode(this, 'VALUE', Blockly.Python.ORDER_ATOMIC);
+  var code = "return "+value+";\n";
+  return code;
+};
+
+Blockly.Python.procedures_null = function() {
+  // Return nothing
+  var code = 'None';
+  return [code ,Blockly.Python.ORDER_NONE];
 };

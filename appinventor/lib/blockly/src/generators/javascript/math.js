@@ -21,6 +21,7 @@
  * @fileoverview Generating JavaScript for math blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
@@ -60,8 +61,8 @@ Blockly.JavaScript.math_change = function() {
   // Add to a variable in place.
   var argument0 = Blockly.JavaScript.valueToCode(this, 'DELTA',
       Blockly.JavaScript.ORDER_ADDITION) || '0';
-  var varName = Blockly.JavaScript.variableDB_.getName(this.getTitleValue('VAR'),
-      Blockly.Variables.NAME_TYPE);
+  var varName = Blockly.JavaScript.variableDB_.getName(
+      this.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
   return varName + ' = (typeof ' + varName + ' == \'number\' ? ' + varName +
       ' : 0) + ' + argument0 + ';\n';
 };
@@ -75,7 +76,7 @@ Blockly.JavaScript.math_single = function() {
     // Negation is a special case given its different operator precedence.
     arg = Blockly.JavaScript.valueToCode(this, 'NUM',
         Blockly.JavaScript.ORDER_UNARY_NEGATION) || '0';
-    if (arg.charAt(0) == '-') {
+    if (arg[0] == '-') {
       // --3 is not legal in JS.
       arg = ' ' + arg;
     }
@@ -276,8 +277,7 @@ Blockly.JavaScript.math_on_list = function() {
         func.push('    variance += Math.pow(numbers[j] - mean, 2);');
         func.push('  }');
         func.push('  variance = variance / n;');
-        func.push('  standard_dev = Math.sqrt(variance);');
-        func.push('  return standard_dev;');
+        func.push('  return Math.sqrt(variance);');
         func.push('}');
         Blockly.JavaScript.definitions_['math_standard_deviation'] =
             func.join('\n');
@@ -355,7 +355,7 @@ Blockly.JavaScript.math_random_int = function() {
     func.push('}');
     Blockly.JavaScript.definitions_['math_random_int'] = func.join('\n');
   }
-  code = Blockly.JavaScript.math_random_int.random_function +
+  var code = Blockly.JavaScript.math_random_int.random_function +
       '(' + argument0 + ', ' + argument1 + ')';
   return [code, Blockly.JavaScript.ORDER_FUNCTION_CALL];
 };

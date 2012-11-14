@@ -25,37 +25,10 @@
 
   <target name="BlocklyCompile"
           description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library">
-    <!-- blockly.js has to come first -->
-    <concat destfile="${public.build.dir}/blockly-all.js">
-      <fileset file="${blockly.src.dir}/blockly.js"/>
-    </concat>
-    <!-- language/en/*.js has to come next (for constants) -->
-    <concat destfile="${public.build.dir}/blockly-all.js"
-            append="true">
-      <fileset dir="${blockly.src.dir}/language/en">
-        <include name="*.js"/>
-      </fileset>
-    </concat>
-    <!-- the rest of the blockly .js files can come in any order -->
-    <concat destfile="${public.build.dir}/blockly-all.js"
-            append="true">
-      <fileset dir="${blockly.src.dir}">
-        <include name="*.js"/>
-        <exclude name="blockly.js"/>
-        <!-- leave out the toolbox. it is replaced by our drawer.js -->
-        <exclude name="toolbox.js"/> 
-         <!-- note that we don't include the blockly built-in blocks since 
-             we have our own versions of them -->
-      </fileset>
-    </concat>
-    <!-- finally, include any of our own .js file in any order -->
-    <concat destfile="${public.build.dir}/blockly-all.js"
-            append="true">
-      <fileset dir="${src.dir}">
-        <include name="**/*.js"/>
-        <exclude name="demos/**/*"/>
-      </fileset>
-    </concat>
+  <java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
+    <arg line="build ploverConfig.js"/>
+  </java>
+
   </target>
 
   <target name="BlocklyTestbed"  
@@ -87,8 +60,8 @@
     <concat destfile="${public.build.dir}/component-types.js" append="true">
       <fileset file="${build.dir}/components/simple_components.json" />
     </concat>
-    <copy file="${blockly.src.dir}/blockly.css" todir="${public.build.dir}" />
-    <copy file="${blockly.src.dir}/1x1.gif" todir="${public.build.dir}" />
+<!--    <copy file="${blockly.src.dir}/blockly.css" todir="${public.build.dir}" />
+    <copy file="${blockly.src.dir}/1x1.gif" todir="${public.build.dir}" /> -->
     <mkdir dir="${public.build.dir}/media" />
     <copy todir="${public.build.dir}/media" >
       <fileset dir="${blockly.src.dir}/media" />

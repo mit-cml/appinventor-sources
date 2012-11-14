@@ -84,10 +84,10 @@ Blockly.Drawer.buildTree_ = function() {
  * @param drawerName
  */
 Blockly.Drawer.showBuiltin = function(drawerName) {
-  if (drawerName != Blockly.MSG_VARIABLE_CATEGORY &&
-      drawerName != Blockly.MSG_PROCEDURE_CATEGORY) {
+  //if (drawerName != Blockly.MSG_VARIABLE_CATEGORY &&
+  //    drawerName != Blockly.MSG_PROCEDURE_CATEGORY) {
       drawerName = Blockly.Drawer.PREFIX_ + drawerName;
-  }
+  //}
   var blockSet = Blockly.Drawer.languageTree[drawerName];
   if (!blockSet) {
     throw "no such drawer: " + drawerName;

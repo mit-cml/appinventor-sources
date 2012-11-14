@@ -21,8 +21,14 @@
  * @fileoverview Generating Dart for text blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Dart = Blockly.Generator.get('Dart');
+
+if (!Blockly.Dart.RESERVED_WORDS_) {
+  Blockly.Dart.RESERVED_WORDS_ = '';
+}
+Blockly.Dart.RESERVED_WORDS_ += 'Html,Math,';
 
 Blockly.Dart.text = function() {
   // Text value.
@@ -59,7 +65,7 @@ Blockly.Dart.text_append = function() {
       Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Dart.valueToCode(this, 'TEXT',
       Blockly.Dart.ORDER_UNARY_POSTFIX) || '\'\'';
-  return code = varName + ' = new StringBuffer(' + varName +
+  return varName + ' = new StringBuffer(' + varName +
       ').add(' + argument0 + ').toString();\n';
 };
 
@@ -157,18 +163,18 @@ Blockly.Dart.text_changeCase = function() {
       Blockly.Dart.text_changeCase.toTitleCase = functionName;
       var func = [];
       func.push('String ' + functionName + '(str) {');
-      func.push('  RegExp exp = const RegExp(@"(\\S+)");');
+      func.push('  RegExp exp = const RegExp(r\'\\b\');');
       func.push('  List<String> list = str.split(exp);');
-      func.push('  String title = \'\';');
+      func.push('  final title = new StringBuffer();');
       func.push('  for (String part in list) {');
       func.push('    if (part.length > 0) {');
-      func.push('      title += part[0].toUpperCase();');
+      func.push('      title.add(part[0].toUpperCase());');
       func.push('      if (part.length > 0) {');
-      func.push('        title += part.substring(1).toLowerCase();');
+      func.push('        title.add(part.substring(1).toLowerCase());');
       func.push('      }');
       func.push('    }');
       func.push('  }');
-      func.push('  return title;');
+      func.push('  return title.toString();');
       func.push('}');
       Blockly.Dart.definitions_['toTitleCase'] = func.join('\n');
     }
@@ -195,8 +201,8 @@ Blockly.Dart.text_trim = function() {
 };
 
 Blockly.Dart.text_trim.OPERATORS = {
-  LEFT: '.replaceFirst(new RegExp(@"^\\s+"), \'\')',
-  RIGHT: '.replaceFirst(new RegExp(@"\\s+$"), \'\')',
+  LEFT: '.replaceFirst(new RegExp(r\'^\\s+\'), \'\')',
+  RIGHT: '.replaceFirst(new RegExp(r\'\\s+$\'), \'\')',
   BOTH: '.trim()'
 };
 
@@ -209,11 +215,14 @@ Blockly.Dart.text_print = function() {
 
 Blockly.Dart.text_prompt = function() {
   // Prompt function.
-  Blockly.Dart.definitions_['import_dart_html'] = '#import(\'dart:html\');';
+  Blockly.Dart.definitions_['import_dart_html'] =
+      'import \'dart:html\' as Html;';
   var msg = Blockly.Dart.quote_(this.getTitleValue('TEXT'));
-  var code = 'window.prompt(' + msg + ', \'\')';
+  var code = 'Html.window.prompt(' + msg + ', \'\')';
   var toNumber = this.getTitleValue('TYPE') == 'NUMBER';
   if (toNumber) {
+    Blockly.Dart.definitions_['import_dart_math'] =
+        'import \'dart:math\' as Math;';
     code = 'Math.parseDouble(' + code + ')';
   }
   return [code, Blockly.Dart.ORDER_UNARY_POSTFIX];

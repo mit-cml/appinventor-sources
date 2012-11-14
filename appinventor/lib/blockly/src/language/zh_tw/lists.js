@@ -18,11 +18,10 @@
  */
 
 /**
- * @fileoverview List blocks for Blockly.
- * @author fraser@google.com (Neil Fraser)
+ * @fileoverview Custom list blocks for Traditional Chinese.
+ * @author gasolin@gmail.com (Fred Lin)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.lists_getIndex = {
   // Get element at index.

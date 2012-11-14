@@ -21,6 +21,7 @@
  * @fileoverview Generating Dart for logic blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Dart = Blockly.Generator.get('Dart');
 

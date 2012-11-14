@@ -21,6 +21,7 @@
  * @fileoverview Generating JavaScript for control blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
@@ -94,7 +95,8 @@ Blockly.JavaScript.controls_for = function() {
         '    (' + startVar + ' <= ' + endVar + ') ? ' +
         variable0 + ' <= ' + endVar + ' : ' +
         variable0 + ' >= ' + endVar + ';\n' +
-        '    ' + variable0 + ' += (' + startVar + ' <= ' + endVar + ') ? 1 : -1) {\n' +
+        '    ' + variable0 +
+        ' += (' + startVar + ' <= ' + endVar + ') ? 1 : -1) {\n' +
         branch0 + '}\n';
   }
   return code;

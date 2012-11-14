@@ -21,6 +21,7 @@
  * @fileoverview Generating Python for text blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Python = Blockly.Generator.get('Python');
 
@@ -68,7 +69,7 @@ Blockly.Python.text_append = function() {
       Blockly.Variables.NAME_TYPE);
   var argument0 = Blockly.Python.valueToCode(this, 'TEXT',
       Blockly.Python.ORDER_NONE) || '\'\'';
-  return code = varName + ' = str(' + varName + ') + str(' + argument0 + ')\n';
+  return varName + ' = str(' + varName + ') + str(' + argument0 + ')\n';
 };
 
 Blockly.Python.text_length = function() {

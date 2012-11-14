@@ -21,6 +21,7 @@
  * @fileoverview Helper functions for generating Python for blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Python = Blockly.Generator.get('Python');
 

@@ -18,11 +18,10 @@
  */
 
 /**
- * @fileoverview Text blocks for Blockly.
- * @author fraser@google.com (Neil Fraser)
+ * @fileoverview Custom text blocks for Traditional Chinese.
+ * @author gasolin@gmail.com (Fred Lin)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.text_charAt = {
   // Get a character from the string.

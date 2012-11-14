@@ -21,12 +21,13 @@
  * @fileoverview Generating Python for variable blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Python = Blockly.Generator.get('Python');
 
 Blockly.Python.variables_get = function() {
   // Variable getter.
-  code = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
+  var code = Blockly.Python.variableDB_.getName(this.getTitleValue('VAR'),
       Blockly.Variables.NAME_TYPE);
   return [code, Blockly.Python.ORDER_ATOMIC];
 };

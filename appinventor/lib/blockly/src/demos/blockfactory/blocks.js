@@ -21,8 +21,7 @@
  * @fileoverview Blocks for building blocks.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.factory_base = {
   // Base of new block.
@@ -279,7 +278,7 @@ Blockly.Language.title_dropdown = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // Disconnect all input blocks and destroy all inputs.
+    // Disconnect all input blocks and remove all inputs.
     for (var x = this.optionCount_ - 1; x >= 0; x--) {
       this.removeInput('OPTION' + x);
     }
@@ -346,6 +345,29 @@ Blockly.Language.title_dropdown_option = {
     this.setNextStatement(true);
     this.setTooltip('Add a new option to the dropdown menu.');
     this.contextMenu = false;
+  }
+};
+
+Blockly.Language.title_checkbox = {
+  // Checkbox.
+  category: 'Title',
+  init: function() {
+    this.setColour(160);
+    this.appendDummyInput()
+        .appendTitle('checkbox')
+        .appendTitle(new Blockly.FieldCheckbox('TRUE'), 'CHECKED')
+        .appendTitle(',')
+        .appendTitle(new Blockly.FieldTextInput('NAME'), 'TITLENAME');
+    this.setPreviousStatement(true, 'Title');
+    this.setNextStatement(true, 'Title');
+    this.setTooltip('Checkbox field.');
+  },
+  onchange: function() {
+    if (!this.workspace) {
+      // Block has been deleted.
+      return;
+    }
+    titleNameCheck(this);
   }
 };
 
@@ -440,7 +462,7 @@ Blockly.Language.type_group = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // Disconnect all input blocks and destroy all inputs.
+    // Disconnect all input blocks and remove all inputs.
     for (var x = this.typeCount_ - 1; x >= 0; x--) {
       this.removeInput('TYPE' + x);
     }
@@ -618,7 +640,7 @@ Blockly.Language.type_other = {
  */
 function titleNameCheck(referenceBlock) {
   var name = referenceBlock.getTitleValue('TITLENAME').toLowerCase();
-  count = 0;
+  var count = 0;
   var blocks = referenceBlock.workspace.getAllBlocks();
   for (var x = 0, block; block = blocks[x]; x++) {
     var otherName = block.getTitleValue('TITLENAME');
@@ -640,7 +662,7 @@ function titleNameCheck(referenceBlock) {
  */
 function inputNameCheck(referenceBlock) {
   var name = referenceBlock.getTitleValue('INPUTNAME').toLowerCase();
-  count = 0;
+  var count = 0;
   var blocks = referenceBlock.workspace.getAllBlocks();
   for (var x = 0, block; block = blocks[x]; x++) {
     var otherName = block.getTitleValue('INPUTNAME');

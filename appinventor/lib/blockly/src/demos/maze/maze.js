@@ -21,6 +21,7 @@
  * @fileoverview Demonstration of Blockly: Solving a maze.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 /**
  * Create a namespace for the maze.
@@ -566,12 +567,13 @@ Maze.scheduleFinish = function() {
  */
 Maze.displayPegman = function(x, y, d) {
   var pegmanIcon = document.getElementById('pegman');
-  pegmanIcon.setAttribute('x', x * Maze.SQUARE_SIZE - d * Maze.PEGMAN_WIDTH);
-  pegmanIcon.setAttribute('y', Maze.SQUARE_SIZE * (y + 0.5) -
-      Maze.PEGMAN_HEIGHT / 2 - 8);
+  pegmanIcon.setAttribute('x',
+      x * Maze.SQUARE_SIZE - d * Maze.PEGMAN_WIDTH + 1);
+  pegmanIcon.setAttribute('y',
+      Maze.SQUARE_SIZE * (y + 0.5) - Maze.PEGMAN_HEIGHT / 2 - 8);
 
   var clipRect = document.getElementById('clipRect');
-  clipRect.setAttribute('x', x * Maze.SQUARE_SIZE);
+  clipRect.setAttribute('x', x * Maze.SQUARE_SIZE + 1);
   clipRect.setAttribute('y', pegmanIcon.getAttribute('y'));
 };
 

@@ -100,7 +100,7 @@ function auto_save_and_restore_blocks() {
   // initialization is not affected from a failed load.
   window.setTimeout(restore_blocks, 0);
   // Hook a save function onto unload.
-  Blockly.bindEvent_(window, 'unload', null, backup_blocks);
+  bindEvent(window, 'unload', backup_blocks);
   tabClick('tab_' + selected);
 
   // Init load event.
@@ -109,4 +109,20 @@ function auto_save_and_restore_blocks() {
   document.getElementById('fakeload').onclick = function() {
     loadInput.click();
   };
+}
+
+/**
+ * Bind an event to a function call.
+ * @param {!Element} element Element upon which to listen.
+ * @param {string} name Event name to listen to (e.g. 'mousedown').
+ * @param {!Function} func Function to call when event is triggered.
+ *     W3 browsers will call the function with the event object as a parameter,
+ *     MSIE will not.
+ */
+function bindEvent(element, name, func) {
+  if (element.addEventListener) {  // W3C
+    element.addEventListener(name, func, false);
+  } else if (element.attachEvent) {  // IE
+    element.attachEvent('on' + name, func);
+  }
 }

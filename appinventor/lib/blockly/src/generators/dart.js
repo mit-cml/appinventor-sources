@@ -21,6 +21,7 @@
  * @fileoverview Helper functions for generating Dart for blocks.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 Blockly.Dart = Blockly.Generator.get('Dart');
 
@@ -37,14 +38,14 @@ if (!Blockly.Dart.RESERVED_WORDS_) {
 
 Blockly.Dart.RESERVED_WORDS_ +=
     // http://www.dartlang.org/docs/spec/latest/dart-language-specification.pdf
-    // Section 14.1.1
-    'break,case,catch,class,const,continue,default,do,else,extends,false,final,finally,for,if,in,is,new,null,return,super,switch,this,throw,true,try,var,void,while,' +
+    // Section 15.1.1
+    'assert,break,case,catch,class,const,continue,default,do,else,extends,false,final,finally,for,if,in,is,new,null,return,super,switch,this,throw,true,try,var,void,while,' +
     // http://api.dartlang.org/dart_core.html
-    'AssertionError,bool,Clock,Collection,Comparable,Completer,Date,double,Duration,Dynamic,Expect,FallThroughError,Function,Future,Futures,Hashable,HashMap,HashSet,int,Iterable,Iterator,LinkedHashMap,List,Map,Match,Math,num,Object,Options,Pattern,Queue,RegExp,Set,Stopwatch,String,StringBuffer,Strings,TimeZone,TypeError,BadNumberFormatException,ClosureArgumentMismatchException,EmptyQueueException,Exception,ExpectException,FutureAlreadyCompleteException,FutureNotCompleteException,IllegalAccessException,IllegalArgumentException,IllegalJSRegExpException,IndexOutOfRangeException,IntegerDivisionByZeroException,NoMoreElementsException,NoSuchMethodException,NotImplementedException,NullPointerException,ObjectNotClosureException,OutOfMemoryException,StackOverflowException,UnsupportedOperationException,WrongArgumentCountException,';
+    'AbstractClassInstantiationError,ArgumentError,AssertionError,bool,CastError,Collection,Comparable,Completer,Date,double,Duration,Error,Expando,Expect,FallThroughError,Function,Future,Futures,Hashable,HashSet,int,Iterable,Iterator,Match,NoSuchMethodError,num,Object,Options,Pattern,Queue,RuntimeError,Set,Stopwatch,StringBuffer,Strings,Type,TypeError,HashMap,LinkedHashMap,List,Map,RegExp,String,Comparator,ClosureArgumentMismatchException,EmptyQueueException,Exception,ExpectException,FormatException,FutureAlreadyCompleteException,FutureNotCompleteException,IllegalAccessException,IllegalArgumentException,IllegalJSRegExpException,IndexOutOfRangeException,IntegerDivisionByZeroException,NoMoreElementsException,NotImplementedException,NullPointerException,ObjectNotClosureException,OutOfMemoryException,StackOverflowException,UnsupportedOperationException,WrongArgumentCountException,';
 
 /**
  * Order of operation ENUMs.
- * http://www.dartlang.org/docs/language-tour/#operators
+ * http://www.dartlang.org/docs/dart-up-and-running/ch02.html#operator_table
  */
 Blockly.Dart.ORDER_ATOMIC = 0;         // 0 "" ...
 Blockly.Dart.ORDER_UNARY_POSTFIX = 1;  // expr++ expr-- () [] .
@@ -101,11 +102,18 @@ Blockly.Dart.finish = function(code) {
   code = 'main() {\n' + code + '}';
 
   // Convert the definitions dictionary into a list.
+  var imports = [];
   var definitions = [];
   for (var name in Blockly.Dart.definitions_) {
-    definitions.push(Blockly.Dart.definitions_[name]);
+    var def = Blockly.Dart.definitions_[name];
+    if (def.match(/^import\s/)) {
+      imports.push(def);
+    } else {
+      definitions.push(def);
+    }
   }
-  return definitions.join('\n\n') + '\n\n\n' + code;
+  var allDefs = imports.join('\n') + '\n\n' + definitions.join('\n\n');
+  return allDefs.replace(/\n\n+/g, '\n\n').replace(/\n*$/, '\n\n\n') + code;
 };
 
 /**

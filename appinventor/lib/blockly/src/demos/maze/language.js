@@ -21,13 +21,10 @@
  * @fileoverview Demonstration of Blockly: Solving a maze.
  * @author fraser@google.com (Neil Fraser)
  */
+'use strict';
 
 // Extensions to Blockly's language and JavaScript generator.
 
-// Define Language and JavaScript, in case this file is loaded too early.
-if (!Blockly.Language) {
-  Blockly.Language = {};
-}
 Blockly.JavaScript = Blockly.Generator.get('JavaScript');
 
 Blockly.Language.maze_move = {
@@ -169,3 +166,40 @@ Blockly.JavaScript.controls_whileUntil = function() {
   return 'while (' + argument0 + ') {\n' + branch0 +
       '  Maze.checkTimeout("' + this.id + '");\n}\n';
 };
+
+function init() {
+  // Whitelist of blocks to keep.
+  var newLanguage = {};
+  var keepers = ['maze_move', 'maze_turnLeft', 'maze_turnRight',
+      'maze_isWall', 'controls_if', 'controls_if_if', 'controls_if_elseif',
+      'controls_if_else', 'controls_forever', 'controls_whileUntil',
+      'logic_operation', 'logic_negate'];
+  for (var x = 0; x < keepers.length; x++) {
+    newLanguage[keepers[x]] = Blockly.Language[keepers[x]];
+  }
+  // Fold control category into logic category.
+  for (var name in newLanguage) {
+    if (newLanguage[name].category == 'Control') {
+      newLanguage[name].category = 'Logic';
+    }
+  }
+  Blockly.Language = newLanguage;
+
+  Blockly.inject(document.body, {path: '../../'});
+
+  if (window.parent.Maze) {
+    // Let the top-level application know that Blockly is ready.
+    window.parent.Maze.init(Blockly);
+  } else {
+    // Attempt to diagnose the problem.
+    var msg = 'Error: Unable to communicate between frames.\n\n';
+    if (window.parent == window) {
+      msg += 'Try loading index.html instead of frame.html';
+    } else if (window.location.protocol == 'file:') {
+      msg += 'This may be due to a security restriction preventing\n' +
+          'access when using the file:// protocol.\n' +
+          'http://code.google.com/p/chromium/issues/detail?id=47416';
+    }
+    alert(msg);
+  }
+}

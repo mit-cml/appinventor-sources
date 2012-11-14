@@ -21,8 +21,7 @@
  * @fileoverview Text blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.text = {
   // Text value.
@@ -35,7 +34,7 @@ Blockly.Language.text = {
         'media/quote0.png', 12, 12))
         .appendTitle(new Blockly.FieldTextInput(''), 'TEXT')
         .appendTitle(new Blockly.FieldImage(Blockly.pathToBlockly +
-        'media/quote1.png', 12, 12))
+        'media/quote1.png', 12, 12));
     this.setOutput(true, String);
     this.setTooltip(Blockly.LANG_TEXT_TEXT_TOOLTIP_1);
   }
@@ -93,7 +92,7 @@ Blockly.Language.text_join = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // Disconnect all input blocks and destroy all inputs.
+    // Disconnect all input blocks and remove all inputs.
     if (this.itemCount_ == 0) {
       this.removeInput('EMPTY');
     } else {

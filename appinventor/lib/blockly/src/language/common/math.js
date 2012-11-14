@@ -21,8 +21,7 @@
  * @fileoverview Math blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.math_number = {
   // Numeric value.

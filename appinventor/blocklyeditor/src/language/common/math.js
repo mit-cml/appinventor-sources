@@ -122,7 +122,7 @@ Blockly.Language.math_arithmetic.TOOLTIPS = {
   MULTIPLY: 'Return the product of the two numbers.',
   DIVIDE: 'Return the quotient of the two numbers.',
   POWER: 'Return the first number raised to\n' +
-      'the power of the second number.',
+      'the power of the second number.'
 };
 
 Blockly.Language.math_single = {
@@ -154,7 +154,7 @@ Blockly.Language.math_single.TOOLTIPS = {
   ABS: 'Return the absolute value of a number.',
   NEG: 'Return the negation of a number.',
   LN: 'Return the natural logarithm of a number.',
-  EXP: 'Return e to the power of a number.',
+  EXP: 'Return e to the power of a number.'
 };
 
 Blockly.Language.math_random_int = {

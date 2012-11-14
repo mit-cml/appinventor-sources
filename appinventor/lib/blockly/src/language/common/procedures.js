@@ -21,8 +21,7 @@
  * @fileoverview Procedure blocks for Blockly.
  * @author fraser@google.com (Neil Fraser)
  */
-
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
 
 Blockly.Language.procedures_defnoreturn = {
   // Define a procedure with no return value.
@@ -74,7 +73,7 @@ Blockly.Language.procedures_defnoreturn = {
   domToMutation: function(xmlElement) {
     this.arguments_ = [];
     for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
-      if (childNode.nodeName == 'arg') {
+      if (childNode.nodeName.toLowerCase() == 'arg') {
         this.arguments_.push(childNode.getAttribute('name'));
       }
     }
@@ -101,27 +100,27 @@ Blockly.Language.procedures_defnoreturn = {
   },
   compose: function(containerBlock) {
     this.arguments_ = [];
-    paramIds = [];
+    this.paramIds_ = [];
     var paramBlock = containerBlock.getInputTargetBlock('STACK');
     while (paramBlock) {
       this.arguments_.push(paramBlock.getTitleValue('NAME'));
-      paramIds.push(paramBlock.id);
+      this.paramIds_.push(paramBlock.id);
       paramBlock = paramBlock.nextConnection &&
           paramBlock.nextConnection.targetBlock();
     }
     this.updateParams_();
     Blockly.Procedures.mutateCallers(this.getTitleValue('NAME'),
-                                     this.workspace, this.arguments_, paramIds);
+        this.workspace, this.arguments_, this.paramIds_);
   },
-  destroy: function() {
+  dispose: function() {
     var name = this.getTitleValue('NAME');
     var editable = this.editable;
     var workspace = this.workspace;
     // Call parent's destructor.
-    Blockly.Block.prototype.destroy.apply(this, arguments);
-    if (this.editable) {
-      // Destroy any callers.
-      Blockly.Procedures.destroyCallers(name, workspace);
+    Blockly.Block.prototype.dispose.apply(this, arguments);
+    if (editable) {
+      // Dispose of any callers.
+      Blockly.Procedures.disposeCallers(name, workspace);
     }
   },
   getProcedureDef: function() {
@@ -183,7 +182,7 @@ Blockly.Language.procedures_defreturn = {
   domToMutation: Blockly.Language.procedures_defnoreturn.domToMutation,
   decompose: Blockly.Language.procedures_defnoreturn.decompose,
   compose: Blockly.Language.procedures_defnoreturn.compose,
-  destroy: Blockly.Language.procedures_defnoreturn.destroy,
+  dispose: Blockly.Language.procedures_defnoreturn.dispose,
   getProcedureDef: function() {
     // Return the name of the defined procedure,
     // a list of all its arguments,
@@ -253,6 +252,20 @@ Blockly.Language.procedures_callnoreturn = {
     }
   },
   setProcedureParameters: function(paramNames, paramIds) {
+    // Data structures for parameters on each call block:
+    // this.arguments = ['x', 'y']
+    //     Existing param names.
+    // paramNames = ['x', 'y', 'z']
+    //     New param names.
+    // paramIds = ['piua', 'f8b_', 'oi.o']
+    //     IDs of params (consistent for each parameter through the life of a
+    //     mutator, regardless of param renaming).
+    // this.quarkConnections_ {piua: null, f8b_: Blockly.Connection}
+    //     Look-up of paramIds to connections plugged into the call block.
+    // this.quarkArguments_ = ['piua', 'f8b_']
+    //     Existing param IDs.
+    // Note that quarkConnections_ may include IDs that no longer exist, but
+    // which might reappear if a param is reattached in the mutator.
     if (!paramIds) {
       // Reset the quarks (a mutator is about to open).
       this.quarkConnections_ = {};
@@ -269,19 +282,22 @@ Blockly.Language.procedures_callnoreturn = {
         // No change to the parameters, allow quarkConnections_ to be
         // populated with the existing connections.
         this.quarkArguments_ = paramIds;
+      } else {
+        this.quarkArguments_ = [];
       }
-    }
-    // Update the quarkConnections_ with existing connections.
-    for (var x = 0; x < this.arguments_.length; x++) {
-      var connection = this.getInput('ARG' + x).connection.targetConnection;
-      this.quarkConnections_[this.quarkArguments_[x]] = connection;
     }
     // Switch off rendering while the block is rebuilt.
     var savedRendered = this.rendered;
     this.rendered = false;
-    // Disconnect all argument blocks and destroy all inputs.
+    // Update the quarkConnections_ with existing connections.
     for (var x = this.arguments_.length - 1; x >= 0; x--) {
-      this.removeInput('ARG' + x);
+      var input = this.getInput('ARG' + x);
+      if (input) {
+        var connection = input.connection.targetConnection;
+        this.quarkConnections_[this.quarkArguments_[x]] = connection;
+        // Disconnect all argument blocks and remove all inputs.
+        this.removeInput('ARG' + x);
+      }
     }
     // Rebuild the block's arguments.
     this.arguments_ = [].concat(paramNames);
@@ -326,15 +342,20 @@ Blockly.Language.procedures_callnoreturn = {
     // Restore the name and parameters.
     var name = xmlElement.getAttribute('name');
     this.setTitleValue(name, 'NAME');
-    this.arguments_ = [];
-    for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
-      if (childNode.tagName && childNode.tagName.toLowerCase() == 'arg') {
-        var paramName = childNode.getAttribute('name');
-        this.appendValueInput('ARG' + this.arguments_.length)
-            .setAlign(Blockly.ALIGN_RIGHT)
-            .appendTitle(paramName);
-        this.arguments_.push(paramName);
+    var def = Blockly.Procedures.getDefinition(name, this.workspace);
+    if (def && def.mutator.isVisible()) {
+      // Initialize caller with the mutator's IDs.
+      this.setProcedureParameters(def.arguments_, def.paramIds_);
+    } else {
+      this.arguments_ = [];
+      for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
+        if (childNode.nodeName.toLowerCase() == 'arg') {
+          this.arguments_.push(childNode.getAttribute('name'));
+        }
       }
+      // For the second argument (paramIds) use the arguments list as a dummy
+      // list.
+      this.setProcedureParameters(this.arguments_, this.arguments_);
     }
   },
   renameVar: function(oldName, newName) {
@@ -352,17 +373,8 @@ Blockly.Language.procedures_callnoreturn = {
     var name = this.getTitleValue('NAME');
     var workspace = this.workspace;
     option.callback = function() {
-      var blocks = workspace.getAllBlocks(false);
-      for (var x = 0; x < blocks.length; x++) {
-        var func = blocks[x].getProcedureDef;
-        if (func) {
-          var tuple = func.call(blocks[x]);
-          if (tuple && Blockly.Names.equals(tuple[0], name)) {
-            blocks[x].select();
-            break;
-          }
-        }
-      }
+      var def = Blockly.Procedures.getDefinition(name, workspace);
+      def && def.select();
     };
     options.push(option);
   }
@@ -392,3 +404,32 @@ Blockly.Language.procedures_callreturn = {
   renameVar: Blockly.Language.procedures_callnoreturn.renameVar,
   customContextMenu: Blockly.Language.procedures_callnoreturn.customContextMenu
 };
+
+Blockly.Language.procedures_return = {
+  // Return value in a procedure 
+  category: null,
+  helpUrl: null,
+  init: function() {
+    this.setColour(290);
+    this.appendValueInput("VALUE", Number)
+      .appendTitle(Blockly.LANG_PROCEDURES_DEFRETURN_RETURN);
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip("return in procedure");
+  }
+};
+
+Blockly.Language.procedures_null = {
+  // Return nothing
+  category: null,
+  helpUrl: null,
+  init: function() {
+    this.setColour(290);
+    this.appendDummyInput()
+        .appendTitle('Null');
+    this.setOutput(true,null);
+    this.setTooltip('Return nothing');
+  }
+};
+
