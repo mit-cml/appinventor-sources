@@ -22,7 +22,7 @@ public enum ComponentCategory {
   LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
   MISC("Other stuff"),
   EXPERIMENTAL("Not ready for prime time"),
-  OBSOLETE("Old stuff"),
+  //OBSOLETE("Old stuff"),// removed to remove old stuff from the menu
   INTERNAL("For internal use only"),
   // UNINITIALIZED is used as a default value so Swing libraries can still compile
   UNINITIALIZED("Uninitialized");

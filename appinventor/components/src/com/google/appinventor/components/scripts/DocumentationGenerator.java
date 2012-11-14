@@ -140,7 +140,7 @@ public class DocumentationGenerator extends ComponentProcessor {
         ComponentCategory.LEGOMINDSTORMS,
         ComponentCategory.MISC,
         ComponentCategory.EXPERIMENTAL,
-        ComponentCategory.OBSOLETE
+        //ComponentCategory.OBSOLETE// removed to remove old stuff from  the menu
       }
     };
 
