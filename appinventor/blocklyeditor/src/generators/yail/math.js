@@ -64,14 +64,13 @@ Blockly.Yail.math_compare.OPERATORS = {
   GTE: ['>=', '>=', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_arithmetic = function() {
+Blockly.Yail.math_arithmetic = function(mode,block) {
   // Basic arithmetic operators.
-  var mode = this.getTitleValue('OP');
   var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1]; 
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || null;
+  var argument0 = Blockly.Yail.valueToCode(block, 'A', order) || null;
+  var argument1 = Blockly.Yail.valueToCode(block, 'B', order) || null;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -81,6 +80,53 @@ Blockly.Yail.math_arithmetic = function() {
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
       + Blockly.Yail.YAIL_OPEN_COMBINATION + "number number"
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
+Blockly.Yail.math_subtract = function() {
+  return Blockly.Yail.math_arithmetic("MINUS",this);
+};
+
+Blockly.Yail.math_division = function() {
+  return Blockly.Yail.math_arithmetic("DIVIDE",this);
+};
+
+Blockly.Yail.math_power = function() {
+  return Blockly.Yail.math_arithmetic("POWER",this);
+};
+
+Blockly.Yail.math_add = function() {
+  return Blockly.Yail.math_arithmetic_list("ADD",this);
+};
+
+Blockly.Yail.math_multiply = function() {
+  return Blockly.Yail.math_arithmetic_list("MULTIPLY",this);
+};
+
+Blockly.Yail.math_arithmetic_list = function(mode,block) {
+  // Basic arithmetic operators.
+  //var mode = this.getTitleValue('OP');
+  var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
+  var operator = tuple[0];
+  var order = tuple[1];
+
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
+      + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
+  for(i=0;i<block.itemCount_;i++) {
+    var argument = Blockly.Yail.valueToCode(block, 'NUM' + i, order) || null;
+    code += argument + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  for(i=0;i<block.itemCount_;i++) {
+    code += "number" + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [code, Blockly.Yail.ORDER_ATOMIC];
@@ -204,16 +250,20 @@ Blockly.Yail.math_on_list = function() {
   var tuple = Blockly.Yail.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1]; 
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || null;
+  var args = "";
+  var typeString = "";
+  for(var i=0;i<this.itemCount_;i++) {
+    args += (Blockly.Yail.valueToCode(this, 'NUM' + i, order) || "null") + Blockly.Yail.YAIL_SPACER;
+    typeString += "number" + Blockly.Yail.YAIL_SPACER;
+  }
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument0 + Blockly.Yail.YAIL_SPACER + argument1
+      + args//argument0 + Blockly.Yail.YAIL_SPACER + argument1
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "number number"
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + typeString
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;

@@ -35,18 +35,23 @@ Blockly.Yail.text = function() {
 };
 
 Blockly.Yail.text_join = function() {
-  // Create a string made up of two elements of any type..
-  var argument0 = Blockly.Yail.valueToCode(this, 'ADD0', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'ADD1', Blockly.Yail.ORDER_NONE) || null;
+  // Create a string made up of elements of any type..
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-append"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
-  code = code + argument0 + Blockly.Yail.YAIL_SPACER + argument1
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+
+  for(i=0;i<this.itemCount_;i++) {
+    var argument = Blockly.Yail.valueToCode(this, 'ADD' + i, Blockly.Yail.ORDER_NONE) || null;
+    code += argument + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text text"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+      + Blockly.Yail.YAIL_OPEN_COMBINATION;
+  for(i=0;i<this.itemCount_;i++) {
+    code += "text" + Blockly.Yail.YAIL_SPACER;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "join"
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [ code, Blockly.Yail.ORDER_ATOMIC ];

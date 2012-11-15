@@ -46,10 +46,50 @@ Blockly.Language.text_join = {
   init : function() {
     this.setColour(160);
     this.setOutput(true, String);
-    this.appendValueInput('ADD0').setCheck(String).appendTitle('join');
-    this.appendValueInput('ADD1').setCheck(String);
+    this.appendValueInput('ADD0').appendTitle('join');
+    this.appendValueInput('ADD1');
     this.setTooltip('Appends all the inputs to form a single text string.\n'
         + 'If there are no inputs, makes an empty text.');
+    this.setMutator(new Blockly.Mutator(['text_join_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'ADD';
+    this.itemCount_ = 2;
+  },
+
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'text_join_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){
+    this.appendDummyInput(this.emptyInputName)
+      .appendTitle('join');
+  },
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum);
+    if(inputNum == 0){
+      input.appendTitle('join');
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.inputList[0].titleRow[0].setText("join");
+  }
+
+};
+
+Blockly.Language.text_join_item = {
+  // Add items.
+  init: function() {
+    this.setColour(160);
+    this.appendDummyInput()
+        .appendTitle("string");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip("");
+    this.contextMenu = false;
   }
 };
 

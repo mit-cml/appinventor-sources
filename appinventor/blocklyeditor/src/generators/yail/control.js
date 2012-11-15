@@ -29,10 +29,25 @@ if (!Blockly.Yail) Blockly.Yail = {};
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 Blockly.Yail.controls_if = function() {
-  var argument = Blockly.Yail.valueToCode(this, 'IF', Blockly.Yail.ORDER_NONE) || 'false';
-  var branch = Blockly.Yail.statementToCode(this, 'DO');
-  var code = Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
+
+  var code = "";
+  for(var i=0;i<this.elseifCount_ + 1;i++){
+    var argument = Blockly.Yail.valueToCode(this, 'IF'+ i, Blockly.Yail.ORDER_NONE) || 'false';
+    var branch = Blockly.Yail.statementToCode(this, 'DO'+ i);
+    if(i != 0) {
+      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
+    }
+    code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
       + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+  if(this.elseCount_ == 1){
+    var branch = Blockly.Yail.statementToCode(this, 'ELSE');
+    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+  for(var i=0;i<this.elseifCount_ + this.elseCount_ + 1;i++){
+    code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+
   return code;
 };
 

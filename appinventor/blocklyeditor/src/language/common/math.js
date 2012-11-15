@@ -90,7 +90,65 @@ Blockly.Language.math_compare.TOOLTIPS = {
       'than or equal to the second number.'
 };
 
-Blockly.Language.math_arithmetic = {
+Blockly.Language.math_add = {
+  // Basic arithmetic operator.
+  category: Blockly.LANG_CATEGORY_MATH,
+  helpUrl: '',
+  init: function() {
+    this.setColour(230);
+    this.setOutput(true, Number);
+    this.appendValueInput('NUM0').setCheck(Number);
+    this.appendValueInput('NUM1').setCheck(Number).appendTitle("+");
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      return 'Return the sum of the numbers.';
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+    this.itemCount_ = 2;
+  },
+
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'math_mutator_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Number);
+    if(inputNum != 0){
+      input.appendTitle("+");
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.inputList[0].titleRow[0].setText("+");
+  }
+};
+
+Blockly.Language.math_mutator_item = {
+  // Add items.
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        //.appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
+        .appendTitle("number");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    //this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
+    this.contextMenu = false;
+  }
+};
+
+
+Blockly.Language.math_subtract = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
   helpUrl: '',
@@ -98,31 +156,94 @@ Blockly.Language.math_arithmetic = {
     this.setColour(230);
     this.setOutput(true, Number);
     this.appendValueInput('A').setCheck(Number);
-    this.appendValueInput('B').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('B').setCheck(Number).appendTitle("-");
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      var mode = thisBlock.getTitleValue('OP');
-      return Blockly.Language.math_arithmetic.TOOLTIPS[mode];
+      return 'Return the difference of the two numbers.';
     });
   }
 };
 
-Blockly.Language.math_arithmetic.OPERATORS =
-  [['+', 'ADD'],
-   ['-', 'MINUS'],
-   ['\u00D7', 'MULTIPLY'],
-   ['\u00F7', 'DIVIDE'],
-   ['^', 'POWER']];
+Blockly.Language.math_multiply = {
+  // Basic arithmetic operator.
+  category: Blockly.LANG_CATEGORY_MATH,
+  helpUrl: '',
+  init: function() {
+    this.setColour(230);
+    this.setOutput(true, Number);
+    this.appendValueInput('NUM0').setCheck(Number);
+    this.appendValueInput('NUM1').setCheck(Number).appendTitle("*");
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      return 'Return the product of the numbers.';
+    });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+    this.itemCount_ = 2;
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'math_mutator_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){
+    var input = this.appendDummyInput(this.emptyInputName);
+  },
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Number);
+    if(inputNum != 0){
+      input.appendTitle("*");
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.inputList[0].titleRow[0].setText("*");
+  }
+};
 
-Blockly.Language.math_arithmetic.TOOLTIPS = {
-  ADD: 'Return the sum of the two numbers.',
-  MINUS: 'Return the difference of the two numbers.',
-  MULTIPLY: 'Return the product of the two numbers.',
-  DIVIDE: 'Return the quotient of the two numbers.',
-  POWER: 'Return the first number raised to\n' +
-      'the power of the second number.'
+Blockly.Language.math_division = {
+  // Basic arithmetic operator.
+  category: Blockly.LANG_CATEGORY_MATH,
+  helpUrl: '',
+  init: function() {
+    this.setColour(230);
+    this.setOutput(true, Number);
+    this.appendValueInput('A').setCheck(Number);
+    this.appendValueInput('B').setCheck(Number).appendTitle("/");
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      return 'Return the quotient of the two numbers.';
+    });
+  }
+};
+
+Blockly.Language.math_power = {
+  // Basic arithmetic operator.
+  category: Blockly.LANG_CATEGORY_MATH,
+  helpUrl: '',
+  init: function() {
+    this.setColour(230);
+    this.setOutput(true, Number);
+    this.appendValueInput('A').setCheck(Number);
+    this.appendValueInput('B').setCheck(Number).appendTitle("^");
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      //var mode = thisBlock.getTitleValue('OP');
+      return 'Return the first number raised to\n' +
+      'the power of the second number.';
+    });
+  }
 };
 
 Blockly.Language.math_single = {
@@ -240,13 +361,48 @@ Blockly.Language.math_on_list = {
     var thisBlock = this;
     this.setColour(230);
     this.setOutput(true, Number);
-    this.appendValueInput('A').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
-    this.appendValueInput('B').setCheck(Number);
+    this.appendValueInput('NUM0').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('NUM1').setCheck(Number);
     this.setInputsInline(false);
     this.setTooltip(function() {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.math_on_list.TOOLTIPS[mode];
     });
+    this.setMutator(new Blockly.Mutator(['math_mutator_item']));
+    this.itemCount_ = 2;
+    this.valuesToSave = {'OP':null};
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'NUM';
+
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'math_mutator_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){
+    var input = this.appendDummyInput(this.emptyInputName);
+    input.appendTitle(new Blockly.FieldDropdown(this.OPERATORS),'OP');
+    this.setTitleValue(this.valuesToSave['OP'],'OP');
+  },
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Number);
+    if(inputNum == 0){
+      input.appendTitle(new Blockly.FieldDropdown(this.OPERATORS),'OP');
+      this.setTitleValue(this.valuesToSave['OP'],'OP');
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+
+    for(var i=0;i<Blockly.Language.math_on_list.OPERATORS.length;i++){
+      if(Blockly.Language.math_on_list.OPERATORS[i][1] == this.getTitleValue("OP") ){
+        containerBlock.inputList[0].titleRow[0].setText(Blockly.Language.math_on_list.OPERATORS[i][0]);
+      }
+    }
+
   }
 };
 

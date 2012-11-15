@@ -47,6 +47,7 @@
     "./src/drawer.js",
     "./src/savefile.js",
     "./src/componentblock.js",
+    "./src/mutators.js",
     "./src/field_lexical_variable.js",
 
     //language files

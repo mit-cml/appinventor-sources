@@ -26,17 +26,56 @@
 
 if (!Blockly.Language) Blockly.Language = {};
 
-Blockly.Language.lists_make = {
-  // Create an empty list.
-  // TODO: (Andrew) Make this handle multiple items.
-  category : Blockly.LANG_CATEGORY_LISTS,
-  helpUrl : '',
-  init : function() {
+Blockly.Language.lists_create_with = {
+  // Create a list with any number of elements of any type.
+  category: Blockly.LANG_CATEGORY_LISTS,
+  helpUrl: '',
+  init: function() {
     this.setColour(210);
+    this.appendValueInput('ADD0')
+        .appendTitle("make a list");
+    this.appendValueInput('ADD1');
     this.setOutput(true, Array);
-    this.appendValueInput('ITEM').appendTitle('make a list').appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
-    Blockly.Language.setTooltip(this, 'Makes a list of the given items. If there are no items, '
-        + 'makes an empty list.');
+    this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_TOOLTIP_1);
+    this.itemCount_ = 2;
+    this.emptyInputName = 'EMPTY';
+    this.repeatingInputName = 'ADD';
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'lists_create_with_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){
+    this.appendDummyInput(this.emptyInputName)
+      .appendTitle(Blockly.LANG_LISTS_CREATE_EMPTY_TITLE_1);
+  },
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum);
+    if(inputNum == 0){
+      input.appendTitle("make a list");
+    }
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
+  }
+
+};
+
+Blockly.Language.lists_create_with_item = {
+  // Add items.
+  init: function() {
+    this.setColour(210);
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
+    this.contextMenu = false;
   }
 };
 
@@ -125,17 +164,51 @@ Blockly.Language.lists_append_list = {
 };
 
 Blockly.Language.lists_add_items = {
-  // Add items to list.
-  // TODO: (Andrew) Make this handle multiple items.
-  category : Blockly.LANG_CATEGORY_LISTS,
-  helpUrl : '',
-  init : function() {
+  // Create a list with any number of elements of any type.
+  category: Blockly.LANG_CATEGORY_LISTS,
+  helpUrl: '',
+  init: function() {
     this.setColour(210);
-    this.appendValueInput('LIST').setCheck(Array).appendTitle('add items to list').appendTitle('list').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('ITEM').appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('LIST').setCheck(Array).appendTitle('add items to list').appendTitle(' list');
+    this.appendValueInput('ITEM0').appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, 'Adds items to the end of a list.');
+    this.setMutator(new Blockly.Mutator(['lists_add_items_item']));
+    this.itemCount_ = 1;
+    this.emptyInputName = null;
+    this.repeatingInputName = 'ITEM';
+  },
+  mutationToDom: Blockly.mutationToDom,
+  domToMutation: Blockly.domToMutation,
+  decompose: function(workspace){
+    return Blockly.decompose(workspace,'lists_add_items_item',this);
+  },
+  compose: Blockly.compose,
+  saveConnections: Blockly.saveConnections,
+  addEmptyInput: function(){},
+  addInput: function(inputNum){
+    var input = this.appendValueInput(this.repeatingInputName + inputNum);
+    input.appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
+    return input;
+  },
+  updateContainerBlock: function(containerBlock) {
+    containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
+    containerBlock.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1);
+  }
+
+};
+
+Blockly.Language.lists_add_items_item = {
+  // Add items.
+  init: function() {
+    this.setColour(210);
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
+    this.contextMenu = false;
   }
 };
 
