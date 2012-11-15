@@ -1,5 +1,7 @@
-// Copyright 2008 Google Inc. All Rights Reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.client.explorer.commands;
 
 import java.util.Date;
@@ -45,11 +47,11 @@ public class ShowProgressBarCommand extends ChainableCommand {
   private String serviceName;
 
   /**
-  * Creates a new command for showing a barcode for the target of a project.
-  *
-  * @param target the build target
-  * @param waitForBuildResultCommand
-  */
+   * Creates a new command for showing a barcode for the target of a project.
+   *
+   * @param target the build target
+   * @param waitForBuildResultCommand
+   */
   public ShowProgressBarCommand(String target,ChainableCommand nextCommand, String serviceName) {
     // Since we don't know when the barcode dialog is finished, we can't
     // support a command after this one.
@@ -60,51 +62,50 @@ public class ShowProgressBarCommand extends ChainableCommand {
     this.serviceName = serviceName;
   }
 
-    @Override
-  public boolean willCallExecuteNextCommand() {
+  @Override
+    public boolean willCallExecuteNextCommand() {
     return true;
   }
 
   @Override
   //the main function to be called
-  public void execute(final ProjectNode node) {
-      final Ode ode = Ode.getInstance();
-      if (counter<1) {
-          projectNode = node;
-          minPB = new ProgressBarDialogBox();
-          minPB.center();
-          executeNextCommand(node);
-      }
-      counter++;
-      //call back function - dynamic DialogBox
-      OdeAsyncCallback<RpcResult> callback =new OdeAsyncCallback<RpcResult>(
-        // failure message
-        MESSAGES.buildError()) {
-        @Override
-        public void onSuccess(RpcResult result) {
-          minPB.addMessages(node.getName(),result);
-          if (result.succeeded()) {
-            if(serviceName != "BarcodeAction") {
-              minPB.show();
-            } else {
-              minPB.hide();}         
-            } else if (progressBarShow != 2 ) {
-              // Build isn't done yet
-              Timer timer = new Timer() {
+    public void execute(final ProjectNode node) {
+    final Ode ode = Ode.getInstance();
+    if (counter<1) {
+      projectNode = node;
+      minPB = new ProgressBarDialogBox();
+      minPB.center();
+      executeNextCommand(node);
+    }
+    counter++;
+    //call back function - dynamic DialogBox
+    OdeAsyncCallback<RpcResult> callback = new OdeAsyncCallback<RpcResult>(MESSAGES.buildError())  // failure message
+      {
+      @Override
+      public void onSuccess(RpcResult result) {
+        minPB.addMessages(node.getName(),result);
+        if (result.succeeded()) {
+          if(serviceName != "BarcodeAction") {
+            minPB.show();
+          } else {
+            minPB.hide();}
+        } else if (progressBarShow != 2 ) {
+          // Build isn't done yet
+          Timer timer = new Timer() {
               @Override
-              public void run() {
+                public void run() {
                 execute(node); }
-              };
-              // TODO(user): Maybe do an exponential backoff here.
-                  timer.schedule(WAIT_INTERVAL_MILLIS);
-             }
-         }
-         @Override
-         public void onFailure(Throwable caught) {
-           super.onFailure(caught);
-           executionFailedOrCanceled();}
-      };
-      ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
+            };
+          // TODO(user): Maybe do an exponential backoff here.
+          timer.schedule(WAIT_INTERVAL_MILLIS);
+        }
+      }
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        executionFailedOrCanceled();}
+    };
+    ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
   }
 
   class ProgressBarDialogBox extends DialogBox{
@@ -125,12 +126,12 @@ public class ShowProgressBarCommand extends ChainableCommand {
 
       //click handler for the mini html buttons
       buttonHandler = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          hide();
-          progressBarShow++;
-        }
-      };
+          @Override
+            public void onClick(ClickEvent event) {
+            hide();
+            progressBarShow++;
+          }
+        };
 
       //declare the cancel and ok buttons
       cancelButton.addClickHandler(buttonHandler);
@@ -138,7 +139,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
 
       //warning label
-      warningLabel = new HTML("");  
+      warningLabel = new HTML("");
       warningLabel.setWordWrap(true);
       warningLabel.setWidth("200px");  // set width to get the text to wrap
 
@@ -154,59 +155,59 @@ public class ShowProgressBarCommand extends ChainableCommand {
       contentPanel = new VerticalPanel();
       contentPanel.add(mpb);
       contentPanel.add(warningPanel);
-      contentPanel.add(buttonPanel);              
+      contentPanel.add(buttonPanel);
       setWidget(contentPanel);
-      }
+    }
 
-      public void clear() {
-        warningLabel.setHTML("");
-      }
+    public void clear() {
+      warningLabel.setHTML("");
+    }
 
-      public void addMessages(String projectName, RpcResult result) {
-        if (result.succeeded()) {
-          show();
-          mpb.setProgress(100);
-          if(serviceName == "DownloadAction") {
-            warningLabel.setHTML("<br />The APK file will be saved in the download folder.");
-          }else if (serviceName == "DownloadToPhoneAction"){
-            warningLabel.setHTML("<br />The APK file will be installed in the phone.");
-          }else{
-            warningLabel.setHTML("<br />Waiting for the barcode.");
-          }
-         }else{
-           try {
-                 currentProgress = Math.max(currentProgress,
-                   Integer.parseInt(result.getOutput()));
-                 mpb.setProgress(currentProgress);
-                 if (currentProgress <= 10) {
-                   warningLabel.setHTML("<br />Preparing application icon");
-                 } else if (currentProgress < 15) {
-                    warningLabel.setHTML("<br />Determining permissions");
-                 } else if (currentProgress < 20) {
-                    warningLabel.setHTML("<br />Generating application information");
-                 } else if (currentProgress < 35) {
-                    warningLabel.setHTML("<br />Compiling part 1");
-                 } else if (currentProgress < 85) {
-                    warningLabel.setHTML("<br />Compiling part 2 (please wait)");
-                 } else if (currentProgress < 90) {
-                    warningLabel.setHTML("<br />Preparing final package");
-                 } else if (currentProgress <= 95) {
-                    warningLabel.setHTML("<br />Building APK");
-                 } else {
-                    if(serviceName == "DownloadAction") {
-                      warningLabel.setHTML("<br />The APK file will be saved in your downloads folder.");
-                    } else if (serviceName == "DownloadToPhoneAction") {
-                      warningLabel.setHTML("<br />The APK file will be installed in the phone.");
-                    } else {
-                      warningLabel.setHTML("<br />Waiting for the barcode.");
-                    }
-                 }
-         } catch (NumberFormatException e) {
-            mpb.setProgress(0);
-            warningLabel.setHTML("<br />Error occured."
-            + "<br />Check the debugging messages.");
+    public void addMessages(String projectName, RpcResult result) {
+      if (result.succeeded()) {
+        show();
+        mpb.setProgress(100);
+        if(serviceName == "DownloadAction") {
+          warningLabel.setHTML("<br />The APK file will be saved in the download folder.");
+        } else if (serviceName == "DownloadToPhoneAction"){
+          warningLabel.setHTML("<br />The APK file will be installed in the phone.");
+        } else {
+          warningLabel.setHTML("<br />Waiting for the barcode.");
+        }
+      } else {
+        try {
+          currentProgress = Math.max(currentProgress,
+                                     Integer.parseInt(result.getOutput()));
+          mpb.setProgress(currentProgress);
+          if (currentProgress <= 10) {
+            warningLabel.setHTML("<br />Preparing application icon");
+          } else if (currentProgress < 15) {
+            warningLabel.setHTML("<br />Determining permissions");
+          } else if (currentProgress < 20) {
+            warningLabel.setHTML("<br />Generating application information");
+          } else if (currentProgress < 35) {
+            warningLabel.setHTML("<br />Compiling part 1");
+          } else if (currentProgress < 85) {
+            warningLabel.setHTML("<br />Compiling part 2 (please wait)");
+          } else if (currentProgress < 90) {
+            warningLabel.setHTML("<br />Preparing final package");
+          } else if (currentProgress <= 95) {
+            warningLabel.setHTML("<br />Building APK");
+          } else {
+            if(serviceName == "DownloadAction") {
+              warningLabel.setHTML("<br />The APK file will be saved in your downloads folder.");
+            } else if (serviceName == "DownloadToPhoneAction") {
+              warningLabel.setHTML("<br />The APK file will be installed in the phone.");
+            } else {
+              warningLabel.setHTML("<br />Waiting for the barcode.");
             }
-         }
+          }
+        } catch (NumberFormatException e) {
+          mpb.setProgress(0);
+          warningLabel.setHTML("<br />Error occured."
+                               + "<br />Check the debugging messages.");
+        }
       }
+    }
   }
 }
