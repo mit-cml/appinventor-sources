@@ -334,6 +334,7 @@ public class BuildServer {
 
     //for the request for update part, the file should be empty
     if (inputZip.length() == 0L) {
+      cleanUp();
     } else {
       if (commandLineOptions.requiredHosts != null) {
       boolean oktoproceed = false;

@@ -110,7 +110,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
   class ProgressBarDialogBox extends DialogBox{
     public ClickHandler buttonHandler;
     public Button cancelButton = new Button(MESSAGES.cancelButton());
-    public Button dismissButton = new Button(MESSAGES.dimissButton());
+    public Button dismissButton = new Button(MESSAGES.dismissButton());
     public HTML warningLabel;
     public VerticalPanel contentPanel;
     public HorizontalPanel buttonPanel = new HorizontalPanel();
