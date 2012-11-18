@@ -125,7 +125,9 @@ public final class ErrorMessages {
   // Arrangement errors
   public static final int ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT = 1401;
   public static final int ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT = 1402;
-  // Please start the next group of error numbers at 1501.
+  // BarcodeScanner errors
+  public static final int ERROR_NO_SCANNER_FOUND = 1501;
+  // Please start the next group of error numbers at 1601.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -338,6 +340,8 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
             "are 1 or 2.");
+    errorMessages.put(ERROR_NO_SCANNER_FOUND,
+        "Your device does not have a scanning application installed.");
 
   }
 

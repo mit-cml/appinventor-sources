@@ -10,7 +10,15 @@ import openblocks.codeblockutil.HTMLPane;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JButton;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * FeedbackReporter provides a mechanism for showing the user status and error
@@ -189,6 +197,18 @@ public class FeedbackReporter extends JOptionPane {
     }
   }
 
+  public static void showInfoMessage(String msgText, ImageIcon icon) {
+    if (!testingMode) {
+      if (WorkspaceControllerHolder.isHeadless()) {
+        return;
+      }
+      HTMLPane htmlMsg = new HTMLPane(msgText);
+      showMessageDialog(frame, htmlMsg, INFO_MESSAGE_TITLE, JOptionPane.INFORMATION_MESSAGE, icon);
+    } else {
+      System.out.println(msgText);
+    }
+  }
+
   public static void showSystemErrorMessage(String msgText) {
     // For debugging, always also print the message to the console
     System.out.println(msgText);
@@ -247,6 +267,51 @@ public class FeedbackReporter extends JOptionPane {
     }
   }
 
+  /**
+   * ShowWirelessCodeDialog show a pop-up which displays the wireless
+   * code both in text and via a QR Code. This code is entered into
+   * the Companion App (aka REPL App) which then posts to the
+   * rendezvous server this code along with the ipaddress of the
+   * phone.  While this dialog is displayed, the blocks editor polls
+   * the rendezvous server (in a separate thread) until it receives
+   * the ip address. If the user selected the "Cancel" button, the
+   * dialog is dismissed and the polling terminates.
+   *
+   * @param msgText The code to show complete with explanation text.
+   * @param qrcode The ImageIcon with the QR Code to display.
+   * @return JDialog The actual displayed dialog
+   */
+  public static JDialog showWirelessCodeDialog(String code, ImageIcon qrcode, final Runnable cancelAction) {
+    String msgText = "Instructions:<br />\n<ul>\n<li>Start the App Inventor Companion App on your phone or tablet.</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press \"Connect to App Inventor.\"</li></ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
+
+    HTMLPane htmlMsg = new HTMLPane(msgText);
+    final JDialog dialog = new JDialog(frame, "Waiting for the Companion App");
+    JLabel qrcodeLabel = new JLabel(qrcode);
+    JPanel center = new JPanel();
+    JPanel south = new JPanel();
+    JButton cancelButton = new JButton("Cancel");
+    dialog.getContentPane().setLayout(new BorderLayout());
+    center.setLayout(new FlowLayout());
+    south.setLayout(new FlowLayout());
+    center.add(qrcodeLabel);
+    center.add(htmlMsg);
+    south.add(cancelButton);
+    dialog.getContentPane().add(center, BorderLayout.CENTER);
+    dialog.getContentPane().add(south, BorderLayout.SOUTH);
+    cancelButton.addActionListener(new ActionListener() {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+          javax.swing.SwingUtilities.invokeLater(new Runnable() {
+              public void run() {
+                dialog.setVisible(false); // Our caller will also do this, but not necessarily right away, so we do it here as well.
+                cancelAction.run();
+              }});
+        }});
+    dialog.pack();
+    dialog.setLocationRelativeTo(frame);
+    dialog.setVisible(true);
+    return dialog;
+  }
 
   // For errors that we want logged, but not shown to the user
   public static void logError(String msgText) {

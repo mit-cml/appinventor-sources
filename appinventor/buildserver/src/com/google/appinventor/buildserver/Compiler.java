@@ -94,6 +94,8 @@ public final class Compiler {
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
+  private static final String BUGSENSE_RUNTIME =
+      RUNTIME_FILES_DIR + "bugsense3.0.5.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
 
@@ -142,6 +144,7 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForRepl;
+  private final boolean isForWireless;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private static Set<String> librariesNeeded; // Set of component libraries
@@ -231,6 +234,18 @@ public final class Compiler {
           // Android Market.
          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
+
+      // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
+      // is used by the Google Play store to determine which devices the app is available for. By adding
+      // these lines we indicate that we use these features BUT THAT THEY ARE NOT REQUIRED so it is ok
+      // to make the app available on devices that lack the feature. Without these lines the Play Store
+      // makes a guess based on permissions and assumes that they are required features.
+      if (isForWireless) {
+          out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
+      }
+
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
@@ -344,17 +359,17 @@ public final class Compiler {
    * @param keystoreFilePath
    * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
- * @throws JSONException
- * @throws IOException
+   * @throws JSONException
+   * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
+                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
 
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
+    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
 
     // Get the names of component libraries for classpath and dx command line
@@ -541,13 +556,14 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForRepl, int childProcessMaxRam) {
+           PrintStream userErrors, boolean isForRepl, boolean isForWireless, int childProcessMaxRam) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
     this.isForRepl = isForRepl;
+    this.isForWireless = isForWireless;
     this.childProcessRamMb = childProcessMaxRam;
   }
 
@@ -602,6 +618,7 @@ public final class Compiler {
       // Construct the class path including component libraries (jars)
       String classpath =
         getResource(KAWA_RUNTIME) + File.pathSeparator +
+        getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
         getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
@@ -811,6 +828,7 @@ public final class Compiler {
     commandLineList.add(classesDir.getAbsolutePath());
     commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
     commandLineList.add(getResource(KAWA_RUNTIME));
+    commandLineList.add(getResource(BUGSENSE_RUNTIME));
 
     // Add libraries to command line arguments
     for (String library : librariesNeeded) {
@@ -854,7 +872,7 @@ public final class Compiler {
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
     } else if (osName.startsWith("Windows")) {
-        aaptTool = WINDOWS_AAPT_TOOL;
+      aaptTool = WINDOWS_AAPT_TOOL;
     } else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);

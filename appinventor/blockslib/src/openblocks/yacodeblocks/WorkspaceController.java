@@ -107,6 +107,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   private final CDeviceSelector deviceSelector;
   private final PhoneCommIndicator commIndicator;
 
+
   //flag to indicate if a workspace has been loaded/initialized
   private boolean workspaceLoaded = false;
 
@@ -858,9 +859,13 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
         } finally {
           System.out.println("WorkspaceController: workspace reload done");
           autoSaver.reset();
+          System.out.println("Called autoSaver.reset();");
           autoSaver.saveFormProperties(formProperties);
+          System.out.println("Called autoSaver.saveFormProperties");
           if (blocksWereUpgraded || componentRemovedOrRenamedDuringLoad) {
+            System.out.println("blocksWereUpgraded or ComponentRemovedOrRenamedDuringLoad");
             autoSaver.workspaceChangedBySystem();
+            System.out.println("autoSaver.workspaceChangedBySystem();");
           } else {
             if (codeblocksSource.length() == 0) {
               try {
@@ -1156,7 +1161,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
       }
     });
   }
-
 
   /////////////
   // STARTUP //

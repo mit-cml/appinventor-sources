@@ -5,6 +5,8 @@
 package com.google.appinventor.components.runtime.util;
 
 import android.app.Activity;
+import android.content.Context;
+import com.bugsense.trace.BugSenseHandler;
 
 /**
  * Helper methods for calling methods added in Eclair (2.0, API level 5)
@@ -27,6 +29,10 @@ public class EclairUtil {
    */
   public static void overridePendingTransitions(Activity activity, int enterAnim, int exitAnim) {
     activity.overridePendingTransition(enterAnim, exitAnim);
+  }
+
+  public static void setupBugSense(Context context, String api_key) {
+    BugSenseHandler.initAndStartSession(context, api_key);
   }
 
 }

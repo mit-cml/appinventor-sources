@@ -121,6 +121,12 @@ public interface AndroidController {
       throws AndroidControllerException, ExternalStorageException;
   
   /**
+   * Make device the currently selected device. Used for WiFi connection.
+   * Throws AndroidControllerException if device isn't a WiFi device.
+   */
+  public void selectDevice(String device, String ipAddress) throws AndroidControllerException;
+
+  /**
    * Make device the currently selected device. device should have previously
    * been provided as an argument to deviceConnected. 
    * Throws AndroidControllerException if device is not currently connected.

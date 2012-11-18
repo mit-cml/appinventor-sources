@@ -25,35 +25,35 @@ import javax.swing.JMenuItem;
  * menu shows "No available devices". A device in the menu can be designated
  * as the "current device", which will cause it to have an icon next to its
  * name in the menu (a green arrow currently),
- * 
+ *
  * @author sharon@google.com (Sharon Perl)
  *
  */
 public class CDeviceSelector extends JMenuBar {
   private static final boolean DEBUG = true;
-  
+
   private static final String EXPAND_SYMBOL = "\u25BE";
-  
+
   private Color background = CGraphite.white;
-  
+
   private volatile Map<String, JMenuItem> availableDevices;
   private volatile DeviceSelectedCallback callback = null;
-  
+
   private JMenu menu;
   private JMenuItem noDevicesPlaceholder = new JMenuItem("No available devices");
-  
+
   // Clicking this item does an ADB restart
   private JMenuItem resetConnections = new JMenuItem("Reset connections");
-  
+
   private final ImageIcon connectedIcon;
   private JMenuItem currentDevice;
-  
+
   public interface DeviceSelectedCallback {
     void onDeviceSelected(String device);
   }
-  
+
   private AIDirectory aidir = new AIDirectory();
-  
+
   public CDeviceSelector() {
     super();
     // Button text starts out as "Loading initial project"
@@ -68,9 +68,13 @@ public class CDeviceSelector extends JMenuBar {
     resetConnections.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         // Note(halabelson): I'd like to provide some visual feedback
-        // to indicate that the reset is happening, but I can't figure 
+        // to indicate that the reset is happening, but I can't figure
         // out how to get Swing to do this.
         aidir.restartADB();
+        if (callback != null) {
+          System.out.println("Device selected is now none");
+          callback.onDeviceSelected("none");
+        }
       }
     });
     menu.add(resetConnections);
@@ -86,12 +90,14 @@ public class CDeviceSelector extends JMenuBar {
     } else {
       connectedIcon = new ImageIcon(descriptor);
     }
+    addDevice("WiFi");          // Add the WiFi device, so now there will always be at least one
+                                // which means that the noDevicesPlaceholder can be deprecated
   }
-  
+
   public void addCallback(DeviceSelectedCallback callback) {
     this.callback = callback;
   }
-  
+
   public void addDevice(final String device) {
     if (DEBUG) {
       System.out.println("CDeviceSelector: adding device " + device);
@@ -115,7 +121,7 @@ public class CDeviceSelector extends JMenuBar {
       }
     }
   }
-  
+
   public void removeDevice(String device) {
     if (DEBUG) {
       System.out.println("CDeviceSelector: removing device " + device);
@@ -135,7 +141,7 @@ public class CDeviceSelector extends JMenuBar {
       }
     }
   }
-  
+
   public void setCurrentDevice(String device) {
     if (currentDevice != null) {
       currentDevice.setIcon(null);
@@ -149,7 +155,7 @@ public class CDeviceSelector extends JMenuBar {
       }
     }
   }
-  
+
   @Override
  public void setEnabled(boolean enabled) {
     menu.setText("Connect to Device..." + " " + EXPAND_SYMBOL + " ");
@@ -157,5 +163,5 @@ public class CDeviceSelector extends JMenuBar {
   }
 
 }
-  
- 
+
+

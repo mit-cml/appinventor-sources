@@ -205,8 +205,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 10.
   // For YOUNG_ANDROID_VERSION 67:
   // - TEXTING_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 68:
+  // - Phone Status Block was added.
 
-    public static final int YOUNG_ANDROID_VERSION = 67;
+  public static final int YOUNG_ANDROID_VERSION = 68;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -486,6 +488,8 @@ public class YaVersion {
   // For PHONENUMBERPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
   public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 4;
+
+  public static final int PHONESTATUS_COMPONENT_VERSION = 1;
 
   // For PLAYER_COMPONENT_VERSION 2:
   // - The Player.PlayerError event was added.

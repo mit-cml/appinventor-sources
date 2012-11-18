@@ -5,10 +5,44 @@
 
 package openblocks.yacodeblocks;
 
+import com.google.appinventor.components.common.YaVersion;
+
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+import java.util.Random;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JDialog;
+
+import org.json.*;
+import org.apache.commons.io.*;
+
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
 
 /**
  * Class for communication with a Phone/Emulator containing an embedded Yail REPL.
@@ -36,9 +70,13 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
   private ReadWriteThread inputThread;
   private AndroidController androidController;
   private PostProcessor postProcessor;
+  private PhoneCommManager phoneManager;
 
   private volatile boolean connectionHappy = false;  // is there a device connected and working
   private volatile int devicesPluggedIn = 0;
+  private volatile boolean stopWireless = false; // set to true to break out of the rendezvous server read loop prematurely
+
+  private final String rendezvousUrl = "http://rendezvous.appinventor.mit.edu/rendezvous/"; // This should be parameterized (will be!)
 
   public DeviceReplCommController(String host, int port,
       AndroidController androidController, PostProcessor postProcessor) {
@@ -55,15 +93,15 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       System.out.println(String.format("Sent '%s\n", message));
     }
   }
-  
-/**
- * Send initial string to the REPL controller.  If the REPL controller
- * isn't actually connected, will take a series of escalating steps to
- * reconnect it.
- * @param message the string to send to the REPL controller
- * @param mustRestartApp if true, will restart the app before doing the send
- * @throws IOException, ExternalStorageException
- */
+
+  /**
+   * Send initial string to the REPL controller.  If the REPL controller
+   * isn't actually connected, will take a series of escalating steps to
+   * reconnect it.
+   * @param message the string to send to the REPL controller
+   * @param mustRestartApp if true, will restart the app before doing the send
+   * @throws IOException, ExternalStorageException
+   */
   public void sendInitial(String message, boolean mustRestartApp) throws IOException,
       ExternalStorageException {
     String selectedDevice = androidController.getSelectedDevice();
@@ -106,8 +144,10 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
         if (DEBUG) {
           System.out.println("**** Trying to do restart from reinstalling the application....");
         }
-        doReinstallApplication();
-        doRestartApplication();
+        if (!selectedDevice.equals("WiFi")) { // Cannot restart WiFi app, but it is likely just fine.
+          doReinstallApplication();
+          doRestartApplication();
+        }
         restarted = true;
         establishSocketLevelCommunication();
         doWrite(message);
@@ -328,14 +368,35 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
     }
     postProcessor.onDisconnect(serialNumber);
   }
-  
+
   public String getSelectedDevice() {
     return androidController.getSelectedDevice();
   }
-  
+
+  public boolean selectDevice(String device, String ipAddress) {
+    try {
+      if (device.equals("WiFi")) {
+        this.host = ipAddress;
+        androidController.selectDevice(device, ipAddress);
+        phoneManager.replWifiStart();
+      } else {
+        this.host = "127.0.0.1"; // The IP address used for USB connected phones
+        androidController.selectDevice(device);
+      }
+      return true;
+    } catch (AndroidControllerException e) {
+      return false;
+    }
+  }
+
   public boolean selectDevice(String device) {
     try {
-      androidController.selectDevice(device);
+      if (device.equals("WiFi")) {
+        rendevzousIpAddress();  // This runs in another thread which calls selectDevice(device, ipaddress) when ready
+        return false;
+      } else {
+        androidController.selectDevice(device);
+      }
       return true;
     } catch (AndroidControllerException e) {
       return false;
@@ -395,4 +456,138 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
       }
     }
   }
+
+  private void rendevzousIpAddress() {
+    // Generate the random 6 digit code and the QRCode that contains it.
+    String AB = "abcdefghijklmnopqrstuvwxyz";
+    Random rnd = new Random();
+    StringBuilder sb = new StringBuilder(6);
+    for(int i=0; i<6; i++)
+      sb.append(AB.charAt(rnd.nextInt(AB.length())));
+    final String code = sb.toString();
+    final ImageIcon qrcode = generateQRCode(code);
+    stopWireless = false;       // Re-initialize in case it was set in a previous attempt
+    final JDialog displayedCode = FeedbackReporter.showWirelessCodeDialog(code, qrcode, new Runnable() {
+        public void run() {
+          setStopWireless();
+        }});
+    Thread t = new Thread(new Runnable() {
+        public void run() {
+          try {
+            // Put up the wireless dialog box
+            Thread.sleep(4000); // Sleep 4 seconds, time to give the user a chance to start the Companion App
+            String jsonString = fetchJsonString(code);
+            int count = 0;
+            while (jsonString == null) {
+              if (count++ > 20) { // This limits this loop to 20 seconds or so
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                      displayedCode.setVisible(false); // Take down pending message
+                      FeedbackReporter.showErrorMessage("We failed to find your phone, please try again.", "Try Again");
+                    }});
+                return;
+              }
+              if (stopWireless) {
+                javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                      displayedCode.setVisible(false); // Take down pending message
+                    }});
+                return;
+              }
+              Thread.sleep(1000); // Pause a second (so the total wait time for the first loop is really 5 seconds subsequent loops are 1 second
+              if (DEBUG)
+                System.out.println("DeviceReplCommController (WiFi Connect) looping count = " + count);
+              jsonString = fetchJsonString(code);
+            }
+            JSONObject jsonObject = new JSONObject(jsonString);
+            final String ipAddress = (String) jsonObject.get("ipaddr");
+            if (DEBUG)
+              System.out.println("Got ipaddr = " + ipAddress);
+
+            // We have the IP address, we now send our version to the phone which
+            // starts the phone TelnetRepl listening. If this version doesn't match
+            // The phone will display an error and not listen. We don't need to know
+            // the result because if the phone fails to listen it will reject the
+            // connection that is attempted when we call selectDevice()
+            String curl = "http://" + ipAddress + ":8000/_version?version=" +
+              YaVersion.YOUNG_ANDROID_VERSION;
+            if (DEBUG)
+              System.out.println("Connecting to: " + curl);
+            URL url = new URL(curl);
+            URLConnection con = null;
+            try {
+              con = url.openConnection();
+              con.getInputStream().close(); // We don't care about the return value
+            } catch (FileNotFoundException fnf) {
+              System.out.println("Exception setting version, ignoring for now.");
+              fnf.printStackTrace(System.out); // Let's not hide it though!
+            }
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  displayedCode.setVisible(false);
+                  selectDevice("WiFi", ipAddress); // This is run on the UI thread
+                }});
+          } catch(Exception e) {
+            System.out.println("It did not work." + e.toString());//return
+            e.printStackTrace(System.out);
+            javax.swing.SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                  if (displayedCode != null) displayedCode.setVisible(false);
+                }});
+          }}});
+    t.start();
+  }
+
+  private ImageIcon generateQRCode(String code) {
+    Charset charset = Charset.forName("ISO-8859-1");
+    CharsetEncoder encoder = charset.newEncoder();
+    byte[] b = null;
+    try {
+      // Convert a string to ISO-8859-1 bytes in a ByteBuffer
+      ByteBuffer bbuf = encoder.encode(CharBuffer.wrap(code));
+      b = bbuf.array();
+    } catch (CharacterCodingException e) {
+      System.out.println(e.getMessage());
+    }
+
+    String data = null;
+    try {
+      data = new String(b, "ISO-8859-1");
+    } catch (UnsupportedEncodingException e) {
+      System.out.println(e.getMessage());
+    }
+
+    // get a byte matrix for the data
+    BitMatrix matrix = null;
+    int h = 200;
+    int w = 200;
+    com.google.zxing.Writer writer = new QRCodeWriter();
+    try {
+      matrix = writer.encode(data,
+        com.google.zxing.BarcodeFormat.QR_CODE, w, h);
+      ImageIcon qrcode = new ImageIcon();
+      qrcode.setImage(MatrixToImageWriter.toBufferedImage(matrix));
+      return qrcode;
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+    return null;
+  }
+
+  private String fetchJsonString(String code) throws IOException {
+    URL url = new URL(rendezvousUrl + code); //
+    URLConnection con = url.openConnection();
+    InputStream in = con.getInputStream();
+    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+    return (reader.readLine());
+  }
+
+  private void setStopWireless() {
+    stopWireless = true;
+  }
+
+  public void setPhoneManager(PhoneCommManager phoneManager) {
+    this.phoneManager = phoneManager;
+  }
+
 }

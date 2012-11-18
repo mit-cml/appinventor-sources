@@ -7,9 +7,14 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.collect.Lists;
+import com.google.appinventor.components.runtime.Notifier;
 
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import kawa.standard.Scheme;
@@ -97,20 +102,8 @@ public class ReplCommController {
     blocksEditorReplController.StartServer();
     everStarted = true;
     if (showAlert) {
-      ShowAlert("Listening to App Inventor. Click \"Restart app on device\" in the Blocks Editor "
-          + " if you don't eventually see your components.");
+      (new Notifier(form)).ShowAlert("Listening to App Inventor. Your App should display shortly.");
     }
-  }
-
-  private void ShowAlert(final String notice) {
-    // In REPL, it is currently ok to show notices that are in English.
-    // However, in a component, it is not ok to do so. Therefore, this method should never be used
-    // to show messages from a component such as GameClient or Voting.
-    handler.post(new Runnable() {
-      public void run() {
-        Toast.makeText(form, notice, Toast.LENGTH_LONG).show();
-      }
-    });
   }
 
   /**

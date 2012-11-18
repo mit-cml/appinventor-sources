@@ -111,7 +111,7 @@ public final class ProjectBuilder {
         + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
   }
 
-  Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl,
+    Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl, boolean isForWireless,
                int childProcessRam) {
     try {
       // Download project files into a temporary directory
@@ -157,11 +157,11 @@ public final class ProjectBuilder {
         PrintStream userErrors = new PrintStream(errors);
 
         Set<String> componentTypes =
-            isForRepl ? getAllComponentTypes() : getComponentTypes(sourceFiles);
+            (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl,
+            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
                              keyStorePath, childProcessRam);
         console.close();
         userErrors.close();
@@ -439,14 +439,14 @@ public final class ProjectBuilder {
       if (exitValue == 1) {
         // Failed to generate yail for legitimate reasons, such as empty sockets.
         throw new YailGenerationException("Unable to generate code for " + formName + "."
-            + "\n -- err is " + err.toString() 
+            + "\n -- err is " + err.toString()
             + "\n -- out is" + out.toString(),
             formName);
       } else {
         // Any other exit value is unexpected.
-        throw new RuntimeException("YailGenerator for form " + formName 
+        throw new RuntimeException("YailGenerator for form " + formName
             + " exited with code " + exitValue
-            + "\n -- err is " + err.toString() 
+            + "\n -- err is " + err.toString()
             + "\n -- out is" + out.toString());
       }
     }

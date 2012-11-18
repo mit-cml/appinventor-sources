@@ -13,9 +13,11 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.util.Log;
 
 /**
@@ -71,7 +73,12 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);
     }
-    container.$context().startActivityForResult(intent, requestCode);
+    try {
+      container.$context().startActivityForResult(intent, requestCode);
+    } catch (ActivityNotFoundException e) {
+      container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
+        ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
+    }
   }
 
   @Override

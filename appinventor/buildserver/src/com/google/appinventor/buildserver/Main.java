@@ -22,6 +22,9 @@ import java.util.zip.ZipFile;
 public final class Main {
 
   static class CommandLineOptions {
+    @Option(name = "--isForWirelessRepl", usage = "create the AppInventorDebugger APK")
+    boolean isForWireless = false;
+
     @Option(name = "--isForStemCellApp", usage = "create APK suitable for Phone App",
             aliases = {"--isForRepl"})
     boolean isForStemCellApp = false;
@@ -79,6 +82,7 @@ public final class Main {
                                          zip,
                                          commandLineOptions.outputDir,
                                          commandLineOptions.isForStemCellApp,
+                                         commandLineOptions.isForWireless,
                                          commandLineOptions.childProcessRamMb);
     System.exit(result.getResult());
   }
