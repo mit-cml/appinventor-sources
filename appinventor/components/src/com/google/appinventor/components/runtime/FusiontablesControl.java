@@ -617,7 +617,6 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       // Get a fresh access token
       OAuth2Helper oauthHelper = new OAuth2Helper();
       String authToken = oauthHelper.getRefreshedAuthToken(activity, authTokenType);
-      Log.i(TAG, "authToken = " + authToken);
 
       // Make the fusiontables query
 

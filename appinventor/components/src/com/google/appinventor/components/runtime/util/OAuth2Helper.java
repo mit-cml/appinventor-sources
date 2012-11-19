@@ -112,7 +112,6 @@ public class OAuth2Helper {
 
       Bundle authTokenBundle = future.getResult();
       authToken = authTokenBundle.get(AccountManager.KEY_AUTHTOKEN).toString();
-      Log.i(TAG, "authToken = " + authToken);
 
       persistCredentials(settings, 
           authTokenBundle.getString(AccountManager.KEY_ACCOUNT_NAME), 
