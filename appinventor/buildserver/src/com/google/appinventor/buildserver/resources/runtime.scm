@@ -242,11 +242,17 @@
 ;;; Lexical variables
 ;;; A lexical variable is looked up in the current environment
 ;;; following Kawa's ordinary rules.
-;;; currently there are no setters for lexical variables
 (define-syntax lexical-value
   (syntax-rules ()
     ((_ var-name)
      var-name)))
+
+;;; Lexical Set Variable
+;;; (set-lexical! var 10)
+(define-syntax set-lexical!
+  (syntax-rules ()
+    ((_ var value)
+      (set! var value))))
 
 ;;; We can't use Kawa's and/or directly here, because we want to enforce that
 ;;; the argument types are booleans.  So we delay the arguments and check the types

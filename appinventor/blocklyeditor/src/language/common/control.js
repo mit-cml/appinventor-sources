@@ -24,6 +24,14 @@
  * to language files.
  */
 
+/*
+ Lyn's History: 
+   [lyn, 11/29-30/12] 
+   * Change forEach and forRange loops to take name as input text rather than via plug. 
+   * For these blocks, add extra methods to support renaming. 
+*/
+
+
 if (!Blockly.Language) Blockly.Language = {};
 
 Blockly.Language.controls_if = {
@@ -72,7 +80,12 @@ Blockly.Language.controls_if = {
     return container;
   },
   domToMutation: function(xmlElement) {
-    this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
+    if(xmlElement.getAttribute('elseif') == null){
+      this.elseifCount_ = 0;
+    } else {
+      this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
+    }
+    
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
@@ -216,7 +229,7 @@ Blockly.Language.controls_if_else = {
   }
 };
 
-
+// [lyn, 01/15/2013] Remove DO C-sockets because now handled more modularly by DO-THEN-RETURN block. 
 Blockly.Language.controls_choose = {
   // Choose.
   category : Blockly.LANG_CATEGORY_CONTROLS,
@@ -224,15 +237,21 @@ Blockly.Language.controls_choose = {
   init : function() {
     this.setColour(120);
     this.setOutput(true, null);
-    this.appendValueInput('IF').setCheck(Boolean).appendTitle('choose').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('DO0').appendTitle('then-do').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEST').setCheck(Boolean).appendTitle('choose').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
+    // this.appendStatementInput('DO0').appendTitle('then-do').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('THENRETURN').appendTitle('then-return').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('ELSE').appendTitle('else-do').setAlign(Blockly.ALIGN_RIGHT);
+    // this.appendStatementInput('ELSE').appendTitle('else-do').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ELSERETURN').appendTitle('else-return').setAlign(Blockly.ALIGN_RIGHT);
-    Blockly.Language.setTooltip(this, 'If the condition being tested is true, the agent will '
-        + 'run all the blocks attached to the \'then-do\' section and return the value attached '
-        + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
-        + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
+    /* Blockly.Language.setTooltip(this, 'If the condition being tested is true, the agent will '
+       + 'run all the blocks attached to the \'then-do\' section and return the value attached '
+       + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
+       + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
+       */
+    // [lyn, 01/15/2013] Edit description to be consistent with changes to slots. 
+    Blockly.Language.setTooltip(this, 'If the condition being tested is true,'
+       + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
+       + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
+       + 'at most one of the return slot expressions will be evaluated.');
   }
 };
 
@@ -243,14 +262,42 @@ Blockly.Language.controls_forEach = {
   init : function() {
     this.setColour(120);
     //this.setOutput(true, null);
-    // Need to deal with variables here
-    this.appendValueInput('VAR').appendTitle('for each').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('LIST').setCheck(Array).appendTitle('in list').setAlign(Blockly.ALIGN_RIGHT);
+    // [lyn, 11/29/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
+    // Old code: 
+    //   this.appendValueInput('VAR').appendTitle('for each').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
+    //   this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
+    //   this.appendValueInput('LIST').setCheck(Array).appendTitle('in list').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('LIST')
+        .setCheck(Array)
+        .appendTitle("for each")
+        .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
+        .appendTitle('in list')
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendStatementInput('DO')
+        .appendTitle('do');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\'  section for each item in '
         + 'the list.  Use the given variable name to refer to the current list item.');
+  },
+  getVars: function() {
+    return [this.getTitleValue('VAR')];
+  },
+  blocksInScope: function() {
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
+  },
+  declaredNames: function() {
+    return [this.getTitleValue('VAR')];
+  },
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
+      this.setTitleValue(newName, 'VAR');
+    }
   }
 };
 
@@ -262,8 +309,16 @@ Blockly.Language.controls_forRange = {
     this.setColour(120);
     //this.setOutput(true, null);
     // Need to deal with variables here
-    this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
+    // [lyn, 11/30/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
+    // Old code: 
+    // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
+    // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('START')
+        .setCheck(Array)
+        .appendTitle("for range")
+        .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
+        .appendTitle('start')
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('END').setCheck(Number).appendTitle('end').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('STEP').setCheck(Number).appendTitle('step').setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
@@ -272,6 +327,25 @@ Blockly.Language.controls_forRange = {
     Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\' section for each numeric '
         + 'value in the range from start to end, stepping the value each time.  Use the given '
         + 'variable name to refer to the current value.');
+  },
+  getVars: function() {
+    return [this.getTitleValue('VAR')];
+  },
+  blocksInScope: function() {
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
+  },
+  declaredNames: function() {
+    return [this.getTitleValue('VAR')];
+  },
+  renameVar: function(oldName, newName) {
+    if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
+      this.setTitleValue(newName, 'VAR');
+    }
   }
 };
 
@@ -289,6 +363,59 @@ Blockly.Language.controls_while = {
         + 'true.');
   }
 };
+
+// [lyn, 01/15/2013] Added
+Blockly.Language.controls_do_then_return = {
+  // String length.
+  category: Blockly.LANG_CATEGORY_CONTROLS,
+  init: function() {
+    this.setColour(120);
+    this.appendStatementInput('STM')
+        .appendTitle("do");
+    this.appendValueInput('VALUE')
+        .appendTitle("then-return")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setOutput(true, null);
+  }
+};
+
+// [lyn, 01/15/2013] Added
+Blockly.Language.controls_eval_but_ignore = {
+  category: Blockly.LANG_CATEGORY_CONTROLS,
+  init: function() {
+    this.setColour(120);
+    this.appendValueInput('VALUE')
+        .appendTitle("eval-but-ignore-result");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+// [lyn, 01/15/2013] Added 
+Blockly.Language.controls_do_nothing = {
+  // A do-nothing statement, like "skip" in many languages, or nop in assembly code
+  category: Blockly.LANG_CATEGORY_CONTROLS,
+  init: function() {
+    this.setColour(120);
+    this.appendDummyInput()
+        .appendTitle("do-nothing");
+    this.setPreviousStatement(true);
+    this.setNextStatement(true);
+  }
+};
+
+// [lyn, 01/15/2013] Added
+Blockly.Language.controls_nothing = {
+  // Expression for the nothing value
+  category: Blockly.LANG_CATEGORY_CONTROLS,
+  init: function() {
+    this.setColour(120);
+    this.appendDummyInput()
+        .appendTitle("nothing");
+    this.setOutput(true, null);
+  }
+};
+
 
 Blockly.Language.controls_openAnotherScreen = {
   // Open another screen

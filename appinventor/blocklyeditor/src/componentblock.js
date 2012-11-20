@@ -46,12 +46,18 @@ Blockly.ComponentBlock.event = function(eventType, instanceName) {
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
     this.appendDummyInput().appendTitle('when ' + this.instanceName + '.' + this.eventType.name);
+    
+    if(eventType.params.length != 0){
+      var paramInput = this.appendDummyInput();
+    }
 
     // TODO: implement event callback parameters.  Need to figure out how to do procedures and 
     // make callback parameters consistent with that.
+    var paramLength = eventType.params.length;
     for (var i = 0, param; param = eventType.params[i]; i++) {
-      this.appendValueInput(Blockly.INPUT_VALUE, this.paramName(i)).appendTitle(param.name);
+      paramInput.appendTitle(param.name + (i != paramLength -1 ? "," : ""));
     }
+    
     this.appendStatementInput("DO").appendTitle('do');
     Blockly.Language.setTooltip(this, eventType.description);
     this.setPreviousStatement(false);

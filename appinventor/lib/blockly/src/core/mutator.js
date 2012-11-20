@@ -287,6 +287,12 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     // The source block may have changed, notify its workspace.
     this.block_.workspace.fireChangeEvent();
   }
+
+  if(this.shouldHide){
+    this.setVisible(false);
+    this.shouldHide = false;
+  }
+
 };
 
 /**

@@ -68,13 +68,15 @@
     "./src/generators/yail/math.js",
     "./src/generators/yail/control.js",
     "./src/generators/yail/logic.js",
-    "./src/generators/yail/text.js"
+    "./src/generators/yail/text.js",
+    "./src/generators/yail/variables.js",
+    "./src/generators/yail/procedures.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library
   // will be included, so when test-raw.html loads each input in RAW mode,
   // it is important that the proper charset be used.
   //"output-charset": "UTF-8",
-  "mode": "WHITESPACE",
+  "mode": "RAW",
   "output-file": "../build/blocklyeditor/blockly-all.js"
 }

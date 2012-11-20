@@ -44,10 +44,11 @@ Blockly.Yail.controls_if = function() {
     var branch = Blockly.Yail.statementToCode(this, 'ELSE');
     code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   }
-  for(var i=0;i<this.elseifCount_ + this.elseCount_ + 1;i++){
-    code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  
+  for(var i=0;i<this.elseifCount_;i++){
+    code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   }
-
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
@@ -62,30 +63,43 @@ Blockly.Yail.controls_ifelse = function() {
   return code;
 };
 
+// [lyn, 01/15/2013] Edited to make consistent with removal of "THEN-DO" and "ELSE-DO"
 Blockly.Yail.controls_choose = function() {
   // Choose.
-  var test = Blockly.Yail.valueToCode(this, 'CHOOSE', Blockly.Yail.ORDER_NONE) || 'false';
-  var thenDo = Blockly.Yail.statementToCode(this, 'THEN', Blockly.Yail.ORDER_NONE) || 'null';
+  var test = Blockly.Yail.valueToCode(this, 'TEST', Blockly.Yail.ORDER_NONE) || 'false';
   var thenReturn = Blockly.Yail.valueToCode(this, 'THENRETURN', Blockly.Yail.ORDER_NONE) || 'null';
-  var elseDo = Blockly.Yail.statementToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE) || 'null';
   var elseReturn = Blockly.Yail.valueToCode(this, 'ELSERETURN', Blockly.Yail.ORDER_NONE) || 'null';
-  var code = Blockly.Yail.YAIL_IF + test;
-  code = code + Blockly.Yail.YAIL_SPACER +  Blockly.Yail.YAIL_BEGIN + thenDo + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + thenReturn + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER +  Blockly.Yail.YAIL_BEGIN + elseDo + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + elseReturn + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return code;
+  var code = Blockly.Yail.YAIL_IF + test
+             + Blockly.Yail.YAIL_SPACER +  thenReturn 
+             + Blockly.Yail.YAIL_SPACER +  elseReturn 
+             + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [code,Blockly.Yail.ORDER_ATOMIC];
 };
 
+// [lyn, 12/27/2012]
 Blockly.Yail.controls_forEach = function() {
   // For each loop.
-  //TODO:(Andrew) When variables are implemented
-  return "Waiting for variables to be implemented";
+  var loopIndexName = this.getTitleValue('VAR');
+  var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || 'null';
+  var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) || 'null';
+  return Blockly.Yail.YAIL_FOREACH + loopIndexName + Blockly.Yail.YAIL_SPACER
+         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER 
+         + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
+// [lyn, 12/27/2012]
 Blockly.Yail.controls_forRange = function() {
-  // For range.
-  //TODO:(Andrew) When variables are implemented
-  return "Waiting for variables to be implemented";
+  // For range loop.
+  var loopIndexName = this.getTitleValue('VAR');
+  var startCode = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || 'null';
+  var endCode = Blockly.Yail.valueToCode(this, 'END', Blockly.Yail.ORDER_NONE) || 'null';
+  var stepCode = Blockly.Yail.valueToCode(this, 'STEP', Blockly.Yail.ORDER_NONE) || 'null';
+  var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) || 'null';
+  return Blockly.Yail.YAIL_FORRANGE + loopIndexName + Blockly.Yail.YAIL_SPACER
+         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER 
+         + startCode + Blockly.Yail.YAIL_SPACER 
+         + endCode + Blockly.Yail.YAIL_SPACER 
+         + stepCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
 Blockly.Yail.controls_while = function() {
@@ -95,6 +109,30 @@ Blockly.Yail.controls_while = function() {
   var code = Blockly.Yail.YAIL_WHILE + test + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + toDo + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
+
+// [lyn, 01/15/2013] Added 
+Blockly.Yail.controls_do_then_return = function() {
+  var stm = Blockly.Yail.statementToCode(this, 'STM', Blockly.Yail.ORDER_NONE) || 'null';
+  var value = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || 'false';
+  var code = Blockly.Yail.YAIL_BEGIN + stm + Blockly.Yail.YAIL_SPACER + value + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [code, Blockly.Yail.ORDER_ATOMIC];
+};
+
+// [lyn, 01/15/2013] Added 
+Blockly.Yail.controls_eval_but_ignore = function() {
+  var value = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || 'false';
+  return Blockly.Yail.YAIL_BEGIN + value + Blockly.Yail.YAIL_SPACER + 'null' + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+}
+
+// [lyn, 01/15/2013] Added 
+Blockly.Yail.controls_do_nothing = function() {
+  return 'null';
+}
+
+// [lyn, 01/15/2013] Added 
+Blockly.Yail.controls_nothing = function() {
+  return ['*the-null-value*', Blockly.Yail.ORDER_NONE];
+}
 
 Blockly.Yail.controls_openAnotherScreen = function() {
   // Open another screen

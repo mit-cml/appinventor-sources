@@ -153,7 +153,7 @@ Blockly.Procedures.rename = function(text) {
   var blocks = this.sourceBlock_.workspace.getAllBlocks();
   for (var x = 0; x < blocks.length; x++) {
     var func = blocks[x].renameProcedure;
-    if (func) {
+    if (func && this.sourceBlock_.rendered) {
       func.call(blocks[x], this.text_, text);
     }
   }

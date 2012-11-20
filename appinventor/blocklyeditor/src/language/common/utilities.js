@@ -50,7 +50,7 @@ Blockly.Language.YailTypeToBlocklyTypeMap =
 
 Blockly.Language.YailTypeToBlocklyType = function(yail) {
     var bType = Blockly.Language.YailTypeToBlocklyTypeMap[yail];
-    if (bType != null) {
+    if (bType != null || yail == 'any') {
         return bType;
     } else {
         throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
