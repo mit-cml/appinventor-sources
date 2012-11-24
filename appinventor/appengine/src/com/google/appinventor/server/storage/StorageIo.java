@@ -380,17 +380,41 @@ public interface StorageIo {
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
                                           @Nullable String zipName) throws IOException;
-  
+
   /**
    * Find a user's id given their email address. Note that this query is case
    * sensitive!
-   * 
+   *
    * @param email user's email address
-   * 
+   *
    * @return the user's id if found
    * @throws NoSuchElementException if we can't find a user with that exact
    *    email address
    */
   String findUserByEmail(String email) throws NoSuchElementException;
+
+  /**
+   * Find a phone's IP address given the six character key. Used by the
+   * RendezvousServlet. This is used only when memcache is unavailable.
+   *
+   * @param key the six character key
+   * @return Ip Address as string or null if not found
+   *
+   */
+  String findIpAddressByKey(String key);
+
+  /**
+   * Store a phone's IP address indexed by six character key. Used by the
+   * RendezvousServlet. This is used only when memcache is unavailable.
+   *
+   * Note: Nothing currently cleans up these entries, but we have a
+   * timestamp field which we update so a later process can recognize
+   * and remove stale entries.
+   *
+   * @param key the six character key
+   * @param ipAddress the IP Address of the phone
+   *
+   */
+  void storeIpAddressByKey(String key, String ipAddress);
 
 }

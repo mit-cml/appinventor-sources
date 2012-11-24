@@ -166,4 +166,20 @@ public class StoredData {
     // More MOTD detail, if any
     String content;
   }
+
+  // Rendezvous Data -- Only used when memcache is unavailable
+  @Unindexed
+  static final class RendezvousData {
+    @Id Long id;
+
+    // Six character key entered by user (or scanned).
+    @Indexed public String key;
+
+    // Ip Address of phone
+    public String ipAddress;
+
+    public Date used;           // Used during (manual) cleanup to determine if this entry can be pruned
+
+  }
+
 }
