@@ -127,7 +127,11 @@ public final class ErrorMessages {
   public static final int ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT = 1402;
   // BarcodeScanner errors
   public static final int ERROR_NO_SCANNER_FOUND = 1501;
-  // Please start the next group of error numbers at 1601.
+  // ImagePicker errors
+  public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
+  public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+  
+  // Please start the next group of error numbers at 1701.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -342,6 +346,10 @@ public final class ErrorMessages {
             "are 1 or 2.");
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
+    errorMessages.put(ERROR_CANNOT_SAVE_IMAGE,
+        "Unable to save image: %s");
+    errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
+        "Unable to copy selected media: %s");
 
   }
 

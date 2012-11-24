@@ -659,6 +659,12 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    } 
+    if (srcCompVersion < 5) {
+      // The ImagePath property was renamed to Selection.
+      handlePropertyRename(componentProperties, "ImagePath", "Selection");
+      // Properties related to this component have now been upgraded to version 2.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }

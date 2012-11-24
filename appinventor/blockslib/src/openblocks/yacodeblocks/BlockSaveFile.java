@@ -834,6 +834,12 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The ImagePath property was renamed to Selection.
+      handlePropertyRename(componentName, "ImagePath", "Selection");
+      // Blocks related to this component have now been upgraded to version 5.
+      blkCompVersion = 5;
+    } 
     return blkCompVersion;
   }
 
