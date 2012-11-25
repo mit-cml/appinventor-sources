@@ -30,10 +30,11 @@ import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -173,11 +174,41 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     this.activity = componentContainer.$context();
     requestHelper = createClientLoginHelper(DIALOG_TEXT, FUSIONTABLES_SERVICE);
     query = DEFAULT_QUERY;
+    
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
-      Toast.makeText(activity, "Sorry. The Fusiontables component is not compatible with your phone. Exiting.", Toast.LENGTH_LONG).show();
-      activity.finish();
+      showNoticeAndDie(
+          "Sorry. The Fusiontables component is not compatible with this phone.",
+          "This application must exit.",
+          "Rats!");      
     }
+    
+    // comment: The above code was originally
+    //    Toast.makeText(activity,
+    //        "Sorry. The Fusiontables component is not compatible with your phone. Exiting.",
+    //        Toast.LENGTH_LONG).show();
+    //    activity.finish();
+    // I'm leaving this here for the edification of future developers.  The code does not work
+    // because Toasts do not block: The activity will finish immediately, regardless of
+    // the length of the toast, and the message will not be readable. The new version isn't
+    // quite right either because the app will execute Screen.Initialize while the message
+    // is being shown.
+ 
   }
+  
+  // show a notification and kill the app when the button is pressed
+  private void showNoticeAndDie(String message, String title, String buttonText){
+    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle(title);
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
+    alertDialog.setMessage(message);
+    alertDialog.setButton(buttonText, new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+        activity.finish();
+      }});
+    alertDialog.show();
+  }
+
   
   /**
    * Setter for the app developer's API key.
