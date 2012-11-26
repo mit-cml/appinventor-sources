@@ -2,7 +2,7 @@
 $Source $Yail
 |#
 
-(define-repl-form edu.mit.appinventor.aicompanion.Screen1 Screen1)
+(define-repl-form edu.mit.appinventor.aicompanion2.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 (def (badversion)
 (set-var! expired  #t)
@@ -82,8 +82,8 @@ $Source $Yail
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
 (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
 (set-and-coerce-property! 'Screen1 'Title "App Inventor Companion" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 200 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "2.0" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 201 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "2.01" 'text)
 )
 (define-event Screen1 Initialize()
  (set-this-form)
@@ -275,7 +275,7 @@ $Source $Yail
 (add-component Screen1 TinyDB TinyDB1 )
 ;;; ActivityStarter1
 (add-component Screen1 ActivityStarter ActivityStarter1 (set-and-coerce-property! 'ActivityStarter1 'Action "android.intent.action.VIEW" 'text)
-(set-and-coerce-property! 'ActivityStarter1 'DataUri "market://details?id=edu.mit.appinventor.aicompanion" 'text)
+(set-and-coerce-property! 'ActivityStarter1 'DataUri "market://details?id=edu.mit.appinventor.aicompanion2" 'text)
 )
 ;;; PhoneStatus1
 (add-component Screen1 PhoneStatus PhoneStatus1 )
