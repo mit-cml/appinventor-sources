@@ -43,6 +43,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.telephony.gsm.SmsManager;
 import android.telephony.gsm.SmsMessage;
@@ -89,16 +90,16 @@ import android.widget.Toast;
       "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " + 
     "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
     @UsesLibraries(libraries = 
-    "google-api-client-beta.jar," +
-    "google-api-client-android2-beta.jar," +
-    "google-http-client-beta.jar," +
-    "google-http-client-android2-beta.jar," +
-    "google-http-client-android3-beta.jar," +
-    "google-oauth-client-beta.jar," +
+      "google-api-client-beta.jar," +
+      "google-api-client-android2-beta.jar," +
+      "google-http-client-beta.jar," +
+      "google-http-client-android2-beta.jar," +
+      "google-http-client-android3-beta.jar," +
+      "google-oauth-client-beta.jar," +
     "guava-11.0.1.jar")
 
-  public class Texting extends AndroidNonvisibleComponent
-    implements Component, OnResumeListener, OnPauseListener, OnInitializeListener {
+    public class Texting extends AndroidNonvisibleComponent
+    implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
   public static final String TAG = "Texting Component";
 
@@ -112,6 +113,7 @@ import android.widget.Toast;
   public static final String GV_SMS_SEND_URL = "https://www.google.com/voice/b/0/sms/send/";
   public static final String GV_URL = "https://www.google.com/voice/b/0";
 
+
   // Meta data key and value that identify an app for handling incoming Sms
   // Used by Texting component
   public static final String META_DATA_SMS_KEY = "sms_handler_component";
@@ -124,6 +126,10 @@ import android.widget.Toast;
   private static final String SENT = "SMS_SENT";
   private static final String UTF8 = "UTF-8";
   private static final String MESSAGE_DELIMITER = "\u0001";
+  private static final String PREF_GVENABLED = "gvenabled";   // Boolean flag for GV is enabled
+  private static final String PREF_RCVENABLED = "receiving"; // Boolean flag for app is receiving
+  private static final String PREF_FILE = "TextingState";    // State of Texting component
+
 
   // Google Voice oauth helper
   private GoogleVoiceUtil gvHelper;
@@ -143,16 +149,16 @@ import android.widget.Toast;
 
   // No messages can be received until Initialized
   private boolean isInitialized;
-  
+
   // True when resumed and false when paused. 
   // Messages are cached when app is not running
   private static boolean isRunning;
- 
+
   // Cache file for cached messages
   private static final String CACHE_FILE = "textingmsgcache";
   private static int messagesCached;
   private static Object cacheLock = new Object();
-  
+
   /**
    * Creates a new TextMessage component.
    *
@@ -164,11 +170,19 @@ import android.widget.Toast;
     Texting.component = (Texting)this;
     activity = container.$context();
 
+    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    if (prefs != null) {
+      receivingEnabled = prefs.getBoolean(PREF_RCVENABLED, true); 
+      googleVoiceEnabled = prefs.getBoolean(PREF_GVENABLED, false);
+      Log.i(TAG, "Starting with receiving Enabled=" + receivingEnabled + " GV enabled=" + googleVoiceEnabled);
+    } else {
+      receivingEnabled = true;
+      googleVoiceEnabled = false;		
+    }
+
     smsManager = SmsManager.getDefault();
     PhoneNumber("");
-    receivingEnabled = true;
-    googleVoiceEnabled = false;
-    
+
     isInitialized = false; // Set true when the form is initialized and can dispatch
     isRunning = false;     // This will be set true in onResume and false in onPause
 
@@ -176,6 +190,7 @@ import android.widget.Toast;
     container.$form().registerForOnInitialize(this);
     container.$form().registerForOnResume(this);
     container.$form().registerForOnPause(this);  
+    container.$form().registerForOnStop(this);
   }
 
   /**
@@ -289,6 +304,10 @@ import android.widget.Toast;
   public void GoogleVoiceEnabled(boolean enabled) {
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
       this.googleVoiceEnabled = enabled;
+      SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+      SharedPreferences.Editor editor = prefs.edit();
+      editor.putBoolean(PREF_GVENABLED, enabled);
+      editor.commit();  
     } else {
       Toast.makeText(activity, "Sorry, your phone's system does not support this option.", Toast.LENGTH_LONG).show();
     }
@@ -319,6 +338,15 @@ import android.widget.Toast;
   @SimpleProperty()
   public void ReceivingEnabled(boolean enabled) {
     Texting.receivingEnabled = enabled;
+    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putBoolean(PREF_RCVENABLED, enabled);
+    editor.commit();
+  }
+
+  public static boolean isReceivingEnabled(Context context) {
+    SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    return prefs.getBoolean(PREF_RCVENABLED, true);
   }
 
   /**
@@ -366,7 +394,7 @@ import android.widget.Toast;
       Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
 
       int delim = phoneAndMessage.indexOf(":");
-      
+
       // If receiving is not enabled, messages are not dispatched
       if (receivingEnabled && delim != -1) {
         MessageReceived(phoneAndMessage.substring(0,delim),
@@ -374,7 +402,7 @@ import android.widget.Toast;
       }
     }
   }
-  
+
   /**
    * Retrieves cached messages from the cache file
    * and deletes the file. 
@@ -398,8 +426,7 @@ import android.widget.Toast;
       messagesCached = 0;
       Log.i(TAG, "Retrieved cache " + cache);
     } catch (FileNotFoundException e) {
-      Log.e(TAG, "File not found error reading from cache file");
-      e.printStackTrace();
+      Log.e(TAG, "No Cache file found -- this is not (usually) an error");
       return null;
     } catch (IOException e) {
       Log.e(TAG, "I/O Error reading from cache file");
@@ -409,7 +436,7 @@ import android.widget.Toast;
     String messagelist[] = cache.split(MESSAGE_DELIMITER);
     return messagelist;
   }
-  
+
   /**
    * Called by SmsBroadcastReceiver
    * @return
@@ -417,7 +444,7 @@ import android.widget.Toast;
   public static boolean isRunning() {
     return isRunning;
   }
-  
+
   /**
    * Used to keep count in Notifications.
    * @return
@@ -425,7 +452,7 @@ import android.widget.Toast;
   public static int getCachedMsgCount() {
     return messagesCached;
   }
-  
+
   /**
    * Processes cached messages if the app is initialized
    */
@@ -439,7 +466,7 @@ import android.widget.Toast;
       nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
     }
   }
-  
+
   /**
    * Messages received while paused will be cached
    */
@@ -448,7 +475,7 @@ import android.widget.Toast;
     Log.i(TAG, "onPause()");
     isRunning = false;
   }
-  
+
   /**
    * This method is called by SmsBroadcastRecieiver when a message is received.
    * @param phone
@@ -463,7 +490,7 @@ import android.widget.Toast;
       }
     }
   }
-  
+
   /**
    * Messages a cached in a private file
    * @param context
@@ -748,12 +775,12 @@ import android.widget.Toast;
 
         if (googleVoiceEnabled) {
           Log.i(TAG, "Sending via GV");
-          
+
           // Get the authtoken
           OAuth2Helper oauthHelper = new OAuth2Helper();
           String authToken = oauthHelper.getRefreshedAuthToken(activity, GV_SERVICE);
           Log.i(TAG, "authToken = " + authToken);
-           
+
           if (gvHelper == null) {
             gvHelper = new GoogleVoiceUtil(authToken);
           }
@@ -804,6 +831,18 @@ import android.widget.Toast;
         // Do nothing -- built-in SMS will display either "sent" or "error"
       }
     }
+  }
+
+  /**
+   * Save the component's state in shared preference file before it is killed.
+   */
+  @Override
+  public void onStop() {
+    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putBoolean(PREF_RCVENABLED, receivingEnabled);
+    editor.putBoolean(PREF_GVENABLED, googleVoiceEnabled);
+    editor.commit();
   }
 }
 

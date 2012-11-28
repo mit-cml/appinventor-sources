@@ -71,7 +71,7 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     // If activity is receiving messages, send the message;
     // It'll be cached if the app isn't running
-    if (Texting.receivingEnabled) {
+    if (Texting.isReceivingEnabled(context)) {
       if (isRepl(context)) {    // If we are the Repl, we only handle texts if we are running
         if (Texting.isRunning()) {
           Texting.handledReceivedMessage(context, phone, msg);
