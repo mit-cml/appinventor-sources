@@ -51,6 +51,12 @@
          buildserver to match -->
     <property name="build.send.git.version" value="true" />
 
+    <!-- Set this to true to enable the use of Wifi connections from the blocks editor to
+         the phone. The phone must have an up-to-date copy of the MIT AICompanion App to
+         use this feature. -->
+
+    <property name="wifi.enabled" value="false" />
+
   </system-properties>
 
   <!-- Enable concurrency in the app engine server -->

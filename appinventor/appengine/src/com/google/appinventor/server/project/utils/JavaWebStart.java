@@ -7,6 +7,7 @@ package com.google.appinventor.server.project.utils;
 
 import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.server.encryption.EncryptionException;
+import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.user.UserInfoProvider;
 
@@ -39,6 +40,8 @@ public final class JavaWebStart {
   }
 
   private static final String VERSION_PREFIX_DELIMITER = "_";
+
+  private static final Flag<Boolean> wifiEnabled = Flag.createFlag("wifi.enabled", false);
 
   private JavaWebStart() {  // COV_NF_LINE
   }  // COV_NF_LINE
@@ -141,6 +144,10 @@ public final class JavaWebStart {
     for (String jarFile : jarFiles) {
       jnlp.append("      <jar href=\"").append(jarFile).append("\"/>\n");
     }
+
+    if (wifiEnabled.get())
+      jnlp.append("      <property name=\"wifi.enabled\" value=\"true\"/>\n");
+
     jnlp.append("   </resources>\n")
         .append("   <application-desc main-class=\"").append(mainClass).append("\">\n");
     for (String arg : args) {
