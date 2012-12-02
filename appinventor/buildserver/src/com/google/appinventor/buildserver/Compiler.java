@@ -112,10 +112,10 @@ public final class Compiler {
   // Logging support
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
-  private static final ConcurrentMap<String, Set<String>> componentPermissions =
+  private final ConcurrentMap<String, Set<String>> componentPermissions =
       new ConcurrentHashMap<String, Set<String>>();
 
-  private static final ConcurrentMap<String, Set<String>> componentLibraries =
+  private final ConcurrentMap<String, Set<String>> componentLibraries =
     new ConcurrentHashMap<String, Set<String>>();
 
   /**
@@ -147,7 +147,7 @@ public final class Compiler {
   private final boolean isForWireless;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
-  private static Set<String> librariesNeeded; // Set of component libraries
+  private Set<String> librariesNeeded; // Set of component libraries
 
 
   /*
@@ -178,10 +178,10 @@ public final class Compiler {
   }
 
   /*
-   * Generate the set of Android permissions needed by this project.
+   * Generate the set of Android libraries needed by this project.
    */
   @VisibleForTesting
-  Set<String> generateLibraryNames() {
+  void generateLibraryNames() {
     // Before we can use componentLibraries, we have to call loadComponentLibraries().
     try {
       loadComponentLibraryNames();
@@ -189,20 +189,17 @@ public final class Compiler {
       // This is fatal.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
-      return null;
     } catch (JSONException e) {
       // This is fatal, but shouldn't actually ever happen.
       e.printStackTrace();
       userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
-      return null;
     }
 
-
-    Set<String> libraries = Sets.newHashSet();
+    librariesNeeded = Sets.newHashSet();
     for (String componentType : componentTypes) {
-      libraries.addAll(componentLibraries.get(componentType));
+      librariesNeeded.addAll(componentLibraries.get(componentType));
     }
-    return libraries;
+    System.out.println("Libraries needed, n= " + librariesNeeded.size());
   }
 
 
@@ -372,8 +369,7 @@ public final class Compiler {
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
 
-    // Get the names of component libraries for classpath and dx command line
-    librariesNeeded = compiler.generateLibraryNames();
+    compiler.generateLibraryNames();
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -622,12 +618,15 @@ public final class Compiler {
         getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
+      System.out.println("Libraries Classpath, n " + librariesNeeded.size());
       for (String library : librariesNeeded) {
         classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
       }
 
       classpath +=
         getResource(ANDROID_RUNTIME);
+      
+      System.out.println("Libraries Classpath = " + classpath);
 
       String yailRuntime = getResource(YAIL_RUNTIME);
       List<String> kawaCommandArgs = Lists.newArrayList();
@@ -831,10 +830,13 @@ public final class Compiler {
     commandLineList.add(getResource(BUGSENSE_RUNTIME));
 
     // Add libraries to command line arguments
+    System.out.println("Libraries needed command line n = " + librariesNeeded.size());
     for (String library : librariesNeeded) {
       commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
     }
 
+    System.out.println("Libraries command line = " + commandLineList);
+    
     // Convert command line to an array
     String[] dxCommandLine = new String[commandLineList.size()];
     commandLineList.toArray(dxCommandLine);
@@ -945,7 +947,7 @@ public final class Compiler {
     }
   }
 
-  private static void loadComponentPermissions() throws IOException, JSONException {
+  private void loadComponentPermissions() throws IOException, JSONException {
     synchronized (componentPermissions) {
       if (componentPermissions.isEmpty()) {
         String permissionsJson = Resources.toString(
@@ -979,7 +981,7 @@ public final class Compiler {
    * @throws IOException
    * @throws JSONException
    */
-  private static void loadComponentLibraryNames() throws IOException, JSONException {
+  private void loadComponentLibraryNames() throws IOException, JSONException {
     synchronized (componentLibraries) {
       if (componentLibraries.isEmpty()) {
         String librariesJson = Resources.toString(
