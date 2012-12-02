@@ -62,23 +62,28 @@ import android.widget.Toast;
     " method is called, send the text message " +
     "specified in the <code>Message</code> property to the phone number " +
     "specified in the <code>PhoneNumber</code> property. " +
-    "<p>This component can also receive text messages unless the " +
-    "<code>ReceivingEnabled</code> property is False.  When a message " +
+    "<p>This component will also receive text messages if the " +
+    "<code>ReceivingEnabled</code> property is True.  When a message " +
     "arrives, the <code>MessageReceived</code> event is raised and provides " +
     "the sending number and message.</p>" +
-    "<p>If the GoogleVoiceEnabled property is true, messages can be sent and received " +
-    "over Wifi. This option requires that the user have a Google Voice account and " + 
-    "that the mobile Voice app is installed on the phone. This option works only on " +
-    "phones that support Android 2.0 (Eclair) or higher. </p>" +
-    "<p>Often, this component is used with the <code>ContactPicker</code> " +
-    "component, which lets the user select a contact from the ones stored " +
-    "on the phone and sets the <code>PhoneNumber</code> property to the " +
-    "contact's phone number.</p>" +
-    "<p>To directly specify the phone number (e.g., 650-555-1212), set " +
-    "the <code>PhoneNumber</code> property to a Text with the specified " +
-    "digits (e.g., \"6505551212\").  Dashes, dots, and parentheses may be " +
-    "included (e.g., \"(650)-555-1212\") but will be ignored; spaces may " +
-    "not be included.</p>",
+    "<p> An app that includes this component will receive messages even " +
+    "when it is in the background (i.e. when it's not visible on the screen) and, moreso, "+
+    "even if the app is not running, so long as it's installed on the phone. If the phone " +
+    "receives a text message when the app is not in the foreground, the phone  will show a " +
+    "notification in the notification bar.  Selecting the notification will bring up the app." +
+    "As an app developer, you'll probably want to give your users the ability to control " +
+    "ReceivingEnabled so that they can make the phone ignore text messages." +
+    "<p>If the GoogleVoiceEnabled property is true, messages can be sent " +
+    "over Wifi using Google Voice. This option requires that the user have a Google Voice " +
+    "account and that the mobile Voice app is installed on the phone. The Google Voice " +
+    "option works only on phones that support Android 2.0 (Eclair) or higher. </p>" +
+    "<p>To specify the phone number (e.g., 650-555-1212), set " +
+    "the <code>PhoneNumber</code> property to a Text string with the specified " +
+    "digits (e.g., 6505551212).  Dashes, dots, and parentheses may be " +
+    "included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.</p>" +
+    "<p>Another way for an app to specify a phone number would be to include " +
+    "a <code>PhoneNumberPicker</code> component, which lets the users select a phone numbers " + 
+    "from the ones stored in the the phone's contacts.</p>",
     category = ComponentCategory.SOCIAL,
     nonVisible = true,
     iconName = "images/texting.png")
@@ -114,7 +119,7 @@ import android.widget.Toast;
   public static final String GV_URL = "https://www.google.com/voice/b/0";
 
 
-  // Meta data key and value that identify an app for handling incoming Sms
+  // Meta data key and value that identify an app for handling incoming SMS
   // Used by Texting component
   public static final String META_DATA_SMS_KEY = "sms_handler_component";
   public static final String META_DATA_SMS_VALUE = "Texting";
@@ -220,26 +225,35 @@ import android.widget.Toast;
   }
 
   /**
-   * Get the phone number that the message will be sent to when the SendMessage function is called.
+   * The number that the message will be sent to when the SendMessage method is called.  The 
+   * number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, 
+   * and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces
+   * should not be included.
    */
-  @SimpleProperty
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "The number that the message will be sent to when the SendMessage method " +
+      "is called. The "  +
+      "number is a text string with the specified digits (e.g., 6505551212).  Dashes, dots, " +
+      "and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces " +
+      "should not be included.")
   public String PhoneNumber() {
     return phoneNumber;
   }
 
   /**
-   * Sets the text message to send when the SendMessage function is called.
+   * The text message to that will be sent when the SendMessage method is called.
    *
    * @param message the message to send when the SendMessage function is called.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+  description = "The message that will be sent when the SendMessage method is called.")
   public void Message(String message) {
     this.message = message;
   }
 
   /**
-   * Get the message that will be sent when the SendMessage function is called.
+   * The text message that will be sent when the SendMessage method is called.
    */
   @SimpleProperty
   public String Message() {
@@ -259,10 +273,8 @@ import android.widget.Toast;
   }
 
   /**
-   * Event that's raised when a new text message is received by the phone.
+   * Event that's raised when a text message is received by the phone.
    * 
-   * This method shouldn't be called until the app is initialized. If dispatch
-   * fails, the message is cached. 
    * 
    * @param number the phone number that the text message was sent from.
    * @param messageText the text of the message.
@@ -283,18 +295,25 @@ import android.widget.Toast;
   }
 
   /**
-   * Gets whether you want to use Google Voice to send/receive messages.
+   * If this property is true, then SendMessage will attempt to send messages over
+   * WiFi, using Google voice.
    *
    * @return 'true' or 'false' depending on whether you want to
    * use Google Voice for sending/receiving messages.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+	  description = "If true, then SendMessage will attempt to send messages over Wifi " +
+	  "using Google Voice.  This requires that the Google Voice app must be installed " +
+          "and set up on the phone or tablet, with a Google Voice account.  If GoogleVoiceEnabled " +
+	  "is false, the device must have phone and texting service in order to send or " +
+          "receive messages with this component.")
   public boolean GoogleVoiceEnabled() {
     return googleVoiceEnabled;
   }
 
   /**
-   * Sets whether you want to use Google Voice to send/receive messages.
+   * If this property is true, then SendMessage will attempt to send messages over
+   * WiFi, using Google voice.
    *
    * @param enabled  Set to 'true' or 'false' depending on whether you want to
    *  use Google Voice to send/receive messages.
@@ -321,7 +340,16 @@ import android.widget.Toast;
    *          {@link #MessageReceived(String,String)} event to get run when a
    *          new text message is received.
    */
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description = "If true, the component will respond to messages received.  If the app " +
+          "is in the foreground, the MessageReceived event will be signaled.  If the app is " +
+          "running in the background, or even not running at all, the phone will show a " +
+          "notification.  " +
+          "Selecting the notification will bring up the app and signal the MessageReceived " +
+          "event.  Messages received when the app is dormant will be queued, and so " +
+          "several ReceivingEnabled event might appear when the app awakens.  As an app " +
+          "developer, it would be a good idea to give your users control over this property, " +
+          "so they can make their phones ignore text messages when your app is installed.")
   public boolean ReceivingEnabled() {
     return receivingEnabled;
   }
@@ -477,7 +505,7 @@ import android.widget.Toast;
   }
 
   /**
-   * This method is called by SmsBroadcastRecieiver when a message is received.
+   * This method is called by SmsBroadcastReceiver when a message is received.
    * @param phone
    * @param msg
    */
@@ -620,7 +648,7 @@ import android.widget.Toast;
 
     /**
      * Internal method which parses the Homepage source code to determine the
-     * rnrsee variable, this variable is passed into most fuctions for placing
+     * rnrsee variable, this variable is passed into most functions for placing
      * calls and sms.
      *
      * @throws IOException Signals that an I/O exception has occurred.
@@ -676,7 +704,7 @@ import android.widget.Toast;
         redirectCounter++;
         if(redirectCounter > MAX_REDIRECTS) {
           redirectCounter = 0;
-          throw new IOException(urlString + " : " + conn.getResponseMessage() + "("+responseCode+") : Too manny redirects. exiting.");
+          throw new IOException(urlString + " : " + conn.getResponseMessage() + "("+responseCode+") : Too many redirects. exiting.");
         }
         String location = conn.getHeaderField("Location");
         if(location!=null && !location.equals("")) {
