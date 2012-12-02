@@ -48,6 +48,7 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.URLDecoder
 import java.util.List;
 import java.util.Map;
 
@@ -571,6 +572,25 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   public String UriEncode(String text) {
     try {
       return URLEncoder.encode(text, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      // If UTF-8 is not supported, we're in big trouble!
+      // According to Javadoc and Android documentation for java.nio.charset.Charset, UTF-8 is
+      // available on every Java implementation.
+      Log.e(LOG_TAG, "UTF-8 is unsupported?", e);
+      return "";
+    }
+  }
+
+  /**
+   * Decodes the given text value using UriDecoding.
+   *
+   * @param text the text to encode
+   * @return the encoded text
+   */
+  @SimpleFunction
+  public String UriDecode(String text) {
+    try {
+      return URLDecoder.decode(text, "UTF-8");
     } catch (UnsupportedEncodingException e) {
       // If UTF-8 is not supported, we're in big trouble!
       // According to Javadoc and Android documentation for java.nio.charset.Charset, UTF-8 is
