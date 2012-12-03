@@ -11,6 +11,7 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -168,7 +169,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param title the title for the alert box
    */
   private void textInputAlert(String message, String title) {
-    Log.i(LOG_TAG, "Text input alert: " + message);
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(message);
@@ -212,13 +212,20 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
+    // The notifier font size for more recent releases seems too
+    // small compared to early releases.
+    // This sets the fontsize according to SDK level,  There is almost certainly
+    // a better way to do this, with display metrics for example, but
+    // I (hal) can't figure it out.
+    int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
+        ? 22 : 15;
     Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
     textView.setBackgroundColor(Color.DKGRAY);
     textView.setTextColor(Color.WHITE);
-    textView.setTextSize(20);
-    Typeface typeface = Typeface.create("serif", Typeface.NORMAL);
+    textView.setTextSize(fontsize);
+    Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
     textView.setText(message);
