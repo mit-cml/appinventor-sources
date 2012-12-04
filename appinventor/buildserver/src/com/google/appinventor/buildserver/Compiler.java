@@ -917,7 +917,7 @@ public final class Compiler {
    *
    * @param resourcePath the name of the resource
    */
-  static String getResource(String resourcePath) {
+  static synchronized String getResource(String resourcePath) {
     try {
       File file = resources.get(resourcePath);
       if (file == null) {
