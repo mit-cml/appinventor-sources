@@ -70,7 +70,7 @@ public class AppInvHTTPD extends NanoHTTPD {
       try {
         String strversion = parms.getProperty("version", "0");
         int version = (new Integer(strversion)).intValue();
-        if ((version > YaVersion.YOUNG_ANDROID_VERSION) ||
+        if ((version > (YaVersion.YOUNG_ANDROID_VERSION + YAV_SKEW)) ||
             (version < (YaVersion.YOUNG_ANDROID_VERSION - YAV_SKEW))) {
           scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
         } else {
