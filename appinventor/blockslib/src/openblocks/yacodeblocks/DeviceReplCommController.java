@@ -479,7 +479,7 @@ public class DeviceReplCommController implements AndroidController.DeviceConnect
             String jsonString = fetchJsonString(code);
             int count = 0;
             while (jsonString == null) {
-              if (count++ > 20) { // This limits this loop to 20 seconds or so
+              if (count++ > 56) { // This limits this loop to about a minute (4 seconds wait above and 56 seconds round the loop)
                 javax.swing.SwingUtilities.invokeLater(new Runnable() {
                     public void run() {
                       displayedCode.setVisible(false); // Take down pending message
