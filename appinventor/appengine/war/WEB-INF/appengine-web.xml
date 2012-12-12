@@ -55,7 +55,7 @@
          the phone. The phone must have an up-to-date copy of the MIT AICompanion App to
          use this feature. -->
 
-    <property name="wifi.enabled" value="false" />
+    <property name="wifi.enabled" value="true" />
 
   </system-properties>
 
