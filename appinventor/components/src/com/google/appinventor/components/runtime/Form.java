@@ -682,13 +682,20 @@ public class Form extends Activity
   }
 
   /**
+   * The requested screen orientation. Commonly used values are
+      unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " + 
+      "complete list of possible settings.
+   * 
    * ScreenOrientation property getter method.
    *
    * @return  screen orientation
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"user\".")
+      " unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+      "See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the " + 
+      "complete list of possible settings.")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
@@ -728,9 +735,7 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"behind\".")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScreenOrientation(String screenOrientation) {
     if (screenOrientation.equalsIgnoreCase("behind")) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);

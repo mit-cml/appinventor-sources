@@ -347,7 +347,7 @@ import android.widget.Toast;
           "notification.  " +
           "Selecting the notification will bring up the app and signal the MessageReceived " +
           "event.  Messages received when the app is dormant will be queued, and so " +
-          "several ReceivingEnabled event might appear when the app awakens.  As an app " +
+          "several MessageReceived events might appear when the app awakens.  As an app " +
           "developer, it would be a good idea to give your users control over this property, " +
           "so they can make their phones ignore text messages when your app is installed.")
   public boolean ReceivingEnabled() {
