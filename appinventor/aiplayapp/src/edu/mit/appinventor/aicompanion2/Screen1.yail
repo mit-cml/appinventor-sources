@@ -12,35 +12,7 @@ $Source $Yail
 (set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
 
  )
-(def (Setup)
-(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
- '())
-)
-
-(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
- 'text)
-
-(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
-
-(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
-
-(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
-
-(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
- '())
-)
- '( boolean)
- "not")
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
-
-)
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
-
-)
-)
-
- )
-(def expired #f)
+(def ipaddress "IPADDRESS")
 
 (def (PostData)
 (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
@@ -76,25 +48,65 @@ $Source $Yail
  '())
 
  )
-(def ipaddress "IPADDRESS")
+(def expired #f)
 
+(def (Setup)
+(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
+ '())
+)
+
+(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
+ 'text)
+
+(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
+
+(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
+ '())
+)
+ '( boolean)
+ "not")
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
+
+)
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
+
+)
+)
+
+ )
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
 (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
 (set-and-coerce-property! 'Screen1 'Title "MIT AICompanion" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 203 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "2.03" 'text)
-)
-(define-event Screen1 Initialize()
- (set-this-form)
- ((get-var Setup))
-
+(set-and-coerce-property! 'Screen1 'VersionCode 204 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "2.04" 'text)
 )
 (define-event Screen1 ErrorOccurred( component  functionName  errorNumber  message )
  (set-this-form)
  (set-and-coerce-property! 'Label8 'Visible #t 'boolean)
 
+(if (call-yail-primitive yail-equal? (*list-for-runtime* (lexical-value errorNumber)
+ 1501)
+ '( any any)
+ "=")
+ (begin (set-and-coerce-property! 'Label8 'Text "Your phone does not appear to have a Bar Code Scanning Application Installed." 'text)
+
+)
+ (begin (set-and-coerce-property! 'Label8 'Text "An Error Occurred. Please try pressing \"Connect to App Inventor\" again." 'text)
+
+)
+)
+
 ((get-var Setup))
+
+)
+(define-event Screen1 Initialize()
+ (set-this-form)
+ ((get-var Setup))
 
 )
 ;;; HorizontalArrangement2
@@ -125,7 +137,9 @@ $Source $Yail
 )
 (define-event ScanButton Click()
  (set-this-form)
- (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*)
+ (set-and-coerce-property! 'Label8 'Visible #f 'boolean)
+
+(call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*)
  '())
 
 )
@@ -177,8 +191,7 @@ $Source $Yail
 
 )
 ;;; Label8
-(add-component Screen1 Label Label8 (set-and-coerce-property! 'Label8 'Text "An Error Occurred. Please try pressing \"Connect to App Inventor\" again." 'text)
-(set-and-coerce-property! 'Label8 'TextColor #xFFFF0000 'number)
+(add-component Screen1 Label Label8 (set-and-coerce-property! 'Label8 'TextColor #xFFFF0000 'number)
 (set-and-coerce-property! 'Label8 'Visible #f 'boolean)
 )
 ;;; HorizontalArrangement5
