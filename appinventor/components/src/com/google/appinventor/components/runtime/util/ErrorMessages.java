@@ -343,7 +343,7 @@ public final class ErrorMessages {
                         "are 1, 2, or 3.");
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
-            "are 1 or 2.");
+            "are 1, 2, or 3.");
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
     errorMessages.put(ERROR_CANNOT_SAVE_IMAGE,

@@ -111,6 +111,20 @@ public class ChoicePropertyEditor extends PropertyEditor implements ChangeHandle
       }
     }
   }
+  
+  /**
+   * Enables the dropdown selector for this property
+   */ 
+  public void enable() {
+    listbox.setEnabled(true);
+  }
+  
+  /**
+   * Disables the dropdown selector for this property
+   */ 
+  public void disable() {
+    listbox.setEnabled(false);
+  }
 
   // ChangeHandler implementation
 

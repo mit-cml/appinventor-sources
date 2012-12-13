@@ -6,6 +6,8 @@
 package com.google.appinventor.client.properties;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONValue;
 
@@ -202,7 +204,7 @@ public class Properties<T extends Property> implements Iterable<T> {
    *
    * @throws IllegalStateException  if no such property exists
    */
-  private T getExistingProperty(String name) {
+  public T getExistingProperty(String name) {
     T property = getProperty(name);
     if (property == null) {
       throw new IllegalStateException("no such property: " + name);

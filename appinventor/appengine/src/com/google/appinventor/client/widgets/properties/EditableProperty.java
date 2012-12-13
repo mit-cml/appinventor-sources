@@ -119,7 +119,7 @@ public final class EditableProperty extends Property {
    *
    * @return  property editor
    */
-  final PropertyEditor getEditor() {
+  public final PropertyEditor getEditor() {
     return editor;
   }
 

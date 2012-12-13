@@ -19,7 +19,7 @@ public final class MockHorizontalArrangement extends MockHVArrangement {
    * Component type name.
    */
   public static final String TYPE = "HorizontalArrangement";
-
+  
   /**
    * Creates a new MockHorizontalArrangement component.
    *
@@ -29,4 +29,8 @@ public final class MockHorizontalArrangement extends MockHVArrangement {
     super(editor, TYPE, images.horizontal(),
         ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL);
   }
+  
+
+
+
 }

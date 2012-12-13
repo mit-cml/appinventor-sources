@@ -5,12 +5,18 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.BadPropertyEditorException;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.Document;
@@ -36,6 +42,8 @@ public final class MockForm extends MockContainer {
    */
   private class TitleBar extends Composite {
     private static final int HEIGHT = 24;
+    
+
 
     // UI elements
     private Label title;
@@ -132,9 +140,15 @@ public final class MockForm extends MockContainer {
   private static int verticalScrollbarWidth;
 
   private MockFormLayout myLayout;
+  
+  // flag to control attempting to enable/disable vertical
+  // alignment when scrollable property is changed
+  private boolean initialized = false;
+  
+  private YoungAndroidVerticalAlignmentChoicePropertyEditor myVAlignmentPropertyEditor;
 
-  private static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
-  private static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
+  public static final String PROPERTY_NAME_HORIZONTAL_ALIGNMENT = "AlignHorizontal";
+  public static final String PROPERTY_NAME_VERTICAL_ALIGNMENT = "AlignVertical";
 
   /**
    * Creates a new MockForm component.
@@ -174,6 +188,17 @@ public final class MockForm extends MockContainer {
     resizePanels();
 
     initComponent(formWidget);
+    
+    // Set up the initial state of the vertical alignment property editor and its
+    // dropdowns
+    try {
+      myVAlignmentPropertyEditor = PropertiesUtil.getVAlignmentEditor(properties);
+    } catch (BadPropertyEditorException e) {
+      OdeLog.log(MESSAGES.badAlignmentPropertyEditorForArrangement());
+      return;
+    };
+    enableAndDisableDropdowns();
+    initialized = true;
   }
 
   /*
@@ -581,6 +606,7 @@ public final class MockForm extends MockContainer {
       setScreenOrientationProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_SCROLLABLE)) {
       setScrollableProperty(newValue);
+      adjustAlignmentDropdowns();
     } else if (propertyName.equals(PROPERTY_NAME_TITLE)) {
       titleBar.changeTitle(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_ICON)) {
@@ -596,6 +622,21 @@ public final class MockForm extends MockContainer {
     } else if (propertyName.equals(PROPERTY_NAME_VERTICAL_ALIGNMENT)) {
     myLayout.setVAlignmentFlags(newValue);
     refreshForm();
+    }
   }
+  
+  // enableAndDisable It should not be called until the component is initialized.
+  // Otherwise, we'll get NPEs in trying to use myAlignmentPropertyEditor.
+  private void adjustAlignmentDropdowns() {
+    if (initialized) enableAndDisableDropdowns();
+  }
+
+  // Don't forget to call this on initialization!!!
+  // If scrollable is True, the selector for vertical alignment should be disabled. 
+  private void enableAndDisableDropdowns() {
+    String scrollable = properties.getProperty(PROPERTY_NAME_SCROLLABLE).getValue();
+    if (scrollable.equals("True")) {
+      myVAlignmentPropertyEditor.disable();
+    } else myVAlignmentPropertyEditor.enable();
   }
 }
