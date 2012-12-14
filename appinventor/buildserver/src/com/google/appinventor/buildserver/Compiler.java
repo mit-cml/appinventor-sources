@@ -451,6 +451,16 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
+      if (componentTypes.contains("BarcodeScanner")) {
+        // Barcode Activity
+        out.write("    <activity android:name=\"com.google.zxing.client.android.AppInvCaptureActivity\"\n");
+        out.write("              android:screenOrientation=\"landscape\"\n");
+        out.write("              android:stateNotNeeded=\"true\"\n");
+        out.write("              android:configChanges=\"orientation|keyboardHidden\"\n");
+        out.write("              android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\"\n");
+        out.write("              android:windowSoftInputMode=\"stateAlwaysHidden\" />\n");
+      }
+
       // BroadcastReceiver for Texting Component
       if (componentTypes.contains("Texting")) {
         System.out.println("Android Manifest: including <receiver> tag");

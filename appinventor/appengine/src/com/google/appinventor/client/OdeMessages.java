@@ -2950,6 +2950,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String ResultProperties();
 
+  @DefaultMessage("UseExternalScanner")
+  @Description("")
+  String UseExternalScannerProperties();
+
   @DefaultMessage("ResultType")
   @Description("")
   String ResultTypeProperties();
