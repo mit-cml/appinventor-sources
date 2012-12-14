@@ -1,4 +1,7 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.common;
 
@@ -188,8 +191,26 @@ public class YaVersion {
   // - BALL_COMPONENT_VERSION was incremented to 4.
   // - CANVAS_COMPONENT_VERSION was incremented to 6.
   // - IMAGESPRITE_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 63:
+  // - ACTIVITYSTARTER_COMPONENT_VERSION was incremented to 4.
+  // - FORM_COMPONENT_VERSION was incremented to 9.
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 64:
+  // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 65:
+  // - BALL_COMPONENT_VERSION was incremented to 5.
+  // - CANVAS_COMPONENT_VERSION was incremented to 7.
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 66:
+  // - FORM_COMPONENT_VERSION was incremented to 10.
+  // For YOUNG_ANDROID_VERSION 67:
+  // - TEXTING_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 68:
+  // - Phone Status Block was added.
+  // For YOUNG_ANDROID_VERSION 69:
+  // - IMAGEPICKER_COMPONENT_VERSION was incremented to 5.
 
-    public static final int YOUNG_ANDROID_VERSION = 62;
+  public static final int YOUNG_ANDROID_VERSION = 69;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -270,7 +291,10 @@ public class YaVersion {
   // - The ActivityStarter.ActivityError event was added.
   // For ACTIVITYSTARTER_COMPONENT_VERSION 3:
   // - The ActivityStarter.ActivityError event was marked userVisible false and is no longer used.
-  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 3;
+  // For ACTIVITYSTARTER_COMPONENT_VERSION 4:
+  // - The ActivityStarter.StartActivity was edited to use the parent Form's open screen
+  //   animation to transition to next activity.
+  public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
@@ -279,7 +303,9 @@ public class YaVersion {
   // - The Z property was added (also for ImageSprite)
   // For BALL_COMPONENT_VERSION 4:
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
-  public static final int BALL_COMPONENT_VERSION = 4;
+  // For BALL_COMPONENT_VERSION 5:
+  // - Callback parameters speed and heading were added to Flung. (for all sprites)
+  public static final int BALL_COMPONENT_VERSION = 5;
 
   public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
 
@@ -328,7 +354,9 @@ public class YaVersion {
   // - Added GetBackgroundPixelColor, GetPixelColor, and SetBackgroundPixelColor methods.
   // For CANVAS_COMPONENT_VERSION 6:
   // - Added TouchDown, TouchUp, and Flung events.
-  public static final int CANVAS_COMPONENT_VERSION = 6;
+  // For CANVAS_COMPONENT_VERSION 7:
+  // - Callback parameters speed and heading were added to Flung. (for all sprites)
+  public static final int CANVAS_COMPONENT_VERSION = 7;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.
@@ -364,9 +392,16 @@ public class YaVersion {
   // For FROM_COMPONENT_VERSION 8:
   // - The AlignHorizontal property was added
   // - The AlignVertical property was added
-  public static final int FORM_COMPONENT_VERSION = 8;
+  // For FORM_COMPONENT_VERSION 9:
+  // - The OpenScreenAnimation property was added
+  // - The CloseScreenAnimation property was added
+  // For FORM_COMPONENT_VERSION 10:
+  // - The BackPressed event was added.
+  public static final int FORM_COMPONENT_VERSION = 10;
 
-  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 1;
+  // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
+  // - The Fusiontables API was migrated from SQL to V1
+  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 2;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
@@ -383,7 +418,11 @@ public class YaVersion {
   // - The method Open was added.
   // For IMAGEPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int IMAGEPICKER_COMPONENT_VERSION = 4;
+  // For IMAGEPICKER_COMPONENT_VERSION 5:
+  // - The ImagePath property was changed to Selection, and now returns a file path to
+  //   external storage
+  
+  public static final int IMAGEPICKER_COMPONENT_VERSION = 5;
 
   // For IMAGESPRITE_COMPONENT_VERSION 2:
   // - The Rotates property was added.
@@ -394,7 +433,9 @@ public class YaVersion {
   // - The Z property was added (also for Ball)
   // For IMAGESPRITE_COMPONENT_VERSION 5:
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 5;
+  // For IMAGESPRITE_COMPONENT_VERSION 6:
+  // - Callback parameters speed and heading were added to Flung. (for all sprites)
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 6;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
@@ -422,7 +463,10 @@ public class YaVersion {
   // - The method Open was added.
   // For LISTPICKER_COMPONENT_VERSION 5:
   // - The Shape property was added.
-  public static final int LISTPICKER_COMPONENT_VERSION = 5;
+  // For LISTPICKER_COMPONENT_VERSION 6:
+  // - The getIntent method was modified to provide the ListPickerActivity
+  //   with the parent Form's open screen animation.
+  public static final int LISTPICKER_COMPONENT_VERSION = 6;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -450,6 +494,8 @@ public class YaVersion {
   // For PHONENUMBERPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
   public static final int PHONENUMBERPICKER_COMPONENT_VERSION = 4;
+
+  public static final int PHONESTATUS_COMPONENT_VERSION = 1;
 
   // For PLAYER_COMPONENT_VERSION 2:
   // - The Player.PlayerError event was added.
@@ -486,7 +532,13 @@ public class YaVersion {
 
   public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
 
-  public static final int TEXTING_COMPONENT_VERSION = 1;
+  // For TEXTING_COMPONENT_VERSION 2:
+  // Texting over Wifi was implemented using Google Voice
+  // This works only on phones with 2.0 (Eclair) or higher.
+  // It requires that the user has a Google Voice account
+  // and has the mobile Voice app installed on the phone.
+  // Access to Google Voice is controlled through OAuth 2.
+  public static final int TEXTING_COMPONENT_VERSION = 2;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 

@@ -1,4 +1,7 @@
-// Copyright 2011 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.server.storage;
 
@@ -18,6 +21,7 @@ import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
+import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -95,7 +99,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   private class Result<T> {
     T t;
   }
-  
+
   private FileService fileService;
 
   static {
@@ -106,13 +110,14 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(FileData.class);
     ObjectifyService.register(UserFileData.class);
     ObjectifyService.register(MotdData.class);
+    ObjectifyService.register(RendezvousData.class);
   }
 
   ObjectifyStorageIo() {
     fileService = FileServiceFactory.getFileService();
     initMotd();
   }
-  
+
   // for testing
   ObjectifyStorageIo(FileService fileService) {
     this.fileService = fileService;
@@ -229,7 +234,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           UserData userData = datastore.find(userKey(userId));
           if (userData != null) {
             userData.settings = settings;
-	    userData.visited = new Date(); // Indicate that this person was active now
+            userData.visited = new Date(); // Indicate that this person was active now
             datastore.put(userData);
           }
         }
@@ -308,7 +313,7 @@ public class ObjectifyStorageIo implements  StorageIo {
         public void onNonFatalError() {
           rememberBlobsToDelete();
         }
-        
+
         private void rememberBlobsToDelete() {
           for (FileData addedFile : addedFiles) {
             if (addedFile.isBlob && addedFile.blobstorePath != null) {
@@ -319,7 +324,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           addedFiles.clear();
         }
       });
-            
+
       // second job is on the user entity
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -332,7 +337,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           datastore.put(upd);
         }
       });
-    } catch (ObjectifyException e) {          
+    } catch (ObjectifyException e) {
       for (FileData addedFile : addedFiles) {
         if (addedFile.isBlob && addedFile.blobstorePath != null) {
           blobsToDelete.add(addedFile.blobstorePath);
@@ -1056,7 +1061,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
-  private String uploadToBlobstore(byte[] content, String name) 
+  private String uploadToBlobstore(byte[] content, String name)
       throws BlobWriteException, ObjectifyException {
     // Create a new Blob file with generic mime-type "application/octet-stream"
     AppEngineFile blobstoreFile = null;
@@ -1220,10 +1225,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     final Result<String> projectName = new Result<String>();
     projectName.t = null;
     String fileName = null;
-    
+
     ByteArrayOutputStream zipFile = new ByteArrayOutputStream();
     final ZipOutputStream out = new ZipOutputStream(zipFile);
-    
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1313,7 +1318,7 @@ public class ObjectifyStorageIo implements  StorageIo {
                 }
               } catch (IOException e) {
                 throw CrashReport.createAndLogError(LOG, null,
-                    collectProjectErrorInfo(userId, projectId, 
+                    collectProjectErrorInfo(userId, projectId,
                         StorageUtil.ANDROID_KEYSTORE_FILENAME), e);
               }
             }
@@ -1354,7 +1359,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return motd.t;
   }
-  
+
   @Override
   public String findUserByEmail(final String email) throws NoSuchElementException {
     Objectify datastore = ObjectifyService.begin();
@@ -1365,6 +1370,46 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw new NoSuchElementException("Couldn't find a user with email " + email);
     }
     return userData.id;
+  }
+
+  @Override
+  public String findIpAddressByKey(final String key) {
+    Objectify datastore = ObjectifyService.begin();
+    RendezvousData data  = datastore.query(RendezvousData.class).filter("key", key).get();
+    if (data == null) {
+      return null;
+    } else {
+      return data.ipAddress;
+    }
+  }
+
+  @Override
+  public void storeIpAddressByKey(final String key, final String ipAddress) {
+    Objectify datastore = ObjectifyService.begin();
+    final RendezvousData data  = datastore.query(RendezvousData.class).filter("key", key).get();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            RendezvousData new_data = null;
+            if (data == null) {
+              new_data = new RendezvousData();
+              new_data.id = null;
+              new_data.key = key;
+              new_data.ipAddress = ipAddress;
+              new_data.used = new Date(); // So we can cleanup old entries
+              datastore.put(new_data);
+            } else {
+              new_data = data;
+              new_data.ipAddress = ipAddress;
+              new_data.used = new Date();
+              datastore.put(new_data);
+          }
+          }
+        });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
   }
 
   private void initMotd() {
@@ -1378,8 +1423,8 @@ public class ObjectifyStorageIo implements  StorageIo {
             firstMotd.id = MOTD_ID;
             firstMotd.caption = "Hello!";
             firstMotd.content = "Welcome to the experimental App Inventor system from MIT. " +
-		"This is still a prototype.  It would be a good idea to frequently back up " +
-		"your projects to local storage.";
+                "This is still a prototype.  It would be a good idea to frequently back up " +
+                "your projects to local storage.";
             datastore.put(firstMotd);
           }
         }
@@ -1388,7 +1433,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, "Initing MOTD", e);
     }
   }
-  
+
   // Create a name for a blob from a project id and file name. This is mostly
   // to help with debugging and viewing the blobstore via the admin console.
   // We don't currently use these blob names anywhere else.

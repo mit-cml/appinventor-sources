@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.buildserver;
 
@@ -20,13 +23,18 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -44,6 +52,8 @@ import javax.imageio.ImageIO;
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class Compiler {
+  public static int currentProgress = 10;
+
   // Kawa and DX processes can use a lot of memory. We only launch one Kawa or DX process at a time.
   private static final Object SYNC_KAWA_OR_DX = new Object();
 
@@ -53,17 +63,20 @@ public final class Compiler {
 
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
-
+  
   public static final String RUNTIME_FILES_DIR = "/files/";
 
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
-  
+
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
 
   private static final String COMPONENT_PERMISSIONS =
       RUNTIME_FILES_DIR + "simple_components_permissions.json";
+
+  private static final String COMPONENT_LIBRARIES =
+    RUNTIME_FILES_DIR + "simple_components_libraries.json";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -75,25 +88,35 @@ public final class Compiler {
       RUNTIME_FILES_DIR + "android.jar";
   private static final String MAC_AAPT_TOOL =
       "/tools/mac/aapt";
-  private static final String WINDOWS_AAPT_TOOL = 
+  private static final String WINDOWS_AAPT_TOOL =
       "/tools/windows/aapt";
   private static final String LINUX_AAPT_TOOL =
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
-  private static final String TWITTER_RUNTIME =
-      RUNTIME_FILES_DIR + "twitter4j.jar";
+  private static final String BUGSENSE_RUNTIME =
+      RUNTIME_FILES_DIR + "bugsense3.0.5.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
+
   @VisibleForTesting
   static final String YAIL_RUNTIME =
       RUNTIME_FILES_DIR + "runtime.scm";
+  private static final String MAC_ZIPALIGN_TOOL =
+      "/tools/mac/zipalign";
+  private static final String WINDOWS_ZIPALIGN_TOOL =
+      "/tools/windows/zipalign";
+  private static final String LINUX_ZIPALIGN_TOOL =
+      "/tools/linux/zipalign";
 
   // Logging support
   private static final Logger LOG = Logger.getLogger(Compiler.class.getName());
 
-  private static final ConcurrentMap<String, Set<String>> componentPermissions =
+  private final ConcurrentMap<String, Set<String>> componentPermissions =
       new ConcurrentHashMap<String, Set<String>>();
+
+  private final ConcurrentMap<String, Set<String>> componentLibraries =
+    new ConcurrentHashMap<String, Set<String>>();
 
   /**
    * Map used to hold the names and paths of resources that we've written out
@@ -121,8 +144,10 @@ public final class Compiler {
   private final PrintStream err;
   private final PrintStream userErrors;
   private final boolean isForRepl;
+  private final boolean isForWireless;
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
+  private Set<String> librariesNeeded; // Set of component libraries
 
 
   /*
@@ -153,6 +178,32 @@ public final class Compiler {
   }
 
   /*
+   * Generate the set of Android libraries needed by this project.
+   */
+  @VisibleForTesting
+  void generateLibraryNames() {
+    // Before we can use componentLibraries, we have to call loadComponentLibraries().
+    try {
+      loadComponentLibraryNames();
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Libraries"));
+    }
+
+    librariesNeeded = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      librariesNeeded.addAll(componentLibraries.get(componentType));
+    }
+    System.out.println("Libraries needed, n= " + librariesNeeded.size());
+  }
+
+
+  /*
    * Creates an AndroidManifest.xml file needed for the Android application.
    */
   private boolean writeAndroidManifest(File manifestFile, Set<String> permissionsNeeded) {
@@ -165,7 +216,7 @@ public final class Compiler {
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
-    
+
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
@@ -180,6 +231,18 @@ public final class Compiler {
           // Android Market.
          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
+
+      // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
+      // is used by the Google Play store to determine which devices the app is available for. By adding
+      // these lines we indicate that we use these features BUT THAT THEY ARE NOT REQUIRED so it is ok
+      // to make the app available on devices that lack the feature. Without these lines the Play Store
+      // makes a guess based on permissions and assumes that they are required features.
+      if (isForWireless) {
+          out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
+      }
+
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
@@ -206,7 +269,9 @@ public final class Compiler {
       // http://developer.android.com/guide/publishing/preparing.html suggests removing the
       // 'debuggable=true' but I'm not sure that our users would want that while they're still
       // testing their packaged apps.  Maybe we should make that an option, somehow.
-      out.write("android:debuggable=\"true\" ");
+      // TODONE(jis): Turned off debuggable. No one really uses it and it represents a security
+      // risk for App Inventor App end-users.
+      out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
       out.write(">\n");
@@ -252,6 +317,23 @@ public final class Compiler {
       out.write("      </intent-filter>\n");
       out.write("    </activity>\n");
 
+      // BroadcastReceiver for Texting Component
+      if (componentTypes.contains("Texting")) {
+        System.out.println("Android Manifest: including <receiver> tag");
+        out.write(
+            "<receiver \n" +   
+            "android:name=\"com.google.appinventor.components.runtime.util.SmsBroadcastReceiver\" \n" +
+            "android:enabled=\"true\" \n" +
+            "android:exported=\"true\" >\n "  +
+            "<intent-filter> \n" +
+            "<action android:name=\"android.provider.Telephony.SMS_RECEIVED\" /> \n" +
+            "<action \n" +
+            "android:name=\"com.google.android.apps.googlevoice.SMS_RECEIVED\" \n" +
+            "android:permission=\"com.google.android.apps.googlevoice.permission.RECEIVE_SMS\" /> \n" +
+            "</intent-filter>  \n" +
+        "</receiver> \n");
+      }
+
       out.write("  </application>\n");
       out.write("</manifest>\n");
       out.close();
@@ -276,15 +358,20 @@ public final class Compiler {
    * @param keystoreFilePath
    * @param childProcessRam   maximum RAM for child processes, in MBs.
    * @return  {@code true} if the compilation succeeds, {@code false} otherwise
+   * @throws JSONException
+   * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, String keystoreFilePath, int childProcessRam) {
+                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
+
     // Create a new compiler instance for the compilation
-    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl,
+    Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
+
+    compiler.generateLibraryNames();
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -296,6 +383,14 @@ public final class Compiler {
     if (!compiler.prepareApplicationIcon(new File(drawableDir, "ya.png"))) {
       return false;
     }
+    setProgress(10);
+
+    // Create anim directory and animation xml files
+    out.println("________Creating animation xml");
+    File animDir = createDirectory(resDir, "anim");
+    if (!compiler.createAnimationXml(animDir)) {
+      return false;
+    }
 
     // Determine android permissions.
     out.println("________Determining permissions");
@@ -303,6 +398,7 @@ public final class Compiler {
     if (permissionsNeeded == null) {
       return false;
     }
+    setProgress(15);
 
     // Generate AndroidManifest.xml
     out.println("________Generating manifest file");
@@ -310,6 +406,7 @@ public final class Compiler {
     if (!compiler.writeAndroidManifest(manifestFile, permissionsNeeded)) {
       return false;
     }
+    setProgress(20);
 
     // Create class files.
     out.println("________Compiling source files");
@@ -317,6 +414,7 @@ public final class Compiler {
     if (!compiler.generateClasses(classesDir)) {
       return false;
     }
+    setProgress(35);
 
     // Invoke dx on class files
     out.println("________Invoking DX");
@@ -334,6 +432,7 @@ public final class Compiler {
     if (!compiler.runDx(classesDir, dexedClasses)) {
       return false;
     }
+    setProgress(85);
 
     // Invoke aapt to package everything up
     out.println("________Invoking AAPT");
@@ -343,6 +442,7 @@ public final class Compiler {
     if (!compiler.runAaptPackage(manifestFile, resDir, tmpPackageName)) {
       return false;
     }
+    setProgress(90);
 
     // Seal the apk with ApkBuilder
     out.println("________Invoking ApkBuilder");
@@ -351,6 +451,7 @@ public final class Compiler {
     if (!compiler.runApkBuilder(apkAbsolutePath, tmpPackageName, dexedClasses)) {
       return false;
     }
+    setProgress(95);
 
     // Sign the apk file
     out.println("________Signing the apk file");
@@ -358,9 +459,65 @@ public final class Compiler {
       return false;
     }
 
+    // ZipAlign the apk file
+    out.println("________ZipAligning the apk file");
+    if (!compiler.runZipAlign(apkAbsolutePath, tmpDir)) {
+      return false;
+    }
+
+    setProgress(100);
+
     out.println("Build finished in " +
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
+    return true;
+  }
+
+  /*
+   * Creates all the animation xml files.
+   */
+  private boolean createAnimationXml(File animDir) {
+    // Store the filenames, and their contents into a HashMap
+    // so that we can easily add more, and also to iterate
+    // through creating the files.
+    Map<String, String> files = new HashMap<String, String>();
+    files.put("fadein.xml", AnimationXmlConstants.FADE_IN_XML);
+    files.put("fadeout.xml", AnimationXmlConstants.FADE_OUT_XML);
+    files.put("hold.xml", AnimationXmlConstants.HOLD_XML);
+    files.put("zoom_enter.xml", AnimationXmlConstants.ZOOM_ENTER);
+    files.put("zoom_exit.xml", AnimationXmlConstants.ZOOM_EXIT);
+    files.put("zoom_enter_reverse.xml", AnimationXmlConstants.ZOOM_ENTER_REVERSE);
+    files.put("zoom_exit_reverse.xml", AnimationXmlConstants.ZOOM_EXIT_REVERSE);
+    files.put("slide_exit.xml", AnimationXmlConstants.SLIDE_EXIT);
+    files.put("slide_enter.xml", AnimationXmlConstants.SLIDE_ENTER);
+    files.put("slide_exit_reverse.xml", AnimationXmlConstants.SLIDE_EXIT_REVERSE);
+    files.put("slide_enter_reverse.xml", AnimationXmlConstants.SLIDE_ENTER_REVERSE);
+    files.put("slide_v_exit.xml", AnimationXmlConstants.SLIDE_V_EXIT);
+    files.put("slide_v_enter.xml", AnimationXmlConstants.SLIDE_V_ENTER);
+    files.put("slide_v_exit_reverse.xml", AnimationXmlConstants.SLIDE_V_EXIT_REVERSE);
+    files.put("slide_v_enter_reverse.xml", AnimationXmlConstants.SLIDE_V_ENTER_REVERSE);
+
+    for (String filename : files.keySet()) {
+      File file = new File(animDir, filename);
+      if (!writeXmlFile(file, files.get(filename))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /*
+   * Writes the given string input to the provided file.
+   */
+  private boolean writeXmlFile(File file, String input) {
+    try {
+      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+      writer.write(input);
+      writer.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+      return false;
+    }
     return true;
   }
 
@@ -397,13 +554,14 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForRepl, int childProcessMaxRam) {
+           PrintStream userErrors, boolean isForRepl, boolean isForWireless, int childProcessMaxRam) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
     this.err = err;
     this.userErrors = userErrors;
     this.isForRepl = isForRepl;
+    this.isForWireless = isForWireless;
     this.childProcessRamMb = childProcessMaxRam;
   }
 
@@ -423,10 +581,10 @@ public final class Compiler {
         int srcIndex = sourceFileName.indexOf("/../src/");
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
-            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+        .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         if (System.getProperty("os.name").startsWith("Windows")){
-        	classFileName = classesDir.getAbsolutePath()
-           .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
+          classFileName = classesDir.getAbsolutePath()
+            .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
 
         // Check whether user code exists by seeing if a left parenthesis exists at the beginning of
@@ -455,11 +613,23 @@ public final class Compiler {
         return false;
       }
 
+      // Construct the class path including component libraries (jars)
       String classpath =
-          getResource(KAWA_RUNTIME) + File.pathSeparator +
-          getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator +
-          getResource(TWITTER_RUNTIME) + File.pathSeparator +
-          getResource(ANDROID_RUNTIME);
+        getResource(KAWA_RUNTIME) + File.pathSeparator +
+        getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
+        getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
+
+      // Add component library names to classpath
+      System.out.println("Libraries Classpath, n " + librariesNeeded.size());
+      for (String library : librariesNeeded) {
+        classpath += getResource(RUNTIME_FILES_DIR + library) + File.pathSeparator;
+      }
+
+      classpath +=
+        getResource(ANDROID_RUNTIME);
+      
+      System.out.println("Libraries Classpath = " + classpath);
+
       String yailRuntime = getResource(YAIL_RUNTIME);
       List<String> kawaCommandArgs = Lists.newArrayList();
       int mx = childProcessRamMb - 200;
@@ -494,7 +664,7 @@ public final class Compiler {
       String kawaOutput = kawaOutputStream.toString();
       out.print(kawaOutput);
       String kawaCompileTimeMessage = "Kawa compile time: " +
-          ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
+      ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
       out.println(kawaCompileTimeMessage);
       LOG.info(kawaCompileTimeMessage);
 
@@ -530,7 +700,7 @@ public final class Compiler {
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
       if (System.getProperty("os.name").startsWith("Windows")){
-  		jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
+        jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
             File.separator + "jarsigner.exe");
       }
       if (!jarsignerFile.exists()) {
@@ -559,6 +729,57 @@ public final class Compiler {
 
     return true;
   }
+
+  private boolean runZipAlign(String apkAbsolutePath, File tmpDir) {
+    // TODO(user): add zipalign tool appinventor->lib->android->tools->linux and windows
+    // Need to make sure assets directory exists otherwise zipalign will fail.
+    createDirectory(project.getAssetsDirectory());
+    String zipAlignTool;
+    String osName = System.getProperty("os.name");
+    if (osName.equals("Mac OS X")) {
+      zipAlignTool = MAC_ZIPALIGN_TOOL;
+    } else if (osName.equals("Linux")) {
+      zipAlignTool = LINUX_ZIPALIGN_TOOL;
+    } else if (osName.startsWith("Windows")) {
+      zipAlignTool = WINDOWS_ZIPALIGN_TOOL;
+    } else {
+      LOG.warning("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      err.println("YAIL compiler - cannot run ZIPALIGN on OS " + osName);
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    // TODO: create tmp file for zipaling result
+    String zipAlignedPath = tmpDir.getAbsolutePath() + File.separator + "zipaligned.apk";
+    // zipalign -f -v 4 infile.zip outfile.zip
+    String[] zipAlignCommandLine = {
+        getResource(zipAlignTool),
+        "-f",
+        "4",
+        apkAbsolutePath,
+        zipAlignedPath
+    };
+    long startAapt = System.currentTimeMillis();
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
+    // tools output
+    if (!Execution.execute(null, zipAlignCommandLine, System.out, System.err)) {
+      LOG.warning("YAIL compiler - ZIPALIGN execution failed.");
+      err.println("YAIL compiler - ZIPALIGN execution failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    if(!copyFile(zipAlignedPath, apkAbsolutePath)) {
+      LOG.warning("YAIL compiler - ZIPALIGN file copy failed.");
+      err.println("YAIL compiler - ZIPALIGN file copy failed.");
+      userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
+      return false;
+    }
+    String zipALignTimeMessage = "ZIPALIGN time: " +
+        ((System.currentTimeMillis() - startAapt) / 1000.0) + " seconds";
+    out.println(zipALignTimeMessage);
+    LOG.info(zipALignTimeMessage);
+    return true;
+  }
+
 
   /*
    * Loads the icon for the application, either a user provided one or the default one.
@@ -596,25 +817,40 @@ public final class Compiler {
 
   private boolean runDx(File classesDir, String dexedClasses) {
     int mx = childProcessRamMb - 200;
-    String[] dxCommandLine = {
-        System.getProperty("java.home") + "/bin/java",
-        "-mx" + mx + "M",
-        "-jar",
-        getResource(DX_JAR),
-        "--dex",
-        "--positions=lines",
-        "--output=" + dexedClasses,
-        classesDir.getAbsolutePath(),
-        getResource(SIMPLE_ANDROID_RUNTIME_JAR),
-        getResource(KAWA_RUNTIME),
-        getResource(TWITTER_RUNTIME),
-    };
-    long startDx = System.currentTimeMillis();
+
+    List<String> commandLineList = new ArrayList<String>();
+    commandLineList.add(System.getProperty("java.home") + "/bin/java");
+    commandLineList.add("-mx" + mx + "M");
+    commandLineList.add("-jar");
+    commandLineList.add(getResource(DX_JAR));
+    commandLineList.add("--dex");
+    commandLineList.add("--positions=lines");
+    commandLineList.add("--output=" + dexedClasses);
+    commandLineList.add(classesDir.getAbsolutePath());
+    commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
+    commandLineList.add(getResource(KAWA_RUNTIME));
+    commandLineList.add(getResource(BUGSENSE_RUNTIME));
+
+    // Add libraries to command line arguments
+    System.out.println("Libraries needed command line n = " + librariesNeeded.size());
+    for (String library : librariesNeeded) {
+      commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
+    }
+
+    System.out.println("Libraries command line = " + commandLineList);
+    
+    // Convert command line to an array
+    String[] dxCommandLine = new String[commandLineList.size()];
+    commandLineList.toArray(dxCommandLine);
+
+   long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to polute build messages with
     // tools output
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
+      setProgress(50);
       dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+      setProgress(75);
     }
     if (!dxSuccess) {
       LOG.warning("YAIL compiler - DX execution failed.");
@@ -640,8 +876,8 @@ public final class Compiler {
     } else if (osName.equals("Linux")) {
       aaptTool = LINUX_AAPT_TOOL;
     } else if (osName.startsWith("Windows")) {
-		aaptTool = WINDOWS_AAPT_TOOL;
-	} else {
+      aaptTool = WINDOWS_AAPT_TOOL;
+    } else {
       LOG.warning("YAIL compiler - cannot run AAPT on OS " + osName);
       err.println("YAIL compiler - cannot run AAPT on OS " + osName);
       userErrors.print(String.format(ERROR_IN_STAGE, "AAPT"));
@@ -681,7 +917,7 @@ public final class Compiler {
    *
    * @param resourcePath the name of the resource
    */
-  static String getResource(String resourcePath) {
+  static synchronized String getResource(String resourcePath) {
     try {
       File file = resources.get(resourcePath);
       if (file == null) {
@@ -713,7 +949,7 @@ public final class Compiler {
     }
   }
 
-  private static void loadComponentPermissions() throws IOException, JSONException {
+  private void loadComponentPermissions() throws IOException, JSONException {
     synchronized (componentPermissions) {
       if (componentPermissions.isEmpty()) {
         String permissionsJson = Resources.toString(
@@ -738,6 +974,65 @@ public final class Compiler {
         }
       }
     }
+  }
+
+  /**
+   * Loads the names of library jars for each component and stores them in
+   * componentLibraries.
+   *
+   * @throws IOException
+   * @throws JSONException
+   */
+  private void loadComponentLibraryNames() throws IOException, JSONException {
+    synchronized (componentLibraries) {
+      if (componentLibraries.isEmpty()) {
+        String librariesJson = Resources.toString(
+            Compiler.class.getResource(COMPONENT_LIBRARIES), Charsets.UTF_8);
+
+        JSONArray componentsArray = new JSONArray(librariesJson);
+        int componentslength = componentsArray.length();
+        for (int componentsIndex = 0; componentsIndex < componentslength; componentsIndex++) {
+          JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
+          String name = componentObject.getString("name");
+
+          Set<String> librariesForThisComponent = Sets.newHashSet();
+
+          JSONArray librariesArray = componentObject.getJSONArray("libraries");
+          int librariesLength = librariesArray.length();
+          for (int librariesIndex = 0; librariesIndex < librariesLength; librariesIndex++) {
+            String libraryName = librariesArray.getString(librariesIndex);
+            librariesForThisComponent.add(libraryName);
+          }
+          componentLibraries.put(name, librariesForThisComponent);
+        }
+      }
+    }
+  }
+
+  /**
+   * Copy one file to another. If destination file does not exist, it is created.
+   *
+   * @param srcPath absolute path to source file
+   * @param dstPath absolute path to destination file
+   * @return  {@code true} if the copy succeeds, {@code false} otherwise
+   */
+  private static Boolean copyFile(String srcPath, String dstPath) {
+    try{
+      FileInputStream in = new FileInputStream(srcPath);
+      FileOutputStream out = new FileOutputStream(dstPath);
+      byte[] buf = new byte[1024];
+      int len;
+      while ((len = in.read(buf)) > 0) {
+        out.write(buf, 0, len);
+      }
+      in.close();
+      out.close();
+    }
+    catch(IOException e) {
+      e.printStackTrace();
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -766,5 +1061,21 @@ public final class Compiler {
       dir.mkdir();
     }
     return dir;
+  }
+
+  private static int setProgress(int increments){
+    Compiler.currentProgress = increments;
+    LOG.info("The current progress is "
+              + Compiler.currentProgress + "%");
+    return Compiler.currentProgress;
+  }
+
+  public static int getProgress(){
+    if (Compiler.currentProgress==100){
+      Compiler.currentProgress = 10;
+      return 100;
+    }else{
+      return Compiler.currentProgress;
+    }
   }
 }

@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -8,13 +11,18 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Gravity;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 /**
@@ -161,7 +169,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param title the title for the alert box
    */
   private void textInputAlert(String message, String title) {
-    Log.i(LOG_TAG, "Text input alert: " + message);
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(message);
@@ -197,9 +204,33 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   public void ShowAlert(final String notice) {
     handler.post(new Runnable() {
       public void run() {
-        Toast.makeText(activity, notice, Toast.LENGTH_LONG).show();
+        toastNow(notice);
       }
     });
+  }
+  
+  // show a toast using a TextView, which allows us to set the
+  // font size.  The default toast is too small.
+  private void toastNow (String message) {
+    // The notifier font size for more recent releases seems too
+    // small compared to early releases.
+    // This sets the fontsize according to SDK level,  There is almost certainly
+    // a better way to do this, with display metrics for example, but
+    // I (hal) can't figure it out.
+    int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
+        ? 22 : 15;
+    Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
+    toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
+    TextView textView = new TextView(activity);
+    textView.setBackgroundColor(Color.DKGRAY);
+    textView.setTextColor(Color.WHITE);
+    textView.setTextSize(fontsize);
+    Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
+    textView.setTypeface(typeface);
+    textView.setPadding(10, 10, 10, 10);
+    textView.setText(message);
+    toast.setView(textView);
+    toast.show();
   }
 
   /**

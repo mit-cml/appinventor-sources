@@ -1,4 +1,7 @@
-// Copyright 2007 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client.editor.simple.components;
 
@@ -54,6 +57,7 @@ import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.user.client.ui.impl.ClippedImagePrototype;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +77,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected static final String PROPERTY_NAME_NAME = "Name";
   protected static final String PROPERTY_NAME_UUID = "Uuid";
   protected static final String PROPERTY_NAME_SOURCE = "Source";
+  protected static final List<String> YAIL_NAMES = Arrays.asList("CsvUtil", "Double", "Float",
+    "Integer", "JavaCollection", "JavaIterator", "KawaEnvironment", "Long", "Short",
+    "SimpleForm", "String", "Pattern", "YailList", "YailNumberToString", "YailRuntimeError");
 
   public static final int BORDER_SIZE = 2 + 2; // see ode-SimpleMockComponent in Ya.css
 
@@ -159,6 +166,12 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       final List<String> names = editor.getComponentNames();
       if (names.contains(newName)) {
         Window.alert(MESSAGES.duplicateComponentNameError());
+        return false;
+      }
+
+      // Check that it is a variable name used in the Yail code
+      if (YAIL_NAMES.contains(newName)) {
+        Window.alert(MESSAGES.badComponentNameError());
         return false;
       }
 

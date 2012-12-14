@@ -1,11 +1,14 @@
-// Copyright 2011 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 import android.content.Intent;
 
 /**
@@ -37,6 +40,8 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(getIntent(), requestCode);
+    String openAnim = container.$form().getOpenAnimType();
+    AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
   }
 
   // Functions

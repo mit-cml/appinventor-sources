@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -10,9 +13,11 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.util.Log;
 
 /**
@@ -68,7 +73,12 @@ public class BarcodeScanner extends AndroidNonvisibleComponent
     if (requestCode == 0) {
       requestCode = form.registerForActivityResult(this);
     }
-    container.$context().startActivityForResult(intent, requestCode);
+    try {
+      container.$context().startActivityForResult(intent, requestCode);
+    } catch (ActivityNotFoundException e) {
+      container.$form().dispatchErrorOccurredEvent(this, "BarcodeScanner",
+        ErrorMessages.ERROR_NO_SCANNER_FOUND, "");
+    }
   }
 
   @Override

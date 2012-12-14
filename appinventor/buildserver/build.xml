@@ -58,7 +58,8 @@
       <classpath>
         <pathelement location="${build.dir}/blockslib/OpenBlocks.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
       </classpath>
@@ -71,7 +72,8 @@
       <fileset dir="${YailGenerator-class.dir}" />
       <zipfileset src="${build.dir}/blockslib/OpenBlocks.jar"/>
       <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-10.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-11.0.1.jar" />
+      <zipfileset src="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
     </jar>
@@ -122,19 +124,33 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,simple_components.txt,simple_components_permissions.json"/>
+               includes="AndroidRuntime.jar,simple_components.txt,simple_components_permissions.json,simple_components_libraries.json"/>
     </copy>
     <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+    <copy toFile="${classes.files.dir}/bugsense3.0.5.jar" file="${lib.dir}/bugsense/bugsense3.0.5.jar" />
+    <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
+    <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+    <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+    <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" /> 
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
       <fileset dir="${lib.dir}/android/tools" includes="*/aapt" />
     </copy>
     <chmod dir="${classes.tools.dir}" includes="*/aapt" perm="ugo+rx"/>
-
+    <copy todir="${classes.tools.dir}">
+      <fileset dir="${lib.dir}/android/tools" includes="*/zipalign" />
+    </copy>
+    <chmod dir="${classes.tools.dir}" includes="*/zipalign" perm="ugo+rx"/>
+    
     <!-- jar up the classes and resource files -->
     <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">
       <fileset dir="${BuildServer-class.dir}" />
@@ -153,7 +169,8 @@
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
-      <fileset dir="${lib.dir}" includes="guava/guava-10.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-11.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
     </copy>
@@ -203,6 +220,55 @@
       <arg value="--userName" />
       <arg value="App Inventor" />
       <arg value="--isForStemCellApp" />
+      <arg value="--outputDir" />
+      <arg value="${public.build.dir}" />
+    </java>
+  </target>
+
+  <!-- =====================================================================
+       GenPlayAppSrcZip Version for the Google Play Store works over WiFi
+       ===================================================================== -->
+  <target name="GenPlayAppSrcZip"
+          depends="init">
+    <!-- Note that if you want to pre-generate an android.keystore file for use in signing the
+         AppInventorDebugApp.apk (i.e. the stem cell app) you should put that file in the
+         ${appinventor.dir}/aiplayapp directory and add 'android.keystore' to the includes
+         list below.
+      -->
+    <zip destfile="${local.build.dir}/aiplayapp.zip" basedir="${appinventor.dir}/aiplayapp" filesonly="true"
+         includes="src/**/*,youngandroidproject/*,assets/*" />
+  </target>
+
+  <!-- =====================================================================
+       CheckPlayApp: Sets the PlayApp.uptodate property to true if
+                        the starter app needs to be rebuilt. This can happen
+                        if the starter app source files have changed, or if
+                        any of the build server jars have changed.
+       ===================================================================== -->
+  <target name="CheckPlayApp"
+          depends="GenPlayAppSrcZip,BuildServer">
+    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/AppInventorCompanion.apk">
+      <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
+      <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
+    </uptodate>
+  </target>
+
+  <!-- =====================================================================
+       PlayApp: builds ../build/buildserver/AppInventorCompanion.apk
+       ===================================================================== -->
+  <target name="PlayApp"
+          depends="CheckPlayApp"
+          unless="PlayApp.uptodate">
+    <java classname="com.google.appinventor.buildserver.Main" fork="true" failonerror="true">
+      <classpath>
+        <fileset dir="${run.lib.dir}" includes="*.jar" />
+      </classpath>
+      <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--inputZipFile" />
+      <arg value="${local.build.dir}/aiplayapp.zip" />
+      <arg value="--userName" />
+      <arg value="App Inventor" />
+      <arg value="--isForWirelessRepl" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
     </java>
@@ -262,7 +328,8 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+    <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
   </path>

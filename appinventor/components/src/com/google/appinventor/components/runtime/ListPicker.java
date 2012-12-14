@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -40,6 +43,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_ARG_NAME = LIST_ACTIVITY_CLASS + ".list";
   static final String LIST_ACTIVITY_RESULT_NAME = LIST_ACTIVITY_CLASS + ".selection";
   static final String LIST_ACTIVITY_RESULT_INDEX = LIST_ACTIVITY_CLASS + ".index";
+  static final String LIST_ACTIVITY_ANIM_TYPE = LIST_ACTIVITY_CLASS + ".anim";
 
   private YailList items;
   private String selection;
@@ -175,6 +179,11 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     Intent intent = new Intent();
     intent.setClassName(container.$context(), LIST_ACTIVITY_CLASS);
     intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toStringArray());
+    // Get the current Form's opening transition anim type,
+    // and pass it to the list picker activity. For consistency,
+    // the closing animation will be the same (but in reverse)
+    String openAnim = container.$form().getOpenAnimType();
+    intent.putExtra(LIST_ACTIVITY_ANIM_TYPE, openAnim);
     return intent;
   }
 

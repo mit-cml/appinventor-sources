@@ -1,4 +1,8 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+
 package com.google.appinventor.components.scripts;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -8,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -414,6 +419,11 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     protected final Set<String> permissions;
 
     /**
+     * Libraries required by this component.
+     */
+    protected final Set<String> libraries;
+    
+    /**
      * Properties of this component that are visible in the Designer.
      * @see DesignerProperty
      */
@@ -466,6 +476,7 @@ public abstract class ComponentProcessor extends AbstractProcessor {
             "Component");
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
+      libraries = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
       methods = Maps.newTreeMap();
@@ -736,6 +747,14 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       }
     }
 
+    // Gather library names.
+    UsesLibraries ulib = element.getAnnotation(UsesLibraries.class);
+    if (ulib != null) {
+      for (String library : ulib.libraries().split(",")) {
+        componentInfo.libraries.add(library.trim());
+      }
+    }
+    
     // Build up event information.
     processEvents(componentInfo, element);
 

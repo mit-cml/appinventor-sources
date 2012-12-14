@@ -26,6 +26,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="RunLocalBuildServer"/>
   </target>
 
+  <target name="PlayApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
@@ -65,8 +69,9 @@
         <pathelement location="lib/android/tools/sdklib.jar"/>
         <pathelement location="lib/args4j/args4j-2.0.18.jar" />
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
+        <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
         <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
-        <pathelement location="lib/guava/guava-10.0.1.jar" />
+        <pathelement location="lib/guava/guava-11.0.1.jar" />
         <pathelement location="lib/gwt_dragdrop/gwt-dnd-r1057.jar" />
         <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="lib/json/json.jar" />
@@ -74,7 +79,7 @@
         <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-        <pathelement location="lib/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+        <pathelement location="lib/twitter/twitter4j-core-android-2.2.6.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
@@ -82,7 +87,7 @@
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/appengine-api-1.0-sdk-1.6.2.1.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
-	<!-- prevent error importing GitBuildId if it has been generated -->
+        <!-- prevent error importing GitBuildId if it has been generated -->
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
       <!-- Ignore non-standard tags used in blockslib.  -->
@@ -101,8 +106,8 @@
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
       <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
       <link href="http://d.android.com/reference"
-	    offline="true"
-	    packagelistLoc="lib/android"/>
+            offline="true"
+            packagelistLoc="lib/android"/>
     </javadoc>
   </target>
 

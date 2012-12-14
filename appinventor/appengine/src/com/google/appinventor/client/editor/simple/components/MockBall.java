@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client.editor.simple.components;
 
@@ -95,6 +98,22 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       mockCanvas.reorderComponents(this);
     }
   }
+  
+  private void setXProperty(String text) {
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockBall on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
+  }
+  
+  private void setYProperty(String text) {
+    MockCanvas mockCanvas = (MockCanvas) getContainer();
+    // mockCanvas will be null for the MockBall on the palette
+    if (mockCanvas != null) {
+      mockCanvas.reorderComponents(this);
+    }
+  }
 
   @Override
   protected boolean isPropertyVisible(String propertyName) {
@@ -127,6 +146,10 @@ public final class MockBall extends MockVisibleComponent implements MockSprite {
       setColorProperty(newValue);
     } else if (propertyName.equals(PROPERTY_NAME_Z)) {
       setZProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_X)) {
+      setXProperty(newValue);
+    } else if (propertyName.equals(PROPERTY_NAME_Y)) {
+      setYProperty(newValue);
     }
   }
 }

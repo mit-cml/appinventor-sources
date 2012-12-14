@@ -1,3 +1,7 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package openblocks.yacodeblocks;
 
 import org.json.JSONException;
@@ -102,6 +106,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
   private final CEmulatorButton newEmulatorButton;
   private final CDeviceSelector deviceSelector;
   private final PhoneCommIndicator commIndicator;
+
 
   //flag to indicate if a workspace has been loaded/initialized
   private boolean workspaceLoaded = false;
@@ -854,9 +859,13 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
         } finally {
           System.out.println("WorkspaceController: workspace reload done");
           autoSaver.reset();
+          System.out.println("Called autoSaver.reset();");
           autoSaver.saveFormProperties(formProperties);
+          System.out.println("Called autoSaver.saveFormProperties");
           if (blocksWereUpgraded || componentRemovedOrRenamedDuringLoad) {
+            System.out.println("blocksWereUpgraded or ComponentRemovedOrRenamedDuringLoad");
             autoSaver.workspaceChangedBySystem();
+            System.out.println("autoSaver.workspaceChangedBySystem();");
           } else {
             if (codeblocksSource.length() == 0) {
               try {
@@ -1152,7 +1161,6 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
       }
     });
   }
-
 
   /////////////
   // STARTUP //

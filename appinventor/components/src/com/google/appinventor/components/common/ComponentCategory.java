@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.common;
 
@@ -19,7 +22,7 @@ public enum ComponentCategory {
   LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
   MISC("Other stuff"),
   EXPERIMENTAL("Not ready for prime time"),
-  OBSOLETE("Old stuff"),
+  //OBSOLETE("Old stuff"),// removed to remove old stuff from the menu
   INTERNAL("For internal use only"),
   // UNINITIALIZED is used as a default value so Swing libraries can still compile
   UNINITIALIZED("Uninitialized");

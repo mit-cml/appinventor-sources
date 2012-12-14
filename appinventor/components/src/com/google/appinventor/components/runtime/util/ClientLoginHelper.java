@@ -1,4 +1,7 @@
-// Copyright 2010-2011 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime.util;
 
@@ -131,7 +134,11 @@ public class ClientLoginHelper implements IClientLoginHelper {
     }
   }
 
-  private String getAuthToken() throws ClientProtocolException {
+  /**
+   * Uses Google Account Manager to retrieve auth token that can
+   * be used to access various Google APIs -- e.g., the Google Voice api.
+   */
+  public String getAuthToken() throws ClientProtocolException {
     Account account = accountChooser.findAccount();
     if (account != null) {
       AccountManagerFuture<Bundle> future;

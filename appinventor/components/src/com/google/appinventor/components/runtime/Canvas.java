@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -108,6 +111,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
+  private static final int FLING_INTERVAL = 1000;  // ms
 
   // Keep track of enclosed sprites.  This list should always be
   // sorted by increasing sprite.Z().
@@ -994,10 +998,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   // Methods supporting event handling
 
   /**
-   * When the user touches a canvas, providing the (x, y) position of
-   * the touch relative to the upper left corner of the canvas.  The
-   * value "touchedSprite" is true if a sprite was also in this position.
-   * This event is only fired once touch-down AND touch-up have occurred.
+   * When the user touches the canvas and then immediately lifts finger: provides
+   * the (x,y) position of the touch, relative to the upper left of the canvas.  TouchedSprite
+   * is true if the same touch also touched a sprite, and false otherwise.
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
@@ -1010,10 +1013,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * When the user starts touching the canvas (putting finger down for the
-   * first time).
-   * Provides the (x,y) position of the touch relative to the upper-left
-   * corner of the canvas.
+   * When the user begins touching the canvas (places finger on canvas and
+   * leaves it there): provides the (x,y) position of the touch, relative
+   * to the upper left of the canvas
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
@@ -1024,9 +1026,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * When the user stops touching the canvas (lifting his/her finger up).
-   * Provides the (x, y) position of the touch relative to the upper
-   * left corner of the canvas.
+   * When the user stops touching the canvas (lifts finger after a
+   * TouchDown event): provides the (x,y) position of the touch, relative
+   * to the upper left of the canvas
    *
    * @param x  x-coordinate of the point that was touched
    * @param y  y-coordinate of the point that was touched
@@ -1037,24 +1039,27 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * When the user performs a fling (quick swipe) on the screen.
-   * Provides the (x, y) position of the start of the swing,
-   * relative to the upper left of the canvas. Also provides
-   * the x velocity and y velocity of the fling. The value
-   * "flungSprite" is true if a sprite was also in this
-   * position when the fling occurred.
+   * When a fling gesture (quick swipe) is made on the canvas: provides
+   * the (x,y) position of the start of the fling, relative to the upper
+   * left of the canvas. Also provides the speed (pixels per millisecond) and heading
+   * (0-360 degrees) of the fling, as well as the x velocity and y velocity
+   * components of the fling's vector. The value "flungSprite" is true if a sprite
+   * was located near the the starting point of the fling gesture.
    *
-   * @param x  x-coordinate of the point that was touched
-   * @param y  y-coordinate of the point that was touched
-   * @param xvel  the velocity of the fling in the x direction
-   * @param yvel  the velocity of the fling in the y direction
+   * @param x  x-coordinate of touched point
+   * @param y  y-coordinate of touched point
+   * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
+   * @param heading  the heading of the fling 
+   * @param xvel  the speed in x-direction of the fling
+   * @param yvel  the speed in y-direction of the fling
    * @param flungSprite  {@code true} if a sprite was flung,
    *        {@code false} otherwise
+   * 
    */
   @SimpleEvent
-  public void Flung(float x, float y, float xvel, float yvel,
+  public void Flung(float x, float y, float speed, float heading,float xvel, float yvel,
       boolean flungSprite) {
-    EventDispatcher.dispatchEvent(this, "Flung", x, y, xvel, yvel, flungSprite);
+    EventDispatcher.dispatchEvent(this, "Flung", x, y, speed, heading, xvel, yvel, flungSprite);
   }
 
   /**
@@ -1310,6 +1315,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         float velocityY) {
       float x = Math.max(0, (int) e1.getX()); // set to zero if negative
       float y = Math.max(0, (int) e1.getY()); // set to zero if negative
+      
+      // Normalize the velocity: Change from pixels/sec to pixels/ms
+      float vx = velocityX / FLING_INTERVAL;
+      float vy = velocityY / FLING_INTERVAL;
+
+      float speed = (float) Math.sqrt(vx * vx + vy * vy);
+      float heading = (float) -Math.toDegrees(Math.atan2(vy, vx));
 
       int width = Width();
       int height = Height();
@@ -1327,11 +1339,11 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       for (Sprite sprite : sprites) {
         if (sprite.Enabled() && sprite.Visible() &&
             sprite.intersectsWith(rect)) {
-          sprite.Flung(x, y, velocityX, velocityY);
+          sprite.Flung(x, y, speed, heading, vx, vy);
           spriteHandledFling = true;
         }
       }
-      Flung(x, y, velocityX, velocityY, spriteHandledFling);
+      Flung(x, y, speed, heading, vx, vy, spriteHandledFling);
       return true;
     }
   }

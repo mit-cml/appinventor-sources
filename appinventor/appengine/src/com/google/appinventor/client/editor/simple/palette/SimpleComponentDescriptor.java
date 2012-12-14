@@ -1,4 +1,7 @@
-// Copyright 2007 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client.editor.simple.palette;
 
@@ -91,6 +94,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/legoMindstormsNxt.png", images.legoMindstormsNxt());
     bundledImages.put("images/orientationsensor.png", images.orientationsensor());
     bundledImages.put("images/pedometer.png", images.pedometerComponent());
+    bundledImages.put("images/phoneip.png", images.phonestatusComponent());
     bundledImages.put("images/phoneCall.png", images.phonecall());
     bundledImages.put("images/player.png", images.player());
     bundledImages.put("images/soundEffect.png", images.soundeffect());

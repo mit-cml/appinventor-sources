@@ -808,7 +808,10 @@
        </h2>
        <img alt="" src="images/texting.png" />
        <p>
-        Use this non-visible component to allow users to send and receive text messages.
+        Use this non-visible component to allow users to send and receive text messages. If the
+        <code>GoogleVoiceEnabled</code> property is true, messages can be sent and received over Wifi. This
+        option requires that the user have a Google Voice account and that the mobile Voice app is installed
+        on the phone. This option works only on phones that support Android 2.0 (Eclair) or higher.
        </p>
        <p>
         When the
@@ -890,6 +893,14 @@
         <dd>
          If set, this component can receive text messages.
         </dd>
+        <dt>
+         <code>
+          GoogleVoiceEnabled
+         </code>
+        </dt>
+        <dd>
+         If set, this component can receive messages over Wifi through Google Voice.
+        </dd>
        </dl>
        <h3>
         Events
@@ -933,17 +944,11 @@
         This component allows users to interact with Twitter.
        </p>
        <p>
-        This non-visible component enables communication with Twitter. Methods are included
-                to enable searching (
-        <code>
-         SearchTwitter
-        </code>
-        ) and logging in to Twitter
-                (
+        This non-visible component enables communication with Twitter. Once a user has logged in (
         <code>
          Authorize
         </code>
-        ). Once a user has logged in and the login has been
+        ) and the login has been
                 confirmed successful by the
         <code>
          IsAuthorized
@@ -952,6 +957,13 @@
                 following methods:
        </p>
        <ul>
+       <li>
+       Search Twitter for tweets or labels (
+         <code>
+           SearchTwitter
+         </code>
+         ).
+       </li>
         <li>
          Set the status of the logged-in user (
          <code>
@@ -996,7 +1008,7 @@
          ).
         </li>
         <li>
-         Get the most recent messages of followed users
+         Get the most recent messages in the user's timeline.
                 (
          <code>
           RequestFriendTimeline
@@ -1013,8 +1025,8 @@
         </li>
        </ul>
        <p>
-        In general, you invoke one of these methods and the result will bcome available
-                when the corresponding recipt event is signalled. For example, if you call
+        In general, you invoke one of these methods and the result will become available
+                when the corresponding receipt event is signaled. For example, if you call
         <code>
          RequestFollowers
         </code>
@@ -1023,10 +1035,9 @@
          FollowersReceived
         </code>
         event will
-                be signalled when the list of followers is available. This might take time, because
-                the request is going over the web; the result might even never become available,
-                for example, if your device is not connected to the web or the Twitter web site is
-                down.
+                be signaled when the list of followers is available. This might take time, because
+                the request is going over the web; the result might even never become available if, 
+                for example, your device is not connected to the web or the Twitter web site is down.
        </p>
        <p>
         Login is handled using the OAuth protocol, as required by the Twitter API (
@@ -1039,19 +1050,12 @@
         <code>
          Authorize
         </code>
-        . This causes a Twitter login page to
-                be presented that will allow the user to login with their username and password if
-                necessary, and then return appropriate credentials to the Twitter component in the
+        . This loads a Twitter login page that will allow the user to login with their username and password, and then return appropriate credentials to the Twitter component in the
                 app. Once the Twitter component has the credentials the
         <code>
          IsAuthorized
         </code>
-        event is raised to let the app know that it can proceed with Twitter API calls. The
-                only Twitter component method that does not require the user to be authenticated is
-        <code>
-         SearchTwitter
-        </code>
-        . An app retains Twitter credentials across invocations,
+        event is raised to let the app know that it can proceed with Twitter API calls. An app retains Twitter credentials across invocations,
                 so it may not be necessary for the user to login each time he or she uses the app.
                 Reinstalling an app will clear the credentials, as will calling the
         <code>
@@ -1074,7 +1078,7 @@
          Important:
         </b>
         Most of the operation of the OAuth protocol is hidden inside the
-                Twitter component and you do not need to understand how it works in order to use
+                Twitter component and you do not need to understand how it works to use
                 the component. However, it is necessary for anyone building an app with the Twitter
                 component to supply a
         <i>
@@ -1309,7 +1313,7 @@
            <code>
             RequestMentions
            </code>
-           has
+           have
                       been retrieved.
           </dd>
           <dt>
@@ -1356,11 +1360,7 @@
           </dt>
           <dd>
            Removes authorization from this running app instance. A user will have to
-                      login again to use any Twitter method other than
-           <code>
-            SearchTwitter
-           </code>
-           .
+                      login again to use any Twitter method.
           </dd>
           <dt>
            <code>
@@ -1401,7 +1401,7 @@
           </dt>
           <dd>
            Retrieves the 20 most recent messages in your timeline. Returns a list of
-                      tuples (sub-lists), where each tuple contains username and status message.
+                      tuples (sub-lists), where each tuple contains a username and status message.
           </dd>
           <dt>
            <code>
@@ -1409,7 +1409,7 @@
            </code>
           </dt>
           <dd>
-           Retrieves the most mentions of the user.
+           Retrieves the most recent mentions of the user.
           </dd>
           <dt>
            <code>

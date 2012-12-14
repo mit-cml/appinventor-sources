@@ -118,7 +118,16 @@
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${lib.dir}/android/2.2/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-        <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+        <pathelement location="${lib.dir}/bugsense/bugsense3.0.5.jar" />
+        <pathelement location="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
+        <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+        <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+        <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
       </classpath>
     </ai.javac>
 
@@ -140,6 +149,7 @@
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
+    <pathelement location="${lib.dir}/bugsense/bugsense3.0.5.jar" />
     <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
     <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
     <pathelement location="${lib.dir}/powermock/javassist-3.15.0-GA.jar" />
@@ -202,9 +212,18 @@
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
           <pathelement location="${lib.dir}/android/2.2/android.jar" />
-          <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+          <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-          <pathelement location="${lib.dir}/twitter/twitter4j-2.0.10-SNAPSHOT.jar" />
+          <pathelement location="${lib.dir}/bugsense/bugsense3.0.5.jar" />
+          <pathelement location="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
+	  <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
+	  <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
+	  <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
@@ -228,7 +247,7 @@
       <include name="${components.pkg}/annotations/*.java" />
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
-        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -257,7 +276,7 @@
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonUtils.jar" />
-        <pathelement location="${lib.dir}/guava/guava-10.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
       </classpath>
     </ai.javac>
 
@@ -273,7 +292,7 @@
       <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
       <zipfileset src="${build.dir}/common/CommonUtils.jar" />
-      <zipfileset src="${lib.dir}/guava/guava-10.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-11.0.1.jar" />
     </jar>
 
   </target>
@@ -311,11 +330,12 @@
   </target>
 
   <!-- =====================================================================
-       ComponentList: create simple_components.txt and
-                      simple_components_permissions.json
+       ComponentList: create simple_components.txt,
+                      simple_components_permissions.json,
+                      and simple_components_libraries.json
        ===================================================================== -->
   <target name="ComponentList"
-          description="Make simple_components.txt and simple_components_permissions.json."
+          description="Make simple_components.txt, simple_components_permissions.json, and simple_components_libraries.json."
           depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
     <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
     <mkdir dir="${ComponentList-class.dir}" />
@@ -327,6 +347,8 @@
     <copy file="${ComponentList-class.dir}/simple_components.txt"
           todir="${public.build.dir}"/>
     <copy file="${ComponentList-class.dir}/simple_components_permissions.json"
+          todir="${public.build.dir}"/>
+    <copy file="${ComponentList-class.dir}/simple_components_libraries.json"
           todir="${public.build.dir}"/>
   </target>
 

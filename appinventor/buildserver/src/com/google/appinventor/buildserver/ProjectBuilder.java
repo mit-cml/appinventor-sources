@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.buildserver;
 
@@ -30,6 +33,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * Provides support for building Young Android projects.
@@ -106,7 +111,7 @@ public final class ProjectBuilder {
         + baseNamePrefix + "0 to " + baseNamePrefix + (TEMP_DIR_ATTEMPTS - 1) + ')');
   }
 
-  Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl,
+    Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl, boolean isForWireless,
                int childProcessRam) {
     try {
       // Download project files into a temporary directory
@@ -152,11 +157,11 @@ public final class ProjectBuilder {
         PrintStream userErrors = new PrintStream(errors);
 
         Set<String> componentTypes =
-            isForRepl ? getAllComponentTypes() : getComponentTypes(sourceFiles);
+            (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
 
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl,
+            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
                              keyStorePath, childProcessRam);
         console.close();
         userErrors.close();
@@ -185,7 +190,10 @@ public final class ProjectBuilder {
       } finally {
         // On some platforms (OS/X), the java.io.tmpdir contains a symlink. We need to use the
         // canonical path here so that Files.deleteRecursively will work.
-        Files.deleteRecursively(new File(projectRoot.getCanonicalPath()));
+        
+        // Note (ralph):  deleteRecursively has been removed from the guava-11.0.1 lib
+        // Replacing with deleteDirectory, which is supposed to delete the entire directory.
+        FileUtils.deleteDirectory(new File(projectRoot.getCanonicalPath()));
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -431,14 +439,14 @@ public final class ProjectBuilder {
       if (exitValue == 1) {
         // Failed to generate yail for legitimate reasons, such as empty sockets.
         throw new YailGenerationException("Unable to generate code for " + formName + "."
-            + "\n -- err is " + err.toString() 
+            + "\n -- err is " + err.toString()
             + "\n -- out is" + out.toString(),
             formName);
       } else {
         // Any other exit value is unexpected.
-        throw new RuntimeException("YailGenerator for form " + formName 
+        throw new RuntimeException("YailGenerator for form " + formName
             + " exited with code " + exitValue
-            + "\n -- err is " + err.toString() 
+            + "\n -- err is " + err.toString()
             + "\n -- out is" + out.toString());
       }
     }
@@ -459,5 +467,9 @@ public final class ProjectBuilder {
     String getFormName() {
       return formName;
     }
+  }
+
+  public int getProgress() {
+    return Compiler.getProgress();
   }
 }

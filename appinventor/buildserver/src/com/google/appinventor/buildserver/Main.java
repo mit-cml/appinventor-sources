@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.buildserver;
 
@@ -19,6 +22,9 @@ import java.util.zip.ZipFile;
 public final class Main {
 
   static class CommandLineOptions {
+    @Option(name = "--isForWirelessRepl", usage = "create the AppInventorDebugger APK")
+    boolean isForWireless = false;
+
     @Option(name = "--isForStemCellApp", usage = "create APK suitable for Phone App",
             aliases = {"--isForRepl"})
     boolean isForStemCellApp = false;
@@ -76,6 +82,7 @@ public final class Main {
                                          zip,
                                          commandLineOptions.outputDir,
                                          commandLineOptions.isForStemCellApp,
+                                         commandLineOptions.isForWireless,
                                          commandLineOptions.childProcessRamMb);
     System.exit(result.getResult());
   }

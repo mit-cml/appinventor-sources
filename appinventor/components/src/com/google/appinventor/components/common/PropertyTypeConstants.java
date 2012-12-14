@@ -1,3 +1,7 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.components.common;
 
 /**
@@ -101,6 +105,12 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenOrientationChoicePropertyEditor}.
    */
   public static final String PROPERTY_TYPE_SCREEN_ORIENTATION = "screen_orientation";
+
+  /**
+   * Choices of screen animations offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidScreenAnimationChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_SCREEN_ANIMATION = "screen_animation";
 
    /**
     * Minimum distance interval, in meters, that the location sensor will try to use

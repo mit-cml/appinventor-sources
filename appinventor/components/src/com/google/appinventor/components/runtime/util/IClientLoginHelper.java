@@ -1,4 +1,7 @@
-// Copyright 2011 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime.util;
 
@@ -31,4 +34,15 @@ public interface IClientLoginHelper {
    * this service is associated with.
    */
   public void forgetAccountName();
+ 
+  /**
+   * Uses AccountManager to retrieve an accessToken that can be
+   * used to access Google APIs.
+   * 
+   * Added to support Texting Component. Allows the authToken to
+   * be requested by external objects.
+   */
+
+  public String getAuthToken() throws ClientProtocolException; 
+
 }

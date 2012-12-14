@@ -1,4 +1,7 @@
-// Copyright 2008 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.server.project.youngandroid;
 
@@ -74,10 +77,11 @@ import java.util.logging.Logger;
  */
 public final class YoungAndroidProjectService extends CommonProjectService {
 
+  private static int currentProgress = 0;
   private static final Logger LOG = Logger.getLogger(YoungAndroidProjectService.class.getName());
 
   // The value of this flag can be changed in appengine-web.xml
-  private static final Flag<Boolean> sendGitVersion = 
+  private static final Flag<Boolean> sendGitVersion =
     Flag.createFlag("build.send.git.version", true);
 
   // Project folder prefixes
@@ -504,8 +508,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       connection.setDoOutput(true);
       connection.setRequestMethod("POST");
 
-      BufferedOutputStream bufferedOutputStream =
-          new BufferedOutputStream(connection.getOutputStream());
+      BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(connection.getOutputStream());
       FileExporter fileExporter = new FileExporterImpl();
       zipFile = fileExporter.exportProjectSourceZip(userId, projectId, false,
           /* includeAndroidKeystore */ true,
@@ -514,7 +517,12 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.flush();
       bufferedOutputStream.close();
 
-      int responseCode = connection.getResponseCode();
+      int responseCode = 0;
+      try {
+          responseCode = connection.getResponseCode();
+      } catch (IOException e) {
+          throw new CouldNotFetchException();
+      }
       if (responseCode != HttpURLConnection.HTTP_OK) {
         // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
         // can provide an appropriate error message to the user.
@@ -556,6 +564,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
+    } catch (CouldNotFetchException e) {
+        CrashReport.createAndLogError(LOG, null,
+                buildErrorMsg("CouldNotFetchException", buildServerUrl, userId, projectId), e);
+      return new RpcResult(false, "", " Can not contact the BuildServer at " + buildServerUrl.getHost());
     } catch (EncryptionException e) {
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
@@ -597,7 +609,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     return "http://" + buildServerHost.get() + "/buildserver/build-all-from-zip-async"
            + "?uname=" + URLEncoder.encode(userName, "UTF-8")
            + (sendGitVersion.get()
-               ? "&gitBuildVersion=" 
+               ? "&gitBuildVersion="
                  + URLEncoder.encode(GitBuildId.getVersion(), "UTF-8")
                : "")
            + "&callback="
@@ -652,7 +664,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     String userId = user.getUserId();
     String buildOutputFileName = BUILD_FOLDER + '/' + target + '/' + "build.out";
     List<String> outputFiles = storageIo.getProjectOutputFiles(userId, projectId);
-    RpcResult buildResult = new RpcResult(-1, "", ""); // Build not finished yet
+    updateCurrentProgress(user, projectId, target);
+    RpcResult buildResult = new RpcResult(-1, ""+currentProgress, ""); // Build not finished
     for (String outputFile : outputFiles) {
       if (buildOutputFileName.equals(outputFile)) {
         String outputStr = storageIo.downloadFile(userId, projectId, outputFile, "UTF-8");
@@ -669,5 +682,66 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       }
     }
     return buildResult;
+  }
+
+  /**
+   * Check if there are any build progress available for the given user's project
+   *
+   * @param user the User that owns the {@code projectId}.
+   * @param projectId  project id to be built
+   * @param target  build target (optional, implementation dependent)
+   * @return an RpcResult reflecting the call to the Build Server. The following values may be in
+   *         RpcResult.result:
+   *            0:  Build is done and was successful
+   *            1:  Build is done and was unsuccessful
+   *            2:  Yail generation failed
+   *           -1:  Build is not yet done.
+   */
+  public void updateCurrentProgress(User user, long projectId, String target) {
+    try {
+      String userId = user.getUserId();
+      String projectName = storageIo.getProjectName(userId, projectId);
+      String outputFileDir = BUILD_FOLDER + '/' + target;
+      URL buildServerUrl = null;
+      ProjectSourceZip zipFile = null;
+
+      buildServerUrl = new URL(getBuildServerUrlStr(user.getUserEmail(),
+        userId, projectId, outputFileDir));
+      HttpURLConnection connection = (HttpURLConnection) buildServerUrl.openConnection();
+      connection.setDoOutput(true);
+      connection.setRequestMethod("POST");
+
+      int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+          try {
+            String content = readContent(connection.getInputStream());
+            if (content != null && !content.isEmpty()) {
+              LOG.info("The current progress is " + content + "%.");
+              currentProgress = Integer.parseInt(content);
+            }
+          } catch (IOException e) {
+            // No content. That's ok.
+          }
+         }
+      } catch (MalformedURLException e) {
+        // that's ok, nothing to do
+      } catch (IOException e) {
+        // that's ok, nothing to do
+      } catch (EncryptionException e) {
+        // that's ok, nothing to do
+      } catch (RuntimeException e) {
+        // that's ok, nothing to do
+      }
+  }
+
+  /**
+   * Special Exception for the open connect
+   */
+  class CouldNotFetchException extends Exception {
+      String mistake;
+      public CouldNotFetchException() {
+          super();
+          mistake = "Could not fetch the Build Server URL";
+      }
   }
 }

@@ -1,4 +1,7 @@
-// Copyright 2008 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client;
 
@@ -19,6 +22,10 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'OK' button.")
   String okButton();
 
+  @DefaultMessage("Dismiss")
+  @Description("Text on 'Dismiss' button.")
+  String dismissButton();
+
   @DefaultMessage("Old name:")
   @Description("Label next to the old name in a rename dialog")
   String oldNameLabel();
@@ -35,7 +42,7 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'Delete' button")
   String deleteButton();
 
-  @DefaultMessage("Add...")
+  @DefaultMessage("Upload new...")
   @Description("Text on 'Add...' button")
   String addButton();
 
@@ -335,6 +342,13 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component name would be the same as an existing one")
   String duplicateComponentNameError();
 
+  @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
+      "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
+      "Pattern, YailList, YailNumberToString, YailRuntimeError")
+  @Description("Error shown when a new component name is a variable name already used in the" +
+      "Yail code")
+  String badComponentNameError();
+
   @DefaultMessage("Deleting this component will delete all blocks associated with it in the " +
       "Blocks Editor. Are you sure you want to delete?")
   @Description("Confirmation query for removing a component")
@@ -578,6 +592,32 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("The value must be a number greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")
   String nonnumericInputError();
+
+  // Used in editor/youngandroid/properties/YoungAndroidScreenAnimationChoicePropertyEditor.java
+
+  @DefaultMessage("Default")
+  @Description("Text for screen animation choice 'Default '")
+  String defaultScreenAnimation();
+
+  @DefaultMessage("Fade")
+  @Description("Text for screen animation choice 'Fade '")
+  String fadeScreenAnimation();
+
+  @DefaultMessage("Zoom")
+  @Description("Text for screen animation choice 'Zoom '")
+  String zoomScreenAnimation();
+
+  @DefaultMessage("SlideHorizontal")
+  @Description("Text for screen animation choice 'SlideHorizontal '")
+  String slideHorizontalScreenAnimation();
+
+  @DefaultMessage("SlideVertical")
+  @Description("Text for screen animation choice 'SlideVertical '")
+  String slideVerticalScreenAnimation();
+
+  @DefaultMessage("None")
+  @Description("Text for screen animation choice 'None '")
+  String noneScreenAnimation();
 
   // Used in editor/youngandroid/properties/YoungAndroidScreenOrientationChoicePropertyEditor.java
 

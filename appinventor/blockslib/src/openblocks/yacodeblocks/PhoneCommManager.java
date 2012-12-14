@@ -1,4 +1,7 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package openblocks.yacodeblocks;
 
@@ -26,7 +29,7 @@ public class PhoneCommManager {
 
   // The port for communicating with the phone for the ReplCommController
   // Note: This should reference the same definition as in ReplCommController.
-  public static final int REPL_COMMUNICATION_PORT = 9997;
+  public static final int REPL_COMMUNICATION_PORT = 9987;
 
   // procedure (macro) defined in runtime.scm for transforming ReplCommController input
   // before evaluation
@@ -57,7 +60,7 @@ public class PhoneCommManager {
   public static final String REPL_ENCODED_CLOSE_BRACKET = REPL_ESCAPE + "2";
 
   private static final String YAIL_NEWLINE = "(newline)";
-  private static final String LOCALHOST = "127.0.0.1";
+  private String ipAddress = "127.0.0.1";
 
   // This message to runtime.scm establishes the strings used to punctuate
   // messages it sends back here. Check setup-repl-environment carefully to
@@ -163,6 +166,14 @@ public class PhoneCommManager {
       public void onDeviceSelected(String device) {
         String prevDevice = psReplController.getSelectedDevice();
         if (prevDevice != null && connectedToPhone()) {
+          if (device.equals("none")) { // Special case. When the "reset" menu item is selected, we change the device to this
+            setConnectedToPhone(false);
+            if (psReplController != null)
+              psReplController.reset();
+            psReplController.selectDevice(device); // This will reset the ipAddress in psReplController to 127.0.0.1 so USB can work.
+            updateStatusIndicators();
+            return;
+          }
           if (!device.equals(prevDevice)) {
             if (!FeedbackReporter.getConfirmation(
                 "The Blocks Editor is currently connected to device " + prevDevice + ".\n"
@@ -171,6 +182,10 @@ public class PhoneCommManager {
               return;
             }
           } else {
+            if (device.equals("WiFi")) {
+              FeedbackReporter.showErrorMessage("If the connection to your phone appears hung, or if the Companion App is no longer running, select the \"Reset connections\" menu option on the \"Connect to Device...\" menu and then restart the Comapanion App on the the phone and reconnect.");
+              return;
+            }
             if (FeedbackReporter.getConfirmation(
                 "The Blocks Editor is already connected to device " + prevDevice + ". \n"
                 + "Do you want to restart the app on the device?")) {
@@ -181,12 +196,15 @@ public class PhoneCommManager {
         }
         setConnectedToPhone(false);
         System.out.println("Selecting device " + device);
+        setPhoneManager();      // Tell the replcontroller who we are
         if (!psReplController.selectDevice(device)) {
-          if (DEBUG) {
-            System.out.println("Selected device is no longer attached");
-          }
-          FeedbackReporter.showErrorMessage(
+          if (!device.equals("WiFi") && !device.equals("none")) { // Only generate a warning if we are not wifi, wifi always returns false here
+            if (DEBUG) {
+              System.out.println("Selected device is no longer attached");
+            }
+            FeedbackReporter.showErrorMessage(
               "It appears that device " + device + " is no longer available.");
+          }
           return;
         }
         if (DEBUG) {
@@ -196,9 +214,18 @@ public class PhoneCommManager {
       }});
   }
 
+  // Used by the Wifi Code to start the repl after the ip address is obtained asynchronously
+  public void replWifiStart() {
+    replControllerCreateAndSendAsync(YAIL_NEWLINE, REPL_CONFIRMATION, new Long(0), false);
+  }
+
+  public void setPhoneManager() {
+    psReplController.setPhoneManager(this);
+  }
+
   private void initReplController() {
     setReplController(new DeviceReplCommController(
-        LOCALHOST,
+        ipAddress,
         REPL_COMMUNICATION_PORT,
         androidController,
         new DeviceReplCommController.PostProcessor() {
@@ -339,6 +366,16 @@ public class PhoneCommManager {
   }
 
   /**
+   * Reinitialize the phone connection for WiFi use.
+   *
+   */
+
+  public void prepareForWiFi() {
+    initReplController();
+    reinitPhoneApp();
+  }
+
+  /**
    * Restarts and reinitializes the app on the phone, if we're connected, to
    * prepare for loading in new project definitions.
    *
@@ -415,6 +452,8 @@ public class PhoneCommManager {
           } catch (IOException e) {
             if (DEBUG) {
               System.out.println("^^^^^^^^ regular send failed, will try kick: " + e.getMessage());
+              e.printStackTrace(System.out);
+              System.out.println("androidController = " + androidController);
             }
             setConnectedToPhone(false);
           }

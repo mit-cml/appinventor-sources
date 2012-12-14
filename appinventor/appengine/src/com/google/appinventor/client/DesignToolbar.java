@@ -1,4 +1,7 @@
-// Copyright 2009 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client;
 
@@ -15,6 +18,7 @@ import com.google.appinventor.client.explorer.commands.DownloadProjectOutputComm
 import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
 import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
@@ -39,9 +43,9 @@ import java.util.Map;
  *
  */
 public class DesignToolbar extends Toolbar {
-  
+
   /*
-   * A Screen groups together the form editor and blocks editor for an 
+   * A Screen groups together the form editor and blocks editor for an
    * application screen. Name is the name of the screen (form) displayed
    * in the screens pull-down.
    */
@@ -49,16 +53,16 @@ public class DesignToolbar extends Toolbar {
     private final String screenName;
     private final FileEditor formEditor;
     private final FileEditor blocksEditor;
-    
+
     public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
       this.screenName = name;
       this.formEditor = formEditor;
       this.blocksEditor = blocksEditor;
     }
   }
-  
+
   /*
-   * A project as represented in the DesignToolbar. Each project has a name 
+   * A project as represented in the DesignToolbar. Each project has a name
    * (as displayed in the DesignToolbar on the left), a set of named screens,
    * and an indication of which screen is currently being edited.
    */
@@ -66,14 +70,14 @@ public class DesignToolbar extends Toolbar {
     private final String name;
     private final Map<String, Screen> screens; // screen name -> Screen
     private String currentScreen; // name of currently displayed screen
-    
+
     public DesignProject(String name) {
       this.name = name;
       screens = Maps.newHashMap();
       // Screen1 is initial screen by default
-      currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME; 
+      currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
     }
-    
+
     // Returns true if we added the screen (it didn't previously exist), false otherwise.
     public boolean addScreen(String name, FileEditor formEditor, FileEditor blocksEditor) {
       if (!screens.containsKey(name)) {
@@ -83,16 +87,16 @@ public class DesignToolbar extends Toolbar {
         return false;
       }
     }
-    
+
     public void removeScreen(String name) {
       screens.remove(name);
     }
-    
+
     public void setCurrentScreen(String name) {
       currentScreen = name;
     }
   }
-  
+
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
@@ -105,23 +109,23 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
-  
+
   // Enum for type of view showing in the design tab
-  public enum View { 
+  public enum View {
     FORM,   // Form editor view
     BLOCKS  // Blocks editor view
   }
   private View currentView = View.FORM;
 
   private Label projectNameLabel;
-  
+
   // Project currently displayed in designer
   private DesignProject currentProject;
-  
+
   // Map of project id to project info for all projects we've ever shown
   // in the Designer in this session.
   private Map<Long, DesignProject> projectMap = Maps.newHashMap();
-  
+
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
@@ -222,7 +226,7 @@ public class DesignToolbar extends Toolbar {
       if (sourceNode != null && !sourceNode.isScreen1()) {
         // DeleteFileCommand handles the whole operation, including displaying the confirmation
         // message dialog, closing the form editor and the blocks editor,
-        // deleting the files in the server's storage, and deleting the 
+        // deleting the files in the server's storage, and deleting the
         // corresponding client-side nodes (which will ultimately trigger the
         // screen deletion in the DesignToolbar).
         final String deleteConfirmationMessage = MESSAGES.reallyDeleteForm(
@@ -237,7 +241,7 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
-  
+
   private class SwitchScreenAction implements Command {
     private final long projectId;
     private final String name;  // screen name
@@ -246,16 +250,16 @@ public class DesignToolbar extends Toolbar {
       this.projectId = projectId;
       this.name = screenName;
     }
-    
+
     @Override
     public void execute() {
       doSwitchScreen(projectId, name, currentView);
     }
   }
-  
+
   private void doSwitchScreen(long projectId, String screenName, View view) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar: no project with id " + projectId 
+      OdeLog.wlog("DesignToolbar: no project with id " + projectId
           + ". Ignoring SwitchScreenAction.execute().");
       return;
     }
@@ -271,7 +275,7 @@ public class DesignToolbar extends Toolbar {
     if (!currentProject.screens.containsKey(newScreenName)) {
       // Can't find the requested screen in this project. This shouldn't happen, but if it does
       // for some reason, try switching to Screen1 instead.
-      OdeLog.wlog("Trying to switch to non-existent screen " + newScreenName + 
+      OdeLog.wlog("Trying to switch to non-existent screen " + newScreenName +
           " in project " + currentProject.name + ". Trying Screen1 instead.");
       if (currentProject.screens.containsKey(YoungAndroidSourceNode.SCREEN1_FORM_NAME)) {
         newScreenName = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
@@ -341,10 +345,9 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
-
-  /**
+ /**
    * Implements the action to generate the ".yail" file for each screen in the current project.
-   * It does not build the entire project. The intention is that this will be helpful for 
+   * It does not build the entire project. The intention is that this will be helpful for
    * debugging during development, and will most likely be disabled in the production system.
    */
   private class GenerateYailAction implements Command {
@@ -370,7 +373,7 @@ public class DesignToolbar extends Toolbar {
     @Override
     public void execute() {
       if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. " 
+        OdeLog.wlog("DesignToolbar.currentProject is null. "
             + "Ignoring SwitchToBlocksEditorAction.execute().");
         return;
       }
@@ -380,7 +383,7 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
-  
+
   private class SwitchToFormEditorAction implements Command {
     @Override
     public void execute() {
@@ -395,19 +398,19 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
-  
+
   public void addProject(long projectId, String projectName) {
     if (!projectMap.containsKey(projectId)) {
       projectMap.put(projectId, new DesignProject(projectName));
       OdeLog.log("DesignToolbar added project " + projectName + " with id " + projectId);
     } else {
-      OdeLog.wlog("DesignToolbar ignoring addProject for existing project " + projectName 
+      OdeLog.wlog("DesignToolbar ignoring addProject for existing project " + projectName
           + " with id " + projectId);
     }
   }
- 
+
   // Switch to an existing project. Note that this does not switch screens.
-  // TODO(sharon): it might be better to throw an exception if the 
+  // TODO(sharon): it might be better to throw an exception if the
   // project doesn't exist.
   private boolean switchToProject(long projectId, String projectName) {
     if (projectMap.containsKey(projectId)) {
@@ -417,7 +420,7 @@ public class DesignToolbar extends Toolbar {
         return true;
       }
       clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
-      OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id " 
+      OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
       currentProject = projectMap.get(projectId);
       // TODO(sharon): add screens to drop-down menu in the right order
@@ -427,24 +430,24 @@ public class DesignToolbar extends Toolbar {
       }
       projectNameLabel.setText(projectName);
     } else {
-      ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName + 
+      ErrorReporter.reportError("Design toolbar doesn't know about project " + projectName +
           " with id " + projectId);
-      OdeLog.wlog("Design toolbar doesn't know about project " + projectName + " with id " 
+      OdeLog.wlog("Design toolbar doesn't know about project " + projectName + " with id "
           + projectId);
       return false;
     }
     return true;
   }
-  
+
   /*
-   * Add a screen name to the drop-down for the project with id projectId. 
+   * Add a screen name to the drop-down for the project with id projectId.
    * name is the form name, formEditor is the file editor for the form UI,
    * and blocksEditor is the file editor for the form's blocks.
    */
-  public void addScreen(long projectId, String name, FileEditor formEditor, 
+  public void addScreen(long projectId, String name, FileEditor formEditor,
       FileEditor blocksEditor) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId 
+      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId
           + ". Ignoring addScreen().");
       return;
     }
@@ -464,17 +467,17 @@ public class DesignToolbar extends Toolbar {
   public void switchToScreen(long projectId, String screenName, View view) {
     doSwitchScreen(projectId, screenName, view);
   }
-  
+
   /*
-   * Remove screen name (if it exists) from project projectId 
+   * Remove screen name (if it exists) from project projectId
    */
   public void removeScreen(long projectId, String name) {
     if (!projectMap.containsKey(projectId)) {
-      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId 
+      OdeLog.wlog("DesignToolbar can't find project " + name + " with id " + projectId
           + " Ignoring removeScreen().");
       return;
     }
-    OdeLog.log("DesignToolbar: got removeScreen for project " + projectId 
+    OdeLog.log("DesignToolbar: got removeScreen for project " + projectId
         + ", screen " + name);
     DesignProject project = projectMap.get(projectId);
     if (!project.screens.containsKey(name)) {
@@ -492,7 +495,7 @@ public class DesignToolbar extends Toolbar {
     }
     project.removeScreen(name);
   }
-  
+
   /**
    * Enables and/or disables buttons based (mostly) on whether there is a
    * current form.
@@ -508,7 +511,7 @@ public class DesignToolbar extends Toolbar {
 
     if (AppInventorFeatures.allowMultiScreenApplications()) {
       setButtonEnabled(WIDGET_NAME_ADDFORM, enabled);
-      enabled = (currentProject != null && 
+      enabled = (currentProject != null &&
           !YoungAndroidSourceNode.SCREEN1_FORM_NAME.equals(screenName));
       setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);
     }

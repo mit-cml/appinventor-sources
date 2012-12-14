@@ -1,3 +1,7 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package openblocks.yacodeblocks;
 
 import openblocks.yacodeblocks.AndroidController.DeviceConnectionListener;
@@ -116,6 +120,12 @@ public interface AndroidController {
   public void pushFileToDevice(String fileToPush, String remotePath)
       throws AndroidControllerException, ExternalStorageException;
   
+  /**
+   * Make device the currently selected device. Used for WiFi connection.
+   * Throws AndroidControllerException if device isn't a WiFi device.
+   */
+  public void selectDevice(String device, String ipAddress) throws AndroidControllerException;
+
   /**
    * Make device the currently selected device. device should have previously
    * been provided as an argument to deviceConnected. 

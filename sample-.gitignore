@@ -9,3 +9,5 @@ reports/
 *~
 *.out
 .DS_Store*
+*.out
+*~

@@ -48,8 +48,12 @@
       <include name="${openblocks.pkg}/**/*.java" />
       <classpath>
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
+        <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
+        <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
+        <pathelement location="${lib.dir}/QRGenerator/core.jar" />
+        <pathelement location="${lib.dir}/QRGenerator/javase.jar" />
       </classpath>
     </ai.javac5>
 
@@ -66,7 +70,7 @@
         <include name="${openblocks.pkg}/yacodeblocks/images/*.png" />
         <include name="${openblocks.pkg}/yacodeblocks/support/*.dtd" />
       </fileset>
-    </copy>    
+    </copy>
 
     <copy file="${build.dir}/components/ya_lang_def.xml"
           todir="${OpenBlocks-class.dir}/${openblocks.pkg}/yacodeblocks/support"/>
@@ -80,10 +84,11 @@
        OpenBlocksTests:build and  run the OpenBlocks tests and generate the output results
        ===================================================================== -->
 
-  <path id="libsForOpenBlocksTests.path"> 
+  <path id="libsForOpenBlocksTests.path">
     <pathelement location="${public.build.dir}/OpenBlocks.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
+    <pathelement location="${build.dir}/components/CommonConstants.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -98,8 +103,8 @@
     <pathelement location="${local.build.dir}/OpenBlocksTests.jar" />
   </path>
 
-  <target name="OpenBlocksTests" 
-               depends="OpenBlocks,common_CommonTestUtils,components_XmlComponentDescription" 
+  <target name="OpenBlocksTests"
+               depends="OpenBlocks,common_CommonTestUtils,components_XmlComponentDescription"
                description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="OpenBlocksTests"
                 aij-dir="${openblocks.pkg}" >

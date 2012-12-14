@@ -5,4 +5,8 @@ $Source $Yail
 (define-repl-form com.google.appinventor.aiphoneapp.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 
+(let ((topform Screen1:topform))  ;;; Turn on Kawa Telnet Repl
+  (topform:setIsUSBrepl))
+
 (init-runtime)
+

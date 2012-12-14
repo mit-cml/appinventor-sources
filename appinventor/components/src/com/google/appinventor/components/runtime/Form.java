@@ -1,4 +1,7 @@
-// Copyright 2007 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -24,6 +27,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuItem.OnMenuItemClickListener;
@@ -36,6 +40,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -46,10 +51,12 @@ import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.collect.Sets;
 import com.google.appinventor.components.runtime.util.AlignmentUtil;
+import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
@@ -67,8 +74,7 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
     description = "Top-level component containing all other components in the program",
     showOnPalette = false)
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.INTERNET")
-//@UsesPermissions(permissionNames = "android.permission.ACCESS_NETWORK_STATE")
+@UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
@@ -119,6 +125,9 @@ public class Form extends Activity
   private int horizontalAlignment;
   private int verticalAlignment;
 
+  // String representing the transition animation type
+  private String openAnimType;
+  private String closeAnimType;
 
   private FrameLayout frameLayout;
   private boolean scrollable;
@@ -129,6 +138,9 @@ public class Form extends Activity
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+  
+  // AppInventor lifecycle: listeners for the Initialize Event
+  private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
 
   // Set to the optional String-valued Extra passed in via an Intent on startup.
   private String startupValue = "";
@@ -225,6 +237,31 @@ public class Form extends Activity
     }
   }
 
+  /*
+   * Here we override the hardware back button, just to make sure
+   * that the closing screen animation is applied. (In API level
+   * 5, we can simply override the onBackPressed method rather
+   * than bothering with onKeyDown)
+   */
+  @Override
+  public boolean onKeyDown(int keyCode, KeyEvent event) {
+    if (keyCode == KeyEvent.KEYCODE_BACK) {      
+      if (!BackPressed()) {
+        boolean handled = super.onKeyDown(keyCode, event);
+        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
+        return handled;
+      } else {
+        return true;
+      }      
+    }
+    return super.onKeyDown(keyCode, event);
+  }
+
+  @SimpleEvent(description = "Device back button pressed.")
+  public boolean BackPressed() {
+    return EventDispatcher.dispatchEvent(this, "BackPressed");
+  }
+  
   // onActivityResult should be triggered in only two cases:
   // (1) The result is for some other component in the app, not this Form itself
   // (2) This page started another page, and that page is closing, and passing
@@ -320,6 +357,16 @@ public class Form extends Activity
 
   public void registerForOnResume(OnResumeListener component) {
     onResumeListeners.add(component);
+  }
+  
+  /**
+   * An app can register to be notified when App Inventor's Initialize
+   * block has fired.  They will be called in Initialize().
+   * 
+   * @param component
+   */
+  public void registerForOnInitialize(OnInitializeListener component) {
+    onInitializeListeners.add(component);
   }
 
   @Override
@@ -439,6 +486,12 @@ public class Form extends Activity
         if (frameLayout != null && frameLayout.getWidth() != 0 && frameLayout.getHeight() != 0) {
           EventDispatcher.dispatchEvent(Form.this, "Initialize");
           screenInitialized = true;
+          
+          //  Call all apps registered to be notified when Initialize Event is dispatched
+          for (OnInitializeListener onInitializeListener : onInitializeListeners) {
+            onInitializeListener.onInitialize();
+          }
+          
         } else {
           // Try again later.
           androidUIHandler.post(this);
@@ -629,13 +682,20 @@ public class Form extends Activity
   }
 
   /**
+   * The requested screen orientation. Commonly used values are
+      unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+      "See the Android developer documentation for ActivityInfo.Screen_Orientation for the " + 
+      "complete list of possible settings.
+   * 
    * ScreenOrientation property getter method.
    *
    * @return  screen orientation
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"user\".")
+      " unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  " +
+      "See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the " + 
+      "complete list of possible settings.")
   public String ScreenOrientation() {
     switch (getRequestedOrientation()) {
       case ActivityInfo.SCREEN_ORIENTATION_BEHIND:
@@ -675,9 +735,7 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ORIENTATION,
       defaultValue = "unspecified")
-  @SimpleProperty(category = PropertyCategory.APPEARANCE,
-      description = "The requested screen orientation. Commonly used values are" +
-      " \"unspecified\", \"landscape\", \"portrait\", \"sensor\", and \"behind\".")
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
   public void ScreenOrientation(String screenOrientation) {
     if (screenOrientation.equalsIgnoreCase("behind")) {
       setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_BEHIND);
@@ -788,7 +846,41 @@ public class Form extends Activity
    }
  }
 
+  /**
+   * Sets the animation type for the transition to another screen.
+   *
+   * @param animType the type of animation to use for the transition
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+      defaultValue = "default")
+  @SimpleFunction(description = "Sets the animation for switching to another screen. Valid" +
+ 		" options are default, fade, zoom, slidehorizontal, slidevertical, and none")
+  public void OpenScreenAnimation(String animType) {
+    openAnimType = animType;
+  }
 
+  /**
+   * Sets the animation type for the transition of this form closing and returning
+   * to a form behind it in the activity stack.
+   *
+   * @param animType the type of animation to use for the transition
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
+      defaultValue = "default")
+  @SimpleFunction(description = "Sets the animation for closing current screen and returning " +
+     " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
+     "slidevertical, and none")
+  public void CloseScreenAnimation(String animType) {
+    closeAnimType = animType;
+  }
+
+  /*
+   * Used by ListPicker, and ActivityStarter to get this Form's current opening transition
+   * animation
+   */
+  public String getOpenAnimType() {
+    return openAnimType;
+  }
 
   /**
    * Specifies the name of the application icon.
@@ -902,6 +994,7 @@ public class Form extends Activity
     try {
       Log.i(LOG_TAG, "startNewForm starting activity:" + activityIntent);
       startActivityForResult(activityIntent, SWITCH_FORM_REQUEST_CODE);
+      AnimationUtil.ApplyOpenScreenAnimation(this, openAnimType);
     } catch (ActivityNotFoundException e) {
       dispatchErrorOccurredEvent(this, functionName,
           ErrorMessages.ERROR_SCREEN_NOT_FOUND, nextFormName);
@@ -1062,6 +1155,7 @@ public class Form extends Activity
       setResult(Activity.RESULT_OK, resultIntent);
     }
     finish();
+    AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
   }
 
   // This is called from runtime.scm when a "close application" block is executed.

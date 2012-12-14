@@ -1,4 +1,7 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.client.youngandroid;
 
@@ -228,6 +231,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Form")) {
         srcCompVersion = upgradeFormProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("FusiontablesControl")) {
+        srcCompVersion = upgradeFusiontablesControlProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("HorizontalArrangement")) {
         srcCompVersion = upgradeHorizontalArrangementProperties(componentProperties, srcCompVersion);
 
@@ -273,6 +279,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("TextBox")) {
         srcCompVersion = upgradeTextBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Texting")) {
+        srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
+        
       } else if (componentType.equals("Twitter")) {
         srcCompVersion = upgradeTwitterProperties(componentProperties, srcCompVersion);
 
@@ -358,6 +367,12 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+      // The ActivityStarter.StartActivity method was modified to provide the parent Form's
+      // screen animation type.
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
@@ -375,6 +390,10 @@ public final class YoungAndroidFormUpgrader {
       // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+      }
+    if (srcCompVersion < 5) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -481,6 +500,10 @@ public final class YoungAndroidFormUpgrader {
       // The events TouchDown, TouchUp, and Flung were added.
       srcCompVersion = 6;
     }
+    if (srcCompVersion < 7) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 7;
+    } 
     return srcCompVersion;
   }
 
@@ -588,6 +611,25 @@ public final class YoungAndroidFormUpgrader {
       // to upgrade to version 8.
       srcCompVersion = 8;
     }
+    if (srcCompVersion < 9) {
+      // The OpenScreenAnimation and CloseScreenAnimation properties were added. No blocks need
+      // to be modified to upgrade to version 9.
+      srcCompVersion = 9;
+    }
+    if (srcCompVersion < 10) {
+      // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
+      srcCompVersion = 10;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeFusiontablesControlProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // No properties need to be modified to upgrade to version 2.
+      // The ApiKey property and the SendQuery and ForgetLogin methods were added.
+      srcCompVersion = 2;
+    }
     return srcCompVersion;
   }
 
@@ -617,6 +659,12 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    } 
+    if (srcCompVersion < 5) {
+      // The ImagePath property was renamed to Selection.
+      handlePropertyRename(componentProperties, "ImagePath", "Selection");
+      // Properties related to this component have now been upgraded to version 2.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -640,6 +688,10 @@ public final class YoungAndroidFormUpgrader {
       // The TouchUp, TouchDown, and Flung events were added. (for all sprites)
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The callback parameters speed and heading were added to Flung.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -675,6 +727,12 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // The getIntent method was modified to add the parent Form's screen
+      // animation type. No properties need to be modified to upgrade to
+      // version 6.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }
@@ -820,6 +878,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeTextingProperties(Map<String, JSONValue> componentProperties,
+                                              int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The designer property GoogleVoiceEnabled was added
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }  
+  
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {

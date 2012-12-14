@@ -1,4 +1,7 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package openblocks.codeblockutil;
 
@@ -358,45 +361,58 @@ public final class AIDirectory {
   // to access the envars in Java.
   // See http://en.wikipedia.org/wiki/Environment_variable#System_path_variables
   private  final String findWindowsCandidate() throws NoAIDirectoryException {
-    String candidate;
+    String candidate = null;
     // "Appinventor Setup" is specified in the installed build file
-    final String registryQuery =
-      "reg.exe QUERY \"HKCU\\Software\\Appinventor Setup\" /v PATH";
-    try {
-      // The HKCU key might not exist and reg.exe will produce
-      // an error.  Possible reasons are that the Appinventor Setup software
-      // was never installed, that there's there's a 32 vs. 64 bit incompatibility
-      // between the installer and the user machine, or because Windows
-      // is just generally painful. So we catch the
-      // error and try asking the user where the directory is.
-      // true as last argument means that we wait for the process output
-      String result = CodeBlocksProcessHelper.execOnWindows(registryQuery, true);
-      if (DEBUG) {
-        System.out.println("got QUERY result from Windows: " + result);
+    // Need to look for all the 4 places since the differences in 32/64 bits
+    final String[] registryQuerys = new String[]{
+            "reg.exe QUERY \"HKLM\\Software\\Appinventor Setup\" /v PATH",
+            "reg.exe QUERY \"HKCU\\Software\\Appinventor Setup\" /v PATH",
+            "reg.exe QUERY \"HKLM\\Software\\Wow6432Node\\Appinventor Setup\" /v PATH",
+            "reg.exe QUERY \"HKCU\\Software\\Wow6432Node\\Appinventor Setup\" /v PATH",
+            };
+
+    for(int i =0; i<registryQuerys.length; i++){
+        candidate = lookForWindowsCandiate(registryQuerys[i]);
+        // At this point, candidate is the result of reading the registry.  Now we need to test it.
+        // Just because we found the directory in the registry, it doesn't mean
+        // that the directory was there.
+        if (candidate != null && testCandidate(candidate)) {
+          return candidate;
+        }
+    }   
+    // getCandidateFromUser will throw a NoAIDirectoryException if it loses
+    return getCandidateFromUser(candidate);
+  }
+  
+  private final String lookForWindowsCandiate(String registryQuery) throws NoAIDirectoryException{    
+      String candidate;     
+      try {
+        // The HKCU key might not exist and reg.exe will produce
+        // an error.  Possible reasons are that the Appinventor Setup software
+        // was never installed, that there's there's a 32 vs. 64 bit incompatibility
+        // between the installer and the user machine, or because Windows
+        // is just generally painful. So we catch the
+        // error and try asking the user where the directory is.
+        // true as last argument means that we wait for the process output
+        String result = CodeBlocksProcessHelper.execOnWindows(registryQuery, true);
+        if (DEBUG) {
+          System.out.println("got QUERY result from Windows: " + result);
+        }
+        // Look for the part of the result after REG_SZ
+        // Warning: Windows 7 return two copies of the QUERY result, while Windows XP
+        // returns one copy, which is why we pick the last element in the match result rather
+        // than, e.g., the 2nd element
+        String [] matchResult = result.split("REG_SZ\\S?");
+        String directory = matchResult[matchResult.length - 1].trim();
+        if (DEBUG) {
+          System.out.println("got AI directory from Windows: " + directory);
+        }
+        candidate = directory;
+      } catch (IOException e) {
+        System.out.println("Got error trying to read registry: " + e.getMessage());
+        candidate = null;
       }
-      // Look for the part of the result after REG_SZ
-      // Warning: Windows 7 return two copies of the QUERY result, while Windows XP
-      // returns one copy, which is why we pick the last element in the match result rather
-      // than, e.g., the 2nd element
-      String [] matchResult = result.split("REG_SZ\\S?");
-      String directory = matchResult[matchResult.length - 1].trim();
-      if (DEBUG) {
-        System.out.println("got AI directory from Windows: " + directory);
-      }
-      candidate = directory;
-    } catch (IOException e) {
-      System.out.println("Got error trying to read registry: " + e.getMessage());
-      candidate = null;
-    }
-    // At this point, candidate is the result of reading the registry.  Now we need to test it.
-    // Just because we found the directory in the registry, it doesn't mean
-    // that the directory was there.
-    if (candidate != null && testCandidate(candidate)) {
       return candidate;
-    } else {
-      // getCandidateFromUser will throw a NoAIDirectoryException if it loses
-      return getCandidateFromUser(candidate);
-    }
   }
 
   // Prints a message and requests the user to enter a location.  The input

@@ -1,4 +1,7 @@
-// Copyright 2010 Google Inc. All Rights Reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.blockseditor.youngandroid;
 
@@ -20,6 +23,13 @@ import openblocks.yacodeblocks.AndroidControllerException;
 import openblocks.yacodeblocks.ExternalStorageException;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.FileInputStream;
+import java.io.File;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -109,6 +119,9 @@ public final class YaCodeblocksAndroidController implements AndroidController,
      *  records app running state and fires workspace event if the state changed
      */
     boolean detectIsAppRunning(IDevice device) {
+      if (usingwifi) {
+        return true;            // Cannot really tell
+      }
       if (device != selectedDevice) return false;
       if (!startedSinceLastConnected) return false;
       Client starterClient = device.getClient(packageName);
@@ -136,6 +149,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
     // Call detectIsAppRunning for currently selected device (if any)
     boolean detectIsAppRunning() {
       if (selectedDevice == null) return false;
+      if (usingwifi) return true;
       return detectIsAppRunning(selectedDevice);
     }
 
@@ -154,6 +168,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
     }
 
     void syncAndInstallApp() throws AndroidControllerException, ExternalStorageException {
+      if (usingwifi) return;
       syncApplication(apkFilePath, appName, packageName, true);
     }
 
@@ -162,6 +177,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
      *
      */
     void startApp() throws AndroidControllerException {
+      if (usingwifi) return;
       StringBuilder cmd = new StringBuilder();
       cmd.append("am start");
       cmd.append(" -n ");
@@ -194,7 +210,11 @@ public final class YaCodeblocksAndroidController implements AndroidController,
     }
 
     void killApp() {
-      killApplication(packageName);
+      if (usingwifi) {
+        // Need to close the connection here?
+      } else {
+        killApplication(packageName);
+      }
     }
 
     private void detectedAppRunning(Client client) {
@@ -218,6 +238,152 @@ public final class YaCodeblocksAndroidController implements AndroidController,
       }
     }
   }
+
+  /*
+   * Inner class to manage connectivity to a phone connected via a
+   * Wifi network connection. This works a lot like an USB connection
+   * except we use an IP address other then 127.0.0.1 and we use HTTP
+   * to push assets to the phone.
+   */
+
+  private final class WifiManager {
+
+    private String ipAddress;
+
+    // Do this actual stuffing!
+
+    private class Uploader {
+
+      private static final String CrLf = "\r\n";
+      private void SendFile(String ipAddress, String fileToPush, String filename) throws IOException {
+
+        FileInputStream is = null;
+        OutputStream os = null;
+        InputStream cin = null;
+
+        try {
+          URL url = new URL("http://" + ipAddress + ":8000");
+          File file = new File(fileToPush);
+          long filelength = file.length();
+
+          System.out.println("url:" + url);
+          HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+          conn.setRequestMethod("POST");
+          conn.setDoOutput(true);
+
+          String postData = "";
+
+          is = new FileInputStream(file);
+
+          String message1 = "";
+          message1 += "-----------------------------4664151417711" + CrLf;
+          message1 += "Content-Disposition: form-data; name=\"uploadedfile\"; filename=\"" + filename + "\"" + CrLf;
+          message1 += "Content-Type: application/octet-string" + CrLf;
+          message1 += CrLf;
+
+          // the image is sent between the messages in the multipart message.
+
+          String message2 = "";
+          message2 += CrLf + "-----------------------------4664151417711--"
+            + CrLf;
+
+          conn.setRequestProperty("Content-Type",
+                                  "multipart/form-data; boundary=---------------------------4664151417711");
+          // might not need to specify the content-length when sending chunked
+          // data.
+          conn.setRequestProperty("Content-Length", String.valueOf((message1
+                                                                    .length() + message2.length() + filelength)));
+
+          os = conn.getOutputStream();
+          os.write(message1.getBytes());
+
+          // SEND THE FILE
+          int index = 0;
+          int size = 1024;
+          byte [] data = new byte[size];
+          int r;
+          do {
+            r = is.read(data, 0, size);
+            if (r > 0)
+              os.write(data, 0, r);
+          } while (r > 0);
+
+          os.write(message2.getBytes());
+          os.flush();
+
+          System.out.println("open is");
+          cin = conn.getInputStream();
+
+          int len;
+          do {
+            System.out.println("READ");
+            len = cin.read(data, 0, size);
+
+            if (len > 0) {
+              System.out.println(new String(data, 0, len));
+            }
+          } while (len > 0);
+
+          System.out.println("DONE");
+        } catch (Exception e) {
+          e.printStackTrace();
+        } finally {
+          System.out.println("Close connection");
+          try {
+            os.close();
+          } catch (Exception e) {
+          }
+          try {
+            is.close();
+          } catch (Exception e) {
+          }
+          try {
+            cin.close();
+          } catch (Exception e) {
+          }
+        }
+      }
+    }
+
+
+    WifiManager(String ipAddress) {
+      this.ipAddress = ipAddress;
+    }
+
+    void triggerInstall(String packageName) {
+      try {
+        String url = "http://" + ipAddress + ":8000/_package?package=" + packageName;
+        URL triggerurl = new URL(url);
+        URLConnection con = triggerurl.openConnection();
+        con.getInputStream().close(); // Ignore return value for now
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
+    }
+
+    void pushFileToDevice(String fileToPush, String remotePath) throws AndroidControllerException, ExternalStorageException {
+      pushFileToDevice(fileToPush, remotePath, false);
+    }
+
+    void pushFileToDevice(String fileToPush, String remotePath, boolean doInstall)
+      throws AndroidControllerException, ExternalStorageException {
+      System.out.println("pushFileToDevice: fileToPush: \"" + fileToPush + "\" remotePath: \"" + remotePath + "\"");
+      String [] r = remotePath.split("/"); // We only want the last part!
+      String filename = r[r.length - 1];
+      System.out.println("pushFileToDevice: filename = \"" + filename + "\"");
+      try {
+        (new Uploader()).SendFile(ipAddress, fileToPush, filename);
+        if (doInstall) triggerInstall(filename);
+      } catch (Exception e) {
+        e.printStackTrace(System.out);
+        throw new AndroidControllerException(e.toString());
+      }
+    }
+  }
+
+  private WifiManager wifiManager = null;
+
+  private boolean usingwifi = false; // Set to true when we are using a WiFi connection
 
   private static final boolean DEBUG = false;
 
@@ -245,6 +411,9 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public boolean androidInitializeCommunicationBridge(String adbLocation) {
+    if (usingwifi) {            // Don't use adb with Wifi
+      return true;
+    }
     this.adbLocation = adbLocation;
     return startAdb();
   }
@@ -317,16 +486,19 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public void androidKillStarterApplication() {
+    if (usingwifi) return;
     starterAppManager.killApp();
   }
 
   public void androidKillSpecificApplication(String packageName) {
+    if (usingwifi) return;
     killApplication(packageName);
   }
 
   // Interface to sync the application to the device and install the application
   public void androidSyncAndInstallStarterApplication()
       throws AndroidControllerException, ExternalStorageException {
+    if (usingwifi) return;
     starterAppManager.syncAndInstallApp();
   }
 
@@ -340,6 +512,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
   // Interface to create a port forwarding between a local and a remote port.
   public boolean androidForwardTcpPort(int localPort, int remotePort) {
+    if (usingwifi) return true;
     IDevice device = starterAppManager.getSelectedDevice();
     if (device == null) return false;
     try {
@@ -353,11 +526,13 @@ public final class YaCodeblocksAndroidController implements AndroidController,
 
   // Interface to start the application running.
   public void androidStartStarterApplication() throws AndroidControllerException {
+    if (usingwifi) return;
     starterAppManager.startApp();
   }
 
   // Must be called before the code exits
   public void androidCleanUpBeforeExit() {
+    if (usingwifi) return;
     if (adbInitDone) {
       AndroidDebugBridge.terminate();
       adbInitDone = false;
@@ -376,6 +551,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   private boolean startAdb() {
     // TODO(kerr): Is there any case where we'd need to call
     // AndroidDebugBridge.restart() for a hard reset on state?
+    if (usingwifi) return true;
     if (!adbInitDone) {
       AndroidDebugBridge.init(true);
       adbInitDone = androidRestartBridge();
@@ -384,6 +560,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public boolean androidRestartBridge() {
+    if (usingwifi) return true;
     if (AndroidDebugBridge.createBridge(adbLocation, false) == null) return false;
     AndroidDebugBridge.addDeviceChangeListener(this);
     AndroidDebugBridge.addClientChangeListener(this);
@@ -398,14 +575,20 @@ public final class YaCodeblocksAndroidController implements AndroidController,
       boolean uninstallRequired) throws AndroidControllerException, ExternalStorageException {
     // Upload the app to the device.
     final String remoteInstallPath = installPath + appName;
-    pushFileToDevice(apkFilePath, remoteInstallPath);
-
-    // Install the app.
-    installApplication(remoteInstallPath, packageName, uninstallRequired);
+    if (usingwifi) {
+      wifiManager.pushFileToDevice(apkFilePath, appName, true); // Send and Install
+    } else {
+      pushFileToDevice(apkFilePath, remoteInstallPath);
+      installApplication(remoteInstallPath, packageName, uninstallRequired);
+    }
   }
 
   public void pushFileToDevice(String fileToPush, String remotePath)
       throws AndroidControllerException, ExternalStorageException {
+    if (usingwifi) {
+      wifiManager.pushFileToDevice(fileToPush, remotePath);
+      return;
+    }
     IDevice device = starterAppManager.getSelectedDevice();
     SyncService sync = starterAppManager.getSyncService();
     if (device == null) {
@@ -433,6 +616,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   // Returns true iff we can detect that the external storage is *not* mounted
   // on the phone.
   private boolean externalStorageNotMounted() {
+    if (usingwifi) return false;
     IDevice device = starterAppManager.getSelectedDevice();
     if (device != null) {
       final boolean externalStorageMounted[] = { false };
@@ -476,6 +660,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
    * Kill the application if it is running.
    */
   private void killApplication(String packageName) {
+    if (usingwifi) return;
     IDevice device = starterAppManager.getSelectedDevice();
     Client application = device.getClient(packageName);
     if (DEBUG) {
@@ -494,6 +679,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
    */
   private void installApplication(String remotePath, String packageName, boolean uninstallRequired)
       throws AndroidControllerException {
+    if (usingwifi) return;
     class ShellReceiver extends MultiLineReceiver {
       public boolean success = false;
       public StringBuilder result = new StringBuilder();
@@ -569,7 +755,16 @@ public final class YaCodeblocksAndroidController implements AndroidController,
     }
   }
 
+  public void selectDevice(String device, String ipAddress) throws AndroidControllerException {
+    if (!device.equals("WiFi")) throw new AndroidControllerException("Only set IP address for WiFi connection.");
+    usingwifi = true;
+    wifiManager = new WifiManager(ipAddress);
+  }
+
   public void selectDevice(String device) throws AndroidControllerException {
+    usingwifi = false;
+    if (device.equals("none"))  // Nothing more to do
+      return;
     if (devices.containsKey(device)) {
       starterAppManager.selectDevice(devices.get(device));
     } else {
@@ -578,6 +773,7 @@ public final class YaCodeblocksAndroidController implements AndroidController,
   }
 
   public String getSelectedDevice() {
+    if (usingwifi) return "WiFi";
     IDevice selectedDevice = starterAppManager.getSelectedDevice();
     if (selectedDevice != null) {
       return selectedDevice.getSerialNumber();
