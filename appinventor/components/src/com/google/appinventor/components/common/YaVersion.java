@@ -296,8 +296,10 @@ public class YaVersion {
   // - Added PROXIMITYSENSOR_COMPONENT_VERSION
   // For YOUNG_ANDROID_VERSION 110:
   // - LABEL_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 111:
+  // - BARCODESCANNER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 110;
+  public static final int YOUNG_ANDROID_VERSION = 111;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -422,7 +424,9 @@ public class YaVersion {
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
   public static final int BALL_COMPONENT_VERSION = 5;
 
-  public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
+  // For BARCODESCANNER_COMPONENT_VERSION 2:
+  // -- UseExternalScanner property was added (default true)
+  public static final int BARCODESCANNER_COMPONENT_VERSION = 2;
 
   // For BLUETOOTHCLIENT_COMPONENT_VERSION 2:
   // - The BluetoothClient.Enabled property was added.
