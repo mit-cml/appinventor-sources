@@ -297,7 +297,12 @@ Blockly.Yail.getFormPropertiesLines = function(formName, componentJson, includeC
   }
   var yailForComponentProperties = Blockly.Yail.getPropertySettersLines(componentJson, formName);
   if (yailForComponentProperties.length > 0) {
-    code.push(Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION + yailForComponentProperties + 
+    // getPropertySettersLine returns an array of lines.  So we need to 
+    // concatenate them (using join) before pushing them onto the Yail expression.
+    // WARNING:  There may be other type errors of this sort in this file, which
+    // (hopefully) will be uncovered in testing. Please
+    // be alert for these errors and check carefully.
+    code.push(Blockly.Yail.YAIL_DO_AFTER_FORM_CREATION + yailForComponentProperties.join(" ") + 
       Blockly.Yail.YAIL_CLOSE_BLOCK);
   }
   return code;
