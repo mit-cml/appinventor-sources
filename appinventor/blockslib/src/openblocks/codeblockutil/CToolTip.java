@@ -61,7 +61,10 @@ class CToolTipUI extends BasicToolTipUI {
       return new Dimension(0,0);
     textArea.setText(tipText);
     Dimension d = textArea.getPreferredSize();
-    d.width = Math.min(d.width, WIDTH);
+    // d.width = Math.min(d.width, WIDTH);
+    // getPreferrdSize seems to give too small a width,
+    // so we'll just go with WIDTH
+    d.width = WIDTH;
     // We need to pad the height, or else the last line
     // doesn't show in some tooltips.  Is this a Swing bug or
     // is getPreferred size the wrong thing to use here?
