@@ -63,7 +63,7 @@ public final class Compiler {
 
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
-  
+
   public static final String RUNTIME_FILES_DIR = "/files/";
 
   private static final String DEFAULT_ICON =
@@ -241,6 +241,11 @@ public final class Compiler {
           out.write("  <uses-feature android:name=\"android.hardware.bluetooth\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.location\" android:required=\"false\" />\n");
           out.write("  <uses-feature android:name=\"android.hardware.telephony\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.location.network\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.location.gps\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.microphone\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.touchscreen\" android:required=\"false\" />\n");
+          out.write("  <uses-feature android:name=\"android.hardware.wifi\" />\n"); // We actually require wifi
       }
 
       for (String permission : permissionsNeeded) {
@@ -321,7 +326,7 @@ public final class Compiler {
       if (componentTypes.contains("Texting")) {
         System.out.println("Android Manifest: including <receiver> tag");
         out.write(
-            "<receiver \n" +   
+            "<receiver \n" +
             "android:name=\"com.google.appinventor.components.runtime.util.SmsBroadcastReceiver\" \n" +
             "android:enabled=\"true\" \n" +
             "android:exported=\"true\" >\n "  +
@@ -627,7 +632,7 @@ public final class Compiler {
 
       classpath +=
         getResource(ANDROID_RUNTIME);
-      
+
       System.out.println("Libraries Classpath = " + classpath);
 
       String yailRuntime = getResource(YAIL_RUNTIME);
@@ -838,7 +843,7 @@ public final class Compiler {
     }
 
     System.out.println("Libraries command line = " + commandLineList);
-    
+
     // Convert command line to an array
     String[] dxCommandLine = new String[commandLineList.size()];
     commandLineList.toArray(dxCommandLine);
