@@ -850,8 +850,20 @@
 ;;; For example:
 ;;;  (call-component-method 'Sound1 'Vibrate (*list-for-runtime* duration) (*list-for-runtime* 'number))
 
-;;; Note that the result is coming back from a component, so we have to
-;;; sanitize it
+;;; Note that the result is coming back from a component, so we have to sanitize it
+;;; Warning: We are living dangrously here by assuming that the component method can handle the
+;;; args being passed to it.  We're relying on the coercion from coerce-args and Kawa's invoke
+;;; to deal with any weird Kawa types before passing them to the component.  A place where this 
+;;; does not work is with TinyDB and TinyWebDB and the storeValue method, where the "value" arg is
+;;; type any on the Kawa side and type Object on the Java side, so no coercion get performed.  As a 
+;;; consequence, calling this method with value as the result of a division could wind up passing an 
+;;; argument of class gnu.math.IntFraction, which the Json library can't handle, and so has to
+;;; be tested for in the Java implementation of this method in JsonUtils.getJsonRepresentation.  It might be 
+;;; more prudent to install an interface that is inverse of sanitize to check that all values being 
+;;; relayed by call-component-method at OK.  But for now, we'll try to get by with being careful.
+;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
+;;; values they will receive.
+
 
 (define (call-component-method component-name method-name arglist typelist)
   (let ((coerced-args (coerce-args method-name arglist typelist)))
