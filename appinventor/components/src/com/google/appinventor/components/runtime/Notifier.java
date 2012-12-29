@@ -6,10 +6,14 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -62,6 +66,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Activity activity;
   private final Handler handler;
 
+  //By setting isCancelable=true, a Cancel button will be added to ShowChooseDialog, allowing
+  //user to Cancel out of dialog
+  private boolean isCancelable = false;
+
   /**
    * Creates a new Notifier component.
    *
@@ -100,8 +108,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
 
   /**
-   * Display an alert with two buttons.   Raises the AfterChoosing event when the
-   * choice has been made.
+   * Display an alert with minimum two buttons. If isCancelable is set to true,
+   * then displays a third button, allowing user to cancel out of dialog.
+   * Raises the AfterChoosing event when the choice has been made.
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
@@ -120,8 +129,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
-    // prevents the user from escaping the dialog by hitting the Back button
-    alertDialog.setCancelable(false);
+
     alertDialog.setMessage(message);
     alertDialog.setButton(button1Text,
         new DialogInterface.OnClickListener() {
@@ -139,11 +147,46 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         AfterChoosing(button2Text);
       }
     });
+
+      //If IsCancelable==true, then a 3rd button, with text of Cancel will be added.
+      if (IsCancelable())  {
+          alertDialog.setButton3("Cancel",
+              new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                      AfterChoosing("Cancel");
+                  }
+              });
+      } else {
+          // prevents the user from escaping the dialog by hitting the Back button
+          alertDialog.setCancelable(false);
+      }
+
     alertDialog.show();
   }
 
+    /**
+     * Getter for isCancelable
+     * @return the current state of isCancelable
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+        description = "If true, then Notifier will add a Cancel button and will trigger AfterChoosing with choice of " +
+            "Cancel. If false, then Cancel button will not be displayed and user can not cancel out of" +
+            "Notifier (default = true)")
+    public boolean IsCancelable() {
+        return isCancelable;
+    }
 
-  /**
+    /**
+     * Setter for isCancelable
+     * @param isCancelable if true, then ShowChooseDialog will include a Cancel button
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+    @SimpleProperty
+    public void IsCancelable(boolean isCancelable) {
+        this.isCancelable = isCancelable;
+    }
+
+    /**
    * Event after the user has made a selection for ShowChooseDialog.
    * @param choice is the text on the button the user pressed
    */
@@ -208,7 +251,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
-  
+
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
