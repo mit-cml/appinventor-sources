@@ -9,6 +9,7 @@
  */
 package com.google.appinventor.components.runtime.util;
 
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.Texting;
 import com.google.appinventor.components.runtime.ReplForm;
 
@@ -71,25 +72,37 @@ public class SmsBroadcastReceiver extends BroadcastReceiver {
 
     // If activity is receiving messages, send the message;
     // It'll be cached if the app isn't running
-    if (Texting.isReceivingEnabled(context)) {
-      if (isRepl(context)) {    // If we are the Repl, we only handle texts if we are running
-        if (Texting.isRunning()) {
-          Texting.handledReceivedMessage(context, phone, msg);
-        } else {
-          Log.i(TAG, context.getApplicationInfo().packageName + " is not running and we are the repl, ignoring message.");
-        }
-      } else {
-        Texting.handledReceivedMessage(context, phone, msg);
-        if (!Texting.isRunning()) {
-          // If the app isn't running, send a Notification
-          sendNotification(context, phone, msg);
-        } else {
-          Log.i(TAG, context.getApplicationInfo().packageName + " is running");
-        }
-      }
-    } else {
-      Log.i(TAG, context.getApplicationInfo().packageName + " receiving disabled");
+
+    int receivingEnabled = Texting.isReceivingEnabled(context);
+
+    // If isReceivingEnabled == 0, then we don't want anything EVER
+    if (receivingEnabled == ComponentConstants.TEXT_RECEIVING_OFF) {
+      Log.i(TAG, context.getApplicationInfo().packageName +
+        " Receiving is not enabled, ignoring message.");
+      return;
     }
+
+    // If we get this far, receiving is enabled for either FOREGROUND or ALWAYS
+
+    if (((receivingEnabled == ComponentConstants.TEXT_RECEIVING_FOREGROUND) ||
+        isRepl(context)) && !Texting.isRunning()) {
+      Log.i(TAG, context.getApplicationInfo().packageName +
+        " Texting isn't running, and either receivingEnabled is FOREGROUND or we are the repl.");
+      return;
+    }
+
+    // If we get this far, we want the message, either foreground or background
+
+    Texting.handledReceivedMessage(context, phone, msg);
+    if (Texting.isRunning()) {  // We are running in the foreground
+      Log.i(TAG, context.getApplicationInfo().packageName +
+        " App in Foreground, delivering message.");
+    } else {
+      Log.i(TAG, context.getApplicationInfo().packageName +
+        " Texting isn't running, but receivingEnabled == 2, sending notification.");
+      sendNotification(context, phone, msg);
+    }
+
   }
 
   /**

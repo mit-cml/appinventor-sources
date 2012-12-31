@@ -885,8 +885,21 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      if (componentProperties.containsKey("ReceivingEnabled")) {
+        JSONValue receivingEnabled = componentProperties.get("ReceivingEnabled");
+        String receivingString = receivingEnabled.asString().getString();
+        if (receivingString.equals("true")) {
+          componentProperties.put("ReceivingEnabled", new ClientJsonString("2"));
+        } else {
+          componentProperties.put("ReceivingEnabled", new ClientJsonString("1"));
+        }
+      }
+      srcCompVersion = 3;
+    }
+
     return srcCompVersion;
-  }  
+  }
   
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
