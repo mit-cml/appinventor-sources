@@ -68,7 +68,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
   //By setting isCancelable=true, a Cancel button will be added to ShowChooseDialog, allowing
   //user to Cancel out of dialog
-  private boolean isCancelable = false;
+  private boolean isCancelable = true;
 
   /**
    * Creates a new Notifier component.
