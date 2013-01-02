@@ -39,7 +39,7 @@ public abstract class Sprite extends VisibleComponent
   private static final String LOG_TAG = "Sprite";
   private static final boolean DEFAULT_ENABLED = true;  // Enable timer for movement
   private static final int DEFAULT_HEADING = 0;      // degrees
-  private static final int DEFAULT_INTERVAL = 1000;  // ms
+  private static final int DEFAULT_INTERVAL = 100;  // ms
   private static final float DEFAULT_SPEED = 0.0f;   // pixels per interval
   private static final boolean DEFAULT_VISIBLE = true;
   private static final double DEFAULT_Z = 1.0;
@@ -211,9 +211,9 @@ public abstract class Sprite extends VisibleComponent
    * @return  timer interval in ms
    */
   @SimpleProperty(
-      description = "<p>The interval, in milliseconds, at which the sprite's " +
-      "position is updated.  For example, if the speed is 10, the sprite will " +
-      "move 10 pixels every interval.</p>",
+      description = "<p>The interval in milliseconds at which the sprite's " +
+      "position is updated.  For example, if the interval is 50 and the speed is 10, " +
+      "then the sprite will move 10 pixels every 50 milliseconds.</p>",
       category = PropertyCategory.BEHAVIOR)
   public int Interval() {
     return timerInternal.Interval();
