@@ -38,6 +38,12 @@ public interface ITextToSpeech {
    */
   public void speak(String message, Locale loc);
 
+    /**
+     * Interrupts the current utterance (whether played or rendered to file)
+     * and discards other utterances in the queue.
+     */
+  public void stopSpeak();
+
   /**
    * This will be called when the Activity is stopped, to give us a chance to cleanup resources,
    * if necessary.
