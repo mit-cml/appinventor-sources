@@ -241,28 +241,13 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleFunction
   public void ShowAlert(final String notice) {
-      ShowAlertCustom(notice, true);
-  }
-
-    /**
-     * Display a temporary notification
-     *
-     * @param notice the text of the notification
-     * @param useDefaultToast if true, uses default Toast style else uses custom toast display
-     */
-    @SimpleFunction
-    public void ShowAlertCustom(final String notice, final boolean useDefaultToast)
-    {
     handler.post(new Runnable() {
       public void run() {
-                if (useDefaultToast) {
-                    Toast.makeText(activity, notice, Toast.LENGTH_LONG).show();
-                } else {
         toastNow(notice);
       }
-            }
     });
   }
+  
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
