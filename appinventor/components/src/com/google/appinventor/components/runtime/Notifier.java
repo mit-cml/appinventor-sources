@@ -7,11 +7,11 @@ package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
@@ -66,9 +66,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Activity activity;
   private final Handler handler;
 
-  //By setting isCancelable=true, a Cancel button will be added to ShowChooseDialog, allowing
+  //isCancelable=true, a Cancel button will be added to ShowChooseDialog, allowing
   //user to Cancel out of dialog
-  private boolean isCancelable = false;
+  private boolean isCancelable = true;
 
   /**
    * Creates a new Notifier component.
@@ -129,19 +129,17 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
-
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
     alertDialog.setMessage(message);
-    alertDialog.setButton(button1Text,
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         AfterChoosing(button1Text);
       }
     });
-    // TODO(halabelson): The android documentation says that setButton2 is deprecated and that one
-    // should use setButton(AlertDialog.BUTTON_NEGATIVE, ...) instead.  When I use that, everything
-    // compiles, but the application crashes immediately, in VFY.  Should we be using new a newer
-    // version of the installer?
-    alertDialog.setButton2(button2Text,
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, button2Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         AfterChoosing(button2Text);
@@ -150,15 +148,12 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
       //If IsCancelable==true, then a 3rd button, with text of Cancel will be added.
       if (IsCancelable())  {
-          alertDialog.setButton3("Cancel",
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
               new DialogInterface.OnClickListener() {
                   public void onClick(DialogInterface dialog, int which) {
                       AfterChoosing("Cancel");
                   }
               });
-      } else {
-          // prevents the user from escaping the dialog by hitting the Back button
-          alertDialog.setCancelable(false);
       }
 
     alertDialog.show();
@@ -166,7 +161,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     /**
      * Getter for isCancelable
-     * @return the current state of isCancelable
+     * @return 'true' or 'false' depending on whether you want to
+     * allow user to cancel out of Notifier.
      */
     @SimpleProperty(category = PropertyCategory.BEHAVIOR,
         description = "If true, then Notifier will add a Cancel button and will trigger AfterChoosing with choice of " +
@@ -178,7 +174,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
     /**
      * Setter for isCancelable
-     * @param isCancelable if true, then ShowChooseDialog will include a Cancel button
+     * Indicates whether the user should be able to cancel out of ShowChooseDialog
      */
     @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
     @SimpleProperty
@@ -245,13 +241,28 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @SimpleFunction
   public void ShowAlert(final String notice) {
-    handler.post(new Runnable() {
-      public void run() {
-        toastNow(notice);
-      }
-    });
+      ShowAlertCustom(notice, true);
   }
 
+    /**
+     * Display a temporary notification
+     *
+     * @param notice the text of the notification
+     * @param useDefaultToast if true, uses default Toast style else uses custom toast display
+     */
+    @SimpleFunction
+    public void ShowAlertCustom(final String notice, final boolean useDefaultToast)
+    {
+    handler.post(new Runnable() {
+      public void run() {
+                if (useDefaultToast) {
+                    Toast.makeText(activity, notice, Toast.LENGTH_LONG).show();
+                } else {
+        toastNow(notice);
+      }
+            }
+    });
+  }
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
