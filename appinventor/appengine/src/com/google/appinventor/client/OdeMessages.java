@@ -1156,7 +1156,7 @@ public interface OdeMessages extends Messages {
   
   // Used in client/editor/simple/components/MockHVarrangement.java
   
-  @DefaultMessage("System error: bad alignmnet property editor for horizontal or vertical arrangement.")
+  @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
   String badAlignmentPropertyEditorForArrangement();
 
