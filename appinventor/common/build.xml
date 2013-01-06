@@ -66,7 +66,7 @@
 
   <path id="libsForCommonUtilsTests.path">
     <pathelement location="${public.build.dir}/CommonUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
+    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
   </path>
 
@@ -100,7 +100,7 @@
         <arg line = "describe " />
     </exec>
     <filter token="git.build.version" value="${git.build.version}" />
-  	
+
     <exec executable="git" outputproperty="git.build.fingerprint">
         <arg line = "rev-parse HEAD " />
     </exec>
@@ -109,7 +109,9 @@
     <tstamp/>
     <property name="ant.build.date" value="${TODAY}" />
     <filter token="ant.build.date" value="${ant.build.date}" />
-    
+
+    <filter token="bugsense.apikey" value="${bugsense.apikey}" />
+
     <mkdir dir="${local.build.dir}/src/${common.pkg}/version/"/>
     <copy tofile="${local.build.dir}/src/${common.pkg}/version/GitBuildId.java" file="GitBuildId.template" filtering="true" />
 

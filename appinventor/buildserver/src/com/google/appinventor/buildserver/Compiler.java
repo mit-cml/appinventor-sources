@@ -95,7 +95,7 @@ public final class Compiler {
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
   private static final String BUGSENSE_RUNTIME =
-      RUNTIME_FILES_DIR + "bugsense3.0.8.jar";
+      RUNTIME_FILES_DIR + "bugsense3.1.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
 
@@ -279,6 +279,9 @@ public final class Compiler {
       out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
+      if (isForWireless) {              // This is to hook into Bugsense
+        out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
+      }
       out.write(">\n");
 
       for (Project.SourceDescriptor source : project.getSources()) {

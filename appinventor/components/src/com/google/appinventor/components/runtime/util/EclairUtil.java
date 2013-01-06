@@ -35,4 +35,8 @@ public class EclairUtil {
     BugSenseHandler.initAndStartSession(context, api_key);
   }
 
+  public static void sendBugSenseException(Exception ex) {
+    BugSenseHandler.sendException(ex);
+  }
+
 }

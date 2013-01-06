@@ -375,6 +375,8 @@
 
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+         ;; The call below is a no-op unless we are in the wireless repl
+         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if (lookup-in-form-environment 'repl)
              (when ((this):toastAllowed)
                    (begin
@@ -390,13 +392,13 @@
                                (ex:getMessage)
                                (*close-bracket*:get)))
                      (force-output)))
-             ;; TODO(sharon): it would be nice to log the stack trace for the code
-             ;; that threw the exception too.
+
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
               (ex:getMessage)
               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
               "End Application")))
+
 
        ;; For the HandlesEventDispatching interface
        (define (dispatchEvent componentObject :: com.google.appinventor.components.runtime.Component

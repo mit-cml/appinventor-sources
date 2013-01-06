@@ -16,8 +16,8 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockslib"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
   </target>
 
