@@ -2058,6 +2058,35 @@ For multiple screen apps, use close screen with value rather than close screen w
       </LangSpecProperties>
     </BlockGenus>
 
+    <!-- List Lookup in Pairs Block -->
+    <BlockGenus name="list-lookup-in-pairs" decorator="call" kind="function" initlabel="lookup in pairs " color="list">
+      <description>
+        <arg-description n="1" name="key" doc-name="key">The key to look up </arg-description>
+        <arg-description n="2" name="pairs" doc-name="pairs">A list of (key value) pairs</arg-description>
+        <arg-description n="3" name="notFound" 
+                 doc-name="notFound">Value to return if there is no pair with the given key.</arg-description>
+        <text>Returns the value associated with the key in the list of pairs.</text>
+      </description>
+      <BlockConnectors>
+        <BlockConnector label="" connector-kind="plug" connector-type="poly"/>
+        <BlockConnector label="key" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="pairs" connector-kind="socket" connector-type="poly"/>
+        <BlockConnector label="notFound" connector-kind="socket" connector-type="poly">
+          <DefaultArg genus-name="text" label="NotFound"/>
+        </BlockConnector>
+      </BlockConnectors>
+      <LangSpecProperties>
+        <LangSpecProperty key="ya-kind" value="primitive"/>
+        <LangSpecProperty key="ya-rep" value="yail-alist-lookup"/>
+        <LangSpecProperty key="type-exclude-1" value="argument"/>
+        <LangSpecProperty key="socket-exclude-1" value="key/argument"/>
+        <LangSpecProperty key="socket-allow-1" value="pairs/value"/>
+        <LangSpecProperty key="socket-allow-2" value="pairs/list"/>
+        <LangSpecProperty key="socket-allow-3" value="notFound/text"/>
+        <LangSpecProperty key="socket-allow-4" value="notFound/text"/>
+      </LangSpecProperties>
+    </BlockGenus>
+
     <!-- Math -->
 
     <!-- Greaterthan Block -->

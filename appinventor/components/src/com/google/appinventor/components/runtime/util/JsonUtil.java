@@ -82,6 +82,8 @@ public class JsonUtil {
    * @throws JSONException if an element in jObject cannot be
    * converted properly.
    */
+  // TODO(hal): If we implement dictionaries, we'll need to decode Json
+  // objects to dictionaires instead.
   public static List<Object> getListFromJsonObject(JSONObject jObject) throws JSONException {
     List<Object> returnList = new ArrayList<Object>();
     Iterator<String> keys = jObject.keys();

@@ -158,6 +158,8 @@
         <BlockGenusMember>list-to-csv-table</BlockGenusMember>
         <BlockGenusMember>list-from-csv-row</BlockGenusMember>
         <BlockGenusMember>list-from-csv-table</BlockGenusMember>
+        <BlockGenusMember>list-lookup-in-pairs</BlockGenusMember>
+
       </BlockDrawer>
 
       <BlockDrawer name="Math" button-color="math">

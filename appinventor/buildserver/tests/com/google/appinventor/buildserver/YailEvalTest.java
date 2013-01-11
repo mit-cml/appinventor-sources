@@ -736,6 +736,57 @@ public class YailEvalTest extends TestCase {
     }
   }
 
+  /* a-list lookup */
+  public void testAListLookup1() throws Throwable {
+    String schemeInputString = "(begin " + 
+      "(define pair1 (make-yail-list \"a\" \"b\")) " +
+      "(define pair2 (make-yail-list \"aa\" \"bb\")) " +
+      "(define pairs (make-yail-list pair1 pair2)) " +
+      "(yail-alist-lookup \"aa\" pairs \"nothing\") " +
+      ")";
+    String schemeResultString = "bb";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
+  public void testAListLookup2() throws Throwable {
+    String schemeInputString = "(begin " + 
+      "(define pair1 (make-yail-list \"a\" \"b\")) " +
+      "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
+      "(define pairs (make-yail-list pair1 pair2)) " +
+      "(yail-alist-lookup (make-yail-list 1  (+ 1 1)) pairs \"nothing\") " +
+      ")";
+    String schemeResultString = "bb";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
+  public void testAListLookup3() throws Throwable {
+    String schemeInputString = "(begin " + 
+      "(define pair1 (make-yail-list \"a\" \"b\")) " +
+      "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
+      "(define pairs (make-yail-list pair1 pair2)) " +
+      "(yail-alist-lookup (make-yail-list \"foo\"  (+ 1 1)) pairs \"nothing\") " +
+      ")";
+    String schemeResultString = "nothing";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+  }
+
+  public void testAListLookup4() throws Throwable {
+    /* check that this signals a runtime error for a bad pair  */
+    String schemeInnerInputString = "(begin " + 
+      "(define pair1 (make-yail-list \"a\" \"b\")) " +
+      "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
+      "(define badpair 100) " +
+      "(define pairs (make-yail-list pair1 pair2 badpair)) " +
+      "(yail-alist-lookup (make-yail-list \"foo\"  (+ 1 1)) pairs \"nothing\") " +
+      ")";
+    String schemeInputString = "(try-catch " +
+          schemeInnerInputString +
+        " (exception com.google.appinventor.components.runtime.errors.YailRuntimeError " +
+        " \"bad pair\" " +
+        "))";
+    assertEquals("bad pair", scheme.eval(thunkify(schemeInputString)).toString());
+  }
+
   public void testListInsertionMiddle() throws Throwable {
     /* test list insertion in middle */
     String schemeInputString = "(begin " +
