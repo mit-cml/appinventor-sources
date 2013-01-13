@@ -625,7 +625,8 @@ public abstract class Sprite extends VisibleComponent
   /**
    * Turns this sprite to point towards a given point.
    *
-   * @param target the other sprite to point towards
+   * @param x parameter of the point to turn to
+   * @param y parameter of the point to turn to
    */
   @SimpleFunction(
     description = "<p>Turns the sprite to point towards the point " +

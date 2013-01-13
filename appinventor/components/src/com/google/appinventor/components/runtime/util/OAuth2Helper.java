@@ -219,7 +219,7 @@ public class OAuth2Helper {
   
   /**
    * Clients can retrieve error messages statically.
-   * @return 
+   * @return errorMessage
    */
   public static String getErrorMessage() {
     Log.i(TAG, "getErrorMessage = " + errorMessage);

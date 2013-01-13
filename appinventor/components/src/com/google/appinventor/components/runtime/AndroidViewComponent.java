@@ -59,7 +59,7 @@ public abstract class AndroidViewComponent extends VisibleComponent {
   /**
    * Specifies whether the component should be visible on the screen.  Value is true if the 
    * component is showing and false if hidden.
-   * @param  visible desired state
+   * @param  visibility desired state
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VISIBILITY,
       defaultValue = "True")

@@ -78,7 +78,20 @@
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
         <pathelement location="lib/twitter/twitter4j-core-android-2.2.6.jar" />
+        <pathelement location="lib/QRGenerator/core.jar" />
+        <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
+        <!-- oauth libs -->
+        <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-android2-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-android3-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
+        <!-- fusiontables libs -->
+        <pathelement location="lib/fusiontables/fusiontables.jar" />
+        <!-- bugsense -->
+        <pathelement location="lib/bugsense/bugsense3.0.8.jar" />
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>

@@ -648,12 +648,6 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
    * @param target  build target (optional, implementation dependent)
-   * @return an RpcResult reflecting the call to the Build Server. The following values may be in
-   *         RpcResult.result:
-   *            0:  Build is done and was successful
-   *            1:  Build is done and was unsuccessful
-   *            2:  Yail generation failed
-   *           -1:  Build is not yet done.
    */
   public void updateCurrentProgress(User user, long projectId, String target) {
     try {

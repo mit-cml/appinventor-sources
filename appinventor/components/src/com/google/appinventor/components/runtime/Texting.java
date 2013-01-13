@@ -507,7 +507,7 @@ public class Texting extends AndroidNonvisibleComponent
 
   /**
    * Called by SmsBroadcastReceiver
-   * @return
+   * @return isRunning if the app is running in the foreground.
    */
   public static boolean isRunning() {
     return isRunning;
@@ -515,7 +515,7 @@ public class Texting extends AndroidNonvisibleComponent
 
   /**
    * Used to keep count in Notifications.
-   * @return
+   * @return message count
    */
   public static int getCachedMsgCount() {
     return messagesCached;
