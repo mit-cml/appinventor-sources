@@ -439,9 +439,20 @@ public class LocationSensor extends AndroidNonvisibleComponent
             return sb.toString();
           }
         }
-      } catch (IOException e) {
-        Log.e("LocationSensor",
-                           "Exception thrown by getFromLocation() " + e.getMessage());
+
+      } catch (Exception e) {
+        // getFromLocation can throw an IOException or an IllegalArgumentException
+        // a bad result can give an indexOutOfBoundsException
+        // are there others?
+        if (e instanceof IllegalArgumentException 
+            || e instanceof IOException
+            || e instanceof IndexOutOfBoundsException ) {         
+          Log.e("LocationSensor", "Exception thrown by getting current address " + e.getMessage());     
+        } else {
+          // what other exceptions can happen here?
+          Log.e("LocationSensor", 
+              "Unexpected exception thrown by getting current address " + e.getMessage());
+        } 
       }
     }
     return "No address available";
@@ -458,7 +469,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public double LatitudeFromAddress(String locationName) {
     try {
       List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      if (addressObjs == null) {
+      Log.i("LocationSensor", "latitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
         throw new IOException("");
       }
       return addressObjs.get(0).getLatitude();
@@ -479,7 +491,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public double LongitudeFromAddress(String locationName) {
     try {
       List<Address> addressObjs = geocoder.getFromLocationName(locationName, 1);
-      if (addressObjs == null) {
+      Log.i("LocationSensor", "longitude addressObjs size is " + addressObjs.size() + " for " + locationName);
+      if ( (addressObjs == null) || (addressObjs.size() == 0) ){
         throw new IOException("");
       }
       return addressObjs.get(0).getLongitude();
