@@ -6,14 +6,10 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
-import com.google.appinventor.components.annotations.DesignerProperty;
-import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
-import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -66,10 +62,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Activity activity;
   private final Handler handler;
 
-  //isCancelable=true, a Cancel button will be added to ShowChooseDialog, allowing
-  //user to Cancel out of dialog
-  private boolean isCancelable = true;
-
   /**
    * Creates a new Notifier component.
    *
@@ -108,23 +100,25 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
 
   /**
-   * Display an alert with minimum two buttons. If isCancelable is set to true,
-   * then displays a third button, allowing user to cancel out of dialog.
-   * Raises the AfterChoosing event when the choice has been made.
+   * Displays an alert with two buttons that have specified text, and additional button
+   * marked CANCEL if cancelable is set.
+   * Raises the AfterChoosing event when the choice has been made, and returns the text of
+   * the button that was pressed.
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
    * @param button1Text the text on the left-hand button
    * @param button2Text the text on the right-hand button
+   * @param cancelable indicates if additional CANCEL button should be added
    */
   @SimpleFunction
   public void ShowChooseDialog(String message, String title, String button1Text,
-      String button2Text) {
-    twoButtonAlert(message, title, button1Text, button2Text);
+      String button2Text, boolean cancelable) {
+    twoButtonAlert(message, title, button1Text, button2Text, cancelable);
   }
 
   private void twoButtonAlert(String message,  String title,
-       final String button1Text,  final String button2Text) {
+       final String button1Text,  final String button2Text, boolean cancelable) {
     Log.i(LOG_TAG, "ShowChooseDialog: " + message);
 
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
@@ -146,41 +140,20 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
 
-      //If IsCancelable==true, then a 3rd button, with text of Cancel will be added.
-      if (IsCancelable())  {
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancel",
+      //If cancelable is true, then a 3rd button, with text of Cancel will be added
+      // and will raise AfterChoosing when pressed.
+      if (cancelable)  {
+            final String cancelButtonText="Cancel";
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
               new DialogInterface.OnClickListener() {
                   public void onClick(DialogInterface dialog, int which) {
-                      AfterChoosing("Cancel");
+                      AfterChoosing(cancelButtonText);
                   }
               });
       }
 
     alertDialog.show();
   }
-
-    /**
-     * Getter for isCancelable
-     * @return 'true' or 'false' depending on whether you want to
-     * allow user to cancel out of Notifier.
-     */
-    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-        description = "If true, then Notifier will add a Cancel button and will trigger AfterChoosing with choice of " +
-            "Cancel. If false, then Cancel button will not be displayed and user can not cancel out of" +
-            "Notifier (default = true)")
-    public boolean IsCancelable() {
-        return isCancelable;
-    }
-
-    /**
-     * Setter for isCancelable
-     * Indicates whether the user should be able to cancel out of ShowChooseDialog
-     */
-    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
-    @SimpleProperty
-    public void IsCancelable(boolean isCancelable) {
-        this.isCancelable = isCancelable;
-    }
 
     /**
    * Event after the user has made a selection for ShowChooseDialog.
@@ -194,21 +167,31 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Shows a dialog box in which the user can enter text, after which the
    * AfterTextInput event is raised.
+   * @param message the text in the alert box
+   * @param title the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of dialog.
+   *                   When true, an additional CANCEL button will be added allowing user to cancel
+   *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
    */
   @SimpleFunction
-  public void ShowTextDialog(String message, String title) {
-    textInputAlert(message, title);
+  public void ShowTextDialog(String message, String title, boolean cancelable) {
+    textInputAlert(message, title, cancelable);
   }
 
   /**
-   * Display an alert with a text entry.   Raises the AfterTextInput event when the
-   * text has been entered and the user presses "OK".
+   * Display an alert with a text entry. If cancelable is true, then also displays a "CANCEL"
+   * button, allowing user to cancel out of dialog.
+   * Raises the AfterTextInput event when the text has been entered and the user presses "OK".
+   * Raises the AfterTextInput event when users presses "CANCEL", passing CANCEL to AfterTextInput
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of dialog.
+   *                   When true, an additional CANCEL button will be added allowing user to cancel
+   *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
    */
-  private void textInputAlert(String message, String title) {
-    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+  private void textInputAlert(String message, String title, boolean cancelable) {
+    final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(message);
     // Set an EditText view to get user input
@@ -222,6 +205,19 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         AfterTextInput(input.getText().toString());
       }
     });
+
+      //If cancelable, then add the CANCEL button
+      if (cancelable)  {
+          final String cancelButtonText="CANCEL";
+          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+              new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                      //User pressed CANCEL. Raise AfterTextInput with CANCEL
+                      AfterTextInput(cancelButtonText);
+                  }
+              });
+      }
+
     alertDialog.show();
   }
 
@@ -247,7 +243,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
-  
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
