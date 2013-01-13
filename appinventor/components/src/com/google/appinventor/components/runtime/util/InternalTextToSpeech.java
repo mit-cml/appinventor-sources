@@ -81,6 +81,13 @@ public class InternalTextToSpeech implements ITextToSpeech {
     }
   }
 
+    @Override
+   public void stopSpeak() {
+        if (tts !=null) {
+            tts.stop();
+        }
+  }
+
   @Override
   public void onStop() {
     if (tts != null) {

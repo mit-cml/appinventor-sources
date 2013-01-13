@@ -234,6 +234,16 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     tts.speak(message, loc);
   }
 
+  /**
+   * Interrupts the current utterance (whether played or rendered to file)
+   * and discards other utterances in the queue.
+   */
+  @SimpleFunction
+  public void StopSpeak() {
+    tts.stopSpeak();
+  }
+
+
 
   /**
    * Event to raise when Speak is invoked, before the message is spoken.

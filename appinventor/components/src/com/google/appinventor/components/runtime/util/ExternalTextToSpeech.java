@@ -52,6 +52,12 @@ public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListen
     container.$context().startActivityForResult(intent, requestCode);
   }
 
+    @Override
+    public void stopSpeak()
+    {
+        // nothing to do
+    }
+
   @Override
   public void onStop() {
     // nothing to do
