@@ -463,6 +463,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Texting")) {
         blkCompVersion = upgradeTextingBlocks(blkCompVersion, componentName);
 
+      }  else if (genus.equals("Notifier")) {
+        blkCompVersion = upgradeNotifierBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("TinyWebDB")) {
         blkCompVersion = upgradeTinyWebDBBlocks(blkCompVersion, componentName);
 
@@ -1051,6 +1054,30 @@ public class BlockSaveFile {
       blkCompVersion = 3;
     }
 
+    return blkCompVersion;
+  }
+
+  private int upgradeNotifierBlocks(int blkCompVersion, String componentName) {
+      final String NEW_ARG_WARNING = "The %s block has been changed to " +
+          "expect a new cancelable argument. Please replace this block by a new one from the Notifier drawer.";
+
+    if (blkCompVersion < 2) {
+        // Look for ShowChooseDialog method block for this component.
+        for (Element block : getAllMatchingMethodOrEventBlocks(componentName, "Notifier",
+          "ShowChooseDialog")) {
+          // Mark the block bad.
+          markBlockBad(block,NEW_ARG_WARNING );
+      }
+
+      // Look for ShowTextDialog method block for this component.
+      for (Element block : getAllMatchingMethodOrEventBlocks(componentName, "Notifier",
+          "ShowTextDialog")) {
+          // Mark the block bad.
+          markBlockBad(block,NEW_ARG_WARNING );
+      }
+
+      blkCompVersion = 2;
+    }
     return blkCompVersion;
   }
 

@@ -211,8 +211,10 @@ public class YaVersion {
   // - IMAGEPICKER_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 70:
   // - TEXTING_COMPONENT_VERSION was incremented to 3.
+    // For YOUNG_ANDROID_VERSION 71:
+    // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 70;
+  public static final int YOUNG_ANDROID_VERSION = 71;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -474,7 +476,9 @@ public class YaVersion {
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
 
-  public static final int NOTIFIER_COMPONENT_VERSION = 1;
+  // For NOTIFIER_COMPONENT_VERSION 2:
+  // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
+  public static final int NOTIFIER_COMPONENT_VERSION = 2;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.

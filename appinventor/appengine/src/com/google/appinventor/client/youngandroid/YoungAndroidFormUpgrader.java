@@ -282,6 +282,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Texting")) {
         srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
         
+      }  else if (componentType.equals("Notifier")) {
+        srcCompVersion = upgradeNotifierProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Twitter")) {
         srcCompVersion = upgradeTwitterProperties(componentProperties, srcCompVersion);
 
@@ -841,6 +844,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 2) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
       // to upgrqde to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeNotifierProperties(Map<String, JSONValue> componentProperties,
+                                                  int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // A new boolean socket was added to allow canceling out of ShowChooseDialog
+      // and ShowTextDialog
       srcCompVersion = 2;
     }
     return srcCompVersion;
