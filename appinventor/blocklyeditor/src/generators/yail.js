@@ -1,3 +1,4 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
@@ -95,6 +96,7 @@ Blockly.Yail.FLONUM_REGEXP = "^[\\s]*[-+]?([0-9]*)((\\.[0-9]+)|[0-9]\\.)[\\s]*$"
 Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
   var jsonObject = JSON.parse(formJson); 
   // TODO: check for JSON parse error
+  var componentNames = [];
   var formProperties; 
   var formName;
   var code = [];
@@ -114,6 +116,9 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
     
   var componentMap = Blockly.Component.buildComponentMap([], [], false, false);
   
+  for (var comp in componentMap.components)
+    componentNames.push(comp);
+
   var globalBlocks = componentMap.globals;
   for (var i = 0, block; block = globalBlocks[i]; i++) {
     code.push(Blockly.Yail.blockToCode(block));
@@ -128,16 +133,23 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
       throw "Source type " + sourceType + " is invalid.";
     }
   
+    // Fetch all of the components in the form, this may result in duplicates
+    componentNames = Blockly.Yail.getDeepNames(formProperties, componentNames);
+    // Remove the duplicates
+    var uniqueNames = componentNames.filter(function(elem, pos) {
+        return componentNames.indexOf(elem) == pos});
+    componentNames = uniqueNames;
+
     // Add runtime initializations
     code.push(Blockly.Yail.YAIL_INIT_RUNTIME);
   
     if (forRepl) {
-      code = Blockly.Yail.wrapForRepl(formName, code, componentMap);
+      code = Blockly.Yail.wrapForRepl(formName, code, componentNames);
     }
 
     // TODO?: get rid of empty property assignments? I'm not convinced this is necessary.
     // The original code in YABlockCompiler.java attempts to do this, but it matches on 
-    // "set-property" rather that "set-and-coerce-property" so I'm not sure it is actually
+    // "set-property" rather than "set-and-coerce-property" so I'm not sure it is actually
     // doing anything. If we do need this, something like the call below might work.
     // 
     // finalCode = code.join('\n').replace(/\\(set-property.*\"\"\\)\\n*/mg, "");
@@ -145,6 +157,17 @@ Blockly.Yail.getFormYail = function(formJson, packageName, forRepl) {
   
   return code.join('\n');  // Blank line between each section.
 };
+
+Blockly.Yail.getDeepNames = function(componentJson, componentNames) {
+  if (componentJson.$Components) {
+    var children = componentJson.$Components;
+    for (var i = 0, child; child = children[i]; i++) {
+      componentNames.push(child.$Name);
+      componentNames = Blockly.Yail.getDeepNames(child, componentNames);
+    }
+  }
+  return componentNames;
+}
 
 /**
  * Generate the beginning Yail code for an APK compilation (i.e., not the REPL)
@@ -170,12 +193,11 @@ Blockly.Yail.getYailPrelude = function(packageName, formName) {
  * 
  * @param {String} formName 
  * @param {Array} code  code strings to be wrapped
- * @param {Object} componentMap map from component names to the top-level blocks for that component
- *    in the workspace. See the Blockly.Component.buildComponentMap description for the structure.
+ * @param {Array} componentNames array of component names
  * @returns {Array} wrapped code strings
  * @private
  */
-Blockly.Yail.wrapForRepl = function(formName, code, componentMap) {
+Blockly.Yail.wrapForRepl = function(formName, code, componentNames) {
   var replCode = [];
   replCode.push(Blockly.Yail.YAIL_BEGIN);
   replCode.push(Blockly.Yail.YAIL_CLEAR_FORM);
@@ -188,7 +210,7 @@ Blockly.Yail.wrapForRepl = function(formName, code, componentMap) {
     replCode.push(Blockly.Yail.getComponentRenameString("Screen1", formName));
   }
   replCode = replCode.concat(code);
-  replCode.push(Blockly.Yail.getComponentInitializationString(componentMap));
+  replCode.push(Blockly.Yail.getComponentInitializationString(formName, componentNames));
   replCode.push(Blockly.Yail.YAIL_CLOSE_BLOCK);
   return replCode;
 }
@@ -196,14 +218,14 @@ Blockly.Yail.wrapForRepl = function(formName, code, componentMap) {
 /**
  * Return code to initialize all components in componentMap.
  * 
- * @param {Object} componentMap map from component names to the top-level blocks for that component
- *    in the workspace. See the Blockly.Component.buildComponentMap description for the structure.
+ * @param {Array} componentNames array of names of components in the workspace
  * @returns {Array} code strings
  * @private
  */
-Blockly.Yail.getComponentInitializationString = function(componentMap) {
+Blockly.Yail.getComponentInitializationString = function(formName, componentNames) {
   var code = Blockly.Yail.YAIL_INITIALIZE_COMPONENTS;
-  for (var cName in componentMap.component) {  // TODO: will we get non-component fields this way?
+  code += " " + Blockly.Yail.YAIL_QUOTE + formName;
+  for (var i = 0, cName; cName = componentNames[i]; i++) {  // TODO: will we get non-component fields this way?
     code = code + " " + Blockly.Yail.YAIL_QUOTE + cName;
   }
   code = code + ")";
