@@ -1,0 +1,53 @@
+//Before using this template, make sure that you copy an acm and a bky files in
+//a structure inside the data folder, within a folder named as the test you are
+//writing.
+var fs = require('fs'); //Always required to read from files
+
+//Read files from filesystem
+var formJson = fs.read('PATH_TO/Screen1.scm');
+// strip off leading "#|\n$JSON\n" and trailing "|#"
+formJson = formJson.substring(9, formJson.length-2);
+var blocks = fs.read('PATH_TO/Screen1.bky');
+
+// PhantomJS page object to open and load an URL
+var page = require('webpage').create();
+// Some debugging from PhantomJS
+page.onConsoleMessage = function (msg) { console.log(msg); };
+page.onError = function (msg, trace) {
+  console.log(msg);
+  trace.forEach(function(item) {
+    console.log('  ', item.file, ':', item.line);
+  })
+}
+
+// Open the actuall page and load all the JavaScript in it
+// if sucess is true, all went well
+page.open('../src/demos/yail/testing_index.html', function(status) {
+  //The evaluate function has arguments passed after the callback
+  //in this case we are passing formJson and blocks
+  var passed = page.evaluate(function(){
+
+    //The following three methods are defined in testing_index.html
+    processForm(arguments[0]);
+    processBlocks(arguments[1]);
+    var generatedYail = toAppYail();
+
+    // strip off all end of lines
+    generatedYail = generatedYail.replace(/\s/g, '');
+
+    // define the expected output (generally comming form 'generateYail' in the
+    // browser. Make sure you escape any single quotes
+    var expected = 'EXPECTED_YAIL_GOES_HERE';
+    // strip off all end of lines -- for good meassure
+    expected = expected.replace(/\s/g, '');
+
+    return !!~('' + generatedYail).indexOf(expected);
+
+  }, formJson, blocks);
+
+  //This is the actual result of the test
+  console.log('PASSED: ', passed);
+  //Exit the phantom process
+  phantom.exit();
+});
+

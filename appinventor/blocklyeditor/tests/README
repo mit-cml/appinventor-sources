@@ -1,0 +1,22 @@
+To create a phantomJS test you will need to generate a project first, so that
+you have access to an Screen1.scm and Screen1.bky files.
+
+You will also have to install phantomJS: http://phantomjs.org/download.html
+
+In MacOSX is as simple as: brew install phantomJS (if you are using homebew)
+In other platforms just download the package and put the bin folder in your PATH
+
+
+After that, create a new test following the template in this same folder called
+yailGeneratorTest.template
+The test will expect the two files mentioned above as test data, and also an
+expected Yail string to assert against.
+
+You can generate a project by using blocks in the browser, and then download the
+zip file. Unzipping the file will reveal both scm and bky files.
+While the project is open in the browser, you can right click on the main block
+and choose 'Generate Yail'. You should copy that string to be used as the
+expected value of the test.
+
+For an Example, you can see the code in buttonClickTest.js, and the accompanying
+files inside data/buttonClick.

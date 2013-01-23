@@ -43,6 +43,7 @@
       <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
       <!-- These are not the comments you're looking for.  This is for testing -->
       <fileset dir="blockseditor/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="blocklyeditor/reports/raw" includes="TEST-*.xml"/>
       <fileset dir="blockslib/reports/raw" includes="TEST-*.xml"/>
       <fileset dir="buildserver/reports/raw" includes="TEST-*.xml"/>
       <fileset dir="common/reports/raw" includes="TEST-*.xml"/>

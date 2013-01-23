@@ -194,23 +194,10 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
  * @param instanceName the component's current name, e.g., Button1
  */
 Blockly.Component.display = function(instanceName) {
-  console.log("RAM Iterating through Blockly.ComponentInstances");
   var blocks = Blockly.ComponentInstances[instanceName].blocks;
   for (var i = 0; i < blocks.length; i++) { 
     var blockname = blocks[i];
     var blocklyblock = Blockly.Language[blockname];
-    console.log("RAM blockname: " + blockname);
-    console.log("RAM >> Blockly.Language block: category = " + blocklyblock.category + " name = " + blocklyblock.instanceName);
-    console.log("RAM >> Blockly.Yail generator: " + Blockly.Yail[blockname]);
-  }
-  console.log("RAM Iterating through workspace top level blocks");
-  var wsblocks = Blockly.mainWorkspace.getTopBlocks(true);
-  for (var x= 0;  x < wsblocks.length; x++) {
-    if (!wsblocks[x].category) {
-      continue;
-    } else if (wsblocks[x].category == 'Component') {
-      console.log("RAM top level block name = " + wsblocks[x]);
-    }
   }
 }
 
@@ -317,7 +304,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
       Blockly.Yail[newblockname] = Blockly.Yail.setproperty(newname);
     }
     else if (blocktype == 'genericgetter') {
-      console.log("RAM generating genericgetter  block code for " + Blockly.Language[newblockname].typeName);
+      console.log("generating genericgetter  block code for " + Blockly.Language[newblockname].typeName);
       Blockly.Yail[newblockname] = Blockly.Yail.genericGetproperty(Blockly.Language[newblockname].typeName);
     }
     else if (blocktype == 'genericsetter') {
@@ -485,7 +472,6 @@ Blockly.ComponentTypes.haveType = function(typeName) {
 }
 
 Blockly.ComponentTypes.addType = function(typeName, typeDescription) {
-  console.log("In Blockly.ComponentTypes.addType " +  typeName);
   Blockly.ComponentTypes[typeName] = {};
   Blockly.ComponentTypes[typeName].type = typeDescription;
   Blockly.ComponentTypes[typeName].blocks = [];
@@ -513,7 +499,6 @@ Blockly.ComponentTypes.getType = function(typeName) {
 Blockly.ComponentInstances = {};
 
 Blockly.ComponentInstances.addInstance = function(name, uid) {
-  console.log("RAM In Blockly.ComponentInsance.addInstance " + name);
   Blockly.ComponentInstances[name] = {};
   Blockly.ComponentInstances[name].uid = uid;
   Blockly.ComponentInstances[name].blocks = [];
