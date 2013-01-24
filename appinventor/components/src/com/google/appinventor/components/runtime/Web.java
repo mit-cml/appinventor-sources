@@ -595,6 +595,9 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   // The object will be sanitized to produce the corresponding Yail data by call-component-method.
   // That mechanism would need to be extended if we ever change JSON decoding to produce
   // dictionaries rather than lists
+  // TOOD(hal): Provide an alternative way to decode JSON objects to dictionaries.  Maybe with 
+  // renaming this JsonTextDecodeWithPairs and making JsonTextDecode the one to use
+  // dictionaries
   public Object JsonTextDecode(String jsonText) {
     try {
       return decodeJsonText(jsonText);

@@ -25,8 +25,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  *
  */
 public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEditor {
-  private static final String CONST_AUTOMATIC = "" + MockVisibleComponent.LENGTH_PREFERRED;
-  private static final String CONST_FILL_PARENT = "" + MockVisibleComponent.LENGTH_FILL_PARENT;
+  public static final String CONST_AUTOMATIC = "" + MockVisibleComponent.LENGTH_PREFERRED;
+  public static final String CONST_FILL_PARENT = "" + MockVisibleComponent.LENGTH_FILL_PARENT;
 
   private static int uniqueIdSeed = 0;
 

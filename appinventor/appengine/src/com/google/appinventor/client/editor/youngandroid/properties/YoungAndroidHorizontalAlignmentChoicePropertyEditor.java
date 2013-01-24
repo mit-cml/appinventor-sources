@@ -8,11 +8,8 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
 
-// cludge for now.  mimic how this is done for button shape
-
-
 /**
- * Property editor for button shape.
+ * Property editor for horizontal alignment choice.
  *
  * @author hal@mit.edu (Hal Abelson)
  */

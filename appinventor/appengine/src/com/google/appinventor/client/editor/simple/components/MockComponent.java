@@ -211,7 +211,9 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected boolean expanded;
 
   // Properties of the component
-  private final EditableProperties properties;
+  // Expose these to individual component subclasses, which might need to 
+  // check properties fpr UI manipulation.  One example is MockHorizontalArrangement
+  protected final EditableProperties properties;
 
   private DragSourceSupport dragSourceSupport;
 

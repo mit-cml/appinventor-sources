@@ -209,8 +209,12 @@ public class YaVersion {
   // - Phone Status Block was added.
   // For YOUNG_ANDROID_VERSION 69:
   // - IMAGEPICKER_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 70:
+  // - TEXTING_COMPONENT_VERSION was incremented to 3.
+    // For YOUNG_ANDROID_VERSION 71:
+    // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 69;
+  public static final int YOUNG_ANDROID_VERSION = 71;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -472,7 +476,9 @@ public class YaVersion {
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
 
-  public static final int NOTIFIER_COMPONENT_VERSION = 1;
+  // For NOTIFIER_COMPONENT_VERSION 2:
+  // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
+  public static final int NOTIFIER_COMPONENT_VERSION = 2;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
@@ -538,7 +544,10 @@ public class YaVersion {
   // It requires that the user has a Google Voice account
   // and has the mobile Voice app installed on the phone.
   // Access to Google Voice is controlled through OAuth 2.
-  public static final int TEXTING_COMPONENT_VERSION = 2;
+  // For TEXTING_COMPONENT_VERISON 3:
+  // - receivingEnabled is now an integer in the range 1-3
+  //   instead of a boolean
+  public static final int TEXTING_COMPONENT_VERSION = 3;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 

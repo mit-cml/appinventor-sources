@@ -277,7 +277,7 @@ public class FeedbackReporter extends JOptionPane {
    * the ip address. If the user selected the "Cancel" button, the
    * dialog is dismissed and the polling terminates.
    *
-   * @param msgText The code to show complete with explanation text.
+   * @param code The code to show complete with explanation text.
    * @param qrcode The ImageIcon with the QR Code to display.
    * @return JDialog The actual displayed dialog
    */

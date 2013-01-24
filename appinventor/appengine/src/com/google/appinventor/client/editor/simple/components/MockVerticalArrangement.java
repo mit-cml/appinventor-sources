@@ -29,4 +29,5 @@ public final class MockVerticalArrangement extends MockHVArrangement {
     super(editor, TYPE, images.vertical(),
         ComponentConstants.LAYOUT_ORIENTATION_VERTICAL);
   }
+  
 }

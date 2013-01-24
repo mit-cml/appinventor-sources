@@ -130,8 +130,10 @@ public final class ErrorMessages {
   // ImagePicker errors
   public static final int ERROR_CANNOT_SAVE_IMAGE = 1601;
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
+  // Texting errors
+  public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
   
-  // Please start the next group of error numbers at 1701.
+  // Please start the next group of error numbers at 1801.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -343,14 +345,16 @@ public final class ErrorMessages {
                         "are 1, 2, or 3.");
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
-            "are 1 or 2.");
+            "are 1, 2, or 3.");
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
     errorMessages.put(ERROR_CANNOT_SAVE_IMAGE,
         "Unable to save image: %s");
     errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
         "Unable to copy selected media: %s");
-
+    // Texting errors
+    errorMessages.put(ERROR_BAD_VALUE_FOR_TEXT_RECEIVING,
+      "Text Receiving should be either 1, 2 or 3.");
   }
 
   private ErrorMessages() {

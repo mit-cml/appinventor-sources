@@ -57,4 +57,7 @@ public class ComponentConstants {
   public static final int HORIZONTAL_ALIGNMENT_DEFAULT = GRAVITY_LEFT;
   public static final int VERTICAL_ALIGNMENT_DEFAULT = GRAVITY_TOP;
 
+  public static final int TEXT_RECEIVING_OFF = 1;
+  public static final int TEXT_RECEIVING_FOREGROUND = 2;
+  public static final int TEXT_RECEIVING_ALWAYS = 3;
 }

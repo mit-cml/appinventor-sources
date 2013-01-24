@@ -220,7 +220,7 @@ public class BluetoothReflection {
   // version of the jar that doesn't yet have the method, which was added in API level 10.
   /**
    * Invokes the method
-   * {@link android.bluetooth.BluetoothDevice#createInsecureRfcommSocketToServiceRecord(UUID)}.
+   * {@link android.bluetooth.BluetoothDevice#createInsecureRfcommSocketToServiceRecord(Object, UUID)}.
    *
    * @param bluetoothDevice a {@link android.bluetooth.BluetoothDevice} object
    * @param uuid the service record uuid

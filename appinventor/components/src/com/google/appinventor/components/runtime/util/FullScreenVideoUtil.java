@@ -392,7 +392,7 @@ public class FullScreenVideoUtil implements OnCompletionListener,
    *          {@link com.google.appinventor.components.runtime.util.FullScreenVideoUtil#VIDEOPLAYER_POSITION}
    *          value of the Bundle passed in the
    *          {@link FullScreenVideoUtil#performAction(int, VideoPlayer, Object)}
-   *          or {@link FullScreenVideoUtil#createFullScreenVideoDialog(Bundle)}
+   *          or {@link FullScreenVideoUtil#createFullScreenVideoDialog()}
    * @return True if the video was successfully loaded. False otherwise.
    */
   public boolean setSource(String source, boolean clearSeek) {

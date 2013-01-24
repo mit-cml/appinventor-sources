@@ -441,7 +441,8 @@ public class Form extends Activity
    * {@link com.google.appinventor.components.scripts.LangDefXmlGenerator},
    * respectively.  The actual implementation appears in {@code runtime.scm}.
    */
-  void $define() {
+  protected void $define() {    // This must be declared protected because we are called from Screen1 which subclasses
+                                // us and isn't in our package.
     throw new UnsupportedOperationException();
   }
 

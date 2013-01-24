@@ -282,6 +282,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Texting")) {
         srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
         
+      }  else if (componentType.equals("Notifier")) {
+        srcCompVersion = upgradeNotifierProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Twitter")) {
         srcCompVersion = upgradeTwitterProperties(componentProperties, srcCompVersion);
 
@@ -846,6 +849,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeNotifierProperties(Map<String, JSONValue> componentProperties,
+                                                  int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // A new boolean socket was added to allow canceling out of ShowChooseDialog
+      // and ShowTextDialog
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
   private static int upgradeVideoPlayerProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -885,8 +898,21 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      if (componentProperties.containsKey("ReceivingEnabled")) {
+        JSONValue receivingEnabled = componentProperties.get("ReceivingEnabled");
+        String receivingString = receivingEnabled.asString().getString();
+        if (receivingString.equals("true")) {
+          componentProperties.put("ReceivingEnabled", new ClientJsonString("2"));
+        } else {
+          componentProperties.put("ReceivingEnabled", new ClientJsonString("1"));
+        }
+      }
+      srcCompVersion = 3;
+    }
+
     return srcCompVersion;
-  }  
+  }
   
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {

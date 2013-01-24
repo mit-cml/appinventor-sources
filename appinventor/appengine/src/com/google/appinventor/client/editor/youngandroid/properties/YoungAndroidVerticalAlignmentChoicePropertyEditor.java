@@ -13,7 +13,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 
 /**
- * Property editor for button shape.
+ * Property editor for vertical alignment choice.
  *
  * @author hal@mit.edu (Hal Abelson)
  */

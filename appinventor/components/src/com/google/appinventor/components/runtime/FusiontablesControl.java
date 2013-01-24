@@ -59,25 +59,25 @@ import java.util.ArrayList;
 
 /**
  * Appinventor fusiontables control.
- * 
+ *
  * This version has been migrated from the Fusiontables SQL API to the Fusiontables V1.0 API.
- * 
- * @see https://developers.google.com/fusiontables/
- * @see https://developers.google.com/fusiontables/docs/v1/migration_guide
- * 
+ *
+ * See <a href="https://developers.google.com/fusiontables/">https://developers.google.com/fusiontables/</a>
+ * See <a href="https://developers.google.com/fusiontables/docs/v1/migration_guide">https://developers.google.com/fusiontables/</a>
+ *
  * The main change occurs in the way API requests are authorized.  This version uses
  * OAuth 2.0 and makes use of OAuth2Helper. The helper uses the Google AccountManager
- * to acquire an access token that must be attached as the OAuth header in all 
- * Fusiontable Http requests. 
- * 
+ * to acquire an access token that must be attached as the OAuth header in all
+ * Fusiontable Http requests.
+ *
  * Before a Fusiontable request can be made, the app must acquire an OAuth token.
- * This may involve the user logging in to their Gmail account (or not if they are already 
+ * This may involve the user logging in to their Gmail account (or not if they are already
  * logged in) and then being prompted to give the app permission to access the user's fusion
- * tables.  
- * 
- * Permission takes the form of an access token (called authToken), which must be 
+ * tables.
+ *
+ * Permission takes the form of an access token (called authToken), which must be
  * transmitted to the Fusiontables service as part of all Http requests.
- * 
+ *
  */
 @DesignerComponent(version = YaVersion.FUSIONTABLESCONTROL_COMPONENT_VERSION,
     description = "<p>A non-visible component that communicates with Google Fusion Tables. " +
@@ -102,7 +102,7 @@ import java.util.ArrayList;
     "can be converted to list format using the \"list from csv table\" or " +
     "\"list from csv row\" blocks.</p>" +
     "<p>Note that you do not need to worry about UTF-encoding the query. " +
-    "But you do need to make sure the query follows the syntax described in " + 
+    "But you do need to make sure the query follows the syntax described in " +
     "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, " +
     "which means that things like capitalization for names of columns matters, and " +
     "that single quotes must be used around column names if there are spaces in them.</p>",
@@ -116,7 +116,7 @@ import java.util.ArrayList;
     "android.permission.MANAGE_ACCOUNTS," +
     "android.permission.GET_ACCOUNTS," +
     "android.permission.USE_CREDENTIALS")
-@UsesLibraries(libraries = 
+@UsesLibraries(libraries =
     "fusiontables.jar," +
     "google-api-client-beta.jar," +
     "google-api-client-android2-beta.jar," +
@@ -125,7 +125,7 @@ import java.util.ArrayList;
     "google-http-client-android3-beta.jar," +
     "google-oauth-client-beta.jar," +
     "guava-11.0.1.jar")
-    
+
 public class FusiontablesControl extends AndroidNonvisibleComponent implements Component {
   private static final String LOG_TAG = "fusion";
   private static final String DIALOG_TEXT = "Choose an account to access FusionTables";
@@ -137,51 +137,51 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   private static final int SERVER_TIMEOUT_MS = 30000;
   public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
-  
+
   public static final String FUSIONTABLES_URL = "https://www.googleapis.com/fusiontables/v1/query";
   public static final String AUTH_TOKEN_TYPE_FUSIONTABLES = "oauth2:https://www.googleapis.com/auth/fusiontables";
   public static final String APP_NAME = "App Inventor";
-  
+
   private String authTokenType = AUTH_TOKEN_TYPE_FUSIONTABLES;
-  
+
   /**
-   * The developer's Google API key, 
-   * @see https://code.google.com/apis/console/
+   * The developer's Google API key,
+   * See <a href="https://code.google.com/apis/console/">https://code.google.com/apis/console/</a>
    */
   private String apiKey;
-  
-  
+
+
   /**
    * The query to send to the Fusiontables service.
    */
   private String query;
-  
+
   /**
    * String result of API query
    */
-  private String queryResultStr; 
- 
+  private String queryResultStr;
+
   /**
    * Error message returned from API query
    */
   private String errorMessage = "Error on Fusiontables query";
 
   private final Activity activity;
-  private final IClientLoginHelper requestHelper;    
+  private final IClientLoginHelper requestHelper;
 
   public FusiontablesControl(ComponentContainer componentContainer) {
     super(componentContainer.$form());
     this.activity = componentContainer.$context();
     requestHelper = createClientLoginHelper(DIALOG_TEXT, FUSIONTABLES_SERVICE);
     query = DEFAULT_QUERY;
-    
+
     if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
       showNoticeAndDie(
           "Sorry. The Fusiontables component is not compatible with this phone.",
           "This application must exit.",
-          "Rats!");      
+          "Rats!");
     }
-    
+
     // comment: The above code was originally
     //    Toast.makeText(activity,
     //        "Sorry. The Fusiontables component is not compatible with your phone. Exiting.",
@@ -192,9 +192,9 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     // the length of the toast, and the message will not be readable. The new version isn't
     // quite right either because the app will execute Screen.Initialize while the message
     // is being shown.
- 
+
   }
-  
+
   // show a notification and kill the app when the button is pressed
   private void showNoticeAndDie(String message, String title, String buttonText){
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
@@ -209,7 +209,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     alertDialog.show();
   }
 
-  
+
   /**
    * Setter for the app developer's API key.
    */
@@ -222,11 +222,11 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
     /**
      * Getter for the API key.
-     * @return
+     * @return apiKey the apiKey
      */
     @SimpleProperty(
         description = "Your Google API Key. For help, click on the question" +
-        		"mark (?) next to the FusiontablesControl component in the Palette. ",
+                        "mark (?) next to the FusiontablesControl component in the Palette. ",
         category = PropertyCategory.BEHAVIOR)
     public String ApiKey() {
       return apiKey;
@@ -253,17 +253,17 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   }
 
   /**
-   * Calls QueryProcessor to execute the API request asynchronously, if 
+   * Calls QueryProcessor to execute the API request asynchronously, if
    * the user has already authenticated with the Fusiontables service.
    */
   @SimpleFunction(description = "Send the query to the Fusiontables server.")
   public void SendQuery() {
     new QueryProcessorV1(activity).execute(query);
   }
-  
-//Deprecated  -- Won't work after 12/2012 
+
+//Deprecated  -- Won't work after 12/2012
   @SimpleFunction(description = "DEPRECATED. This block " +
-       "will be deprecated by the end of 2012.  Use SendQuery.")  
+       "will be deprecated by the end of 2012.  Use SendQuery.")
   public void DoQuery() {
     if (requestHelper != null) {
       new QueryProcessor().execute(query);
@@ -289,7 +289,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
   public void ForgetLogin() {
     OAuth2Helper.resetAccountCredential(activity);
   }
-  
+
 
   // To be Deprecated, based on the old API
   private IClientLoginHelper createClientLoginHelper(String accountPrompt, String service) {
@@ -359,33 +359,33 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       GotResult(result);
     }
   }
-  
+
   /**
    * Executes a Fusiontable query with an OAuth 2.0 authenticated
-   * request.  Requests are authenticated by attaching an 
+   * request.  Requests are authenticated by attaching an
    * Authentication header to the Http request.  The header
    * takes the form 'Authentication Oauth <access_token>'.
-   * 
+   *
    * Requests take the form of SQL strings, using an Sql
    * object from the Google API Client library.  Apparently
    * the Sql object handles the decision of whether the request
    * should be a GET or a POST.  Queries such as 'show tables'
    * and 'select' are supposed to be GETs and queries such as
    * 'insert' are supposed to be POSTS.
-   * 
-   * @see https://developers.google.com/fusiontables/docs/v1/using
-   * 
-   * @param query, the raw SQL string used by App Inventor
-   * @param authToken, the OAuth 2.0 access token
-   * @return the HttpResponse if the request succeeded, or null 
+   *
+   * See <a href="https://developers.google.com/fusiontables/docs/v1/using">https://developers.google.com/fusiontables/docs/v1/using</a>
+   *
+   * @param query the raw SQL string used by App Inventor
+   * @param authToken the OAuth 2.0 access token
+   * @return the HttpResponse if the request succeeded, or null
    */
   public com.google.api.client.http.HttpResponse sendQuery(String query, String authToken) {
     Log.i(LOG_TAG, "executing " + query);
     com.google.api.client.http.HttpResponse response = null;
-    
+
     // Create a Fusiontables service object (from Google API client lib)
     Fusiontables service = new Fusiontables.Builder(
-          AndroidHttp.newCompatibleTransport(), 
+          AndroidHttp.newCompatibleTransport(),
           new GsonFactory(),
           new GoogleCredential())
     .setApplicationName("App Inventor Fusiontables/v1.0")
@@ -393,7 +393,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     .build();
 
     try {
-      
+
       // Construct the SQL query and get a CSV result
       Sql sql =
         ((Fusiontables) service).query().sql(query);
@@ -411,14 +411,14 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       e.printStackTrace();
       errorMessage = e.getMessage();
     }
-    return response; 
+    return response;
   }
-  
-  /**                                                                                                                                                                                         
-   * Static utility method to prettify the HttpResponse. This version uses Google API                                                                                                         
-   * HttpResponse object, which is different than Apache's                                                                                                                                    
-   * @param response                                                                                                                                                                          
-   * @return                                                                                                                                                                                  
+
+  /**
+   * Static utility method to prettify the HttpResponse. This version uses Google API
+   * HttpResponse object, which is different than Apache's
+   * @param response
+   * @return resultString
    */
   public static String httpResponseToString(com.google.api.client.http.HttpResponse response) {
     String resultStr = "";
@@ -429,7 +429,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
         try {
           resultStr = parseResponse(response.getContent());
         } catch (IOException e) {
-          // TODO Auto-generated catch block                                                                                                                                                  
+          // TODO Auto-generated catch block
           e.printStackTrace();
         }
       }
@@ -437,11 +437,11 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     return resultStr;
   }
 
-  /**                                                                                                                                                                                         
-   * Handles Apache Http Response.  Uses Apache's HttpResponse object, which is different                                                                                                     
-   * from Google's.                                                                                                                                                                           
-   * @param response                                                                                                                                                                          
-   * @return                                                                                                                                                                                  
+  /**
+   * Handles Apache Http Response.  Uses Apache's HttpResponse object, which is different
+   * from Google's.
+   * @param response
+   * @return The result string
    */
   public static String httpApacheResponseToString(org.apache.http.HttpResponse response) {
     String resultStr = "";
@@ -460,10 +460,10 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     return resultStr;
   }
 
-  /**                                                                                                                                                                                         
-   * Parses the input stream returned from Http query                                                                                                                                         
-   * @param input                                                                                                                                                                             
-   * @return                                                                                                                                                                                  
+  /**
+   * Parses the input stream returned from Http query
+   * @param input
+   * @return The Result String
    */
   public static String parseResponse(InputStream input) {
     String resultStr = "";
@@ -485,7 +485,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     return resultStr;
   }
 
-  
+
   /**
    * Callback used for error reporting.
    * @param msg
@@ -494,17 +494,17 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     Log.i(LOG_TAG, "handleOAuthError: " + msg);
     errorMessage = msg;
   }
-  
+
   /**
    * Parses SQL API Create query into v1.0 a JSon string which is then submitted as a POST request
    * E.g., parses "
    *   CREATE TABLE Notes (NoteField: STRING,  NoteLength: NUMBER, Date:DATETIME, Location:LOCATION)"
    * into :
-   *  "CREATE TABLE " + 
+   *  "CREATE TABLE " +
       "{\"columns\": [{\"name\": \"NoteField\",\"type\": \"STRING\"},{\"name\": \"NoteLength\",\"type\": \"NUMBER\"}," +
       "{\"name\": \"Location\",\"type\": \"LOCATION\"},{\"name\": \"Date\",\"type\": \"DATETIME\"}], " +
       "\"isExportable\": \"true\", \"name\": \"Notes\"}"
-      
+
    * @param query
    * @return
    */
@@ -521,25 +521,25 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       jsonContent.append("{'name': '" + nameTypePair[0].trim() + "', 'type': '" + nameTypePair[1].trim() + "'}" );
       if (k < columnSpecs.length -1) {
         jsonContent.append(",");
-      }    
+      }
     }
     jsonContent.append("],");
     jsonContent.append("'isExportable':'true',");
     jsonContent.append("'name': '" + tableName + "'");
     jsonContent.append("}");
-    
+
     jsonContent.insert(0, "CREATE TABLE ");
-    
+
     Log.i(LOG_TAG, "result = " + jsonContent.toString());
     return jsonContent.toString();
   }
-  
+
   /**
    * Method for handling 'create table' SQL queries. At this point that is
    * the only query that we support using a POST request.
-   * 
+   *
    * TODO: Generalize this for other queries that require POST.
-   * 
+   *
    * @param query -- a query of the form "create table <json encoded content>"
    * @param authToken -- Oauth 2.0 access token
    * @return
@@ -549,8 +549,8 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     String jsonContent = query.trim().substring("create table".length());
     Log.i(LOG_TAG, "Http Post content = " + jsonContent);
 
-    // Set up the POST request 
-    
+    // Set up the POST request
+
     StringEntity entity = null;
     HttpPost request = new HttpPost(FUSIONTABLES_POST + "?key=" + ApiKey()); // Fusiontables Uri
     try {
@@ -564,7 +564,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
     request.setEntity(entity);
 
     // Execute the request
-    
+
     HttpClient client = new DefaultHttpClient();
     try {
       response = client.execute(request);
@@ -607,17 +607,17 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
 
     return queryResultStr;
   }
-  
-  
+
+
   /**
-   * First uses OAuth2Helper to acquire an access token and then sends the 
+   * First uses OAuth2Helper to acquire an access token and then sends the
    * Fusiontables query asynchronously to the server and returns the result.
-   * 
-   * This version uses the Fusion Tabes V1.0 API. 
+   *
+   * This version uses the Fusion Tabes V1.0 API.
    */
   private class QueryProcessorV1 extends AsyncTask<String, Void, String> {
     private static final String TAG = "QueryProcessorV1";
- 
+
     private final Activity activity; // The main list activity
     private final ProgressDialog dialog;
 
@@ -654,13 +654,13 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
       if (authToken != null) {
 
         // We handle CREATE TABLE as a special case
-        if (query.toLowerCase().contains("create table")) {  
+        if (query.toLowerCase().contains("create table")) {
           queryResultStr = doPostRequest(parseSqlCreateQueryToJson(query), authToken);
           return queryResultStr;
         } else {
-          
+
           // Execute all other queries
-          com.google.api.client.http.HttpResponse response = sendQuery(query, authToken); 
+          com.google.api.client.http.HttpResponse response = sendQuery(query, authToken);
 
           // Process the response
           if (response != null) {
@@ -670,7 +670,7 @@ public class FusiontablesControl extends AndroidNonvisibleComponent implements C
             queryResultStr = errorMessage;
             Log.i(TAG, "Error:  " + errorMessage);
           }
-          return queryResultStr;  
+          return queryResultStr;
         }
       } else {
         return OAuth2Helper.getErrorMessage();

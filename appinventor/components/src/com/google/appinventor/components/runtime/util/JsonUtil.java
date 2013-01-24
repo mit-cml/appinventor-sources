@@ -6,6 +6,7 @@
 package com.google.appinventor.components.runtime.util;
 
 import gnu.lists.FString;
+import gnu.math.IntFraction;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -23,7 +24,7 @@ import java.util.List;
  *
  */
 public class JsonUtil {
-
+  
   /**
    * Prevent instantiation.
    */
@@ -81,6 +82,8 @@ public class JsonUtil {
    * @throws JSONException if an element in jObject cannot be
    * converted properly.
    */
+  // TODO(hal): If we implement dictionaries, we'll need to decode Json
+  // objects to dictionaires instead.
   public static List<Object> getListFromJsonObject(JSONObject jObject) throws JSONException {
     List<Object> returnList = new ArrayList<Object>();
     Iterator<String> keys = jObject.keys();
@@ -156,6 +159,16 @@ public class JsonUtil {
     }
     if (value instanceof YailList) {
       return ((YailList) value).toJSONString();
+    }
+    // The Json tokener used in getOnjectFromJson cannot handle
+    // fractions.  So we Json encode fractions by first converting
+    // them to doubles. This is an example of value with Kawa type any
+    // being exposed to the rest of App Inventor by the value being
+    // passed to a compoent method, in this case TinyDB or TinyWebDB
+    // StoreValue.  See the "warning" comment in runtime.scm at
+    // call-component-method.
+    if (value instanceof IntFraction) {
+      return JSONObject.numberToString((Number) ((IntFraction)value).doubleValue());
     }
     if (value instanceof Number) {
       return JSONObject.numberToString((Number) value);

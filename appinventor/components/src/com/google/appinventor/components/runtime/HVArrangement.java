@@ -120,7 +120,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
       category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how contents of the arrangement are aligned " +
           " horizontally. The choices are: 1 = left aligned, 2 = horizontally centered, " +
-          " 3 = right aligned.  Alignment has no effect with the arrangement's width is " +
+          " 3 = right aligned.  Alignment has no effect if the arrangement's width is " +
           "automatic.")
   public int AlignHorizontal() {
     return horizontalAlignment;

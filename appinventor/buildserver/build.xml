@@ -20,6 +20,7 @@
 
   <target name="tests"
           depends="BuildServerTests,YailGeneratorTests">
+
   </target>
 
   <!-- =====================================================================
@@ -128,7 +129,7 @@
     </copy>
     <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <copy toFile="${classes.files.dir}/bugsense3.0.5.jar" file="${lib.dir}/bugsense/bugsense3.0.5.jar" />
+    <copy toFile="${classes.files.dir}/bugsense3.1.jar" file="${lib.dir}/bugsense/bugsense3.1.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
@@ -137,9 +138,10 @@
     <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-    <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" /> 
+    <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
+    <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
     <property name="classes.tools.dir" location="${BuildServer-class.dir}/tools" />
     <copy todir="${classes.tools.dir}">
@@ -150,7 +152,7 @@
       <fileset dir="${lib.dir}/android/tools" includes="*/zipalign" />
     </copy>
     <chmod dir="${classes.tools.dir}" includes="*/zipalign" perm="ugo+rx"/>
-    
+
     <!-- jar up the classes and resource files -->
     <jar destfile="${run.lib.dir}/BuildServer.jar" filesonly="true">
       <fileset dir="${BuildServer-class.dir}" />

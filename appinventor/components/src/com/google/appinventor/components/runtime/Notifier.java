@@ -100,22 +100,25 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
 
   /**
-   * Display an alert with two buttons.   Raises the AfterChoosing event when the
-   * choice has been made.
+   * Displays an alert with two buttons that have specified text, and additional button
+   * marked CANCEL if cancelable is set.
+   * Raises the AfterChoosing event when the choice has been made, and returns the text of
+   * the button that was pressed.
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
    * @param button1Text the text on the left-hand button
    * @param button2Text the text on the right-hand button
+   * @param cancelable indicates if additional CANCEL button should be added
    */
   @SimpleFunction
   public void ShowChooseDialog(String message, String title, String button1Text,
-      String button2Text) {
-    twoButtonAlert(message, title, button1Text, button2Text);
+      String button2Text, boolean cancelable) {
+    twoButtonAlert(message, title, button1Text, button2Text, cancelable);
   }
 
   private void twoButtonAlert(String message,  String title,
-       final String button1Text,  final String button2Text) {
+       final String button1Text,  final String button2Text, boolean cancelable) {
     Log.i(LOG_TAG, "ShowChooseDialog: " + message);
 
     AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
@@ -123,25 +126,34 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
     alertDialog.setMessage(message);
-    alertDialog.setButton(button1Text,
+    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         AfterChoosing(button1Text);
       }
     });
-    // TODO(halabelson): The android documentation says that setButton2 is deprecated and that one
-    // should use setButton(AlertDialog.BUTTON_NEGATIVE, ...) instead.  When I use that, everything
-    // compiles, but the application crashes immediately, in VFY.  Should we be using new a newer
-    // version of the installer?
-    alertDialog.setButton2(button2Text,
+
+        alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, button2Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         AfterChoosing(button2Text);
       }
     });
+
+      //If cancelable is true, then a 3rd button, with text of Cancel will be added
+      // and will raise AfterChoosing when pressed.
+      if (cancelable)  {
+            final String cancelButtonText="Cancel";
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+              new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                      AfterChoosing(cancelButtonText);
+                  }
+              });
+      }
+
     alertDialog.show();
   }
-
 
   /**
    * Event after the user has made a selection for ShowChooseDialog.
@@ -155,21 +167,31 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   /**
    * Shows a dialog box in which the user can enter text, after which the
    * AfterTextInput event is raised.
+   * @param message the text in the alert box
+   * @param title the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of dialog.
+   *                   When true, an additional CANCEL button will be added allowing user to cancel
+   *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
    */
   @SimpleFunction
-  public void ShowTextDialog(String message, String title) {
-    textInputAlert(message, title);
+  public void ShowTextDialog(String message, String title, boolean cancelable) {
+    textInputAlert(message, title, cancelable);
   }
 
   /**
-   * Display an alert with a text entry.   Raises the AfterTextInput event when the
-   * text has been entered and the user presses "OK".
+   * Display an alert with a text entry. If cancelable is true, then also displays a "CANCEL"
+   * button, allowing user to cancel out of dialog.
+   * Raises the AfterTextInput event when the text has been entered and the user presses "OK".
+   * Raises the AfterTextInput event when users presses "CANCEL", passing CANCEL to AfterTextInput
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
+   * @param cancelable indicates whether the user should be able to cancel out of dialog.
+   *                   When true, an additional CANCEL button will be added allowing user to cancel
+   *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
    */
-  private void textInputAlert(String message, String title) {
-    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+  private void textInputAlert(String message, String title, boolean cancelable) {
+    final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
     alertDialog.setMessage(message);
     // Set an EditText view to get user input
@@ -183,6 +205,19 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
         AfterTextInput(input.getText().toString());
       }
     });
+
+      //If cancelable, then add the CANCEL button
+      if (cancelable)  {
+          final String cancelButtonText="CANCEL";
+          alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
+              new DialogInterface.OnClickListener() {
+                  public void onClick(DialogInterface dialog, int which) {
+                      //User pressed CANCEL. Raise AfterTextInput with CANCEL
+                      AfterTextInput(cancelButtonText);
+                  }
+              });
+      }
+
     alertDialog.show();
   }
 
@@ -208,7 +243,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
-  
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {

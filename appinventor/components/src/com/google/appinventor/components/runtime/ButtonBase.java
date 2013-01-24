@@ -15,7 +15,7 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.TextViewUtil;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-
+import android.view.MotionEvent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -38,7 +38,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 public abstract class ButtonBase extends AndroidViewComponent
-    implements OnClickListener, OnFocusChangeListener, OnLongClickListener {
+    implements OnClickListener, OnFocusChangeListener, OnLongClickListener, View.OnTouchListener {
 
   private static final String LOG_TAG = "ButtonBase";
 
@@ -111,6 +111,7 @@ public abstract class ButtonBase extends AndroidViewComponent
     view.setOnClickListener(this);
     view.setOnFocusChangeListener(this);
     view.setOnLongClickListener(this);
+    view.setOnTouchListener(this);
 
     // Default property values
     TextAlignment(Component.ALIGNMENT_CENTER);
@@ -127,6 +128,54 @@ public abstract class ButtonBase extends AndroidViewComponent
     TextColor(Component.COLOR_DEFAULT);
     Shape(Component.BUTTON_SHAPE_DEFAULT);
   }
+
+    /**
+     * If a custom background images is specified for the button, then it will lose the pressed
+     * and disabled image effects; no visual feedback.
+     * The approach below is to provide a visual feedback if and only if an image is assigned
+     * to the button. In this situation, we overlay a gray background when pressed and
+     * release when not-pressed.
+     */
+    @Override
+    public boolean onTouch(View view, MotionEvent me)
+    {
+        //NOTE: We ALWAYS return false because we want to indicate that this listener has not
+        //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
+
+        //If regular button with no background image or default shape,
+        // then we use the normal button visual feedback.
+        boolean shouldOverlay=true;
+        if (backgroundImageDrawable == null) {
+            shouldOverlay=false;
+        }
+
+        //If using other than default Shape, then we want to overlay
+        if (shape != Component.BUTTON_SHAPE_DEFAULT){
+            shouldOverlay=true;
+        }
+
+        //If a background color has been assigned, then we should perform overlay
+        if (BackgroundColor() != 0 ) {
+            shouldOverlay=true;
+        }
+
+        if (!shouldOverlay) {
+            return false;
+        }
+
+        if (me.getAction() == MotionEvent.ACTION_DOWN) {
+            //button pressed, provide visual feedback AND return false
+            view.getBackground().setAlpha(70); // translucent
+
+        } else if (me.getAction() == MotionEvent.ACTION_UP ||
+            me.getAction() == MotionEvent.ACTION_CANCEL) {
+            //button released, set button back to normal AND return false
+            view.getBackground().setAlpha(255); // opaque
+            return false;
+        }
+
+        return false;
+    }
 
   @Override
   public View getView() {

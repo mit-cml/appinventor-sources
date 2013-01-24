@@ -381,6 +381,8 @@
 
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
+         ;; The call below is a no-op unless we are in the wireless repl
+         (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if (lookup-in-form-environment 'repl)
              (when ((this):toastAllowed)
                    (begin
@@ -396,13 +398,13 @@
                                (ex:getMessage)
                                (*close-bracket*:get)))
                      (force-output)))
-             ;; TODO(sharon): it would be nice to log the stack trace for the code
-             ;; that threw the exception too.
+
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
               (ex:getMessage)
               (if (instance? ex YailRuntimeError) ((as YailRuntimeError ex):getErrorType) "Runtime Error")
               "End Application")))
+
 
        ;; For the HandlesEventDispatching interface
        (define (dispatchEvent componentObject :: com.google.appinventor.components.runtime.Component
@@ -856,8 +858,20 @@
 ;;; For example:
 ;;;  (call-component-method 'Sound1 'Vibrate (*list-for-runtime* duration) (*list-for-runtime* 'number))
 
-;;; Note that the result is coming back from a component, so we have to
-;;; sanitize it
+;;; Note that the result is coming back from a component, so we have to sanitize it
+;;; Warning: We are living dangrously here by assuming that the component method can handle the
+;;; args being passed to it.  We're relying on the coercion from coerce-args and Kawa's invoke
+;;; to deal with any weird Kawa types before passing them to the component.  A place where this 
+;;; does not work is with TinyDB and TinyWebDB and the storeValue method, where the "value" arg is
+;;; type any on the Kawa side and type Object on the Java side, so no coercion get performed.  As a 
+;;; consequence, calling this method with value as the result of a division could wind up passing an 
+;;; argument of class gnu.math.IntFraction, which the Json library can't handle, and so has to
+;;; be tested for in the Java implementation of this method in JsonUtils.getJsonRepresentation.  It might be 
+;;; more prudent to install an interface that is inverse of sanitize to check that all values being 
+;;; relayed by call-component-method at OK.  But for now, we'll try to get by with being careful.
+;;; Be sure to check any components whose methods are type 'any' to make sure they can handle the
+;;; values they will receive.
+
 
 (define (call-component-method component-name method-name arglist typelist)
   (let ((coerced-args (coerce-args method-name arglist typelist)))
@@ -1541,11 +1555,12 @@ Block name               Kawa implementation
 - add items to list       (yail-list-add-to-list! yail-list . items)
 - insert into list        (yail-list-insert-item! yail-list index item)
 - is in list?             (yail-list-member? object yail-list)
-- position  in list       (yail-list-index item list)
+- position in list       (yail-list-index item list)
 - for each                (foreach variable bodyform yail-list) [macro] [in control drawer]
 - pick random item        (yail-list-pick-random yail-list)
 - is list?                (yail-list? object)
 - is empty?               (yail-list-empty? yail-list)
+- lookup in pairs         (yail-alist-lookup key yail-list-of-pairs default)
 
 Lists in App Inventor are implemented as "Yail lists".  A Yail list is
 a Java pair whose car is a distinguished token
@@ -1912,6 +1927,44 @@ list, use the make-yail-list constructor with no arguments.
   (kawa-list->yail-list (loop (inexact->exact (ceiling low))
                               (inexact->exact (floor high)))))
 
+
+;;; For now, we'll represent tables as lists of pairs.
+;;; Note that these are Yail lists, and the implementation
+;;; must take account of that.   In this implementation, keys and
+;;; values can be any blocks objects.
+
+;;; Yail-alist lookup looks up the key in a list of pairs and returns resulting match.
+;;; It returns the default if the key is not in the table.
+;;; Note that we can't simply use kawa assoc here, because we are
+;;; dealing with Yail lists
+
+;;; TODO(hal):  Implement dictionaries and
+;;; integrate these with get JSON from web services.  Probably need to
+;;; make new DICTIONARY data type analogous to YailList.  Think about
+;;; any component operations that need to create dictionaries and whether we
+;;; we need a Java class similar to the YailList Java class.  Also think about
+;;; how to convert dictionaries to strings and how this interacts with printing
+;;; JSON objects and whether jsonutils.decode.
+
+(define (yail-alist-lookup key yail-list-of-pairs default)
+  (android-log 
+   (format #f "List alist lookup key is  ~A and table is ~A" key yail-list-of-pairs))
+  (let loop ((pairs-to-check (yail-list-contents yail-list-of-pairs)))
+    (cond ((null? pairs-to-check) default)
+	  ((not (pair-ok? (car pairs-to-check)))
+	   (signal-runtime-error
+	    (format #f "Lookup in pairs: the list ~A is not a well-formed list of pairs"
+		    (get-display-representation yail-list-of-pairs))
+	    "Invalid list of pairs"))
+	  ((equal? key (car (yail-list-contents (car pairs-to-check))))
+	   (cadr (yail-list-contents (car pairs-to-check))))
+	  (else (loop (cdr pairs-to-check))))))
+
+
+(define (pair-ok? candidate-pair)
+  (and (yail-list? candidate-pair)
+       (= (length (yail-list-contents candidate-pair)) 2)))
+      
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; End of List implementation

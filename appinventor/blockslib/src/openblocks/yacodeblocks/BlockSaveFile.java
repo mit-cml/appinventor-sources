@@ -463,6 +463,9 @@ public class BlockSaveFile {
       } else if (genus.equals("Texting")) {
         blkCompVersion = upgradeTextingBlocks(blkCompVersion, componentName);
 
+      }  else if (genus.equals("Notifier")) {
+        blkCompVersion = upgradeNotifierBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("TinyWebDB")) {
         blkCompVersion = upgradeTinyWebDBBlocks(blkCompVersion, componentName);
 
@@ -1044,6 +1047,35 @@ public class BlockSaveFile {
     if (blkCompVersion < 2) {
       // No changes required
       // The GoogleVoiceEnabled property was added.
+      blkCompVersion = 2;
+    }
+    if (blkCompVersion < 3) {
+      handlePropertyTypeChange(componentName, "ReceivingEnabled", "receivingEnabled is now an integer in the range 1-3 instead of a boolean");
+      blkCompVersion = 3;
+    }
+
+    return blkCompVersion;
+  }
+
+  private int upgradeNotifierBlocks(int blkCompVersion, String componentName) {
+      final String NEW_ARG_WARNING = "The %s block has been changed to " +
+          "expect a new cancelable argument. Please replace this block by a new one from the Notifier drawer.";
+
+    if (blkCompVersion < 2) {
+        // Look for ShowChooseDialog method block for this component.
+        for (Element block : getAllMatchingMethodOrEventBlocks(componentName, "Notifier",
+          "ShowChooseDialog")) {
+          // Mark the block bad.
+          markBlockBad(block,NEW_ARG_WARNING );
+      }
+
+      // Look for ShowTextDialog method block for this component.
+      for (Element block : getAllMatchingMethodOrEventBlocks(componentName, "Notifier",
+          "ShowTextDialog")) {
+          // Mark the block bad.
+          markBlockBad(block,NEW_ARG_WARNING );
+      }
+
       blkCompVersion = 2;
     }
     return blkCompVersion;
@@ -1629,6 +1661,49 @@ public class BlockSaveFile {
       }
     }
     return broken;
+  }
+
+  /*
+   * When a property's type changes we use this routine to find any
+   * component getters and setters and mark them as bad so the user corrects the
+   * type.
+   */
+  private void handlePropertyTypeChange(String componentName, String propName, String changeMessage) {
+
+    // We are targeting reads and writes of this qualified property name
+    // (e.g., Label1.Text).
+    String qualifiedPropName = componentName + "." + propName;
+
+    // Find BlockStubs whose StubParentName is the qualified property name.
+    NodeList blockStubNodeList = document.getElementsByTagName("BlockStub");
+    int length = blockStubNodeList.getLength();
+    for (int i = 0; i < length; i++) {
+      // This try-catch will allow us to avoid explicitly checking for malformed
+      // BlockSaveFiles, which could occur if the user munged their save file.
+      // We want to ignore any munged nodes.
+      try {
+        Element blockStub = (Element) blockStubNodeList.item(i);
+        String stubParentName = getChildTagValue(blockStub, "StubParentName");
+        if (stubParentName.equals(qualifiedPropName)) {
+          // If it is a componentSetter, mark it as bad.
+          Element block = (Element) ((Element) blockStub).getElementsByTagName("Block").item(0);
+          if (block.getAttribute("genus-name").equals("componentSetter") || block.getAttribute("genus-name").equals("componentGetter")) {
+            markBlockBad(block, changeMessage);
+          }
+        }
+      } catch (NullPointerException e) {
+        // This could occur in two situations, either of which we will ignore:
+        // - getChildTagValue() returned null, indicating that a node lacked
+        //   the expected child
+        // - item(0) returned null, indicating that the blockStub had no
+        //   elements with tag name "Block".
+      } catch (IllegalArgumentException e) {
+        // getChildTagValue() threw an IllegalArgumentException, indicating
+        // that a node lacked the expected child.  Ignore it.
+      } catch (ClassCastException e) {
+        // A Node was not an Element.  Ignore it.
+      }
+    }
   }
 
   /*

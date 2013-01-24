@@ -156,4 +156,11 @@ public class PropertyTypeConstants {
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVisibilityChoicePropertyEditor}.
    */
   public static final String PROPERTY_TYPE_VISIBILITY = "visibility";
+
+  /**
+   * Choices of Text Receiving options. {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_TEXT_RECEIVING = "text_receiving";
+
 }

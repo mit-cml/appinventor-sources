@@ -50,7 +50,8 @@ public class ShowProgressBarCommand extends ChainableCommand {
    * Creates a new command for showing a barcode for the target of a project.
    *
    * @param target the build target
-   * @param waitForBuildResultCommand
+   * @param nextCommand
+   * @param serviceName
    */
   public ShowProgressBarCommand(String target,ChainableCommand nextCommand, String serviceName) {
     // Since we don't know when the barcode dialog is finished, we can't

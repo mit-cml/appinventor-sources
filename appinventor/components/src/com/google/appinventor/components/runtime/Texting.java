@@ -33,8 +33,10 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.app.Activity;
 import android.app.NotificationManager;
@@ -58,53 +60,63 @@ import android.widget.Toast;
  */
 @SuppressWarnings("deprecation")
 @DesignerComponent(version = YaVersion.TEXTING_COMPONENT_VERSION,
-    description = "<p>A component that will, when the <code>SendMessage</code> " +
-    " method is called, send the text message " +
-    "specified in the <code>Message</code> property to the phone number " +
-    "specified in the <code>PhoneNumber</code> property. " +
-    "<p>This component will also receive text messages if the " +
-    "<code>ReceivingEnabled</code> property is True.  When a message " +
-    "arrives, the <code>MessageReceived</code> event is raised and provides " +
-    "the sending number and message.</p>" +
-    "<p> An app that includes this component will receive messages even " +
-    "when it is in the background (i.e. when it's not visible on the screen) and, moreso, "+
-    "even if the app is not running, so long as it's installed on the phone. If the phone " +
-    "receives a text message when the app is not in the foreground, the phone  will show a " +
-    "notification in the notification bar.  Selecting the notification will bring up the app." +
-    "As an app developer, you'll probably want to give your users the ability to control " +
-    "ReceivingEnabled so that they can make the phone ignore text messages." +
-    "<p>If the GoogleVoiceEnabled property is true, messages can be sent " +
-    "over Wifi using Google Voice. This option requires that the user have a Google Voice " +
-    "account and that the mobile Voice app is installed on the phone. The Google Voice " +
-    "option works only on phones that support Android 2.0 (Eclair) or higher. </p>" +
-    "<p>To specify the phone number (e.g., 650-555-1212), set " +
-    "the <code>PhoneNumber</code> property to a Text string with the specified " +
-    "digits (e.g., 6505551212).  Dashes, dots, and parentheses may be " +
-    "included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.</p>" +
-    "<p>Another way for an app to specify a phone number would be to include " +
-    "a <code>PhoneNumberPicker</code> component, which lets the users select a phone numbers " + 
-    "from the ones stored in the the phone's contacts.</p>",
-    category = ComponentCategory.SOCIAL,
-    nonVisible = true,
-    iconName = "images/texting.png")
-    @SimpleObject
-    @UsesPermissions(permissionNames = 
-      "android.permission.RECEIVE_SMS, android.permission.SEND_SMS, " +
-      "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
-      "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
-      "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " + 
-    "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
-    @UsesLibraries(libraries = 
-      "google-api-client-beta.jar," +
-      "google-api-client-android2-beta.jar," +
-      "google-http-client-beta.jar," +
-      "google-http-client-android2-beta.jar," +
-      "google-http-client-android3-beta.jar," +
-      "google-oauth-client-beta.jar," +
-    "guava-11.0.1.jar")
+  description = "<p>A component that will, when the <code>SendMessage</code> method is " +
+  "called, send the text message specified in the <code>Message</code> " +
+  "property to the phone number specified in the <code>PhoneNumber</code> " +
+  "property.</p> " +
+  "<p>If the <code>ReceivingEnabled</code> property is set to 1 messages " +
+  "will <b>not</b> be received. If <code>ReceivingEnabled</code> is set " +
+  "to 2 messages will be received only when the application is " +
+  "running. Finally if <code>ReceivingEnabled</code> is set to 3, " +
+  "messages will be received when the application is running <b>and</b> " +
+  "when the application is not running they will be queued and a " +
+  "notification displayed to the user.</p> " +
+  "<p>When a message arrives, the <code>MessageReceived</code> event is " +
+  "raised and provides the sending number and message.</p> " +
+  "<p> An app that includes this component will receive messages even " +
+  "when it is in the background (i.e. when it's not visible on the " +
+  "screen) and, moreso, even if the app is not running, so long as it's " +
+  "installed on the phone. If the phone receives a text message when the " +
+  "app is not in the foreground, the phone will show a notification in " +
+  "the notification bar.  Selecting the notification will bring up the " +
+  "app.  As an app developer, you'll probably want to give your users the " +
+  "ability to control ReceivingEnabled so that they can make the phone " +
+  "ignore text messages.</p> " +
+  "<p>If the GoogleVoiceEnabled property is true, messages can be sent " +
+  "over Wifi using Google Voice. This option requires that the user have " +
+  "a Google Voice account and that the mobile Voice app is installed on " +
+  "the phone. The Google Voice option works only on phones that support " +
+  "Android 2.0 (Eclair) or higher.</p> " +
+  "<p>To specify the phone number (e.g., 650-555-1212), set the " +
+  "<code>PhoneNumber</code> property to a Text string with the specified " +
+  "digits (e.g., 6505551212).  Dashes, dots, and parentheses may be " +
+  "included (e.g., (650)-555-1212) but will be ignored; spaces may not be " +
+  "included.</p> " +
+  "<p>Another way for an app to specify a phone number would be to " +
+  "include a <code>PhoneNumberPicker</code> component, which lets the " +
+  "users select a phone numbers from the ones stored in the the phone's " +
+  "contacts.</p>",
+  category = ComponentCategory.SOCIAL,
+  nonVisible = true,
+  iconName = "images/texting.png")
+@SimpleObject
+@UsesPermissions(permissionNames = 
+  "android.permission.RECEIVE_SMS, android.permission.SEND_SMS, " +
+  "com.google.android.apps.googlevoice.permission.RECEIVE_SMS, " +
+  "com.google.android.apps.googlevoice.permission.SEND_SMS, " +
+  "android.permission.ACCOUNT_MANAGER, android.permission.MANAGE_ACCOUNTS, " + 
+  "android.permission.GET_ACCOUNTS, android.permission.USE_CREDENTIALS")
+@UsesLibraries(libraries = 
+  "google-api-client-beta.jar," +
+  "google-api-client-android2-beta.jar," +
+  "google-http-client-beta.jar," +
+  "google-http-client-android2-beta.jar," +
+  "google-http-client-android3-beta.jar," +
+  "google-oauth-client-beta.jar," +
+  "guava-11.0.1.jar")
 
-    public class Texting extends AndroidNonvisibleComponent
-    implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
+public class Texting extends AndroidNonvisibleComponent
+  implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
   public static final String TAG = "Texting Component";
 
@@ -132,7 +144,8 @@ import android.widget.Toast;
   private static final String UTF8 = "UTF-8";
   private static final String MESSAGE_DELIMITER = "\u0001";
   private static final String PREF_GVENABLED = "gvenabled";   // Boolean flag for GV is enabled
-  private static final String PREF_RCVENABLED = "receiving"; // Boolean flag for app is receiving
+  private static final String PREF_RCVENABLED_LEGACY = "receiving"; // Is receiving enabled (Legacy boolean version)
+  private static final String PREF_RCVENABLED = "receiving2"; // Is receiving enabled
   private static final String PREF_FILE = "TextingState";    // State of Texting component
 
 
@@ -142,7 +155,7 @@ import android.widget.Toast;
   private static Component component;
 
   // Indicates whether the component is receiving messages or not
-  public static boolean receivingEnabled = true;
+  public static int receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
   private SmsManager smsManager;
 
   // The phone number to send the text message to.
@@ -164,6 +177,8 @@ import android.widget.Toast;
   private static int messagesCached;
   private static Object cacheLock = new Object();
 
+  private ComponentContainer container; // Need this for error reporting
+
   /**
    * Creates a new TextMessage component.
    *
@@ -172,17 +187,26 @@ import android.widget.Toast;
   public Texting(ComponentContainer container) {
     super(container.$form());
     Log.d(TAG, "Texting constructor");
+    this.container = container;
     Texting.component = (Texting)this;
     activity = container.$context();
 
     SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     if (prefs != null) {
-      receivingEnabled = prefs.getBoolean(PREF_RCVENABLED, true); 
+      receivingEnabled = prefs.getInt(PREF_RCVENABLED, -1);
+      if (receivingEnabled == -1) {
+        if (prefs.getBoolean(PREF_RCVENABLED_LEGACY, true)) {
+          receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
+        } else {
+          receivingEnabled = ComponentConstants.TEXT_RECEIVING_OFF;
+        }
+      }
+
       googleVoiceEnabled = prefs.getBoolean(PREF_GVENABLED, false);
       Log.i(TAG, "Starting with receiving Enabled=" + receivingEnabled + " GV enabled=" + googleVoiceEnabled);
     } else {
-      receivingEnabled = true;
-      googleVoiceEnabled = false;		
+      receivingEnabled = ComponentConstants.TEXT_RECEIVING_FOREGROUND;
+      googleVoiceEnabled = false;
     }
 
     smsManager = SmsManager.getDefault();
@@ -281,7 +305,7 @@ import android.widget.Toast;
    */
   @SimpleEvent
   public static void MessageReceived(String number, String messageText) {
-    if (receivingEnabled) {
+    if (receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF) {
       Log.i(TAG, "MessageReceived from " + number + ":" + messageText);   
       if (EventDispatcher.dispatchEvent(component, "MessageReceived", number, messageText)) {
         Log.i(TAG, "Dispatch successful");
@@ -295,8 +319,8 @@ import android.widget.Toast;
   }
 
   /**
-   * If this property is true, then SendMessage will attempt to send messages over
-   * WiFi, using Google voice.
+   * If this property is true, then SendMessage will attempt to send messages using
+   * Google voice.
    *
    * @return 'true' or 'false' depending on whether you want to
    * use Google Voice for sending/receiving messages.
@@ -336,21 +360,23 @@ import android.widget.Toast;
    * Gets whether you want the {@link #MessageReceived(String,String)} event to
    * get run when a new text message is received.
    *
-   * @return 'true' or 'false' depending on whether you want the
+   * @return 1,2 or 3 indicating that receiving is disabled (1) or foreground only
+   *          (2) or always (3).
    *          {@link #MessageReceived(String,String)} event to get run when a
    *          new text message is received.
    */
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description = "If true, the component will respond to messages received.  If the app " +
-          "is in the foreground, the MessageReceived event will be signaled.  If the app is " +
-          "running in the background, or even not running at all, the phone will show a " +
-          "notification.  " +
-          "Selecting the notification will bring up the app and signal the MessageReceived " +
-          "event.  Messages received when the app is dormant will be queued, and so " +
-          "several MessageReceived events might appear when the app awakens.  As an app " +
-          "developer, it would be a good idea to give your users control over this property, " +
-          "so they can make their phones ignore text messages when your app is installed.")
-  public boolean ReceivingEnabled() {
+      description = "If set to 1 (OFF) no messages will be received.  If set to 2 (FOREGROUND) or" +
+    "3 (ALWAYS) the component will respond to messages if it is running. If the " +
+    "app is not running then the message will be discarded if set to 2 " +
+    "(FOREGROUND). If set to 3 (ALWAYS) and the app is not running the phone will " +
+    "show a notification.  Selecting the notification will bring up the app " +
+    "and signal the MessageReceived event.  Messages received when the app " +
+    "is dormant will be queued, and so several MessageReceived events might " +
+    "appear when the app awakens.  As an app developer, it would be a good " +
+    "idea to give your users control over this property, so they can make " +
+    "their phones ignore text messages when your app is installed.")
+  public int ReceivingEnabled() {
     return receivingEnabled;
   }
 
@@ -358,24 +384,38 @@ import android.widget.Toast;
    * Sets whether you want the {@link #MessageReceived(String,String)} event to
    * get run when a new text message is received.
    *
-   * @param enabled  Set to 'true' or 'false' depending on whether you want the
-   *                 {@link #MessageReceived(String,String)} event to get run
-   *                 when a new text message is received.
+   * @param enabled  0 = never receive, 1 = receive foreground only, 2 = receive always
+   *
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_RECEIVING, defaultValue = "2") // Default is FOREGROUND
   @SimpleProperty()
-  public void ReceivingEnabled(boolean enabled) {
+  public void ReceivingEnabled(int enabled) {
+    if ((enabled < ComponentConstants.TEXT_RECEIVING_OFF) ||
+      (enabled > ComponentConstants.TEXT_RECEIVING_ALWAYS)) {
+      container.$form().dispatchErrorOccurredEvent(this, "Texting",
+        ErrorMessages.ERROR_BAD_VALUE_FOR_TEXT_RECEIVING, enabled);
+      return;
+    }
+
     Texting.receivingEnabled = enabled;
     SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     SharedPreferences.Editor editor = prefs.edit();
-    editor.putBoolean(PREF_RCVENABLED, enabled);
+    editor.putInt(PREF_RCVENABLED, enabled);
+    editor.remove(PREF_RCVENABLED_LEGACY); // Remove any legacy value
     editor.commit();
   }
 
-  public static boolean isReceivingEnabled(Context context) {
+  public static int isReceivingEnabled(Context context) {
     SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
-    return prefs.getBoolean(PREF_RCVENABLED, true);
-  }
+    int retval = prefs.getInt(PREF_RCVENABLED, -1);
+    if (retval == -1) {         // Fetch legacy value
+      if (prefs.getBoolean(PREF_RCVENABLED_LEGACY, true))
+        return ComponentConstants.TEXT_RECEIVING_FOREGROUND; // Foreground
+      else
+        return ComponentConstants.TEXT_RECEIVING_OFF; // Off
+    }
+    return retval;
+}
 
   /**
    * Parse the messages out of the extra fields from the "android.permission.RECEIVE_SMS" broadcast
@@ -424,7 +464,7 @@ import android.widget.Toast;
       int delim = phoneAndMessage.indexOf(":");
 
       // If receiving is not enabled, messages are not dispatched
-      if (receivingEnabled && delim != -1) {
+      if ((receivingEnabled > ComponentConstants.TEXT_RECEIVING_OFF) && delim != -1) {
         MessageReceived(phoneAndMessage.substring(0,delim),
             phoneAndMessage.substring(delim+1));
       }
@@ -467,7 +507,7 @@ import android.widget.Toast;
 
   /**
    * Called by SmsBroadcastReceiver
-   * @return
+   * @return isRunning if the app is running in the foreground.
    */
   public static boolean isRunning() {
     return isRunning;
@@ -475,7 +515,7 @@ import android.widget.Toast;
 
   /**
    * Used to keep count in Notifications.
-   * @return
+   * @return message count
    */
   public static int getCachedMsgCount() {
     return messagesCached;
@@ -868,7 +908,7 @@ import android.widget.Toast;
   public void onStop() {
     SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     SharedPreferences.Editor editor = prefs.edit();
-    editor.putBoolean(PREF_RCVENABLED, receivingEnabled);
+    editor.putInt(PREF_RCVENABLED, receivingEnabled);
     editor.putBoolean(PREF_GVENABLED, googleVoiceEnabled);
     editor.commit();
   }

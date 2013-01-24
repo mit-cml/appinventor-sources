@@ -1126,4 +1126,26 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("No upgrade strategy exists for {0} from version {1} to {2}.")
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
+  
+  // Used in client/editor/simple/components/MockHVarrangement.java
+  
+  @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
+  @Description("System error message for a bad alignment property editor")
+  String badAlignmentPropertyEditorForArrangement();
+
+  // Used in
+  // editor/youngandroid/properties/YoungAndroidTextReceivingPropertyEditor.java
+
+  @DefaultMessage("Off")
+  @Description("Text Messages are not received at any time.")
+  String textReceivingChoiceOff();
+
+  @DefaultMessage("Foreground")
+  @Description("Text Messages are received only when the App is in the foreground.")
+  String textReceivingChoiceForeground();
+
+  @DefaultMessage("Always")
+  @Description("Text messages are always received, and a notification is shown if the App is in the background.")
+  String textReceivingChoiceAlways();
+
 }

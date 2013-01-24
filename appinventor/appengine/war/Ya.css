@@ -479,6 +479,10 @@ body {
 .ode-PropertyEditor {
 }
 
+select.ode-PropertyEditor[disabled] {
+  background-color: #aaa;
+}
+
 .ode-MultipleChoicePropertyEditor {
   min-width: 150px;
   background-color: white;
