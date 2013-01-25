@@ -1,3 +1,26 @@
+/**
+ * Visual Blocks Editor
+ *
+ * Copyright 2012 Google Inc.
+ * http://blockly.googlecode.com/
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * @fileoverview Style sheet for a Blockly editor.
+ * @author fraser@google.com (Neil Fraser)
+ */
 .blocklySvg {
   background-color: #fff;
 }
@@ -7,7 +30,10 @@
   z-index: 999;
 }
 .blocklyDraggable {
-  cursor: url(handopen.cur) 8 5 , auto;
+  /* Hotspot coordinates are baked into the CUR file, but they are still
+     required in the CSS due to a Chrome bug.
+     http://code.google.com/p/chromium/issues/detail?id=1446 */
+  cursor: url(handopen.cur) 8 5, auto;
 }
 .blocklyResizeSE {
   fill: #aaa;
@@ -38,18 +64,20 @@
 .blocklySelected>.blocklyPathLight {
   display: none;
 }
-.blocklyDragging>.blocklyPath, .blocklyDragging>.blocklyPathLight {
-  fill-opacity: .8;
-  stroke-opacity: .8;
+.blocklyDragging>.blocklyPath,
+.blocklyDragging>.blocklyPathLight {
+  fill-opacity: 0.8;
+  stroke-opacity: 0.8;
 }
 .blocklyDragging>.blocklyPathDark {
   display: none;
 }
 .blocklyDisabled>.blocklyPath {
-  fill-opacity: .5;
-  stroke-opacity: .5;
+  fill-opacity: 0.50;
+  stroke-opacity: 0.50;
 }
-.blocklyDisabled>.blocklyPathLight, .blocklyDisabled>.blocklyPathDark {
+.blocklyDisabled>.blocklyPathLight,
+.blocklyDisabled>.blocklyPathDark {
   display: none;
 }
 .blocklyText {
@@ -61,23 +89,30 @@
 .blocklyNonEditableText>text {
   pointer-events: none;
 }
-.blocklyNonEditableText>rect, .blocklyEditableText>rect {
+.blocklyNonEditableText>rect,
+.blocklyEditableText>rect {
   fill: #fff;
-  fill-opacity: .6;
+  fill-opacity: 0.6;
 }
-.blocklyNonEditableText>text, .blocklyEditableText>text {
+.blocklyNonEditableText>text,
+.blocklyEditableText>text {
   fill: #000;
 }
 .blocklyEditableText:hover>rect {
   stroke-width: 2;
   stroke: #fff;
 }
+/*
+ * Don't allow users to select text.
+ * It gets annoying when trying to drag a block and selected text moves instead.
+ */
 .blocklySvg text {
   -moz-user-select: none;
   -webkit-user-select: none;
   user-select: none;
   cursor: inherit;
 }
+
 .blocklyHidden {
   display: none;
 }
@@ -86,7 +121,9 @@
   stroke-width: 1px;
   stroke: #d8d8d8;
 }
-.blocklyTooltipShadow, .blocklyContextMenuShadow, .blocklyDropdownMenuShadow {
+.blocklyTooltipShadow,
+.blocklyContextMenuShadow,
+.blocklyDropdownMenuShadow {
   fill: #bbb;
   filter: url(#blocklyShadowFilter);
 }
@@ -95,6 +132,7 @@
   font-size: 9pt;
   fill: #000;
 }
+
 .blocklyIconShield {
   cursor: default;
   fill: #00c;
@@ -116,6 +154,8 @@
   fill: #ccc;
   text-anchor: middle;
 }
+.blocklyWarningBody {
+}
 .blocklyMinimalBody {
   margin: 0;
   padding: 0;
@@ -133,12 +173,15 @@
   border: none;
   outline: none;
 }
-.blocklyContextMenuBackground, .blocklyMutatorBackground {
+.blocklyContextMenuBackground,
+.blocklyMutatorBackground {
   fill: #fff;
   stroke-width: 1;
   stroke: #ddd;
 }
-.blocklyContextMenuOptions>.blocklyMenuDiv, .blocklyContextMenuOptions>.blocklyMenuDivDisabled, .blocklyDropdownMenuOptions>.blocklyMenuDiv {
+.blocklyContextMenuOptions>.blocklyMenuDiv,
+.blocklyContextMenuOptions>.blocklyMenuDivDisabled,
+.blocklyDropdownMenuOptions>.blocklyMenuDiv {
   fill: #fff;
 }
 .blocklyToolboxOptions>.blocklyMenuDiv {
@@ -147,16 +190,24 @@
 .blocklyToolboxOptions>.blocklyMenuDiv:hover {
   fill: #e4e4e4;
 }
-.blocklyContextMenuOptions>.blocklyMenuDiv:hover>rect, .blocklyDropdownMenuOptions>.blocklyMenuDiv:hover>rect, .blocklyMenuSelected>rect {
+.blocklyContextMenuOptions>.blocklyMenuDiv:hover>rect,
+.blocklyDropdownMenuOptions>.blocklyMenuDiv:hover>rect {
+  fill: #57e;
+}
+.blocklyMenuSelected>rect {
   fill: #57e;
 }
 .blocklyMenuText {
   cursor: default !important;
   font-family: sans-serif;
-  font-size: 15px;
+  font-size: 15px; /* All context menu sizes are based on pixels. */
   fill: #000;
 }
-.blocklyContextMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText, .blocklyDropdownMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText, .blocklyMenuSelected>.blocklyMenuText {
+.blocklyContextMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText,
+.blocklyDropdownMenuOptions>.blocklyMenuDiv:hover>.blocklyMenuText {
+  fill: #fff;
+}
+.blocklyMenuSelected>.blocklyMenuText {
   fill: #fff;
 }
 .blocklyMenuDivDisabled>.blocklyMenuText {
@@ -167,7 +218,7 @@
 }
 .blocklyFlyoutBackground {
   fill: #ddd;
-  fill-opacity: .8;
+  fill-opacity: 0.8;
 }
 .blocklyColourBackground {
   fill: #666;
@@ -180,20 +231,38 @@
 .blocklyScrollbarKnob {
   fill: #ccc;
 }
-.blocklyScrollbarBackground:hover+.blocklyScrollbarKnob, .blocklyScrollbarKnob:hover {
+.blocklyScrollbarBackground:hover+.blocklyScrollbarKnob,
+.blocklyScrollbarKnob:hover {
   fill: #bbb;
 }
 .blocklyInvalidInput {
   background: #faa;
 }
+
+
+/*
+ * Copyright 2007 The Closure Library Authors. All Rights Reserved.
+ *
+ * Use of this source code is governed by the Apache License, Version 2.0.
+ * See the COPYING file for details.
+ */
+
+/* Author: pupius@google.com (Daniel Pupius) */
+
+/*
+  Styles to make the colorpicker look like the old gmail color picker
+  NOTE: without CSS scoping this will override styles defined in palette.css
+*/
 .goog-palette {
   outline: none;
   cursor: default;
 }
+
 .goog-palette-table {
   border: 1px solid #666;
   border-collapse: collapse;
 }
+
 .goog-palette-cell {
   height: 13px;
   width: 15px;
@@ -204,15 +273,18 @@
   border-right: 1px solid #666;
   font-size: 1px;
 }
+
 .goog-palette-colorswatch {
   position: relative;
   height: 13px;
   width: 15px;
   border: 1px solid #666;
 }
+
 .goog-palette-cell-hover .goog-palette-colorswatch {
-  border: 1px solid #fff;
+  border: 1px solid #FFF;
 }
+
 .goog-palette-cell-selected .goog-palette-colorswatch {
   border: 1px solid #000;
   color: #fff;

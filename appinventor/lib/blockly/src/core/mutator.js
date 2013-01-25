@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,11 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Mutator');
+
+goog.require('Blockly.Bubble');
+
 
 /**
  * Class for a mutator dialog.
@@ -287,12 +292,11 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     // The source block may have changed, notify its workspace.
     this.block_.workspace.fireChangeEvent();
   }
-
+  
   if(this.shouldHide){
     this.setVisible(false);
     this.shouldHide = false;
   }
-
 };
 
 /**

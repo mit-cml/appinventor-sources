@@ -133,13 +133,14 @@ Blockly.Language.procedures_defnoreturn = {
     var editable = this.editable;
     var workspace = this.workspace;
 
+    // Call parent's destructor.
+    Blockly.Block.prototype.dispose.apply(this, arguments);
+
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
       Blockly.Language.removeProcedureValues(name, workspace);
     }
-    // Call parent's destructor.
-    Blockly.Block.prototype.dispose.apply(this, arguments);
 
   },
   getProcedureDef: function() {
@@ -371,7 +372,7 @@ Blockly.Language.procedures_callnoreturn = {
   helpUrl: Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL,
   init: function() {
     this.setColour(290);
-    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(false);};
+    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,false);};
     var onChangeDropDown = function(text) {
       var workspace = this.block.workspace;
       this.setText(text);
@@ -553,7 +554,7 @@ Blockly.Language.procedures_callreturn = {
   helpUrl: Blockly.LANG_PROCEDURES_CALLRETURN_HELPURL,
   init: function() {
     this.setColour(290);
-    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(true);};
+    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,true);};
     var onChangeDropDown = function(text) {
       var workspace = this.block.workspace;
       this.setText(text);
@@ -592,7 +593,7 @@ Blockly.Language.procedures_callreturn = {
   removeProcedureValue: Blockly.Language.procedures_callnoreturn.removeProcedureValue
 };
 
-Blockly.Language.getProcedureNames = function(returnValue) {
+Blockly.Language.getProcedureNames = function(dropDown,returnValue) {
   var topBlocks = Blockly.mainWorkspace.getTopBlocks();
   var procNameArray = [["","none"]];
   for(var i=0;i<topBlocks.length;i++){
@@ -602,6 +603,9 @@ Blockly.Language.getProcedureNames = function(returnValue) {
     } else if (topBlocks[i].type == "procedures_defreturn" && returnValue) {
       procNameArray.push([procName,procName]);
     }
+  }
+  if(procNameArray.length > 1 ){
+    procNameArray.splice(0,1);
   }
   return procNameArray;
 

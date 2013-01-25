@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.BlockSvg');
+
+goog.require('goog.userAgent');
 
 /**
  * Class for a block's SVG representation.
@@ -872,11 +876,11 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       var titleY = cursorY + Blockly.BlockSvg.TITLE_HEIGHT;
       if (input.align != Blockly.ALIGN_LEFT) {
         var titleRightX = inputRows.rightEdge - input.titleWidth -
-            Blockly.BlockSvg.TAB_WIDTH - Blockly.BlockSvg.SEP_SPACE_X;
+            Blockly.BlockSvg.TAB_WIDTH - 2 * Blockly.BlockSvg.SEP_SPACE_X;
         if (input.align == Blockly.ALIGN_RIGHT) {
-          titleX = titleRightX;
+          titleX += titleRightX;
         } else if (input.align == Blockly.ALIGN_CENTRE) {
-          titleX = (titleRightX + titleX) / 2;
+          titleX += (titleRightX + titleX) / 2;
         }
       }
       this.renderTitles_(input.titleRow, titleX, titleY);
@@ -908,14 +912,14 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       var titleY = cursorY + Blockly.BlockSvg.TITLE_HEIGHT;
       if (input.align != Blockly.ALIGN_LEFT) {
         var titleRightX = inputRows.rightEdge - input.titleWidth -
-            Blockly.BlockSvg.SEP_SPACE_X;
+            2 * Blockly.BlockSvg.SEP_SPACE_X;
         if (inputRows.hasValue) {
           titleRightX -= Blockly.BlockSvg.TAB_WIDTH;
         }
         if (input.align == Blockly.ALIGN_RIGHT) {
-          titleX = titleRightX;
+          titleX += titleRightX;
         } else if (input.align == Blockly.ALIGN_CENTRE) {
-          titleX = (titleRightX + titleX) / 2;
+          titleX += (titleRightX + titleX) / 2;
         }
       }
       this.renderTitles_(input.titleRow, titleX, titleY);
@@ -938,11 +942,11 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
       var titleY = cursorY + Blockly.BlockSvg.TITLE_HEIGHT;
       if (input.align != Blockly.ALIGN_LEFT) {
         var titleRightX = inputRows.statementEdge - input.titleWidth -
-            Blockly.BlockSvg.SEP_SPACE_X;
+            2 * Blockly.BlockSvg.SEP_SPACE_X;
         if (input.align == Blockly.ALIGN_RIGHT) {
-          titleX = titleRightX;
+          titleX += titleRightX;
         } else if (input.align == Blockly.ALIGN_CENTRE) {
-          titleX = (titleRightX + titleX) / 2;
+          titleX += (titleRightX + titleX) / 2;
         }
       }
       this.renderTitles_(input.titleRow, titleX, titleY);
@@ -1069,7 +1073,7 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ = function(steps, highlightSteps,
  * @private
  */
 Blockly.BlockSvg.prototype.renderDrawLeft_ = function(steps, highlightSteps,
-                                                   connectionsXY, cursorY) {
+                                                      connectionsXY, cursorY) {
   if (this.block_.outputConnection) {
     // Create output connection.
     this.block_.outputConnection.moveTo(connectionsXY.x, connectionsXY.y);

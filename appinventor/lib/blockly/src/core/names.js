@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Names');
+
 
 /**
  * Class for a database of entity names (variables, functions, etc).
@@ -77,9 +80,10 @@ Blockly.Names.prototype.getName = function(name, type) {
   var normalized = Blockly.Names.PREFIX_ + name.toLowerCase() + 'X' + type;
   if (normalized in this.db_) {
     return this.db_[normalized];
-  } else {
-    return this.getDistinctName(name, type);
   }
+  var safeName = this.getDistinctName(name, type);
+  this.db_[normalized] = safeName;
+  return safeName;
 };
 
 /**
@@ -101,7 +105,6 @@ Blockly.Names.prototype.getDistinctName = function(name, type) {
     i = i ? i + 1 : 2;
   }
   safeName += i;
-  this.db_[Blockly.Names.PREFIX_ + name.toLowerCase() + 'X' + type] = safeName;
   this.dbReverse_[Blockly.Names.PREFIX_ + safeName] = true;
   return safeName;
 };

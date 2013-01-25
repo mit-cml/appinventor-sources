@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,11 @@
  */
 'use strict';
 
-/**
- * Name space for the toolbox singleton.
- */
-Blockly.Toolbox = {};
+goog.provide('Blockly.Toolbox');
+
+goog.require('Blockly.ContextMenu');
+goog.require('Blockly.Flyout');
+
 
 /**
  * Width of the toolbox.

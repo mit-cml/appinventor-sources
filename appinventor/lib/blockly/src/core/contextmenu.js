@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,8 @@
  */
 'use strict';
 
-/**
- * Name space for the context menu singleton.
- */
-Blockly.ContextMenu = {};
+goog.provide('Blockly.ContextMenu');
+
 
 /**
  * Horizontal padding on either side of each option.
@@ -77,7 +75,7 @@ Blockly.ContextMenu.createDom = function() {
  * @param {!Array.<Object>} options Array of menu options.
  */
 Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
-  if (options.length == 0) {
+  if (!options.length) {
     Blockly.ContextMenu.hide();
     return;
   }
@@ -139,7 +137,7 @@ Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
       options.length * Blockly.ContextMenu.Y_HEIGHT + 10);
 
   // Convert the mouse coordinates into SVG coordinates.
-  var xy = Blockly.mouseToSvg(anchorX, anchorY);
+  var xy = Blockly.convertCoordinates(anchorX, anchorY, true);
   anchorX = xy.x;
   anchorY = xy.y;
 

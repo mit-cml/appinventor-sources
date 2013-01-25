@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,25 @@
  */
 'use strict';
 
-if (!window.goog) {
-  alert('Error: Closure not found.  Read this:\n' +
-        'http://code.google.com/p/blockly/wiki/Closure\n');
-}
+// Top level object for Blockly.
+goog.provide('Blockly');
 
 // Closure dependencies.
 goog.require('goog.dom');
 goog.require('goog.color');
+goog.require('goog.events');
 goog.require('goog.string');
+goog.require('goog.ui.ColorPicker');
 goog.require('goog.userAgent');
 
-// Top level object for Blockly.
-var Blockly = {};
+// Blockly dependencies.
+goog.require('Blockly.Block');
+goog.require('Blockly.Connection');
+goog.require('Blockly.utils');
+//goog.require('Blockly.Toolbox');
+goog.require('Blockly.Workspace');
+goog.require('Blockly.renaming_map');
+
 
 /**
  * Path to Blockly's directory.  Can be relative, absolute, or remote.
@@ -389,7 +395,8 @@ Blockly.onContextMenu_ = function(e) {
 Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.Tooltip && Blockly.Tooltip.hide();
   Blockly.ContextMenu && Blockly.ContextMenu.hide();
-  Blockly.FieldDropdown.hideMenu();
+  Blockly.FieldDropdown && Blockly.FieldDropdown.hide();
+  Blockly.FieldColour && Blockly.FieldColour.hide();
   if (Blockly.Toolbox && !opt_allowToolbox &&
       Blockly.Toolbox.flyout_.autoClose) {
     Blockly.Toolbox.clearSelection();
@@ -562,16 +569,30 @@ Blockly.setMainWorkspaceMetrics = function(xyRatio) {
 };
 
 /**
+ * When something in Blockly's workspace changes, call a function.
+ * @param {!Function} func Function to call.
+ * @return {!Array.<!Array>} Opaque data that can be passed to
+ *     removeChangeListener.
+ */
+Blockly.addChangeListener = function(func) {
+  return Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(),
+                            'blocklyWorkspaceChange', null, func);
+};
+
+/**
+ * Stop listening for Blockly's workspace changes.
+ * @param {!Array.<!Array>} bindData Opaque data from addChangeListener.
+ */
+Blockly.removeChangeListener = function(bindData) {
+  Blockly.unbindEvent_(bindData);
+};
+
+/**
  * Rerender certain elements which might have had their sizes changed by the
  * CSS file and thus need realigning.
  * Called when the CSS file has finally loaded.
  */
 Blockly.cssLoaded = function() {
+  Blockly.Field && (Blockly.Field.textLengthCache = {});
   Blockly.Toolbox && Blockly.Toolbox.redraw();
 };
-
-/**
- * Name space for the Language singleton.
- * Language gets populated in the language files.
- */
-Blockly.Language = {};

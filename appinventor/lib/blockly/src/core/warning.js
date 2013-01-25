@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Warning');
+
 
 /**
  * Class for a warning.
@@ -145,6 +148,9 @@ Blockly.Warning.prototype.setVisible = function(visible) {
       }
     }
     this.updateColour();
+    // Bump the warning into the right location.
+    var size = this.bubble_.getBubbleSize();
+    this.bubble_.setBubbleSize(size.width, size.height);
   } else {
     // Dispose of the bubble.
     this.bubble_.dispose();

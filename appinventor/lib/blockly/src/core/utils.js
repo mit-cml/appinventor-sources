@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,9 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.utils');
+
 
 /**
  * Add a CSS class to a element.
@@ -73,47 +76,37 @@ Blockly.removeClass_ = function(element, className) {
  * @param {string} name Event name to listen to (e.g. 'mousedown').
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
- *     W3 browsers will call the function with the event object as a parameter,
- *     MSIE will not.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */
 Blockly.bindEvent_ = function(element, name, thisObject, func) {
   var bindData = [];
   var wrapFunc;
-  if (element.addEventListener) {  // W3C
+  if (!element.addEventListener) {
+    throw 'Element is not a DOM node with addEventListener.';
+  }
+  wrapFunc = function(e) {
+    func.apply(thisObject, arguments);
+  };
+  element.addEventListener(name, wrapFunc, false);
+  bindData.push([element, name, wrapFunc]);
+  // Add equivalent touch event.
+  if (name in Blockly.bindEvent_.TOUCH_MAP) {
     wrapFunc = function(e) {
+      // Punt on multitouch events.
+      if (e.changedTouches.length == 1) {
+        // Map the touch event's properties to the event.
+        var touchPoint = e.changedTouches[0];
+        e.clientX = touchPoint.clientX;
+        e.clientY = touchPoint.clientY;
+      }
       func.apply(thisObject, arguments);
+      // Stop the browser from scrolling/zooming the page
+      e.preventDefault();
     };
-    element.addEventListener(name, wrapFunc, false);
-    bindData.push([element, name, wrapFunc]);
-    // Add equivalent touch event.
-    if (name in Blockly.bindEvent_.TOUCH_MAP) {
-      wrapFunc = function(e) {
-        // Punt on multitouch events.
-        if (e.changedTouches.length == 1) {
-          // Map the touch event's properties to the event.
-          var touchPoint = e.changedTouches[0];
-          e.clientX = touchPoint.clientX;
-          e.clientY = touchPoint.clientY;
-        }
-        func.apply(thisObject, arguments);
-        // Stop the browser from scrolling/zooming the page
-        e.preventDefault();
-      };
-      element.addEventListener(Blockly.bindEvent_.TOUCH_MAP[name],
-                               wrapFunc, false);
-      bindData.push([element, Blockly.bindEvent_.TOUCH_MAP[name], wrapFunc]);
-    }
-  } else if (element.attachEvent) {  // IE
-    wrapFunc = function(e) {
-      func.apply(thisObject, arguments);
-      e.stopPropagation();
-    };
-    element.attachEvent('on' + name, wrapFunc);
-    bindData.push([element, name, wrapFunc]);
-  } else {
-    throw 'Element is not a DOM node.';
+    element.addEventListener(Blockly.bindEvent_.TOUCH_MAP[name],
+                             wrapFunc, false);
+    bindData.push([element, Blockly.bindEvent_.TOUCH_MAP[name], wrapFunc]);
   }
   return bindData;
 };
@@ -147,11 +140,7 @@ Blockly.unbindEvent_ = function(bindData) {
     var element = bindDatum[0];
     var name = bindDatum[1];
     var func = bindDatum[2];
-    if (element.removeEventListener) {  // W3C
-      element.removeEventListener(name, func, false);
-    } else {  // IE
-      element.detachEvent('on' + name, func);
-    }
+    element.removeEventListener(name, func, false);
   }
   return func;
 };
@@ -267,15 +256,20 @@ Blockly.isRightButton = function(e) {
 };
 
 /**
- * Convert the mouse coordinates into SVG coordinates.
- * @param {number} x X mouse coordinate.
- * @param {number} y Y mouse coordinate.
- * @return {!Object} Object with x and y properties in SVG coordinates.
+ * Convert between mouse/HTML coordinates and SVG coordinates.
+ * @param {number} x X input coordinate.
+ * @param {number} y Y input coordinate.
+ * @param {boolean} toSvg True to convert to SVG coordinates.
+ *     False to convert to mouse/HTML coordinates.
+ * @return {!Object} Object with x and y properties in output coordinates.
  */
-Blockly.mouseToSvg = function(x, y) {
+Blockly.convertCoordinates = function(x, y, toSvg) {
   var svgPoint = Blockly.svg.createSVGPoint();
   svgPoint.x = x;
   svgPoint.y = y;
-  var matrix = Blockly.svg.getScreenCTM().inverse();
+  var matrix = Blockly.svg.getScreenCTM();
+  if (toSvg) {
+    matrix = matrix.inverse();
+  }
   return svgPoint.matrixTransform(matrix);
 };

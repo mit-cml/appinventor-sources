@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,13 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Field');
+
+// TODO(scr): Fix circular dependencies
+// goog.require('Blockly.Block');
+goog.require('Blockly.BlockSvg');
+
 
 /**
  * Class for an editable field.
@@ -129,8 +136,10 @@ Blockly.Field.prototype.render_ = function() {
     var width = Blockly.Field.textLengthCache[this.text_];
   } else {
     var width = this.textElement_.getComputedTextLength();
-    // Cache the current width.
-    Blockly.Field.textLengthCache[this.text_] = width;
+    // If a valid width was obtained, cache the current width.
+    if (width) {
+      Blockly.Field.textLengthCache[this.text_] = width;
+    }
   }
   if (this.borderRect_) {
     this.borderRect_.setAttribute('width',
@@ -160,9 +169,13 @@ Blockly.Field.prototype.getText = function() {
 
 /**
  * Set the text in this field.  Trigger a rerender of the source block.
- * @param {string} text New text.
+ * @param {?string} text New text.
  */
 Blockly.Field.prototype.setText = function(text) {
+  if (text === null) {
+    // No change if null.
+    return;
+  }
   this.text_ = text;
   // Empty the text element.
   goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));

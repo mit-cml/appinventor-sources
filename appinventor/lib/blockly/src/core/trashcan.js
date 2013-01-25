@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,9 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Trashcan');
+
 
 /**
  * Class for a trash can.
@@ -213,7 +216,7 @@ Blockly.Trashcan.prototype.onMouseMove = function(e) {
   var top = xy.y;
 
   // Convert the mouse coordinates into SVG coordinates.
-  xy = Blockly.mouseToSvg(e.clientX, e.clientY);
+  xy = Blockly.convertCoordinates(e.clientX, e.clientY, true);
   var mouseX = xy.x;
   var mouseY = xy.y;
 

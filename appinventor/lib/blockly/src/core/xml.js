@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@
  */
 'use strict';
 
-/**
- * Name space for the XML singleton.
- */
-Blockly.Xml = {};
+goog.provide('Blockly.Xml');
+
+// TODO(scr): Fix circular dependencies
+// goog.require('Blockly.Block');
+
 
 /**
  * Encode a block tree as XML.
@@ -35,7 +36,7 @@ Blockly.Xml = {};
  */
 Blockly.Xml.workspaceToDom = function(workspace) {
   var xml = goog.dom.createDom('xml');
-  var blocks = workspace.getTopBlocks(false);
+  var blocks = workspace.getTopBlocks(true);
   for (var i = 0, block; block = blocks[i]; i++) {
     var element = Blockly.Xml.blockToDom_(block);
     var xy = block.getRelativeToSurfaceXY();
@@ -156,7 +157,7 @@ Blockly.Xml.domToPrettyText = function(dom) {
   // Indent every line.
   var indent = '';
   for (var x = 1; x < lines.length; x++) {
-    var line = lines[x]
+    var line = lines[x];
     if (line[0] == '/') {
       indent = indent.substring(2);
     }

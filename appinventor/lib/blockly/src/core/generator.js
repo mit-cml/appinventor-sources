@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,12 @@
  */
 'use strict';
 
+goog.provide('Blockly.CodeGenerator');
+goog.provide('Blockly.Generator');
+
+goog.require('Blockly.Block');
+
+
 /**
  * Name space for the generator singleton.
  */
@@ -42,7 +48,7 @@ Blockly.Generator.languages = {};
 /**
  * Return the code generator for the specified language.  Create one if needed.
  * @param {string} name The language's name.
- * @return {!Object} Generator for this language.
+ * @return {!Blockly.CodeGenerator} Generator for this language.
  */
 Blockly.Generator.get = function(name) {
   if (!(name in Blockly.Generator.languages)) {
@@ -128,6 +134,7 @@ Blockly.Generator.allNestedComments = function(block) {
  */
 Blockly.CodeGenerator = function(name) {
   this.name_ = name;
+  this.RESERVED_WORDS_ = '';
 };
 
 /**
@@ -138,9 +145,15 @@ Blockly.CodeGenerator = function(name) {
  *     operator order value.  Returns '' if block is null.
  */
 Blockly.CodeGenerator.prototype.blockToCode = function(block) {
-  if (!block || block.disabled) {
+  if (!block) {
     return '';
   }
+  if (block.disabled) {
+    // Skip past this block if it is disabled.
+    var nextBlock = block.nextConnection && block.nextConnection.targetBlock();
+    return this.blockToCode(nextBlock);
+  }
+
   var func = this[block.type];
   if (!func) {
     throw 'Language "' + this.name_ + '" does not know how to generate code ' +
@@ -161,9 +174,13 @@ Blockly.CodeGenerator.prototype.blockToCode = function(block) {
  * @param {string} name The name of the input.
  * @param {number} order The maximum binding strength (minimum order value)
  *     of any operators adjacent to "block".
- * @return {string} Generated code or '' if no blocks are connected.
+ * @return {string} Generated code or '' if no blocks are connected or the
+ *     specified input does not exist.
  */
 Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
+  if (isNaN(order)) {
+    throw 'Expecting valid order from block "' + block.type + '".';
+  }
   var targetBlock = block.getInputTargetBlock(name);
   if (!targetBlock) {
     return '';
@@ -180,6 +197,9 @@ Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
   }
   var code = tuple[0];
   var innerOrder = tuple[1];
+  if (isNaN(innerOrder)) {
+    throw 'Expecting valid order from value block "' + targetBlock.type + '".';
+  }
   if (code && order <= innerOrder) {
     // The operators outside this code are stonger than the operators
     // inside this code.  To prevent the code from being pulled apart,
@@ -209,4 +229,13 @@ Blockly.CodeGenerator.prototype.statementToCode = function(block, name) {
     code = Blockly.Generator.prefixLines(/** @type {string} */ (code), '  ');
   }
   return code;
+};
+
+/**
+ * Add one or more words to the list of reserved words for this language.
+ * @param {string} words Comma-separated list of words to add to the list.
+ *     No spaces.  Duplicates are ok.
+ */
+Blockly.CodeGenerator.prototype.addReservedWords = function(words) {
+  this.RESERVED_WORDS_ += words + ',';
 };

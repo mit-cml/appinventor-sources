@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,24 +23,9 @@
  */
 'use strict';
 
-Blockly.Language.lists_getIndex = {
-  // Get element at index.
-  category: Blockly.LANG_CATEGORY_LISTS,
-  helpUrl: Blockly.LANG_LISTS_GET_INDEX_HELPURL,
-  init: function() {
-    this.setColour(210);
-    this.setOutput(true, null);
-    //this.appendTitle(Blockly.LANG_LISTS_GET_INDEX_TITLE);
-    this.appendValueInput('VALUE')
-        .setCheck(Array)
-        .appendTitle(Blockly.LANG_LISTS_GET_INDEX_INPUT_IN_LIST);
-    this.appendValueInput('AT')
-        .setCheck(Number)
-        .appendTitle(Blockly.LANG_LISTS_GET_INDEX_INPUT_AT);
-    this.setInputsInline(true);
-    this.setTooltip(Blockly.LANG_LISTS_GET_INDEX_TOOLTIP_1);
-  }
-};
+goog.provide('Blockly.Language.lists.zh_tw');
+
+goog.require('Blockly.Language.lists');
 
 Blockly.Language.lists_setIndex = {
   // Set element at index.
@@ -48,7 +33,6 @@ Blockly.Language.lists_setIndex = {
   helpUrl: Blockly.LANG_LISTS_SET_INDEX_HELPURL,
   init: function() {
     this.setColour(210);
-    //this.appendTitle(Blockly.LANG_LISTS_SET_INDEX_TITLE);
     this.appendValueInput('LIST')
         .setCheck(Array)
         .appendTitle(Blockly.LANG_LISTS_SET_INDEX_INPUT_IN_LIST);
@@ -60,6 +44,6 @@ Blockly.Language.lists_setIndex = {
     this.setInputsInline(true);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_LISTS_SET_INDEX_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_LISTS_SET_INDEX_TOOLTIP);
   }
 };

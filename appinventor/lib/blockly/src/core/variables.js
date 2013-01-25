@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,13 @@
  */
 'use strict';
 
-/**
- * Name space for the variables singleton.
- */
-Blockly.Variables = {};
+goog.provide('Blockly.Variables');
+
+// TODO(scr): Fix circular dependencies
+// goog.require('Blockly.Block');
+//goog.require('Blockly.Toolbox');
+goog.require('Blockly.Workspace');
+
 
 /**
  * Category to separate variable names from procedures and generated functions.

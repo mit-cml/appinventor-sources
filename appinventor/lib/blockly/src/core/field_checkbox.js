@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,13 +23,21 @@
  */
 'use strict';
 
+goog.provide('Blockly.FieldCheckbox');
+
+goog.require('Blockly.Field');
+
+
 /**
  * Class for a checkbox field.
  * @param {string} state The initial state of the field ('TRUE' or 'FALSE').
+ * @param {Function} opt_changeHandler A function that is executed when a new
+ *     option is selected.
  * @extends Blockly.Field
  * @constructor
  */
-Blockly.FieldCheckbox = function(state) {
+Blockly.FieldCheckbox = function(state, opt_changeHandler) {
+  this.changeHandler_ = opt_changeHandler;
   // Call parent's constructor.
   Blockly.Field.call(this, '');
   // The checkbox doesn't use the inherited text element.
@@ -78,5 +86,15 @@ Blockly.FieldCheckbox.prototype.setValue = function(strBool) {
  * @private
  */
 Blockly.FieldCheckbox.prototype.showEditor_ = function() {
-  this.setValue(String(!this.state_).toUpperCase());
+  var newState = !this.state_;
+  if (this.changeHandler_) {
+    // Call any change handler, and allow it to override.
+    var override = this.changeHandler_(newState);
+    if (override !== undefined) {
+      newState = override;
+    }
+  }
+  if (newState !== null) {
+    this.setValue(String(newState).toUpperCase());
+  }
 };

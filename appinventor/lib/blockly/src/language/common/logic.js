@@ -2,7 +2,7 @@
  * Visual Blocks Language
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,13 @@
 
 /**
  * @fileoverview Logic blocks for Blockly.
- * @author fraser@google.com (Neil Fraser)
+ * @author q.neutron@gmail.com (Quynh Neutron)
  */
 'use strict';
+
+goog.provide('Blockly.Language.logic');
+
+goog.require('Blockly.Language');
 
 Blockly.Language.logic_compare = {
   // Comparison operator.
@@ -101,7 +105,7 @@ Blockly.Language.logic_negate = {
     this.appendValueInput('BOOL')
         .setCheck(Boolean)
         .appendTitle(Blockly.LANG_LOGIC_NEGATE_INPUT_NOT);
-    this.setTooltip(Blockly.LANG_LOGIC_NEGATE_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_LOGIC_NEGATE_TOOLTIP);
   }
 };
 
@@ -113,11 +117,45 @@ Blockly.Language.logic_boolean = {
     this.setColour(120);
     this.setOutput(true, Boolean);
     this.appendDummyInput()
-        .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
-    this.setTooltip(Blockly.LANG_LOGIC_BOOLEAN_TOOLTIP_1);
+        .appendTitle(new Blockly.FieldDropdown(this.BOOLEANS), 'BOOL');
+    this.setTooltip(Blockly.LANG_LOGIC_BOOLEAN_TOOLTIP);
   }
 };
 
-Blockly.Language.logic_boolean.OPERATORS =
+Blockly.Language.logic_boolean.BOOLEANS =
     [[Blockly.LANG_LOGIC_BOOLEAN_TRUE, 'TRUE'],
      [Blockly.LANG_LOGIC_BOOLEAN_FALSE, 'FALSE']];
+
+Blockly.Language.logic_null = {
+  // Null data type.
+  category: Blockly.LANG_CATEGORY_LOGIC,
+  helpUrl: Blockly.LANG_LOGIC_NULL_HELPURL,
+  init: function() {
+    this.setColour(120);
+    this.setOutput(true, null);
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_LOGIC_NULL);
+    this.setTooltip(Blockly.LANG_LOGIC_NULL_TOOLTIP);
+  }
+};
+
+Blockly.Language.logic_ternary = {
+  // Ternary operator.
+  category: Blockly.LANG_CATEGORY_LOGIC,
+  helpUrl: Blockly.LANG_LOGIC_TERNARY_HELPURL,
+  init: function() {
+    this.setColour(120);
+    this.appendValueInput('IF')
+        .setCheck(Boolean)
+        .appendTitle(Blockly.LANG_LOGIC_TERNARY_CONDITION);
+    this.appendValueInput('THEN')
+        .setCheck(null)
+        .appendTitle(Blockly.LANG_LOGIC_TERNARY_IF_TRUE);
+    this.appendValueInput('ELSE')
+        .setCheck(null)
+        .appendTitle(Blockly.LANG_LOGIC_TERNARY_IF_FALSE);
+    this.setOutput(true, null);
+    this.setTooltip(Blockly.LANG_LOGIC_TERNARY_TOOLTIP);
+  }
+};
+

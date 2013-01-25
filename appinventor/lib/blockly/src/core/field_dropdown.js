@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,21 +25,27 @@
  */
 'use strict';
 
+goog.provide('Blockly.FieldDropdown');
+
+goog.require('Blockly.Field');
+
+
 /**
  * Class for an editable dropdown field.
  * @param {(!Array.<string>|!Function)} menuGenerator An array of options
  *     for a dropdown list, or a function which generates these options.
  * @param {Function} opt_changeHandler A function that is executed when a new
  *     option is selected.
- * @extends Blockly.Field
+ * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
   this.menuGenerator_ = menuGenerator;
   this.changeHandler_ = opt_changeHandler;
-  var firstText = this.getOptions_()[0][0];
+  var firstTuple = this.getOptions_()[0];
+  this.value_ = firstTuple[1];
   // Call parent's constructor.
-  Blockly.Field.call(this, firstText);
+  Blockly.Field.call(this, firstTuple[0]);
 };
 
 // FieldDropdown is a subclass of Field.
@@ -77,7 +83,7 @@ Blockly.FieldDropdown.createDom = function() {
  */
 Blockly.FieldDropdown.prototype.dispose = function() {
   if (Blockly.FieldDropdown.openDropdown_ == this) {
-    Blockly.FieldDropdown.hideMenu();
+    Blockly.FieldDropdown.hide();
   }
   // Call parent's destructor.
   Blockly.Field.prototype.dispose.call(this);
@@ -116,12 +122,17 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   svgGroup.style.display = 'block';
   Blockly.FieldDropdown.openDropdown_ = this;
 
-  function callbackFactory(text) {
+  function callbackFactory(value) {
     return function(e) {
       if (this.changeHandler_) {
-        this.changeHandler_(text);
-      } else {
-        this.setText(text);
+        // Call any change handler, and allow it to override.
+        var override = this.changeHandler_(value);
+        if (override !== undefined) {
+          value = override;
+        }
+      }
+      if (value !== null) {
+        this.setValue(value);
       }
       // This mouse click has been handled, don't bubble up to document.
       e.stopPropagation();
@@ -140,7 +151,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     var textElement = gElement.lastChild;
     svgOptions.appendChild(gElement);
     // Add a checkmark next to the current item.
-    if (!checkElement && text == this.text_) {
+    if (!checkElement && value == this.value_) {
       checkElement = Blockly.createSvgElement('text',
           {'class': 'blocklyMenuText', 'y': 15}, null);
       // Insert the checkmark between the rect and text, thus preserving the
@@ -153,9 +164,9 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
         'translate(0, ' + (x * Blockly.ContextMenu.Y_HEIGHT) + ')');
     resizeList.push(rectElement);
     Blockly.bindEvent_(gElement, 'mousedown', null, Blockly.noEvent);
-    Blockly.bindEvent_(gElement, 'mouseup', this, callbackFactory(text));
+    Blockly.bindEvent_(gElement, 'mouseup', this, callbackFactory(value));
     Blockly.bindEvent_(gElement, 'mouseup', null,
-                       Blockly.FieldDropdown.hideMenu);
+                       Blockly.FieldDropdown.hide);
     // Compute the length of the longest text length.
     maxWidth = Math.max(maxWidth, textElement.getComputedTextLength());
   }
@@ -224,15 +235,7 @@ Blockly.FieldDropdown.prototype.getOptions_ = function() {
  * @return {string} Current text.
  */
 Blockly.FieldDropdown.prototype.getValue = function() {
-  var selectedText = this.text_;
-  var options = this.getOptions_();
-  for (var x = 0; x < options.length; x++) {
-    // Options are tuples of human-readable text and language-neutral values.
-    if (options[x][0] == selectedText) {
-      return options[x][1];
-    }
-  }
-  throw '"' + selectedText + '" not valid in dropdown.';
+  return this.value_;
 };
 
 /**
@@ -240,6 +243,8 @@ Blockly.FieldDropdown.prototype.getValue = function() {
  * @param {string} newValue New value to set.
  */
 Blockly.FieldDropdown.prototype.setValue = function(newValue) {
+  this.value_ = newValue;
+  // Look up and display the human-readable text.
   var options = this.getOptions_();
   for (var x = 0; x < options.length; x++) {
     // Options are tuples of human-readable text and language-neutral values.
@@ -256,7 +261,7 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
 /**
  * Hide the dropdown menu.
  */
-Blockly.FieldDropdown.hideMenu = function() {
+Blockly.FieldDropdown.hide = function() {
   Blockly.FieldDropdown.svgGroup_.style.display = 'none';
   Blockly.FieldDropdown.openDropdown_ = null;
 };

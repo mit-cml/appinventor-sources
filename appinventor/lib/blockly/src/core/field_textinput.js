@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,26 @@
  */
 'use strict';
 
+goog.provide('Blockly.FieldTextInput');
+
+goog.require('Blockly.Field');
+goog.require('goog.userAgent');
+
+
 /**
  * Class for an editable text field.
  * @param {string} text The initial content of the field.
- * @param {Function} opt_validationFunc An optional function that is called
+ * @param {Function} opt_changeHandler An optional function that is called
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
  *     the change.
  * @extends Blockly.Field
  * @constructor
  */
-Blockly.FieldTextInput = function(text, opt_validationFunc) {
+Blockly.FieldTextInput = function(text, opt_changeHandler) {
   // Call parent's constructor.
   Blockly.Field.call(this, text);
-  this.validationFunc_ = opt_validationFunc;
+  this.changeHandler_ = opt_changeHandler;
 };
 
 // FieldTextInput is a subclass of Field.
@@ -47,11 +53,11 @@ goog.inherits(Blockly.FieldTextInput, Blockly.Field);
  * @param {string} text New text.
  */
 Blockly.FieldTextInput.prototype.setText = function(text) {
-  if (this.validationFunc_) {
-    var validated = this.validationFunc_(text);
+  if (this.changeHandler_) {
+    var validated = this.changeHandler_(text);
     // If the new text is invalid, validation returns null.
     // In this case we still want to display the illegal result.
-    if (validated !== null) {
+    if (validated !== null && validated !== undefined) {
       text = validated;
     }
   }
@@ -65,7 +71,7 @@ Blockly.FieldTextInput.prototype.setText = function(text) {
  */
 Blockly.FieldTextInput.injectDom_ = function(workspaceSvg) {
   /*
-  <foreignObject class="blocklyHidden" height="22">
+  <foreignObject height="22">
     <body xmlns="http://www.w3.org/1999/xhtml" class="blocklyMinimalBody">
       <input class="blocklyHtmlInput" xmlns="http://www.w3.org/1999/xhtml"/>
     </body>
@@ -109,8 +115,11 @@ Blockly.FieldTextInput.prototype.showEditor_ = function() {
      If Opera starts supporting foreignObjects, then delete this entire hack.
     */
     var newValue = window.prompt(Blockly.MSG_CHANGE_VALUE_TITLE, this.text_);
-    if (this.validationFunc_) {
-      newValue = this.validationFunc_(newValue);
+    if (this.changeHandler_) {
+      var override = this.changeHandler_(newValue);
+      if (override !== undefined) {
+        newValue = override;
+      }
     }
     if (newValue !== null) {
       this.setText(newValue);
@@ -194,13 +203,13 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
 Blockly.FieldTextInput.prototype.validate_ = function() {
   var valid = true;
   var htmlInput = Blockly.FieldTextInput.htmlInput_;
-  if (this.validationFunc_) {
-    valid = this.validationFunc_(htmlInput.value);
+  if (this.changeHandler_) {
+    valid = this.changeHandler_(htmlInput.value);
   }
-  if (valid) {
-    Blockly.removeClass_(htmlInput, 'blocklyInvalidInput');
-  } else {
+  if (valid === null) {
     Blockly.addClass_(htmlInput, 'blocklyInvalidInput');
+  } else {
+    Blockly.removeClass_(htmlInput, 'blocklyInvalidInput');
   }
 };
 
@@ -239,8 +248,8 @@ Blockly.FieldTextInput.prototype.closeEditor_ = function(save) {
   if (save) {
     // Save the edit (if it validates).
     text = htmlInput.value;
-    if (this.validationFunc_) {
-      text = this.validationFunc_(text);
+    if (this.changeHandler_) {
+      text = this.changeHandler_(text);
       if (text === null) {
         // Invalid edit.
         text = htmlInput.defaultValue;
@@ -253,4 +262,32 @@ Blockly.FieldTextInput.prototype.closeEditor_ = function(save) {
   this.setText(text);
   Blockly.FieldTextInput.disposeDom_();
   this.sourceBlock_.render();
+};
+
+/**
+ * Ensure that only a number may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid number, or null if invalid.
+ */
+Blockly.FieldTextInput.numberValidator = function(text) {
+  // TODO: Handle cases like 'ten', '1.203,14', etc.
+  // 'O' is sometimes mistaken for '0' by inexperienced users.
+  text = text.replace(/O/ig, '0');
+  // Strip out thousands separators.
+  text = text.replace(/,/g, '');
+  var n = parseFloat(text || 0);
+  return isNaN(n) ? null : String(n);
+};
+
+/**
+ * Ensure that only a nonnegative integer may be entered.
+ * @param {string} text The user's text.
+ * @return {?string} A string representing a valid int, or null if invalid.
+ */
+Blockly.FieldTextInput.nonnegativeIntegerValidator = function(text) {
+  var n = Blockly.FieldTextInput.numberValidator(text);
+  if (n) {
+    n = String(Math.max(0, Math.floor(n)));
+  }
+  return n;
 };

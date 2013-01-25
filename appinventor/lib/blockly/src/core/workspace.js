@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,15 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Workspace');
+
+// TODO(scr): Fix circular dependencies
+// goog.require('Blockly.Block');
+goog.require('Blockly.ScrollbarPair');
+goog.require('Blockly.Trashcan');
+goog.require('Blockly.Xml');
+
 
 /**
  * Class for a workspace.
@@ -243,21 +252,28 @@ Blockly.Workspace.prototype.traceOn = function(armed) {
 
 /**
  * Highlight a block in the workspace.
- * @param {string} id ID of block to find.
+ * @param {?string} id ID of block to find.
  */
 Blockly.Workspace.prototype.highlightBlock = function(id) {
   if (!this.traceOn_) {
     return;
   }
-  var block = this.getBlockById(id);
-  if (!block) {
-    return;
+  var block = null;
+  if (id) {
+    block = this.getBlockById(id);
+    if (!block) {
+      return;
+    }
   }
   // Temporary turn off the listener for selection changes, so that we don't
   // trip the monitor for detecting user activity.
   this.traceOn(false);
   // Select the current block.
-  block.select();
+  if (block) {
+    block.select();
+  } else if (Blockly.selected) {
+    Blockly.selected.unselect();
+  }
   // Restore the monitor for user activity.
   this.traceOn(true);
 };

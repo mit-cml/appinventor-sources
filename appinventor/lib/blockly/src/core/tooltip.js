@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,8 @@
  */
 'use strict';
 
-/**
- * Name space for the tooltip singleton.
- */
-Blockly.Tooltip = {};
+goog.provide('Blockly.Tooltip');
+
 
 /**
  * Is a tooltip currently showing?
@@ -160,9 +158,9 @@ Blockly.Tooltip.bindMouseEvents = function(element) {
  */
 Blockly.Tooltip.onMouseOver_ = function(e) {
   // If the tooltip is an object, treat it as a pointer to the next object in
-  // the chain to look at.  Terminate when a string is found.
+  // the chain to look at.  Terminate when a string or function is found.
   var element = e.target;
-  while (goog.isObject(element.tooltip)) {
+  while (!goog.isString(element.tooltip) && !goog.isFunction(element.tooltip)) {
     element = element.tooltip;
   }
   if (Blockly.Tooltip.element_ != element) {
@@ -295,7 +293,7 @@ Blockly.Tooltip.show_ = function() {
   var anchorY = Blockly.Tooltip.lastY_ + Blockly.Tooltip.OFFSET_Y;
 
   // Convert the mouse coordinates into SVG coordinates.
-  var xy = Blockly.mouseToSvg(anchorX, anchorY);
+  var xy = Blockly.convertCoordinates(anchorX, anchorY, true);
   anchorX = xy.x;
   anchorY = xy.y;
 

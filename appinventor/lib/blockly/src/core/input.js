@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,14 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.Input');
+
+// TODO(scr): Fix circular dependencies
+// goog.require('Blockly.Block');
+goog.require('Blockly.Connection');
+goog.require('Blockly.FieldLabel');
+
 
 /**
  * Class for an input with an optional title.
@@ -49,6 +57,10 @@ Blockly.Input = function(type, name, block, connection) {
  * @return {!Blockly.Input} The input being append to (to allow chaining).
  */
 Blockly.Input.prototype.appendTitle = function(title, opt_name) {
+  // Null or undefined generates no title.
+  if (!goog.isDefAndNotNull(title)) {
+    return this;
+  }
   // Generate a FieldLabel when given a plain text title.
   if (goog.isString(title)) {
     title = new Blockly.FieldLabel(/** @type {string} */ (title));

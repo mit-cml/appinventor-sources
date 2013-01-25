@@ -2,7 +2,7 @@
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://code.google.com/p/blockly/
+ * http://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,11 @@
  * @author fraser@google.com (Neil Fraser)
  */
 'use strict';
+
+goog.provide('Blockly.inject');
+
+goog.require('goog.dom');
+
 
 /**
  * Initialize the SVG document with various handlers.
@@ -49,6 +54,9 @@ Blockly.parseOptions_ = function(options) {
   Blockly.RTL = !!options['rtl'];
   Blockly.editable = !options['readOnly'];
   Blockly.pathToBlockly = options['path'] || './';
+  if (options['trashcan'] === false) {
+    delete Blockly.Trashcan;
+  }
 };
 
 /**
@@ -57,13 +65,18 @@ Blockly.parseOptions_ = function(options) {
  * @private
  */
 Blockly.createDom_ = function(container) {
+  // Sadly browsers (Chrome vs Firefox) are currently inconsistent in laying
+  // out content in RTL mode.  Therefore Blockly forces the use of LTR,
+  // then manually positions content in RTL as needed.
+  container.setAttribute('dir', 'LTR');
+
   // Load CSS.
   //<link href="blockly.css" rel="stylesheet" type="text/css" />
   var link = goog.dom.createDom('link', {
       'href': Blockly.pathToBlockly + 'media/blockly.css',
       'rel': 'stylesheet',
-      'type': 'text/css',
-      'onload': 'Blockly.cssLoaded()'});
+      'type': 'text/css'});
+  Blockly.bindEvent_(link, 'load', null, Blockly.cssLoaded);
   var head = document.head || document.getElementsByTagName('head')[0];
   if (!head) {
     throw 'No head in document.';
@@ -171,10 +184,10 @@ Blockly.createDom_ = function(container) {
     svg.appendChild(Blockly.Toolbox.createDom());
   }
   Blockly.Tooltip && svg.appendChild(Blockly.Tooltip.createDom());
-  if (Blockly.editable) {
+  if (Blockly.editable && Blockly.FieldDropdown) {
     svg.appendChild(Blockly.FieldDropdown.createDom());
   }
-  if (Blockly.ContextMenu) {
+  if (Blockly.ContextMenu && Blockly.ContextMenu) {
     svg.appendChild(Blockly.ContextMenu.createDom());
   }
 
@@ -182,6 +195,11 @@ Blockly.createDom_ = function(container) {
   container.appendChild(svg);
   Blockly.svg = svg;
   Blockly.svgResize();
+
+  // Create an HTML container for popup overlays (e.g. editor widgets).
+  Blockly.widgetDiv = goog.dom.createDom('div', {
+      'class': 'blocklyWidgetDiv'});
+  container.appendChild(Blockly.widgetDiv);
 };
 
 
