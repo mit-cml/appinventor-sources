@@ -359,8 +359,7 @@
   <!-- ====================================================================
        components_ComponentList builds:
        - build/components/simple_components.txt
-       - build/components/simple_components_permissions.json
-       - build/components/simple_components_libraries.json
+       - build/components/simple_components_build_info.json
        ==================================================================== -->
   
   <target name="components_ComponentList">

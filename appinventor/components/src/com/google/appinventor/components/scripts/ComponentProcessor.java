@@ -12,7 +12,9 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesAssets;
 import com.google.appinventor.components.annotations.UsesLibraries;
+import com.google.appinventor.components.annotations.UsesNativeLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -46,7 +48,6 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
-
 
 /**
  * Processor for generating output files based on the annotations and
@@ -82,12 +83,19 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       "com.google.appinventor.components.annotations.SimpleEvent",
       "com.google.appinventor.components.annotations.SimpleFunction",
       "com.google.appinventor.components.annotations.SimpleObject",
-      "com.google.appinventor.components.annotations.SimpleProperty");
+      "com.google.appinventor.components.annotations.SimpleProperty",
+      "com.google.appinventor.components.annotations.UsesAssets",
+      "com.google.appinventor.components.annotations.UsesLibraries",
+      "com.google.appinventor.components.annotations.UsesNativeLibraries",
+      "com.google.appinventor.components.annotations.UsesPermissions");
 
   // Returned by getRwString()
   private static final String READ_WRITE = "read-write";
   private static final String READ_ONLY = "read-only";
   private static final String WRITE_ONLY = "write-only";
+
+  // Must match buildserver.compiler.ARMEABI_V7A_SUFFIX
+  private static final String ARMEABI_V7A_SUFFIX = "-v7a";
 
   // The next two fields are set in init().
   /**
@@ -422,7 +430,17 @@ public abstract class ComponentProcessor extends AbstractProcessor {
      * Libraries required by this component.
      */
     protected final Set<String> libraries;
-    
+
+    /**
+     * Native libraries required by this component.
+     */
+    protected final Set<String> nativeLibraries;
+
+    /**
+     * Assets required by this component.
+     */
+    protected final Set<String> assets;
+
     /**
      * Properties of this component that are visible in the Designer.
      * @see DesignerProperty
@@ -477,6 +495,8 @@ public abstract class ComponentProcessor extends AbstractProcessor {
       displayName = getDisplayNameForComponentType(name);
       permissions = Sets.newHashSet();
       libraries = Sets.newHashSet();
+      nativeLibraries = Sets.newHashSet();
+      assets = Sets.newHashSet();
       designerProperties = Maps.newTreeMap();
       properties = Maps.newTreeMap();
       methods = Maps.newTreeMap();
@@ -713,12 +733,15 @@ public abstract class ComponentProcessor extends AbstractProcessor {
         }
       }
 
-      // If we still can't find the parent class, we don't care about it,
-      // since it's not a component (but something like java.lang.Object).
-      // Otherwise, we need to copy its designer properties, properties, methods, and events.
+      // If we still can't find the parent class, we don't care about it, since it's not a
+      // component (but something like java.lang.Object).  Otherwise, we need to copy its
+      // build info, designer properties, properties, methods, and events.
       if (parentComponent != null) {
-        // Copy its permissions, designer properties, properties, methods, and events.
+        // Copy its build info, designer properties, properties, methods, and events.
         componentInfo.permissions.addAll(parentComponent.permissions);
+        componentInfo.libraries.addAll(parentComponent.libraries);
+        componentInfo.nativeLibraries.addAll(parentComponent.nativeLibraries);
+        componentInfo.assets.addAll(parentComponent.assets);
         // Since we don't modify DesignerProperties, we can just call Map.putAll to copy the
         // designer properties from parentComponent to componentInfo.
         componentInfo.designerProperties.putAll(parentComponent.designerProperties);
@@ -740,21 +763,40 @@ public abstract class ComponentProcessor extends AbstractProcessor {
     }
 
     // Gather permissions.
-    UsesPermissions up = element.getAnnotation(UsesPermissions.class);
-    if (up != null) {
-      for (String permission : up.permissionNames().split(",")) {
+    UsesPermissions usesPermissions = element.getAnnotation(UsesPermissions.class);
+    if (usesPermissions != null) {
+      for (String permission : usesPermissions.permissionNames().split(",")) {
         componentInfo.permissions.add(permission.trim());
       }
     }
 
     // Gather library names.
-    UsesLibraries ulib = element.getAnnotation(UsesLibraries.class);
-    if (ulib != null) {
-      for (String library : ulib.libraries().split(",")) {
+    UsesLibraries usesLibraries = element.getAnnotation(UsesLibraries.class);
+    if (usesLibraries != null) {
+      for (String library : usesLibraries.libraries().split(",")) {
         componentInfo.libraries.add(library.trim());
       }
     }
-    
+
+    // Gather native library names.
+    UsesNativeLibraries usesNativeLibraries = element.getAnnotation(UsesNativeLibraries.class);
+    if (usesNativeLibraries != null) {
+      for (String nativeLibrary : usesNativeLibraries.libraries().split(",")) {
+        componentInfo.nativeLibraries.add(nativeLibrary.trim());
+      }
+      for (String v7aLibrary : usesNativeLibraries.v7aLibraries().split(",")) {
+        componentInfo.nativeLibraries.add(v7aLibrary.trim() + ARMEABI_V7A_SUFFIX);
+      }
+    }
+
+    // Gather required files.
+    UsesAssets usesAssets = element.getAnnotation(UsesAssets.class);
+    if (usesAssets != null) {
+      for (String file : usesAssets.fileNames().split(",")) {
+        componentInfo.assets.add(file.trim());
+      }
+    }
+
     // Build up event information.
     processEvents(componentInfo, element);
 

@@ -38,7 +38,6 @@
   <property name="run.dir" location="${local.build.dir}/run" />
   <property name="run.lib.dir" location="${run.dir}/lib" />
 
-
   <!-- =====================================================================
        Targets
        ===================================================================== -->
@@ -125,7 +124,7 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,simple_components.txt,simple_components_permissions.json,simple_components_libraries.json"/>
+               includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
     <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />

@@ -66,17 +66,35 @@ public final class Compiler {
 
   public static final String RUNTIME_FILES_DIR = "/files/";
 
+  // Build info constants.  Used for permissions, libraries and assets.
+  private static final String ARMEABI_V7A_DIRECTORY = "armeabi-v7a";
+  // Must match ComponentProcessor.ARMEABI_V7A_SUFFIX
+  private static final String ARMEABI_V7A_SUFFIX = "-v7a";
+  // Must match ComponentListGenerator.PERMISSIONS_TARGET
+  private static final String PERMISSIONS_TARGET = "permissions";
+  // Must match ComponentListGenerator.LIBRARIES_TARGET
+  public static final String LIBRARIES_TARGET = "libraries";
+  // Must match ComponentListGenerator.NATIVE_TARGET
+  public static final String NATIVE_TARGET = "native";
+  // Must match ComponentListGenerator.ASSETS_TARGET
+  private static final String ASSETS_TARGET = "assets";
+  // Must match Component.ASSET_DIRECTORY
+  private static final String ASSET_DIRECTORY = "component";
+
+  // Native library directory names
+  private static final String LIBS_DIR_NAME = "libs";
+  private static final String APK_LIB_DIR_NAME = "lib";
+  private static final String ARMEABI_DIR_NAME = "armeabi";
+  private static final String ARMEABI_V7A_DIR_NAME = "armeabi-v7a";
+
   private static final String DEFAULT_ICON =
       RUNTIME_FILES_DIR + "ya.png";
 
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
 
-  private static final String COMPONENT_PERMISSIONS =
-      RUNTIME_FILES_DIR + "simple_components_permissions.json";
-
-  private static final String COMPONENT_LIBRARIES =
-    RUNTIME_FILES_DIR + "simple_components_libraries.json";
+  private static final String COMPONENT_BUILD_INFO =
+      RUNTIME_FILES_DIR + "simple_components_build_info.json";
 
   /*
    * Resource paths to yail runtime, runtime library files and sdk tools.
@@ -116,6 +134,12 @@ public final class Compiler {
       new ConcurrentHashMap<String, Set<String>>();
 
   private final ConcurrentMap<String, Set<String>> componentLibraries =
+      new ConcurrentHashMap<String, Set<String>>();
+
+  private final ConcurrentMap<String, Set<String>> componentNativeLibraries =
+      new ConcurrentHashMap<String, Set<String>>();
+
+  private final ConcurrentMap<String, Set<String>> componentAssets =
     new ConcurrentHashMap<String, Set<String>>();
 
   /**
@@ -148,16 +172,29 @@ public final class Compiler {
   // Maximum ram that can be used by a child processes, in MB.
   private final int childProcessRamMb;
   private Set<String> librariesNeeded; // Set of component libraries
-
+  private Set<String> nativeLibrariesNeeded; // Set of component native libraries
+  private Set<String> assetsNeeded; // Set of component assets
+  private File libsDir; // The directory that will contain any native libraries for packaging
 
   /*
    * Generate the set of Android permissions needed by this project.
    */
   @VisibleForTesting
   Set<String> generatePermissions() {
-    // Before we can use componentPermissions, we have to call loadComponentPermissions().
+    // Before we can use componentPermissions, we have to call loadJsonInfo() for permissions.
     try {
-      loadComponentPermissions();
+      loadJsonInfo(componentPermissions, PERMISSIONS_TARGET);
+      if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
+        LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
+        if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
+          Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
+          // See ProjectEditor.recordLocationSettings()
+          locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
+          locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
+          locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
+          componentPermissions.put("WebViewer", locationPermissions);
+        }
+      }
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -188,7 +225,7 @@ public final class Compiler {
   void generateLibraryNames() {
     // Before we can use componentLibraries, we have to call loadComponentLibraries().
     try {
-      loadComponentLibraryNames();
+      loadJsonInfo(componentLibraries, LIBRARIES_TARGET);
     } catch (IOException e) {
       // This is fatal.
       e.printStackTrace();
@@ -206,6 +243,55 @@ public final class Compiler {
     System.out.println("Libraries needed, n= " + librariesNeeded.size());
   }
 
+  /*
+   * Generate the set of conditionally included libraries needed by this project.
+   */
+  @VisibleForTesting
+  void generateNativeLibraryNames() {
+    // Before we can use componentLibraries, we have to call loadComponentLibraries().
+    try {
+      loadJsonInfo(componentNativeLibraries, NATIVE_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Native Libraries"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Native Libraries"));
+    }
+
+    nativeLibrariesNeeded = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      nativeLibrariesNeeded.addAll(componentNativeLibraries.get(componentType));
+    }
+    System.out.println("Native Libraries needed, n= " + nativeLibrariesNeeded.size());
+  }
+
+  /*
+   * Generate the set of conditionally included assets needed by this project.
+   */
+  @VisibleForTesting
+  void generateAssets() {
+    // Before we can use componentAssets, we have to call loadJsonInfo() for assets.
+    try {
+      loadJsonInfo(componentAssets, ASSETS_TARGET);
+    } catch (IOException e) {
+      // This is fatal.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Assets"));
+    } catch (JSONException e) {
+      // This is fatal, but shouldn't actually ever happen.
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Assets"));
+    }
+
+    assetsNeeded = Sets.newHashSet();
+    for (String componentType : componentTypes) {
+      assetsNeeded.addAll(componentAssets.get(componentType));
+    }
+    System.out.println("Component assets needed, n= " + assetsNeeded.size());
+  }
 
   /*
    * Creates an AndroidManifest.xml file needed for the Android application.
@@ -290,7 +376,7 @@ public final class Compiler {
 
       for (Project.SourceDescriptor source : project.getSources()) {
         String formClassName = source.getQualifiedName();
-        //String screenName = formClassName.substring(formClassName.lastIndexOf('.') + 1);
+        // String screenName = formClassName.substring(formClassName.lastIndexOf('.') + 1);
         boolean isMain = formClassName.equals(mainClass);
 
         if (isMain) {
@@ -375,15 +461,18 @@ public final class Compiler {
    */
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
-                                boolean isForRepl, boolean isForWireless, String keystoreFilePath, int childProcessRam) throws IOException, JSONException {
+                                boolean isForRepl, boolean isForWireless, String keystoreFilePath,
+                                int childProcessRam) throws IOException, JSONException {
     long start = System.currentTimeMillis();
-
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
                                      childProcessRam);
 
+    // Get names of component-required libraries and assets.
     compiler.generateLibraryNames();
+    compiler.generateNativeLibraryNames();
+    compiler.generateAssets();
 
     // Create build directory.
     File buildDir = createDirectory(project.getBuildDirectory());
@@ -419,6 +508,18 @@ public final class Compiler {
       return false;
     }
     setProgress(20);
+
+    // Insert native libraries
+    out.println("________Attaching native libraries");
+    if (!compiler.insertNativeLibraries(buildDir)) {
+      return false;
+    }
+
+    // Add raw assets to sub-directory of project assets.
+    out.println("________Attaching component assets");
+    if (!compiler.attachComponentAssets()) {
+      return false;
+    }
 
     // Create class files.
     out.println("________Compiling source files");
@@ -566,7 +667,8 @@ public final class Compiler {
    */
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
-           PrintStream userErrors, boolean isForRepl, boolean isForWireless, int childProcessMaxRam) {
+           PrintStream userErrors, boolean isForRepl, boolean isForWireless,
+           int childProcessMaxRam) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
@@ -594,7 +696,7 @@ public final class Compiler {
         String sourceFileRelativePath = sourceFileName.substring(srcIndex + 8);
         String classFileName = (classesDir.getAbsolutePath() + "/" + sourceFileRelativePath)
         .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
-        if (System.getProperty("os.name").startsWith("Windows")){
+        if (System.getProperty("os.name").startsWith("Windows")) {
           classFileName = classesDir.getAbsolutePath()
             .replace(YoungAndroidConstants.YAIL_EXTENSION, ".class");
         }
@@ -673,10 +775,13 @@ public final class Compiler {
         kawaSuccess = Execution.execute(null, kawaCommandLine,
             System.out, new PrintStream(kawaOutputStream));
       }
+      if (!kawaSuccess) {
+        LOG.log(Level.SEVERE, "Kawa compile has failed.");
+      }
       String kawaOutput = kawaOutputStream.toString();
       out.print(kawaOutput);
       String kawaCompileTimeMessage = "Kawa compile time: " +
-      ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
+          ((System.currentTimeMillis() - start) / 1000.0) + " seconds";
       out.println(kawaCompileTimeMessage);
       LOG.info(kawaCompileTimeMessage);
 
@@ -711,7 +816,7 @@ public final class Compiler {
       // This works when a JDK is installed with the JRE.
       jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
           File.separator + "jarsigner");
-      if (System.getProperty("os.name").startsWith("Windows")){
+      if (System.getProperty("os.name").startsWith("Windows")) {
         jarsignerFile = new File(javaHome + File.separator + ".." + File.separator + "bin" +
             File.separator + "jarsigner.exe");
       }
@@ -779,7 +884,7 @@ public final class Compiler {
       userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
       return false;
     }
-    if(!copyFile(zipAlignedPath, apkAbsolutePath)) {
+    if (!copyFile(zipAlignedPath, apkAbsolutePath)) {
       LOG.warning("YAIL compiler - ZIPALIGN file copy failed.");
       err.println("YAIL compiler - ZIPALIGN file copy failed.");
       userErrors.print(String.format(ERROR_IN_STAGE, "ZIPALIGN"));
@@ -791,7 +896,6 @@ public final class Compiler {
     LOG.info(zipALignTimeMessage);
     return true;
   }
-
 
   /*
    * Loads the icon for the application, either a user provided one or the default one.
@@ -856,7 +960,7 @@ public final class Compiler {
     commandLineList.toArray(dxCommandLine);
 
    long startDx = System.currentTimeMillis();
-    // Using System.err and System.out on purpose. Don't want to polute build messages with
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
@@ -904,10 +1008,10 @@ public final class Compiler {
         "-S", resDir.getAbsolutePath(),
         "-A", project.getAssetsDirectory().getAbsolutePath(),
         "-I", getResource(ANDROID_RUNTIME),
-        "-F", tmpPackageName
+        "-F", tmpPackageName,
     };
     long startAapt = System.currentTimeMillis();
-    // Using System.err and System.out on purpose. Don't want to polute build messages with
+    // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     if (!Execution.execute(null, aaptPackageCommandLine, System.out, System.err)) {
       LOG.warning("YAIL compiler - AAPT execution failed.");
@@ -920,6 +1024,55 @@ public final class Compiler {
     out.println(aaptTimeMessage);
     LOG.info(aaptTimeMessage);
 
+    return true;
+  }
+
+  private boolean insertNativeLibraries(File buildDir){
+    out.println("________Copying native libraries");
+    libsDir = createDirectory(buildDir, LIBS_DIR_NAME);
+    File apkLibDir = createDirectory(libsDir, APK_LIB_DIR_NAME); // This dir will be copied to apk.
+    File armeabiDir = createDirectory(apkLibDir, ARMEABI_DIR_NAME);
+    File armeabiV7aDir = createDirectory(apkLibDir, ARMEABI_V7A_DIR_NAME);
+    /*
+     * Native libraries are targeted for particular processor architectures.
+     * Here, non-default architectures (ARMv5TE is default) are identified with suffixes
+     * before being placed in the appropriate directory with their suffix removed.
+     */
+    try {
+      for (String library : nativeLibrariesNeeded) {
+        if (library.endsWith(ARMEABI_V7A_SUFFIX)) { // Remove suffix and copy.
+          library = library.substring(0, library.length() - ARMEABI_V7A_SUFFIX.length());
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + ARMEABI_V7A_DIRECTORY +
+              File.separator + library)), new File(armeabiV7aDir, library));
+        } else {
+          Files.copy(new File(getResource(RUNTIME_FILES_DIR + library)),
+              new File(armeabiDir, library));
+        }
+      }
+      return true;
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Native Code"));
+      return false;
+    }
+  }
+
+  private boolean attachComponentAssets() {
+    createDirectory(project.getAssetsDirectory()); // Needed to insert resources.
+    try {
+      // Gather non-library assets to be added to apk's Asset directory.
+      // The assets directory have been created before this.
+      File componentAssetDirectory = createDirectory(project.getAssetsDirectory(),
+          ASSET_DIRECTORY);
+      for (String filename : assetsNeeded) {
+        Files.copy(new File(getResource(RUNTIME_FILES_DIR + filename)),
+            new File(componentAssetDirectory, filename));
+      }
+    } catch (IOException e) {
+      e.printStackTrace();
+      userErrors.print(String.format(ERROR_IN_STAGE, "Assets"));
+      return false;
+    }
     return true;
   }
 
@@ -961,72 +1114,32 @@ public final class Compiler {
     }
   }
 
-  private void loadComponentPermissions() throws IOException, JSONException {
-    synchronized (componentPermissions) {
-      if (componentPermissions.isEmpty()) {
-        String permissionsJson = Resources.toString(
-            Compiler.class.getResource(COMPONENT_PERMISSIONS), Charsets.UTF_8);
-
-        JSONArray componentsArray = new JSONArray(permissionsJson);
-        int componentslength = componentsArray.length();
-        for (int componentsIndex = 0; componentsIndex < componentslength; componentsIndex++) {
-          JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
-          String name = componentObject.getString("name");
-
-          Set<String> permissionsForThisComponent = Sets.newHashSet();
-
-          JSONArray permissionsArray = componentObject.getJSONArray("permissions");
-          int permissionsLength = permissionsArray.length();
-          for (int permissionsIndex = 0; permissionsIndex < permissionsLength; permissionsIndex++) {
-            String permission = permissionsArray.getString(permissionsIndex);
-            permissionsForThisComponent.add(permission);
-          }
-
-          componentPermissions.put(name, permissionsForThisComponent);
-        }
-      }
-      if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
-        LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
-        if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
-          Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
-          // See ProjectEditor.recordLocationSettings()
-          locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
-          locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
-          componentPermissions.put("WebViewer", locationPermissions);
-        }
-      }
-    }
-  }
-
-  /**
-   * Loads the names of library jars for each component and stores them in
-   * componentLibraries.
-   *
-   * @throws IOException
-   * @throws JSONException
+  /*
+   *  Loads permissions and information on component libraries and assets.
    */
-  private void loadComponentLibraryNames() throws IOException, JSONException {
-    synchronized (componentLibraries) {
-      if (componentLibraries.isEmpty()) {
-        String librariesJson = Resources.toString(
-            Compiler.class.getResource(COMPONENT_LIBRARIES), Charsets.UTF_8);
+  private void loadJsonInfo(ConcurrentMap<String, Set<String>> infoMap, String targetInfo)
+      throws IOException, JSONException {
+    synchronized (infoMap) {
+      if (infoMap.isEmpty()) {
+        String buildInfoJson = Resources.toString(
+            Compiler.class.getResource(COMPONENT_BUILD_INFO), Charsets.UTF_8);
 
-        JSONArray componentsArray = new JSONArray(librariesJson);
-        int componentslength = componentsArray.length();
-        for (int componentsIndex = 0; componentsIndex < componentslength; componentsIndex++) {
+        JSONArray componentsArray = new JSONArray(buildInfoJson);
+        int componentsLength = componentsArray.length();
+        for (int componentsIndex = 0; componentsIndex < componentsLength; componentsIndex++) {
           JSONObject componentObject = componentsArray.getJSONObject(componentsIndex);
           String name = componentObject.getString("name");
 
-          Set<String> librariesForThisComponent = Sets.newHashSet();
+          Set<String> infoGroupForThisComponent = Sets.newHashSet();
 
-          JSONArray librariesArray = componentObject.getJSONArray("libraries");
-          int librariesLength = librariesArray.length();
-          for (int librariesIndex = 0; librariesIndex < librariesLength; librariesIndex++) {
-            String libraryName = librariesArray.getString(librariesIndex);
-            librariesForThisComponent.add(libraryName);
+          JSONArray infoArray = componentObject.getJSONArray(targetInfo);
+          int infoLength = infoArray.length();
+          for (int infoIndex = 0; infoIndex < infoLength; infoIndex++) {
+            String info = infoArray.getString(infoIndex);
+            infoGroupForThisComponent.add(info);
           }
-          componentLibraries.put(name, librariesForThisComponent);
+
+          infoMap.put(name, infoGroupForThisComponent);
         }
       }
     }
@@ -1040,7 +1153,7 @@ public final class Compiler {
    * @return  {@code true} if the copy succeeds, {@code false} otherwise
    */
   private static Boolean copyFile(String srcPath, String dstPath) {
-    try{
+    try {
       FileInputStream in = new FileInputStream(srcPath);
       FileOutputStream out = new FileOutputStream(dstPath);
       byte[] buf = new byte[1024];
@@ -1051,7 +1164,7 @@ public final class Compiler {
       in.close();
       out.close();
     }
-    catch(IOException e) {
+    catch (IOException e) {
       e.printStackTrace();
       return false;
     }
@@ -1086,18 +1199,18 @@ public final class Compiler {
     return dir;
   }
 
-  private static int setProgress(int increments){
+  private static int setProgress(int increments) {
     Compiler.currentProgress = increments;
     LOG.info("The current progress is "
               + Compiler.currentProgress + "%");
     return Compiler.currentProgress;
   }
 
-  public static int getProgress(){
-    if (Compiler.currentProgress==100){
+  public static int getProgress() {
+    if (Compiler.currentProgress==100) {
       Compiler.currentProgress = 10;
       return 100;
-    }else{
+    } else {
       return Compiler.currentProgress;
     }
   }

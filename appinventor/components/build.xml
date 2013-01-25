@@ -120,6 +120,8 @@
         <pathelement location="${lib.dir}/android/2.2/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
+        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+        <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
@@ -128,7 +130,6 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -330,12 +331,11 @@
   </target>
 
   <!-- =====================================================================
-       ComponentList: create simple_components.txt,
-                      simple_components_permissions.json,
-                      and simple_components_libraries.json
+       ComponentList: create simple_components.txt and
+                      simple_components_build_info.json
        ===================================================================== -->
   <target name="ComponentList"
-          description="Make simple_components.txt, simple_components_permissions.json, and simple_components_libraries.json."
+          description="Make simple_components.txt and simple_components_build_info.json."
           depends="AnnotationProcessors,AndroidRuntime,HtmlEntities,CommonConstants">
     <property name="ComponentList-class.dir" location="${class.dir}/ComponentList" />
     <mkdir dir="${ComponentList-class.dir}" />
@@ -346,9 +346,7 @@
 
     <copy file="${ComponentList-class.dir}/simple_components.txt"
           todir="${public.build.dir}"/>
-    <copy file="${ComponentList-class.dir}/simple_components_permissions.json"
-          todir="${public.build.dir}"/>
-    <copy file="${ComponentList-class.dir}/simple_components_libraries.json"
+    <copy file="${ComponentList-class.dir}/simple_components_build_info.json"
           todir="${public.build.dir}"/>
   </target>
 

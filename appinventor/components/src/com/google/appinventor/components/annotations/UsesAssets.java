@@ -11,19 +11,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate library files required by components.
+ * Annotation to indicate asset files required by components.
  *
- * @author ralph.morelli@trincoll.edu
+ * @author trevorbadams@gmail.com (Trevor Adams)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface UsesLibraries {
-
+public @interface UsesAssets {
   /**
-   * The names of the libraries separated by commas.
-   *
-   * @return  the library name
-   * @see android.Manifest.permission
+   * The filenames of the required assets separated by commas.
    */
-  String libraries() default "";
+  String fileNames() default "";
 }

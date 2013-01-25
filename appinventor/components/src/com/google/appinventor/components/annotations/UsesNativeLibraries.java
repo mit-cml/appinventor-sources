@@ -11,19 +11,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate library files required by components.
+ * Annotation to indicate native library files required by components.
  *
- * @author ralph.morelli@trincoll.edu
+ * @author trevorbadams@gmail.com (Trevor Adams)
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface UsesLibraries {
+public @interface UsesNativeLibraries {
 
   /**
-   * The names of the libraries separated by commas.
-   *
-   * @return  the library name
-   * @see android.Manifest.permission
+   * The names of the libraries separated by commas. Filenames of native libraries targeted at
+   * Armeabi-v7A must end (after name but before the file extension) with a suffix
+   * defined in Compiler.java ("-v7a").
    */
   String libraries() default "";
+  String v7aLibraries() default "";
 }
