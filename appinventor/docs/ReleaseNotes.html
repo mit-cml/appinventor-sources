@@ -38,6 +38,59 @@
 
                 <h2>Release Notes</h2>
 
+                <h3>Version 133, February 5, 2013</h3>
+
+                <ul>
+                  <li>
+                    You will need to upgrade your copy of the MIT
+                    AICompanion for this release. Look for version
+                    2.05 in the Google Play
+                    Store. <a href="http://appinventor.mit.edu/releaseupdate"
+                    target="_blank">[More Information]</a>.
+                  </li>
+                  <li>
+                    Updated Texting Component. The property
+                    “ReceivingEnabled” is no longer a boolean but is
+                    instead a numeric value. 1 = receiving disabled. 2
+                    = Receiving enabled, but only when the app is
+                    running. 3 = Receiving enabled, both when the app
+                    is running and when it isn’t (in which case a
+                    notification is displayed, as it does for the v132
+                    release). So 1 is the equivalent to “false” in the
+                    old release and 3 is equivalent to “true” and 2 is
+                    a new option which emulates the behavior of the
+                    old texting component (prior to release v129)
+                    where texts could be received only when the app
+                    was running.
+                  </li>
+                  <li>
+                    New Button Press Behavior: When an image is set as
+                    a button background, it will change color
+                    (lighten) when pressed in order to give the user
+                    feedback that the button was pressed.
+                  </li>
+                  <li>
+                    Disable Horizontal/Vertical and Alignment
+                    properties for HorizontalArrangement and Vertical
+                    Arrangment in designer when width/length is
+                    automatic.  Disable Vertical Alignment for Screen
+                    when Scrollable is set.
+                  </li>
+                  <li>
+                    Added logic to ShowChooseDialog & ShowTexDialog
+                    methods to include a Cancel button based on a new
+                    arg to indicate cancelable state.
+                  </li>
+                  <li>
+                    Incorporation of the “Bugsense” Error reporting
+                    system in the MIT AICompanion App. This system
+                    will report bugs directly back to MIT.
+                  </li>
+                  <li>
+                    Bugfixes.
+                  </li>
+                </ul>
+
                 <h3>Version 132, December 12, 2012</h3>
 
                 <ul>
