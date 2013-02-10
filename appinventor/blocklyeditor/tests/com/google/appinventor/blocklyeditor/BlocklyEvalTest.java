@@ -22,7 +22,7 @@ public class BlocklyEvalTest extends TestCase {
 
   public void testButtonClick() throws Exception {
 
-    String[] params = { "/usr/local/bin/phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/buttonClickTest.js" };
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/buttonClickTest.js" };
     String result = "";
 
     try {
@@ -36,7 +36,7 @@ public class BlocklyEvalTest extends TestCase {
   
   public void testIfThenBlock() throws Exception {
 
-    String[] params = { "/usr/local/bin/phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/ifThenBlockTest.js" };
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/ifThenBlockTest.js" };
     String result = "";
 
     try {
