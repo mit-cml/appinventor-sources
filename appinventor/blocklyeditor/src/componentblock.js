@@ -252,7 +252,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
 
         function() {return propNames; },
         // change the output type and tooltip to match the new selection
-        function(selection) {this.setText(selection);
+        function(selection) {this.setValue(selection);
 
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will disconnect the block if the new outputType doesn't match the
@@ -313,7 +313,7 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
         function() {return propNames; },
         // change the output type and tooltip to match the new selection
         function(selection)
-        {this.setText(selection);
+        {this.setValue(selection);
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will disconnect the block if the new outputType doesn't match the
         // socket the block is plugged into
@@ -379,7 +379,7 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
         function() {return propNames; },
         function(selection)
         // change the input type to match the new selection
-        {this.setText(selection);
+        {this.setValue(selection);
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
@@ -399,6 +399,9 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
     this.setPreviousStatement(true);
     this.setNextStatement(true);
+
+    this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
 
     // Renames the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
@@ -439,7 +442,7 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
         function() {return propNames; },
         function(selection)
         // change the input type to match the new selection
-        {this.setText(selection);
+        {this.setValue(selection);
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
@@ -462,6 +465,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
     this.setPreviousStatement(true);
     this.setNextStatement(true);
 
+    this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
+
     // Renames the block's typeName, and revises its title
     this.rename = function(oldname, newname) {
       if (this.typeName == oldname) {
@@ -480,6 +486,24 @@ Blockly.ComponentBlock.getCurrentArgType = function (fieldDropdown, propNames, p
   var yailType = propYailTypes[propertyName];
   var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType);
   return blocklyType;
+}
+
+// Save the yail type of the property socket
+Blockly.ComponentBlock.setterMutationToDom = function() {
+  var propertyName = this.getTitleValue("PROP");
+  var yailType = this.propYailTypes[propertyName]
+  var container = document.createElement('mutation');
+  container.setAttribute('yailtype', yailType);
+  return container;
+}
+
+// Restore the blockly type of the property socket from the yail type.
+Blockly.ComponentBlock.setterDomToMutation = function(xmlElement) {
+  var yailType = xmlElement.getAttribute('yailtype');
+  if(yailType) {
+    var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType);
+    this.getInput("VALUE").connection.setCheck(blocklyType);
+  }
 }
 
 //Get the tooltip for the property name that is
