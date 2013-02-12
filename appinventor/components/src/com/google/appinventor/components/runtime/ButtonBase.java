@@ -68,6 +68,9 @@ public abstract class ButtonBase extends AndroidViewComponent
   // Backing for font bold
   private boolean bold;
 
+  // Used for determining if visual feedback should be provided for buttons that have images
+  private boolean showFeedback=true;
+
   // Backing for font italic
   private boolean italic;
 
@@ -142,6 +145,10 @@ public abstract class ButtonBase extends AndroidViewComponent
         //NOTE: We ALWAYS return false because we want to indicate that this listener has not
         //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
 
+        //If user has disabled the visual feedback, then don't even proceed any further
+        if (!ShowFeedback()) {
+            return false;
+        }
         //If regular button with no background image or default shape,
         // then we use the normal button visual feedback.
         boolean shouldOverlay=true;
@@ -166,12 +173,13 @@ public abstract class ButtonBase extends AndroidViewComponent
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
             //button pressed, provide visual feedback AND return false
             view.getBackground().setAlpha(70); // translucent
+            view.invalidate();
 
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
             me.getAction() == MotionEvent.ACTION_CANCEL) {
             //button released, set button back to normal AND return false
             view.getBackground().setAlpha(255); // opaque
-            return false;
+            view.invalidate();
         }
 
         return false;
@@ -455,6 +463,37 @@ public abstract class ButtonBase extends AndroidViewComponent
   }
 
   /**
+   * Specifies if a visual feedback should be shown when a button with an assigned image
+   * is pressed.
+   *
+   * @param showFeedback  {@code true} enables showing feedback,
+   *                 {@code false} disables it
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+          defaultValue = "True")
+  @SimpleProperty(description = "Specifies if a visual feedback should be shown " +
+          " for a button that as an image as background.")
+
+  public void ShowFeedback(boolean showFeedback) {
+    this.showFeedback =showFeedback;
+  }
+
+    /**
+     * Returns true if the button's text should be bold.
+     * If bold has been requested, this property will return true, even if the
+     * font does not support bold.
+     *
+     * @return {@code true} indicates visual feedback will be shown,
+     *                 {@code false} visual feedback will not be shown
+     */
+    @SimpleProperty(
+            category = PropertyCategory.APPEARANCE,
+            description = "Returns the button's visual feedback state")
+    public boolean ShowFeedback() {
+        return showFeedback;
+    }
+
+    /**
    * Returns true if the button's text should be italic.
    * If italic has been requested, this property will return true, even if the
    * font does not support italic.

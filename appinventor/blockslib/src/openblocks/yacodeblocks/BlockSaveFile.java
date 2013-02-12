@@ -668,6 +668,12 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The ShowFeedback property was added.
+      // No properties need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
+    }
+
     return blkCompVersion;
   }
 

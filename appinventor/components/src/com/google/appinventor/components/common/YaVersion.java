@@ -215,8 +215,9 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 72:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 72;
+  // For YOUNG_ANDROID_VERSION 73:
+  // - BUTTON_COMPONENT_VERSION was incremented to 5.
+  public static final int YOUNG_ANDROID_VERSION = 73;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -341,7 +342,9 @@ public class YaVersion {
   // - The LongClick event was added.
   // For BUTTON_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 4;
+  // For BUTTON_COMPONENT_VERSION 5:
+  // - The ShowFeedback property was added.
+  public static final int BUTTON_COMPONENT_VERSION = 5;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
