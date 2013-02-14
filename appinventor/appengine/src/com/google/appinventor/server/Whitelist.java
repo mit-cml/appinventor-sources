@@ -3,6 +3,9 @@
 // Copyright 2011-2012 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
+// Note: This code is no longer used but is kept here as an example and in case we
+//       wish to switch back to a internal file based version of a whitelist
+
 package com.google.appinventor.server;
 
 import com.google.appinventor.server.flags.Flag;

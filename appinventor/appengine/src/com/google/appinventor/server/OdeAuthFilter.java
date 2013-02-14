@@ -44,7 +44,7 @@ public class OdeAuthFilter implements Filter {
   private static final UserService userService = UserServiceFactory.getUserService();
 
   // Note that if no whitelist exists, then no whitelist will be used.
-  private static final Whitelist whitelist = new Whitelist();
+//  private static final Whitelist whitelist = new Whitelist();
   private static final IdMap idmap = new IdMap();
 
   // Whether this server should use a whitelist to determine who can
@@ -110,7 +110,8 @@ public class OdeAuthFilter implements Filter {
 
   @VisibleForTesting
   boolean isUserWhitelisted() {
-    return whitelist.isInWhitelist(localUser);
+    //return whitelist.isInWhitelist(localUser);
+    return storageIo.checkWhiteList(localUser.getUserEmail());
   }
 
   @VisibleForTesting
