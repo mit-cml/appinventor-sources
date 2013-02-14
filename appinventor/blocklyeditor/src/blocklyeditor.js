@@ -38,7 +38,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   
   */
   
-  Blockly.showPrefixToUser = false;
+  Blockly.showPrefixToUser = true;
   Blockly.usePrefixInYail = false;
 
   /******************************************************************************
@@ -50,8 +50,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
    */
 
   Blockly.globalNamePrefix = "global"; // For names introduced by global variable declarations
-  Blockly.procedureParameterPrefix = "param"; // For names introduced by procedure/function declarations 
-  Blockly.handlerParameterPrefix = "param"; // For names introduced by event handlers
+  Blockly.procedureParameterPrefix = "parameter"; // For names introduced by procedure/function declarations
+  Blockly.handlerParameterPrefix = "parameter"; // For names introduced by event handlers
   Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
   Blockly.loopParameterPrefix = "index"; // For names introduced by for loops
 

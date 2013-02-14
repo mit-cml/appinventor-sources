@@ -31,7 +31,7 @@ Blockly.Language.logic_boolean = {
   category : Blockly.LANG_CATEGORY_LOGIC,
   helpUrl : '',
   init : function() {
-    this.setColour(120);
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Boolean);   
     this.appendDummyInput().appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
     var thisBlock = this;
@@ -51,12 +51,30 @@ Blockly.Language.logic_boolean.TOOLTIPS = {
   FALSE : 'Reports the boolean false.'
 };
 
+
+Blockly.Language.logic_false = {
+  // Boolean data type: true and false.
+  category : Blockly.LANG_CATEGORY_LOGIC,
+  helpUrl : '',
+  init : function() {
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+    this.setOutput(true, Boolean);
+    this.appendDummyInput().appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_boolean.OPERATORS), 'BOOL');
+    this.setTitleValue('FALSE','BOOL');
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var op = thisBlock.getTitleValue('BOOL');
+      return Blockly.Language.logic_boolean.TOOLTIPS[op];
+    });
+  }
+};
+
 Blockly.Language.logic_negate = {
   // Negation.
   category : Blockly.LANG_CATEGORY_LOGIC,
   helpUrl : '',
   init : function() {
-    this.setColour(120);
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('BOOL').setCheck(Boolean).appendTitle('not');
     this.setTooltip('Returns true if the input is false.\n' +
@@ -69,7 +87,7 @@ Blockly.Language.logic_compare = {
   category : Blockly.LANG_CATEGORY_LOGIC,
   helpUrl : '',
   init : function() {
-    this.setColour(120);
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('A');
     this.appendValueInput('B').appendTitle('=');
@@ -80,23 +98,23 @@ Blockly.Language.logic_compare = {
 };
 
 Blockly.Language.logic_operation = {
-    // Logical operations: 'and', 'or'.
-    category: Blockly.LANG_CATEGORY_LOGIC,
-    helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
-    init: function() {
-      this.setColour(120);
-      this.setOutput(true, Boolean);
-      this.appendValueInput('A').setCheck(Boolean);
-      this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
-      this.setInputsInline(true);
-      // Assign 'this' to a variable for use in the tooltip closure below.
-      var thisBlock = this;
-      this.setTooltip(function() {
-        var op = thisBlock.getTitleValue('OP');
-        return Blockly.Language.logic_operation.TOOLTIPS[op];
-      });
-    }
-  };
+  // Logical operations: 'and', 'or'.
+  category: Blockly.LANG_CATEGORY_LOGIC,
+  helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
+  init: function() {
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+    this.setOutput(true, Boolean);
+    this.appendValueInput('A').setCheck(Boolean);
+    this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var op = thisBlock.getTitleValue('OP');
+      return Blockly.Language.logic_operation.TOOLTIPS[op];
+    });
+  }
+};
 
 Blockly.Language.logic_operation.OPERATORS =
     [[Blockly.LANG_LOGIC_OPERATION_AND, 'AND'],
@@ -107,4 +125,22 @@ Blockly.Language.logic_operation.TOOLTIPS = {
   OR : 'Returns true if any input is true.'
 };
 
-
+Blockly.Language.logic_or = {
+  // Logical operations: 'and', 'or'.
+  category: Blockly.LANG_CATEGORY_LOGIC,
+  helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
+  init: function() {
+    this.setColour(Blockly.LOGIC_CATEGORY_HUE);
+    this.setOutput(true, Boolean);
+    this.appendValueInput('A').setCheck(Boolean);
+    this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_operation.OPERATORS), 'OP');
+    this.setTitleValue('OR','OP');
+    this.setInputsInline(true);
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var op = thisBlock.getTitleValue('OP');
+      return Blockly.Language.logic_operation.TOOLTIPS[op];
+    });
+  }
+};

@@ -39,7 +39,7 @@ Blockly.Language.procedures_defnoreturn = {
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.LANG_PROCEDURES_DEFNORETURN_HELPURL,
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var name = Blockly.Procedures.findLegalName(
         Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE, this);
     this.appendDummyInput()
@@ -187,7 +187,7 @@ Blockly.Language.procedures_defreturn = {
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.LANG_PROCEDURES_DEFRETURN_HELPURL,
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var name = Blockly.Procedures.findLegalName(
         Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE, this);
     this.appendDummyInput()
@@ -231,7 +231,7 @@ Blockly.Language.procedures_defreturn = {
 Blockly.Language.procedures_mutatorcontainer = {
   // Procedure container (for mutator dialog).
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE);
     this.appendStatementInput('STACK');
@@ -264,7 +264,7 @@ Blockly.Language.procedures_mutatorcontainer = {
 Blockly.Language.procedures_mutatorarg = {
   // Procedure argument (for mutator dialog).
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_PROCEDURES_MUTATORARG_TITLE)
         .appendTitle(new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam), 'NAME');
@@ -371,7 +371,7 @@ Blockly.Language.procedures_callnoreturn = {
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL,
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,false);};
     var onChangeDropDown = function(text) {
       var workspace = this.block.workspace;
@@ -553,7 +553,7 @@ Blockly.Language.procedures_callreturn = {
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.LANG_PROCEDURES_CALLRETURN_HELPURL,
   init: function() {
-    this.setColour(290);
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,true);};
     var onChangeDropDown = function(text) {
       var workspace = this.block.workspace;

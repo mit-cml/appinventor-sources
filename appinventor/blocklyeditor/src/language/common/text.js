@@ -30,7 +30,7 @@ Blockly.Language.text = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput().appendTitle('\u201C').appendTitle(new Blockly.FieldTextInput(''),
         'TEXT').appendTitle('\u201D');
     this.setOutput(true, String);
@@ -44,7 +44,7 @@ Blockly.Language.text_join = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, String);
     this.appendValueInput('ADD0').appendTitle('join');
     this.appendValueInput('ADD1');
@@ -83,7 +83,7 @@ Blockly.Language.text_join = {
 Blockly.Language.text_join_item = {
   // Add items.
   init: function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle("string");
     this.setPreviousStatement(true);
@@ -98,7 +98,7 @@ Blockly.Language.text_length = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Number);
     this.appendValueInput('VALUE').setCheck(String).appendTitle('length');
     this.setTooltip('Returns number of characters (including spaces)\n' + 'in the provided text.');
@@ -110,7 +110,7 @@ Blockly.Language.text_isEmpty = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('VALUE').setCheck(String).appendTitle('is empty');
     this.setTooltip('Returns true if the length of the\n' + 'text is 0, false otherwise.');
@@ -122,7 +122,7 @@ Blockly.Language.text_compare = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('TEXT1').setCheck(String).appendTitle('compare texts');
     this.appendValueInput('TEXT2').setCheck(String).appendTitle(
@@ -155,7 +155,7 @@ Blockly.Language.text_trim = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, String);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('trim');
     this.setTooltip('Returns a copy of it text string arguments with any\n'
@@ -168,7 +168,7 @@ Blockly.Language.text_changeCase = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, String);
     this.appendValueInput('TEXT').setCheck(String).appendTitle(
         new Blockly.FieldDropdown(this.OPERATORS), 'OP');
@@ -192,7 +192,7 @@ Blockly.Language.text_starts_at = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Number);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('starts at').appendTitle('text');
     this.appendValueInput('PIECE').setCheck(String).appendTitle('piece');
@@ -207,7 +207,7 @@ Blockly.Language.text_contains = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('contains').appendTitle('text');
     this.appendValueInput('PIECE').setCheck(String).appendTitle('piece');
@@ -221,7 +221,7 @@ Blockly.Language.text_split = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('TEXT').setCheck(String).appendTitle(
         new Blockly.FieldDropdown(this.OPERATORS), 'OP').appendTitle('text');
@@ -261,7 +261,7 @@ Blockly.Language.text_split_at_spaces = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('split at spaces');
     this.setTooltip('Split the text into pieces separated by spaces.');
@@ -273,7 +273,7 @@ Blockly.Language.text_segment = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, String);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('segment').appendTitle('text');
     this.appendValueInput('START').setCheck(Number).appendTitle('start');
@@ -289,7 +289,7 @@ Blockly.Language.text_replace_all = {
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : '',
   init : function() {
-    this.setColour(160);
+    this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, String);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('replace all').appendTitle('text');
     this.appendValueInput('SEGMENT').setCheck(String).appendTitle('segment');

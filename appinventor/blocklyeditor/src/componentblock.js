@@ -21,10 +21,10 @@ Blockly.ComponentBlock = {};
  * Block Colors Hues (See blockly.js for Saturation and Value - fixed for
  * all blocks)
  */
-Blockly.ComponentBlock.COLOUR_EVENT = 31;
-Blockly.ComponentBlock.COLOUR_METHOD = 270;
-Blockly.ComponentBlock.COLOUR_GETSET = 151;
-Blockly.ComponentBlock.COLOUR_COMPONENT = 180;
+Blockly.ComponentBlock.COLOUR_EVENT = Blockly.CONTROL_CATEGORY_HUE;
+Blockly.ComponentBlock.COLOUR_METHOD = Blockly.PROCEDURE_CATEGORY_HUE;
+Blockly.ComponentBlock.COLOUR_GETSET = Blockly.COLOR_CATEGORY_HUE;
+Blockly.ComponentBlock.COLOUR_COMPONENT = Blockly.COLOR_CATEGORY_HUE;
 
 
 //TODO(): add I18N
@@ -402,7 +402,6 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
 
     this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
     this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
-
     // Renames the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -487,6 +486,7 @@ Blockly.ComponentBlock.getCurrentArgType = function (fieldDropdown, propNames, p
   var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType);
   return blocklyType;
 }
+
 
 // Save the yail type of the property socket
 Blockly.ComponentBlock.setterMutationToDom = function() {

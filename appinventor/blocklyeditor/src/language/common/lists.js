@@ -31,7 +31,7 @@ Blockly.Language.lists_create_with = {
   category: Blockly.LANG_CATEGORY_LISTS,
   helpUrl: '',
   init: function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('ADD0')
         .appendTitle("make a list");
     this.appendValueInput('ADD1');
@@ -69,7 +69,7 @@ Blockly.Language.lists_create_with = {
 Blockly.Language.lists_create_with_item = {
   // Add items.
   init: function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
@@ -84,7 +84,7 @@ Blockly.Language.lists_select_item = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('select list item').appendTitle('list');
     this.appendValueInput('NUM').setCheck(Number).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
@@ -97,7 +97,7 @@ Blockly.Language.lists_replace_item = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('replace list item').appendTitle('list');
     this.appendValueInput('NUM').setCheck(Number).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ITEM').appendTitle('replacement').setAlign(Blockly.ALIGN_RIGHT);
@@ -112,7 +112,7 @@ Blockly.Language.lists_remove_item = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('remove list item').appendTitle('list');
     this.appendValueInput('INDEX').setCheck(Number).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
@@ -126,7 +126,7 @@ Blockly.Language.lists_insert_item = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('insert list item').appendTitle('list');
     this.appendValueInput('INDEX').setCheck(Number).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('ITEM').setCheck(Number).appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
@@ -141,7 +141,7 @@ Blockly.Language.lists_length = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Number);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('length of list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Counts the number of items in a list.');
@@ -153,7 +153,7 @@ Blockly.Language.lists_append_list = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST0').setCheck(Array).appendTitle('append to list').appendTitle('list1');
     this.appendValueInput('LIST1').setCheck(Array).appendTitle('list2').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
@@ -168,7 +168,7 @@ Blockly.Language.lists_add_items = {
   category: Blockly.LANG_CATEGORY_LISTS,
   helpUrl: '',
   init: function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('add items to list').appendTitle(' list');
     this.appendValueInput('ITEM0').appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
@@ -202,7 +202,7 @@ Blockly.Language.lists_add_items = {
 Blockly.Language.lists_add_items_item = {
   // Add items.
   init: function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
@@ -217,7 +217,7 @@ Blockly.Language.lists_is_in = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('ITEM').appendTitle('is in list?').appendTitle('thing');
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list').setAlign(Blockly.ALIGN_RIGHT);
@@ -231,7 +231,7 @@ Blockly.Language.lists_position_in = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Number);
     
     this.appendValueInput('ITEM').appendTitle('position in list').appendTitle('thing');
@@ -246,7 +246,7 @@ Blockly.Language.lists_pick_random_item = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('pick a random item').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Pick an item at random from the list.');
@@ -258,7 +258,7 @@ Blockly.Language.lists_is_empty = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('is list empty?').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Tests if a list is empty \(has no items in it\)');
@@ -270,7 +270,7 @@ Blockly.Language.lists_copy = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('copy list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Makes a copy of a list, including copying all sublists');
@@ -282,7 +282,7 @@ Blockly.Language.lists_is_list = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Boolean);
     this.appendValueInput('ITEM').appendTitle('is a list?').appendTitle('thing');
     Blockly.Language.setTooltip(this, 'Tests if something is a list.');
@@ -294,7 +294,7 @@ Blockly.Language.lists_to_csv_row = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list to csv row').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Interprets the list as a row of a table and returns a CSV '
@@ -310,7 +310,7 @@ Blockly.Language.lists_to_csv_table = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list to csv table').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Interprets the list as a table in row-major format and '
@@ -327,7 +327,7 @@ Blockly.Language.lists_from_csv_row = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('list from csv row').appendTitle('text');
     Blockly.Language.setTooltip(this, 'Parses a text as a CSV \(comma-separated value\) formatted '
@@ -342,7 +342,7 @@ Blockly.Language.lists_from_csv_table = {
   category : Blockly.LANG_CATEGORY_LISTS,
   helpUrl : '',
   init : function() {
-    this.setColour(210);
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Array);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('list from csv table').appendTitle('text');
     Blockly.Language.setTooltip(this, 'Parses a text as a CSV \(comma-separated value\) formatted '

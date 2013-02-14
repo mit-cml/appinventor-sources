@@ -30,6 +30,10 @@ Blockly.Yail.logic_boolean = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
+Blockly.Yail.logic_false = function() {
+  return Blockly.Yail.logic_boolean.call(this);
+}
+
 Blockly.Yail.logic_negate = function() {
   // negate operation
   var argument = Blockly.Yail
@@ -67,6 +71,10 @@ Blockly.Yail.logic_operation.OPERATORS = {
   AND : [ 'and-delayed', Blockly.Yail.ORDER_NONE ],
   OR : [ 'or-delayed', Blockly.Yail.ORDER_NONE ]
 };
+
+Blockly.Yail.logic_or = function() {
+  return Blockly.Yail.logic_operation.call(this);
+}
 
 Blockly.Yail.logic_compare = function() {
   // Basic logic compare operators

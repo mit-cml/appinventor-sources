@@ -67,11 +67,11 @@ Blockly.Language.global_declaration = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendValueInput('VALUE')
-        .appendTitle("global")
+        .appendTitle("initialize global")
         .appendTitle(new Blockly.FieldTextInput('name', Blockly.LexicalVariable.renameGlobal), 'NAME')
-        .appendTitle("initially is");
+        .appendTitle("to");
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
   },
   getVars: function() {
@@ -89,7 +89,7 @@ Blockly.Language.lexical_variable_get = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable("???"); 
     this.fieldVar_.setBlock(this);
     this.appendDummyInput()
@@ -139,7 +139,7 @@ Blockly.Language.lexical_variable_set = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable("???"); 
     this.fieldVar_.setBlock(this);
     this.appendValueInput('VALUE')
@@ -163,16 +163,17 @@ Blockly.Language.local_declaration_statement = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/07/12] Fix this
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.localNames_ = ["name"]; // list of declared local variable names; has one initially 
-    this.appendDummyInput('LOCAL_KEYWORD')
-        .appendTitle("local"); // [lyn, 11/05/12] tried to put this on same line with first local name;
+    //this.appendDummyInput('LOCAL_KEYWORD')
+        //.appendTitle("local"); // [lyn, 11/05/12] tried to put this on same line with first local name;
                                // Worked fine here, but not in compose function below.
     
     
     var declInput = this.appendValueInput('DUMMYDECL');
-    declInput.appendTitle(new Blockly.FieldTextInput("name"))
-            .appendTitle("initially is")
+    declInput.appendTitle("set local")
+            .appendTitle(new Blockly.FieldTextInput("name"))
+            .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT);
     
     this.appendStatementInput('DUMMYSTACK') 
@@ -200,9 +201,10 @@ Blockly.Language.local_declaration_statement = {
         // if (i == 0) {
         //  declInput.appendTitle("local"); // Only put keyword "local" on top line.
         // }
-        declInput.appendTitle(new Blockly.FieldTextInput(names[i], Blockly.LexicalVariable.renameParam), 
+        declInput.appendTitle("set local")
+            .appendTitle(new Blockly.FieldTextInput(names[i], Blockly.LexicalVariable.renameParam), 
                               'VAR' + i)
-            .appendTitle("initially is")
+            .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT); 
         if (inits && inits[i]) { // If there is an initializer, connect it
             declInput.connection.connect(inits[i]);
@@ -395,14 +397,15 @@ Blockly.Language.local_declaration_expression = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/07/12] Fix this
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.localNames_ = ["name"]; // list of declared local variable names; has one initially 
-    this.appendDummyInput('LOCAL_KEYWORD')
-        .appendTitle("local"); // [lyn, 11/05/12] See notes on this above in local_declaration_statement
+    //this.appendDummyInput('LOCAL_KEYWORD')
+        //.appendTitle("local"); // [lyn, 11/05/12] See notes on this above in local_declaration_statement
 
     var declInput = this.appendValueInput('DUMMYDECL');
-    declInput.appendTitle(new Blockly.FieldTextInput("name"))
-            .appendTitle("initially is")
+    declInput.appendTitle("set local")
+            .appendTitle(new Blockly.FieldTextInput("name"))
+            .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT);
 
 	this.appendValueInput('DUMMYRETURN')
@@ -457,7 +460,7 @@ Blockly.Language.local_declaration_expression = {
 Blockly.Language.local_mutatorcontainer = {
   // Local variable container (for mutator dialog).
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle("local names");
     this.appendStatementInput('STACK');
@@ -490,7 +493,7 @@ Blockly.Language.local_mutatorcontainer = {
 Blockly.Language.local_mutatorarg = {
   // Procedure argument (for mutator dialog).
   init: function() {
-    this.setColour(330);
+    this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle("name")
         .appendTitle(new Blockly.FieldTextInput('x', Blockly.LexicalVariable.renameParam), 'NAME');
