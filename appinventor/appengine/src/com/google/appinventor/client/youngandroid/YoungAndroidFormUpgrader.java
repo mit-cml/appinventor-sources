@@ -281,7 +281,7 @@ public final class YoungAndroidFormUpgrader {
 
       } else if (componentType.equals("Texting")) {
         srcCompVersion = upgradeTextingProperties(componentProperties, srcCompVersion);
-        
+
       }  else if (componentType.equals("Notifier")) {
         srcCompVersion = upgradeNotifierProperties(componentProperties, srcCompVersion);
 
@@ -506,7 +506,7 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 7;
-    } 
+    }
     return srcCompVersion;
   }
 
@@ -662,7 +662,7 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
-    } 
+    }
     if (srcCompVersion < 5) {
       // The ImagePath property was renamed to Selection.
       handlePropertyRename(componentProperties, "ImagePath", "Selection");
@@ -913,7 +913,7 @@ public final class YoungAndroidFormUpgrader {
 
     return srcCompVersion;
   }
-  
+
   private static int upgradeTextBoxProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -955,10 +955,12 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 2) {
+    if (srcCompVersion < 3) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
-      srcCompVersion = 2;
+      // UsesLocation property added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

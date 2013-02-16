@@ -6,8 +6,14 @@
 package com.google.appinventor.client.editor.simple.components;
 
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.shared.settings.SettingsConstants;
+
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.SimplePanel;
+
+import java.util.ArrayList;
+
+import com.google.appinventor.client.output.OdeLog;
 
 /**
  * Mock WebViewer component.
@@ -20,6 +26,9 @@ public final class MockWebViewer extends MockVisibleComponent {
    * Component type name.
    */
   public static final String TYPE = "WebViewer";
+
+  // Property names that we need to treat specially
+  private static final String PROPERTY_NAME_USESLOCATION = "UsesLocation";
 
   // Large icon image for use in designer.  Smaller version is in the palette.
   private final Image largeImage = new Image(images.webviewerbig());
@@ -72,5 +81,13 @@ public final class MockWebViewer extends MockVisibleComponent {
     return heightHint;
   }
 
+  @Override
+  public void onPropertyChange(String propertyName, String newValue) {
+    super.onPropertyChange(propertyName, newValue);
 
+    if (propertyName.equals(PROPERTY_NAME_USESLOCATION)) {
+      editor.getProjectEditor().recordLocationSetting(this.getName(), newValue);
+    }
+
+  }
 }

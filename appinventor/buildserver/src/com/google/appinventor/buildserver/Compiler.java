@@ -981,6 +981,17 @@ public final class Compiler {
           componentPermissions.put(name, permissionsForThisComponent);
         }
       }
+      if (project != null) {    // Only do this if we have a project (testing doesn't provide one :-( ).
+        LOG.log(Level.INFO, "usesLocation = " + project.getUsesLocation());
+        if (project.getUsesLocation().equals("True")) { // Add location permissions if any WebViewer requests it
+          Set<String> locationPermissions = Sets.newHashSet(); // via a Property.
+          // See ProjectEditor.recordLocationSettings()
+          locationPermissions.add("android.permission.ACCESS_FINE_LOCATION");
+          locationPermissions.add("android.permission.ACCESS_COARSE_LOCATION");
+          locationPermissions.add("android.permission.ACCESS_MOCK_LOCATION");
+          componentPermissions.put("WebViewer", locationPermissions);
+        }
+      }
     }
   }
 

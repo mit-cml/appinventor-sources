@@ -7,7 +7,9 @@ package com.google.appinventor.client.editor;
 
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
+import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.gwt.event.logical.shared.AttachEvent;
@@ -47,6 +49,8 @@ public abstract class ProjectEditor extends Composite {
 
   private final Map<String, FileEditor> openFileEditors;
   protected final List<String> tabNames;  // tab names in the same order as the TabBar.
+
+  private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
 
   // UI elements
   private final TabBar tabBar;
@@ -277,6 +281,51 @@ public abstract class ProjectEditor extends Composite {
       settings.changePropertyValue(name, newValue);
       Ode.getInstance().getEditorManager().scheduleAutoSave(projectSettings);
     }
+  }
+
+  /**
+   * Keep track of components that require the
+   * "android.permission.ACCESS_FINE_LOCATION" (and related
+   * permissions). This code is in particular for use of the WebViewer
+   * component. The WebViewer exports the Javascript location
+   * API. However it cannot be used by an app with location
+   * permissions. Each WebViewer has a "UsesLocation" property which
+   * is only available from the designer. Each WebViewer then
+   * registers its value here. Each time this hashtable is updated we
+   * recompute whether or not location permission is needed based on a
+   * logical OR of all of the WebViwer components registered. Note:
+   * Even if no WebViewer component requires location permisson, other
+   * components, such as the LocationSensor may require it. That is
+   * handled via the @UsesPermissions mechanism and is independent of
+   * this code.
+   *
+   * @param componentName The name of the component registering location permission
+   * @param newVlue either "True" or "False" indicating whether permission is need.
+   */
+
+  public final void recordLocationSetting(String componentName, String newValue) {
+    OdeLog.log("ProjectEditor: recordLocationSetting(" + componentName + "," + newValue + ")");
+    locationHashMap.put(componentName, newValue);
+    recomputeLocationPermission();
+  }
+
+  private final void recomputeLocationPermission() {
+    String usesLocation = "False";
+    for (String c : locationHashMap.values()) {
+      OdeLog.log("ProjectEditor:recomputeLocationPermission: " + c);
+      if (c.equals("True")) {
+        usesLocation = "True";
+        break;
+      }
+    }
+    changeProjectSettingsProperty(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_USES_LOCATION,
+      usesLocation);
+  }
+
+  public void clearLocation(String componentName) {
+    OdeLog.log("ProjectEditor:clearLocation: clearing " + componentName);
+    locationHashMap.remove(componentName);
+    recomputeLocationPermission();
   }
 
   /**

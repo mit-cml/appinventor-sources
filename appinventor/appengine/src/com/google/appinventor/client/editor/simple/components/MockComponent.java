@@ -206,7 +206,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   protected boolean expanded;
 
   // Properties of the component
-  // Expose these to individual component subclasses, which might need to 
+  // Expose these to individual component subclasses, which might need to
   // check properties fpr UI manipulation.  One example is MockHorizontalArrangement
   protected final EditableProperties properties;
 
@@ -263,6 +263,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       public void delete() {
         if (!isForm()) {
           if (Window.confirm(MESSAGES.reallyDeleteComponent())) {
+            MockComponent.this.editor.getProjectEditor().clearLocation(MockComponent.this.getName());
             getForm().select();
             // Pass true to indicate that the component is being permanently deleted.
             getContainer().removeComponent(MockComponent.this, true);

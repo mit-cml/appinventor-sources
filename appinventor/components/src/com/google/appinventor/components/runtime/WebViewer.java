@@ -16,6 +16,13 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 
+import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -55,6 +62,9 @@ public final class WebViewer extends AndroidViewComponent {
   // whether or not to follow links when they are tapped
   private boolean followLinks;
 
+  // Whether or not to prompt for permission in the WebViewer
+  private boolean prompt = true;
+
   /**
    * Creates a new WebViewer component.
    *
@@ -69,6 +79,10 @@ public final class WebViewer extends AndroidViewComponent {
     webview.setFocusable(true);
     // enable pinch zooming and zoom controls
     webview.getSettings().setBuiltInZoomControls(true);
+
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
+      EclairUtil.setupWebViewGeoLoc(this, webview, container.$context());
+
     container.$add(this);
 
     webview.setOnTouchListener(new View.OnTouchListener() {
@@ -275,4 +289,60 @@ public final class WebViewer extends AndroidViewComponent {
     webview.loadUrl(url);
   }
 
+  /**
+   * Specifies whether or not this WebViewer can access the JavaScript
+   * Location API.
+   *
+   * @param uses -- Whether or not the API is available
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "False")
+  @SimpleProperty(userVisible = false,
+    description = "Whether or not to give the application permission to use the Javascript geolocation API.")
+  public void UsesLocation(boolean uses) {
+    // We don't actually do anything here (the work is in the MockWebViewer)
+  }
+
+  /**
+   * Determine if the user should be prompted for permission to use the geolocation API while in
+   * the webviewer.
+   *
+   * @return true if prompting is  required.  False assumes permission is granted.
+   */
+
+  @SimpleProperty(description = "If True, then prompt the user of the WebView to give permission to access the geolocation API. " +
+    "If False, then assume permission is granted.")
+  public boolean PromptforPermission() {
+    return prompt;
+  }
+
+  /**
+   * Determine if the user should be prompted for permission to use the geolocation API while in
+   * the webviewer.
+   *
+   * @param prompt set to true to require prompting. False assumes permission is granted.
+   */
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+    defaultValue = "True")
+  @SimpleProperty(userVisible = true)
+  public void PromptforPermission(boolean prompt) {
+    this.prompt = prompt;
+  }
+
+  /**
+   * Clear Stored Location permissions. When the geolocation API is used in
+   * the WebViewer, the end user is prompted on a per URL basis for whether
+   * or not permission should be granted to access their location. This
+   * function clears this information for all locations.
+   *
+   * As the permissions interface is not available on phones older then
+   * Eclair, this function is a no-op on older phones.
+   */
+
+  @SimpleFunction(description = "Clear stored location permissions.")
+  public void ClearLocations() {
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR)
+      EclairUtil.clearWebViewGeoLoc();
+  }
 }
