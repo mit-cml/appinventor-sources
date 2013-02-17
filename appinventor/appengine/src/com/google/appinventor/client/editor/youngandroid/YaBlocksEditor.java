@@ -100,7 +100,7 @@ public final class YaBlocksEditor extends FileEditor
     // was no set height to fill. Looking again, I wonder if this might be a
     // problem in the Box constructor, perhaps in the call to
     // body.setSize("100%", "100%"). I wonder if that should be using the initial
-    // height passed into the Box constructor instead.  
+    // height passed into the Box constructor instead.
     blocksArea.setSize("100%", "600px");
 
     initWidget(blocksArea);
@@ -170,7 +170,9 @@ public final class YaBlocksEditor extends FileEditor
       PaletteBox paletteBox = PaletteBox.getPaletteBox();
       paletteBox.setContent(palettePanel);
     }
-
+    
+    PaletteBox.getPaletteBox().setVisible(false);
+    
     // Update the source structure explorer with the tree of this form's components.
     MockForm form = getForm();
     if (form != null) {
@@ -219,6 +221,7 @@ public final class YaBlocksEditor extends FileEditor
     // Clear the palette box.
     PaletteBox paletteBox = PaletteBox.getPaletteBox();
     paletteBox.clear();
+    paletteBox.setVisible(true);
 
     // Clear and hide the blocks selector tree
     sourceStructureExplorer.clearTree();

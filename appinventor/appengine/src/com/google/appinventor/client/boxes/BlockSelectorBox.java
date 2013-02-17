@@ -4,13 +4,17 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.Images;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.components.MockForm;
 import com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener;
 import com.google.appinventor.client.explorer.SourceStructureExplorer;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.common.collect.Maps;
+import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import java.util.ArrayList;
@@ -61,12 +65,11 @@ public final class BlockSelectorBox extends Box {
   private static final BlockSelectorBox INSTANCE = new BlockSelectorBox();
   
   private static final String BUILTIN_DRAWER_NAMES[] = {"Control",
-                                                      "Lists",
-                                                      "Logic",
-                                                      "Math",
-                                                      "Text",
-                                                      "Variables",
-                                                      "Procedures"};
+      "Logic", "Math", "Text", "Lists", "Colors", "Variables", "Procedures"};
+  
+  
+  private static final Images images = Ode.getImageBundle();
+  private static final Map<String, ImageResource> bundledImages = Maps.newHashMap();
 
   // Source structure explorer (for components and built-in blocks)
   private final SourceStructureExplorer sourceStructureExplorer;
@@ -97,6 +100,17 @@ public final class BlockSelectorBox extends Box {
     setVisible(false);
     drawerListeners = new ArrayList<BlockDrawerSelectionListener>();
   }
+  
+  private static void initBundledImages() {
+    bundledImages.put("Control", images.control());
+    bundledImages.put("Logic", images.logic());
+    bundledImages.put("Math", images.math());
+    bundledImages.put("Text", images.text());
+    bundledImages.put("Lists", images.lists());
+    bundledImages.put("Colors", images.colors());
+    bundledImages.put("Variables", images.variables());
+    bundledImages.put("Procedures", images.procedures());
+  }
 
   /**
    * Returns source structure explorer associated with box.
@@ -113,10 +127,12 @@ public final class BlockSelectorBox extends Box {
    * @return  tree item
    */
   public TreeItem getBuiltInBlocksTree() {
+    initBundledImages();
     TreeItem builtinNode = new TreeItem(new HTML("<span>" 
         + MESSAGES.builtinBlocksLabel() + "</span>"));
     for (final String drawerName : BUILTIN_DRAWER_NAMES) {
-      TreeItem itemNode = new TreeItem(new HTML("<span>" + drawerName + "</span>"));
+      Image drawerImage = new Image(bundledImages.get(drawerName));
+      TreeItem itemNode = new TreeItem(new HTML("<span>" + drawerImage + drawerName + "</span>"));
       SourceStructureExplorerItem sourceItem = new BlockSelectorItem() {
         @Override
         public void onSelected() {

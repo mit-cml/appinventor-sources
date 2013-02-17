@@ -500,7 +500,7 @@ public class Ode implements EntryPoint {
     Box box = PaletteBox.getPaletteBox();
     box.setWidth("225px");
     workColumns.add(box);
-    workColumns.setCellWidth(box, "1%");
+    //workColumns.setCellWidth(box, "1%");
 
     VerticalPanel structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
@@ -511,7 +511,7 @@ public class Ode implements EntryPoint {
     structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
     structureAndAssets.add(AssetListBox.getAssetListBox());
     workColumns.add(structureAndAssets);
-    workColumns.setCellWidth(structureAndAssets, "1%");
+    //workColumns.setCellWidth(structureAndAssets, "1%");
 
     box = ViewerBox.getViewerBox();
     workColumns.add(box);
@@ -520,7 +520,7 @@ public class Ode implements EntryPoint {
     box = PropertiesBox.getPropertiesBox();
     box.setWidth("210px");
     workColumns.add(box);
-    workColumns.setCellWidth(box, "1%");
+    //workColumns.setCellWidth(box, "1%");
     
     vertPanel.add(workColumns);
     designTabIndex = deckPanel.getWidgetCount();
