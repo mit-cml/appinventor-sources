@@ -1,3 +1,7 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2009-2011 Google, All Rights reserved
+// Copyright 2011-2012 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -31,7 +35,7 @@ import java.util.Set;
 
 /**
  * Editor for Young Android Blocks (.blk) files.
- * 
+ *
  * TODO(sharon): blocks file loading and saving is not implemented yet!!
  *
  * @author lizlooney@google.com (Liz Looney)
@@ -45,7 +49,7 @@ public final class YaBlocksEditor extends FileEditor
       SimpleComponentDatabase.getInstance();
 
   // Keep a map from projectid_formname -> YaBlocksEditor for handling blocks workspace changed
-  // callbacks from the BlocklyPanel objects. This has to be static because it is used by 
+  // callbacks from the BlocklyPanel objects. This has to be static because it is used by
   // static methods that are called from the Javascript Blockly world.
   private static final Map<String, YaBlocksEditor> formToBlocksEditor = Maps.newHashMap();
 
@@ -62,8 +66,8 @@ public final class YaBlocksEditor extends FileEditor
 
   // Blocks area. Note that the blocks area is a part of the "document" in the
   // browser (via the deckPanel in the ProjectEditor). So if the document changes (which happens
-  // when we switch projects) we will lose the blocks editor state, even though 
-  // YaBlocksEditor objects are kept around when switching projects. If we come 
+  // when we switch projects) we will lose the blocks editor state, even though
+  // YaBlocksEditor objects are kept around when switching projects. If we come
   // back to this blocks editor after having switched projects, the blocksArea
   // will get reinitialized.
   private final BlocklyPanel blocksArea;
@@ -74,15 +78,18 @@ public final class YaBlocksEditor extends FileEditor
   // if selectedDrawer != null, it is either "component_" + instance name or
   // "builtin_" + drawer name
   private String selectedDrawer = null;
-  
+
   // Keep a list of components that we know about. Need this to detect when a call to add a
   // component is adding one that we already have (which can happen when a component gets
   // moved from one container to another). In that case we do not want to add it to the
   // blocks area again.
   private Set<String> componentUuids = new HashSet<String>();
-  
+
   // The form editor associated with this blocks editor
   private YaFormEditor myFormEditor;
+
+  // Used to determine if the newly generated yail should be sent to the debugging phone
+  private String lastYail = "";
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -92,7 +99,7 @@ public final class YaBlocksEditor extends FileEditor
     fullFormName = blocksNode.getProjectId() + "_" + blocksNode.getFormName();
     formToBlocksEditor.put(fullFormName, this);
     blocksArea = new BlocklyPanel(fullFormName);
-    
+
     // We would like the blocks area to fill the available space automatically,
     // but apparently we need to give it a height or else it ends up too short.
     // TODO(sharon): Neil was stumped the last time he looked at this, and I didn't manage to get
@@ -107,7 +114,7 @@ public final class YaBlocksEditor extends FileEditor
 
     // Get references to the source structure explorer
     sourceStructureExplorer = BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer();
-    
+
     // Listen for selection events for built-in drawers
     BlockSelectorBox.getBlockSelectorBox().addBlockDrawerSelectionListener(this);
 
@@ -157,6 +164,7 @@ public final class YaBlocksEditor extends FileEditor
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
     loadBlocksEditor();
+    makeYail();                 // Create yail and send to REPL (if connected).
   }
 
   /*
@@ -206,7 +214,7 @@ public final class YaBlocksEditor extends FileEditor
           + "current file editor!");
     }
   }
-  
+
   @Override
   public void onClose() {
     // our partner YaFormEditor added us as a FormChangeListener, but we remove ourself.
@@ -233,12 +241,24 @@ public final class YaBlocksEditor extends FileEditor
 
     hideComponentBlocks();
   }
-  
+
   public static void onBlocksAreaChanged(String formName) {
     YaBlocksEditor editor = formToBlocksEditor.get(formName);
     if (editor != null) {
       OdeLog.log("Got blocks area changed for " + formName);
       Ode.getInstance().getEditorManager().scheduleAutoSave(editor);
+      FileEditor thiseditor = Ode.getInstance().getCurrentFileEditor();
+      if (thiseditor instanceof YaBlocksEditor)
+        ((YaBlocksEditor)thiseditor).makeYail();
+    }
+  }
+
+  public synchronized void makeYail() {
+    try {
+      blocksArea.sendYail(myFormEditor.encodeFormAsJsonString(),
+        packageNameFromPath(getFileId()));
+    } catch (YailGenerationException e) {
+      e.printStackTrace();
     }
   }
 
@@ -246,7 +266,7 @@ public final class YaBlocksEditor extends FileEditor
     TreeItem items[] = new TreeItem[3];
     items[0] = BlockSelectorBox.getBlockSelectorBox().getBuiltInBlocksTree();
     items[1] = form.buildComponentsTree();
-    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);    
+    items[2] = BlockSelectorBox.getBlockSelectorBox().getGenericComponentsTree(form);
     sourceStructureExplorer.updateTree(items, itemToSelect);
   }
 
@@ -261,15 +281,15 @@ public final class YaBlocksEditor extends FileEditor
   public String getRawFileContent() {
     return blocksArea.getBlocksContent();
   }
-  
+
   public FileDescriptorWithContent getYail() throws YailGenerationException {
-    return new FileDescriptorWithContent(getProjectId(), yailFileName(), 
-        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(), 
+    return new FileDescriptorWithContent(getProjectId(), yailFileName(),
+        blocksArea.getYail(myFormEditor.encodeFormAsJsonString(),
             packageNameFromPath(getFileId())));
   }
 
   /**
-   * Converts a source file path (e.g., 
+   * Converts a source file path (e.g.,
    * src/com/gmail/username/project1/Form.extension) into a package
    * name (e.g., com.gmail.username.project1.Form)
    * @param path the path to convert.
@@ -362,10 +382,10 @@ public final class YaBlocksEditor extends FileEditor
       return null;
     }
   }
-  
+
   private String yailFileName() {
     String fileId = getFileId();
-    return fileId.replace(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION, 
+    return fileId.replace(YoungAndroidSourceAnalyzer.BLOCKLY_SOURCE_EXTENSION,
         YoungAndroidSourceAnalyzer.YAIL_FILE_EXTENSION);
   }
 
@@ -428,7 +448,7 @@ public final class YaBlocksEditor extends FileEditor
       selectedDrawer = null;
     }
   }
-  
+
   private void updateSourceStructureExplorer() {
     MockForm form = getForm();
     if (form != null) {
@@ -445,9 +465,9 @@ public final class YaBlocksEditor extends FileEditor
   public void onComponentSelectionChange(MockComponent component, boolean selected) {
     // not relevant for blocks editor - this happens on clicks in the mock form areas
   }
-  
+
   // BlockDrawerSelectionListener implementation
-  
+
   /*
    * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
    * onBlockDrawerSelected(java.lang.String)
@@ -459,7 +479,7 @@ public final class YaBlocksEditor extends FileEditor
       showBuiltinBlocks(drawerName);
     }
   }
-  
+
   /*
    * @see com.google.appinventor.client.editor.youngandroid.BlockDrawerSelectionListener#
    * onBlockDrawerSelected(java.lang.String)
@@ -470,6 +490,14 @@ public final class YaBlocksEditor extends FileEditor
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       showGenericBlocks(drawerName);
     }
+  }
+
+  /*
+   * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
+   */
+  @Override
+  public void startRepl(Boolean alreadyRunning) {
+    blocksArea.startRepl(alreadyRunning);
   }
 
 }

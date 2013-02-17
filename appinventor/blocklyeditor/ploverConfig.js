@@ -76,7 +76,10 @@
     "./src/generators/yail/logic.js",
     "./src/generators/yail/text.js",
     "./src/generators/yail/variables.js",
-    "./src/generators/yail/procedures.js"
+    "./src/generators/yail/procedures.js",
+
+    // Repl
+    "./src/replmgr.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library

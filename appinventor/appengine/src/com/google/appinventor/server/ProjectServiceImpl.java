@@ -194,6 +194,21 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value is the raw file contents.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  raw file content
+   */
+  @Override
+  public byte [] loadraw(long projectId, String fileId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).loadraw(userId, projectId, fileId);
+  }
+
+  /**
    * Loads the contents of multiple files.
    *
    * @param files  list containing file descriptor of files to be loaded
@@ -313,7 +328,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     if (!projectType.isEmpty()) {
       return getProjectRpcImpl(userId, storageIo.getProjectType(userId, projectId));
     } else {
-      throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), 
+      throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(),
           "user=" + userId + ", project=" + projectId,
           new IllegalArgumentException("Can't find project " + projectId));
     }

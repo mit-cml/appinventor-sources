@@ -7,12 +7,20 @@
 package com.google.appinventor.components.runtime.util;
 import com.google.appinventor.components.runtime.ReplForm;
 import java.util.Enumeration;
+import java.util.Formatter;
 import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import android.util.Log;
+
 import com.google.appinventor.components.common.YaVersion;
+
 import kawa.standard.Scheme;
 import gnu.expr.Language;
 
@@ -25,6 +33,11 @@ public class AppInvHTTPD extends NanoHTTPD {
   private Language scheme;
   private ReplForm form;
   private static final int YAV_SKEW = 1;
+  private static final String LOG_TAG = "AppInvHTTPD";
+  private static byte[] hmacKey;
+  private static int seq;
+
+  private boolean first = true;
 
   public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
   {
@@ -36,7 +49,7 @@ public class AppInvHTTPD extends NanoHTTPD {
     try {
       scheme.eval("(begin (require com.google.youngandroid.runtime)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
     } catch (Throwable e) {
-      e.printStackTrace();
+      Log.e(LOG_TAG, "Scheme Failure", e);
     }
   }
 
@@ -50,7 +63,7 @@ public class AppInvHTTPD extends NanoHTTPD {
    */
   public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
   {
-    myOut.println( method + " '" + uri + "' " );
+    Log.d(LOG_TAG,  method + " '" + uri + "' " );
 
     // Special case for _version: This uri has a parameter of
     // "version" which is the blocks editor idea of what
@@ -64,6 +77,26 @@ public class AppInvHTTPD extends NanoHTTPD {
     // REPL exactly when we upgrade the App Engine server. So we
     // permit some version skew. Exactly how much is defined by
     // YAV_SKEW (defined above)
+
+    if (method.equals("OPTIONS")) { // This is a complete hack. OPTIONS requests are used
+                                    // by Cross Origin Resource Sharing. We give a response
+                                    // that permits connections to us from Javascript
+                                    // loaded from other pages (like the App Inventor Blocks Editor)
+      Enumeration e = header.propertyNames();
+      while ( e.hasMoreElements())
+        {
+          String value = (String)e.nextElement();
+          Log.d(LOG_TAG,  "  HDR: '" + value + "' = '" +
+            header.getProperty( value ) + "'" );
+        }
+      Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return (res);
+    }
+
 
     if (uri.equals("/_version")) { // handle special uri's here
       Response res;
@@ -85,6 +118,76 @@ public class AppInvHTTPD extends NanoHTTPD {
         e.printStackTrace();
       }
       return (res);
+    } else if (uri.equals("/_newblocks")) { // Handle AJAX calls from the newblocks code
+      String inSeq = parms.getProperty("seq", "0");
+      int iseq = Integer.parseInt(inSeq);
+      String code = parms.getProperty("code");
+      String inMac = parms.getProperty("mac", "no key provided");
+      String compMac = "";
+      if (hmacKey != null) {
+        try {
+          Mac hmacSha1 = Mac.getInstance("HmacSHA1");
+          SecretKeySpec key = new SecretKeySpec(hmacKey, "RAW");
+          hmacSha1.init(key);
+          byte [] tmpMac = hmacSha1.doFinal((code + inSeq).getBytes());
+          StringBuffer sb = new StringBuffer(tmpMac.length * 2);
+          Formatter formatter = new Formatter(sb);
+          for (byte b : tmpMac)
+            formatter.format("%02x", b);
+          compMac = sb.toString();
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error working with hmac", e);
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Exception working on HMAC");
+          Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT");
+          return(res);
+        }
+        Log.d(LOG_TAG, "Incoming Mac = " + inMac);
+        Log.d(LOG_TAG, "Computed Mac = " + compMac);
+        Log.d(LOG_TAG, "Incoming seq = " + inSeq);
+        Log.d(LOG_TAG, "Computed seq = " + seq);
+        if ((seq != iseq) || (!inMac.equals(compMac))) {
+          Log.e(LOG_TAG, "Hmac or Seq do not match");
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Invalid HMAC");
+          Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT");
+          return(res);
+        }
+        seq += 1;
+      } else {                  // No hmacKey
+        Log.e(LOG_TAG, "No HMAC Key");
+        form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+          ErrorMessages.ERROR_REPL_SECURITY_ERROR, "No HMAC Key");
+        Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT");
+        return(res);
+      }
+      if (first) {
+        try {
+          scheme.eval("(begin (require <com.google.youngandroid.runtime>)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
+        } catch (Throwable e) {
+          Log.e(LOG_TAG, "Scheme Failure(first)", e);
+        }
+        first = false;
+      }
+
+      code = "(begin (require <com.google.youngandroid.runtime>) (process-newblocks-input (begin " +
+        code + " )))";
+
+      Log.d(LOG_TAG, "To Eval: " + code);
+
+      try {
+        scheme.eval(code);
+      } catch (Throwable ex) {
+        Log.e(LOG_TAG, "newblocks: Scheme Failure", ex);
+      }
+
+      Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return(res);
+
     } else if (uri.equals("/_package")) { // Handle installing a package
       Response res;
       String packageapk = parms.getProperty("package", null);
@@ -92,7 +195,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT OK"); // Should really return an error code, but we don't look at it yet
         return (res);
       }
-      myOut.println(rootDir + "/" + packageapk);
+      Log.d(LOG_TAG, rootDir + "/" + packageapk);
       Intent intent = new Intent(Intent.ACTION_VIEW);
       Uri packageuri = Uri.fromFile(new File(rootDir + "/" + packageapk));
       intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
@@ -101,18 +204,64 @@ public class AppInvHTTPD extends NanoHTTPD {
       return (res);
     }
 
+    if (method.equals("PUT")) { // Asset File Upload for newblocks
+      Boolean error = false;
+      String tmpFileName = (String) files.getProperty("content", null);
+      if (tmpFileName != null) { // We have content
+        File fileFrom = new File(tmpFileName);
+        String filename = parms.getProperty("filename", null);
+        if (filename != null) {
+          if (filename.startsWith("..") || filename.endsWith("..")
+            || filename.indexOf("../") >= 0) {
+            Log.d(LOG_TAG, " Ignoring invalid filename: " + filename);
+            filename = null;
+          }
+        }
+        if (filename != null) { // We have a filename and it has not been declared
+                                // invalid by the code above
+          File fileTo = new File(rootDir + "/" + filename);
+          if (!fileFrom.renameTo(fileTo)) { // First try rename
+            copyFile(fileFrom, fileTo);
+            fileFrom.delete();  // Remove temp file
+          }
+        } else {
+          fileFrom.delete();    // We have content but no file name
+          Log.e(LOG_TAG, "Received content without a file name!");
+          error = true;
+        }
+      } else {
+        Log.e(LOG_TAG, "Received PUT without content.");
+        error = true;
+      }
+      if (error) {
+        Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOTOK");
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+        res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+        res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+        return (res);
+      } else {
+        Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+        res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+        res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+        return (res);
+      }
+    }
+
     Enumeration e = header.propertyNames();
     while ( e.hasMoreElements())
       {
         String value = (String)e.nextElement();
-        myOut.println( "  HDR: '" + value + "' = '" +
+        Log.d(LOG_TAG,  "  HDR: '" + value + "' = '" +
                        header.getProperty( value ) + "'" );
       }
     e = parms.propertyNames();
     while ( e.hasMoreElements())
       {
         String value = (String)e.nextElement();
-        myOut.println( "  PRM: '" + value + "' = '" +
+        Log.d(LOG_TAG,  "  PRM: '" + value + "' = '" +
                        parms.getProperty( value ) + "'" );
       }
     e = files.propertyNames();
@@ -123,7 +272,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         String filename = (String) parms.getProperty(fieldname);
         if (filename.startsWith("..") || filename.endsWith("..")
             || filename.indexOf("../") >= 0) {
-          myOut.println(" Ignoring invalid filename: " + filename);
+          Log.d(LOG_TAG, " Ignoring invalid filename: " + filename);
           filename = null;
         }
         File fileFrom = new File(tempLocation);
@@ -136,7 +285,13 @@ public class AppInvHTTPD extends NanoHTTPD {
             fileFrom.delete();  // Cleanup temp file
           }
         }
-        myOut.println( " UPLOADED: '" + filename + "' was at '" + tempLocation + "'");
+        Log.d(LOG_TAG,  " UPLOADED: '" + filename + "' was at '" + tempLocation + "'");
+        Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+        res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+        res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+        return(res);
       }
 
     return serveFile( uri, header, rootDir, true );
@@ -159,4 +314,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       e.printStackTrace();
     }
   }
+
+  /**
+   * @param inputKey String key to use the HTOP algorithm seed
+   *
+   */
+  public static void setHmacKey(String inputKey) {
+    hmacKey = inputKey.getBytes();
+    seq = 1;              // Initialize this now
+  }
+
 }

@@ -136,7 +136,7 @@ public class ReplForm extends Form {
     try {
         if (assetServer == null) {
             checkAssetDir();
-            assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR), this); // Probably should make the port variable
+            assetServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), this); // Probably should make the port variable
             Log.i("ReplForm", "started AppInvHTTPD");
         }
     } catch (IOException ex) {

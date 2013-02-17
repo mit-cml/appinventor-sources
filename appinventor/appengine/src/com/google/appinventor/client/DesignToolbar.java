@@ -109,6 +109,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
+  private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -125,6 +126,9 @@ public class DesignToolbar extends Toolbar {
   // Map of project id to project info for all projects we've ever shown
   // in the Designer in this session.
   private Map<Long, DesignProject> projectMap = Maps.newHashMap();
+
+  // Whether or not the we are talking to the repl
+  private boolean replStarted = false;
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -152,6 +156,7 @@ public class DesignToolbar extends Toolbar {
           new RemoveFormAction()));
     }
 
+    addButton(new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton(), new WirelessAction()), true);
     List<ToolbarItem> screenItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems, true);
 
@@ -298,6 +303,29 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.blocksEditor);
     }
     updateButtons();
+  }
+
+  /**
+   * This would pull up a window to start the wireless connection.
+   * For now it doesn't do anything.
+   * @author logan
+   *
+   */
+  private class WirelessAction implements Command {
+    @Override
+    public void execute() {
+      if (currentProject == null) {
+        OdeLog.wlog("DesignToolbar.currentProject is null. "
+          + "Ignoring WirelessAction.execute().");
+        return;
+      }
+      startRepl(currentProject.currentScreen);
+
+//      if (currentView == View.BLOCKS) { // Only start the Repl if we are viewing the Blocks panel. (???) (XXX)
+//      startRepl(currentProject.currentScreen);
+//      }
+
+    }
   }
 
   private class BarcodeAction implements Command {
@@ -531,4 +559,17 @@ public class DesignToolbar extends Toolbar {
     setDropDownButtonCaption(WIDGET_NAME_BUILD,
         isBuilding ? MESSAGES.isBuildingButton() : MESSAGES.buildButton());
   }
+
+  private void startRepl(String screenName) {
+    Screen screen = currentProject.screens.get(screenName);
+    screen.blocksEditor.startRepl(replStarted);
+    if (!replStarted) {
+      replStarted = true;
+      setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButtonConnected());
+    } else {
+      replStarted = false;
+      setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton());
+    }
+  }
+
 }

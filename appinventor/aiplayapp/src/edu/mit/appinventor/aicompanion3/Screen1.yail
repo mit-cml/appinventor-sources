@@ -1,0 +1,95 @@
+#|
+$Source $Yail
+|#
+
+(define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")  ) '(list))  ) '(text)))
+(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)  ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
+(def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The Version of the blocks are not compatible with this Companion" 'text))
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT NewBlocks Companion" 'text)
+)
+
+(define-event Screen1 Initialize()(set-this-form)
+    (set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) 'text))
+;;; Label3
+
+(add-component Screen1 Label Label3 
+(set-and-coerce-property! 'Label3 'Text "The is the new version of the MIT Newblocks Companion, written using newblocks!" 'text)
+
+)
+
+;;; HorizontalArrangement1
+
+(add-component Screen1 HorizontalArrangement HorizontalArrangement1 
+)
+
+;;; Label4
+
+(add-component HorizontalArrangement1 Label Label4 
+(set-and-coerce-property! 'Label4 'Text "Your IP Address is: " 'text)
+
+)
+
+;;; ipaddrlabel
+
+(add-component HorizontalArrangement1 Label ipaddrlabel 
+(set-and-coerce-property! 'ipaddrlabel 'Text "Unknown" 'text)
+
+)
+
+;;; CodeBox
+
+(add-component Screen1 TextBox CodeBox 
+(set-and-coerce-property! 'CodeBox 'Hint "six digit code" 'text)
+
+)
+
+;;; ConnectButton
+
+(add-component Screen1 Button ConnectButton 
+(set-and-coerce-property! 'ConnectButton 'Text "Connect to App Inventor" 'text)
+
+)
+
+(define-event ConnectButton Click()(set-this-form)
+    (call-component-method 'CodeBox 'HideKeyboard (*list-for-runtime* ) '())((get-var doconnect) (get-property 'CodeBox 'Text)))
+;;; ScanButton
+
+(add-component Screen1 Button ScanButton 
+(set-and-coerce-property! 'ScanButton 'Text "Or Scan Barcode to Connect" 'text)
+
+)
+
+(define-event ScanButton Click()(set-this-form)
+    (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime* ) '()))
+;;; ErrorLabel
+
+(add-component Screen1 Label ErrorLabel 
+(set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
+
+)
+
+;;; PhoneStatus1
+
+(add-component Screen1 PhoneStatus PhoneStatus1 
+)
+
+;;; Web1
+
+(add-component Screen1 Web Web1 
+(set-and-coerce-property! 'Web1 'Url "http://rendezvous.appinventor.mit.edu/rendezvous/" 'text)
+
+)
+
+;;; BarcodeScanner1
+
+(add-component Screen1 BarcodeScanner BarcodeScanner1 
+)
+
+(define-event BarcodeScanner1 AfterScan(result)(set-this-form)
+    (set-and-coerce-property! 'CodeBox 'Text (lexical-value result) 'text)((get-var doconnect) (lexical-value result)))
+(init-runtime)

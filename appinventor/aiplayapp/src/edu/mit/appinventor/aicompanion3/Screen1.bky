@@ -1,0 +1,163 @@
+<xml>
+  <block type="ConnectButton_Click" x="233" y="-6">
+    <statement name="DO">
+      <block type="CodeBox_HideKeyboard">
+        <next>
+          <block type="procedures_callnoreturn" inline="false">
+            <mutation name="doconnect">
+              <arg name="x"></arg>
+            </mutation>
+            <title name="PROCNAME">doconnect</title>
+            <value name="ARG0">
+              <block type="CodeBox_getproperty">
+                <title name="PROP">Text</title>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-76" y="312">
+    <mutation>
+      <arg name="x"></arg>
+    </mutation>
+    <title name="NAME">doconnect</title>
+    <statement name="STACK">
+      <block type="procedures_callnoreturn" inline="false">
+        <mutation name="callrendezvous">
+          <arg name="code"></arg>
+        </mutation>
+        <title name="PROCNAME">callrendezvous</title>
+        <value name="ARG0">
+          <block type="PhoneStatus1_setHmacSeedReturnCode" inline="false">
+            <value name="ARG0">
+              <block type="lexical_variable_get">
+                <title name="VAR">x</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="PhoneStatus1_startHTTPD"></block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="BarcodeScanner1_AfterScan" x="-82" y="46">
+    <statement name="DO">
+      <block type="CodeBox_setproperty" inline="false">
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="lexical_variable_get">
+            <title name="VAR">result</title>
+          </block>
+        </value>
+        <next>
+          <block type="procedures_callnoreturn" inline="false">
+            <mutation name="doconnect">
+              <arg name="x"></arg>
+            </mutation>
+            <title name="PROCNAME">doconnect</title>
+            <value name="ARG0">
+              <block type="lexical_variable_get">
+                <title name="VAR">result</title>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-96" y="-281">
+    <mutation>
+      <arg name="code"></arg>
+    </mutation>
+    <title name="NAME">callrendezvous</title>
+    <statement name="STACK">
+      <block type="Web1_PostText" inline="false">
+        <value name="ARG0">
+          <block type="Web1_BuildPostData" inline="false">
+            <value name="ARG0">
+              <block type="lists_create_with" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">key</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="lexical_variable_get">
+                        <title name="VAR">code</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">ipaddr</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="PhoneStatus1_GetWifiIpAddress"></block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">port</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="text">
+                        <title name="TEXT">9987</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="-48" y="484">
+    <mutation></mutation>
+    <title name="NAME">badversion</title>
+    <statement name="STACK">
+      <block type="ErrorLabel_setproperty" inline="false">
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="text">
+            <title name="TEXT">The Version of the blocks are not compatible with this Companion</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="Screen1_Initialize" x="220" y="142">
+    <statement name="DO">
+      <block type="ipaddrlabel_setproperty" inline="false">
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="PhoneStatus1_GetWifiIpAddress"></block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="ScanButton_Click" x="205" y="242">
+    <statement name="DO">
+      <block type="BarcodeScanner1_DoScan"></block>
+    </statement>
+  </block>
+</xml>

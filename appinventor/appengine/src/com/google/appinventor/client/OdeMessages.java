@@ -287,19 +287,19 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Blocks")
   @Description("Caption for block selector box.")
   String blockSelectorBoxCaption();
-  
+
   @DefaultMessage("Built-in")
   @Description("Label on built-in-blocks branch of block selector tree")
   String builtinBlocksLabel();
-  
+
   // Used in boxes/ViewerBox.java
 
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
-  
+
   // Used in SaveAllEditorsCommand.java
-  
+
   @DefaultMessage("Saved project at {0}")
   @Description("Message reported when project was saved successfully.")
   String savedProject(String saveTime);
@@ -405,18 +405,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("{0} blocks")
   @Description("Tab name for blocks editor")
   String blocksEditorTabName(String formName);
-  
+
   // Used in editor/youngandroid/BlocklyPanel.java
-  
+
   @DefaultMessage("The blocks area did not load properly. Changes to the blocks for screen {0} will not be saved.")
   @Description("Message indicating that blocks changes were not saved")
   String blocksNotSaved(String formName);
-  
+
   @DefaultMessage("The blocks for screen {0} did not load properly. "
       + "You will not be able to edit using the blocks editor until the problem is corrected.")
   @Description("Message when blocks fail to load properly")
   String blocksLoadFailure(String formName);
-  
+
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
   @DefaultMessage("left")
@@ -1021,7 +1021,7 @@ public interface OdeMessages extends Messages {
       "\n\nA file named {0} already exists in this project." +
       "\nDo you want to remove that old file?" +
       "\nThis will also remove any other files whose " +
-      "names conflict with {1}.") 
+      "names conflict with {1}.")
   @Description("Confirmation message shown when conflicting files are about to be deleted.")
   String confirmOverwrite(String newFile, String existingFile);
 
@@ -1126,9 +1126,9 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("No upgrade strategy exists for {0} from version {1} to {2}.")
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
-  
+
   // Used in client/editor/simple/components/MockHVarrangement.java
-  
+
   @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
   String badAlignmentPropertyEditorForArrangement();
@@ -1147,5 +1147,13 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Always")
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
+
+  @DefaultMessage("Wireless")
+  @Description("Message providing details about starting the wireless connection.")
+  String wirelessButton();
+
+  @DefaultMessage("Disconnect Wireless")
+  @Description("Message providing details about starting the wireless connection.")
+  String wirelessButtonConnected();
 
 }

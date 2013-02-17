@@ -218,16 +218,19 @@ public class NanoHTTPD
         // Socket & server code
         // ==================================================
 
+        private static final int REPL_STACK_SIZE = 256*1024;
+
         /**
          * Starts a HTTP server to given port.<p>
          * Throws an IOException if the socket is already in use
          */
+
         public NanoHTTPD( int port, File wwwroot ) throws IOException
         {
                 myTcpPort = port;
                 this.myRootDir = wwwroot;
                 myServerSocket = new ServerSocket( myTcpPort );
-                myThread = new Thread( new Runnable()
+                myThread = new Thread( new ThreadGroup("biggerstack"), new Runnable()
                         {
                                 public void run()
                                 {
@@ -239,7 +242,7 @@ public class NanoHTTPD
                                         catch ( IOException ioe )
                                         {}
                                 }
-                        });
+                  }, "NanoHTTPD");
                 myThread.setDaemon( true );
                 myThread.start();
         }
@@ -308,7 +311,7 @@ public class NanoHTTPD
                 public HTTPSession( Socket s )
                 {
                         mySocket = s;
-                        Thread t = new Thread( this );
+                        Thread t = new Thread( new ThreadGroup("biggerstack"), this, "HTTPD Session", REPL_STACK_SIZE);
                         t.setDaemon( true );
                         t.start();
                 }

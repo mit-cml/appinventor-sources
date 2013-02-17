@@ -94,7 +94,7 @@ public abstract class FileEditor extends Composite {
   public abstract String getTabText();
 
   /**
-   * Called when the FileEditor is about to be shown. Calls 
+   * Called when the FileEditor is about to be shown. Calls
    * Ode.getInstance().setCurrentFileEditor(this). The subclass should do anything else necessary
    * to get its UI set up after calling super.onShow().
    */
@@ -103,25 +103,33 @@ public abstract class FileEditor extends Composite {
   }
 
   /**
-   * Called when the FileEditor is about to be hidden. Calls 
-   * Ode.getInstance().setCurrentFileEditor(null). The subclass should do anything else necessary 
+   * Called when the FileEditor is about to be hidden. Calls
+   * Ode.getInstance().setCurrentFileEditor(null). The subclass should do anything else necessary
    * to get its UI cleaned up after calling super.onHide().
    */
   public void onHide() {
     // When an editor is detached, if we are the "current" editor,
-    // set the current editor to null. 
+    // set the current editor to null.
     // Note: I'm not sure it is possible that we would not be the "current"
     // editor when this is called, but we check just to be safe.
     if (Ode.getInstance().getCurrentFileEditor() == this) {
       Ode.getInstance().setCurrentFileEditor(null);
     }
   }
-  
+
   /**
    * Called when the FileEditor is about to be closed. Subclasses can override this
    * to remove themselves as listeners.
    */
   public void onClose() {
+  }
+
+  /**
+   * Called to trigger the Repl (Wireless) to start. This version does nothing
+   * but the YaBlocksEditor overrides this version with one that start the
+   * Repl going.
+   */
+  public void startRepl(Boolean alreadyRunning) {
   }
 
   /**

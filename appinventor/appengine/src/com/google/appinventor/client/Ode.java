@@ -121,6 +121,8 @@ public class Ode implements EntryPoint {
   // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
   private FileEditor currentFileEditor;
 
+  private AssetManager assetManager;
+
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
    *
@@ -211,6 +213,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the asset manager.
+   *
+   * @return  asset manager
+   */
+  public AssetManager getAssetManager() {
+    return assetManager;
+  }
+
+  /**
    * Returns true if we have received the window closing event.
    */
   public static boolean isWindowClosing() {
@@ -237,7 +248,7 @@ public class Ode implements EntryPoint {
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
-  
+
   /**
    * Switch to the Debugging tab
    */
@@ -306,7 +317,7 @@ public class Ode implements EntryPoint {
     } else {
       // The project nodes have been loaded. Tell the viewer to open
       // the project. This will cause the projects source files to be fetched
-      // asynchronously, and loaded into file editors. 
+      // asynchronously, and loaded into file editors.
       ViewerBox.getViewerBox().show(projectRootNode);
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
@@ -316,6 +327,10 @@ public class Ode implements EntryPoint {
         // insert token into history but do not trigger listener event
         History.newItem(projectIdString, false);
       }
+      if (assetManager == null) {
+        assetManager = AssetManager.getInstance();
+      }
+      assetManager.loadAssets(project.getProjectId());
     }
   }
 
@@ -446,7 +461,7 @@ public class Ode implements EntryPoint {
    */
   private void initializeUi() {
     BlocklyPanel.initUi();
-    
+
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
@@ -521,7 +536,7 @@ public class Ode implements EntryPoint {
     box.setWidth("210px");
     workColumns.add(box);
     //workColumns.setCellWidth(box, "1%");
-    
+
     vertPanel.add(workColumns);
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(vertPanel);
@@ -713,7 +728,7 @@ public class Ode implements EntryPoint {
     currentFileEditor = fileEditor;
     if (currentFileEditor == null) {
       // nothing more we can do
-      OdeLog.log("Setting current file editor to null"); 
+      OdeLog.log("Setting current file editor to null");
       return;
     }
     OdeLog.log("Ode: Setting current file editor to " + currentFileEditor.getFileId());
@@ -725,7 +740,7 @@ public class Ode implements EntryPoint {
       userSettings.saveSettings(null);
     }
   }
-  
+
   /**
    * @return  currently open FileEditor, or null if none
    */
