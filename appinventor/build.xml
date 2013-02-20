@@ -91,7 +91,7 @@
         <!-- fusiontables libs -->
         <pathelement location="lib/fusiontables/fusiontables.jar" />
         <!-- bugsense -->
-        <pathelement location="lib/bugsense/bugsense3.0.8.jar" />
+        <pathelement location="lib/bugsense/bugsense3.1.jar" />
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
