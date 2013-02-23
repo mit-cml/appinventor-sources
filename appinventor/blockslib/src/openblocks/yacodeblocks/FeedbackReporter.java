@@ -282,7 +282,7 @@ public class FeedbackReporter extends JOptionPane {
    * @return JDialog The actual displayed dialog
    */
   public static JDialog showWirelessCodeDialog(String code, ImageIcon qrcode, final Runnable cancelAction) {
-    String msgText = "Instructions:<br />\n<ul>\n<li>Start the App Inventor Companion App on your phone or tablet.</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press \"Connect to App Inventor.\"</li></ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
+    String msgText = "Instructions:<br />\n<ul>\n<li>Start the \"MIT AI Companion\" App on your phone or tablet.</li>\n<li>Use the the Companion App to scan the QR code at the left;<br />\n<center>or</center>\nEnter the code below into the Companion App and press \"Connect to App Inventor.\"</li></ul>\n<font size=+1>Your Code:</font><br />\n<font size=+5>" + code + "</font>\n";
 
     HTMLPane htmlMsg = new HTMLPane(msgText);
     final JDialog dialog = new JDialog(frame, "Waiting for the Companion App");
