@@ -286,26 +286,26 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
             handled = false;
             for (Sprite sprite : draggedSprites) {
               if (sprite.Enabled() && sprite.Visible()) {
-                sprite.Touched(startX, startY);
-                sprite.TouchUp(startX, startY);
+                sprite.Touched(x, y);
+                sprite.TouchUp(x, y);
                 handled = true;
               }
             }
             // Last argument indicates that one or more sprites handled the tap
-            Touched(startX, startY, handled);
+            Touched(x, y, handled);
           }
           else {
             for (Sprite sprite : draggedSprites) {
               if (sprite.Enabled() && sprite.Visible()) {
-                sprite.Touched(startX, startY);
-                sprite.TouchUp(startX, startY);
+                sprite.Touched(x, y);
+                sprite.TouchUp(x, y);
               }
             }
           }
           // This is intentionally outside the if (!drag) block.
           // Even the release of a drag on the canvas should fire
           // a touch-up event.
-          TouchUp(startX, startY);
+          TouchUp(x, y);
 
           // Prepare for next drag
           drag = false;
