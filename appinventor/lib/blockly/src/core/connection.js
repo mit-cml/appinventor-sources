@@ -175,7 +175,12 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
 
   // Demote the inferior block so that one is a child of the superior one.
   childBlock.setParent(parentBlock);
-
+  if(childBlock.onchange) {
+    childBlock.onchange();
+  }
+  if(parentBlock.onchange) {
+    parentBlock.onchange();
+  }
   // Rendering the child node will trigger a rendering of its parent.
   // Rendering the parent node will move its connected children into position.
   if (parentBlock.rendered) {

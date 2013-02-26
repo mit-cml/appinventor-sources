@@ -23,7 +23,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.Warning');
+goog.provide('Blockly.ErrorIcon');
 
 
 /**
@@ -31,7 +31,7 @@ goog.provide('Blockly.Warning');
  * @param {!Blockly.Block} block The block associated with this warning.
  * @constructor
  */
-Blockly.Warning = function(block) {
+Blockly.ErrorIcon = function(block) {
   this.block_ = block;
   this.createIcon_();
 };
@@ -39,40 +39,40 @@ Blockly.Warning = function(block) {
 /**
  * Radius of the warning icon.
  */
-Blockly.Warning.ICON_RADIUS = 8;
+Blockly.ErrorIcon.ICON_RADIUS = 8;
 
 /**
  * Bubble UI (if visible).
  * @type {Blockly.Bubble}
  * @private
  */
-Blockly.Warning.prototype.bubble_ = null;
+Blockly.ErrorIcon.prototype.bubble_ = null;
 
 /**
  * Warning text (if bubble is not visible).
  * @private
  */
-Blockly.Warning.prototype.text_ = '';
+Blockly.ErrorIcon.prototype.text_ = '';
 
 /**
  * Absolute X coordinate of icon's center.
  * @type {number}
  * @private
  */
-Blockly.Warning.prototype.iconX_ = 0;
+Blockly.ErrorIcon.prototype.iconX_ = 0;
 
 /**
  * Absolute Y coordinate of icon's centre.
  * @type {number}
  * @private
  */
-Blockly.Warning.prototype.iconY_ = 0;
+Blockly.ErrorIcon.prototype.iconY_ = 0;
 
 /**
  * Create the icon on the block.
  * @private
  */
-Blockly.Warning.prototype.createIcon_ = function() {
+Blockly.ErrorIcon.prototype.createIcon_ = function() {
   /* Here's the markup that will be generated:
   <g class="blocklyIconGroup">
     <path class="blocklyIconShield" d="..."/>
@@ -82,14 +82,14 @@ Blockly.Warning.prototype.createIcon_ = function() {
   this.iconGroup_ = Blockly.createSvgElement('g',
       {'class': 'blocklyIconGroup'}, null);
   var iconShield = Blockly.createSvgElement('path',
-      {'class': 'blocklyWarningIconShield',
+      {'class': 'blocklyErrorIconShield',
        'd': 'M 2,15 Q -1,15 0.5,12 L 6.5,1.7 Q 8,-1 9.5,1.7 L 15.5,12 ' +
        'Q 17,15 14,15 z'},
       this.iconGroup_);
   this.iconMark_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyWarningIconMark',
-       'x': Blockly.Warning.ICON_RADIUS,
-       'y': 2 * Blockly.Warning.ICON_RADIUS - 3}, this.iconGroup_);
+      {'class': 'blocklyIconMark',
+       'x': Blockly.ErrorIcon.ICON_RADIUS,
+       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
   this.block_.getSvgRoot().appendChild(this.iconGroup_);
   Blockly.bindEvent_(this.iconGroup_, 'mouseup', this, this.iconClick_);
@@ -101,7 +101,7 @@ Blockly.Warning.prototype.createIcon_ = function() {
  * @return {!Element} The top-level node of the text.
  * @private
  */
-Blockly.Warning.prototype.textToDom_ = function(text) {
+Blockly.ErrorIcon.prototype.textToDom_ = function(text) {
   var paragraph = Blockly.createSvgElement('text',
       {'class': 'blocklyText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
   var lines = text.split('\n');
@@ -118,7 +118,7 @@ Blockly.Warning.prototype.textToDom_ = function(text) {
  * Is the warning bubble visible?
  * @return {boolean} True if the bubble is visible.
  */
-Blockly.Warning.prototype.isVisible = function() {
+Blockly.ErrorIcon.prototype.isVisible = function() {
   return !!this.bubble_;
 };
 
@@ -126,7 +126,7 @@ Blockly.Warning.prototype.isVisible = function() {
  * Show or hide the warning bubble.
  * @param {boolean} visible True if the bubble should be visible.
  */
-Blockly.Warning.prototype.setVisible = function(visible) {
+Blockly.ErrorIcon.prototype.setVisible = function(visible) {
   if (visible == this.isVisible()) {
     // No change.
     return;
@@ -165,7 +165,7 @@ Blockly.Warning.prototype.setVisible = function(visible) {
  * @param {!Event} e Mouse click event.
  * @private
  */
-Blockly.Warning.prototype.iconClick_ = function(e) {
+Blockly.ErrorIcon.prototype.iconClick_ = function(e) {
   this.setVisible(!this.isVisible());
 };
 
@@ -174,7 +174,7 @@ Blockly.Warning.prototype.iconClick_ = function(e) {
  * @param {!Event} e Mouse up event.
  * @private
  */
-Blockly.Warning.prototype.bodyFocus_ = function(e) {
+Blockly.ErrorIcon.prototype.bodyFocus_ = function(e) {
   this.bubble_.promote_();
 };
 
@@ -182,7 +182,7 @@ Blockly.Warning.prototype.bodyFocus_ = function(e) {
  * Set this warning's text.
  * @param {string} text Warning text.
  */
-Blockly.Warning.prototype.setText = function(text) {
+Blockly.ErrorIcon.prototype.setText = function(text) {
   this.text_ = text;
   if (this.isVisible()) {
     this.setVisible(false);
@@ -193,7 +193,7 @@ Blockly.Warning.prototype.setText = function(text) {
 /**
  * Change the colour of a warning to match its block.
  */
-Blockly.Warning.prototype.updateColour = function() {
+Blockly.ErrorIcon.prototype.updateColour = function() {
   if (this.isVisible()) {
     var hexColour = Blockly.makeColour(this.block_.getColour());
     this.bubble_.setColour(hexColour);
@@ -203,14 +203,14 @@ Blockly.Warning.prototype.updateColour = function() {
 /**
  * Dispose of this warning.
  */
-Blockly.Warning.prototype.dispose = function() {
+Blockly.ErrorIcon.prototype.dispose = function() {
   // Dispose of and unlink the icon.
   goog.dom.removeNode(this.iconGroup_);
   this.iconGroup_ = null;
   // Dispose of and unlink the bubble.
   this.setVisible(false);
   // Disconnect links between the block and the warning.
-  this.block_.warning = null;
+  this.block_.errorIcon = null;
   this.block_ = null;
 };
 
@@ -219,7 +219,7 @@ Blockly.Warning.prototype.dispose = function() {
  * @param {number} cursorX Horizontal offset at which to position the icon.
  * @return {number} Horizontal offset for next item to draw.
  */
-Blockly.Warning.prototype.renderIcon = function(cursorX) {
+Blockly.ErrorIcon.prototype.renderIcon = function(cursorX) {
   if (this.block_.collapsed) {
     this.iconGroup_.setAttribute('display', 'none');
     return cursorX;
@@ -227,7 +227,7 @@ Blockly.Warning.prototype.renderIcon = function(cursorX) {
   this.iconGroup_.setAttribute('display', 'block');
 
   var TOP_MARGIN = 5;
-  var diameter = 2 * Blockly.Warning.ICON_RADIUS;
+  var diameter = 2 * Blockly.ErrorIcon.ICON_RADIUS;
   if (Blockly.RTL) {
     cursorX -= diameter;
   }
@@ -247,7 +247,7 @@ Blockly.Warning.prototype.renderIcon = function(cursorX) {
  * @param {number} x Absolute horizontal location.
  * @param {number} y Absolute vertical location.
  */
-Blockly.Warning.prototype.setIconLocation = function(x, y) {
+Blockly.ErrorIcon.prototype.setIconLocation = function(x, y) {
   this.iconX_ = x;
   this.iconY_ = y;
   if (this.isVisible()) {
@@ -259,12 +259,12 @@ Blockly.Warning.prototype.setIconLocation = function(x, y) {
  * Notification that the icon has moved, but we don't really know where.
  * Recompute the icon's location from scratch.
  */
-Blockly.Warning.prototype.computeIconLocation = function() {
+Blockly.ErrorIcon.prototype.computeIconLocation = function() {
   // Find coordinates for the centre of the icon and update the arrow.
   var blockXY = this.block_.getRelativeToSurfaceXY();
   var iconXY = Blockly.getRelativeXY_(this.iconGroup_);
-  var newX = blockXY.x + iconXY.x + Blockly.Warning.ICON_RADIUS;
-  var newY = blockXY.y + iconXY.y + Blockly.Warning.ICON_RADIUS;
+  var newX = blockXY.x + iconXY.x + Blockly.ErrorIcon.ICON_RADIUS;
+  var newY = blockXY.y + iconXY.y + Blockly.ErrorIcon.ICON_RADIUS;
   if (newX !== this.iconX_ || newY !== this.iconY_) {
     this.setIconLocation(newX, newY);
   }
@@ -274,6 +274,6 @@ Blockly.Warning.prototype.computeIconLocation = function() {
  * Returns the center of the block's icon relative to the surface.
  * @return {!Object} Object with x and y properties.
  */
-Blockly.Warning.prototype.getIconLocation = function() {
+Blockly.ErrorIcon.prototype.getIconLocation = function() {
   return {x: this.iconX_, y: this.iconY_};
 };

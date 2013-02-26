@@ -24,7 +24,7 @@ Blockly.Yail.procedures_defreturn = function() {
   var argPrefix = (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
   var args = argPrefix + this.arguments_.join(' ' + argPrefix);
   var procName = this.getTitleValue('NAME');
-  var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || 'false';
+  var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
       + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION 
       + Blockly.Yail.YAIL_SPACER + returnVal + Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -48,7 +48,7 @@ Blockly.Yail.procedures_callnoreturn = function() {
   var procName = this.getTitleValue('PROCNAME');
   var argCode = [];
   for ( var x = 0; x < this.arguments_.length; x++) {
-    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || 'null';
+    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   }
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + argCode.join(' ')
@@ -61,7 +61,7 @@ Blockly.Yail.procedures_callreturn = function() {
   var procName = this.getTitleValue('PROCNAME');
   var argCode = [];
   for ( var x = 0; x < this.arguments_.length; x++) {
-    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || 'null';
+    argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   }
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER + argCode.join(' ')

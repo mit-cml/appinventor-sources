@@ -79,6 +79,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -188,7 +189,7 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
-
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -248,7 +249,7 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
-
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's typeNam, and revises its title
     this.rename = function(oldname, newname) {
       if (this.typeName == oldname) {
@@ -322,6 +323,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
 
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -389,6 +391,7 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
 
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -469,6 +472,7 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
 
     this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
     this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
@@ -534,7 +538,7 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
 
     this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
     this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
-
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's typeName, and revises its title
     this.rename = function(oldname, newname) {
       if (this.typeName == oldname) {
@@ -607,7 +611,8 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
     this.appendDummyInput().appendTitle(this.componentDropDown, "COMPONENT_SELECTOR");
     this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, "COMPONENT");
-
+    this.errors = [{name:"checkIsInDefinition"}];
+    this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {

@@ -74,6 +74,7 @@ Blockly.Language.global_declaration = {
         .appendTitle("to");
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
     return [this.getTitleValue('VAR')];
   },
@@ -97,6 +98,7 @@ Blockly.Language.lexical_variable_get = {
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -125,6 +127,7 @@ Blockly.Language.lexical_variable_get = {
          }
        }
     }
+    Blockly.WarningHandler.checkErrors.call(this);
   },
   renameLexicalVar: function(oldName, newName) {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
@@ -149,6 +152,7 @@ Blockly.Language.lexical_variable_set = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP_1);
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -188,6 +192,7 @@ Blockly.Language.local_declaration_statement = {
 
     this.setTooltip("Fix this tooltip!"); // *** [lyn, 11/07/12] Fix this
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: function(names, inits) { 
     // Create all inputs (except for "local" keyword) from names list using exps in inits
     // If inits is undefined, treat all initial expressions as undefined. 
@@ -421,6 +426,7 @@ Blockly.Language.local_declaration_expression = {
 
     this.setTooltip("Fix this tooltip!"); // *** [lyn, 11/07/12] Fix this
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,
   mutationToDom: Blockly.Language.local_declaration_statement.mutationToDom,
   domToMutation: function(xmlElement) {

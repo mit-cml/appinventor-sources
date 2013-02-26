@@ -51,7 +51,9 @@ Blockly.Language.procedures_defnoreturn = {
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.setTooltip(Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP_1);
     this.arguments_ = [];
+    this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   updateParams_: function() {
     // Check for duplicated arguments.
     var badArg = false;
@@ -202,7 +204,9 @@ Blockly.Language.procedures_defreturn = {
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
     this.setTooltip(Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP_1);
     this.arguments_ = [];
+    this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   // [lyn, 11/24/12] return list of procedure body (if there is one)
   blocksInScope: function () {
     /* var doBody = this.getInputTargetBlock('STACK'); */ // *** [lyn, 11/24/12] This will go away with DO-AND-RETURN block
@@ -400,7 +404,9 @@ Blockly.Language.procedures_callnoreturn = {
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
     return this.getTitleValue('PROCNAME');
   },
@@ -581,7 +587,9 @@ Blockly.Language.procedures_callreturn = {
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
   },
+  onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,
   renameProcedure: Blockly.Language.procedures_callnoreturn.renameProcedure,
   setProcedureParameters:

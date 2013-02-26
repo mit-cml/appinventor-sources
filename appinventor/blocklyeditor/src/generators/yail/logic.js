@@ -38,7 +38,7 @@ Blockly.Yail.logic_negate = function() {
   // negate operation
   var argument = Blockly.Yail
       .valueToCode(this, 'BOOL', Blockly.Yail.ORDER_NONE)
-      || null;
+      || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-not"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -59,8 +59,8 @@ Blockly.Yail.logic_operation = function() {
   var tuple = Blockly.Yail.logic_operation.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'A', order) || Blockly.Yail.YAIL_FALSE;
+  var argument1 = Blockly.Yail.valueToCode(this, 'B', order) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + operator
       + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_SPACER
       + argument1 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -79,8 +79,8 @@ Blockly.Yail.logic_or = function() {
 Blockly.Yail.logic_compare = function() {
   // Basic logic compare operators
   // // TODO: (Hal) handle any type?
-  var argument0 = Blockly.Yail.valueToCode(this, 'A', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'B', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'A', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  var argument1 = Blockly.Yail.valueToCode(this, 'B', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-equal?"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION

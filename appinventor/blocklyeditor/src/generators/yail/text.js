@@ -42,7 +42,7 @@ Blockly.Yail.text_join = function() {
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
 
   for(i=0;i<this.itemCount_;i++) {
-    var argument = Blockly.Yail.valueToCode(this, 'ADD' + i, Blockly.Yail.ORDER_NONE) || null;
+    var argument = Blockly.Yail.valueToCode(this, 'ADD' + i, Blockly.Yail.ORDER_NONE) || "\"\"";
     code += argument + Blockly.Yail.YAIL_SPACER;
   }
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
@@ -59,7 +59,7 @@ Blockly.Yail.text_join = function() {
 
 Blockly.Yail.text_length = function() {
   // // String length
-  var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || null;
+  var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-length"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -75,7 +75,7 @@ Blockly.Yail.text_length = function() {
 
 Blockly.Yail.text_isEmpty = function() {
   // Is the string null?
-  var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || null;
+  var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-empty?"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -96,8 +96,8 @@ Blockly.Yail.text_compare = function() {
   var operator1 = prim[0];
   var operator2 = prim[1];
   var order = prim[2];
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT1', order) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'TEXT2', order) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT1', order) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'TEXT2', order) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -120,7 +120,7 @@ Blockly.Yail.text_compare.OPERATORS = {
 
 Blockly.Yail.text_trim = function() {
   // String trim
-  var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
+  var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-trim"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -141,7 +141,7 @@ Blockly.Yail.text_changeCase = function() {
   var operator1 = tuple[0];
   var operator2 = tuple[1];
   var order = tuple[2];
-  var argument = Blockly.Yail.valueToCode(this, 'TEXT', order) || null;
+  var argument = Blockly.Yail.valueToCode(this, 'TEXT', order) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -162,8 +162,8 @@ Blockly.Yail.text_changeCase.OPERATORS = {
 
 Blockly.Yail.text_starts_at = function() {
   // String starts at
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-starts-at"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -180,8 +180,8 @@ Blockly.Yail.text_starts_at = function() {
 
 Blockly.Yail.text_contains = function() {
   // String contains.
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-contains"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -204,8 +204,8 @@ Blockly.Yail.text_split = function() {
   var operator1 = tuple[0];
   var operator2 = tuple[1];
   var order = tuple[2];
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'AT', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'AT', Blockly.Yail.ORDER_NONE) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -231,7 +231,7 @@ Blockly.Yail.text_split.OPERATORS = {
 
 Blockly.Yail.text_split_at_spaces = function() {
   // split at spaces
-  var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
+  var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-split-at-spaces"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -247,9 +247,9 @@ Blockly.Yail.text_split_at_spaces = function() {
 
 Blockly.Yail.text_segment = function() {
   // Create string segment
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || null;
-  var argument2 = Blockly.Yail.valueToCode(this, 'LENGTH', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || 1;
+  var argument2 = Blockly.Yail.valueToCode(this, 'LENGTH', Blockly.Yail.ORDER_NONE) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-substring"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -267,9 +267,9 @@ Blockly.Yail.text_segment = function() {
 
 Blockly.Yail.text_replace_all = function() {
   // String replace with segment
-  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || null;
-  var argument1 = Blockly.Yail.valueToCode(this, 'SEGMENT', Blockly.Yail.ORDER_NONE) || null;
-  var argument2 = Blockly.Yail.valueToCode(this, 'REPLACEMENT', Blockly.Yail.ORDER_NONE) || null;
+  var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument1 = Blockly.Yail.valueToCode(this, 'SEGMENT', Blockly.Yail.ORDER_NONE) || "\"\"";
+  var argument2 = Blockly.Yail.valueToCode(this, 'REPLACEMENT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-replace-all"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION

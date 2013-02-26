@@ -28,6 +28,7 @@ goog.provide('Blockly.Block');
 goog.require('Blockly.BlockSvg');
 goog.require('Blockly.Comment');
 goog.require('Blockly.Connection');
+goog.require('Blockly.ErrorIcon');
 goog.require('Blockly.Input');
 goog.require('Blockly.Language');
 goog.require('Blockly.Mutator');
@@ -117,6 +118,12 @@ Blockly.Block.prototype.comment = null;
  * @type {Blockly.Warning}
  */
 Blockly.Block.prototype.warning = null;
+
+/**
+ * Block's error icon (if any).
+ * @type {Blockly.ErrorIcon}
+ */
+Blockly.Block.prototype.errorIcon = null;
 
 /**
  * Create and initialize the SVG representation of the block.
@@ -263,6 +270,10 @@ Blockly.Block.prototype.dispose = function(healStack, animate) {
   if (this.warning) {
     this.warning.dispose();
   }
+  if (this.errorIcon) {
+    this.errorIcon.dispose();
+  }
+
   // Dispose of all inputs and their titles.
   for (var x = 0, input; input = this.inputList[x]; x++) {
     input.dispose();
@@ -414,6 +425,11 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
       if (descendant.warning) {
         var data = descendant.warning.getIconLocation();
         data.bubble = descendant.warning;
+        this.draggedBubbles_.push(data);
+      }
+      if (descendant.errorIcon) {
+        var data = descendant.errorIcon.getIconLocation();
+        data.bubble = descendant.errorIcon;
         this.draggedBubbles_.push(data);
       }
     }
@@ -679,6 +695,9 @@ Blockly.Block.prototype.moveConnections_ = function(dx, dy) {
   }
   if (this.warning) {
     this.warning.computeIconLocation();
+  }
+  if (this.errorIcon) {
+    this.errorIcon.computeIconLocation();
   }
 
   // Recurse through all blocks attached under this one.
@@ -972,6 +991,9 @@ Blockly.Block.prototype.setColour = function(colourHue) {
   if (this.warning) {
     this.warning.updateColour();
   }
+  if (this.errorIcon) {
+    this.errorIcon.updateColour();
+  }
   if (this.rendered) {
     this.render();
   }
@@ -1208,6 +1230,10 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
   if (collapsed && this.warning) {
     this.warning.setVisible(false);
   }
+  if (collapsed && this.errorIcon) {
+    this.errorIcon.setVisible(false);
+  }
+
 
   if (renderList.length == 0) {
     // No child blocks, just render this block.
@@ -1460,6 +1486,38 @@ Blockly.Block.prototype.setWarningText = function(text) {
     }
   }
 };
+
+
+/**
+ * Set this block's warning text.
+ * @param {?string} text The text, or null to delete.
+ */
+Blockly.Block.prototype.setErrorIconText = function(text) {
+  if (!Blockly.ErrorIcon) {
+    throw 'Warnings not supported.';
+  }
+  var changedState = false;
+  if (goog.isString(text)) {
+    if (!this.errorIcon) {
+      this.errorIcon = new Blockly.ErrorIcon(this);
+      changedState = true;
+    }
+    this.errorIcon.setText(/** @type {string} */ (text));
+  } else {
+    if (this.errorIcon) {
+      this.errorIcon.dispose();
+      changedState = true;
+    }
+  }
+  if (this.rendered) {
+    this.render();
+    if (changedState) {
+      // Adding or removing a warning icon will cause the block to change shape.
+      this.bumpNeighbours_();
+    }
+  }
+};
+
 
 /**
  * Render the block.

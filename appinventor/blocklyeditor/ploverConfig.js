@@ -55,6 +55,8 @@
     "./src/componentblock.js",
     "./src/mutators.js",
     "./src/field_lexical_variable.js",
+    "./src/errorIcon.js",
+    "./src/warningHandler.js",
 
     //language files
     './src/language/common/control.js',
@@ -65,7 +67,7 @@
     './src/language/common/utilities.js',
     './src/language/common/procedures.js',
     './src/language/common/lexical-variables.js',
-
+    './src/language/common/colors.js',
 
     //generator files
     "./src/generators/yail.js",
@@ -75,6 +77,7 @@
     "./src/generators/yail/control.js",
     "./src/generators/yail/logic.js",
     "./src/generators/yail/text.js",
+    "./src/generators/yail/colors.js",
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
 

@@ -35,7 +35,8 @@ Blockly.Language.text = {
         'TEXT').appendTitle('\u201D');
     this.setOutput(true, String);
     this.setTooltip('A text string.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_join = {
@@ -55,7 +56,7 @@ Blockly.Language.text_join = {
     this.repeatingInputName = 'ADD';
     this.itemCount_ = 2;
   },
-
+  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -90,7 +91,8 @@ Blockly.Language.text_join_item = {
     this.setNextStatement(true);
     this.setTooltip("");
     this.contextMenu = false;
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_length = {
@@ -102,7 +104,8 @@ Blockly.Language.text_length = {
     this.setOutput(true, Number);
     this.appendValueInput('VALUE').setCheck(String).appendTitle('length');
     this.setTooltip('Returns number of characters (including spaces)\n' + 'in the provided text.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_isEmpty = {
@@ -114,7 +117,8 @@ Blockly.Language.text_isEmpty = {
     this.setOutput(true, Boolean);
     this.appendValueInput('VALUE').setCheck(String).appendTitle('is empty');
     this.setTooltip('Returns true if the length of the\n' + 'text is 0, false otherwise.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_compare = {
@@ -133,7 +137,8 @@ Blockly.Language.text_compare = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_compare.TOOLTIPS[mode];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_compare.OPERATORS = [ [ '<', 'LT' ], [ '=', 'EQUAL' ], [ '>', 'GT' ] ];
@@ -160,7 +165,8 @@ Blockly.Language.text_trim = {
     this.appendValueInput('TEXT').setCheck(String).appendTitle('trim');
     this.setTooltip('Returns a copy of it text string arguments with any\n'
         + 'leading or trailing spaces removed.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_changeCase = {
@@ -177,7 +183,8 @@ Blockly.Language.text_changeCase = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_changeCase.TOOLTIPS[mode];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_changeCase.OPERATORS = [ [ 'upcase', 'UPCASE' ], [ 'downcase', 'DOWNCASE' ] ];
@@ -199,7 +206,8 @@ Blockly.Language.text_starts_at = {
     this.setTooltip('Returns the starting index of the piece in the text.\n'
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_contains = {
@@ -212,7 +220,8 @@ Blockly.Language.text_contains = {
     this.appendValueInput('TEXT').setCheck(String).appendTitle('contains').appendTitle('text');
     this.appendValueInput('PIECE').setCheck(String).appendTitle('piece');
     this.setTooltip('Tests whether the piece is contained in the text.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_split = {
@@ -231,7 +240,8 @@ Blockly.Language.text_split = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_split.TOOLTIPS[mode];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_split.OPERATORS = [ [ 'split at first', 'SPLITATFIRST' ],
@@ -265,7 +275,8 @@ Blockly.Language.text_split_at_spaces = {
     this.setOutput(true, Array);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('split at spaces');
     this.setTooltip('Split the text into pieces separated by spaces.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_segment = {
@@ -281,7 +292,8 @@ Blockly.Language.text_segment = {
     this.setTooltip('Extracts the segment of the given length from the given text\n'
         + 'starting from the given text starting from the given position. Position\n'
         + '1 denotes the beginning of the text.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.text_replace_all = {
@@ -296,5 +308,6 @@ Blockly.Language.text_replace_all = {
     this.appendValueInput('REPLACEMENT').setCheck(String).appendTitle('replacement');
     this.setTooltip('Returns a new text obtained by replacing all occurrences\n'
         + 'of the segment with the replacement.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };

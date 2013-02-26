@@ -457,6 +457,9 @@ Blockly.BlockSvg.prototype.render = function() {
   if (this.block_.warning) {
     cursorX = this.block_.warning.renderIcon(cursorX);
   }
+  if (this.block_.errorIcon) {
+    cursorX = this.block_.errorIcon.renderIcon(cursorX);
+  }
   cursorX += Blockly.RTL ?
       Blockly.BlockSvg.SEP_SPACE_X : -Blockly.BlockSvg.SEP_SPACE_X;
   // If there are no icons, cursorX will be 0, otherwise it will be the

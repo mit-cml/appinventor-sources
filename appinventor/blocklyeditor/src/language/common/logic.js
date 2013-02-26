@@ -39,7 +39,8 @@ Blockly.Language.logic_boolean = {
       var op = thisBlock.getTitleValue('BOOL');
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_boolean.OPERATORS = [
@@ -66,7 +67,8 @@ Blockly.Language.logic_false = {
       var op = thisBlock.getTitleValue('BOOL');
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_negate = {
@@ -79,7 +81,8 @@ Blockly.Language.logic_negate = {
     this.appendValueInput('BOOL').setCheck(Boolean).appendTitle('not');
     this.setTooltip('Returns true if the input is false.\n' +
         'Returns false if the input is true.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_compare = {
@@ -94,7 +97,8 @@ Blockly.Language.logic_compare = {
     this.setInputsInline(true);
     this.setTooltip('Tests whether two things are equal. \n' +
         'The things being compared can be any thing, not only numbers.');
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_operation = {
@@ -113,7 +117,8 @@ Blockly.Language.logic_operation = {
       var op = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_operation.OPERATORS =
@@ -142,5 +147,6 @@ Blockly.Language.logic_or = {
       var op = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
