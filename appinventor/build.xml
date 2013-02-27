@@ -15,8 +15,6 @@
   <target name="all">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
@@ -33,8 +31,6 @@
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="tests"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>

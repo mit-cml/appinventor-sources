@@ -134,7 +134,7 @@
        ===================================================================== -->
   <target name="AiServerLib"
           description="App Inventor Server library"
-          depends="init,WarLibs,AiSharedLib,blockseditor_BlocksEditor,buildserver_StarterApp">
+          depends="init,WarLibs,AiSharedLib">
     <property name="AiServerLib-class.dir" location="${class.dir}/AiServerLib" />
     <mkdir dir="${AiServerLib-class.dir}" />
 
@@ -147,12 +147,6 @@
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>
     </ai.javac>
-
-    <!-- copy resources that need to be packed into AiServerLib.jar -->
-    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
-          file="${build.dir}/blockseditor/BlocksEditor.jar"/>
-    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
-          file="${build.dir}/buildserver/AppInventorPhoneApp.apk"/>
 
     <jar basedir="${AiServerLib-class.dir}"
          destfile="${local.build.dir}/AiServerLib.jar" />
