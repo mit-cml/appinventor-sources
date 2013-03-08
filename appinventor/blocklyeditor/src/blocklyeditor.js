@@ -38,7 +38,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   
   */
   
-  Blockly.showPrefixToUser = true;
+  Blockly.showPrefixToUser = false;
   Blockly.usePrefixInYail = false;
 
   /******************************************************************************

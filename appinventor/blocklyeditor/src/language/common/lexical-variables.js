@@ -171,7 +171,7 @@ Blockly.Language.local_declaration_statement = {
     
     
     var declInput = this.appendValueInput('DUMMYDECL');
-    declInput.appendTitle("set local")
+    declInput.appendTitle("initialize local")
             .appendTitle(new Blockly.FieldTextInput("name"))
             .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT);
@@ -201,7 +201,7 @@ Blockly.Language.local_declaration_statement = {
         // if (i == 0) {
         //  declInput.appendTitle("local"); // Only put keyword "local" on top line.
         // }
-        declInput.appendTitle("set local")
+        declInput.appendTitle("initialize local")
             .appendTitle(new Blockly.FieldTextInput(names[i], Blockly.LexicalVariable.renameParam), 
                               'VAR' + i)
             .appendTitle("to")
@@ -403,7 +403,7 @@ Blockly.Language.local_declaration_expression = {
         //.appendTitle("local"); // [lyn, 11/05/12] See notes on this above in local_declaration_statement
 
     var declInput = this.appendValueInput('DUMMYDECL');
-    declInput.appendTitle("set local")
+    declInput.appendTitle("initialize local")
             .appendTitle(new Blockly.FieldTextInput("name"))
             .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT);
