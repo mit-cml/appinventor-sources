@@ -94,8 +94,8 @@ public final class Compiler {
       "/tools/linux/aapt";
   private static final String KAWA_RUNTIME =
       RUNTIME_FILES_DIR + "kawa.jar";
-  private static final String BUGSENSE_RUNTIME =
-      RUNTIME_FILES_DIR + "bugsense3.1.jar";
+  private static final String ACRA_RUNTIME =
+      RUNTIME_FILES_DIR + "acra-4.4.0.jar";
   private static final String DX_JAR =
       RUNTIME_FILES_DIR + "dx.jar";
 
@@ -174,6 +174,10 @@ public final class Compiler {
     for (String componentType : componentTypes) {
       permissions.addAll(componentPermissions.get(componentType));
     }
+    if (isForWireless) {      // This is so ACRA can do a logcat on phones older then Jelly Bean
+      permissions.add("android.permission.READ_LOGS");
+    }
+
     return permissions;
   }
 
@@ -279,7 +283,7 @@ public final class Compiler {
       out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
-      if (isForWireless) {              // This is to hook into Bugsense
+      if (isForWireless) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       }
       out.write(">\n");
@@ -624,7 +628,7 @@ public final class Compiler {
       // Construct the class path including component libraries (jars)
       String classpath =
         getResource(KAWA_RUNTIME) + File.pathSeparator +
-        getResource(BUGSENSE_RUNTIME) + File.pathSeparator +
+        getResource(ACRA_RUNTIME) + File.pathSeparator +
         getResource(SIMPLE_ANDROID_RUNTIME_JAR) + File.pathSeparator;
 
       // Add component library names to classpath
@@ -837,7 +841,7 @@ public final class Compiler {
     commandLineList.add(classesDir.getAbsolutePath());
     commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
     commandLineList.add(getResource(KAWA_RUNTIME));
-    commandLineList.add(getResource(BUGSENSE_RUNTIME));
+    commandLineList.add(getResource(ACRA_RUNTIME));
 
     // Add libraries to command line arguments
     System.out.println("Libraries needed command line n = " + librariesNeeded.size());

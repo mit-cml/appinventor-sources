@@ -110,7 +110,7 @@
     <property name="ant.build.date" value="${TODAY}" />
     <filter token="ant.build.date" value="${ant.build.date}" />
 
-    <filter token="bugsense.apikey" value="${bugsense.apikey}" />
+    <filter token="acra.uri" value="${acra.uri}" />
 
     <mkdir dir="${local.build.dir}/src/${common.pkg}/version/"/>
     <copy tofile="${local.build.dir}/src/${common.pkg}/version/GitBuildId.java" file="GitBuildId.template" filtering="true" />

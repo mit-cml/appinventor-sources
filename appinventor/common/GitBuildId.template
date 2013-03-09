@@ -17,7 +17,7 @@ public final class GitBuildId {
   public static final String GIT_BUILD_VERSION = "@git.build.version@";
   public static final String GIT_BUILD_FINGERPRINT = "@git.build.fingerprint@";
   public static final String ANT_BUILD_DATE = "@ant.build.date@";
-  public static final String BUGSENSE_API_KEY = "@bugsense.apikey@";
+  public static final String ACRA_URI = "@acra.uri@";
 
   private GitBuildId() {
   }
@@ -44,10 +44,10 @@ public final class GitBuildId {
     return ANT_BUILD_DATE;
   }
 
-  public static String getBugsenseApiKey() {
-    if (BUGSENSE_API_KEY.equals("${bugsense.apikey}"))  // This is the value if no value is provided to ant
+  public static String getAcraUri() {
+    if (ACRA_URI.equals("${acra.uri}"))  // This is the value if no value is provided to ant
       return("");
-    return BUGSENSE_API_KEY.trim();
+    return ACRA_URI.trim();
   }
 
 }

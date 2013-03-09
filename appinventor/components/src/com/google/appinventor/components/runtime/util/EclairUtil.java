@@ -11,8 +11,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
-import com.bugsense.trace.BugSenseHandler;
-
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
@@ -42,14 +40,6 @@ public class EclairUtil {
    */
   public static void overridePendingTransitions(Activity activity, int enterAnim, int exitAnim) {
     activity.overridePendingTransition(enterAnim, exitAnim);
-  }
-
-  public static void setupBugSense(Context context, String api_key) {
-    BugSenseHandler.initAndStartSession(context, api_key);
-  }
-
-  public static void sendBugSenseException(Exception ex) {
-    BugSenseHandler.sendException(ex);
   }
 
   /**

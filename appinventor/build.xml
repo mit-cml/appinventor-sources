@@ -90,8 +90,8 @@
         <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
         <!-- fusiontables libs -->
         <pathelement location="lib/fusiontables/fusiontables.jar" />
-        <!-- bugsense -->
-        <pathelement location="lib/bugsense/bugsense3.1.jar" />
+        <!-- acra -->
+        <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
