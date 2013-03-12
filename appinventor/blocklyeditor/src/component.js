@@ -90,11 +90,11 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   }
 
   Blockly.ComponentInstances.addInstance(name, uid);
-
+  Blockly.ComponentInstances[name].typeName = typeName;
   // Add event blocks
   for (var i = 0, eventType; eventType = typeDescription.events[i]; i++) {
     Blockly.Component.addBlockAndGenerator(name, name + '_' + eventType.name,
-        new Blockly.ComponentBlock.event(eventType, name),
+        new Blockly.ComponentBlock.event(eventType, name, typeName),
         Blockly.Yail.event(name, eventType.name));
     // TODO: consider adding generic event blocks. We don't have them for now (since the original
     // App Inventor didn't have them).
@@ -104,7 +104,7 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   for (var i = 0, methodType; methodType = typeDescription.methods[i]; i++) {
     Blockly.Component.addBlockAndGenerator(name,
         name + '_' + methodType.name,
-        new Blockly.ComponentBlock.method(methodType, name),
+        new Blockly.ComponentBlock.method(methodType, name, typeName),
         (methodType.returnType
             ? Blockly.Yail.methodWithReturn(name, methodType.name)
                 : Blockly.Yail.methodNoReturn(name, methodType.name)));
@@ -151,14 +151,14 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   if (getters.length > 0) {
     Blockly.Component.addBlockAndGenerator(name,
         name + '_getproperty',
-        new Blockly.ComponentBlock.getter(getters, propYailTypes, propTooltips, name),
+        new Blockly.ComponentBlock.getter(getters, propYailTypes, propTooltips, name, typeName),
         Blockly.Yail.getproperty(name));
   };
 
   if (setters.length > 0) {
     Blockly.Component.addBlockAndGenerator(name,
         name + '_setproperty',
-        new Blockly.ComponentBlock.setter(setters, propYailTypes, propTooltips, name),
+        new Blockly.ComponentBlock.setter(setters, propYailTypes, propTooltips, name, typeName),
         Blockly.Yail.setproperty(name));
   };
 
@@ -181,7 +181,7 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
 
   Blockly.Component.addBlockAndGenerator(name,
       name + '_component',
-      new Blockly.ComponentBlock.component(name),
+      new Blockly.ComponentBlock.component(name,typeName),
       Blockly.Yail.componentObject(name));
 
   // For debugging purposes
@@ -243,6 +243,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
   Blockly.ComponentInstances[newname] = {}
   Blockly.ComponentInstances[newname].uid = uid;
   Blockly.ComponentInstances[newname].blocks = [];
+  Blockly.ComponentInstances[newname].typeName = Blockly.ComponentInstances[oldname].typeName;
 
   // Construct new names for each of the Component's block types -- e.g., Button1_Click
   var blocks = Blockly.ComponentInstances[oldname].blocks;
@@ -362,16 +363,17 @@ Blockly.Component.remove = function(type, name, uid) {
     console.log("Deleting " + elementName + " from Blockly.Yail");
     delete Blockly.Yail[elementName];
 
-    // Delete instances of this type of block from the workspace
-    var allblocks = Blockly.mainWorkspace.getAllBlocks();
-    for (var x = 0, block; block = allblocks[x]; x++) {
-      if (!block.category) {
-        continue;
-      } else if (block.category == 'Component' && block.type == elementName) {
-        block.dispose(true);     // Destroy the block gently
-      }
+  }
+  // Delete instances of this type of block from the workspace
+  var allblocks = Blockly.mainWorkspace.getAllBlocks();
+  for (var x = 0, block; block = allblocks[x]; x++) {
+    if (!block.category) {
+      continue;
+    } else if (block.category == 'Component' && block.instanceName == name) {
+      block.dispose(true);     // Destroy the block gently
     }
   }
+
   // Remove the component instance
   console.log("Deleting " + name + " from Blockly.ComponentInstances");
   delete Blockly.ComponentInstances[name];
@@ -412,11 +414,7 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
       // TODO: eventually deal with variable declarations, once we have them
     } else if (block.category == 'Component') {
       var instanceName = block.instanceName;
-      if (!instanceName) {
-        // Most likely a generic component-related block. There are currently no generic component
-        // blocks that are valid top-level blocks. This could change if we implement generic
-        // event blocks.
-        // TODO: flag this block as invalid at the top level.
+      if(block.blockType != "event") {
         continue;
       }
       if (!map.components[instanceName]) {
@@ -539,6 +537,14 @@ Blockly.Component.addGenericBlockAndGenerator = function(typeName, langName, lan
   Blockly.ComponentTypes.addBlockName(typeName, langName);
 }
 
-
+Blockly.Component.getComponentNamesByType = function(componentType) {
+  var componentNameArray = [];
+  for(var componentName in Blockly.ComponentInstances) {
+    if(Blockly.ComponentInstances[componentName].typeName == componentType) {
+      componentNameArray.push([componentName,componentName]);
+    }
+  }
+  return componentNameArray;
+}
 
 

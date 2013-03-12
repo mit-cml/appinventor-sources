@@ -32,7 +32,7 @@ Blockly.Yail.event = function(instanceName, eventName) {
     }
 
     var code = Blockly.Yail.YAIL_DEFINE_EVENT
-      + instanceName
+      + this.getTitleValue("COMPONENT_SELECTOR")
       + Blockly.Yail.YAIL_SPACER 
       + eventName
       + Blockly.Yail.YAIL_OPEN_COMBINATION 
@@ -132,6 +132,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
         + Blockly.Yail.YAIL_SPACER;
   } else {
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD; 
+    name = methodBlock.getTitleValue("COMPONENT_SELECTOR");
   }
   for (var x = 0; x < methodBlock.inputList.length; x++) {
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -169,7 +170,7 @@ Blockly.Yail.setproperty = function(instanceName) {
   return function() {
     var propName = this.getTitleValue("PROP");
     var propType = this.propYailTypes[propName];
-    var assignLabel = Blockly.Yail.YAIL_QUOTE + instanceName + Blockly.Yail.YAIL_SPACER 
+    var assignLabel = Blockly.Yail.YAIL_QUOTE + this.getTitleValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_SPACER
       + Blockly.Yail.YAIL_QUOTE + propName;
     var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + Blockly.Yail.YAIL_SPACER;
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -221,7 +222,7 @@ Blockly.Yail.getproperty = function(instanceName) {
     var propType = this.propYailTypes[propName];
     var code = Blockly.Yail.YAIL_GET_PROPERTY
       + Blockly.Yail.YAIL_QUOTE
-      + instanceName
+      + this.getTitleValue("COMPONENT_SELECTOR")
       + Blockly.Yail.YAIL_SPACER
       + Blockly.Yail.YAIL_QUOTE
       + propName
@@ -267,7 +268,7 @@ Blockly.Yail.genericGetproperty = function(typeName) {
  */
 Blockly.Yail.componentObject = function(instanceName) {
   return function() { 
-    return [Blockly.Yail.YAIL_GET_COMPONENT + instanceName + Blockly.Yail.YAIL_CLOSE_COMBINATION,
+    return [Blockly.Yail.YAIL_GET_COMPONENT + this.getTitleValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_CLOSE_COMBINATION,
             Blockly.Yail.ORDER_ATOMIC];
   }
 }
