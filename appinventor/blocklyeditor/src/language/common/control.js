@@ -314,7 +314,7 @@ Blockly.Language.controls_forRange = {
     // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('START')
-        .setCheck(Array)
+        .setCheck(Number)
         .appendTitle("for range")
         .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
         .appendTitle('start')

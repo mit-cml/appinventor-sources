@@ -546,7 +546,7 @@ Blockly.Language.math_is_a_number = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Boolean);
     this.appendValueInput('NUM').appendTitle('is a number?');
     this.setTooltip(function() {
       return 'Tests if something is a number.';
