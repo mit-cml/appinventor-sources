@@ -350,6 +350,7 @@ Blockly.Language.local_declaration_statement = {
     while (currentVar) {
         varList.push(currentVar);
         i++;
+        currentVar = this.getTitleValue('VAR' + i);
     }
     return varList;
   },
