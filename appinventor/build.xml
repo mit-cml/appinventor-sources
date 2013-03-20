@@ -96,8 +96,8 @@
         <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
         <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
         <!-- app engine libs -->
-        <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/appengine-api-1.0-sdk-1.6.2.1.jar"/>
-        <pathelement location="lib/appengine/appengine-java-sdk-1.6.2.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
         <!-- prevent error importing GitBuildId if it has been generated -->
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
