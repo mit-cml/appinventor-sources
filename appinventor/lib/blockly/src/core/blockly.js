@@ -238,6 +238,9 @@ Blockly.svgResize = function() {
 Blockly.onMouseDown_ = function(e) {
   Blockly.Block.terminateDrag_(); // In case mouse-up event was lost.
   Blockly.hideChaff();
+  if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
+    Blockly.Drawer.hide()
+  }
   var isTargetSvg = e.target && e.target.nodeName &&
       e.target.nodeName.toLowerCase() == 'svg';
   if (Blockly.selected && isTargetSvg) {

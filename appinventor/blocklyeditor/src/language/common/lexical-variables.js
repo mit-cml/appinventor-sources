@@ -91,7 +91,7 @@ Blockly.Language.lexical_variable_get = {
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
-    this.fieldVar_ = new Blockly.FieldLexicalVariable("???"); 
+    this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
     this.fieldVar_.setBlock(this);
     this.appendDummyInput()
         .appendTitle("get")
@@ -123,7 +123,7 @@ Blockly.Language.lexical_variable_get = {
              }
            }
            // Only get here if name not in list 
-           this.fieldVar_.setText("???");
+           this.fieldVar_.setText(" ");
          }
        }
     }
@@ -143,7 +143,7 @@ Blockly.Language.lexical_variable_set = {
   helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
-    this.fieldVar_ = new Blockly.FieldLexicalVariable("???"); 
+    this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
     this.fieldVar_.setBlock(this);
     this.appendValueInput('VALUE')
         .appendTitle("set")

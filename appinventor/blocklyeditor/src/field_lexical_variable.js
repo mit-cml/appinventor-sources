@@ -238,7 +238,7 @@ Blockly.FieldLexicalVariable.dropdownCreate = function() {
   // text and the internal representation.
   var options = [];
   // [lyn, 11/10/12] Ensure variable list isn't empty
-  if (variableList.length == 0) variableList = ["???"];
+  if (variableList.length == 0) variableList = [" "];
   for (var x = 0; x < variableList.length; x++) {
     options[x] = [variableList[x], variableList[x]];
   }

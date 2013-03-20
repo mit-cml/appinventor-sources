@@ -31,13 +31,21 @@ Blockly.Language.text = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendTitle('\u201C').appendTitle(new Blockly.FieldTextInput(''),
+    this.appendDummyInput().appendTitle('\u201C').appendTitle(new Blockly.FieldTextBlockInput(''),
         'TEXT').appendTitle('\u201D');
-    this.setOutput(true, String);
+    this.setOutput(true, [String,{checkType:"stringNumberCheck",checkFxn:Blockly.Language.text.connectionCheck}]);
     this.setTooltip('A text string.');
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
+
+Blockly.Language.text.connectionCheck = function(block) {
+  if(isNaN(parseFloat(block.getTitleValue('TEXT')))) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 Blockly.Language.text_join = {
   // Create a string made up of any number of elements of any type.
@@ -46,7 +54,7 @@ Blockly.Language.text_join = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, [String,Number]);
     this.appendValueInput('ADD0').appendTitle('join');
     this.appendValueInput('ADD1');
     this.setTooltip('Appends all the inputs to form a single text string.\n'
@@ -161,7 +169,7 @@ Blockly.Language.text_trim = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, [String,Number]);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('trim');
     this.setTooltip('Returns a copy of it text string arguments with any\n'
         + 'leading or trailing spaces removed.');
@@ -175,7 +183,7 @@ Blockly.Language.text_changeCase = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, [String,Number]);
     this.appendValueInput('TEXT').setCheck(String).appendTitle(
         new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     var thisBlock = this;
@@ -285,7 +293,7 @@ Blockly.Language.text_segment = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, [String,Number]);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('segment').appendTitle('text');
     this.appendValueInput('START').setCheck(Number).appendTitle('start');
     this.appendValueInput('LENGTH').setCheck(Number).appendTitle('length');
@@ -302,7 +310,7 @@ Blockly.Language.text_replace_all = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, [String,Number]);
     this.appendValueInput('TEXT').setCheck(String).appendTitle('replace all').appendTitle('text');
     this.appendValueInput('SEGMENT').setCheck(String).appendTitle('segment');
     this.appendValueInput('REPLACEMENT').setCheck(String).appendTitle('replacement');

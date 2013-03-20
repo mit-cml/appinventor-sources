@@ -147,7 +147,7 @@ Blockly.Yail.math_single = function() {
   var operator1 = tuple[0];
   var operator2 = tuple[1];
   var order = tuple[2];
-  var argument = Blockly.Yail.valueToCode(this, 'NUM', order) || 0;
+  var argument = Blockly.Yail.valueToCode(this, 'NUM', order) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -166,8 +166,32 @@ Blockly.Yail.math_single.OPERATORS = {
   ABS: ['abs', 'abs', Blockly.Yail.ORDER_NONE],
   NEG: ['-', 'negate', Blockly.Yail.ORDER_NONE],
   LN: ['log', 'log', Blockly.Yail.ORDER_NONE],
-  EXP: ['exp', 'exp', Blockly.Yail.ORDER_NONE]
+  EXP: ['exp', 'exp', Blockly.Yail.ORDER_NONE],
+  ROUND: ['yail-round', 'round', Blockly.Yail.ORDER_NONE],
+  CEILING: ['yail-ceiling', 'ceiling', Blockly.Yail.ORDER_NONE],
+  FLOOR: ['yail-floor', 'floor', Blockly.Yail.ORDER_NONE]
 };
+
+Blockly.Yail.math_abs = function() {
+  return Blockly.Yail.math_single.call(this);
+};
+
+Blockly.Yail.math_neg = function() {
+  return Blockly.Yail.math_single.call(this);
+};
+
+Blockly.Yail.math_round = function() {
+  return Blockly.Yail.math_single.call(this);
+};
+
+Blockly.Yail.math_ceiling = function() {
+  return Blockly.Yail.math_single.call(this);
+};
+
+Blockly.Yail.math_floor = function() {
+  return Blockly.Yail.math_single.call(this);
+};
+
 
 Blockly.Yail.math_random_int = function() {
   // Random integer between [X] and [Y].
@@ -216,33 +240,6 @@ Blockly.Yail.math_random_set_seed = function() {
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "random set seed"
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
-};
-
-Blockly.Yail.math_round = function() {
-  // Basic arithmetic operators.
-  var mode = this.getTitleValue('OP');
-  var tuple = Blockly.Yail.math_round.OPERATORS[mode];
-  var operator1 = tuple[0];
-  var operator2 = tuple[1];
-  var order = tuple[2];
-  var argument = Blockly.Yail.valueToCode(this, 'NUM', order) || 0;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
-      + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
-      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
-      + argument + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "number"
-      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
-  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator2
-      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
-};
-
-Blockly.Yail.math_round.OPERATORS = {
-  ROUND: ['yail-round', 'round', Blockly.Yail.ORDER_NONE],
-  CEILING: ['yail-ceiling', 'ceiling', Blockly.Yail.ORDER_NONE],
-  FLOOR: ['yail-floor', 'floor', Blockly.Yail.ORDER_NONE]
 };
 
 Blockly.Yail.math_on_list = function() {
@@ -332,6 +329,14 @@ Blockly.Yail.math_trig.OPERATORS = {
   ASIN: ['asin', 'asin-degrees', Blockly.Yail.ORDER_NONE],
   ACOS: ['acos', 'acos-degrees', Blockly.Yail.ORDER_NONE],
   ATAN: ['atan', 'atan-degrees', Blockly.Yail.ORDER_NONE]
+};
+
+Blockly.Yail.math_cos = function() {
+  return Blockly.Yail.math_trig.call(this);
+};
+
+Blockly.Yail.math_tan = function() {
+  return Blockly.Yail.math_trig.call(this);
 };
 
 Blockly.Yail.math_atan2 = function() {

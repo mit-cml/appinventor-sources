@@ -57,6 +57,8 @@
     "./src/field_lexical_variable.js",
     "./src/errorIcon.js",
     "./src/warningHandler.js",
+    "./src/field_procedure.js",
+    "./src/field_textblockinput.js",
 
     //language files
     './src/language/common/control.js',

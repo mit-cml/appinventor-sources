@@ -189,7 +189,29 @@ Blockly.Language.color_dark_gray = {
   onchange: Blockly.WarningHandler.checkErrors
 };
 
+Blockly.Language.color_make_color = {
+  category: "Colors",
+  helpUrl: Blockly.LANG_COLOUR_PICKER_HELPURL,
+  init: function() {
+    this.setColour(Blockly.COLOR_CATEGORY_HUE);
+    this.appendValueInput('COLORLIST').appendTitle("make color");
+    this.setOutput(true, Number);
+    this.setTooltip("A color with the given red, green, blue, and optionally alpha components");
+  },
+  onchange: Blockly.WarningHandler.checkErrors
+};
 
+Blockly.Language.color_split_color = {
+  category: "Colors",
+  helpUrl: Blockly.LANG_COLOUR_PICKER_HELPURL,
+  init: function() {
+    this.setColour(Blockly.COLOR_CATEGORY_HUE);
+    this.appendValueInput('COLOR').appendTitle("split color");
+    this.setOutput(true, Number);
+    this.setTooltip("A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.");
+  },
+  onchange: Blockly.WarningHandler.checkErrors
+};
 
 
 

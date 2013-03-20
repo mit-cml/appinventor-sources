@@ -141,7 +141,7 @@ Blockly.Language.procedures_defnoreturn = {
     if (editable) {
       // Dispose of any callers.
       //Blockly.Procedures.disposeCallers(name, workspace);
-      Blockly.Language.removeProcedureValues(name, workspace);
+      Blockly.AIProcedure.removeProcedureValues(name, workspace);
     }
 
   },
@@ -376,24 +376,9 @@ Blockly.Language.procedures_callnoreturn = {
   helpUrl: Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,false);};
-    var onChangeDropDown = function(text) {
-      var workspace = this.block.workspace;
-      this.setText(text);
-      if(text == "") {
-        for(var i=0;this.block.getInput('ARG' + i) != null;i++){
-          this.block.removeInput('ARG' + i)
-        }
-        return;
-      }
-      var def = Blockly.Procedures.getDefinition(text, workspace);
-      if(def.paramIds_ == null){
-        def.mutator.setVisible(true);
-        def.mutator.shouldHide = true;
-      }
-      this.block.setProcedureParameters(def.arguments_, def.paramIds_,true);
-    };
-    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,onChangeDropDown);
+    var procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(false);};
+
+    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendTitle("call ")
@@ -405,6 +390,7 @@ Blockly.Language.procedures_callnoreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
+    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
@@ -554,30 +540,30 @@ Blockly.Language.procedures_callnoreturn = {
   }
 };
 
+Blockly.Language.procedures_do_then_return = {
+  // String length.
+  category: 'Procedures',
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendStatementInput('STM')
+        .appendTitle("do");
+    this.appendValueInput('VALUE')
+        .appendTitle("then-return")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setOutput(true, null);
+  }
+};
+
+
 Blockly.Language.procedures_callreturn = {
   // Call a procedure with a return value.
   category: 'Procedures',  // Procedures are handled specially.
   helpUrl: Blockly.LANG_PROCEDURES_CALLRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    var procNamesFxn = function(){return Blockly.Language.getProcedureNames(this,true);};
-    var onChangeDropDown = function(text) {
-      var workspace = this.block.workspace;
-      this.setText(text);
-      if(text == "") {
-        for(var i=0;this.block.getInput('ARG' + i) != null;i++){
-          this.block.removeInput('ARG' + i);
-        }
-        return;
-      }
-      var def = Blockly.Procedures.getDefinition(text, workspace);
-      if(def.paramIds_ == null){
-        def.mutator.setVisible(true);
-        def.mutator.shouldHide = true;
-      }
-      this.block.setProcedureParameters(def.arguments_, def.paramIds_);
-    };
-    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,onChangeDropDown);
+    var procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(true);};
+
+    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendTitle("call ")
@@ -601,33 +587,3 @@ Blockly.Language.procedures_callreturn = {
   removeProcedureValue: Blockly.Language.procedures_callnoreturn.removeProcedureValue
 };
 
-Blockly.Language.getProcedureNames = function(dropDown,returnValue) {
-  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
-  var procNameArray = [["","none"]];
-  for(var i=0;i<topBlocks.length;i++){
-    var procName = topBlocks[i].getTitleValue('NAME');
-    if(topBlocks[i].type == "procedures_defnoreturn" && !returnValue) {
-      procNameArray.push([procName,procName]);
-    } else if (topBlocks[i].type == "procedures_defreturn" && returnValue) {
-      procNameArray.push([procName,procName]);
-    }
-  }
-  if(procNameArray.length > 1 ){
-    procNameArray.splice(0,1);
-  }
-  return procNameArray;
-
-}
-
-
-Blockly.Language.removeProcedureValues = function(name, workspace) {
-  var blockArray = Blockly.mainWorkspace.getAllBlocks();
-  for(var i=0;i<blockArray.length;i++){
-    var block = blockArray[i];
-    if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn") {
-      if(block.getTitleValue('PROCNAME') == name) {
-        block.removeProcedureValue();
-      }
-    }
-  }
-}
