@@ -10,6 +10,7 @@ import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileReadChannel;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileStat;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.FinalizationException;
 import com.google.appengine.api.files.GSFileOptions;
@@ -686,6 +687,20 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     @Override
     public RecordWriteChannel openRecordWriteChannel(AppEngineFile arg0, boolean arg1)
         throws FileNotFoundException, FinalizationException, LockException, IOException {
+      return null;
+    }
+
+    @Override
+    public void delete(AppEngineFile... arg0) throws IOException {
+    }
+
+    @Override
+    public String getDefaultGsBucketName() throws IOException {
+      return null;
+    }
+
+    @Override
+    public FileStat stat(AppEngineFile arg0) throws IOException {
       return null;
     }
   }

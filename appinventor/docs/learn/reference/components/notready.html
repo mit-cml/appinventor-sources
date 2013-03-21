@@ -86,8 +86,8 @@
        Note that you do not need to worry about UTF-encoding the
        query. But you do need to make sure the query follows the
        syntax described in the
-       <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">reference manual</a>, 
-       which means that things like capitalization for names of columns matters, and that single quotes must 
+       <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">reference manual</a>,
+       which means that things like capitalization for names of columns matters, and that single quotes must
        be used around column names if there are spaces in them.
        </p>
        <p>
@@ -102,7 +102,7 @@
        </h3>
 
        <h4>Getting an API Key</h4>
-       <p>In order to use the FusiontablesControl Component you need to acquire a Google 
+       <p>In order to use the FusiontablesControl Component you need to acquire a Google
         a Google Applications Programming Interface (API) key, an <i>API Key</i>. To get an API key,
         follow these instructions:</p>
        <ol>
@@ -115,7 +115,7 @@
        your key as the value to the <i>ApiKey</i> property in all your Fusiontables apps.</p>
 
        <h4>Creating Fusion Tables</h4>
-       <p>You will probably want to create your own Fusion Tables to experiment with as you are developing your apps. 
+       <p>You will probably want to create your own Fusion Tables to experiment with as you are developing your apps.
        This is as easy as creating a Google document, if you are familiar with that process.  Here are the steps:</p>
        <ol>
        <li>On the web, login to your Gmail account or any other Google service (e.g., Drive, YouTube).</li>
@@ -131,7 +131,7 @@
        <h4>Creating a Fusiontables App</h4>
        <p>When you drag the <i>FusiontablesControl</i> component onto the Designer, don't forget to set its <i>ApiKey</i>
        property, which is initially blank.  You should copy this from your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a>
-       and paste it into the property field. 
+       and paste it into the property field.
        <h3>
         Properties
        </h3>
@@ -148,13 +148,13 @@
          <p>In order to develop apps that use Fusiontables, you must
          obtain a Google API Key. To get a key follow these
          instructions.</p>
-	  <ol>
-	  <li>Go to your <a href="https://code.google.com/apis/console/"  target="_blank">Google APIs Console</a> and login if necessary.</li>
-	  <li>Select the <i>Services</i> item from the menu on the left.</li>
-	  <li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>
-	  <li>Go back to the main menu and select the <i>API Access</i> item. </li>
-	  </ol>
-	  Your API Key will be near the bottom of that pane in the section called "Simple API Access".
+          <ol>
+          <li>Go to your <a href="https://code.google.com/apis/console/"  target="_blank">Google APIs Console</a> and login if necessary.</li>
+          <li>Select the <i>Services</i> item from the menu on the left.</li>
+          <li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>
+          <li>Go back to the main menu and select the <i>API Access</i> item. </li>
+          </ol>
+          Your API Key will be near the bottom of that pane in the section called "Simple API Access".
          </p>
         </dd>
        </dl>
@@ -901,6 +901,25 @@
         <dd>
          URL of the page the WebViewer should initially open to. Setting this will load
                   the page.
+        </dd>
+        <dt>
+          <code>
+            PromptforPermission
+          </code>
+        </dt>
+        <dd>
+          If True, then prompt the user of the WebView to give
+          permission to access the geolocation API. If False, then
+          assume permission is granted.
+        </dd>
+        <dt>
+          <code>
+            UsesLocation
+          </code>
+        </dt>
+        <dd>
+          Whether or not to give the application permission to use the
+          Javascript geolocation API.
         </dd>
         <dt>
          <code>

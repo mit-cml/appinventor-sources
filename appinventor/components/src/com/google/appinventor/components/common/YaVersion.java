@@ -211,10 +211,12 @@ public class YaVersion {
   // - IMAGEPICKER_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 70:
   // - TEXTING_COMPONENT_VERSION was incremented to 3.
-    // For YOUNG_ANDROID_VERSION 71:
-    // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 71:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 72:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
 
-  public static final int YOUNG_ANDROID_VERSION = 71;
+  public static final int YOUNG_ANDROID_VERSION = 72;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -425,7 +427,7 @@ public class YaVersion {
   // For IMAGEPICKER_COMPONENT_VERSION 5:
   // - The ImagePath property was changed to Selection, and now returns a file path to
   //   external storage
-  
+
   public static final int IMAGEPICKER_COMPONENT_VERSION = 5;
 
   // For IMAGESPRITE_COMPONENT_VERSION 2:
@@ -600,6 +602,8 @@ public class YaVersion {
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
-  public static final int WEBVIEWER_COMPONENT_VERSION = 2;
+  // For WEBVIEWER_COMPONENT_VERSION 3:
+  // - Add UsesLocation property to set location permissions
+  public static final int WEBVIEWER_COMPONENT_VERSION = 3;
 
 }

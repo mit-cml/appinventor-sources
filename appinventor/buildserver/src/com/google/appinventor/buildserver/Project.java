@@ -78,6 +78,7 @@ public final class Project {
   private static final String VNAMETAG = "versionname";
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
+  private static final String USESLOCATIONTAG = "useslocation";
 
   // Table containing project properties
   private Properties properties;
@@ -90,7 +91,7 @@ public final class Project {
 
   // List of source files
   private List<SourceDescriptor> sources;
-  
+
   // Logging support
   private static final Logger LOG = Logger.getLogger(Project.class.getName());
 
@@ -190,7 +191,7 @@ public final class Project {
   public void setIcon(String icon) {
     properties.setProperty(ICONTAG, icon);
   }
-  
+
   /**
    * Returns the version code.
    *
@@ -208,7 +209,7 @@ public final class Project {
   public void setVCode(String vcode) {
     properties.setProperty(VCODETAG, vcode);
   }
-  
+
   /**
    * Returns the version name.
    *
@@ -225,6 +226,18 @@ public final class Project {
    */
   public void setVName(String vname) {
     properties.setProperty(VNAMETAG, vname);
+  }
+
+  /**
+   * gets the useslocation property
+   *
+   * @return useslocation property
+   */
+  public String getUsesLocation() {
+    String retval = properties.getProperty(USESLOCATIONTAG);
+    if (retval == null)         // Older Projects won't have this
+      retval = "False";
+    return retval;
   }
 
   /**

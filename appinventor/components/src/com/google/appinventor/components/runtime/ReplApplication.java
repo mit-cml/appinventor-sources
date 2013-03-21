@@ -11,45 +11,47 @@ import com.google.appinventor.common.version.GitBuildId;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
+import org.acra.*;
+import org.acra.annotation.*;
+
 /**
  * Subclass of Application. Normally App Inventor apps just use the
  * android.app.Application class as their main application. However we
- * use the Bugsense debugging application with the MIT AI Companion
+ * use the ACRA debugging application with the MIT AI Companion
  * app.  This class is only pointed to by the Android Manifest if
  * Compiler.java (which builds the Manifest) is building the Wireless
  * version of the MIT AI Companion.  In this fashion we only turn on
- * bugsense when using the Wireless MIT AI Companion.
- *
- * Bugsense *can* be hooked into an Activity as well as an
- * Application, however ACRA, which we may use as an alternative, only
- * hooks into an Application object, so that is why we hook bugsense
- * here. It Makes changing over to ACRA reasonably easy.
+ * ACRA when using the Wireless MIT AI Companion.
  *
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 
+@ReportsCrashes(formKey="")
 public class ReplApplication extends Application {
 
-  private static ReplApplication theInstance = null;
   private boolean active = false;
+  private static ReplApplication thisInstance;
 
   @Override
   public void onCreate() {
     super.onCreate();
-    String apikey = GitBuildId.getBugsenseApiKey();
-    if ((SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) && !apikey.equals("")) {
-      EclairUtil.setupBugSense((Context) this, apikey);
-      theInstance = this;
-      active = true;
-      Log.i("ReplApplication", "Bugsense Active APIKEY = " + apikey);
+    thisInstance = this;
+    String acraUri = GitBuildId.getAcraUri();
+    if (acraUri.equals("")) {
+      Log.i("ReplApplication", "ACRA Not Active");
     } else {
-      Log.i("ReplApplication", "Bugsense NOT ACTIVE");
+      Log.i("ReplApplication", "ACRA Active, URI = " + acraUri);
+      ACRAConfiguration config = ACRA.getNewDefaultConfig(this);
+      config.setFormUri(acraUri);
+      config.setDisableSSLCertValidation(true); // So we can use an MIT or self signed cert
+      ACRA.setConfig(config);                   // On the server.
+      ACRA.init(this);
+      active = true;
     }
   }
 
-  public static void reportError(Exception ex) {
-    if (theInstance != null && theInstance.active) {
-      EclairUtil.sendBugSenseException(ex);
-    }
+  public static void reportError(Throwable ex) {
+    if (thisInstance != null && thisInstance.active)
+      ACRA.getErrorReporter().handleException(ex);
   }
 }

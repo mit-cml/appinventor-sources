@@ -96,11 +96,11 @@ public final class FileImporterImpl implements FileImporter {
             // so that it contains the correct entries for "main" and "name", which are dependent on
             // the projectName and qualifiedFormName.
             String content = YoungAndroidProjectService.getProjectPropertiesFileContents(
-                projectName, qualifiedFormName, null, null, null);
+              projectName, qualifiedFormName, null, null, null, null);
             project.addTextFile(new TextFile(fileName, content));
             isProjectArchive = true;
 
-          } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) || 
+          } else if (fileName.equals(FileExporter.REMIX_INFORMATION_FILE_PATH) ||
               fileName.equals(StorageUtil.ANDROID_KEYSTORE_FILENAME)) {
             // If the remix information file is present, we ignore it. In the past, a remix
             // information file was saved in the zip when project source was downloaded and
@@ -143,7 +143,7 @@ public final class FileImporterImpl implements FileImporter {
     if (projectHistory != null) {
       project.setProjectHistory(projectHistory);
     }
-    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null);
+    String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null);
     long projectId = storageIo.createProject(userId, project, settings);
     return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
         storageIo.getProjectType(userId, projectId),

@@ -119,7 +119,7 @@
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${lib.dir}/android/2.2/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-        <pathelement location="${lib.dir}/bugsense/bugsense3.1.jar" />
+        <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
@@ -151,7 +151,7 @@
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit4/tl4j-junit4-1.1.3.jar" />
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/bugsense/bugsense3.1.jar" />
+    <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
     <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />
     <pathelement location="${lib.dir}/powermock/easymock-3.0.jar" />
     <pathelement location="${lib.dir}/powermock/javassist-3.15.0-GA.jar" />
@@ -216,7 +216,7 @@
           <pathelement location="${lib.dir}/android/2.2/android.jar" />
           <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-          <pathelement location="${lib.dir}/bugsense/bugsense3.1.jar" />
+          <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-android-2.2.6.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
