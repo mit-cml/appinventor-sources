@@ -36,7 +36,7 @@ Blockly.Yail.procedures_defnoreturn = function() {
   var argPrefix = (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
   var args = argPrefix + this.arguments_.join(' ' + argPrefix);
   var procName = this.getTitleValue('NAME');
-  var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE);
+  var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
       + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + body
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;

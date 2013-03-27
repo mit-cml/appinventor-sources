@@ -370,6 +370,23 @@ Blockly.Language.procedures_mutatorarg.validator = function(newVar) {
   return newVar || null;
 };
 
+
+
+Blockly.Language.procedures_do_then_return = {
+  // String length.
+  category: 'Procedures',
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.appendStatementInput('STM')
+        .appendTitle("do");
+    this.appendValueInput('VALUE')
+        .appendTitle("then-return")
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.setOutput(true, null);
+  }
+};
+
+
 Blockly.Language.procedures_callnoreturn = {
   // Call a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
@@ -540,20 +557,6 @@ Blockly.Language.procedures_callnoreturn = {
   }
 };
 
-Blockly.Language.procedures_do_then_return = {
-  // String length.
-  category: 'Procedures',
-  init: function() {
-    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    this.appendStatementInput('STM')
-        .appendTitle("do");
-    this.appendValueInput('VALUE')
-        .appendTitle("then-return")
-        .setAlign(Blockly.ALIGN_RIGHT);
-    this.setOutput(true, null);
-  }
-};
-
 
 Blockly.Language.procedures_callreturn = {
   // Call a procedure with a return value.
@@ -574,6 +577,7 @@ Blockly.Language.procedures_callreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
+    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,

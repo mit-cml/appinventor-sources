@@ -88,9 +88,9 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
   var blockSet = Blockly.Drawer.languageTree[drawerName];
   if(drawerName == "cat_Procedures") {
     var newBlockSet = [];
-    for(var i=0;i<blockSet.length;i++) {
-      if(!(blockSet[i] == "procedures_callnoreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(null,false)) == JSON.stringify([Blockly.FieldProcedure.defaultValue])) &&
-        !(blockSet[i] == "procedures_callreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(null,true)) == JSON.stringify([Blockly.FieldProcedure.defaultValue]))){
+    for(var i=0;i<blockSet.length;i++) {      
+      if(!(blockSet[i] == "procedures_callnoreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(false)) == JSON.stringify([Blockly.FieldProcedure.defaultValue])) &&
+        !(blockSet[i] == "procedures_callreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(true)) == JSON.stringify([Blockly.FieldProcedure.defaultValue]))){
         newBlockSet.push(blockSet[i]);
       }
     }
