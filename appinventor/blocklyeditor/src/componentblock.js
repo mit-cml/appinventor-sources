@@ -294,7 +294,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will disconnect the block if the new outputType doesn't match the
         // socket the block is plugged into
-        if(newType == Number){
+        if(newType == Number || newType == String){
           newType = [Number,String];
         }
         thisBlock.outputConnection.setCheck(newType);
@@ -321,7 +321,7 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
     this.componentDropDown.setValue(this.instanceName);
     // Set the initial output type and tooltip since they won't be set in the dropdown callback
     var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
-    if(newType == Number){
+    if(newType == Number || newType == String){
       newType = [Number,String];
     }
     thisBlock.setOutput(true, newType);
