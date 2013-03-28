@@ -90,7 +90,7 @@
   // This must be specified because datetimesymbols.js from the Closure Library
   // will be included, so when test-raw.html loads each input in RAW mode,
   // it is important that the proper charset be used.
-  //"output-charset": "UTF-8",
+  "output-charset": "UTF-16",
   "mode": "RAW",
   "output-file": "../build/blocklyeditor/blockly-all.js"
 }

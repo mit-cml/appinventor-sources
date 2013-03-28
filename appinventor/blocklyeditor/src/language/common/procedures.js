@@ -407,7 +407,7 @@ Blockly.Language.procedures_callnoreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
-    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
@@ -577,7 +577,7 @@ Blockly.Language.procedures_callreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,
