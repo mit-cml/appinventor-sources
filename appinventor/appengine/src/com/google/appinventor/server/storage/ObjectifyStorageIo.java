@@ -22,6 +22,7 @@ import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
+import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -111,6 +112,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(UserFileData.class);
     ObjectifyService.register(MotdData.class);
     ObjectifyService.register(RendezvousData.class);
+    ObjectifyService.register(WhiteListData.class);
   }
 
   ObjectifyStorageIo() {
@@ -1412,6 +1414,15 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
   }
 
+  @Override
+  public boolean checkWhiteList(String email) {
+    Objectify datastore = ObjectifyService.begin();
+    WhiteListData data = datastore.query(WhiteListData.class).filter("emailLower", email.toLowerCase()).get();
+    if (data == null)
+      return false;
+    return true;
+  }
+
   private void initMotd() {
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1546,4 +1557,5 @@ public class ObjectifyStorageIo implements  StorageIo {
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
   }
+
 }

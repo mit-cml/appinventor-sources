@@ -182,4 +182,9 @@ public class StoredData {
 
   }
 
+  @Unindexed
+  static final class WhiteListData {
+    @Id Long id;
+    @Indexed public String emailLower;
+  }
 }

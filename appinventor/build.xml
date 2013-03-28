@@ -28,6 +28,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="AIMergerApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
@@ -119,7 +123,8 @@
 
   <target name="clean">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
-    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>  
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
