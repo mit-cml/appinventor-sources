@@ -45,7 +45,7 @@ Blockly.Yail.procedures_defnoreturn = function() {
 
 //call the do return in control category
 Blockly.Yail.procedures_do_then_return = function() {
-  Blockly.Yail.controls_do_then_return.call(this);
+  return Blockly.Yail.controls_do_then_return.call(this);
 }
 
 // Generator code for procedure call with return
