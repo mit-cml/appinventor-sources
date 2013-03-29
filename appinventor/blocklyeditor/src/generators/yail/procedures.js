@@ -52,7 +52,7 @@ Blockly.Yail.procedures_do_then_return = function() {
 Blockly.Yail.procedures_callnoreturn = function() {
   var procName = this.getTitleValue('PROCNAME');
   var argCode = [];
-  for ( var x = 0; x < this.arguments_.length; x++) {
+  for ( var x = 0;this.getInput("ARG" + x); x++) {
     argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   }
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName
@@ -65,7 +65,7 @@ Blockly.Yail.procedures_callnoreturn = function() {
 Blockly.Yail.procedures_callreturn = function() {
   var procName = this.getTitleValue('PROCNAME');
   var argCode = [];
-  for ( var x = 0; x < this.arguments_.length; x++) {
+  for ( var x = 0; this.getInput("ARG" + x); x++) {
     argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   }
   var code = Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_GET_VARIABLE + procName

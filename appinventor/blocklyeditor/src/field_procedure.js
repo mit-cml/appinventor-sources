@@ -7,14 +7,16 @@ Blockly.FieldProcedure.onChange = function(text) {
   var workspace = this.block.workspace;
   if(!this.block.editable){
     workspace = Blockly.Drawer.flyout_.workspace_;
+    return;
   }
-  this.setText(text);
-  if(text == "") {
+
+  if(text == "" || text != this.getValue()) {
     for(var i=0;this.block.getInput('ARG' + i) != null;i++){
       this.block.removeInput('ARG' + i);
     }
-    return;
+    //return;
   }
+  this.setValue(text);
   var def = Blockly.Procedures.getDefinition(text, workspace);
   if(def) {
     if(def.paramIds_ == null){

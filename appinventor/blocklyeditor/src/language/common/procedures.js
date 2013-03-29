@@ -393,9 +393,9 @@ Blockly.Language.procedures_callnoreturn = {
   helpUrl: Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    var procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(false);};
+    this.procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(false);};
 
-    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendTitle("call ")
@@ -407,7 +407,8 @@ Blockly.Language.procedures_callnoreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
-    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn(false)[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
@@ -442,6 +443,10 @@ Blockly.Language.procedures_callnoreturn = {
     if (paramIds.length != paramNames.length) {
       throw 'Error: paramNames and paramIds must be the same length.';
     }
+    var paramIdToParamName = {};
+    for(var i=0;i<paramNames.length;i++) {
+      paramIdToParamName[paramIds[i]] = paramNames[i];
+    }
     if(typeof fromChange == "undefined") {
       fromChange = null;
     }
@@ -461,7 +466,7 @@ Blockly.Language.procedures_callnoreturn = {
     var savedRendered = this.rendered;
     this.rendered = false;
     // Update the quarkConnections_ with existing connections.
-    for (var x = this.arguments_.length - 1; x >= 0; x--) {
+    for (var x = 0;this.getInput('ARG' + x); x++) {
       var input = this.getInput('ARG' + x);
       if (input) {
         var connection = input.connection.targetConnection;
@@ -489,6 +494,11 @@ Blockly.Language.procedures_callnoreturn = {
           } else {
             input.connection.connect(connection);
           }
+        } else if(paramIdToParamName[quarkName]){
+          var connection = this.quarkConnections_[paramIdToParamName[quarkName]];
+          if (connection){
+            input.connection.connect(connection);
+          }
         }
       }
     }
@@ -502,9 +512,9 @@ Blockly.Language.procedures_callnoreturn = {
     // Save the name and arguments (none of which are editable).
     var container = document.createElement('mutation');
     container.setAttribute('name', this.getTitleValue('PROCNAME'));
-    for (var x = 0; x < this.arguments_.length; x++) {
+    for (var x = 0; this.getInput("ARG" + x); x++) {
       var parameter = document.createElement('arg');
-      parameter.setAttribute('name', this.arguments_[x]);
+      parameter.setAttribute('name', this.getInput("ARG" + x).titleRow[0].text_);
       container.appendChild(parameter);
     }
     return container;
@@ -516,17 +526,19 @@ Blockly.Language.procedures_callnoreturn = {
     var def = Blockly.Procedures.getDefinition(name, this.workspace);
     if (def && def.mutator.isVisible()) {
       // Initialize caller with the mutator's IDs.
-      this.setProcedureParameters(def.arguments_, def.paramIds_);
+      this.setProcedureParameters(def.arguments_, def.arguments_);
     } else {
-      this.arguments_ = [];
-      for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
-        if (childNode.nodeName.toLowerCase() == 'arg') {
-          this.arguments_.push(childNode.getAttribute('name'));
+      if(!this.getInput("ARG0")){
+        this.arguments_ = [];
+        for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
+          if (childNode.nodeName.toLowerCase() == 'arg') {
+            this.arguments_.push(childNode.getAttribute('name'));
+          }
         }
+        // For the second argument (paramIds) use the arguments list as a dummy
+        // list.
+        this.setProcedureParameters(this.arguments_, this.arguments_);
       }
-      // For the second argument (paramIds) use the arguments list as a dummy
-      // list.
-      this.setProcedureParameters(this.arguments_, this.arguments_);
     }
   },
   renameVar: function(oldName, newName) {
@@ -564,9 +576,9 @@ Blockly.Language.procedures_callreturn = {
   helpUrl: Blockly.LANG_PROCEDURES_CALLRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
-    var procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(true);};
+    this.procNamesFxn = function(){return Blockly.AIProcedure.getProcedureNames(true);};
 
-    this.procDropDown = new Blockly.FieldDropdown(procNamesFxn,Blockly.FieldProcedure.onChange);
+    this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
         .appendTitle("call ")
@@ -577,7 +589,8 @@ Blockly.Language.procedures_callreturn = {
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
-    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),procNamesFxn()[0][0]);
+    //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn()[0][0]);
+    Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,
