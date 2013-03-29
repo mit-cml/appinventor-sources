@@ -1091,7 +1091,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   boolean useBlobstoreForFile(String fileName) {
     return fileName.contains("assets/")
            || fileName.endsWith(".apk")
-           || (fileName.contains("src/") && fileName.endsWith(".blk"));
+           || (fileName.contains("src/") && fileName.endsWith(".blk"))
+           || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
   }
 
   @Override
