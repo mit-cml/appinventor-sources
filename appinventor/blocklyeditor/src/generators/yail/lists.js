@@ -154,7 +154,7 @@ Blockly.Yail.lists_add_items = function() {
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
   code = code + argument0 + Blockly.Yail.YAIL_SPACER;
 
-  for(i=0;i<this.itemCount_;i++) {
+  for(var i=0;i<this.itemCount_;i++) {
     var argument = Blockly.Yail.valueToCode(this, 'ITEM' + i, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
     code += argument + Blockly.Yail.YAIL_SPACER;
   }
@@ -162,7 +162,7 @@ Blockly.Yail.lists_add_items = function() {
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code = code + "list ";
-  for(i=0;i<this.itemCount_;i++) {
+  for(var i=0;i<this.itemCount_;i++) {
     code += "any" + Blockly.Yail.YAIL_SPACER;
   }
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;

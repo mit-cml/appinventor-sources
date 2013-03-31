@@ -41,14 +41,14 @@ Blockly.Yail.text_join = function() {
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER;
 
-  for(i=0;i<this.itemCount_;i++) {
+  for(var i=0;i<this.itemCount_;i++) {
     var argument = Blockly.Yail.valueToCode(this, 'ADD' + i, Blockly.Yail.ORDER_NONE) || "\"\"";
     code += argument + Blockly.Yail.YAIL_SPACER;
   }
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
       + Blockly.Yail.YAIL_OPEN_COMBINATION;
-  for(i=0;i<this.itemCount_;i++) {
+  for(var i=0;i<this.itemCount_;i++) {
     code += "text" + Blockly.Yail.YAIL_SPACER;
   }
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
