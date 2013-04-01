@@ -487,9 +487,7 @@ Blockly.Yail.quotifyForREPL = function(s) {
 
 Blockly.Yail.quote_ = function(string) {
   // TODO: This is a quick hack.  Replace with goog.string.quote
-  string = string.replace(/\\/g, '\\\\')
-                 .replace(/\n/g, '\\\n')
-                 .replace(/\"/g, '\\"')
+  string = string.replace(/\"/g, '\\"')
                  .replace(/'/g, '\\\'');
   return '"' + string + '"';
 };
