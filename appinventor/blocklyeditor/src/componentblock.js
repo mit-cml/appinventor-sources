@@ -452,6 +452,9 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
+        if(newType == String){
+          newType = [Number,String,Array];
+        }
         thisBlock.getInput("VALUE").connection.setCheck(newType);
         Blockly.Language.setTooltip(
             thisBlock,
@@ -530,6 +533,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
         var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
+        if(newType == String){
+          newType = [Number,String,Array];
+        }
         thisBlock.getInput("VALUE").connection.setCheck(newType);
         Blockly.Language.setTooltip(
             thisBlock,
