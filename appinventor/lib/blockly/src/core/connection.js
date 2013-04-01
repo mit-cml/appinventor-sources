@@ -502,8 +502,8 @@ Blockly.Connection.prototype.checkType_ = function(otherConnection) {
       return true;
     }
     if(typeof this.check_[x] == Number) {
-      for (var y = 0; y < this.otherConnection.check_.length; y++) {
-         if (typeof this.otherConnection.check_[y] == "object" && this.otherConnection.check_[y].checkType == "stringNumberCheck" && this.otherConnection.check_[y].checkFxn(this.sourceBlock_)) {
+      for (var y = 0; y < otherConnection.check_.length; y++) {
+         if (typeof otherConnection.check_[y] == "object" && otherConnection.check_[y].checkType == "stringNumberCheck" && otherConnection.check_[y].checkFxn(this.sourceBlock_)) {
            return true;
          }
       }
