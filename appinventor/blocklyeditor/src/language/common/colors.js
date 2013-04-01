@@ -9,7 +9,7 @@ Blockly.Language.color_black = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#000000'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -23,7 +23,7 @@ Blockly.Language.color_white = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ffffff'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -37,7 +37,7 @@ Blockly.Language.color_red = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ff0000'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -51,7 +51,7 @@ Blockly.Language.color_pink = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ffafaf'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -65,7 +65,7 @@ Blockly.Language.color_orange = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ffc800'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -81,7 +81,7 @@ Blockly.Language.color_yellow = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ffff00'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -95,7 +95,7 @@ Blockly.Language.color_green = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#00ff00'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -109,7 +109,7 @@ Blockly.Language.color_cyan = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#00ffff'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -124,7 +124,7 @@ Blockly.Language.color_blue = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#0000ff'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -138,7 +138,7 @@ Blockly.Language.color_magenta = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#ff00ff'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -152,7 +152,7 @@ Blockly.Language.color_light_gray = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#cccccc'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -168,7 +168,7 @@ Blockly.Language.color_gray = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#888888'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -183,7 +183,7 @@ Blockly.Language.color_dark_gray = {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle(new Blockly.FieldColour('#444444'), 'COLOR');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -195,7 +195,7 @@ Blockly.Language.color_make_color = {
   init: function() {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendValueInput('COLORLIST').appendTitle("make color");
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("A color with the given red, green, blue, and optionally alpha components");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -207,7 +207,7 @@ Blockly.Language.color_split_color = {
   init: function() {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
     this.appendValueInput('COLOR').appendTitle("split color");
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.");
   },
   onchange: Blockly.WarningHandler.checkErrors

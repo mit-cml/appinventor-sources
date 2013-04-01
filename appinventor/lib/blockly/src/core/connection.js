@@ -498,15 +498,8 @@ Blockly.Connection.prototype.checkType_ = function(otherConnection) {
   // Find any intersection in the check lists.
   for (var x = 0; x < this.check_.length; x++) {
     if ((otherConnection.check_.indexOf(this.check_[x]) != -1) ||
-        (typeof this.check_[x] == "object" && this.check_[x].checkType == "stringNumberCheck" && this.check_[x].checkFxn(this.sourceBlock_))) {
+        (typeof this.check_[x] == "object" && this.check_[x].checkFxn && this.check_[x].checkFxn(this.sourceBlock_,otherConnection.check_))) {
       return true;
-    }
-    if(typeof this.check_[x] == Number) {
-      for (var y = 0; y < otherConnection.check_.length; y++) {
-         if (typeof otherConnection.check_[y] == "object" && otherConnection.check_[y].checkType == "stringNumberCheck" && otherConnection.check_[y].checkFxn(this.sourceBlock_)) {
-           return true;
-         }
-      }
     }
   }
   // No intersection.

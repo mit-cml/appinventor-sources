@@ -79,6 +79,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
     this.rename = function(oldname, newname) {
@@ -152,7 +153,7 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
   for (var i = 0, param; param = methodType.params[i]; i++) {
     this.params.push(param.name);
     // param.type is a yail type, and so must be converted to a Blockly type
-    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type));
+    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type,Blockly.Language.INPUT));
     this.yailTypes.push(param.type);
   }
   this.paramTypes = paramTypes;
@@ -184,11 +185,12 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
     }
     // methodType.returnType is a Yail type
     if (this.methodType.returnType) {
-      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(this.methodType.returnType));
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(this.methodType.returnType,Blockly.Language.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
@@ -224,7 +226,7 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
   for (var i = 0, param; param = this.methodType.params[i]; i++) {
     this.params.push(param.name);
     // param.type is a yail type, and so must be converted to a Blockly type
-    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type));
+    paramTypes.push(Blockly.Language.YailTypeToBlocklyType(param.type,Blockly.Language.INPUT));
     this.yailTypes.push(param.type);
   }
   this.paramTypes = paramTypes;
@@ -235,8 +237,7 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
     this.appendDummyInput().appendTitle('call');
     this.appendDummyInput().appendTitle(this.typeName + '.' + this.methodType.name);
 
-    var compInput = this.appendValueInput("COMPONENT").appendTitle('for component');
-    compInput.connection.setCheck(Blockly.Language.YailTypeToBlocklyTypeMap.component);
+    var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendTitle('for component');
 
     for (var i = 0, param; param = this.params[i]; i++) {
       var newInput = this.appendValueInput("ARG" + i).appendTitle(param);
@@ -244,11 +245,12 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
     }
     // methodType.returnType is a Yail type
     if (this.methodType.returnType) {
-      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(this.methodType.returnType));
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(this.methodType.returnType,Blockly.Language.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's typeNam, and revises its title
     this.rename = function(oldname, newname) {
@@ -291,12 +293,10 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
         // change the output type and tooltip to match the new selection
         function(selection) {this.setValue(selection);
 
-        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
+        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes,Blockly.Language.OUTPUT);
         // this will disconnect the block if the new outputType doesn't match the
         // socket the block is plugged into
-        if(newType == Number || newType == String){
-          newType = [Number,String];
-        }
+
         thisBlock.outputConnection.setCheck(newType);
         Blockly.Language.setTooltip(
             thisBlock,
@@ -320,15 +320,20 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
     .appendTitle('.').appendTitle(dropdown, "PROP");
     this.componentDropDown.setValue(this.instanceName);
     // Set the initial output type and tooltip since they won't be set in the dropdown callback
-    var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
+    var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes,Blockly.Language.OUTPUT);
     if(newType == Number || newType == String){
       newType = [Number,String];
     }
     thisBlock.setOutput(true, newType);
+
+    this.mutationToDom = Blockly.ComponentBlock.componentPropertyMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.componentPropertyDomToMutation;
+
     Blockly.Language.setTooltip(
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
 
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
@@ -374,12 +379,10 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
         // change the output type and tooltip to match the new selection
         function(selection)
         {this.setValue(selection);
-        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
+        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes,Blockly.Language.OUTPUT);
         // this will disconnect the block if the new outputType doesn't match the
         // socket the block is plugged into
-        if(newType == Number){
-          newType = [Number,String];
-        }
+
         thisBlock.outputConnection.setCheck(newType);
         thisBlock.setOutput(true, newType);
         Blockly.Language.setTooltip(
@@ -391,19 +394,20 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
     this.appendDummyInput().appendTitle(this.instanceName + '.').appendTitle(dropdown, "PROP");
 
     // the argument input type on the COMPONENT socket is COMPONENT
-    var compInput = this.appendValueInput("COMPONENT").appendTitle('of component').setAlign(Blockly.ALIGN_RIGHT);
-    compInput.connection.setCheck(Blockly.Language.YailTypeToBlocklyTypeMap.component);
+    var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendTitle('of component').setAlign(Blockly.ALIGN_RIGHT);
     // Set the initial and tooltip type since they won't be set in the dropdown callback
-    var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
-	if(newType == Number){
-	  newType = [Number,String];
-	}    
+    var newType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes,Blockly.Language.OUTPUT);
 
     thisBlock.setOutput(true, newType);
+
+    this.mutationToDom = Blockly.ComponentBlock.componentPropertyMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.componentPropertyDomToMutation;
+
     Blockly.Language.setTooltip(
         thisBlock,
         Blockly.ComponentBlock.getCurrentTooltip(dropdown, propNames, propTooltips));
 
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Rename the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
@@ -449,12 +453,10 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
         function(selection)
         // change the input type to match the new selection
         {this.setValue(selection);
-        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
+        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes,Blockly.Language.INPUT);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
-        if(newType == String){
-          newType = [Number,String,Array];
-        }
+
         thisBlock.getInput("VALUE").connection.setCheck(newType);
         Blockly.Language.setTooltip(
             thisBlock,
@@ -473,7 +475,7 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
 
     };
 
-    var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
+    var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes,Blockly.Language.INPUT);
     var valueInput = this.appendValueInput("VALUE", initialArgType)
     .appendTitle('set ')
     .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
@@ -486,8 +488,10 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
     this.setPreviousStatement(true);
     this.setNextStatement(true);
 
-    this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
-    this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
+    this.mutationToDom = Blockly.ComponentBlock.componentPropertyMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.componentPropertyDomToMutation;
+
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName, type, and reset its title
     this.rename = function(oldname, newname) {
@@ -530,12 +534,10 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
         function(selection)
         // change the input type to match the new selection
         {this.setValue(selection);
-        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes);
+        var newType = Blockly.ComponentBlock.getCurrentArgType(this, propNames, propYailTypes,Blockly.Language.INPUT);
         // this will set the socket arg type and also disconnect any plugged in block
         // where the type doesn't match the socket type
-        if(newType == String){
-          newType = [Number,String,Array];
-        }
+
         thisBlock.getInput("VALUE").connection.setCheck(newType);
         Blockly.Language.setTooltip(
             thisBlock,
@@ -545,9 +547,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
 
     this.appendDummyInput().appendTitle('set ' +  this.typeName + '.').appendTitle(dropdown, "PROP");
     // the argument input type on the COMPONENT socket is COMPONENT
-    var compInput = this.appendValueInput("COMPONENT").appendTitle('of component').setAlign(Blockly.ALIGN_RIGHT);
-    compInput.connection.setCheck(Blockly.Language.YailTypeToBlocklyTypeMap.component);
-    var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes);
+    var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendTitle('of component').setAlign(Blockly.ALIGN_RIGHT);
+
+    var initialArgType = Blockly.ComponentBlock.getCurrentArgType(dropdown, propNames, propYailTypes,Blockly.Language.INPUT);
     var valueInput = this.appendValueInput("VALUE").appendTitle('to').setAlign(Blockly.ALIGN_RIGHT);
     valueInput.connection.setCheck(initialArgType);
 
@@ -555,8 +557,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
     this.setPreviousStatement(true);
     this.setNextStatement(true);
 
-    this.mutationToDom = Blockly.ComponentBlock.setterMutationToDom;
-    this.domToMutation = Blockly.ComponentBlock.setterDomToMutation;
+    this.mutationToDom = Blockly.ComponentBlock.componentPropertyMutationToDom;
+    this.domToMutation = Blockly.ComponentBlock.componentPropertyDomToMutation;
+    this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's typeName, and revises its title
     this.rename = function(oldname, newname) {
@@ -571,16 +574,16 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
 
 //Get the Blockly type of the argument for the property name that is
 //selected with the dropdown
-Blockly.ComponentBlock.getCurrentArgType = function (fieldDropdown, propNames, propYailTypes) {
+Blockly.ComponentBlock.getCurrentArgType = function (fieldDropdown, propNames, propYailTypes,inputOrOutput) {
   var propertyName = fieldDropdown.getValue();
   var yailType = propYailTypes[propertyName];
-  var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType);
+  var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType,inputOrOutput);
   return blocklyType;
 }
 
 
 // Save the yail type of the property socket
-Blockly.ComponentBlock.setterMutationToDom = function() {
+Blockly.ComponentBlock.componentPropertyMutationToDom = function() {
   var propertyName = this.getTitleValue("PROP");
   var yailType = this.propYailTypes[propertyName]
   var container = document.createElement('mutation');
@@ -589,11 +592,17 @@ Blockly.ComponentBlock.setterMutationToDom = function() {
 }
 
 // Restore the blockly type of the property socket from the yail type.
-Blockly.ComponentBlock.setterDomToMutation = function(xmlElement) {
+Blockly.ComponentBlock.componentPropertyDomToMutation = function(xmlElement) {
   var yailType = xmlElement.getAttribute('yailtype');
   if(yailType) {
-    var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType);
-    this.getInput("VALUE").connection.setCheck(blocklyType);
+    var inputOrOutput = (this.blockType == "setter" || this.blockType == "genericsetter" ? Blockly.Language.INPUT : Blockly.Language.OUTPUT);
+
+    var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType,inputOrOutput);
+    if(inputOrOutput == Blockly.Language.OUTPUT){
+      this.outputConnection.setCheck(blocklyType);
+    } else {
+      this.getInput("VALUE").connection.setCheck(blocklyType);
+    }
   }
 }
 
@@ -629,7 +638,7 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
     };
     this.appendDummyInput().appendTitle(this.componentDropDown, "COMPONENT_SELECTOR");
     this.componentDropDown.setValue(this.instanceName);
-    this.setOutput(true, "COMPONENT");
+    this.setOutput(true, this.typeName);
     this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName, type, and reset its title

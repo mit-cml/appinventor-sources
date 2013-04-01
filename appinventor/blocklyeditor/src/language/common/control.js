@@ -244,13 +244,13 @@ Blockly.Language.controls_forRange = {
     // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('START')
-        .setCheck(Number)
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
         .appendTitle("for range")
         .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
         .appendTitle('start')
         .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('END').setCheck(Number).appendTitle('end').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('STEP').setCheck(Number).appendTitle('step').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('END').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('end').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('STEP').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('step').setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -419,7 +419,7 @@ Blockly.Language.controls_openAnotherScreen = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('SCREEN').appendTitle('open another screen').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SCREEN').appendTitle('open another screen').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT).setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app.');
   },
@@ -432,7 +432,7 @@ Blockly.Language.controls_openAnotherScreenWithStartValue = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('SCREENNAME').setCheck(String).appendTitle('open another screen with start value').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SCREENNAME').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('open another screen with start value').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('STARTVALUE').appendTitle('startValue').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app and passes the '
@@ -449,7 +449,6 @@ Blockly.Language.controls_getStartValue = {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendDummyInput().appendTitle('get start value');
-    this.appendValueInput('STARTVALUE').appendTitle('startValue').setAlign(Blockly.ALIGN_RIGHT);
     Blockly.Language.setTooltip(this, 'Returns the value that was passed to this screen when it '
         + 'was opened, typically by another screen in a multiple-screen app. If no value was '
         + 'passed, returns the empty text.');
@@ -503,7 +502,7 @@ Blockly.Language.controls_getPlainStartText = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, String);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('get plain start text');
     Blockly.Language.setTooltip(this, 'Returns the plain text that was passed to this screen when '
         + 'it was started by another app. If no value was passed, returns the empty text. For '
@@ -518,7 +517,7 @@ Blockly.Language.controls_closeScreenWithPlainText = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('TEXT').setCheck(String).appendTitle('close screen with plain text').appendTitle('text').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('close screen with plain text').appendTitle('text').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Closes the current screen and returns text to the app that '
         + 'opened this one. For multiple screen apps, use close screen with value rather than '

@@ -37,19 +37,25 @@ Blockly.Language.InstantInTime = function () { return 'InstantInTime'; };
 // Blockly's convention
 Blockly.Language.YailTypeToBlocklyTypeMap =
     {
-        'number':Number,
-        'text':String,
-        'boolean':Boolean,
-        'list':Array,
-        'component':"COMPONENT",
-	'InstantInTime':Blockly.Language.InstantInTime,
+        'number':{input:Number,output:[Number,String]},
+        'text':{input:String,output:[Number,String,Array]},
+        'boolean':{input:Boolean,output:Boolean},
+        'list':{input:Array,output:Array},
+        'component':{input:"COMPONENT",output:"COMPONENT"},
+        'InstantInTime':{input:Blockly.Language.InstantInTime,output:Blockly.Language.InstantInTime},
         'any':null
 
         //add  more types here
     }
 
-Blockly.Language.YailTypeToBlocklyType = function(yail) {
-    var bType = Blockly.Language.YailTypeToBlocklyTypeMap[yail];
+Blockly.Language.OUTPUT = 1;
+Blockly.Language.INPUT = 0;
+
+Blockly.Language.YailTypeToBlocklyType = function(yail,inputOrOutput) {
+
+    var inputOrOutputName = (inputOrOutput == Blockly.Language.OUTPUT ? "output" : "input");
+    var bType = Blockly.Language.YailTypeToBlocklyTypeMap[yail][inputOrOutputName];
+
     if (bType != null || yail == 'any') {
         return bType;
     } else {

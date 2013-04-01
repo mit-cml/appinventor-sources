@@ -153,7 +153,7 @@ Blockly.Language.lists_length = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('LIST').setCheck(Array).appendTitle('length of list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Counts the number of items in a list.');
   },
@@ -192,7 +192,7 @@ Blockly.Language.lists_position_in = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
 
     this.appendValueInput('ITEM').appendTitle('index in list').appendTitle('thing');
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list').setAlign(Blockly.ALIGN_RIGHT);

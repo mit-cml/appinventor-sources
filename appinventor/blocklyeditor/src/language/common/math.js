@@ -37,7 +37,7 @@ Blockly.Language.math_number = {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.appendDummyInput().appendTitle(
         new Blockly.FieldTextInput('0', Blockly.Language.math_number.validator), 'NUM');
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Report the number shown.");
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -109,7 +109,7 @@ Blockly.Language.math_add = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM0').setCheck(Number);
     this.appendValueInput('NUM1').setCheck(Number).appendTitle("+");
     this.setInputsInline(true);
@@ -168,7 +168,7 @@ Blockly.Language.math_subtract = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(Number);
     this.appendValueInput('B').setCheck(Number).appendTitle("-");
     this.setInputsInline(true);
@@ -187,7 +187,7 @@ Blockly.Language.math_multiply = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM0').setCheck(Number);
     this.appendValueInput('NUM1').setCheck(Number).appendTitle("*");
     this.setInputsInline(true);
@@ -230,7 +230,7 @@ Blockly.Language.math_division = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(Number);
     this.appendValueInput('B').setCheck(Number).appendTitle("/");
     this.setInputsInline(true);
@@ -249,7 +249,7 @@ Blockly.Language.math_power = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(Number);
     this.appendValueInput('B').setCheck(Number).appendTitle("^");
     this.setInputsInline(true);
@@ -270,7 +270,7 @@ Blockly.Language.math_random_int = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('FROM').setCheck(Number).appendTitle('random integer').appendTitle('from');
     this.appendValueInput('TO').setCheck(Number).appendTitle('to');
     this.setInputsInline(true);
@@ -287,7 +287,7 @@ Blockly.Language.math_random_float = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('random fraction');
     this.setTooltip('Return a random number between 0 and 1.');
   },
@@ -300,7 +300,7 @@ Blockly.Language.math_random_set_seed = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(false, Number);
+    this.setOutput(false, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle('random set seed').appendTitle('to');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -319,7 +319,7 @@ Blockly.Language.math_on_list = {
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM0').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.appendValueInput('NUM1').setCheck(Number);
     this.setInputsInline(false);
@@ -382,7 +382,7 @@ Blockly.Language.math_single = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -423,7 +423,7 @@ Blockly.Language.math_abs = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_single.OPERATORS), 'OP');
     this.setTitleValue('ABS',"OP");
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -441,7 +441,7 @@ Blockly.Language.math_neg = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_single.OPERATORS), 'OP');
     this.setTitleValue('NEG',"OP");
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -460,7 +460,7 @@ Blockly.Language.math_round = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_single.OPERATORS), 'OP');
     this.setTitleValue('ROUND',"OP");
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -479,7 +479,7 @@ Blockly.Language.math_ceiling = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_single.OPERATORS), 'OP');
     this.setTitleValue('CEILING',"OP");
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -497,7 +497,7 @@ Blockly.Language.math_floor = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_single.OPERATORS), 'OP');
     this.setTitleValue('FLOOR',"OP");
     // Assign 'this' to a variable for use in the tooltip closure below.
@@ -516,7 +516,7 @@ Blockly.Language.math_divide = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('DIVIDEND').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.appendValueInput('DIVISOR').setCheck(Number).appendTitle('\u00F7');
     this.setInputsInline(true);
@@ -547,7 +547,7 @@ Blockly.Language.math_trig = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
@@ -585,7 +585,7 @@ Blockly.Language.math_cos = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_trig.OPERATORS), 'OP');
     this.setTitleValue('COS',"OP");
     // Assign 'this' to a variable for use in the closures below.
@@ -603,7 +603,7 @@ Blockly.Language.math_tan = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle(new Blockly.FieldDropdown(Blockly.Language.math_trig.OPERATORS), 'OP');
     this.setTitleValue('TAN',"OP");
     // Assign 'this' to a variable for use in the closures below.
@@ -621,7 +621,7 @@ Blockly.Language.math_atan2 = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('atan2')
     this.appendValueInput('Y').setCheck(Number).appendTitle('y').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('X').setCheck(Number).appendTitle('x').setAlign(Blockly.ALIGN_RIGHT);
@@ -638,7 +638,7 @@ Blockly.Language.math_convert_angles = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Number).appendTitle('convert').appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     // Assign 'this' to a variable for use in the closures below.
     var thisBlock = this;
@@ -666,7 +666,7 @@ Blockly.Language.math_format_as_decimal = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Number);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('format as decimal');
     this.appendValueInput('NUM').setCheck(Number).appendTitle('number').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('PLACES').setCheck(Number).appendTitle('places').setAlign(Blockly.ALIGN_RIGHT);

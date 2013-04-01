@@ -56,7 +56,7 @@ Blockly.Yail.math_compare = function() {
 };
 
 Blockly.Yail.math_compare.OPERATORS = {
-  EQ: ['=', '=', Blockly.Yail.ORDER_NONE],
+  EQ: ['yail-equal?', '=', Blockly.Yail.ORDER_NONE],
   NEQ: ['yail-not-equal?', 'not =', Blockly.Yail.ORDER_NONE],
   LT: ['<', '<', Blockly.Yail.ORDER_NONE],
   LTE: ['<=', '<=', Blockly.Yail.ORDER_NONE],
@@ -78,7 +78,8 @@ Blockly.Yail.math_arithmetic = function(mode,block) {
       + argument0 + Blockly.Yail.YAIL_SPACER + argument1
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "number number"
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + 
+  code += (mode == "EQ" || mode == "NEQ" ? "any any" : "number number" )
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
