@@ -175,6 +175,7 @@ public class DesignToolbar extends Toolbar {
           MESSAGES.generateYailButton(), new GenerateYailAction()));
     }
     addDropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(), buildItems, true);
+    toggleEditor(false);      // Gray out the Designer button and enable the blocks button
 
   }
 
@@ -408,6 +409,7 @@ public class DesignToolbar extends Toolbar {
       if (currentView != View.BLOCKS) {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
+        toggleEditor(true);       // Gray out the blocks button and enable the designer button
       }
     }
   }
@@ -423,6 +425,7 @@ public class DesignToolbar extends Toolbar {
       if (currentView != View.FORM) {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
+        toggleEditor(false);      // Gray out the Designer button and enable the blocks button
       }
     }
   }
@@ -570,6 +573,12 @@ public class DesignToolbar extends Toolbar {
       replStarted = false;
       setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton());
     }
+  }
+
+  private void toggleEditor(boolean blocks) {
+    setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
+    setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
+    setButtonVisible(WIDGET_NAME_WIRELESS_BUTTON, blocks);
   }
 
 }

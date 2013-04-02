@@ -94,7 +94,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching to the blocks editor")
   String switchToBlocksEditorButton();
 
-  @DefaultMessage("UI")
+  @DefaultMessage("Designer")
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
 
@@ -1148,11 +1148,11 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Wireless")
+  @DefaultMessage("Connect to Companion")
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButton();
 
-  @DefaultMessage("Disconnect Wireless")
+  @DefaultMessage("Disconnect Companion")
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButtonConnected();
 
