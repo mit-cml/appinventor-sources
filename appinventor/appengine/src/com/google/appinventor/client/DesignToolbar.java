@@ -300,8 +300,10 @@ public class DesignToolbar extends Toolbar {
     OdeLog.log("Setting currentScreen to " + newScreenName);
     if (currentView == View.FORM) {
       projectEditor.selectFileEditor(screen.formEditor);
+      toggleEditor(false);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
+      toggleEditor(true);
     }
     updateButtons();
   }
