@@ -46,6 +46,8 @@ abstract class MockImageBase extends MockVisibleComponent {
     image.addLoadHandler(new LoadHandler() {
       @Override
       public void onLoad(LoadEvent event) {
+        // Resize to outer container, fixes issue with setting precise size in designer
+        image.setSize("100%", "100%");
         refreshForm();
       }
     });
@@ -75,13 +77,21 @@ abstract class MockImageBase extends MockVisibleComponent {
   @Override
   public int getPreferredWidth() {
     // The superclass uses getOffsetWidth, which won't work for us.
-    return image.getWidth();
+    // Hide away the current 100% size so we can get at the actual size, otherwise automatic size doesn't work
+    String[] style = MockComponentsUtil.clearSizeStyle(image);
+    int width = image.getWidth();
+    MockComponentsUtil.restoreSizeStyle(image, style);
+    return width;
   }
 
   @Override
   public int getPreferredHeight() {
     // The superclass uses getOffsetHeight, which won't work for us.
-    return image.getHeight();
+    // Hide away the current 100% size so we can get at the actual size, otherwise automatic size doesn't work
+    String[] style = MockComponentsUtil.clearSizeStyle(image);
+    int height = image.getHeight();
+    MockComponentsUtil.restoreSizeStyle(image, style);
+    return height;
   }
 
   // PropertyChangeListener implementation
