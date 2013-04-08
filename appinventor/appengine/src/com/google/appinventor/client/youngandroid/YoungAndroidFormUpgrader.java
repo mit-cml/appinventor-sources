@@ -213,6 +213,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("BluetoothServer")) {
         srcCompVersion = upgradeBluetoothServerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Slider")) {
+        srcCompVersion = upgradeSliderProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
@@ -450,6 +453,15 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
     }
+    return srcCompVersion;
+  }
+  private static int upgradeSliderProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 1) {
+      // Initial version. Placeholder for future upgrades
+      srcCompVersion = 1;
+    }
+
     return srcCompVersion;
   }
 
