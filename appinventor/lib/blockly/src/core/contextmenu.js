@@ -43,7 +43,7 @@ Blockly.ContextMenu.visible = false;
 
 /**
  * Creates the context menu's DOM.  Only needs to be called once.
- * @return {!Element} The context menu's SVG group.
+ * @return {!SVGGElement} The context menu's SVG group.
  */
 Blockly.ContextMenu.createDom = function() {
   /*
@@ -54,8 +54,8 @@ Blockly.ContextMenu.createDom = function() {
     </g>
   </g>
   */
-  var svgGroup =
-      Blockly.createSvgElement('g', {'class': 'blocklyHidden'}, null);
+  var svgGroup = /** @type {!SVGGElement} */ (
+      Blockly.createSvgElement('g', {'class': 'blocklyHidden'}, null));
   Blockly.ContextMenu.svgGroup = svgGroup;
   Blockly.ContextMenu.svgShadow = Blockly.createSvgElement('rect',
       {'class': 'blocklyContextMenuShadow',
@@ -100,8 +100,8 @@ Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
                     Blockly.ContextMenu.svgShadow];
   for (var x = 0, option; option = options[x]; x++) {
     var gElement = Blockly.ContextMenu.optionToDom(option.text);
-    var rectElement = gElement.firstChild;
-    var textElement = gElement.lastChild;
+    var rectElement = /** @type {SVGRectElement} */ (gElement.firstChild);
+    var textElement = /** @type {SVGTextElement} */ (gElement.lastChild);
     Blockly.ContextMenu.svgOptions.appendChild(gElement);
 
     gElement.setAttribute('transform',
@@ -201,4 +201,26 @@ Blockly.ContextMenu.hide = function() {
     Blockly.ContextMenu.svgGroup.style.display = 'none';
     Blockly.ContextMenu.visible = false;
   }
+};
+
+/**
+ * Create a callback function that creates and configures a block,
+ *   then places the new block next to the original.
+ * @param {!Blockly.Block} block Original block.
+ * @param {!Element} xml XML representation of new block.
+ */
+Blockly.ContextMenu.callbackFactory = function(block, xml) {
+  return function() {
+    var newBlock = Blockly.Xml.domToBlock_(block.workspace, xml);
+    // Move the new block next to the old block.
+    var xy = block.getRelativeToSurfaceXY();
+    if (Blockly.RTL) {
+      xy.x -= Blockly.SNAP_RADIUS;
+    } else {
+      xy.x += Blockly.SNAP_RADIUS;
+    }
+    xy.y += Blockly.SNAP_RADIUS * 2;
+    newBlock.moveBy(xy.x, xy.y);
+    newBlock.select();
+  };
 };

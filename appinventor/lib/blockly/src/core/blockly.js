@@ -32,15 +32,24 @@ goog.require('goog.color');
 goog.require('goog.events');
 goog.require('goog.string');
 goog.require('goog.ui.ColorPicker');
+goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.userAgent');
 
-// Blockly dependencies.
+// Blockly core dependencies.
 goog.require('Blockly.Block');
 goog.require('Blockly.Connection');
-goog.require('Blockly.utils');
+goog.require('Blockly.Generator');
+goog.require('Blockly.inject');
+goog.require('Blockly.FieldCheckbox');
+goog.require('Blockly.FieldColour');
+goog.require('Blockly.FieldDropdown');
+goog.require('Blockly.FieldImage');
+goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldVariable');
+goog.require('Blockly.Procedures');
 //goog.require('Blockly.Toolbox');
+goog.require('Blockly.utils');
 goog.require('Blockly.Workspace');
-goog.require('Blockly.renaming_map');
 
 
 /**
@@ -211,23 +220,31 @@ Blockly.svgSize = function() {
 };
 
 /**
- * Size the SVG image to completely fill its container.
- * Record both the height/width and the absolute position of the SVG image.
+ * Size the SVG image to completely fill its container.  Record both
+ * the height/width and the absolute position of the SVG image.
  */
 Blockly.svgResize = function() {
-  var width = Blockly.svg.parentNode.offsetWidth;
-  var height = Blockly.svg.parentNode.offsetHeight;
-  if (Blockly.svg.cachedWidth_ != width) {
-    Blockly.svg.setAttribute('width', width + 'px');
-    Blockly.svg.cachedWidth_ = width;
+  var svg = Blockly.svg;
+  var div = svg.parentNode;
+  var width = div.offsetWidth;
+  var height = div.offsetHeight;
+  if (svg.cachedWidth_ != width) {
+    svg.setAttribute('width', width + 'px');
+    svg.cachedWidth_ = width;
   }
-  if (Blockly.svg.cachedHeight_ != height) {
-    Blockly.svg.setAttribute('height', height + 'px');
-    Blockly.svg.cachedHeight_ = height;
+  if (svg.cachedHeight_ != height) {
+    svg.setAttribute('height', height + 'px');
+    svg.cachedHeight_ = height;
   }
-  var bBox = Blockly.svg.getBoundingClientRect();
-  Blockly.svg.cachedLeft_ = bBox.left;
-  Blockly.svg.cachedTop_ = bBox.top;
+  // Can't use Blockly.svg.getBoundingClientRect() due to bugs in Firefox.
+  // Can't use Blockly.svg.offsetLeft due to bugs in Firefox.
+  svg.cachedLeft_ = 0;
+  svg.cachedTop_ = 0;
+  while (div) {
+    svg.cachedLeft_ += div.offsetLeft;
+    svg.cachedTop_ += div.offsetTop;
+    div = div.offsetParent;
+  }
 };
 
 /**
@@ -252,7 +269,8 @@ Blockly.onMouseDown_ = function(e) {
     if (Blockly.ContextMenu) {
       Blockly.showContextMenu_(e.clientX, e.clientY);
     }
-  } else if (!Blockly.editable || isTargetSvg) {
+  } else if ((!Blockly.editable || isTargetSvg) &&
+             Blockly.mainWorkspace.scrollbar) {
     // If the workspace is editable, only allow dragging when gripping empty
     // space.  Otherwise, allow dragging when gripping anywhere.
     Blockly.mainWorkspace.dragMode = true;
@@ -393,7 +411,7 @@ Blockly.onContextMenu_ = function(e) {
 
 /**
  * Close tooltips, context menus, dropdown selections, etc.
- * @param {boolean} opt_allowToolbox If true, don't close the toolbox.
+ * @param {boolean=} opt_allowToolbox If true, don't close the toolbox.
  */
 Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.Tooltip && Blockly.Tooltip.hide();
@@ -448,19 +466,21 @@ Blockly.loadAudio_ = function(name) {
   // To force the browser to load the sound, play it, but at zero volume.
   if (sound && sound.play) {
     sound.play();
-    sound.volume = 0;
+    sound.volume = 0.01;
     Blockly.SOUNDS_[name] = sound;
   }
 };
 
 /**
- * Play an audio file.
+ * Play an audio file at specified value.  If volume is not specified,
+ * use full volume (1).
  * @param {string} name Name of sound.
+ * @param {?number} opt_volume Volume of sound (0-1).
  */
-Blockly.playAudio = function(name) {
+Blockly.playAudio = function(name, opt_volume) {
   var sound = Blockly.SOUNDS_[name];
   if (sound) {
-    sound.volume = 1;
+    sound.volume = (opt_volume === undefined ? 1 : opt_volume);
     sound.play();
   }
 };
@@ -588,14 +608,4 @@ Blockly.addChangeListener = function(func) {
  */
 Blockly.removeChangeListener = function(bindData) {
   Blockly.unbindEvent_(bindData);
-};
-
-/**
- * Rerender certain elements which might have had their sizes changed by the
- * CSS file and thus need realigning.
- * Called when the CSS file has finally loaded.
- */
-Blockly.cssLoaded = function() {
-  Blockly.Field && (Blockly.Field.textLengthCache = {});
-  Blockly.Toolbox && Blockly.Toolbox.redraw();
 };

@@ -57,7 +57,7 @@ Blockly.Bubble = function(workspace, content, shape,
 
   this.setAnchorLocation(anchorX, anchorY);
   if (!bubbleWidth || !bubbleHeight) {
-    var bBox = this.content_.getBBox();
+    var bBox = /** @type {SVGLocatable} */ (this.content_).getBBox();
     bubbleWidth = bBox.width + 2 * Blockly.Bubble.BORDER_WIDTH;
     bubbleHeight = bBox.height + 2 * Blockly.Bubble.BORDER_WIDTH;
   }
@@ -216,7 +216,8 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
         this.bubbleGroup_);
     var resizeSize = 2 * Blockly.Bubble.BORDER_WIDTH;
     Blockly.createSvgElement('polygon',
-        {'points': '0,x x,x x,0'.replace(/x/g, resizeSize)}, this.resizeGroup_);
+        {'points': '0,x x,x x,0'.replace(/x/g, resizeSize.toString())},
+        this.resizeGroup_);
     Blockly.createSvgElement('line',
         {'class': 'blocklyResizeLine',
         'x1': resizeSize / 3, 'y1': resizeSize - 1,
@@ -398,7 +399,7 @@ Blockly.Bubble.prototype.layoutBubble_ = function() {
     if (this.anchorY_ + relativeTop <
         Blockly.BlockSvg.SEP_SPACE_Y + metrics.viewTop) {
       // Slide the bubble below the block.
-      var bBox = this.shape_.getBBox();
+      var bBox = /** @type {SVGLocatable} */ (this.shape_).getBBox();
       relativeTop = bBox.height;
     }
   }

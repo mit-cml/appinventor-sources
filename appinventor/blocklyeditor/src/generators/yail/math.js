@@ -78,7 +78,7 @@ Blockly.Yail.math_arithmetic = function(mode,block) {
       + argument0 + Blockly.Yail.YAIL_SPACER + argument1
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + 
+      + Blockly.Yail.YAIL_OPEN_COMBINATION;
   code += (mode == "EQ" || mode == "NEQ" ? "any any" : "number number" )
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator

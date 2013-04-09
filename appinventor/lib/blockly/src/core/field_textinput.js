@@ -26,7 +26,9 @@
 goog.provide('Blockly.FieldTextInput');
 
 goog.require('Blockly.Field');
+goog.require('goog.asserts');
 goog.require('goog.userAgent');
+
 
 
 /**
@@ -36,23 +38,27 @@ goog.require('goog.userAgent');
  *     to validate any constraints on what the user entered.  Takes the new
  *     text as an argument and returns the accepted text or null to abort
  *     the change.
- * @extends Blockly.Field
+ * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldTextInput = function(text, opt_changeHandler) {
-  // Call parent's constructor.
-  Blockly.Field.call(this, text);
+  Blockly.FieldTextInput.superClass_.constructor.call(this, text);
+
   this.changeHandler_ = opt_changeHandler;
 };
-
-// FieldTextInput is a subclass of Field.
 goog.inherits(Blockly.FieldTextInput, Blockly.Field);
+
 
 /**
  * Set the text in this field.
- * @param {string} text New text.
+ * @param {?string} text New text.
+ * @override
  */
 Blockly.FieldTextInput.prototype.setText = function(text) {
+  if (text === null) {
+    // No change if null.
+    return;
+  }
   if (this.changeHandler_) {
     var validated = this.changeHandler_(text);
     // If the new text is invalid, validation returns null.
@@ -202,7 +208,8 @@ Blockly.FieldTextInput.prototype.onHtmlInputChange_ = function(e) {
  */
 Blockly.FieldTextInput.prototype.validate_ = function() {
   var valid = true;
-  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  goog.asserts.assertObject(Blockly.FieldTextInput.htmlInput_);
+  var htmlInput = /** @type {!Element} */ (Blockly.FieldTextInput.htmlInput_);
   if (this.changeHandler_) {
     valid = this.changeHandler_(htmlInput.value);
   }

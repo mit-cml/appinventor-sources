@@ -621,7 +621,7 @@ Blockly.Connection.prototype.hideAll = function() {
       }
       // Hide all comments of all children.
       if (block.comment) {
-        block.comment.setVisible_(false);
+        block.comment.setVisible(false);
       }
     }
   }
@@ -668,7 +668,7 @@ Blockly.Connection.prototype.unhideAll = function() {
     }
     // Show any pinned comments.
     if (block.comment && block.comment.isPinned()) {
-        block.comment.setVisible_(true);
+        block.comment.setVisible(true);
     }
   }
   return renderList;

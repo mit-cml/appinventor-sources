@@ -78,7 +78,7 @@ Blockly.Tooltip.poisonedElement_ = null;
 Blockly.Tooltip.svgGroup_ = null;
 /**
  * Tooltip's SVG text element.
- * @type {Element}
+ * @type {SVGTextElement}
  * @private
  */
 Blockly.Tooltip.svgText_ = null;
@@ -118,7 +118,7 @@ Blockly.Tooltip.MARGINS = 5;
 
 /**
  * Create the tooltip elements.  Only needs to be called once.
- * @return {!Element} The tooltip's SVG group.
+ * @return {!SVGGElement} The tooltip's SVG group.
  */
 Blockly.Tooltip.createDom = function() {
   /*
@@ -128,15 +128,18 @@ Blockly.Tooltip.createDom = function() {
     <text class="blocklyTooltipText"></text>
   </g>
   */
-  var svgGroup =
-      Blockly.createSvgElement('g', {'class': 'blocklyHidden'}, null);
+  var svgGroup = /** @type {!SVGGElement} */ (
+      Blockly.createSvgElement('g', {'class': 'blocklyHidden'}, null));
   Blockly.Tooltip.svgGroup_ = svgGroup;
-  Blockly.Tooltip.svgShadow_ = Blockly.createSvgElement('rect',
-      {'class': 'blocklyTooltipShadow', 'x': 2, 'y': 2}, svgGroup);
-  Blockly.Tooltip.svgBackground_ = Blockly.createSvgElement('rect',
-      {'class': 'blocklyTooltipBackground'}, svgGroup);
-  Blockly.Tooltip.svgText_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyTooltipText'}, svgGroup);
+  Blockly.Tooltip.svgShadow_ = /** @type {!SVGRectElement} */ (
+      Blockly.createSvgElement(
+          'rect', {'class': 'blocklyTooltipShadow', 'x': 2, 'y': 2}, svgGroup));
+  Blockly.Tooltip.svgBackground_ = /** @type {!SVGRectElement} */ (
+      Blockly.createSvgElement(
+          'rect', {'class': 'blocklyTooltipBackground'}, svgGroup));
+  Blockly.Tooltip.svgText_ = /** @type {!SVGTextElement} */ (
+      Blockly.createSvgElement(
+          'text', {'class': 'blocklyTooltipText'}, svgGroup));
   return svgGroup;
 };
 

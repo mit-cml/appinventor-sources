@@ -98,12 +98,14 @@ Blockly.Warning.prototype.createIcon_ = function() {
 /**
  * Create the text for the warning's bubble.
  * @param {string} text The text to display.
- * @return {!Element} The top-level node of the text.
+ * @return {!SVGTextElement} The top-level node of the text.
  * @private
  */
 Blockly.Warning.prototype.textToDom_ = function(text) {
-  var paragraph = Blockly.createSvgElement('text',
-      {'class': 'blocklyText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
+  var paragraph = /** @type {!SVGTextElement} */ (
+      Blockly.createSvgElement(
+          'text', {'class': 'blocklyText', 'y': Blockly.Bubble.BORDER_WIDTH},
+          null));
   var lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
     var tspanElement = Blockly.createSvgElement('tspan',

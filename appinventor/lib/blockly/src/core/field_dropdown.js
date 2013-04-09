@@ -44,11 +44,15 @@ Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
   this.changeHandler_ = opt_changeHandler;
   var firstTuple = this.getOptions_()[0];
   this.value_ = firstTuple[1];
-  // Call parent's constructor.
-  Blockly.Field.call(this, firstTuple[0]);
-};
 
-// FieldDropdown is a subclass of Field.
+  // Add dropdown arrow: "option ▾" (LTR) or "▾ אופציה" (RTL)
+  this.arrow_ = Blockly.createSvgElement('tspan', {}, null);
+  this.arrow_.appendChild(document.createTextNode(
+      Blockly.RTL ? '\u25BE ' : ' \u25BE'));
+
+  // Call parent's constructor.
+  Blockly.FieldDropdown.superClass_.constructor.call(this, firstTuple[0]);
+};
 goog.inherits(Blockly.FieldDropdown, Blockly.Field);
 
 /**
@@ -57,15 +61,15 @@ goog.inherits(Blockly.FieldDropdown, Blockly.Field);
  */
 Blockly.FieldDropdown.createDom = function() {
   /*
-  <g class="blocklyHidden">
+  <g class="blocklyHidden blocklyFieldDropdown">
     <rect class="blocklyDropdownMenuShadow" x="0" y="1" rx="2" ry="2"/>
     <rect x="-2" y="-1" rx="2" ry="2"/>
     <g class="blocklyDropdownMenuOptions">
     </g>
   </g>
   */
-  var svgGroup = Blockly.createSvgElement('g', {'class': 'blocklyHidden'},
-                                          null);
+  var svgGroup = Blockly.createSvgElement('g',
+      {'class': 'blocklyHidden blocklyFieldDropdown'}, null);
   Blockly.FieldDropdown.svgGroup_ = svgGroup;
   Blockly.FieldDropdown.svgShadow_ = Blockly.createSvgElement('rect',
       {'class': 'blocklyDropdownMenuShadow',
@@ -119,7 +123,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   goog.dom.removeChildren(svgOptions);
   // The menu must be made visible early since otherwise BBox and
   // getComputedTextLength will return 0.
-  svgGroup.style.display = 'block';
+  Blockly.removeClass_(svgGroup, 'blocklyHidden');
   Blockly.FieldDropdown.openDropdown_ = this;
 
   function callbackFactory(value) {
@@ -147,8 +151,8 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     var text = options[x][0];  // Human-readable text.
     var value = options[x][1]; // Language-neutral value.
     var gElement = Blockly.ContextMenu.optionToDom(text);
-    var rectElement = gElement.firstChild;
-    var textElement = gElement.lastChild;
+    var rectElement = /** @type {SVGRectElement} */ (gElement.firstChild);
+    var textElement = /** @type {SVGTextElement} */ (gElement.lastChild);
     svgOptions.appendChild(gElement);
     // Add a checkmark next to the current item.
     if (!checkElement && value == this.value_) {
@@ -259,9 +263,54 @@ Blockly.FieldDropdown.prototype.setValue = function(newValue) {
 };
 
 /**
+ * Set the text in this field.  Trigger a rerender of the source block.
+ * @param {?string} text New text.
+ */
+Blockly.FieldDropdown.prototype.setText = function(text) {
+  if (this.sourceBlock_) {
+    // Update arrow's colour.
+    this.arrow_.style.fill = Blockly.makeColour(this.sourceBlock_.getColour());
+  }
+  if (text === null) {
+    // No change if null.
+    return;
+  }
+  this.text_ = text;
+  // Empty the text element.
+  goog.dom.removeChildren(/** @type {!Element} */ (this.textElement_));
+  // Replace whitespace with non-breaking spaces so the text doesn't collapse.
+  text = text.replace(/\s/g, Blockly.Field.NBSP);
+  if (!text) {
+    // Prevent the field from disappearing if empty.
+    text = Blockly.Field.NBSP;
+  }
+  var textNode = document.createTextNode(text);
+  this.textElement_.appendChild(textNode);
+
+  // Insert dropdown arrow.
+  if (Blockly.RTL) {
+    this.textElement_.insertBefore(this.arrow_, this.textElement_.firstChild);
+  } else {
+    this.textElement_.appendChild(this.arrow_);
+  }
+
+  // Cached width is obsolete.  Clear it.
+  this.size_.width = 0;
+
+  if (this.sourceBlock_ && this.sourceBlock_.rendered) {
+    this.sourceBlock_.render();
+    this.sourceBlock_.bumpNeighbours_();
+    this.sourceBlock_.workspace.fireChangeEvent();
+  }
+};
+
+/**
  * Hide the dropdown menu.
  */
 Blockly.FieldDropdown.hide = function() {
-  Blockly.FieldDropdown.svgGroup_.style.display = 'none';
+  var svgGroup = Blockly.FieldDropdown.svgGroup_;
+  if (svgGroup) {
+    Blockly.addClass_(svgGroup, 'blocklyHidden');
+  }
   Blockly.FieldDropdown.openDropdown_ = null;
 };

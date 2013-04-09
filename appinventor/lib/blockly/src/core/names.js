@@ -59,7 +59,7 @@ Blockly.Names = function(reservedWords) {
  * @const
  * @private
  */
-Blockly.Names.PREFIX_ = 'v_';
+Blockly.Names.PREFIX_ = '$_';
 
 /**
  * Empty the database and start from scratch.  The reserved words are kept.
@@ -73,11 +73,11 @@ Blockly.Names.prototype.reset = function() {
  * Convert a Blockly entity name to a legal exportable entity name.
  * @param {string} name The Blockly entity name (no constraints).
  * @param {string} type The type of entity in Blockly
- *     ('variable', 'procedure', 'builtin', etc...).
+ *     ('VARIABLE', 'PROCEDURE', 'BUILTIN', etc...).
  * @return {string} An entity name legal for the exported language.
  */
 Blockly.Names.prototype.getName = function(name, type) {
-  var normalized = Blockly.Names.PREFIX_ + name.toLowerCase() + 'X' + type;
+  var normalized = Blockly.Names.PREFIX_ + name.toLowerCase() + '_' + type;
   if (normalized in this.db_) {
     return this.db_[normalized];
   }
@@ -93,7 +93,7 @@ Blockly.Names.prototype.getName = function(name, type) {
  * ensure name doesn't collide.
  * @param {string} name The Blockly entity name (no constraints).
  * @param {string} type The type of entity in Blockly
- *     ('variable', 'procedure', 'builtin', etc...).
+ *     ('VARIABLE', 'PROCEDURE', 'BUILTIN', etc...).
  * @return {string} An entity name legal for the exported language.
  */
 Blockly.Names.prototype.getDistinctName = function(name, type) {

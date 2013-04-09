@@ -33,13 +33,13 @@ goog.require('Blockly.Field');
  * @param {string} state The initial state of the field ('TRUE' or 'FALSE').
  * @param {Function} opt_changeHandler A function that is executed when a new
  *     option is selected.
- * @extends Blockly.Field
+ * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldCheckbox = function(state, opt_changeHandler) {
+  Blockly.FieldCheckbox.superClass_.constructor.call(this, '');
+
   this.changeHandler_ = opt_changeHandler;
-  // Call parent's constructor.
-  Blockly.Field.call(this, '');
   // The checkbox doesn't use the inherited text element.
   // Instead it uses a custom checkmark element that is either visible or not.
   this.checkElement_ = Blockly.createSvgElement('text',
@@ -49,8 +49,6 @@ Blockly.FieldCheckbox = function(state, opt_changeHandler) {
   // Set the initial state.
   this.setValue(state);
 };
-
-// FieldCheckbox is a subclass of Field.
 goog.inherits(Blockly.FieldCheckbox, Blockly.Field);
 
 /**

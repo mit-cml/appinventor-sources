@@ -32,7 +32,7 @@ goog.require('Blockly.Tooltip');
 /**
  * Class for a non-editable field.
  * @param {string} text The initial content of the field.
- * @extends Blockly.Field
+ * @extends {Blockly.Field}
  * @constructor
  */
 Blockly.FieldLabel = function(text) {
@@ -43,8 +43,6 @@ Blockly.FieldLabel = function(text) {
   this.size_ = {height: 25, width: 0};
   this.setText(text);
 };
-
-// FieldLabel is a subclass of Field.
 goog.inherits(Blockly.FieldLabel, Blockly.Field);
 
 /**

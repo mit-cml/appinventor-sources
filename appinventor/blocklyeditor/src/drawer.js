@@ -100,7 +100,8 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
   if (!blockSet) {
     throw "no such drawer: " + drawerName;
   }
-  Blockly.Drawer.flyout_.show(blockSet);
+  var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet);
+  Blockly.Drawer.flyout_.show(xmlList);
 };
 
 /**
@@ -111,7 +112,8 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
 Blockly.Drawer.showComponent = function(instanceName) {
   if (Blockly.ComponentInstances[instanceName]) {
     Blockly.Drawer.flyout_.hide();
-    Blockly.Drawer.flyout_.show(Blockly.ComponentInstances[instanceName].blocks);
+    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentInstances[instanceName].blocks);
+    Blockly.Drawer.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName + 
                 ") - unknown component name");
@@ -128,7 +130,8 @@ Blockly.Drawer.showComponent = function(instanceName) {
 Blockly.Drawer.showGeneric = function(typeName) {
   if (Blockly.ComponentTypes[typeName] && Blockly.ComponentTypes[typeName].blocks) {
     Blockly.Drawer.flyout_.hide();
-    Blockly.Drawer.flyout_.show(Blockly.ComponentTypes[typeName].blocks);
+    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentTypes[typeName].blocks);
+    Blockly.Drawer.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showGeneric(" +  typeName + 
                 ") - unknown component type name");
@@ -148,3 +151,13 @@ Blockly.Drawer.hide = function() {
 Blockly.Drawer.isShowing = function() {
   return Blockly.Drawer.flyout_.isVisible();
 };
+
+Blockly.Drawer.blockListToXMLArray = function(blockList) {
+  var xmlArray = [];
+  for(var i=0;i<blockList.length;i++) {
+    var blockXMLString = '<xml><block type="' + blockList[i] + '"></block></xml>';
+    var xmlBlock = Blockly.Xml.textToDom(blockXMLString).firstChild
+    xmlArray.push(xmlBlock);
+  }
+  return xmlArray;
+}

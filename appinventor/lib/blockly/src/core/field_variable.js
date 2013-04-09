@@ -29,6 +29,7 @@ goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.Variables');
 
 
+
 /**
  * Class for a variable's dropdown field.
  * @param {!string} varname The default name for the variable.  If null,
@@ -37,18 +38,18 @@ goog.require('Blockly.Variables');
  * @constructor
  */
 Blockly.FieldVariable = function(varname) {
- // Call parent's constructor.
-  Blockly.FieldDropdown.call(this, Blockly.FieldVariable.dropdownCreate,
-                                   Blockly.FieldVariable.dropdownChange);
+  Blockly.FieldVariable.superClass_.constructor.call(this,
+      Blockly.FieldVariable.dropdownCreate,
+      Blockly.FieldVariable.dropdownChange);
+
   if (varname) {
     this.setValue(varname);
   } else {
     this.setValue(Blockly.Variables.generateUniqueName());
   }
 };
-
-// FieldVariable is a subclass of FieldDropdown.
 goog.inherits(Blockly.FieldVariable, Blockly.FieldDropdown);
+
 
 /**
  * Get the variable's name (use a variableDB to convert into a real name).
@@ -111,7 +112,6 @@ Blockly.FieldVariable.dropdownChange = function(text) {
     // Beyond this, all names are legal.
     return newVar && newVar.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
   }
-  window.setTimeout(Blockly.Variables.refreshFlyoutCategory, 1);
   if (text == Blockly.MSG_RENAME_VARIABLE) {
     var oldVar = this.getText();
     text = promptName(Blockly.MSG_RENAME_VARIABLE_TITLE.replace('%1', oldVar),

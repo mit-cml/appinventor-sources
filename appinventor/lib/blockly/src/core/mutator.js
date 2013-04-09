@@ -36,7 +36,13 @@ goog.require('Blockly.Bubble');
  */
 Blockly.Mutator = function(quarkNames) {
   this.block_ = null;
-  this.quarkNames_ = quarkNames;
+  this.quarkXml_ = [];
+  // Convert the list of names into a list of XML objects for the flyout.
+  for (var x = 0; x < quarkNames.length; x++) {
+    var element = goog.dom.createDom('block');
+    element.setAttribute('type', quarkNames[x]);
+    this.quarkXml_[x] = element;
+  }
 };
 
 /**
@@ -96,8 +102,8 @@ Blockly.Mutator.prototype.createIcon = function() {
        'height': 8 * quantum,
        'rx': 2 * quantum,
        'ry': 2 * quantum}, this.iconGroup_);
-  if (!Blockly.Mutator.crossPath_) {
-    // Draw the cross once, and save it for future use.
+  if (!Blockly.Mutator.plusPath_) {
+    // Draw the plus sign once, and save it for future use.
     var path = [];
     path.push('M', (3.5 * quantum) + ',' + (3.5 * quantum));
     path.push('v', -2 * quantum, 'h', quantum);
@@ -106,11 +112,19 @@ Blockly.Mutator.prototype.createIcon = function() {
     path.push('v', 2 * quantum, 'h', -quantum);
     path.push('v', -2 * quantum, 'h', -2 * quantum);
     path.push('v', -quantum, 'z');
-    Blockly.Mutator.crossPath_ = path.join(' ');
+    Blockly.Mutator.plusPath_ = path.join(' ');
+  }
+  if (!Blockly.Mutator.minusPath_) {
+    // Draw the minus sign once, and save it for future use.
+    var path = [];
+    path.push('M', (1.5 * quantum) + ',' + (3.5 * quantum));
+    path.push('h', 5 * quantum, 'v', quantum);
+    path.push('h', -5 * quantum, 'z');
+    Blockly.Mutator.minusPath_ = path.join(' ');
   }
   this.iconMark_ = Blockly.createSvgElement('path',
       {'class': 'blocklyIconMark',
-       'd': Blockly.Mutator.crossPath_}, this.iconGroup_);
+       'd': Blockly.Mutator.plusPath_}, this.iconGroup_);
   this.block_.getSvgRoot().appendChild(this.iconGroup_);
   if (this.block_.editable) {
     Blockly.bindEvent_(this.iconGroup_, 'mouseup', this, this.iconClick_);
@@ -201,6 +215,7 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
     return;
   }
   if (visible) {
+    this.iconMark_.setAttribute('d', Blockly.Mutator.minusPath_);
     // Create the bubble.
     this.bubble_ = new Blockly.Bubble(this.block_.workspace,
         this.createEditor_(), this.block_.svg_.svgGroup_,
@@ -208,7 +223,7 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
     var thisObj = this;
     this.flyout_.init(this.workspace_,
                       function() {return thisObj.getFlyoutMetrics_()}, false);
-    this.flyout_.show(this.quarkNames_);
+    this.flyout_.show(this.quarkXml_);
 
     this.rootBlock_ = this.block_.decompose(this.workspace_);
     var blocks = this.rootBlock_.getDescendants();
@@ -238,6 +253,7 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
         this.block_, function() {thisObj.workspaceChanged_();});
     this.updateColour();
   } else {
+    this.iconMark_.setAttribute('d', Blockly.Mutator.plusPath_);
     // Dispose of the bubble.
     this.svgDialog_ = null;
     this.svgBackground_ = null;
@@ -267,10 +283,14 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
   // Delete any block that's sitting on top of the flyout, or above the window.
   if (Blockly.Block.dragMode_ == 0) {
     var blocks = this.workspace_.getTopBlocks(false);
+    var MARGIN = 10;
     for (var b = 0, block; block = blocks[b]; b++) {
       var xy = block.getRelativeToSurfaceXY();
-      if (xy.y < 0 || (Blockly.RTL ?
-          xy.x > -this.flyout_.width_ : xy.x < this.flyout_.width_)) {
+      var bBox = block.getSvgRoot().getBBox();
+      if ((xy.y < MARGIN - bBox.height) ||  // Off the top.
+          (Blockly.RTL ? xy.x > -this.flyout_.width_ + MARGIN :
+           xy.x < this.flyout_.width_ - MARGIN)  // Over the flyout.
+          ) {
         block.dispose(false, false);
       }
     }
@@ -316,6 +336,7 @@ Blockly.Mutator.prototype.getFlyoutMetrics_ = function() {
   }
   return {
     viewHeight: this.workspaceHeight_,
+    viewWidth: 0,  // This seem wrong, but results in correct RTL layout.
     absoluteTop: 0,
     absoluteLeft: left
   };

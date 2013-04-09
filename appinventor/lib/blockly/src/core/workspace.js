@@ -38,29 +38,44 @@ goog.require('Blockly.Xml');
  * @constructor
  */
 Blockly.Workspace = function(editable) {
+  /** @type {boolean} */
   this.editable = editable;
+  /**
+   * @type {!Array.<Blockly.Block>}
+   * @private
+   */
   this.topBlocks_ = [];
+
+  /** @type {number} */
+  this.maxBlocks = Infinity;
+
   Blockly.ConnectionDB.init(this);
 };
 
 /**
  * Can this workspace be dragged around (true) or is it fixed (false)?
+ * @type {boolean}
  */
 Blockly.Workspace.prototype.dragMode = false;
 
 /**
  * Current horizontal scrolling offset.
+ * @type {number}
  */
 Blockly.Workspace.prototype.scrollX = 0;
+
 /**
  * Current vertical scrolling offset.
+ * @type {number}
  */
 Blockly.Workspace.prototype.scrollY = 0;
+
 /**
  * The workspace's trashcan (if any).
  * @type {Blockly.Trashcan}
  */
 Blockly.Workspace.prototype.trashcan = null;
+
 /**
  * PID of upcoming firing of a change event.  Used to fire only one event
  * after multiple changes.
@@ -134,7 +149,7 @@ Blockly.Workspace.prototype.getCanvas = function() {
 
 /**
  * Get the SVG element that forms the bubble surface.
- * @return {!Element} SVG element.
+ * @return {!SVGGElement} SVG element.
  */
 Blockly.Workspace.prototype.getBubbleCanvas = function() {
   return this.svgBubbleCanvas_;
@@ -302,6 +317,10 @@ Blockly.Workspace.prototype.fireChangeEvent = function() {
  * @param {!Element} xmlBlock XML block element.
  */
 Blockly.Workspace.prototype.paste = function(xmlBlock) {
+  if (xmlBlock.getElementsByTagName('block').length >=
+      this.remainingCapacity()) {
+    return;
+  }
   var block = Blockly.Xml.domToBlock_(this, xmlBlock);
   // Move the duplicate to original position.
   var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
@@ -331,4 +350,16 @@ Blockly.Workspace.prototype.paste = function(xmlBlock) {
     block.moveBy(blockX, blockY);
   }
   block.select();
+};
+
+/**
+ * The number of blocks that may be added to the workspace before reaching
+ *     the maxBlocks.
+ * @return {number} Number of blocks left.
+ */
+Blockly.Workspace.prototype.remainingCapacity = function() {
+  if (this.maxBlocks == Infinity) {
+    return Infinity;
+  }
+  return this.maxBlocks - this.getAllBlocks().length;
 };

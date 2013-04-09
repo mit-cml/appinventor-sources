@@ -35,7 +35,7 @@ goog.require('Blockly.Workspace');
 /**
  * Category to separate procedure names from variables and generated functions.
  */
-Blockly.Procedures.NAME_TYPE = 'procedure';
+Blockly.Procedures.NAME_TYPE = 'PROCEDURE';
 
 /**
  * Find all user-created procedure definitions.
@@ -161,7 +161,6 @@ Blockly.Procedures.rename = function(text) {
       func.call(blocks[x], this.text_, text);
     }
   }
-  window.setTimeout(Blockly.Procedures.refreshFlyoutCategory, 1);
   return text;
 };
 
@@ -213,18 +212,6 @@ Blockly.Procedures.flyoutCategory = function(blocks, gaps, margin, workspace) {
 };
 
 /**
- * Refresh the procedure flyout if it is open.
- * Only used if the flyout's autoClose is false.
- */
-Blockly.Procedures.refreshFlyoutCategory = function() {
-  if (Blockly.Toolbox && Blockly.Toolbox.flyout_.isVisible() &&
-      Blockly.Toolbox.selectedOption_.cat == Blockly.MSG_PROCEDURE_CATEGORY) {
-    Blockly.Toolbox.flyout_.hide();
-    Blockly.Toolbox.flyout_.show(Blockly.MSG_PROCEDURE_CATEGORY);
-  }
-};
-
-/**
  * Find all the callers of a named procedure.
  * @param {string} name Name of procedure.
  * @param {!Blockly.Workspace} workspace The workspace to find callers in.
@@ -258,7 +245,6 @@ Blockly.Procedures.disposeCallers = function(name, workspace) {
   for (var x = 0; x < callers.length; x++) {
     callers[x].dispose(true, false);
   }
-  window.setTimeout(Blockly.Procedures.refreshFlyoutCategory, 1);
 };
 
 /**

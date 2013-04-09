@@ -83,6 +83,8 @@ Blockly.Field.prototype.init = function(block) {
     this.mouseUpWrapper_ =
         Blockly.bindEvent_(this.group_, 'mouseup', this, this.onMouseUp_);
   }
+  // Bump to set the colours for dropdown arrows.
+  this.setText(null);
 };
 
 /**
@@ -118,29 +120,12 @@ Blockly.Field.prototype.getRootElement = function() {
 };
 
 /**
- * Cache of text lengths.
- * Blockly has a lot of repeating strings (if, then, do, etc).  Only measure
- * their lengths once.  Subsequent instances can be looked up in this cache.
- */
-Blockly.Field.textLengthCache = {};
-
-/**
  * Draws the border with the correct width.
  * Saves the computed width in a property.
  * @private
  */
 Blockly.Field.prototype.render_ = function() {
-  // This function is called a lot.  Optimizations help.
-  if (Blockly.Field.textLengthCache.hasOwnProperty(this.text_)) {
-    // Length found in cache.
-    var width = Blockly.Field.textLengthCache[this.text_];
-  } else {
-    var width = this.textElement_.getComputedTextLength();
-    // If a valid width was obtained, cache the current width.
-    if (width) {
-      Blockly.Field.textLengthCache[this.text_] = width;
-    }
-  }
+  var width = this.textElement_.getComputedTextLength();
   if (this.borderRect_) {
     this.borderRect_.setAttribute('width',
         width + Blockly.BlockSvg.SEP_SPACE_X);

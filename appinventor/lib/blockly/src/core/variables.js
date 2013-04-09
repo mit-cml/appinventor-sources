@@ -36,11 +36,11 @@ goog.require('Blockly.Workspace');
 /**
  * Category to separate variable names from procedures and generated functions.
  */
-Blockly.Variables.NAME_TYPE = 'variable';
+Blockly.Variables.NAME_TYPE = 'VARIABLE';
 
 /**
  * Find all user-created variables.
- * @param {Blockly.Block} opt_block Optional root block.
+ * @param {Blockly.Block=} opt_block Optional root block.
  * @return {!Array.<string>} Array of variable names.
  */
 Blockly.Variables.allVariables = function(opt_block) {
@@ -128,18 +128,6 @@ Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
     } else {
       gaps.push(margin * 2);
     }
-  }
-};
-
-/**
- * Refresh the variable flyout if it is open.
- * Only used if the flyout's autoClose is false.
- */
-Blockly.Variables.refreshFlyoutCategory = function() {
-  if (Blockly.Toolbox && Blockly.Toolbox.flyout_.isVisible() &&
-      Blockly.Toolbox.selectedOption_.cat == Blockly.MSG_VARIABLE_CATEGORY) {
-    Blockly.Toolbox.flyout_.hide();
-    Blockly.Toolbox.flyout_.show(Blockly.MSG_VARIABLE_CATEGORY);
   }
 };
 

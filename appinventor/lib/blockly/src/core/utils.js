@@ -231,16 +231,17 @@ Blockly.getAbsoluteXY_ = function(element) {
  * Helper method for creating SVG elements.
  * @param {string} name Element's tag name.
  * @param {!Object} attrs Dictionary of attribute names and values.
- * @param {Element} parent Optional parent on which to append the element.
- * @return {!Element} Newly created SVG element.
+ * @param {Element=} opt_parent Optional parent on which to append the element.
+ * @return {!SVGElement} Newly created SVG element.
  */
-Blockly.createSvgElement = function(name, attrs, parent) {
-  var e = document.createElementNS(Blockly.SVG_NS, name);
+Blockly.createSvgElement = function(name, attrs, opt_parent) {
+  var e = /** @type {!SVGElement} */ (
+      document.createElementNS(Blockly.SVG_NS, name));
   for (var key in attrs) {
     e.setAttribute(key, attrs[key]);
   }
-  if (parent) {
-    parent.appendChild(e);
+  if (opt_parent) {
+    opt_parent.appendChild(e);
   }
   return e;
 };
