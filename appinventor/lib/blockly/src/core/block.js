@@ -508,6 +508,9 @@ Blockly.Block.prototype.showHelp_ = function() {
  * @private
  */
 Blockly.Block.prototype.duplicate_ = function() {
+  // Duplicate is made while the block is expanded.
+  var isCollapsed = this.collapsed;
+  this.setCollapsed(false);
   // Create a duplicate via XML.
   var xmlBlock = Blockly.Xml.blockToDom_(this);
   Blockly.Xml.deleteNext(xmlBlock);
@@ -522,6 +525,8 @@ Blockly.Block.prototype.duplicate_ = function() {
   }
   xy.y += Blockly.SNAP_RADIUS * 2;
   newBlock.moveBy(xy.x, xy.y);
+  this.setCollapsed(isCollapsed);
+  newBlock.setCollapsed(isCollapsed);
   return newBlock;
 };
 
@@ -1226,13 +1231,15 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
   }
   this.collapsed = collapsed;
   // Show/hide the inputs.
-  var display = collapsed ? 'none' : 'block';
   var renderList = [];
   for (var x = 0, input; input = this.inputList[x]; x++) {
+    var display = (collapsed && x > 0) ? 'none' : 'block';
     for (var y = 0, title; title = input.titleRow[y]; y++) {
-      var titleElement = title.getRootElement ?
-          title.getRootElement() : title;
-      titleElement.style.display = display;
+      var titleElement = title.getRootElement ? title.getRootElement() : title;
+      // Special cases 'OP' and 'PROPERTY' blocks and 'is empty' block.
+      titleElement.style.display = (title.name == 'OP' || 
+        title.name == 'PROPERTY' || title.name == undefined) ? 'block' : display;
+    //        (title.text_ && title.text_.indexOf('is') != -1)) ? 'block' : display;
     }
     if (input.connection) {
       // This is a connection.
@@ -1243,10 +1250,12 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
       }
       var child = input.connection.targetBlock();
       if (child) {
-        child.svg_.getRootElement().style.display = display;
         if (collapsed) {
+          child.svg_.getRootElement().style.display = 'none';
           child.rendered = false;
-        }
+        } else {
+          child.svg_.getRootElement().style.display = 'block';
+	}
       }
     }
   }

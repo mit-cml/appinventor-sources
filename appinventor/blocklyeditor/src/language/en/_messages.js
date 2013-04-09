@@ -18,6 +18,14 @@ Blockly.MSG_EXPAND_BLOCK = 'Expand Block';
 Blockly.MSG_DISABLE_BLOCK = 'Disable Block';
 Blockly.MSG_ENABLE_BLOCK = 'Enable Block';
 Blockly.MSG_HELP = 'Help';
+Blockly.MSG_COLLAPSE_ALL = 'Collapse Top Blocks';
+Blockly.MSG_EXPAND_ALL = 'Expand Top Blocks';
+Blockly.MSG_ARRANGE_H = 'Arrange Blocks Horizontally';
+Blockly.MSG_ARRANGE_V = 'Arrange Blocks Vertically';
+Blockly.MSG_ARRANGE_S = 'Arrange Blocks Diagonally';
+Blockly.MSG_SORT_W = 'Sort Blocks by Width';
+Blockly.MSG_SORT_H = 'Sort Blocks by Height';
+Blockly.MSG_SORT_C = 'Sort Blocks by Category';
 
 // Variable renaming.
 Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';
