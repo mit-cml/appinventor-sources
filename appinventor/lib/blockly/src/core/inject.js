@@ -220,15 +220,15 @@ Blockly.createDom_ = function(container) {
         // Delete any block that's sitting on top of the flyout, or off window.
         if (Blockly.Block.dragMode_ == 0) {
           var svgSize = Blockly.svgSize();
-          var MARGIN = 10;
+          var MARGIN = 20;
           var blocks = Blockly.mainWorkspace.getTopBlocks(false);
           for (var b = 0, block; block = blocks[b]; b++) {
             var xy = block.getRelativeToSurfaceXY();
             var bBox = block.getSvgRoot().getBBox();
             if ((xy.y < MARGIN - bBox.height) ||  // Off the top.
                 (Blockly.RTL ?
-                 xy.x > svgSize.width - flyout.width_ + MARGIN :
-                 xy.x < flyout.width_ - MARGIN) ||  // Over the flyout.
+                 xy.x > svgSize.width - flyout.width_ + MARGIN * 2 :
+                 xy.x < flyout.width_ - MARGIN * 2) ||  // Over the flyout.
                 (xy.y > svgSize.height - MARGIN) ||  // Off the bottom.
                 (Blockly.RTL ? xy.x < MARGIN :
                  xy.x > svgSize.width - MARGIN)  // Off the far edge.
@@ -308,6 +308,6 @@ Blockly.init_ = function() {
   Blockly.mainWorkspace.addTrashcan(Blockly.getMainWorkspaceMetrics);
 
   // Load the sounds.
-  Blockly.loadAudio_('click');
-  Blockly.loadAudio_('delete');
+  Blockly.loadAudio_('media/click.wav', 'click');
+  Blockly.loadAudio_('media/delete.wav', 'delete');
 };

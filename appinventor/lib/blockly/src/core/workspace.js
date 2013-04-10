@@ -329,7 +329,7 @@ Blockly.Workspace.prototype.paste = function(xmlBlock) {
     if (Blockly.RTL) {
       blockX = -blockX;
     }
-    // Offset block until not clobering another block.
+    // Offset block until not clobbering another block.
     do {
       var collide = false;
       var allBlocks = this.getAllBlocks();

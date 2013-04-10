@@ -38,7 +38,7 @@ Blockly.Css.inject = function() {
   var text = Blockly.Css.CONTENT.join('\n');
   // Strip off any trailing slash (either Unix or Windows).
   var path = Blockly.pathToBlockly.replace(/[\\\/]$/, '');
-  text = text.replace(/<<<PATH>>>/g, Blockly.pathToBlockly);
+  text = text.replace(/<<<PATH>>>/g, path);
   goog.cssom.addCssText(text);
 };
 
@@ -46,6 +46,7 @@ Blockly.Css.inject = function() {
 Blockly.Css.CONTENT = [
   '.blocklySvg {',
   '  background-color: #fff;',
+  '  border: 1px solid #ddd;',
   '}',
   '.blocklyWidgetDiv {',
   '  position: absolute;',

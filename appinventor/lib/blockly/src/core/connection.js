@@ -666,10 +666,6 @@ Blockly.Connection.prototype.unhideAll = function() {
       // Leaf block.
       renderList[0] = block;
     }
-    // Show any pinned comments.
-    if (block.comment && block.comment.isPinned()) {
-        block.comment.setVisible(true);
-    }
   }
   return renderList;
 };

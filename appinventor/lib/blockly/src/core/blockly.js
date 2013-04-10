@@ -453,17 +453,17 @@ Blockly.isTargetInput_ = function(e) {
 
 /**
  * Load an audio file.  Cache it, ready for instantaneous playing.
+ * @param {string} filename Path and filename from Blockly's root.
  * @param {string} name Name of sound.
  * @private
  */
-Blockly.loadAudio_ = function(name) {
+Blockly.loadAudio_ = function(filename, name) {
   if (!window.Audio) {
     // No browser support for Audio.
     return;
   }
-  var sound = new window.Audio(Blockly.pathToBlockly +
-                               'media/' + name + '.wav');
-  // To force the browser to load the sound, play it, but at zero volume.
+  var sound = new window.Audio(Blockly.pathToBlockly + filename);
+  // To force the browser to load the sound, play it, but at nearly zero volume.
   if (sound && sound.play) {
     sound.play();
     sound.volume = 0.01;
@@ -480,8 +480,9 @@ Blockly.loadAudio_ = function(name) {
 Blockly.playAudio = function(name, opt_volume) {
   var sound = Blockly.SOUNDS_[name];
   if (sound) {
-    sound.volume = (opt_volume === undefined ? 1 : opt_volume);
-    sound.play();
+    var mySound = sound.cloneNode();
+    mySound.volume = (opt_volume === undefined ? 1 : opt_volume);
+    mySound.play();
   }
 };
 

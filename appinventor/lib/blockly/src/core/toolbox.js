@@ -136,9 +136,7 @@ Blockly.Toolbox.position_ = function() {
   } else {
     treeDiv.style.marginLeft = svgBox.left;
   }
-  var y = svgSize.top + parseInt(svgBox.top, 10);
-  treeDiv.style.top = y + 'px';
-  treeDiv.style.height = svgSize.height + 'px';
+  treeDiv.style.height = (svgSize.height + 1) + 'px';
   Blockly.Toolbox.width = treeDiv.offsetWidth;
 };
 

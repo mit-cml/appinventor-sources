@@ -1008,7 +1008,7 @@ Blockly.Block.prototype.setColour = function(colourHue) {
   if (this.rendered) {
     // Bump every dropdown to change its colour.
     for (var x = 0, input; input = this.inputList[x]; x++) {
-      for (var y = 0, title; title = this.titleRow[y]; y++) {
+      for (var y = 0, title; title = input.titleRow[y]; y++) {
         title.setText(null);
       }
     }
