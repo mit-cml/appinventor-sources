@@ -5,6 +5,8 @@
 
 package com.google.appinventor.client;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
@@ -50,6 +52,7 @@ import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -122,6 +125,11 @@ public class Ode implements EntryPoint {
   private FileEditor currentFileEditor;
 
   private AssetManager assetManager;
+
+  // Remembers the current View
+  private static final int DESIGNER = 0;
+  private static final int PROJECTS = 1;
+  private static int currentView = DESIGNER;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -232,6 +240,7 @@ public class Ode implements EntryPoint {
    * Switch to the Projects tab
    */
   public void switchToProjectsView() {
+    currentView = PROJECTS;
     deckPanel.showWidget(projectsTabIndex);
   }
 
@@ -241,6 +250,7 @@ public class Ode implements EntryPoint {
   public void switchToDesignView() {
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
+    currentView = DESIGNER;
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
     } else {
@@ -267,7 +277,7 @@ public class Ode implements EntryPoint {
     }
     OdeLog.log("Ode.openPreviousProject called");
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-        getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     openProject(value);
   }
 
@@ -369,8 +379,10 @@ public class Ode implements EntryPoint {
             Window.open(BugReport.getBugReportLink(e), "_blank", "");
           }
         } else {
-          Window.alert(AppInventorFeatures.hasDebuggingView() ?
-              MESSAGES.internalErrorSeeDebuggingView() : MESSAGES.internalError());
+          // Display a confirm dialog with error msg and if 'ok' open the debugging view	
+          if (Window.confirm(MESSAGES.internalErrorClickOkDebuggingView())) {
+            Ode.getInstance().switchToDebuggingView();
+          }
         }
       }
     });
@@ -378,7 +390,7 @@ public class Ode implements EntryPoint {
     // Define bridge methods to Javascript
     JsonpConnection.defineBridgeMethod();
 
-   // Initialize global Ode instance
+    // Initialize global Ode instance
     instance = this;
 
     // Get user information.
@@ -543,11 +555,26 @@ public class Ode implements EntryPoint {
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
+
+      Button dismissButton = new Button(MESSAGES.dismissButton());
+      dismissButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          if (currentView == DESIGNER)
+            switchToDesignView();
+          else
+            switchToProjectsView();
+        }
+      });
+
       ColumnLayout defaultLayout = new ColumnLayout("Default");
       Column column = defaultLayout.addColumn(100);
       column.add(MessagesOutputBox.class, 300, false);
       column.add(OdeLogBox.class, 300, false);
       final WorkAreaPanel debuggingTab = new WorkAreaPanel(new OdeBoxRegistry(), defaultLayout);
+
+      debuggingTab.add(dismissButton);
+
       debuggingTabIndex = deckPanel.getWidgetCount();
       deckPanel.add(debuggingTab);
 
@@ -583,7 +610,8 @@ public class Ode implements EntryPoint {
     mainPanel.setCellHeight(deckPanel, "100%");
     mainPanel.setCellWidth(deckPanel, "100%");
 
-    mainPanel.add(statusPanel, DockPanel.SOUTH);
+    //Commenting out for now to gain more space for the blocks editor
+    //mainPanel.add(statusPanel, DockPanel.SOUTH);
     mainPanel.setSize("100%", "98%");
     RootPanel.get().add(mainPanel);
 
@@ -735,7 +763,7 @@ public class Ode implements EntryPoint {
     switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-          changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
+      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
@@ -816,7 +844,7 @@ public class Ode implements EntryPoint {
    * @return  newly created push button
    */
   public static PushButton createPushButton(ImageResource img, String tip,
-      ClickHandler handler) {
+                                            ClickHandler handler) {
     PushButton pb = new PushButton(new Image(img));
     pb.addClickHandler(handler);
     pb.setTitle(tip);

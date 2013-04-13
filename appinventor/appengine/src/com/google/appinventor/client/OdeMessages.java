@@ -151,6 +151,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("An internal error has occurred. Go look in the Debugging view.")
   @Description("Alert after an internal error")
   String internalErrorSeeDebuggingView();
+  
+  @DefaultMessage("An internal error has occurred. Click 'ok' for more information.")
+  @Description("Confirm alert after an internal error")
+  String internalErrorClickOkDebuggingView();
 
   @DefaultMessage("The server is temporarily unavailable. Please try again later!")
   @Description("Error message if the server becomes completely unavailable.")
@@ -293,7 +297,6 @@ public interface OdeMessages extends Messages {
   String builtinBlocksLabel();
 
   // Used in boxes/ViewerBox.java
-
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();

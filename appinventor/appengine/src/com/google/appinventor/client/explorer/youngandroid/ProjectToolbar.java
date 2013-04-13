@@ -57,10 +57,6 @@ public class ProjectToolbar extends Toolbar {
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
         new DeleteAction()));
-
-    addButton(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
-        new DownloadAllAction()));
-
     List<ToolbarItem> otherItems = Lists.newArrayList();
     otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_SOURCE,
         MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
@@ -73,7 +69,13 @@ public class ProjectToolbar extends Toolbar {
         MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
     otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
         MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
+
+    otherItems.add(null);
+    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
+        new DownloadAllAction()));
+
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
+
     if (Ode.getInstance().getUser().getIsAdmin()) {
       List<ToolbarItem> adminItems = Lists.newArrayList();
       adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
@@ -100,10 +102,11 @@ public class ProjectToolbar extends Toolbar {
           Tracking.PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA);
 
       // Is there a way to disable the Download All button until this completes?
-      Window.alert(MESSAGES.downloadAllAlert());
+      if (Window.confirm(MESSAGES.downloadAllAlert())) {
 
-      Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+            ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+      }
     }
   }
 
@@ -118,7 +121,7 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() > 0) {
         // Show one confirmation window for selected projects.
         if (deleteConfirmation(selectedProjects)) {
@@ -128,8 +131,8 @@ public class ProjectToolbar extends Toolbar {
         }
 
       } else {
-      	// The user can select a project to resolve the 
-      	// error.
+        // The user can select a project to resolve the
+        // error.
         ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
       }
     }
@@ -172,8 +175,8 @@ public class ProjectToolbar extends Toolbar {
     private void doDeleteProject(final long projectId) {
       Ode.getInstance().getProjectService().deleteProject(projectId,
           new OdeAsyncCallback<Void>(
-            // failure message
-          MESSAGES.deleteProjectError()) {
+              // failure message
+              MESSAGES.deleteProjectError()) {
         @Override
         public void onSuccess(Void result) {
           Ode.getInstance().getProjectManager().removeProject(projectId);
@@ -192,11 +195,11 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
         downloadSource(selectedProjects.get(0));
       } else {
-      	// The user needs to select only one project.
+        // The user needs to select only one project.
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
       }
     }
@@ -271,11 +274,11 @@ public class ProjectToolbar extends Toolbar {
             Ode.getInstance().getUserInfoService().deleteUserFile(
                 StorageUtil.ANDROID_KEYSTORE_FILENAME,
                 new OdeAsyncCallback<Void>(errorMessage) {
-              @Override
-              public void onSuccess(Void result) {
-                updateKeystoreButtons();
-              }
-            });
+                  @Override
+                  public void onSuccess(Void result) {
+                    updateKeystoreButtons();
+                  }
+                });
           }
         }
       });
@@ -292,7 +295,7 @@ public class ProjectToolbar extends Toolbar {
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
 
-    setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
+    //    setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
 
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
 
