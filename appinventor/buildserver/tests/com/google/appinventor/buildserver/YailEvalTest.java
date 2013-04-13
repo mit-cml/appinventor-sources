@@ -8,6 +8,7 @@ package com.google.appinventor.buildserver;
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 
+import java.io.File;
 import gnu.math.DFloNum;
 import gnu.math.IntNum;
 import junit.framework.Assert;
@@ -45,7 +46,7 @@ public class YailEvalTest extends TestCase {
   public void setUp() throws Exception {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
-    String yailSchemeTests = YAIL_SCHEME_TESTS;
+    String yailSchemeTests = YAIL_SCHEME_TESTS.replace(File.separatorChar, '/');
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + yailSchemeTests + "\")");
