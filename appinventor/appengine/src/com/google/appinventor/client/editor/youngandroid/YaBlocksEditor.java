@@ -163,6 +163,7 @@ public final class YaBlocksEditor extends FileEditor
   public void onShow() {
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
+    blocksArea.showDifferentForm(fullFormName);
     loadBlocksEditor();
     makeYail();                 // Create yail and send to REPL (if connected).
   }

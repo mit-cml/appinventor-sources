@@ -36,7 +36,8 @@
           window.parent.ReplState = new Blockly.ReplStateObj(); // There should be one of these for the whole system
         }
         window.parent.Blocklies[formName] = Blockly;
-        window.parent.Blocklies[formName].ReplState = window.parent.ReplState;
+        Blockly.ReplMgr.ReplState = window.parent.ReplState;
+        Blockly.ReplMgr.formName = formName; <!-- So we can tell the AssetManager which form we are on. -->
         window.parent.BlocklyPanel_initBlocksArea(formName);
       }
     </script>

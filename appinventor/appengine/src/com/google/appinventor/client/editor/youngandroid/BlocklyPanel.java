@@ -90,8 +90,11 @@ public class BlocklyPanel extends HTMLPanel {
   private static final Map<String, LoadStatus> loadStatusMap = Maps.newHashMap();
 
   // My form name
-  private final String formName;
-  private Timer timer;
+  private String formName;
+
+  // The Yail and Asset Polling timer used to communicate with the Companion App
+  private static Timer timer;
+  private static String timerForm;
 
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
@@ -121,6 +124,12 @@ public class BlocklyPanel extends HTMLPanel {
    * exportInitComponentsMethod().
    */
   private static void initBlocksArea(String formName) {
+    if (timer != null) {
+      timer.cancel();
+      timer = null;
+      OdeLog.log("initBlocksArea: killed running timer.");
+    }
+
     OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
 
     // if there are any components added, add them first before we load
@@ -479,11 +488,42 @@ public class BlocklyPanel extends HTMLPanel {
             }
           };
         timer.scheduleRepeating(2000); // Run every two seconds
+        timerForm = formName;
+        OdeLog.log("Starting timer for " + formName);
       }
+
       doSendYail(formName, doGetYailRepl(formName, formJson, packageName));
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
+  }
+
+  public void showDifferentForm(String newFormName) {
+    OdeLog.log("showDifferentForm changing from " + formName + " to " + newFormName);
+    // Stop any running timer
+    if (!formName.equals(timerForm)) {
+      if (timer != null) {
+        timer.cancel();
+        timer = null;
+        OdeLog.log("timerForm changed, killing running timer.");
+      }
+      timerForm = formName;
+    }
+    // Nuke Yail for form we are leaving so it will reload when we return
+    doResetYail(formName);
+    formName = newFormName;
+    if (timer == null) {      // If we don't have the timer running, start it now
+      final String sendYailFormName = formName;
+      timer = new Timer() {
+          public void run() {
+            doPollYail(sendYailFormName);
+          }
+        };
+      timer.scheduleRepeating(2000); // Run every two seconds
+      timerForm = formName;
+      OdeLog.log("Starting timer for " + formName);
+    }
+    blocklyWorkspaceChanged(formName);
   }
 
   public void startRepl(Boolean alreadyRunning) { // Start the Repl
@@ -567,6 +607,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doSendYail(String formName, String Yail) /*-{
     $wnd.Blocklies[formName].ReplMgr.sendYail(Yail);
+  }-*/;
+
+  public static native void doResetYail(String formName) /*-{
+    $wnd.Blocklies[formName].ReplMgr.resetYail();
   }-*/;
 
   public static native void doPollYail(String formName) /*-{

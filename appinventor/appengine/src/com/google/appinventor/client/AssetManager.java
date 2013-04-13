@@ -95,8 +95,7 @@ public final class AssetManager implements ProjectChangeListener {
       });
   }
 
-  private void refreshAssets1() {
-    String formName = projectId + "_" + "Screen1"; // The repl communication is done from the Screen1 blockly
+  private void refreshAssets1(String formName) {
     OdeLog.log("AssetManager: formName = " + formName);
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
@@ -107,10 +106,10 @@ public final class AssetManager implements ProjectChangeListener {
     }
   }
 
-  public static void refreshAssets() {
+  public static void refreshAssets(String formName) {
     if (INSTANCE == null)
       return;
-    INSTANCE.refreshAssets1();
+    INSTANCE.refreshAssets1(formName);
   }
 
   @Override
@@ -139,7 +138,7 @@ public final class AssetManager implements ProjectChangeListener {
 
   private static native void exportMethodsToJavascript() /*-{
     $wnd.AssetManager_refreshAssets =
-      $entry(@com.google.appinventor.client.AssetManager::refreshAssets());
+      $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;));
   }-*/;
 
   private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{

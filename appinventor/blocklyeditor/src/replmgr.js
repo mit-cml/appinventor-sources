@@ -70,7 +70,9 @@ Blockly.ReplMgr.sendYail = function(yail) {
 Blockly.ReplMgr.RefreshAssets = null;
 
 Blockly.ReplMgr.pollYail = function() {
-    if (Blockly.ReplState.state == this.rsState.CONNECTED) {
+    if (window == undefined)    // If window is gone, then we are a zombie timer firing
+        return;                 // in a destroyed frame.
+    if (this.ReplState.state == this.rsState.CONNECTED) {
         if (this.savedCode == null && this.yail) {
             this.processNewYail(this.yail);
             this.savedCode = this.yail;
@@ -80,13 +82,17 @@ Blockly.ReplMgr.pollYail = function() {
         }
     }
     this.rendPoll();            // Poll the rendezvous mechanism
-    if (Blockly.ReplMgr.RefreshAssets == null) {
+    if (this.RefreshAssets == null) {
         try {
-            Blockly.ReplMgr.RefreshAssets = window.parent.AssetManager_refreshAssets;
+            this.RefreshAssets = window.parent.AssetManager_refreshAssets;
         } catch (err) {
         }
     }
-    Blockly.ReplMgr.RefreshAssets();
+    this.RefreshAssets(this.formName);
+}
+
+Blockly.ReplMgr.resetYail = function(code) {
+    this.savedCode = "";
 }
 
 Blockly.ReplMgr.processNewYail = function(code) {
@@ -95,7 +101,7 @@ Blockly.ReplMgr.processNewYail = function(code) {
     dialog1.setTitle("The Yail");
     dialog1.setButtonSet(goog.ui.Dialog.ButtonSet.OK);
     //    dialog1.setVisible(true);
-    Blockly.ReplMgr.putYail(code);
+    this.putYail(code);
 }
 
 Blockly.ReplMgr.showDialog = function(message, oncancel) {
@@ -111,11 +117,15 @@ Blockly.ReplMgr.showDialog = function(message, oncancel) {
 }
 
 Blockly.ReplMgr.putYail = function(code) {
-    if (Blockly.ReplState.state != this.rsState.CONNECTED)
+    if (this.ReplState.state != this.rsState.CONNECTED)
         return;
     var encoder = new goog.Uri.QueryData();
     var conn = goog.net.XmlHttp();
-    var rs = Blockly.ReplState;
+    if (this.ReplState === undefined || this.ReplState === null) {
+        console.log('putYail: replState not set yet.')
+        return;
+    }
+    var rs = this.ReplState;
     conn.open('POST', rs.url, true);
     conn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200)
@@ -130,9 +140,9 @@ Blockly.ReplMgr.putYail = function(code) {
 
 Blockly.ReplMgr.startRepl = function(already) {
     if (already.toString() == "false") {        // Have to test this way because already is a Java false
-        if (Blockly.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
+        if (this.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
-        var rs = Blockly.ReplState;
+        var rs = this.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();
         rs.rendezvouscode = this.sha1(rs.replcode);
@@ -145,11 +155,11 @@ Blockly.ReplMgr.startRepl = function(already) {
         });
         this.getFromRendezvous();
     } else {
-        if (Blockly.ReplState.state == this.rsState.RENDEZVOUS) {
-            Blockly.ReplState.dialog.setVisible(false);
+        if (this.ReplState.state == this.rsState.RENDEZVOUS) {
+            this.ReplState.dialog.setVisible(false);
         }
         this.savedCode = null;
-        Blockly.ReplState.state = this.rsState.IDLE;
+        this.ReplState.state = this.rsState.IDLE;
     }
 }
 
@@ -164,7 +174,11 @@ Blockly.ReplMgr.genCode = function() {
 // Request ipAddress information from the Rendezvous Server
 Blockly.ReplMgr.getFromRendezvous = function() {
     var xmlhttp = goog.net.XmlHttp();
-    var rs = Blockly.ReplState;
+    if (this.ReplState === undefined || this.ReplState === null) {
+        console.log('getFromRendezvous: replState not set yet.')
+        return;
+    }
+    var rs = this.ReplState;
     var context = this;
     var refreshAssets = window.parent.AssetManager_refreshAssets; // This is where GWT puts this
     xmlhttp.open('GET', 'http://rendezvous.appinventor.mit.edu/rendezvous/' + rs.rendezvouscode, true);
@@ -188,13 +202,13 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 // Called by the main poller function. Manages the state transitions for polling
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
-    if (Blockly.ReplState.state == this.rsState.RENDEZVOUS) {
-        Blockly.ReplState.count = Blockly.ReplState.count + 1;
-        if (Blockly.ReplState.count > 40) {
-            Blockly.ReplState.state = this.rsState.IDLE;
-            Blockly.ReplState.dialog.setVisible(false); // Punt the dialog
+    if (this.ReplState.state == this.rsState.RENDEZVOUS) {
+        this.ReplState.count = Blockly.ReplState.count + 1;
+        if (this.ReplState.count > 40) {
+            this.ReplState.state = this.rsState.IDLE;
+            this.ReplState.dialog.setVisible(false); // Punt the dialog
             alert('Failed to Connect to the MIT AICompanion, try again.');
-            Blockly.ReplState.url = null;
+            this.ReplState.url = null;
         }
         this.getFromRendezvous();
     }
@@ -210,7 +224,7 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
 }
 
 Blockly.ReplMgr.hmac = function(input) {
-    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(Blockly.ReplState.replcode), 64);
+    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(this.ReplState.replcode), 64);
     return(this.bytes_to_hexstring(googhash.getHmac(this.string_to_bytes(input))));
 }
 
@@ -235,11 +249,13 @@ Blockly.ReplMgr.bytes_to_hexstring = function(input) {
 }
 
 Blockly.ReplMgr.putAsset = function(filename, blob) {
-    var conn = goog.net.XmlHttp();
-    var rs = Blockly.ReplState;
-    var encoder = new goog.Uri.QueryData();
-    if (rs.state != this.rsState.CONNECTED)
+    if (this['ReplState'] == undefined || this['ReplState'] == null)
+        return false;
+    if (this.ReplState.state != this.rsState.CONNECTED)
         return false;           // We didn't really do anything
+    var conn = goog.net.XmlHttp();
+    var rs = this.ReplState;
+    var encoder = new goog.Uri.QueryData();
     var z = filename.split('/'); // Remove any directory components
     encoder.add('filename', z[z.length-1]);
     conn.open('PUT', rs.asseturl + '?' + encoder.toString(), true);
