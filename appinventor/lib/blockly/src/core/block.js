@@ -978,18 +978,31 @@ Blockly.Block.prototype.getDescendants = function() {
 
 /**
  * Get the colour of a block.
- * @return {number} HSV hue value.
+ * @return {number|Array} HSV hue value or RGB Array.
  */
 Blockly.Block.prototype.getColour = function() {
-  return this.colourHue_;
+  return (this.rgbArray_ == null ? this.colourHue_ : this.rgbArray_);
 };
 
 /**
  * Change the colour of a block.
- * @param {number} colourHue HSV hue value.
+ * @param {number|Array} hueOrRGBArray HSV hue value or array of RGB values.
  */
-Blockly.Block.prototype.setColour = function(colourHue) {
-  this.colourHue_ = colourHue;
+Blockly.Block.prototype.setColour = function(hueOrRGBArray) {
+  if(Array.isArray(hueOrRGBArray)) {
+    this.rgbArray_ = hueOrRGBArray;
+    this.colourHue_ = null;
+  } else {
+    this.colourHue_ = hueOrRGBArray;
+    this.rgbArray_ = null;
+  }
+  this.updateColour();
+};
+
+/**
+ * Update the colour of a block.
+ */
+Blockly.Block.prototype.updateColour = function() {
   if (this.svg_) {
     this.svg_.updateColour();
   }

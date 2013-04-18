@@ -81,13 +81,18 @@ Blockly.HSV_SATURATION = 0.45;
 Blockly.HSV_VALUE = 0.65;
 
 /**
- * Convert a hue (HSV model) into an RGB hex triplet.
- * @param {number} hue Hue on a colour wheel (0-360).
+ * Convert a hue (HSV model) or an RGB Array
+ * into an RGB hex triplet.
+ * @param {number|Array} hueOrRGBArray Hue on a colour wheel (0-360) or RGB array.
  * @return {string} RGB code, e.g. '#5ba65b'.
  */
-Blockly.makeColour = function(hue) {
-  return goog.color.hsvToHex(hue, Blockly.HSV_SATURATION,
+Blockly.makeColour = function(hueOrRGBArray) {
+  if(Array.isArray(hueOrRGBArray)){
+    return goog.color.rgbArrayToHex(hueOrRGBArray);
+  } else {
+    return goog.color.hsvToHex(hueOrRGBArray, Blockly.HSV_SATURATION,
       Blockly.HSV_VALUE * 256);
+  }
 };
 
 /**
