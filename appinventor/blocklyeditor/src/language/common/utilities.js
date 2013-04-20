@@ -43,7 +43,7 @@ Blockly.Language.YailTypeToBlocklyTypeMap =
         'list':{input:Array,output:Array},
         'component':{input:"COMPONENT",output:"COMPONENT"},
         'InstantInTime':{input:Blockly.Language.InstantInTime,output:Blockly.Language.InstantInTime},
-        'any':null
+        'any':{input:null,output:null}
 
         //add  more types here
     }
