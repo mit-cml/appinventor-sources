@@ -25,6 +25,13 @@ public interface Images extends Resources {
   ImageResource androidGreenSmall();
 
   /**
+   * App Inventor Logo
+   * {@link Ode#createWelcomeDialog(boolean)}
+   */
+  @Source("com/google/appinventor/images/appinvlogo-32.png")
+  ImageResource appInventorLogo();
+
+  /**
    * Close button image for the box widget
    */
   @Source("com/google/appinventor/images/boxClose.png")

@@ -22,9 +22,18 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.appinventor.shared.util.Base64Util;
 import com.google.common.collect.Lists;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -61,6 +70,105 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     long projectId = getProjectRpcImpl(userId, projectType).
         newProject(userId, projectName, params);
     return makeUserProject(userId, projectId);
+  }
+
+  /**
+   * Creates a new project from a zip file that is already stored
+   *  on the server.
+   * @param projectName  name of new project
+   * @param pathToZip path the to template's zip file
+   *
+   * @return  a {@link UserProject} for new project
+   */
+  @Override
+  public UserProject newProjectFromTemplate(String projectName, String pathToZip) {
+
+    //Window.alert("newProjectFromTemplate " + host + pathToZip);
+    //   System.out.println("newProjectFromTemplate = " +  host + pathToZip);
+    UserProject userProject = null;
+    try {
+      FileInputStream fis = new FileInputStream(pathToZip);
+      FileImporter fileImporter = new FileImporterImpl();
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(), projectName, fis);
+    } catch (IOException e) {
+      LOG.log(Level.SEVERE, "I/O Error importing from template project", e);
+    } catch (FileImporterException e) {
+      LOG.log(Level.SEVERE, "FileImporterException Error importing from template project", e);
+    }
+
+    return userProject;
+  }
+
+  /**
+   * This service is passed a base64 encoded string representing the Zip file.
+   * It converts it to a byte array and imports the project using FileImporter.
+   *
+   * @see http://stackoverflow.com/questions/6409587/
+   *   generating-an-inline-image-with-java-gwt/6495356#6495356
+   */
+  @Override
+  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+
+    System.out.println(">>>>> ProjectService newProjectFromExternalTemplate name = " + projectName);
+    UserProject userProject = null;
+
+    // Convert base64 string to byte[]
+    // NOTE: GWT's Base64Utils uses a non-standard algorithm.
+    // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
+    byte[] binData = null;
+    binData = Base64Util.decode(zipData);
+
+    // Import the project
+    ByteArrayInputStream bais = null;
+    FileImporter fileImporter = new FileImporterImpl();
+    try {
+      bais = new ByteArrayInputStream(binData);
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+    } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+      LOG.log(Level.SEVERE, "File Not Found importing from template project (external)", e);
+    } catch (IOException e) {
+      LOG.log(Level.SEVERE, "I/O Error importing from template project (external)", e);
+    } catch (FileImporterException e) {
+      LOG.log(Level.SEVERE, "FileImporterException Error importing from template project (external)", e);
+    }
+    return userProject;
+  }
+
+
+  /**
+   * Reads the template data from a JSON File
+   * @param pathToTemplatesDir pathname of the templates directory which may contain
+   *  0 or more template instances, each of which consists of a JSON file describing
+   *  the template, plus a zip file and image files.
+   *
+   * @return A json-formatted String consisting of an array of template objects
+   */
+  @Override
+  public String retrieveTemplateData(String pathToTemplatesDir) {
+    String json = "[";
+    File templatesRepository = new File(pathToTemplatesDir);
+    File templateFolder[] = templatesRepository.listFiles();
+    for (File file: templateFolder) {
+      String templateName = file.getName();
+      if (file.isDirectory()) {  // Should be a template folder
+        File templateFiles[] = file.listFiles();
+        for (File f: templateFiles) {
+          if (f.isFile() && f.getName().equals(templateName + ".json")) {
+            try {
+              BufferedReader in = new BufferedReader(
+                new FileReader(pathToTemplatesDir + "/" + templateName + "/" + templateName + ".json"));
+              json += in.readLine() +  ", ";
+            } catch (IOException e) {
+              LOG.log(Level.SEVERE, "I/O Exception reading template json file", e);
+              throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), null,
+                new IllegalArgumentException("Cannot Read Internal Project Template"));
+            }
+          }
+        }
+      }
+    }
+    return json + "]";
   }
 
   /**

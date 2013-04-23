@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
@@ -36,6 +34,8 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
+import com.google.appinventor.client.wizards.TemplateUploadWizard;
+import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.GetMotdService;
@@ -126,6 +126,10 @@ public class Ode implements EntryPoint {
 
   // User information
   private User user;
+
+  // Template path if set by /?repo=
+  private String templatePath;
+  private boolean templateLoadingFlag = false;
 
   // Nonce Information
   private String nonce;
@@ -303,8 +307,26 @@ public class Ode implements EntryPoint {
     }
     OdeLog.log("Ode.openPreviousProject called");
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-    getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
-    openProject(value);
+      getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+
+    // Retrieve the userTemplates
+    String userTemplates = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
+      getPropertyValue(SettingsConstants.USER_TEMPLATE_URLS);
+    TemplateUploadWizard.setStoredTemplateUrls(userTemplates);
+
+    if (templateLoadingFlag) {  // We are loading a template, open it instead
+                                // of the last project
+      NewProjectCommand callbackCommand = new NewProjectCommand() {
+          @Override
+          public void execute(Project project) {
+            templateLoadingFlag = false;
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+          }
+        };
+      TemplateUploadWizard.openProjectFromTemplate(templatePath, callbackCommand);
+    } else {
+      openProject(value);
+    }
   }
 
   private void openProject(String projectIdString) {
@@ -420,6 +442,13 @@ public class Ode implements EntryPoint {
     // Initialize global Ode instance
     instance = this;
 
+    // Let's see if we were started with a repo= parameter which points to a template
+    templatePath = Window.Location.getParameter("repo");
+    if (templatePath != null) {
+      OdeLog.wlog("Got a template path of " + templatePath);
+      templateLoadingFlag = true;
+    }
+
     // Get user information.
     OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
         // failure message
@@ -437,10 +466,6 @@ public class Ode implements EntryPoint {
         }
         user = result;
         userSettings = new UserSettings(user);
-        // Here we call userSettings.loadSettings, but the settings are actually loaded
-        // asynchronously, so this loadSettings call will return before they are loaded.
-        // After the user settings have been loaded, openPreviousProject will be called.
-        userSettings.loadSettings();
 
         // Initialize project and editor managers
         projectManager = new ProjectManager();
@@ -450,6 +475,30 @@ public class Ode implements EntryPoint {
         initializeUi();
 
         topPanel.showUserEmail(user.getUserEmail());
+
+        // Retrieve template data stored in war/templates folder and
+        // and save it for later use in TemplateUploadWizard
+
+        OdeAsyncCallback<String> templateCallback =
+        new OdeAsyncCallback<String>(
+          // failure message
+          MESSAGES.createProjectError()) {
+          @Override
+          public void onSuccess(String json) {
+            // Save the templateData
+            TemplateUploadWizard.initializeBuiltInTemplates(json);
+            // Here we call userSettings.loadSettings, but the settings are actually loaded
+            // asynchronously, so this loadSettings call will return before they are loaded.
+            // After the user settings have been loaded, openPreviousProject will be called.
+            // We have to call this after the builtin templates have been loaded otherwise
+            // we will get a NPF.
+            userSettings.loadSettings();
+
+          }
+        };
+
+        // Service call
+        Ode.getInstance().getProjectService().retrieveTemplateData(TemplateUploadWizard.TEMPLATES_ROOT_DIRECTORY, templateCallback);
       }
 
       @Override
@@ -505,6 +554,7 @@ public class Ode implements EntryPoint {
     // The following line causes problems with GWT debugging, and commenting
     // it out doesn't seem to break things.
     //History.fireCurrentHistoryState();
+
   }
 
   /*
@@ -1063,7 +1113,7 @@ public class Ode implements EntryPoint {
           getProjectService().getProjects(new AsyncCallback<long[]>() {
               @Override
               public void onSuccess(long [] projectIds) {
-                if (projectIds.length == 0) {
+                if (projectIds.length == 0 && !templateLoadingFlag) {
                   createNoProjectsDialog(true);
                 }
               }
@@ -1157,7 +1207,7 @@ public class Ode implements EntryPoint {
       getProjectService().getProjects(new AsyncCallback<long[]>() {
           @Override
             public void onSuccess(long [] projectIds) {
-            if (projectIds.length == 0) {
+            if (projectIds.length == 0 && !templateLoadingFlag) {
               createNoProjectsDialog(true);
             }
           }

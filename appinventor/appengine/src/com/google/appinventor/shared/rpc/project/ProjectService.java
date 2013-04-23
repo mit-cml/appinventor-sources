@@ -35,6 +35,34 @@ public interface ProjectService extends RemoteService {
                          NewProjectParameters params);
 
   /**
+   * Creates a new project from a zip file that is stored on the server.
+   * @param projectName name of new project
+   * @param pathToZip path to the zip files
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromTemplate(String projectName, String pathToZip);
+
+  /**
+   * Creates a new project from a zip file is stored on an external server.
+   * @param projectName name of new project
+   * @param zipData Base64 string representing the zip file
+   *
+   * @return a {@link UserProject} for new project
+   */
+  UserProject newProjectFromExternalTemplate(String projectName, String zipData);
+
+  /**
+   * Reads the template data from a JSON File
+   * @param pathToTemplatesDir pathname of the templates directory which may contain
+   *  0 or more template instances, each of which consists of a JSON file describing
+   *  the template, plus a zip file and image files.
+   *
+   * @return a {@link String} or the template data
+   */
+  String retrieveTemplateData(String pathToTemplatesDir);
+
+  /**
    * Copies a project with a new name.
    * @param oldProjectId  old project ID
    * @param newName  new name of project
