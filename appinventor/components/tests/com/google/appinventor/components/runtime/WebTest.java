@@ -89,13 +89,13 @@ public class WebTest extends TestCase {
     }
   }
 
-  public void testbuildPostData() throws Exception {
+  public void testbuildRequestData() throws Exception {
     List<Object> list = new ArrayList<Object>();
     list.add(YailList.makeList(new String[] { "First Name", "Barack" }));
     list.add(YailList.makeList(new String[] { "Last Name", "Obama" }));
     list.add(YailList.makeList(new String[] { "Title", "President of the United States" }));
     assertEquals("First+Name=Barack&Last+Name=Obama&Title=President+of+the+United+States",
-        web.buildPostData(YailList.makeList(list)));
+        web.buildRequestData(YailList.makeList(list)));
 
     list.clear();
     list.add(YailList.makeList(new String[] { "First Name", "Barack" }));
@@ -103,10 +103,10 @@ public class WebTest extends TestCase {
     list.add(YailList.makeList(new String[] { "Last Name", "Obama" }));
     list.add(YailList.makeList(new String[] { "Title", "President of the United States" }));
     try {
-      web.buildPostData(YailList.makeList(list));
+      web.buildRequestData(YailList.makeList(list));
       fail();
-    } catch (Web.BuildPostDataException e) {
-      assertEquals(ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_LIST, e.errorNumber);
+    } catch (Web.BuildRequestDataException e) {
+      assertEquals(ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST, e.errorNumber);
       assertEquals(2, e.index);
     }
 
@@ -116,10 +116,10 @@ public class WebTest extends TestCase {
     list.add(YailList.makeList(new String[] { "Title", "President of the United States",
         "This list has too many items" }));
     try {
-      web.buildPostData(YailList.makeList(list));
+      web.buildRequestData(YailList.makeList(list));
       fail();
-    } catch (Web.BuildPostDataException e) {
-      assertEquals(ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS, e.errorNumber);
+    } catch (Web.BuildRequestDataException e) {
+      assertEquals(ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS, e.errorNumber);
       assertEquals(3, e.index);
     }
 
@@ -129,10 +129,10 @@ public class WebTest extends TestCase {
     list.add(YailList.makeList(new String[] { "Title", "President of the United States" }));
     list.add(YailList.makeList(new String[] { "This list has too few items" }));
     try {
-      web.buildPostData(YailList.makeList(list));
+      web.buildRequestData(YailList.makeList(list));
       fail();
-    } catch (Web.BuildPostDataException e) {
-      assertEquals(ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS, e.errorNumber);
+    } catch (Web.BuildRequestDataException e) {
+      assertEquals(ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS, e.errorNumber);
       assertEquals(4, e.index);
     }
   }

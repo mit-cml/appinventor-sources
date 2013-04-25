@@ -219,7 +219,9 @@ public class YaVersion {
   // - BUTTON_COMPONENT_VERSION was incremented to 5.
   // For YOUNG_ANDROID_VERSION 74:
   // - SLIDER_COMPONENT_VERSION was incremented to 1.
-  public static final int YOUNG_ANDROID_VERSION = 74;
+  // For YOUNG_ANDROID_VERSION 75:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
+  public static final int YOUNG_ANDROID_VERSION = 75;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -603,7 +605,9 @@ public class YaVersion {
   // - The BuildPostData and ClearCookies methods were added.
   // - The existing PostText method was renamed to PostTextWithEncoding, and a new PostText
   //   method was added.
-  public static final int WEB_COMPONENT_VERSION = 2;
+  // For WEB_COMPONENT_VERSION 3:
+  // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
+  public static final int WEB_COMPONENT_VERSION = 3;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
