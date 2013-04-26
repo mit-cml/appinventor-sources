@@ -132,8 +132,9 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
-  
+
   // Please start the next group of error numbers at 1801.
+  // Please update the \appinventor\docs\learn\reference\other.html document when necessary.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -345,7 +346,7 @@ public final class ErrorMessages {
                         "are 1, 2, or 3.");
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
-            "are 1, 2, or 3.");ç
+            "are 1, 2, or 3.");
 	// BarcodeScanner errors
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
