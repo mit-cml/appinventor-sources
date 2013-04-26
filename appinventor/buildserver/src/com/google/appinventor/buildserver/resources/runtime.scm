@@ -1859,12 +1859,20 @@ list, use the make-yail-list constructor with no arguments.
               (random-integer 1  (yail-list-length yail-list))))
 
 
-;; Implements Blocks for-each, which takes a Yail-list as argument
-;; This is called by foreach, defined in macros.scm
+;; Implements Blocks foreach, which takes a Yail-list as argument
+;; This is called by Yail foreach, defined in macros.scm
 
 (define (yail-for-each proc yail-list)
-  (for-each proc (yail-list-contents yail-list))
-  *the-null-value*)
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to foreach is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to foreach")
+        (begin
+          (for-each proc (yail-list-contents verified-list))
+          *the-null-value*))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this
@@ -1941,18 +1949,18 @@ list, use the make-yail-list constructor with no arguments.
 ;;; JSON objects and whether jsonutils.decode.
 
 (define (yail-alist-lookup key yail-list-of-pairs default)
-  (android-log 
+  (android-log
    (format #f "List alist lookup key is  ~A and table is ~A" key yail-list-of-pairs))
   (let loop ((pairs-to-check (yail-list-contents yail-list-of-pairs)))
     (cond ((null? pairs-to-check) default)
-	  ((not (pair-ok? (car pairs-to-check)))
-	   (signal-runtime-error
-	    (format #f "Lookup in pairs: the list ~A is not a well-formed list of pairs"
-		    (get-display-representation yail-list-of-pairs))
-	    "Invalid list of pairs"))
-	  ((equal? key (car (yail-list-contents (car pairs-to-check))))
-	   (cadr (yail-list-contents (car pairs-to-check))))
-	  (else (loop (cdr pairs-to-check))))))
+          ((not (pair-ok? (car pairs-to-check)))
+           (signal-runtime-error
+            (format #f "Lookup in pairs: the list ~A is not a well-formed list of pairs"
+                    (get-display-representation yail-list-of-pairs))
+            "Invalid list of pairs"))
+          ((equal? key (car (yail-list-contents (car pairs-to-check))))
+           (cadr (yail-list-contents (car pairs-to-check))))
+          (else (loop (cdr pairs-to-check))))))
 
 
 (define (pair-ok? candidate-pair)
