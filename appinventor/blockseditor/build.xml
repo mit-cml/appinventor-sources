@@ -69,7 +69,7 @@
     <pathelement location="${build.dir}/blockslib/OpenBlocks.jar" />
     <pathelement location="${build.dir}/common/BlocksEditorHttpConstants.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
-    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" /> 
+    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/powermock/cglib-nodep-2.2.jar" />

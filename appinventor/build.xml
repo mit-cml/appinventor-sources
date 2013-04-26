@@ -73,8 +73,8 @@
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
         <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
         <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
-        <pathelement location="lib/guava/guava-11.0.1.jar" />
-        <pathelement location="lib/gwt_dragdrop/gwt-dnd-r1057.jar" />
+        <pathelement location="lib/guava/guava-14.0.1.jar" />
+        <pathelement location="lib/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="lib/json/json.jar" />
         <pathelement location="lib/kawa/kawa-1.11-modified.jar" />
@@ -97,8 +97,8 @@
         <!-- acra -->
         <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->
-        <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
-        <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
+        <pathelement location="lib/gwt/2.5.1/gwt-dev.jar"/>
+        <pathelement location="lib/gwt/2.5.1/gwt-user.jar"/>
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
@@ -119,7 +119,7 @@
            classpath above,so our javadoc will link appropriate online javadoc for libraries we
            depend on. -->
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
-      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
+      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.5/"/>
       <link href="http://d.android.com/reference"
             offline="true"
             packagelistLoc="lib/android"/>

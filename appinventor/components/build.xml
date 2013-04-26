@@ -128,7 +128,7 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -214,7 +214,7 @@
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
           <pathelement location="${lib.dir}/android/2.2/android.jar" />
-          <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+          <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
@@ -225,7 +225,7 @@
           <pathelement location="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-          <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+          <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
         <compilerarg line="-processor @{apt-processor}" />
@@ -249,7 +249,7 @@
       <include name="${components.pkg}/annotations/*.java" />
       <classpath>
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
-        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -277,7 +277,7 @@
         <pathelement location="${local.build.dir}/ComponentProcessingLib.jar"/>
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
-        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
       </classpath>
     </ai.javac>
 
@@ -292,7 +292,7 @@
       <zipfileset src="${local.build.dir}/ComponentProcessingLib.jar"/>
       <zipfileset src="${local.build.dir}/HtmlEntities.jar"/>
       <zipfileset src="${public.build.dir}/CommonConstants.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-11.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-14.0.1.jar" />
     </jar>
 
   </target>

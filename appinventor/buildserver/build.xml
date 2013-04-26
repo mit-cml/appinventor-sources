@@ -59,7 +59,7 @@
       <classpath>
         <pathelement location="${build.dir}/blockslib/OpenBlocks.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
         <pathelement location="${lib.dir}/json/json.jar" />
         <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
@@ -73,7 +73,7 @@
       <fileset dir="${YailGenerator-class.dir}" />
       <zipfileset src="${build.dir}/blockslib/OpenBlocks.jar"/>
       <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-11.0.1.jar" />
+      <zipfileset src="${lib.dir}/guava/guava-14.0.1.jar" />
       <zipfileset src="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
@@ -138,7 +138,7 @@
     <copy toFile="${classes.files.dir}/google-http-client-android2-beta.jar" file="${lib.dir}/oauth/google-http-client-android2-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
-    <copy toFile="${classes.files.dir}/guava-11.0.1.jar" file="${lib.dir}/guava/guava-11.0.1.jar" />
+    <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
     <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
@@ -171,7 +171,7 @@
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
-      <fileset dir="${lib.dir}" includes="guava/guava-11.0.1.jar"/>
+      <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="args4j/args4j-2.0.18.jar"/>
       <fileset dir="${lib.dir}" includes="json/json.jar" />
@@ -330,7 +330,7 @@
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/AndroidRuntime.jar"/>
     <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
-    <pathelement location="${lib.dir}/guava/guava-11.0.1.jar" />
+    <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
     <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
