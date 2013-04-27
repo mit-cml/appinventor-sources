@@ -26,7 +26,10 @@ import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
+import com.google.gwt.event.logical.shared.ResizeEvent;
+import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
 
 import java.util.HashSet;
@@ -43,6 +46,11 @@ import java.util.Set;
  */
 public final class YaBlocksEditor extends FileEditor
     implements FormChangeListener, BlockDrawerSelectionListener {
+
+  // A constant to substract from the total height of the Viewer window, set through
+  // the computed height of the user's window (Window.getClientHeight())
+  // This is an approximation of the size of the header navigation panel
+  private static final int VIEWER_WINDOW_OFFSET = 170;
 
   // Database of component type descriptions
   private static final SimpleComponentDatabase COMPONENT_DATABASE =
@@ -99,17 +107,19 @@ public final class YaBlocksEditor extends FileEditor
     fullFormName = blocksNode.getProjectId() + "_" + blocksNode.getFormName();
     formToBlocksEditor.put(fullFormName, this);
     blocksArea = new BlocklyPanel(fullFormName);
-
-    // We would like the blocks area to fill the available space automatically,
-    // but apparently we need to give it a height or else it ends up too short.
-    // TODO(sharon): Neil was stumped the last time he looked at this, and I didn't manage to get
-    // it to work either after some futzing. I think the problem was that there
-    // was no set height to fill. Looking again, I wonder if this might be a
-    // problem in the Box constructor, perhaps in the call to
-    // body.setSize("100%", "100%"). I wonder if that should be using the initial
-    // height passed into the Box constructor instead.
-    blocksArea.setSize("100%", "600px");
-
+    blocksArea.setWidth("100%");
+    // This code seems to be using a rather old layout, so we cannot simply pass 100% for height.
+    // Instead, it needs to be calculated from the client's window, and a listener added to Window
+    // We use VIEWER_WINDOW_OFFSET as an approximation of the size of the top navigation bar
+    // New layouts don't need all this messing; see comments on selected answer at: 
+    // http://stackoverflow.com/questions/86901/creating-a-fluid-panel-in-gwt-to-fill-the-page
+    blocksArea.setHeight(Window.getClientHeight() - VIEWER_WINDOW_OFFSET + "px");
+    Window.addResizeHandler(new ResizeHandler() {
+     public void onResize(ResizeEvent event) {
+       int height = event.getHeight();
+       blocksArea.setHeight(height - VIEWER_WINDOW_OFFSET + "px");
+     }
+    });
     initWidget(blocksArea);
 
     // Get references to the source structure explorer
