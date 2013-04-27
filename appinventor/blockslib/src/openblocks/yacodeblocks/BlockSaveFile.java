@@ -401,6 +401,9 @@ public class BlockSaveFile {
       } else if (genus.equals("BluetoothServer")) {
         blkCompVersion = upgradeBluetoothServerBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("Slider")) {
+        blkCompVersion = upgradeSliderBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("Button")) {
         blkCompVersion = upgradeButtonBlocks(blkCompVersion, componentName);
 
@@ -672,6 +675,15 @@ public class BlockSaveFile {
       // The ShowFeedback property was added.
       // No properties need to be modified to upgrade to version 5.
       blkCompVersion = 5;
+    }
+
+    return blkCompVersion;
+  }
+
+  private int upgradeSliderBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 1) {
+      //This is initial version. Placeholder for future upgrades
+      blkCompVersion = 1;
     }
 
     return blkCompVersion;

@@ -217,7 +217,9 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 73:
   // - BUTTON_COMPONENT_VERSION was incremented to 5.
-  public static final int YOUNG_ANDROID_VERSION = 73;
+  // For YOUNG_ANDROID_VERSION 74:
+  // - SLIDER_COMPONENT_VERSION was incremented to 1.
+  public static final int YOUNG_ANDROID_VERSION = 74;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -608,5 +610,9 @@ public class YaVersion {
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
   public static final int WEBVIEWER_COMPONENT_VERSION = 3;
+
+  // For SLIDER_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int SLIDER_COMPONENT_VERSION = 1;
 
 }
