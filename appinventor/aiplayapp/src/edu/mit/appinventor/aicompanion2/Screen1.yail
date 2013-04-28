@@ -4,52 +4,6 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aicompanion2.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def (badversion)
-(set-var! expired  #t)
-
-(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
-
-(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
-
- )
-(def ipaddress "IPADDRESS")
-
-(def (PostData)
-(set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
- '( text text)
- "join")
-)
- '( text text)
- "join")
- 'text)
-
-(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildPostData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
-)
- '( any any)
- "make a list")
- (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (get-var ipaddress)
-)
- '( any any)
- "make a list")
- (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9997")
- '( any any)
- "make a list")
-)
- '( any any any)
- "make a list")
-)
- '( list)
-)
-)
- '( text)
-)
-
-(call-component-method 'code 'HideKeyboard (*list-for-runtime*)
- '())
-
- )
-(def expired #f)
-
 (def (Setup)
 (set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
  '())
@@ -78,12 +32,63 @@ $Source $Yail
 )
 
  )
+(def expired #f)
+
+(def (PostData)
+(set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
+ '( text text)
+ "join")
+)
+ '( text text)
+ "join")
+ 'text)
+
+(call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (get-property 'code 'Text)
+)
+ '( any any)
+ "make a list")
+ (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (get-var ipaddress)
+)
+ '( any any)
+ "make a list")
+ (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9997")
+ '( any any)
+ "make a list")
+)
+ '( any any any)
+ "make a list")
+)
+ '( list)
+)
+)
+ '( text)
+)
+
+(call-component-method 'code 'HideKeyboard (*list-for-runtime*)
+ '())
+
+ )
+(def ipaddress "IPADDRESS")
+
+(def (badversion)
+(set-var! expired  #t)
+
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
+
+(set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
+
+ )
 ;;; Screen1
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'ScreenOrientation "portrait" 'text)
 (set-and-coerce-property! 'Screen1 'Scrollable #f 'boolean)
 (set-and-coerce-property! 'Screen1 'Title "MIT AICompanion" 'text)
-(set-and-coerce-property! 'Screen1 'VersionCode 205 'number)
-(set-and-coerce-property! 'Screen1 'VersionName "2.05" 'text)
+(set-and-coerce-property! 'Screen1 'VersionCode 206 'number)
+(set-and-coerce-property! 'Screen1 'VersionName "2.06" 'text)
+)
+(define-event Screen1 Initialize()
+ (set-this-form)
+ ((get-var Setup))
+
 )
 (define-event Screen1 ErrorOccurred( component  functionName  errorNumber  message )
  (set-this-form)
@@ -104,27 +109,20 @@ $Source $Yail
 ((get-var Setup))
 
 )
-(define-event Screen1 Initialize()
- (set-this-form)
- ((get-var Setup))
-
-)
 ;;; HorizontalArrangement2
 (add-component Screen1 HorizontalArrangement HorizontalArrangement2 (set-and-coerce-property! 'HorizontalArrangement2 'Width -2 'number)
 )
 ;;; Label1
-(add-component HorizontalArrangement2 Label Label1 (set-and-coerce-property! 'Label1 'Text "Your IP Address: " 'text)
+(add-component HorizontalArrangement2 Label Label1 (set-and-coerce-property! 'Label1 'FontSize 12.0 'number)
+(set-and-coerce-property! 'Label1 'Text "Your IP Address: " 'text)
 )
 ;;; iplabel
 (add-component HorizontalArrangement2 Label iplabel (set-and-coerce-property! 'iplabel 'Text "IP ADDRESS" 'text)
 (set-and-coerce-property! 'iplabel 'Width -2 'number)
 )
-;;; Label5
-(add-component Screen1 Label Label5 (set-and-coerce-property! 'Label5 'Text "     " 'text)
-(set-and-coerce-property! 'Label5 'Width -2 'number)
-)
 ;;; Label2
-(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'Text "Directions: \n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Connect to App Inventor' button below.\n4) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'FontSize 12.0 'number)
+(set-and-coerce-property! 'Label2 'Text "Directions: \n1) On the Blocks Editor, press \"Connect to Device\" and select WiFi.\n2) Type the 6-letter code or scan the QR code displayed on the Blocks Editor.\n3) Click the 'Connect to App Inventor' button below.\n4) If not connected in 30 seconds, click reset and repeat steps 1-4." 'text)
 (set-and-coerce-property! 'Label2 'Width -2 'number)
 )
 ;;; Label6
