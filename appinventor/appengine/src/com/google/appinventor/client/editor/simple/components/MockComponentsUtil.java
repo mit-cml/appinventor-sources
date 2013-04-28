@@ -45,6 +45,7 @@ public final class MockComponentsUtil {
     DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
     DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
     DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
+    DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
   }
 
   /**
