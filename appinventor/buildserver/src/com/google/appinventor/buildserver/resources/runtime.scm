@@ -1865,12 +1865,20 @@ list, use the make-yail-list constructor with no arguments.
               (random-integer 1  (yail-list-length yail-list))))
 
 
-;; Implements Blocks for-each, which takes a Yail-list as argument
-;; This is called by foreach, defined in macros.scm
+;; Implements Blocks foreach, which takes a Yail-list as argument
+;; This is called by Yail foreach, defined in macros.scm
 
 (define (yail-for-each proc yail-list)
-  (for-each proc (yail-list-contents yail-list))
-  *the-null-value*)
+  (let ((verified-list (coerce-to-yail-list yail-list)))
+    (if (eq? verified-list *non-coercible-value*)
+        (signal-runtime-error
+         (format #f
+                 "The second argument to foreach is not a list.  The second argument is: ~A"
+                 (get-display-representation yail-list))
+         "Bad list argument to foreach")
+        (begin
+          (for-each proc (yail-list-contents verified-list))
+          *the-null-value*))))
 
 ;; yail-for-range needs to check that its args are numeric
 ;; because the blocks editor can't guarantee this

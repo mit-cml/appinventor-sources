@@ -213,6 +213,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("BluetoothServer")) {
         srcCompVersion = upgradeBluetoothServerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Slider")) {
+        srcCompVersion = upgradeSliderProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
@@ -452,6 +455,15 @@ public final class YoungAndroidFormUpgrader {
     }
     return srcCompVersion;
   }
+  private static int upgradeSliderProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 1) {
+      // Initial version. Placeholder for future upgrades
+      srcCompVersion = 1;
+    }
+
+    return srcCompVersion;
+  }
 
   private static int upgradeButtonProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
@@ -470,6 +482,11 @@ public final class YoungAndroidFormUpgrader {
       // The Shape property was added.
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
+    }
+    if (srcCompVersion < 5) {
+      // The ShowFeedback property was added.
+      // No properties need to be modified to upgrade to version 5.
+      srcCompVersion = 5;
     }
     return srcCompVersion;
   }
@@ -949,6 +966,12 @@ public final class YoungAndroidFormUpgrader {
       // method was added.
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The methods PutText, PutTextWithEncoding, PutFile and Delete were added.
+      // The method BuildPostData was renamed to BuildRequestData.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

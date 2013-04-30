@@ -103,16 +103,17 @@ public final class ErrorMessages {
   // Web errors
   public static final int ERROR_WEB_UNABLE_TO_GET = 1101;
   public static final int ERROR_WEB_UNSUPPORTED_ENCODING = 1102;
-  public static final int ERROR_WEB_UNABLE_TO_POST = 1103;
-  public static final int ERROR_WEB_UNABLE_TO_POST_FILE = 1104;
+  public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT = 1103;
+  public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE = 1104;
   public static final int ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105;
   public static final int ERROR_WEB_HTML_TEXT_DECODE_FAILED = 1106;
   // There is a gap here because two ContactPicker errors below use the numbers 1107 and 1108.
   public static final int ERROR_WEB_MALFORMED_URL = 1109;
   public static final int ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110;
   public static final int ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS = 1111;
-  public static final int ERROR_WEB_BUILD_POST_DATA_NOT_LIST = 1112;
-  public static final int ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS = 1113;
+  public static final int ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST = 1112;
+  public static final int ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS = 1113;
+  public static final int ERROR_WEB_UNABLE_TO_DELETE = 1114;
   // Contact picker (and PhoneNumberPicker) errors
   public static final int ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER = 1107;
   public static final int ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING = 1108;
@@ -309,10 +310,10 @@ public final class ErrorMessages {
         "Unable to get a response with the specified URL: %s");
     errorMessages.put(ERROR_WEB_UNSUPPORTED_ENCODING,
         "The encoding %s is not supported.");
-    errorMessages.put(ERROR_WEB_UNABLE_TO_POST,
-        "Unable to post the text \"%s\" with the specified URL: %s");
-    errorMessages.put(ERROR_WEB_UNABLE_TO_POST_FILE,
-        "Unable to post the file \"%s\" with the specified URL %s.");
+    errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT,
+        "Unable to post or put the text \"%s\" with the specified URL: %s");
+    errorMessages.put(ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE,
+        "Unable to post or put the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,
@@ -323,10 +324,12 @@ public final class ErrorMessages {
         "The specified request headers are not valid: element %s is not a list");
     errorMessages.put(ERROR_WEB_REQUEST_HEADER_NOT_TWO_ELEMENTS,
         "The specified request headers are not valid: element %s does not contain two elements");
-    errorMessages.put(ERROR_WEB_BUILD_POST_DATA_NOT_LIST,
-        "Unable to build post data: element %s is not a list");
-    errorMessages.put(ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS,
-        "Unable to build post data: element %s does not contain two elements");
+    errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST,
+        "Unable to build request data: element %s is not a list");
+    errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS,
+        "Unable to build request data: element %s does not contain two elements");
+    errorMessages.put(ERROR_WEB_UNABLE_TO_DELETE,
+            "Unable to delete a resource with the specified URL: %s");
     // Contact picker (and PhoneNumberPicker) errors
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER,
         "The software used in this app cannot extract contacts from this type of phone.");

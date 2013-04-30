@@ -13,7 +13,6 @@ import twitter4j.DirectMessage;
 import twitter4j.IDs;
 import twitter4j.Query;
 import twitter4j.Status;
-import twitter4j.Tweet;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.User;
@@ -46,6 +45,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
  * 
  * @author sharon@google.com (Sharon Perl) - added OAuth support
  * @author ajcolter@gmail.com (Aubrey Colter) - added the twitter4j 2.2.6 jars
+ * @author josmasflores@gmail.com (Jose Dominguez) - added the twitter4j 3.0.3 jars and fixed auth bug 2413
  */
 @DesignerComponent(version = YaVersion.TWITTER_COMPONENT_VERSION, description = "<p>A non-visible component that enables communication "
     + "with <a href=\"http://www.twitter.com\" target=\"_blank\">Twitter</a>. "
@@ -150,24 +150,12 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * Logs in to Twitter with a username and password.
    */
+  @Deprecated
   @SimpleFunction(userVisible = false, description = "Twitter's API no longer supports login via username and "
       + "password. Use the Authorize call instead.")
   public void Login(String username, String password) {
     form.dispatchErrorOccurredEvent(this, "Login",
         ErrorMessages.ERROR_TWITTER_UNSUPPORTED_LOGIN_FUNCTION);
-  }
-
-  /**
-   * Indicates when the login has been successful.
-   */
-  @SimpleEvent(description = "This event is raised after the program calls "
-      + "<code>Authorize</code> if the authorization was successful.  "
-      + "It is also called after a call to <code>CheckAuthorized</code> "
-      + "if we already have a valid access token. "
-      + "After this event has been raised, any other method for this "
-      + "component can be called.")
-  public void IsAuthorized() {
-    EventDispatcher.dispatchEvent(this, "IsAuthorized");
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "The user name of the authorized user. Empty if "
@@ -219,6 +207,19 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   }
 
   /**
+   * Indicates when the login has been successful.
+   */
+  @SimpleEvent(description = "This event is raised after the program calls "
+      + "<code>Authorize</code> if the authorization was successful.  "
+      + "It is also called after a call to <code>CheckAuthorized</code> "
+      + "if we already have a valid access token. "
+      + "After this event has been raised, any other method for this "
+      + "component can be called.")
+  public void IsAuthorized() {
+    EventDispatcher.dispatchEvent(this, "IsAuthorized");
+  }
+
+  /**
    * Authenticate to Twitter using OAuth
    */
   @SimpleFunction(description = "Redirects user to login to Twitter via the Web browser using "
@@ -229,11 +230,11 @@ public final class Twitter extends AndroidNonvisibleComponent implements
           ErrorMessages.ERROR_TWITTER_BLANK_CONSUMER_KEY_OR_SECRET);
       return;
     }
-    final String myConsumerKey = consumerKey;
-    final String myConsumerSecret = consumerSecret;
     if (twitter == null) {
       twitter = new TwitterFactory().getInstance();
     }
+    final String myConsumerKey = consumerKey;
+    final String myConsumerSecret = consumerSecret;
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         if (checkAccessToken(myConsumerKey, myConsumerSecret)) {
@@ -265,6 +266,15 @@ public final class Twitter extends AndroidNonvisibleComponent implements
           form.dispatchErrorOccurredEvent(Twitter.this, "Authorize",
               ErrorMessages.ERROR_TWITTER_EXCEPTION, e.getMessage());
           DeAuthorize(); // clean up
+        } catch (IllegalStateException ise){ //This should never happen cause it should return
+          // at the if (checkAccessToken...). We mark as an error but let continue
+          Log.e("Twitter", "OAuthConsumer was already set: launch IsAuthorized()");
+          handler.post(new Runnable() {
+            @Override
+            public void run() {
+              IsAuthorized();
+            }
+          });
         }
       }
     });
@@ -305,10 +315,10 @@ public final class Twitter extends AndroidNonvisibleComponent implements
         final String oauthVerifier = uri.getQueryParameter("oauth_verifier");
         if (twitter == null) {
           Log.e("Twitter", "twitter field is unexpectedly null");
-          new RuntimeException().printStackTrace();
           form.dispatchErrorOccurredEvent(this, "Authorize",
               ErrorMessages.ERROR_TWITTER_UNABLE_TO_GET_ACCESS_TOKEN,
               "internal error: can't access Twitter library");
+          new RuntimeException().printStackTrace();
         }
         if (requestToken != null && oauthVerifier != null
             && oauthVerifier.length() != 0) {
@@ -333,22 +343,22 @@ public final class Twitter extends AndroidNonvisibleComponent implements
                 form.dispatchErrorOccurredEvent(Twitter.this, "Authorize",
                     ErrorMessages.ERROR_TWITTER_UNABLE_TO_GET_ACCESS_TOKEN,
                     e.getMessage());
-                DeAuthorize(); // clean up
+                deAuthorize(); // clean up
               }
             }
           });
         } else {
           form.dispatchErrorOccurredEvent(this, "Authorize",
               ErrorMessages.ERROR_TWITTER_AUTHORIZATION_FAILED);
-          DeAuthorize(); // clean up
+          deAuthorize(); // clean up
         }
       } else {
-        Log.e("Twitter",
-            "uri retured from WebView activity was unexpectedly null");
+        Log.e("Twitter", "uri returned from WebView activity was unexpectedly null");
+        deAuthorize(); // clean up so we can call Authorize again
       }
     } else {
-      Log.e("Twitter",
-          "intent retured from WebView activity was unexpectedly null");
+      Log.e("Twitter", "intent returned from WebView activity was unexpectedly null");
+      deAuthorize(); // clean up so we can call Authorize again
     }
   }
 
@@ -379,6 +389,10 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction(description = "Removes Twitter authorization from this running app instance")
   public void DeAuthorize() {
+    deAuthorize();
+  }
+
+  private void deAuthorize() {
     final twitter4j.Twitter oldTwitter;
     requestToken = null;
     accessToken = null;
@@ -407,7 +421,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       + "user has successfully logged in to Twitter.</p>")
   public void SetStatus(final String status) {
 
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "SetStatus",
           ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, "Need to login?");
       return;
@@ -443,7 +457,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>")
   public void RequestMentions() {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "RequestMentions",
           ErrorMessages.ERROR_TWITTER_REQUEST_MENTIONS_FAILED, "Need to login?");
       return;
@@ -453,7 +467,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
 
       public void run() {
         try {
-          replies = twitter.getMentions();
+          replies = twitter.getMentionsTimeline();
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "RequestMentions",
               ErrorMessages.ERROR_TWITTER_REQUEST_MENTIONS_FAILED,
@@ -580,7 +594,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>")
   public void RequestDirectMessages() {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "RequestDirectMessages",
           ErrorMessages.ERROR_TWITTER_REQUEST_DIRECT_MESSAGES_FAILED,
           "Need to login?");
@@ -655,7 +669,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>")
   public void DirectMessage(final String user, final String message) {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "DirectMessage",
           ErrorMessages.ERROR_TWITTER_DIRECT_MESSAGE_FAILED, "Need to login?");
       return;
@@ -677,7 +691,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction
   public void Follow(final String user) {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "Follow",
           ErrorMessages.ERROR_TWITTER_FOLLOW_FAILED, "Need to login?");
       return;
@@ -685,11 +699,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         try {
-          // existsFrienship tests whether userName follows user
-          if (!twitter.existsFriendship(userName, user)) {
-            twitter.createFriendship(user);
-          }
-
+          twitter.createFriendship(user);
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "Follow",
               ErrorMessages.ERROR_TWITTER_FOLLOW_FAILED, e.getMessage());
@@ -703,7 +713,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction
   public void StopFollowing(final String user) {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "StopFollowing",
           ErrorMessages.ERROR_TWITTER_STOP_FOLLOWING_FAILED, "Need to login?");
       return;
@@ -711,10 +721,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
     AsynchUtil.runAsynchronously(new Runnable() {
       public void run() {
         try {
-          // existsFrienship tests whether userName follows user
-          if (twitter.existsFriendship(userName, user)) {
-            twitter.destroyFriendship(user);
-          }
+          twitter.destroyFriendship(user);
         } catch (TwitterException e) {
           form.dispatchErrorOccurredEvent(Twitter.this, "StopFollowing",
               ErrorMessages.ERROR_TWITTER_STOP_FOLLOWING_FAILED, e.getMessage());
@@ -728,7 +735,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
    */
   @SimpleFunction
   public void RequestFriendTimeline() {
-    if (twitter == null) {
+    if (twitter == null || userName.length() == 0) {
       form.dispatchErrorOccurredEvent(this, "RequestFriendTimeline",
           ErrorMessages.ERROR_TWITTER_REQUEST_FRIEND_TIMELINE_FAILED,
           "Need to login?");
@@ -751,7 +758,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
               timeline.clear();
               for (Status message : messages) {
                 List<String> status = new ArrayList<String>();
-                status.add(message.getUser().getName());
+                status.add(message.getUser().getScreenName());
                 status.add(message.getText());
                 timeline.add(status);
               }
@@ -796,10 +803,18 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * Search for tweets or labels
    */
-  @SimpleFunction
+  @SimpleFunction(description = "This searches Twitter for the given String query."
+      + "<p><u>Requirements</u>: This should only be called after the "
+      + "<code>IsAuthorized</code> event has been raised, indicating that the "
+      + "user has successfully logged in to Twitter.</p>")
   public void SearchTwitter(final String query) {
-    AsynchUtil.runAsynchronously(new Runnable() {
-      List<Tweet> tweets = Collections.emptyList();
+    if (twitter == null || userName.length() == 0) {
+      form.dispatchErrorOccurredEvent(this, "SearchTwitter",
+          ErrorMessages.ERROR_TWITTER_SEARCH_FAILED, "Need to login?");
+      return;
+    }
+    AsynchUtil.runAsynchronously(new Runnable() { 
+      List<Status> tweets = Collections.emptyList();
 
       public void run() {
         try {
@@ -811,8 +826,8 @@ public final class Twitter extends AndroidNonvisibleComponent implements
           handler.post(new Runnable() {
             public void run() {
               searchResults.clear();
-              for (Tweet tweet : tweets) {
-                searchResults.add(tweet.getFromUser() + " " + tweet.getText());
+              for (Status tweet : tweets) {
+                searchResults.add(tweet.getUser().getName() + " " + tweet.getText());
               }
               SearchSuccessful(searchResults);
             }
@@ -848,39 +863,38 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Check whether accessToken is valid. This call can take a while because it
-   * makes a request to Twitter, so it should be called from a non-UI thread.
-   * 
-   * @return true if accessToken is valid, false otherwise.
+   * Check whether accessToken is stored in preferences. If there is one, set it.
+   * If it was already set (for instance calling Authorize twice in a row),
+   * it will throw an IllegalStateException that, in this case, can be ignored.
+   * @return true if accessToken is valid and set (user authorized), false otherwise.
    */
   private boolean checkAccessToken(String myConsumerKey, String myConsumerSecret) {
+    accessToken = retrieveAccessToken();
     if (accessToken == null) {
       return false;
     }
-    if (twitter == null) {
-      twitter = new TwitterFactory().getInstance();
-    }
-    try {
-      User user;
-      user = twitter.verifyCredentials();
-      userName = user.getScreenName();
-      twitter.setOAuthConsumer(myConsumerKey, myConsumerSecret);
-      twitter.setOAuthAccessToken(accessToken);
-      Log.i("Twitter", "Saved accessToken is valid. UserId is " + userName);
-      return true; // already have access
-    } catch (TwitterException e) {
-      accessToken = null; // clear invalid token
-      userName = "";
-      saveAccessToken(accessToken);
-      Log.i("Twitter",
-          "Saved access token is not valid---clearing it in shared prefs");
-      return false;
-    } catch (IllegalStateException e) {
-      Log.i("Twitter",
-          "OAuth tokens already saved. Saved accessToken is valid. UserId is "
-              + userName);
+    else {
+      if (twitter == null) {
+        twitter = new TwitterFactory().getInstance();
+      }
+      try {
+        twitter.setOAuthConsumer(consumerKey, consumerSecret);
+        twitter.setOAuthAccessToken(accessToken);
+      }
+      catch (IllegalStateException ies) {
+        //ignore: it means that the consumer data was already set
+      }
+      if (userName.isEmpty()) {
+        User user;
+        try {
+          user = twitter.verifyCredentials();
+          userName = user.getScreenName();
+        } catch (TwitterException e) {// something went wrong (networks or bad credentials <-- DeAuthorize
+          deAuthorize();
+          return false;
+        }
+      }
       return true;
     }
-
   }
 }

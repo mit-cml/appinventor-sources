@@ -12,13 +12,12 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * BlockSaveFile is the saved form of the blocks workspace. This helper class
@@ -401,6 +400,9 @@ public class BlockSaveFile {
       } else if (genus.equals("BluetoothServer")) {
         blkCompVersion = upgradeBluetoothServerBlocks(blkCompVersion, componentName);
 
+      } else if (genus.equals("Slider")) {
+        blkCompVersion = upgradeSliderBlocks(blkCompVersion, componentName);
+
       } else if (genus.equals("Button")) {
         blkCompVersion = upgradeButtonBlocks(blkCompVersion, componentName);
 
@@ -668,6 +670,21 @@ public class BlockSaveFile {
       // No blocks need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The ShowFeedback property was added.
+      // No properties need to be modified to upgrade to version 5.
+      blkCompVersion = 5;
+    }
+
+    return blkCompVersion;
+  }
+
+  private int upgradeSliderBlocks(int blkCompVersion, String componentName) {
+    if (blkCompVersion < 1) {
+      //This is initial version. Placeholder for future upgrades
+      blkCompVersion = 1;
+    }
+
     return blkCompVersion;
   }
 
@@ -1224,6 +1241,18 @@ public class BlockSaveFile {
 
       // Blocks related to this component have now been upgraded to version 2.
       blkCompVersion = 2;
+    }
+    if (blkCompVersion < 3) {
+      // Change BuildPostData function to BuildRequestData.
+      for (Element block : getAllMatchingMethodOrEventBlocks(componentName,
+          "Web", "BuildPostData")) {
+        changeBlockGenusName(block, "Web-BuildRequestData");
+        Node labelChild = getBlockLabelChild(block);
+        String newLabel = componentName + ".BuildRequestData";
+        labelChild.setNodeValue(newLabel);
+      }
+      // Blocks related to this component have now been upgraded to version 3.
+      blkCompVersion = 3;
     }
     return blkCompVersion;
   }

@@ -45,6 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.CookieHandler;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -52,12 +53,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The Web component provides functions for HTTP GET and POST requests.
- *
+ * The Original Web component provided functions for HTTP GET and POST requests.
+ * This new version provides added PUT and DELETE requests.
  * @author lizlooney@google.com (Liz Looney)
+ * @author josmasflores@gmail.com (Jose Dominguez)
  */
 @DesignerComponent(version = YaVersion.WEB_COMPONENT_VERSION,
-    description = "Non-visible component that provides functions for HTTP GET and POST requests.",
+    description = "Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.",
     category = ComponentCategory.MISC,
     nonVisible = true,
     iconName = "images/web.png")
@@ -87,22 +89,22 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
 
   /**
-   * BuildPostDataException can be thrown from buildPostData.
-   * It is thrown if the list passed to buildPostData contains an item that is not a list.
-   * It is thrown if the list passed to buildPostData contains an item that is a list whose size is
+   * BuildRequestDataException can be thrown from buildRequestData.
+   * It is thrown if the list passed to buildRequestData contains an item that is not a list.
+   * It is thrown if the list passed to buildRequestData contains an item that is a list whose size is
    * not 2.
    */
   // VisibleForTesting
-  static class BuildPostDataException extends Exception {
+  static class BuildRequestDataException extends Exception {
     /*
      * errorNumber could be:
-     * ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_LIST
-     * ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS
+     * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST
+     * ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS
      */
     final int errorNumber;
     final int index;         // the index of the invalid header
 
-    BuildPostDataException(int errorNumber, int index) {
+    BuildRequestDataException(int errorNumber, int index) {
       super();
       this.errorNumber = errorNumber;
       this.index = index;
@@ -344,7 +346,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, null);
+          performRequest(webProps, null, null, "GET");
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "Get",
               e.getErrorMessageNumber());
@@ -369,7 +371,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostText(final String text) {
-    postTextImpl(text, "UTF-8", "PostText");
+    requestTextImpl(text, "UTF-8", "PostText", "POST");
   }
 
   /**
@@ -387,60 +389,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       "the name of the file.<br>" +
       "If the SaveResponse property is false, the GotText event will be triggered.")
   public void PostTextWithEncoding(final String text, final String encoding) {
-    postTextImpl(text, encoding, "PostTextWithEncoding");
-  }
-
-  /*
-   * Performs an HTTP POST request using the Url property and the specified
-   * text, and retrieves the response asynchronously.<br>
-   * The characters of the text are encoded using the given encoding.<br>
-   * If the SaveResponse property is true, the response will be saved in a file
-   * and the GotFile event will be triggered. The ResponseFileName property
-   * can be used to specify the name of the file.<br>
-   * If the SaveResponse property is false, the GotText event will be
-   * triggered.
-   *
-   * @param text the text data for the POST request
-   * @param encoding the character encoding to use when sending the text. If
-   *                 encoding is empty or null, UTF-8 encoding will be used.
-   * @param functionName the name of the function, used when dispatching errors
-   */
-  private void postTextImpl(final String text, final String encoding, final String functionName) {
-    // Capture property values before running asynchronously.
-    final CapturedProperties webProps = capturePropertyValues(functionName);
-    if (webProps == null) {
-      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
-      return;
-    }
-
-    AsynchUtil.runAsynchronously(new Runnable() {
-      @Override
-      public void run() {
-        // Convert text to bytes using the encoding.
-        byte[] postData;
-        try {
-          if (encoding == null || encoding.length() == 0) {
-            postData = text.getBytes("UTF-8");
-          } else {
-            postData = text.getBytes(encoding);
-          }
-        } catch (UnsupportedEncodingException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_UNSUPPORTED_ENCODING, encoding);
-          return;
-        }
-
-        try {
-          performRequest(webProps, postData, null);
-        } catch (FileUtil.FileException e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              e.getErrorMessageNumber());
-        } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(Web.this, functionName,
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST, text, webProps.urlString);
-        }
-      }
-    });
+    requestTextImpl(text, encoding, "PostTextWithEncoding", "POST");
   }
 
   /**
@@ -467,17 +416,177 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       @Override
       public void run() {
         try {
-          performRequest(webProps, null, path);
+          performRequest(webProps, null, path, "POST");
         } catch (FileUtil.FileException e) {
           form.dispatchErrorOccurredEvent(Web.this, "PostFile",
               e.getErrorMessageNumber());
         } catch (Exception e) {
           form.dispatchErrorOccurredEvent(Web.this, "PostFile",
-              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_FILE, path, webProps.urlString);
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
         }
       }
     });
   }
+
+  /**
+   * Performs an HTTP PUT request using the Url property and the specified text.
+   *
+   * @param text the text data for the PUT request
+   */
+  @SimpleFunction(description = "Performs an HTTP PUT request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using UTF-8 encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The responseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PutText(final String text) {
+    requestTextImpl(text, "UTF-8", "PutText", "PUT");
+  }
+
+  /**
+   * Performs an HTTP PUT request using the Url property and the specified text.
+   *
+   * @param text the text data for the PUT request
+   * @param encoding the character encoding to use when sending the text. If
+   *                 encoding is empty or null, UTF-8 encoding will be used.
+   */
+  @SimpleFunction(description = "Performs an HTTP PUT request using the Url property and " +
+      "the specified text.<br>" +
+      "The characters of the text are encoded using the given encoding.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PutTextWithEncoding(final String text, final String encoding) {
+    requestTextImpl(text, encoding, "PutTextWithEncoding", "PUT");
+  }
+
+  /**
+   * Performs an HTTP PUT request using the Url property and data from the
+   * specified file, and retrieves the response.
+   *
+   * @param path the path of the file for the PUT request
+   */
+  @SimpleFunction(description = "Performs an HTTP PUT request using the Url property and " +
+      "data from the specified file.<br>" +
+      "If the SaveResponse property is true, the response will be saved in a file and the " +
+      "GotFile event will be triggered. The ResponseFileName property can be used to specify " +
+      "the name of the file.<br>" +
+      "If the SaveResponse property is false, the GotText event will be triggered.")
+  public void PutFile(final String path) {
+    // Capture property values before running asynchronously.
+    final CapturedProperties webProps = capturePropertyValues("PutFile");
+    if (webProps == null) {
+      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          performRequest(webProps, null, path, "PUT");
+        } catch (FileUtil.FileException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+              e.getErrorMessageNumber());
+        } catch (Exception e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PutFile",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE, path, webProps.urlString);
+        }
+      }
+    });
+  }
+
+  /**
+   * Performs an HTTP DELETE request using the Url property and retrieves the
+   * response.<br>
+   * If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.<br>
+   * If the SaveResponse property is false, the GotText event will be
+   * triggered.
+   */
+  @SimpleFunction
+  public void Delete() {
+    // Capture property values in local variables before running asynchronously.
+    final CapturedProperties webProps = capturePropertyValues("Delete");
+    if (webProps == null) {
+      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          performRequest(webProps, null, null, "DELETE");
+        } catch (FileUtil.FileException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+              e.getErrorMessageNumber());
+        } catch (Exception e) {
+          form.dispatchErrorOccurredEvent(Web.this, "Delete",
+              ErrorMessages.ERROR_WEB_UNABLE_TO_DELETE, webProps.urlString);
+        }
+      }
+    });
+  }
+
+  /*
+   * Performs an HTTP GET, POST, PUT or DELETE request using the Url property and the specified
+   * text, and retrieves the response asynchronously.<br>
+   * The characters of the text are encoded using the given encoding.<br>
+   * If the SaveResponse property is true, the response will be saved in a file
+   * and the GotFile event will be triggered. The ResponseFileName property
+   * can be used to specify the name of the file.<br>
+   * If the SaveResponse property is false, the GotText event will be
+   * triggered.
+   *
+   * @param text the text data for the POST or PUT request
+   * @param encoding the character encoding to use when sending the text. If
+   *                 encoding is empty or null, UTF-8 encoding will be used.
+   * @param functionName the name of the function, used when dispatching errors
+   * @param httpVerb the HTTP operation to be performed: GET, POST, PUT or DELETE
+   */
+  private void requestTextImpl(final String text, final String encoding,
+      final String functionName, final String httpVerb) {
+    // Capture property values before running asynchronously.
+    final CapturedProperties webProps = capturePropertyValues(functionName);
+    if (webProps == null) {
+      // capturePropertyValues has already called form.dispatchErrorOccurredEvent
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      public void run() {
+        // Convert text to bytes using the encoding.
+        byte[] requestData;
+        try {
+          if (encoding == null || encoding.length() == 0) {
+            requestData = text.getBytes("UTF-8");
+          } else {
+            requestData = text.getBytes(encoding);
+          }
+        } catch (UnsupportedEncodingException e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              ErrorMessages.ERROR_WEB_UNSUPPORTED_ENCODING, encoding);
+          return;
+        }
+
+        try {
+          performRequest(webProps, requestData, null, httpVerb);
+        } catch (FileUtil.FileException e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              e.getErrorMessageNumber());
+        } catch (Exception e) {
+          form.dispatchErrorOccurredEvent(Web.this, functionName,
+              ErrorMessages.ERROR_WEB_UNABLE_TO_POST_OR_PUT, text, webProps.urlString);
+        }
+      }
+    });
+  }
+
 
   /**
    * Event indicating that a request has finished.
@@ -517,11 +626,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @param list a list of two-element sublists representing name and value pairs
    */
   @SimpleFunction
-  public String BuildPostData(YailList list) {
+  public String BuildRequestData(YailList list) {
     try {
-      return buildPostData(list);
-    } catch (BuildPostDataException e) {
-      form.dispatchErrorOccurredEvent(this, "BuildPostData", e.errorNumber, e.index);
+      return buildRequestData(list);
+    } catch (BuildRequestDataException e) {
+      form.dispatchErrorOccurredEvent(this, "BuildRequestData", e.errorNumber, e.index);
       return "";
     }
   }
@@ -535,7 +644,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @throws BuildPostDataException if the list is not valid
    */
   // VisibleForTesting
-  String buildPostData(YailList list) throws BuildPostDataException {
+  String buildRequestData(YailList list) throws BuildRequestDataException {
     StringBuilder sb = new StringBuilder();
     String delimiter = "";
     for (int i = 0; i < list.size(); i++) {
@@ -550,11 +659,11 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           String value = sublist.getObject(1).toString();
           sb.append(delimiter).append(UriEncode(name)).append('=').append(UriEncode(value));
         } else {
-          throw new BuildPostDataException(
-              ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_TWO_ELEMENTS, i + 1);
+          throw new BuildRequestDataException(
+              ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS, i + 1);
         }
       } else {
-        throw new BuildPostDataException(ErrorMessages.ERROR_WEB_BUILD_POST_DATA_NOT_LIST, i + 1);
+        throw new BuildRequestDataException(ErrorMessages.ERROR_WEB_BUILD_REQUEST_DATA_NOT_LIST, i + 1);
       }
       delimiter = "&";
     }
@@ -672,17 +781,17 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    *
    * @throws IOException
    */
-  private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile)
+  private void performRequest(final CapturedProperties webProps, byte[] postData, String postFile, String httpVerb)
       throws IOException {
 
     // Open the connection.
-    HttpURLConnection connection = openConnection(webProps);
+    HttpURLConnection connection = openConnection(webProps, httpVerb);
     if (connection != null) {
       try {
         if (postData != null) {
-          writePostData(connection, postData);
+          writeRequestData(connection, postData);
         } else if (postFile != null) {
-          writePostFile(connection, postFile);
+          writeRequestFile(connection, postFile);
         }
 
         // Get the response.
@@ -719,10 +828,26 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private static HttpURLConnection openConnection(CapturedProperties webProps)
-      throws IOException, ClassCastException {
+  /**
+   * Open a connection to the resource and set the HTTP action to PUT or DELETE if it is one of
+   * them. GET would be the default, and POST is set in writeRequestData or writeRequestFile
+   * @param webProps the properties of the connection, set as properties in the component
+   * @param httpVerb One of GET/POST/PUT/DELETE
+   * @return a HttpURL Connection
+   * @throws IOException
+   * @throws ClassCastException
+   * @throws ProtocolException thrown if the method in setRequestMethod is not correct
+   */
+  private static HttpURLConnection openConnection(CapturedProperties webProps, String httpVerb)
+      throws IOException, ClassCastException, ProtocolException {
 
     HttpURLConnection connection = (HttpURLConnection) webProps.url.openConnection();
+
+    if (httpVerb.equals("PUT") || httpVerb.equals("DELETE")){
+      // Set the Request Method; GET is the default, and if it is a POST, it will be marked as such
+      // with setDoOutput in writeRequestFile or writeRequestData
+      connection.setRequestMethod(httpVerb);
+    }
 
     // Request Headers
     for (Map.Entry<String, List<String>> header : webProps.requestHeaders.entrySet()) {
@@ -745,13 +870,13 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     return connection;
   }
 
-  private static void writePostData(HttpURLConnection connection, byte[] postData)
+  private static void writeRequestData(HttpURLConnection connection, byte[] postData)
       throws IOException {
     // According to the documentation at
     // http://developer.android.com/reference/java/net/HttpURLConnection.html
     // HttpURLConnection uses the GET method by default. It will use POST if setDoOutput(true) has
     // been called.
-    connection.setDoOutput(true); // This makes it an HTTP POST.
+    connection.setDoOutput(true); // This makes it something other than a HTTP GET.
     // Write the data.
     connection.setFixedLengthStreamingMode(postData.length);
     BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
@@ -763,7 +888,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
-  private void writePostFile(HttpURLConnection connection, String path)
+  private void writeRequestFile(HttpURLConnection connection, String path)
       throws IOException {
     // Use MediaUtil.openMedia to open the file. This means that path could be file on the SD card,
     // an asset, a contact picture, etc.
@@ -774,7 +899,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       // http://developer.android.com/reference/java/net/HttpURLConnection.html
       // HttpURLConnection uses the GET method by default. It will use POST if setDoOutput(true) has
       // been called.
-      connection.setDoOutput(true); // This makes it an HTTP POST.
+      connection.setDoOutput(true); // This makes it something other than a HTTP GET.
       connection.setChunkedStreamingMode(0);
       BufferedOutputStream out = new BufferedOutputStream(connection.getOutputStream());
       try {
