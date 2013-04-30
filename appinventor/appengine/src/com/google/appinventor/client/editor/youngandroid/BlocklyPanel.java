@@ -187,6 +187,10 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
+  private static void afterBlocklyInit(String formName) {
+    YaBlocksEditor.afterBlocklyInit(formName);
+  }
+
   // Returns true if the blocks for formName have been initialized (i.e.,
   // no componentOps entry exists for formName).
   private static boolean blocksInited(String formName) {
@@ -537,6 +541,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
     $wnd.BlocklyPanel_blocklyWorkspaceChanged =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
+    $wnd.BlocklyPanel_afterBlocklyInit =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::afterBlocklyInit(Ljava/lang/String;));
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
   }-*/;
 
@@ -620,5 +626,9 @@ public class BlocklyPanel extends HTMLPanel {
   public static native void doStartRepl(String formName, Boolean alreadyRunning) /*-{
     $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning);
     }-*/;
+
+  public static native void initBlockly(String formName) /*-{
+    $wnd.initFunctions[formName]();
+  }-*/;
 
 }

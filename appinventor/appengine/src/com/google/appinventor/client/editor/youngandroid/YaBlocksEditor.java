@@ -173,9 +173,14 @@ public final class YaBlocksEditor extends FileEditor
   public void onShow() {
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
-    blocksArea.showDifferentForm(fullFormName);
-    loadBlocksEditor();
-    makeYail();                 // Create yail and send to REPL (if connected).
+    BlocklyPanel.initBlockly(fullFormName);
+  }
+
+  public static void afterBlocklyInit(String formName){
+    YaBlocksEditor editor = formToBlocksEditor.get(formName);
+    editor.blocksArea.showDifferentForm(editor.fullFormName);
+    editor.loadBlocksEditor();
+    editor.makeYail();                 // Create yail and send to REPL (if connected).
   }
 
   /*
