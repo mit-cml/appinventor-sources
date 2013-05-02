@@ -48,8 +48,8 @@ public class YailEvalTest extends TestCase {
     scheme = new Scheme();
     String yailRuntimeLibrary = Compiler.getResource(Compiler.YAIL_RUNTIME);
     String yailSchemeTests = YAIL_SCHEME_TESTS;
-	if (System.getProperty("os.name").startsWith("Windows"))
-	    yailSchemeTests = YAIL_SCHEME_TESTS.replace(File.separatorChar, '/');
+    if (System.getProperty("os.name").startsWith("Windows"))
+      yailSchemeTests = YAIL_SCHEME_TESTS.replace(File.separatorChar, '/');
     try {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + yailSchemeTests + "\")");
