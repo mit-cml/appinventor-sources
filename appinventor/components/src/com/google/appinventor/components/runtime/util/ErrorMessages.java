@@ -133,8 +133,9 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_COPY_MEDIA = 1602;
   // Texting errors
   public static final int ERROR_BAD_VALUE_FOR_TEXT_RECEIVING = 1701;
-  
+
   // Please start the next group of error numbers at 1801.
+  // Please update the appinventor-docs-learn-reference-other.html document when necessary.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -326,7 +327,7 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_WEB_BUILD_REQUEST_DATA_NOT_TWO_ELEMENTS,
         "Unable to build request data: element %s does not contain two elements");
     errorMessages.put(ERROR_WEB_UNABLE_TO_DELETE,
-            "Unable to delete a resource with the specified URL: %s");
+        "Unable to delete a resource with the specified URL: %s");
     // Contact picker (and PhoneNumberPicker) errors
     errorMessages.put(ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER,
         "The software used in this app cannot extract contacts from this type of phone.");
@@ -349,8 +350,10 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
             "are 1, 2, or 3.");
+	// BarcodeScanner errors
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
+	// ImagePicker errors
     errorMessages.put(ERROR_CANNOT_SAVE_IMAGE,
         "Unable to save image: %s");
     errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
