@@ -113,9 +113,9 @@ public interface Component {
   static final int DIRECTION_MIN = -4;
   static final int DIRECTION_MAX = 4;
 
-  //Slider defaults for setting Min value, Max Value and the position of the Slider thumb
-  public static float SLIDER_MIN_VALUE=10;
-  public static float SLIDER_MAX_VALUE=40;
-  public static float SLIDER_THUMB_VALUE=20;
+  //Slider defaults for setting MinimumValue and MaximumValue
+  public static float SLIDER_MIN_VALUE = 10;
+  public static float SLIDER_MAX_VALUE = 50;
+  public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
 }
