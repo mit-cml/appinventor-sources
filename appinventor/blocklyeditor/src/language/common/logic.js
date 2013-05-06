@@ -32,7 +32,7 @@ Blockly.Language.logic_boolean = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);   
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
     var thisBlock = this;
     this.setTooltip(function() {
@@ -59,7 +59,7 @@ Blockly.Language.logic_false = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_boolean.OPERATORS), 'BOOL');
     this.setTitleValue('FALSE','BOOL');
     var thisBlock = this;
@@ -77,7 +77,7 @@ Blockly.Language.logic_negate = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('BOOL').setCheck(Boolean).appendTitle('not');
     this.setTooltip('Returns true if the input is false.\n' +
         'Returns false if the input is true.');
@@ -91,7 +91,7 @@ Blockly.Language.logic_compare = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('A');
     this.appendValueInput('B').appendTitle('=');
     this.setInputsInline(true);
@@ -107,7 +107,7 @@ Blockly.Language.logic_operation = {
   helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(Boolean);
     this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
@@ -136,7 +136,7 @@ Blockly.Language.logic_or = {
   helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(Boolean);
     this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_operation.OPERATORS), 'OP');
     this.setTitleValue('OR','OP');

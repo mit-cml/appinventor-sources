@@ -125,7 +125,7 @@ Blockly.Language.text_isEmpty = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('VALUE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('is empty');
     this.setTooltip('Returns true if the length of the\n' + 'text is 0, false otherwise.');
   },
@@ -138,7 +138,7 @@ Blockly.Language.text_compare = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT1').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('compare texts');
     this.appendValueInput('TEXT2').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle(
         new Blockly.FieldDropdown(this.OPERATORS), 'OP');
@@ -227,7 +227,7 @@ Blockly.Language.text_contains = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('contains').appendTitle('text');
     this.appendValueInput('PIECE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('piece');
     this.setTooltip('Tests whether the piece is contained in the text.');
@@ -242,7 +242,7 @@ Blockly.Language.text_split = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle(
         new Blockly.FieldDropdown(this.OPERATORS), 'OP').appendTitle('text');
     this.appendValueInput('AT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('at');
@@ -283,7 +283,7 @@ Blockly.Language.text_split_at_spaces = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('split at spaces');
     this.setTooltip('Split the text into pieces separated by spaces.');
   },

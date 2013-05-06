@@ -57,7 +57,7 @@ Blockly.Language.math_compare = {
   helpUrl: '',
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('A').setCheck(null);
     this.appendValueInput('B').setCheck(null).appendTitle(new Blockly.FieldDropdown(this.OPERATORS,Blockly.Language.math_compare.onchange), 'OP');
     this.setInputsInline(true);
@@ -682,7 +682,7 @@ Blockly.Language.math_is_a_number = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').appendTitle('is a number?');
     this.setTooltip(function() {
       return 'Tests if something is a number.';

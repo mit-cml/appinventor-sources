@@ -35,7 +35,7 @@ Blockly.Language.lists_create_with = {
     this.appendValueInput('ADD0')
         .appendTitle("make a list");
     this.appendValueInput('ADD1');
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
     this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_TOOLTIP_1);
     this.itemCount_ = 2;
@@ -137,7 +137,7 @@ Blockly.Language.lists_is_in = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('ITEM').appendTitle('is in list?').appendTitle('thing');
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list').setAlign(Blockly.ALIGN_RIGHT);
     Blockly.Language.setTooltip(this, 'Retuns true if the the thing is an item in the list, and '
@@ -166,7 +166,7 @@ Blockly.Language.lists_is_empty = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('LIST').setCheck(Array).appendTitle('is list empty?').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Tests if a list is empty \(has no items in it\)');
   },
@@ -287,7 +287,7 @@ Blockly.Language.lists_copy = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('LIST').setCheck(Array).appendTitle('copy list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Makes a copy of a list, including copying all sublists');
   },
@@ -300,7 +300,7 @@ Blockly.Language.lists_is_list = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Boolean);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('ITEM').appendTitle('is a list?').appendTitle('thing');
     Blockly.Language.setTooltip(this, 'Tests if something is a list.');
   },
@@ -313,7 +313,7 @@ Blockly.Language.lists_to_csv_row = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list to csv row').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Interprets the list as a row of a table and returns a CSV '
         + '\(comma-separated value\) text representing the row. Each item in the row list is '
@@ -330,7 +330,7 @@ Blockly.Language.lists_to_csv_table = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('LIST').setCheck(Array).appendTitle('list to csv table').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Interprets the list as a table in row-major format and '
         + 'returns a CSV \(comma-separated value\) text representing the table. Each item in the '
@@ -348,7 +348,7 @@ Blockly.Language.lists_from_csv_row = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(String).appendTitle('list from csv row').appendTitle('text');
     Blockly.Language.setTooltip(this, 'Parses a text as a CSV \(comma-separated value\) formatted '
         + 'row to produce a list of fields. It is an error for the row text to contain unescaped '
@@ -364,7 +364,7 @@ Blockly.Language.lists_from_csv_table = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
-    this.setOutput(true, Array);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(String).appendTitle('list from csv table').appendTitle('text');
     Blockly.Language.setTooltip(this, 'Parses a text as a CSV \(comma-separated value\) formatted '
         + 'table to produce a list of rows, each of which is a list of fields. Rows can be '
