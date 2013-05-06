@@ -1016,6 +1016,11 @@ public class BlockSaveFile {
       // No properties need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The IsLooping method was renamed to Loop.
+      handlePropertyRename(componentName, "IsLooping", "Loop");
+      blkCompVersion = 5;
+    }
     return blkCompVersion;
   }
 
