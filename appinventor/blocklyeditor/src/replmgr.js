@@ -138,10 +138,23 @@ Blockly.ReplMgr.putYail = function(code) {
     conn.send(stuff);
 }
 
-Blockly.ReplMgr.startRepl = function(already) {
+Blockly.ReplMgr.startRepl = function(already, emulator) {
+    var refreshAssets = window.parent.AssetManager_refreshAssets;
+    var rs = this.ReplState;
     if (already.toString() == "false") {        // Have to test this way because already is a Java false
         if (this.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
+        if (emulator.toString() != "false") {         // If we are talking to the emulator, don't use rendezvou server
+            rs.state = this.rsState.CONNECTED; // We know who to talk to!
+            rs.replcode = "emulator";          // Must match code in Companion Source
+            rs.url = 'http://127.0.0.1:8001/_newblocks';
+            rs.asseturl = 'http://127.0.0.1:8001/';
+            rs.seq_count = 1;
+            rs.count = 0;
+            this.pollYail();
+            refreshAssets();
+            return;             // All done
+        }
         var rs = this.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();

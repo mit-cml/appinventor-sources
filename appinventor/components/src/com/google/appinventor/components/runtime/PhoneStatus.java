@@ -13,6 +13,7 @@ import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -93,6 +94,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     Log.d(LOG_TAG, "Seed = " + seed);
     Log.d(LOG_TAG, "Code = " + sb.toString());
     return sb.toString();
+  }
+
+  @SimpleFunction(description = "Returns true if we are running in the emulator")
+  public boolean isEmulator() {
+    if (Build.FINGERPRINT.startsWith("generic"))
+      return true;
+    return false;
   }
 
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")

@@ -512,8 +512,8 @@ public final class YaBlocksEditor extends FileEditor
    * Start up the Repl (call into the Blockly.ReplMgr via the BlocklyPanel.
    */
   @Override
-  public void startRepl(Boolean alreadyRunning) {
-    blocksArea.startRepl(alreadyRunning);
+  public void startRepl(Boolean alreadyRunning, Boolean forEmulator) {
+    blocksArea.startRepl(alreadyRunning, forEmulator);
   }
 
 }

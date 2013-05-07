@@ -530,8 +530,8 @@ public class BlocklyPanel extends HTMLPanel {
     blocklyWorkspaceChanged(formName);
   }
 
-  public void startRepl(Boolean alreadyRunning) { // Start the Repl
-    doStartRepl(formName, alreadyRunning);
+  public void startRepl(Boolean alreadyRunning, Boolean forEmulator) { // Start the Repl
+    doStartRepl(formName, alreadyRunning, forEmulator);
   }
 
   // ------------ Native methods ------------
@@ -623,8 +623,8 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.Blocklies[formName].ReplMgr.pollYail();
   }-*/;
 
-  public static native void doStartRepl(String formName, Boolean alreadyRunning) /*-{
-    $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning);
+  public static native void doStartRepl(String formName, Boolean alreadyRunning, Boolean forEmulator) /*-{
+    $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator);
     }-*/;
 
   public static native void initBlockly(String formName) /*-{

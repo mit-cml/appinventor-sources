@@ -1159,4 +1159,12 @@ public interface OdeMessages extends Messages {
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButtonConnected();
 
+  @DefaultMessage("Connect to Emulator")
+  @Description("Message providing details about starting the emulator connection.")
+  String emulatorButton();
+
+  @DefaultMessage("Disconnect Emulator")
+  @Description("Message providing details about starting the emulator connection.")
+  String emulatorButtonConnected();
+
 }

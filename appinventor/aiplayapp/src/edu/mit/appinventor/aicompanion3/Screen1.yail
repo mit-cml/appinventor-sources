@@ -5,16 +5,17 @@ $Source $Yail
 (define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 
-(def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")  ) '(list))  ) '(text)))
-(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)  ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
+(def (startemulator )  (let ( (ignore "")  )   (set-lexical! ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"  ) '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
 (def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The Version of the blocks are not compatible with this Companion" 'text))
+(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)  ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
+(def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")  ) '(list))  ) '(text)))
 ;;; Screen1
 
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT NewBlocks Companion" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) 'text))
+    (if (call-component-method 'PhoneStatus1 'isEmulator (*list-for-runtime* ) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)((get-var startemulator) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) 'text))))
 ;;; Label3
 
 (add-component Screen1 Label Label3 
@@ -22,9 +23,39 @@ $Source $Yail
 
 )
 
+;;; EmulatorPanel
+
+(add-component Screen1 VerticalArrangement EmulatorPanel 
+(set-and-coerce-property! 'EmulatorPanel 'Width -2 'number)
+
+)
+
+;;; Label5
+
+(add-component EmulatorPanel Label Label5 
+(set-and-coerce-property! 'Label5 'Text "We are running in the emulator, waiting to get blocks..." 'text)
+
+)
+
+;;; ErrorLabel
+
+(add-component Screen1 Label ErrorLabel 
+(set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
+
+)
+
+;;; PhonePanel
+
+(add-component Screen1 VerticalArrangement PhonePanel 
+(set-and-coerce-property! 'PhonePanel 'Width -2 'number)
+
+)
+
 ;;; HorizontalArrangement1
 
-(add-component Screen1 HorizontalArrangement HorizontalArrangement1 
+(add-component PhonePanel HorizontalArrangement HorizontalArrangement1 
+(set-and-coerce-property! 'HorizontalArrangement1 'Width -2 'number)
+
 )
 
 ;;; Label4
@@ -43,14 +74,14 @@ $Source $Yail
 
 ;;; CodeBox
 
-(add-component Screen1 TextBox CodeBox 
+(add-component PhonePanel TextBox CodeBox 
 (set-and-coerce-property! 'CodeBox 'Hint "six digit code" 'text)
 
 )
 
 ;;; ConnectButton
 
-(add-component Screen1 Button ConnectButton 
+(add-component PhonePanel Button ConnectButton 
 (set-and-coerce-property! 'ConnectButton 'Text "Connect to App Inventor" 'text)
 
 )
@@ -59,20 +90,13 @@ $Source $Yail
     (call-component-method 'CodeBox 'HideKeyboard (*list-for-runtime* ) '())((get-var doconnect) (get-property 'CodeBox 'Text)))
 ;;; ScanButton
 
-(add-component Screen1 Button ScanButton 
+(add-component PhonePanel Button ScanButton 
 (set-and-coerce-property! 'ScanButton 'Text "Or Scan Barcode to Connect" 'text)
 
 )
 
 (define-event ScanButton Click()(set-this-form)
     (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime* ) '()))
-;;; ErrorLabel
-
-(add-component Screen1 Label ErrorLabel 
-(set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
-
-)
-
 ;;; PhoneStatus1
 
 (add-component Screen1 PhoneStatus PhoneStatus1 

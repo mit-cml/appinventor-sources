@@ -110,6 +110,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
+  private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -156,6 +157,7 @@ public class DesignToolbar extends Toolbar {
           new RemoveFormAction()));
     }
 
+    addButton(new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButton(), new EmulatorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton(), new WirelessAction()), true);
     List<ToolbarItem> screenItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems, true);
@@ -309,8 +311,7 @@ public class DesignToolbar extends Toolbar {
   }
 
   /**
-   * This would pull up a window to start the wireless connection.
-   * For now it doesn't do anything.
+   * Start wireless connection to the AI Companion
    * @author logan
    *
    */
@@ -322,14 +323,22 @@ public class DesignToolbar extends Toolbar {
           + "Ignoring WirelessAction.execute().");
         return;
       }
-      startRepl(currentProject.currentScreen);
-
-//      if (currentView == View.BLOCKS) { // Only start the Repl if we are viewing the Blocks panel. (???) (XXX)
-//      startRepl(currentProject.currentScreen);
-//      }
-
+      startRepl(currentProject.currentScreen, false); // false means we are *not* the emulator
     }
   }
+
+  private class EmulatorAction implements Command {
+    @Override
+    public void execute() {
+      if (currentProject == null) {
+        OdeLog.wlog("DesignToolbar.currentProject is null. "
+          + "Ignoring WirelessAction.execute().");
+        return;
+      }
+      startRepl(currentProject.currentScreen, true); // true means we are the emulator
+    }
+  }
+
 
   private class BarcodeAction implements Command {
     @Override
@@ -565,15 +574,21 @@ public class DesignToolbar extends Toolbar {
         isBuilding ? MESSAGES.isBuildingButton() : MESSAGES.buildButton());
   }
 
-  private void startRepl(String screenName) {
+  private void startRepl(String screenName, boolean forEmulator) {
     Screen screen = currentProject.screens.get(screenName);
-    screen.blocksEditor.startRepl(replStarted);
+    screen.blocksEditor.startRepl(replStarted, forEmulator);
     if (!replStarted) {
       replStarted = true;
-      setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButtonConnected());
+      if (forEmulator)
+        setButtonCaption(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButtonConnected());
+      else
+        setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButtonConnected());
     } else {
       replStarted = false;
-      setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton());
+      if (forEmulator)
+        setButtonCaption(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButton());
+      else
+        setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton());
     }
   }
 
@@ -581,6 +596,7 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
     setButtonVisible(WIDGET_NAME_WIRELESS_BUTTON, blocks);
+    setButtonVisible(WIDGET_NAME_EMULATOR_BUTTON, blocks);
   }
 
 }

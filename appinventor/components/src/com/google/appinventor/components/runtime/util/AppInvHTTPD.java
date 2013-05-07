@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
+import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.common.YaVersion;
@@ -25,6 +26,8 @@ import kawa.standard.Scheme;
 import gnu.expr.Language;
 
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 
 public class AppInvHTTPD extends NanoHTTPD {
@@ -188,7 +191,17 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return(res);
-
+    } else if (uri.equals("/_getversion")) {
+      Response res;
+      try {
+        PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
+        String versionName = pInfo.versionName;
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, versionName + "\n" + Build.FINGERPRINT + "\n\n");
+      } catch (NameNotFoundException n) {
+        n.printStackTrace();
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "Unknown");
+      }
+      return (res);
     } else if (uri.equals("/_package")) { // Handle installing a package
       Response res;
       String packageapk = parms.getProperty("package", null);
