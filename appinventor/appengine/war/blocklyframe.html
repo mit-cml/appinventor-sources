@@ -6,6 +6,7 @@
     <script type="text/javascript" src="closure-library-20120710-r2029/closure/goog/base.js"></script>
     <link type="text/css" rel="stylesheet" href="media/blockly.css">
     <link type="text/css" rel="stylesheet" href="closure-library-20120710-r2029/closure/goog/css/dialog.css">
+    <script type="text/javascript" src="blockly-all.js"></script>
     <style>
       html, body {
       background-color: #fff;
@@ -20,32 +21,26 @@
     </style>
 
     <script type="text/javascript">
-      var formName = window.location.hash.substr(1);
-      window.blocklyLoaded = false;
-
       function init() {
         // We expect window.location.hash to have the form:
         // projectId_formName, and to be unique among
         // all the Blockly instances created in this App Inventor session.
-        if(blocklyLoaded){
-          window.parent.BlocklyPanel_afterBlocklyInit(formName);
-          return;
+        if (Blockly['ReplState'] == undefined)
+            Blockly.ReplState = new Blockly.ReplStateObj();
+        var formName = window.location.hash.substr(1);
+        Blockly.BlocklyEditor.startup(document.body, formName);
+        if (!window.parent.Blocklies) {
+          // We keep a set of Blockly objects indexed by name
+          // of the form for which they are the blocks editor
+          window.parent.Blocklies = {};
+          window.parent.ReplState = new Blockly.ReplStateObj(); // There should be one of these for the whole system
         }
-        var head= document.getElementsByTagName('head')[0];
-        var script = document.createElement("script");
-        script.type = "text/javascript";
-        script.src = "blockly-all.js";
-        head.appendChild(script);
-      }
-      
-      function loadInitFunction() {
-        if(!window.parent.initFunctions) {
-          window.parent.initFunctions = {};
-        }
-
-        window.parent.initFunctions[formName] = init;
+        window.parent.Blocklies[formName] = Blockly;
+        Blockly.ReplMgr.ReplState = window.parent.ReplState;
+        Blockly.ReplMgr.formName = formName; <!-- So we can tell the AssetManager which form we are on. -->
+        window.parent.BlocklyPanel_initBlocksArea(formName);
       }
     </script>
   </head>
-<body onload="loadInitFunction()"></body>
+<body onload="init()">  </body>
 </html>

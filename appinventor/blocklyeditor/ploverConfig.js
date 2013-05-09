@@ -85,8 +85,7 @@
     "./src/generators/yail/procedures.js",
 
     // Repl
-    "./src/replmgr.js",
-    "./src/afterBlocklyLoaded.js"
+    "./src/replmgr.js"
     ],
 
   // This must be specified because datetimesymbols.js from the Closure Library
