@@ -828,6 +828,12 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+      // The IsPlaying method was renamed to Loop.
+      handlePropertyRename(componentProperties, "IsLooping", "Loop");
+      // Properties related to this component have now been upgraded to version  5.
+      srcCompVersion = 5;
+    }
     return srcCompVersion;
   }
 

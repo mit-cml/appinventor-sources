@@ -1016,6 +1016,11 @@ public class BlockSaveFile {
       // No properties need to be modified to upgrade to version 4.
       blkCompVersion = 4;
     }
+    if (blkCompVersion < 5) {
+      // The IsLooping method was renamed to Loop.
+      handlePropertyRename(componentName, "IsLooping", "Loop");
+      blkCompVersion = 5;
+    }
     return blkCompVersion;
   }
 
@@ -1258,10 +1263,12 @@ public class BlockSaveFile {
   }
 
   private int upgradeWebViewerBlocks(int blkCompVersion, String componentName) {
-    if (blkCompVersion < 2) {
+    if (blkCompVersion < 3) {
       // The CanGoForward and CanGoBack methods were added
       // nothing needs to be changed to upgrade to version 2
-      blkCompVersion = 2;
+      // UsesLocation property added.
+      // No properties need to be modified to upgrade to version 3.
+      blkCompVersion = 3;
     }
     return blkCompVersion;
   }
