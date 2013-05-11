@@ -350,10 +350,10 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT,
         "The value -- %s -- provided for VerticalAlignment was bad.  The only legal values " +
             "are 1, 2, or 3.");
-	// BarcodeScanner errors
+    // BarcodeScanner errors
     errorMessages.put(ERROR_NO_SCANNER_FOUND,
         "Your device does not have a scanning application installed.");
-	// ImagePicker errors
+    // ImagePicker errors
     errorMessages.put(ERROR_CANNOT_SAVE_IMAGE,
         "Unable to save image: %s");
     errorMessages.put(ERROR_CANNOT_COPY_MEDIA,
