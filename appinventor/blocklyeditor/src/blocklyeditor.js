@@ -109,6 +109,10 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   });
 };
 
+Blockly.BlocklyEditor.render = function() {
+  Blockly.mainWorkspace.render();
+}
+
 /**
  * Add a "Generate Yail" option to the context menu for every block. The generated yail will go in
  * the block's comment (if it has one) for now. 

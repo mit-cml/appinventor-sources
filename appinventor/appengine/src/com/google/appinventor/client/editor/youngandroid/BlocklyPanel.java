@@ -619,6 +619,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doStartRepl(String formName, Boolean alreadyRunning, Boolean forEmulator) /*-{
     $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator);
-    }-*/;
+  }-*/;
+
+  public static native void renderBlockly(String formName) /*-{
+    $wnd.Blocklies[formName].BlocklyEditor.render();
+  }-*/;
 
 }
