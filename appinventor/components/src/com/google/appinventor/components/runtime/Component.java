@@ -21,6 +21,11 @@ public interface Component {
   public HandlesEventDispatching getDispatchDelegate();
 
   /*
+   * Components asset directory.
+   */
+  public static final String ASSET_DIRECTORY = "component";
+
+  /*
    * Text alignment constants.
    */
   static final int ALIGNMENT_NORMAL = 0;
@@ -112,4 +117,10 @@ public interface Component {
   static final int DIRECTION_NONE = 0;
   static final int DIRECTION_MIN = -4;
   static final int DIRECTION_MAX = 4;
+
+  //Slider defaults for setting MinimumValue and MaximumValue
+  public static float SLIDER_MIN_VALUE = 10;
+  public static float SLIDER_MAX_VALUE = 50;
+  public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
+
 }

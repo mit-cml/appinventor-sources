@@ -417,4 +417,6 @@ public interface StorageIo {
    */
   void storeIpAddressByKey(String key, String ipAddress);
 
+  boolean checkWhiteList(String email);
+
 }

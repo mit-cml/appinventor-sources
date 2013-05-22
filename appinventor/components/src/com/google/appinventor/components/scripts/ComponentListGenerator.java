@@ -8,32 +8,33 @@ package com.google.appinventor.components.scripts;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
+import java.util.Set;
 import javax.tools.Diagnostic;
 import javax.tools.FileObject;
 
 /**
- * Tool to generate a list of the simple component types, and the permissions
- * required for each component.
+ * Tool to generate a list of the simple component types, and the permissions and libraries
+ * (build info) required for each component.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 public final class ComponentListGenerator extends ComponentProcessor {
-  // Where to write results.
+  // Names of component information types to be output. Must match buildserver.compiler constants.
+  private static final String PERMISSIONS_TARGET = "permissions";
+  private static final String LIBRARIES_TARGET = "libraries";
+  private static final String ASSETS_TARGET = "assets";
+  private static final String NATIVE_TARGET = "native";
+  // Where to write results.  Build Info is the collection of permissions, asset and library info.
   private static final String COMPONENT_LIST_OUTPUT_FILE_NAME = "simple_components.txt";
-  private static final String COMPONENT_PERMISIONS_OUTPUT_FILE_NAME =
-      "simple_components_permissions.json";
-  private static final String COMPONENT_LIBRARIES_OUTPUT_FILE_NAME =
-    "simple_components_libraries.json";
+  private static final String COMPONENT_BUILD_INFO_OUTPUT_FILE_NAME =
+      "simple_components_build_info.json";
 
   @Override
   protected void outputResults() throws IOException {
-    // Build the component list and the permissions simulataneously.
+    // Build the component list and build info simultaneously.
     StringBuilder componentList = new StringBuilder();
-    StringBuilder componentPermissions = new StringBuilder();
-    componentPermissions.append("[\n");
-    StringBuilder componentLibraries = new StringBuilder();
-    componentLibraries.append("[\n");
-   
+    StringBuilder componentBuildInfo = new StringBuilder();
+    componentBuildInfo.append("[\n");
 
     // Components are already sorted.
     String listSeparator = "";
@@ -44,18 +45,12 @@ public final class ComponentListGenerator extends ComponentProcessor {
       componentList.append(listSeparator).append(component.name);
       listSeparator = "\n";
 
-      componentPermissions.append(jsonSeparator);
-      outputComponentPermissions(component, componentPermissions);
-      
-      componentLibraries.append(jsonSeparator);
-      outputComponentLibraries(component, componentLibraries);
-      
+      componentBuildInfo.append(jsonSeparator);
+      outputComponentBuildInfo(component, componentBuildInfo);
       jsonSeparator = ",\n";
-     
     }
 
-    componentPermissions.append("\n]");
-    componentLibraries.append("\n]");
+    componentBuildInfo.append("\n]");
 
     FileObject src = createOutputFileObject(COMPONENT_LIST_OUTPUT_FILE_NAME);
     Writer writer = src.openWriter();
@@ -67,49 +62,35 @@ public final class ComponentListGenerator extends ComponentProcessor {
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
 
-    src = createOutputFileObject(COMPONENT_PERMISIONS_OUTPUT_FILE_NAME);
+    src = createOutputFileObject(COMPONENT_BUILD_INFO_OUTPUT_FILE_NAME);
     writer = src.openWriter();
     try {
-      writer.write(componentPermissions.toString());
+      writer.write(componentBuildInfo.toString());
       writer.flush();
     } finally {
       writer.close();
     }
     messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
-    
-    src = createOutputFileObject(COMPONENT_LIBRARIES_OUTPUT_FILE_NAME);
-    writer = src.openWriter();
-    try {
-      writer.write(componentLibraries.toString());
-      writer.flush();
-    } finally {
-      writer.close();
-    }
-    messager.printMessage(Diagnostic.Kind.NOTE, "Wrote file " + src.toUri());
-    
   }
 
-  private static void outputComponentPermissions(ComponentInfo component, StringBuilder sb) {
+  private static void outputComponentBuildInfo(ComponentInfo component, StringBuilder sb) {
     sb.append("{\"name\": \"");
-    sb.append(component.name);
-    sb.append("\", \"permissions\": [");
-    String separator = "";
-    for (String permission : component.permissions) {
-      sb.append(separator).append("\"").append(permission).append("\"");
-      separator = ", ";
-    }
-    sb.append("]}");
+    sb.append(component.name + "\"");
+    appendComponentInfo(sb, PERMISSIONS_TARGET, component.permissions);
+    appendComponentInfo(sb, LIBRARIES_TARGET, component.libraries);
+    appendComponentInfo(sb, NATIVE_TARGET, component.nativeLibraries);
+    appendComponentInfo(sb, ASSETS_TARGET, component.assets);
+    sb.append("}");
   }
-  
-  private static void outputComponentLibraries(ComponentInfo component, StringBuilder sb) {
-    sb.append("{\"name\": \"");
-    sb.append(component.name);
-    sb.append("\", \"libraries\": [");
+
+  private static void appendComponentInfo(StringBuilder sb,
+      String infoName, Set<String> infoEntries) {
+    sb.append(", \"" + infoName + "\": [");
     String separator = "";
-    for (String library : component.libraries) {
-      sb.append(separator).append("\"").append(library).append("\"");
+    for (String infoEntry : infoEntries) {
+      sb.append(separator).append("\"").append(infoEntry).append("\"");
       separator = ", ";
     }
-    sb.append("]}");
+    sb.append("]");
   }
 }

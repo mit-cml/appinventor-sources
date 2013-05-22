@@ -24,7 +24,8 @@ public class AppInvHTTPD extends NanoHTTPD {
   private File rootDir;
   private Language scheme;
   private ReplForm form;
-  private static final int YAV_SKEW = 1;
+  private static final int YAV_SKEW_FORWARD = 1;
+  private static final int YAV_SKEW_BACKWARD = 4;
 
   public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
   {
@@ -70,8 +71,8 @@ public class AppInvHTTPD extends NanoHTTPD {
       try {
         String strversion = parms.getProperty("version", "0");
         int version = (new Integer(strversion)).intValue();
-        if ((version > (YaVersion.YOUNG_ANDROID_VERSION + YAV_SKEW)) ||
-            (version < (YaVersion.YOUNG_ANDROID_VERSION - YAV_SKEW))) {
+        if ((version > (YaVersion.YOUNG_ANDROID_VERSION + YAV_SKEW_FORWARD)) ||
+            (version < (YaVersion.YOUNG_ANDROID_VERSION - YAV_SKEW_BACKWARD))) {
           scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
         } else {
           // If we have a good version, start the repl

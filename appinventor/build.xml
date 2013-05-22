@@ -29,6 +29,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="AIMergerApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="tests"/>
@@ -69,15 +73,15 @@
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
         <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
         <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
-        <pathelement location="lib/guava/guava-11.0.1.jar" />
-        <pathelement location="lib/gwt_dragdrop/gwt-dnd-r1057.jar" />
+        <pathelement location="lib/guava/guava-14.0.1.jar" />
+        <pathelement location="lib/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
         <pathelement location="lib/json/json.jar" />
         <pathelement location="lib/kawa/kawa-1.11-modified.jar" />
         <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-        <pathelement location="lib/twitter/twitter4j-core-android-2.2.6.jar" />
+        <pathelement location="lib/twitter/twitter4j-core-3.0.3.jar" />
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
@@ -93,8 +97,8 @@
         <!-- acra -->
         <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->
-        <pathelement location="lib/gwt/2.3.0/gwt-dev.jar"/>
-        <pathelement location="lib/gwt/2.3.0/gwt-user.jar"/>
+        <pathelement location="lib/gwt/2.5.1/gwt-dev.jar"/>
+        <pathelement location="lib/gwt/2.5.1/gwt-user.jar"/>
         <!-- app engine libs -->
         <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
         <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
@@ -115,7 +119,7 @@
            classpath above,so our javadoc will link appropriate online javadoc for libraries we
            depend on. -->
       <link href="http://download.oracle.com/javase/6/docs/api/"/>
-      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.3/"/>
+      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.5/"/>
       <link href="http://d.android.com/reference"
             offline="true"
             packagelistLoc="lib/android"/>
@@ -124,6 +128,7 @@
 
   <target name="clean">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
+  	<ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockseditor" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>

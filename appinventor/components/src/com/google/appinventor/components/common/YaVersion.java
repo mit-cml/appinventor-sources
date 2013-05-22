@@ -215,8 +215,15 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 72:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
-
-  public static final int YOUNG_ANDROID_VERSION = 72;
+  // For YOUNG_ANDROID_VERSION 73:
+  // - BUTTON_COMPONENT_VERSION was incremented to 5.
+  // For YOUNG_ANDROID_VERSION 74:
+  // - SLIDER_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 75:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 76:
+  // - PLAYER_COMPONENT_VERSION was incremented to 5
+  public static final int YOUNG_ANDROID_VERSION = 76;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -341,7 +348,9 @@ public class YaVersion {
   // - The LongClick event was added.
   // For BUTTON_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 4;
+  // For BUTTON_COMPONENT_VERSION 5:
+  // - The ShowFeedback property was added.
+  public static final int BUTTON_COMPONENT_VERSION = 5;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -514,8 +523,10 @@ public class YaVersion {
   // - The IsLooping property was added.
   // - The Volume property was added.
   // - The IsPlaying method was added.
+  // For PLAYER_COMPONENT_VERSION 5:
+  // - The IsLooping property was renamed to Loop.
 
-  public static final int PLAYER_COMPONENT_VERSION = 4;
+  public static final int PLAYER_COMPONENT_VERSION = 5;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
@@ -598,12 +609,18 @@ public class YaVersion {
   // - The BuildPostData and ClearCookies methods were added.
   // - The existing PostText method was renamed to PostTextWithEncoding, and a new PostText
   //   method was added.
-  public static final int WEB_COMPONENT_VERSION = 2;
+  // For WEB_COMPONENT_VERSION 3:
+  // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
+  public static final int WEB_COMPONENT_VERSION = 3;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
   public static final int WEBVIEWER_COMPONENT_VERSION = 3;
+
+  // For SLIDER_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int SLIDER_COMPONENT_VERSION = 1;
 
 }

@@ -45,6 +45,7 @@ public final class MockComponentsUtil {
     DOM.setStyleAttribute(widget.getElement(), "backgroundImage", "url(" + image + ')');
     DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
     DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
+    DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
   }
 
   /**
@@ -209,7 +210,7 @@ public final class MockComponentsUtil {
    * @return the previous size style attributes as an array with width at index
    *         0 and height at index 1.
    */
-  private static String[] clearSizeStyle(Widget w) {
+  static String[] clearSizeStyle(Widget w) {
     Element element = w.getElement();
     String widthStyle = DOM.getStyleAttribute(element, "width");
     String heightStyle = DOM.getStyleAttribute(element, "height");
@@ -229,7 +230,7 @@ public final class MockComponentsUtil {
    * @param style the size style attributes as an array with width at index 0
    *        and height at index 1.
    */
-  private static void restoreSizeStyle(Widget w, String[] style) {
+  static void restoreSizeStyle(Widget w, String[] style) {
     Element element = w.getElement();
     if (style[0] != null) {
       DOM.setStyleAttribute(element, "width", style[0]);

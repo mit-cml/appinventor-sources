@@ -540,6 +540,8 @@ public class YailEvalTest extends TestCase {
 
   }
 
+
+
   /* foreach */
   public void testListGroup5() throws Throwable {
     /* test the underlying yail-for-each call */
@@ -588,6 +590,19 @@ public class YailEvalTest extends TestCase {
         ")";
     schemeResultString = "6";
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
+
+    /* test that a non-list for the second argument will be caught as a YailRuntimeError */
+    schemeInputString = "(begin " +
+        "(define x 0) " +
+        "(define badlist 100)" +
+        "(foreach item (begin (set! x (+ x v))) badlist)" +
+        ")";
+    try {
+      scheme.eval(schemeInputString);
+      fail();
+    } catch (YailRuntimeError e) {
+      // this is expected
+    }
   }
 
   public void testForRange() throws Throwable {
@@ -738,7 +753,7 @@ public class YailEvalTest extends TestCase {
 
   /* a-list lookup */
   public void testAListLookup1() throws Throwable {
-    String schemeInputString = "(begin " + 
+    String schemeInputString = "(begin " +
       "(define pair1 (make-yail-list \"a\" \"b\")) " +
       "(define pair2 (make-yail-list \"aa\" \"bb\")) " +
       "(define pairs (make-yail-list pair1 pair2)) " +
@@ -749,7 +764,7 @@ public class YailEvalTest extends TestCase {
   }
 
   public void testAListLookup2() throws Throwable {
-    String schemeInputString = "(begin " + 
+    String schemeInputString = "(begin " +
       "(define pair1 (make-yail-list \"a\" \"b\")) " +
       "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
       "(define pairs (make-yail-list pair1 pair2)) " +
@@ -760,7 +775,7 @@ public class YailEvalTest extends TestCase {
   }
 
   public void testAListLookup3() throws Throwable {
-    String schemeInputString = "(begin " + 
+    String schemeInputString = "(begin " +
       "(define pair1 (make-yail-list \"a\" \"b\")) " +
       "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
       "(define pairs (make-yail-list pair1 pair2)) " +
@@ -772,7 +787,7 @@ public class YailEvalTest extends TestCase {
 
   public void testAListLookup4() throws Throwable {
     /* check that this signals a runtime error for a bad pair  */
-    String schemeInnerInputString = "(begin " + 
+    String schemeInnerInputString = "(begin " +
       "(define pair1 (make-yail-list \"a\" \"b\")) " +
       "(define pair2 (make-yail-list (make-yail-list 1 2) \"bb\")) " +
       "(define badpair 100) " +

@@ -266,6 +266,12 @@ public interface Images extends Resources {
   ImageResource ball();
 
   /**
+   * Designer palette item: Slider
+   */
+  @Source("com/google/appinventor/images/slider.png")
+  ImageResource slider();
+
+  /**
    * Designer palette item: Notifier
    */
   @Source("com/google/appinventor/images/notifier.png")
