@@ -96,12 +96,7 @@ Blockly.BlockSvg.SEP_SPACE_Y = 5;
  * Minimum height of a block.
  * @const
  */
-Blockly.BlockSvg.MIN_BLOCK_Y = 22;
-/**
- * Minimum width of a block.
- * @const
- */
-Blockly.BlockSvg.MIN_BLOCK_X = 125;
+Blockly.BlockSvg.MIN_BLOCK_Y = 25;
 /**
  * Height of horizontal puzzle tab.
  * @const
@@ -117,16 +112,6 @@ Blockly.BlockSvg.TAB_WIDTH = 8;
  * @const
  */
 Blockly.BlockSvg.NOTCH_WIDTH = 30;
-/**
- * Width of padding to add to right of collapsed block title.
- * @const
- */
-Blockly.BlockSvg.COLLAPSED_PAD_RIGHT = 20;
-/**
- * Height of padding to add to some collapsed blocks.
- * @const
- */
-Blockly.BlockSvg.COLLAPSED_PAD_BOTTOM = 8;
 /**
  * Rounded corner radius.
  * @const
@@ -544,23 +529,11 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     inputRows.rightEdge = Math.max(inputRows.rightEdge,
         Blockly.BlockSvg.NOTCH_WIDTH + Blockly.BlockSvg.SEP_SPACE_X);
   }
-  var titleValueWidth = this.block_.inputList[0].titleWidth; 
-  if (!titleValueWidth)
-    titleValueWidth = 0;
-  var min_block_y = Blockly.BlockSvg.MIN_BLOCK_Y;
   if (this.block_.collapsed) {
-    // Most collapsed blocks display their title row; operator blocks (+,*,etc.) 
-    //  display their ops.
-    if (titleValueWidth && titleValueWidth != 0) {
-      inputRows.rightEdge = titleValueWidth + 
-        Blockly.BlockSvg.COLLAPSED_PAD_RIGHT;
-    } else {
-      inputRows.rightEdge = Blockly.BlockSvg.MIN_BLOCK_X; // Operators (+,*,etc.)
-      min_block_y += Blockly.BlockSvg.COLLAPSED_PAD_BOTTOM;  
-    }
+    // Collapsed blocks have no visible inputs.
     return inputRows;
   }
-  titleValueWidth = 0;  // Width of longest external value title.
+  var titleValueWidth = 0;  // Width of longest external value title.
   var titleStatementWidth = 0;  // Width of longest statement title.
   var hasValue = false;
   var hasStatement = false;
@@ -589,7 +562,7 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     row.push(input);
 
     // Compute minimum input size.
-    input.renderHeight = min_block_y;
+    input.renderHeight = Blockly.BlockSvg.MIN_BLOCK_Y;
     // The width is currently only needed for inline value inputs.
     if (this.block_.inputsInline && input.type == Blockly.INPUT_VALUE) {
       input.renderWidth = Blockly.BlockSvg.TAB_WIDTH +
@@ -1036,9 +1009,7 @@ Blockly.BlockSvg.prototype.renderDrawRight_ = function(steps, highlightSteps,
         highlightSteps.push('h 8');
       }
     }
-    cursorY = (this.block_.collapsed) ? 
-      (Blockly.BlockSvg.MIN_BLOCK_Y + Blockly.BlockSvg.COLLAPSED_PAD_BOTTOM) : 
-      Blockly.BlockSvg.MIN_BLOCK_Y;
+    cursorY = Blockly.BlockSvg.MIN_BLOCK_Y;
     steps.push('V', cursorY);
     if (Blockly.RTL) {
       highlightSteps.push('V', cursorY - 1);

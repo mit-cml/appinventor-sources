@@ -155,19 +155,6 @@ Blockly.OPPOSITE_TYPE[Blockly.PREVIOUS_STATEMENT] = Blockly.NEXT_STATEMENT;
 Blockly.SOUNDS_ = {};
 
 /**
- * Workspace blocks arrangements
- */
-Blockly.BLKS_HORIZONTAL = 0;
-Blockly.BLKS_VERTICAL = 1;
-Blockly.BLKS_DIAGONAL = 2;
-
-
-/**
- * Current Workspace arrangement
- */
-Blockly.workspace_arranged = Blockly.BLKS_HORIZONTAL;
-
-/**
  * Currently selected block.
  * @type {Blockly.Block}
  */
@@ -388,18 +375,13 @@ Blockly.onKeyDown_ = function(e) {
  * @private
  */
 Blockly.copy_ = function(block) {
-  // Copy is made of the expanded block.
- var isCollapsed = block.collapsed;
- block.setCollapsed(false);
- var xmlBlock = Blockly.Xml.blockToDom_(block);
+  var xmlBlock = Blockly.Xml.blockToDom_(block);
   Blockly.Xml.deleteNext(xmlBlock);
   // Encode start position in XML.
- var xy = block.getRelativeToSurfaceXY();
- xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
-
- xmlBlock.setAttribute('y', xy.y);
- Blockly.clipboard_ = xmlBlock;
- block.setCollapsed(isCollapsed);
+  var xy = block.getRelativeToSurfaceXY();
+  xmlBlock.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
+  xmlBlock.setAttribute('y', xy.y);
+  Blockly.clipboard_ = xmlBlock;
 };
 
 /**
@@ -416,172 +398,6 @@ Blockly.showContextMenu_ = function(x, y) {
   helpOption.text = Blockly.MSG_HELP;
   helpOption.callback = function() {};
   options.push(helpOption);
-
-  // Option to collapse top blocks.
-  var collapseOption = {enabled: true};
-  collapseOption.text = Blockly.MSG_COLLAPSE_ALL;
-  collapseOption.callback = function() {
-    var topblocks = Blockly.mainWorkspace.topBlocks_;
-    for (var i = 0; i < topblocks.length; i++) {
-      var blk = topblocks[i];
-      blk.setCollapsed(true);
-    }
-    rearrangeWorkspace();
-  }
-  options.push(collapseOption);
-
-  // Options to expand top blocks.
-  var expandOption = {enabled: true};
-  expandOption.text = Blockly.MSG_EXPAND_ALL;
-  expandOption.callback = function() {
-    var topblocks = Blockly.mainWorkspace.topBlocks_;
-    for (var i = 0; i < topblocks.length; i++) {
-      var blk = topblocks[i];
-      blk.setCollapsed(false);
-    }
-    rearrangeWorkspace();
-  }
-  options.push(expandOption);
-
-  // Arrange blocks in row order.
-  var arrangeOptionH = {enabled: true};
-  arrangeOptionH.text = Blockly.MSG_ARRANGE_H;
-  arrangeOptionH.callback = function() {
-    Blockly.workspace_arranged = Blockly.BLKS_HORIZONTAL;
-    arrangeBlocks(Blockly.BLKS_HORIZONTAL);
-  }
-  options.push(arrangeOptionH);
-
-  // Arrange blocks in column order.
-  var arrangeOptionV = {enabled: true};
-  arrangeOptionV.text = Blockly.MSG_ARRANGE_V;
-  arrangeOptionV.callback = function() {
-    Blockly.workspace_arranged = Blockly.BLKS_VERTICAL;
-    arrangeBlocks(Blockly.BLKS_VERTICAL);
-  }
-  options.push(arrangeOptionV);
-
-  // Arrange blocks diagonally.
-  var arrangeOptionD = {enabled: true};
-  arrangeOptionD.text = Blockly.MSG_ARRANGE_S;
-  arrangeOptionD.callback = function() {
-    Blockly.workspace_arranged = Blockly.BLKS_DIAGONAL;
-    arrangeBlocks(Blockly.BLKS_DIAGONAL);
-  }
-  options.push(arrangeOptionD);
-
-  // Arranges block in layout (Horizontal, Vertical or Diagonal).
-  function arrangeBlocks(layout) {
-    var SPACER = 5;
-    var STAGGER_H = 40;
-    var STAGGER_V = 50;
-    var STAGGER_COLUMN = 150;
-    var cols = 0;
-    var topblocks = Blockly.mainWorkspace.topBlocks_;
-    var viewLeft = Blockly.getMainWorkspaceMetrics().viewLeft + 5;
-    var viewTop = Blockly.getMainWorkspaceMetrics().viewTop + 5;
-    var x = viewLeft;
-    var y = viewTop;
-    var wsRight = viewLeft + Blockly.getMainWorkspaceMetrics().viewWidth;
-    var wsBottom = viewTop + Blockly.getMainWorkspaceMetrics().viewHeight;
-    var maxHgt = 0;
-    var maxWidth = 0;
-    for (var i = 0, len = topblocks.length; i < len; i++) {
-      var blk = topblocks[i];
-      var blkXY = blk.getRelativeToSurfaceXY()
-      var blkHgt = blk.svg_.svgGroup_.getBBox().height;
-      var blkWidth = blk.svg_.svgGroup_.getBBox().width;
-      switch (layout) {
-      case Blockly.BLKS_HORIZONTAL:
-	if (x < wsRight) {
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  x += blkWidth + SPACER;
-	  if (blkHgt > maxHgt) // Remember highest block
-	    maxHgt = blkHgt;
-	} else {
-	  y += maxHgt + SPACER;
-	  maxHgt = blkHgt;
-	  x = viewLeft;
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  x += blkWidth + SPACER;
-	}
-        break;
-      case Blockly.BLKS_VERTICAL:
-	if (y < wsBottom) {
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  y += blkHgt + SPACER;
-	  if (blkWidth > maxWidth)  // Remember widest block
-	    maxWidth = blkWidth;
-	} else {
-	  x += maxWidth + SPACER;
-	  maxWidth = blkWidth;
-	  y = viewTop;
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  y += blkHgt + SPACER;
-	}
-        break;
-      case Blockly.BLKS_DIAGONAL:
-	if (x < wsRight && y < wsBottom)  {
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  x += STAGGER_H;
-	  y += STAGGER_V;
-	} else {
-	  cols += 1;
-	  x = viewLeft + (cols * STAGGER_COLUMN);
-	  y = viewTop;
-	  blk.moveBy(x - blkXY.x, y - blkXY.y);
-	  blk.select();
-	  x += STAGGER_H;
-	  y += STAGGER_V;
-	}
-      }
-    }
-  }
-
-  // Sort by Height.
-  var sortOptionH = {enabled: true};
-  sortOptionH.text = Blockly.MSG_SORT_H;
-  sortOptionH.callback = function() {
-    var blocks = Blockly.mainWorkspace.topBlocks_;
-    blocks.sort(function compare(a,b)  { return a.svg_.svgGroup_.getBBox().height - b.svg_.svgGroup_.getBBox().height; });
-    rearrangeWorkspace();
-  }
-  options.push(sortOptionH);
-
-  // Sort by Width.
-  var sortOptionW = {enabled: true};
-  sortOptionW.text = Blockly.MSG_SORT_W;
-  sortOptionW.callback = function() {
-    var blocks = Blockly.mainWorkspace.topBlocks_;
-    blocks.sort(function compare(a,b)  { return a.svg_.svgGroup_.getBBox().width - b.svg_.svgGroup_.getBBox().width; });
-    rearrangeWorkspace();
-  }
-  options.push(sortOptionW);
-
-  // Sort by Category.
-  var sortOptionCat = {enabled: true};
-  sortOptionCat.text = Blockly.MSG_SORT_C;
-  sortOptionCat.callback = function() {
-    var blocks = Blockly.mainWorkspace.topBlocks_;
-    blocks.sort(function compare(a,b)  { if (a.category <  b.category) return -1; else if (a.category > b.category) return +1; else return 0; });
-    rearrangeWorkspace();
-  }
-  options.push(sortOptionCat);
-
-  // Called after a sort or collapse/expand to redisplay blocks.
-  rearrangeWorkspace = function() {
-    if (Blockly.workspace_arranged == Blockly.BLKS_HORIZONTAL)
-      arrangeOptionH.callback();
-    else if (Blockly.workspace_arranged == Blockly.BLKS_VERTICAL)
-      arrangeOptionV.callback();
-    else
-      arrangeOptionD.callback();
-  }
 
   Blockly.ContextMenu.show(x, y, options);
 };
