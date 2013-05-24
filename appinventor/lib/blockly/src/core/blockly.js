@@ -192,7 +192,7 @@ Blockly.DRAG_RADIUS = 5;
  * Maximum misalignment between connections for them to snap together.
  * @const
  */
-Blockly.SNAP_RADIUS = 12;
+Blockly.SNAP_RADIUS = 15;
 
 /**
  * Delay in ms between trigger and bumping unconnected block out of alignment.
@@ -392,6 +392,39 @@ Blockly.copy_ = function(block) {
  */
 Blockly.showContextMenu_ = function(x, y) {
   var options = [];
+
+  if (Blockly.collapse) {
+    var hasCollapsedBlocks = false;
+    var hasExpandedBlocks = false;
+    var topBlocks = Blockly.mainWorkspace.getTopBlocks(false);
+    for (var i = 0; i < topBlocks.length; i++) {
+      if (topBlocks[i].collapsed) {
+        hasCollapsedBlocks = true;
+      } else {
+        hasExpandedBlocks = true;
+      }
+    }
+
+    // Option to collapse top blocks.
+    var collapseOption = {enabled: hasExpandedBlocks};
+    collapseOption.text = Blockly.MSG_COLLAPSE_ALL;
+    collapseOption.callback = function() {
+      for (var i = 0; i < topBlocks.length; i++) {
+        topBlocks[i].setCollapsed(true);
+      }
+    };
+    options.push(collapseOption);
+
+    // Option to expand top blocks.
+    var expandOption = {enabled: hasCollapsedBlocks};
+    expandOption.text = Blockly.MSG_EXPAND_ALL;
+    expandOption.callback = function() {
+      for (var i = 0; i < topBlocks.length; i++) {
+        topBlocks[i].setCollapsed(false);
+      }
+    };
+    options.push(expandOption);
+  }
 
   // Option to get help.
   var helpOption = {enabled: false};

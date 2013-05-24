@@ -42,6 +42,7 @@ goog.require('Blockly.Field');
 Blockly.FieldDropdown = function(menuGenerator, opt_changeHandler) {
   this.menuGenerator_ = menuGenerator;
   this.changeHandler_ = opt_changeHandler;
+  this.trimOptions_();
   var firstTuple = this.getOptions_()[0];
   this.value_ = firstTuple[1];
 
@@ -208,7 +209,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   var hexColour = Blockly.makeColour(this.sourceBlock_.getColour());
   svgBackground.setAttribute('fill', hexColour);
   // Position the dropdown to line up with the field.
-  var xy = Blockly.getAbsoluteXY_(/** @type {!Element} */ (this.borderRect_));
+  var xy = Blockly.getSvgXY_(/** @type {!Element} */ (this.borderRect_));
   var borderBBox = this.borderRect_.getBBox();
   var x;
   if (Blockly.RTL) {
@@ -219,6 +220,46 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
   }
   svgGroup.setAttribute('transform',
       'translate(' + x + ', ' + (xy.y + borderBBox.height) + ')');
+};
+
+/**
+ * Factor out common words in statically defined options.
+ * Create prefix and/or suffix labels.
+ * @private
+ */
+Blockly.FieldDropdown.prototype.trimOptions_ = function() {
+  this.prefixTitle = null;
+  this.suffixTitle = null;
+  var options = this.menuGenerator_;
+  if (!goog.isArray(options) || options.length < 2) {
+    return;
+  }
+  var strings = options.map(function(t) {return t[0];});
+  var shortest = Blockly.shortestStringLength(strings);
+  var prefixLength = Blockly.commonWordPrefix(strings, shortest);
+  var suffixLength = Blockly.commonWordSuffix(strings, shortest);
+  if (!prefixLength && !suffixLength) {
+    return;
+  }
+  if (shortest <= prefixLength + suffixLength) {
+    // One or more strings will entirely vanish if we proceed.  Abort.
+    return;
+  }
+  if (prefixLength) {
+    this.prefixTitle = strings[0].substring(0, prefixLength - 1);
+  }
+  if (suffixLength) {
+    this.suffixTitle = strings[0].substr(1 - suffixLength);
+  }
+  // Remove the prefix and suffix from the options.
+  var newOptions = [];
+  for (var x = 0; x < options.length; x++) {
+    var text = options[x][0];
+    var value = options[x][1];
+    text = text.substring(prefixLength, text.length - suffixLength);
+    newOptions[x] = [text, value];
+  }
+  this.menuGenerator_ = newOptions;
 };
 
 /**

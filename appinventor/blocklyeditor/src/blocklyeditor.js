@@ -10,6 +10,11 @@
 Blockly.BlocklyEditor = {};
 
 Blockly.BlocklyEditor.startup = function(documentBody, formName) {
+
+  //Blockly configurations
+  goog.mixin(Blockly, {
+    collapse : true
+  });
   Blockly.inject(documentBody);
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();

@@ -777,7 +777,7 @@ Blockly.ScrollbarSvg.prototype.onMouseDownBar_ = function(e) {
   var mouseLocation = this.horizontal_ ?
       e.x - svgSize.left : e.y - svgSize.top;
 
-  var knobXY = Blockly.getAbsoluteXY_(this.svgKnob_);
+  var knobXY = Blockly.getSvgXY_(this.svgKnob_);
   var knobStart = this.horizontal_ ? knobXY.x : knobXY.y;
   var knobLength = parseFloat(
       this.svgKnob_.getAttribute(this.horizontal_ ? 'width' : 'height'));

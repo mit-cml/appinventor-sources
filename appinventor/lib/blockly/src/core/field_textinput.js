@@ -114,7 +114,8 @@ Blockly.FieldTextInput.prototype.CURSOR = 'text';
  * @private
  */
 Blockly.FieldTextInput.prototype.showEditor_ = function() {
-  if (window.opera) {
+  if (goog.userAgent.MOBILE || window.opera) {
+    // Mobile browsers have issues with in-line textareas (focus & keyboards).
     /* HACK:
      The current version of Opera (12.00) does not support foreignObject
      content.  Instead of presenting an inline editor, use a modal prompt.
@@ -138,8 +139,8 @@ Blockly.FieldTextInput.prototype.showEditor_ = function() {
   htmlInput.value = htmlInput.defaultValue = this.text_;
   htmlInput.oldValue_ = null;
   var htmlInputFrame = Blockly.FieldTextInput.svgForeignObject_;
-  var xy = Blockly.getAbsoluteXY_(/** @type {!Element} */ (this.borderRect_));
-  var baseXy = Blockly.getAbsoluteXY_(workspaceSvg);
+  var xy = Blockly.getSvgXY_(/** @type {!Element} */ (this.borderRect_));
+  var baseXy = Blockly.getSvgXY_(workspaceSvg);
   xy.x -= baseXy.x;
   xy.y -= baseXy.y;
   if (!Blockly.RTL) {
@@ -236,9 +237,9 @@ Blockly.FieldTextInput.prototype.resizeEditor_ = function() {
   htmlInput.style.width = (bBox.width - 2) + 'px';
   // In RTL mode block titles and LTR input titles the left edge moves,
   // whereas the right edge is fixed.  Reposition the editor.
-  var xy = Blockly.getAbsoluteXY_(this.group_);
+  var xy = Blockly.getSvgXY_(this.group_);
   var workspaceSvg = this.sourceBlock_.workspace.getCanvas();
-  var baseXy = Blockly.getAbsoluteXY_(workspaceSvg);
+  var baseXy = Blockly.getSvgXY_(workspaceSvg);
   xy.x -= baseXy.x;
   htmlInputFrame.setAttribute('x', xy.x - 4);
 };

@@ -417,8 +417,8 @@ Blockly.Flyout.createBlockFunc_ = function(flyout, originBlock) {
     if (!svgRoot) {
       throw 'originBlock is not rendered.';
     }
-    var xyOld = Blockly.getAbsoluteXY_(svgRoot);
-    var xyNew = Blockly.getAbsoluteXY_(flyout.targetWorkspace_.getCanvas());
+    var xyOld = Blockly.getSvgXY_(svgRoot);
+    var xyNew = Blockly.getSvgXY_(flyout.targetWorkspace_.getCanvas());
     block.moveBy(xyOld.x - xyNew.x, xyOld.y - xyNew.y);
     block.render();
     if (flyout.autoClose) {

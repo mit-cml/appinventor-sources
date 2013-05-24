@@ -70,8 +70,17 @@ Blockly.Input.prototype.appendTitle = function(title, opt_name) {
   }
   title.name = opt_name;
 
+  if (title.prefixTitle) {
+    // Add any prefix.
+    this.appendTitle(title.prefixTitle);
+  }
   // Add the title to the title row.
   this.titleRow.push(title);
+  if (title.suffixTitle) {
+    // Add any suffix.
+    this.appendTitle(title.suffixTitle);
+  }
+
   if (this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
     // Adding a title will cause the block to change shape.
@@ -82,8 +91,8 @@ Blockly.Input.prototype.appendTitle = function(title, opt_name) {
 
 /**
  * Change a connection's compatibility.
- * @param {*} check Compatible value type or list of value types.
- *     Null if all types are compatible.
+ * @param {string|Array.<string>|null} check Compatible value type or
+ *     list of value types.  Null if all types are compatible.
  * @return {!Blockly.Input} The input being modified (to allow chaining).
  */
 Blockly.Input.prototype.setCheck = function(check) {

@@ -56,10 +56,10 @@ Blockly.removeClass_ = function(element, className) {
   var classes = element.getAttribute('class');
   if ((' ' + classes + ' ').indexOf(' ' + className + ' ') != -1) {
     var classList = classes.split(/\s+/);
-    for (var x = 0; x < classList.length; x++) {
-      if (!classList[x] || classList[x] == className) {
-        classList.splice(x, 1);
-        x--;
+    for (var i = 0; i < classList.length; i++) {
+      if (!classList[i] || classList[i] == className) {
+        classList.splice(i, 1);
+        i--;
       }
     }
     if (classList.length) {
@@ -210,11 +210,12 @@ Blockly.getRelativeXY_ = function(element) {
 
 /**
  * Return the absolute coordinates of the top-left corner of this element.
+ * The origin (0,0) is the top-left corner of the Blockly svg.
  * @param {!Element} element Element to find the coordinates of.
  * @return {!Object} Object with .x and .y properties.
  * @private
  */
-Blockly.getAbsoluteXY_ = function(element) {
+Blockly.getSvgXY_ = function(element) {
   var x = 0;
   var y = 0;
   do {
@@ -223,8 +224,20 @@ Blockly.getAbsoluteXY_ = function(element) {
     x += xy.x;
     y += xy.y;
     element = element.parentNode;
-  } while (element && element != document);
+  } while (element && element != Blockly.svg);
   return {x: x, y: y};
+};
+
+/**
+ * Return the absolute coordinates of the top-left corner of this element.
+ * The origin (0,0) is the top-left corner of the page body.
+ * @param {!Element} element Element to find the coordinates of.
+ * @return {!Object} Object with .x and .y properties.
+ * @private
+ */
+Blockly.getAbsoluteXY_ = function(element) {
+  var xy = Blockly.getSvgXY_(element);
+  return Blockly.convertCoordinates(xy.x, xy.y, false);
 };
 
 /**
@@ -273,4 +286,90 @@ Blockly.convertCoordinates = function(x, y, toSvg) {
     matrix = matrix.inverse();
   }
   return svgPoint.matrixTransform(matrix);
+};
+
+/**
+ * Given an array of strings, return the length of the shortest one.
+ * @param {!Array<string>} array Array of strings.
+ * @return {number} Length of shortest string.
+ */
+Blockly.shortestStringLength = function(array) {
+  if (!array.length) {
+    return 0;
+  }
+  var len = array[0].length;
+  for (var i = 1; i < array.length; i++) {
+    len = Math.min(len, array[i].length);
+  }
+  return len;
+};
+
+/**
+ * Given an array of strings, return the length of the common prefix.
+ * Words may not be split.  Any space after a word is included in the length.
+ * @param {!Array<string>} array Array of strings.
+ * @param {?number} opt_shortest Length of shortest string.
+ * @return {number} Length of common prefix.
+ */
+Blockly.commonWordPrefix = function(array, opt_shortest) {
+  if (!array.length) {
+    return 0;
+  } else if (array.length == 1) {
+    return array[0].length;
+  }
+  var wordPrefix = 0;
+  var max = opt_shortest || Blockly.shortestStringLength(array);
+  for (var len = 0; len < max; len++) {
+    var letter = array[0][len];
+    for (var i = 1; i < array.length; i++) {
+      if (letter != array[i][len]) {
+        return wordPrefix;
+      }
+    }
+    if (letter == ' ') {
+      wordPrefix = len + 1;
+    }
+  }
+  for (var i = 1; i < array.length; i++) {
+    var letter = array[i][len];
+    if (letter && letter != ' ') {
+      return wordPrefix;
+    }
+  }
+  return max;
+};
+
+/**
+ * Given an array of strings, return the length of the common suffix.
+ * Words may not be split.  Any space after a word is included in the length.
+ * @param {!Array<string>} array Array of strings.
+ * @param {?number} opt_shortest Length of shortest string.
+ * @return {number} Length of common suffix.
+ */
+Blockly.commonWordSuffix = function(array, opt_shortest) {
+  if (!array.length) {
+    return 0;
+  } else if (array.length == 1) {
+    return array[0].length;
+  }
+  var wordPrefix = 0;
+  var max = opt_shortest || Blockly.shortestStringLength(array);
+  for (var len = 0; len < max; len++) {
+    var letter = array[0].substr(-len - 1, 1);
+    for (var i = 1; i < array.length; i++) {
+      if (letter != array[i].substr(-len - 1, 1)) {
+        return wordPrefix;
+      }
+    }
+    if (letter == ' ') {
+      wordPrefix = len + 1;
+    }
+  }
+  for (var i = 1; i < array.length; i++) {
+    var letter = array[i].charAt(array[i].length - len - 1);
+    if (letter && letter != ' ') {
+      return wordPrefix;
+    }
+  }
+  return max;
 };

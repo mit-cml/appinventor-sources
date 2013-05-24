@@ -587,21 +587,23 @@ Blockly.Block.prototype.showContextMenu_ = function(x, y) {
       }
     }
 
-    // Option to collapse/expand block.
-    if (this.collapsed) {
-      var expandOption = {enabled: true};
-      expandOption.text = Blockly.MSG_EXPAND_BLOCK;
-      expandOption.callback = function() {
-        block.setCollapsed(false);
-      };
-      options.push(expandOption);
-    } else {
-      var collapseOption = {enabled: true};
-      collapseOption.text = Blockly.MSG_COLLAPSE_BLOCK;
-      collapseOption.callback = function() {
-        block.setCollapsed(true);
-      };
-      options.push(collapseOption);
+    if (Blockly.collapse) {
+      // Option to collapse/expand block.
+      if (this.collapsed) {
+        var expandOption = {enabled: true};
+        expandOption.text = Blockly.MSG_EXPAND_BLOCK;
+        expandOption.callback = function() {
+          block.setCollapsed(false);
+        };
+        options.push(expandOption);
+      } else {
+        var collapseOption = {enabled: true};
+        collapseOption.text = Blockly.MSG_COLLAPSE_BLOCK;
+        collapseOption.callback = function() {
+          block.setCollapsed(true);
+        };
+        options.push(collapseOption);
+      }
     }
 
     // Option to disable/enable block.
@@ -1085,8 +1087,8 @@ Blockly.Block.prototype.setTooltip = function(newTip) {
 /**
  * Set whether this block can chain onto the bottom of another block.
  * @param {boolean} newBoolean True if there can be a previous statement.
- * @param {Object} opt_check Statement type or list of statement types.
- *     Null or undefined if any type could be connected.
+ * @param {string|Array.<string>|null} opt_check Statement type or list of
+ *     statement types.  Null or undefined if any type could be connected.
  */
 Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
   if (this.previousConnection) {
@@ -1116,8 +1118,8 @@ Blockly.Block.prototype.setPreviousStatement = function(newBoolean, opt_check) {
 /**
  * Set whether another block can chain onto the bottom of this block.
  * @param {boolean} newBoolean True if there can be a next statement.
- * @param {Object} opt_check Statement type or list of statement types.
- *     Null or undefined if any type could be connected.
+ * @param {string|Array.<string>|null} opt_check Statement type or list of
+ *     statement types.  Null or undefined if any type could be connected.
  */
 Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
   if (this.nextConnection) {
@@ -1144,8 +1146,9 @@ Blockly.Block.prototype.setNextStatement = function(newBoolean, opt_check) {
 /**
  * Set whether this block returns a value.
  * @param {boolean} newBoolean True if there is an output.
- * @param {Object} opt_check Returned type or list of returned types.
- *     Null or undefined if any type could be returned (e.g. variable get).
+ * @param {string|Array.<string>|null} opt_check Returned type or list of
+ *     returned types.  Null or undefined if any type could be returned
+ *     (e.g. variable get).
  */
 Blockly.Block.prototype.setOutput = function(newBoolean, opt_check) {
   if (this.outputConnection) {
@@ -1251,18 +1254,21 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
     }
   }
 
-  if (collapsed && this.mutator) {
-    this.mutator.setVisible(false);
+  if (collapsed) {
+    if (this.mutator) {
+      this.mutator.setVisible(false);
+    }
+    if (this.comment) {
+      this.comment.setVisible(false);
+    }
+    if (this.warning) {
+      this.warning.setVisible(false);
+    }
+    if (this.errorIcon) {
+      this.errorIcon.setVisible(false);
+    }
   }
-  if (collapsed && this.comment) {
-    this.comment.setVisible(false);
-  }
-  if (collapsed && this.warning) {
-    this.warning.setVisible(false);
-  }
-  if (collapsed && this.errorIcon) {
-    this.errorIcon.setVisible(false);
-  }
+
 
 
   if (renderList.length == 0) {
@@ -1554,5 +1560,8 @@ Blockly.Block.prototype.setErrorIconText = function(text) {
  * Lays out and reflows a block based on its contents and settings.
  */
 Blockly.Block.prototype.render = function() {
+  if (!this.svg_) {
+    throw 'Uninitialized block cannot be rendered.  Call block.initSvg()';
+  }
   this.svg_.render();
 };

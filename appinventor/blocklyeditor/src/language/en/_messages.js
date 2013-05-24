@@ -18,6 +18,8 @@ Blockly.MSG_EXPAND_BLOCK = 'Expand Block';
 Blockly.MSG_DISABLE_BLOCK = 'Disable Block';
 Blockly.MSG_ENABLE_BLOCK = 'Enable Block';
 Blockly.MSG_HELP = 'Help';
+Blockly.MSG_COLLAPSE_ALL = 'Collapse Blocks';
+Blockly.MSG_EXPAND_ALL = 'Expand Blocks';
 
 // Variable renaming.
 Blockly.MSG_CHANGE_VALUE_TITLE = 'Change value:';

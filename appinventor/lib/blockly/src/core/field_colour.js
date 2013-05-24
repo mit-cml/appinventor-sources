@@ -98,7 +98,6 @@ Blockly.FieldColour.prototype.showEditor_ = function() {
     xy.x += borderBBox.width;
   }
   xy.y += borderBBox.height - 1;
-  xy = Blockly.convertCoordinates(xy.x, xy.y, false);
   if (Blockly.RTL) {
     xy.x -= Blockly.widgetDiv.offsetWidth;
   }
