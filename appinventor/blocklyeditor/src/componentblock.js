@@ -23,9 +23,8 @@ Blockly.ComponentBlock = {};
  */
 Blockly.ComponentBlock.COLOUR_EVENT = Blockly.CONTROL_CATEGORY_HUE;
 Blockly.ComponentBlock.COLOUR_METHOD = Blockly.PROCEDURE_CATEGORY_HUE;
-Blockly.ComponentBlock.COLOUR_GETSET = Blockly.COLOR_CATEGORY_HUE;
-Blockly.ComponentBlock.COLOUR_COMPONENT = Blockly.COLOR_CATEGORY_HUE;
-
+Blockly.ComponentBlock.COLOUR_GETSET = [67, 153, 112];
+Blockly.ComponentBlock.COLOUR_COMPONENT = [67, 153, 112];
 
 //TODO(): add I18N
 
