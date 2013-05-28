@@ -57,7 +57,12 @@ Blockly.Bubble = function(workspace, content, shape,
 
   this.setAnchorLocation(anchorX, anchorY);
   if (!bubbleWidth || !bubbleHeight) {
-    var bBox = /** @type {SVGLocatable} */ (this.content_).getBBox();
+    try {
+      var bBox = /** @type {SVGLocatable} */ (this.content_).getBBox();
+    } catch (e) {
+        // Firefox has trouble with hidden elements (Bug 528969).
+      var bBox = {height: 0, width: 0};
+    }
     bubbleWidth = bBox.width + 2 * Blockly.Bubble.BORDER_WIDTH;
     bubbleHeight = bBox.height + 2 * Blockly.Bubble.BORDER_WIDTH;
   }

@@ -338,7 +338,13 @@ Blockly.Flyout.prototype.show = function(xmlList) {
       Blockly.Comment && child.setCommentText(null);
     }
     block.render();
-    var bBox = block.getSvgRoot().getBBox();
+    try {
+      var bBox = block.getSvgRoot().getBBox();
+    } catch (e) {
+        // Firefox has trouble with hidden elements (Bug 528969).
+      var bBox = {height: 0, width: 0};
+    }
+
     var x = Blockly.RTL ? 0 : margin + Blockly.BlockSvg.TAB_WIDTH;
     block.moveBy(x, cursorY);
     flyoutWidth = Math.max(flyoutWidth, bBox.width);
@@ -358,7 +364,14 @@ Blockly.Flyout.prototype.show = function(xmlList) {
     }
     // Create an invisible rectangle over the block to act as a button.  Just
     // using the block as a button is poor, since blocks have holes in them.
-    var bBox = block.getSvgRoot().getBBox();
+
+    try {
+      var bBox = block.getSvgRoot().getBBox();
+    } catch (e) {
+        // Firefox has trouble with hidden elements (Bug 528969).
+      var bBox = {height: 0, width: 0};
+    }
+
     var xy = block.getRelativeToSurfaceXY();
     var rect = Blockly.createSvgElement('rect',
         {'width': bBox.width, 'height': bBox.height,

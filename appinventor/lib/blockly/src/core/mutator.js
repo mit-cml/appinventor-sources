@@ -166,7 +166,14 @@ Blockly.Mutator.prototype.createEditor_ = function() {
  */
 Blockly.Mutator.prototype.resizeBubble_ = function() {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
-  var workspaceSize = this.workspace_.getCanvas().getBBox();
+
+  try {
+    var workspaceSize = this.workspace_.getCanvas().getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return;
+  }
+
   var flyoutMetrics = this.flyout_.getMetrics();
   var width;
   if (Blockly.RTL) {
@@ -286,7 +293,14 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     var MARGIN = 10;
     for (var b = 0, block; block = blocks[b]; b++) {
       var xy = block.getRelativeToSurfaceXY();
-      var bBox = block.getSvgRoot().getBBox();
+
+      try {
+        var bBox = block.getSvgRoot().getBBox();
+      } catch (e) {
+        // Firefox has trouble with hidden elements (Bug 528969).
+        var bBox = {height: 0, width: 0};
+      }
+
       if ((xy.y < MARGIN - bBox.height) ||  // Off the top.
           (Blockly.RTL ? xy.x > -this.flyout_.width_ + MARGIN :
            xy.x < this.flyout_.width_ - MARGIN)  // Over the flyout.
