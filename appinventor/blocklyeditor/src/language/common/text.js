@@ -33,17 +33,19 @@ Blockly.Language.text = {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput().appendTitle('\u201C').appendTitle(new Blockly.FieldTextBlockInput(''),
         'TEXT').appendTitle('\u201D');
-    this.setOutput(true, [{checkFxn:Blockly.Language.text.connectionCheck}]);
+    this.setOutput(true, [Blockly.Language.text.connectionCheck]);
     this.setTooltip('A text string.');
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
 
-Blockly.Language.text.connectionCheck = function(block,otherTypeArray) {
+Blockly.Language.text.connectionCheck = function(myConnection,otherConnection) {
+  var block = myConnection.sourceBlock_;
+  var otherTypeArray = otherConnection.check_;
   for(var i=0;i<otherTypeArray.length;i++) {
-    if(otherTypeArray[i] == String || otherTypeArray[i] == Array) {
+    if(otherTypeArray[i] == "String" || otherTypeArray[i] == "Array") {
       return true;
-    } else if(otherTypeArray[i] == Number && !isNaN(parseFloat(block.getTitleValue('TEXT')))) {
+    } else if(otherTypeArray[i] == "Number" && !isNaN(parseFloat(block.getTitleValue('TEXT')))) {
       return true;
     }
   }

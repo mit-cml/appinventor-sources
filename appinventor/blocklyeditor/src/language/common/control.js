@@ -41,7 +41,7 @@ Blockly.Language.controls_if = {
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('IF0')
-        .setCheck(Boolean)
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
         .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF);
     this.appendStatementInput('DO0')
         .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
@@ -91,7 +91,7 @@ Blockly.Language.controls_if = {
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
-          .setCheck(Boolean)
+          .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSEIF);
       this.appendStatementInput('DO' + x)
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
@@ -137,7 +137,7 @@ Blockly.Language.controls_if = {
         case 'controls_if_elseif':
           this.elseifCount_++;
           var ifInput = this.appendValueInput('IF' + this.elseifCount_)
-              .setCheck(Boolean)
+              .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
               .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSEIF);
           var doInput = this.appendStatementInput('DO' + this.elseifCount_);
           doInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
@@ -292,7 +292,7 @@ Blockly.Language.controls_forEach = {
     // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('LIST')
-        .setCheck(Array)
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT))
         .appendTitle("for each")
         .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
         .appendTitle('in list')
@@ -332,7 +332,7 @@ Blockly.Language.controls_while = {
   helpUrl : '',
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('TEST').setCheck(Boolean).appendTitle('while').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEST').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('while').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -351,7 +351,7 @@ Blockly.Language.controls_choose = {
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
-    this.appendValueInput('TEST').setCheck(Boolean).appendTitle('choose').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEST').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('choose').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendStatementInput('DO0').appendTitle('then-do').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('THENRETURN').appendTitle('then-return').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendStatementInput('ELSE').appendTitle('else-do').setAlign(Blockly.ALIGN_RIGHT);

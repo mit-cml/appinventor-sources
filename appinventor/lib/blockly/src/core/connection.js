@@ -495,10 +495,20 @@ Blockly.Connection.prototype.checkType_ = function(otherConnection) {
     // One or both sides are promiscuous enough that anything will fit.
     return true;
   }
-  // Find any intersection in the check lists.
+  // Find any intersection in the check lists,
+  // or if the check is a function, evaluate the function.
   for (var x = 0; x < this.check_.length; x++) {
     if ((otherConnection.check_.indexOf(this.check_[x]) != -1) ||
-        (typeof this.check_[x] == "object" && this.check_[x].checkFxn && this.check_[x].checkFxn(this.sourceBlock_,otherConnection.check_))) {
+        (typeof this.check_[x] == "function" && this.check_[x](this,otherConnection))) {
+      return true;
+    }
+  }
+
+  // If the check is a function on the other connection,
+  // evaluate the function to see if it evaluates to true.
+  for (var x = 0; x < otherConnection.check_.length; x++) {
+    if (typeof otherConnection.check_[x] == "function" &&
+        otherConnection.check_[x](otherConnection,this)) {
       return true;
     }
   }

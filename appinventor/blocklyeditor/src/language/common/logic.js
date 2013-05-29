@@ -78,7 +78,7 @@ Blockly.Language.logic_negate = {
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('BOOL').setCheck(Boolean).appendTitle('not');
+    this.appendValueInput('BOOL').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('not');
     this.setTooltip('Returns true if the input is false.\n' +
         'Returns false if the input is true.');
   },
@@ -108,8 +108,8 @@ Blockly.Language.logic_operation = {
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('A').setCheck(Boolean);
-    this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('A').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT));
+    this.appendValueInput('B').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -137,8 +137,8 @@ Blockly.Language.logic_or = {
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('A').setCheck(Boolean);
-    this.appendValueInput('B').setCheck(Boolean).appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_operation.OPERATORS), 'OP');
+    this.appendValueInput('A').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT));
+    this.appendValueInput('B').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle(new Blockly.FieldDropdown(Blockly.Language.logic_operation.OPERATORS), 'OP');
     this.setTitleValue('OR','OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.

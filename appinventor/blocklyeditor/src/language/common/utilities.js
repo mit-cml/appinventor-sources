@@ -37,10 +37,10 @@ Blockly.Language.InstantInTime = function () { return 'InstantInTime'; };
 // Blockly's convention
 Blockly.Language.YailTypeToBlocklyTypeMap =
     {
-        'number':{input:Number,output:[Number,String]},
-        'text':{input:String,output:[Number,String,Array]},
-        'boolean':{input:Boolean,output:[Boolean,String]},
-        'list':{input:Array,output:[Array,String]},
+        'number':{input:"Number",output:["Number","String"]},
+        'text':{input:"String",output:["Number","String","Array"]},
+        'boolean':{input:"Boolean",output:["Boolean","String"]},
+        'list':{input:"Array",output:["Array","String"]},
         'component':{input:"COMPONENT",output:"COMPONENT"},
         'InstantInTime':{input:Blockly.Language.InstantInTime,output:Blockly.Language.InstantInTime},
         'any':{input:null,output:null}
