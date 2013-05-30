@@ -7,6 +7,7 @@ package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
@@ -597,6 +598,8 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
     setButtonVisible(WIDGET_NAME_WIRELESS_BUTTON, blocks);
     setButtonVisible(WIDGET_NAME_EMULATOR_BUTTON, blocks);
+    //show or hide the warning button
+    BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer().setWarningButtonVisibility(blocks);
   }
 
 }

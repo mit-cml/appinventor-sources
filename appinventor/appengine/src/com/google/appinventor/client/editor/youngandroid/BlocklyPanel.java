@@ -96,6 +96,8 @@ public class BlocklyPanel extends HTMLPanel {
   private static Timer timer;
   private static String timerForm;
 
+  public static Boolean isWarningVisible = false;
+
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
     this.formName = formName;
@@ -385,6 +387,26 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
+  public static void toggleWarning(String formName) {
+    if (blocksInited(formName)) {
+      doToggleWarning(formName);
+    }
+  }
+
+  public static void switchWarningVisibility() {
+    if(BlocklyPanel.isWarningVisible){
+      BlocklyPanel.isWarningVisible = false;
+    } else {
+      BlocklyPanel.isWarningVisible = true;
+    }
+  }
+
+  public static void checkWarningState(String formName) {
+    if(BlocklyPanel.isWarningVisible){
+      toggleWarning(formName);
+    }
+  }
+
   /**
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
@@ -543,6 +565,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
     $wnd.BlocklyPanel_blocklyWorkspaceChanged =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
+    $wnd.BlocklyPanel_checkWarningState =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkWarningState(Ljava/lang/String;));
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
   }-*/;
 
@@ -629,6 +653,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doRenderBlockly(String formName) /*-{
     $wnd.Blocklies[formName].BlocklyEditor.render();
+  }-*/;
+
+  public static native void doToggleWarning(String formName) /*-{
+    $wnd.Blocklies[formName].WarningHandler.warningToggle();
   }-*/;
 
 }

@@ -39,6 +39,7 @@
         Blockly.ReplMgr.ReplState = window.parent.ReplState;
         Blockly.ReplMgr.formName = formName; <!-- So we can tell the AssetManager which form we are on. -->
         window.parent.BlocklyPanel_initBlocksArea(formName);
+        window.parent.BlocklyPanel_checkWarningState(formName);
       }
     </script>
   </head>

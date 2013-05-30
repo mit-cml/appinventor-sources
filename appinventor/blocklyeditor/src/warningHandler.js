@@ -61,7 +61,7 @@ Blockly.WarningHandler.checkErrors = function() {
     showWarnings = Blockly.WarningHandler.showWarningsToggle;
   }
 
-  if(!this.getSvgRoot()){
+  if(!this.getSvgRoot() || !this.editable){
     //remove from error count
     if(this.hasWarning) {
       this.hasWarning = false;

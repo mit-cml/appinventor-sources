@@ -235,6 +235,13 @@ public final class YaBlocksEditor extends FileEditor
     formToBlocksEditor.remove(fullFormName);
   }
 
+  public static void toggleWarning() {
+    BlocklyPanel.switchWarningVisibility();
+    for(Object formName : formToBlocksEditor.keySet().toArray()){
+      BlocklyPanel.toggleWarning((String) formName);
+    }
+  }
+
   private void unloadBlocksEditor() {
     // TODO(sharon): do something about form change listener?
 

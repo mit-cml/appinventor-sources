@@ -42,6 +42,14 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'Delete' button")
   String deleteButton();
 
+  @DefaultMessage("Show Warnings")
+  @Description("Text on Toggle Warning Button")
+  String showWarnings();
+
+  @DefaultMessage("Hide Warnings")
+  @Description("Text on Toggle Warning Button")
+  String hideWarnings();
+
   @DefaultMessage("Upload new...")
   @Description("Text on 'Add...' button")
   String addButton();
