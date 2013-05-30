@@ -155,9 +155,31 @@ Blockly.Drawer.isShowing = function() {
 Blockly.Drawer.blockListToXMLArray = function(blockList) {
   var xmlArray = [];
   for(var i=0;i<blockList.length;i++) {
-    var blockXMLString = '<xml><block type="' + blockList[i] + '"></block></xml>';
+    var blockXMLString = Blockly.Drawer.defaultBlocksXML[blockList[i]];
+    if(!blockXMLString){
+      blockXMLString = '<xml><block type="' + blockList[i] + '"></block></xml>';
+    }
     var xmlBlock = Blockly.Xml.textToDom(blockXMLString).firstChild
     xmlArray.push(xmlBlock);
   }
   return xmlArray;
-}
+};
+
+Blockly.Drawer.defaultBlocksXML = {
+  controls_forRange :
+  '<xml>' +
+    '<block type="controls_forRange">' +
+      '<value name="START"><block type="math_number"><title name="NUM">1</title></block></value>' +
+      '<value name="END"><block type="math_number"><title name="NUM">5</title></block></value>' +
+      '<value name="STEP"><block type="math_number"><title name="NUM">1</title></block></value>' +
+    '</block>' +
+  '</xml>',
+
+   math_random_int :
+  '<xml>' +
+    '<block type="math_random_int">' +
+    '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
+    '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
+    '</block>' +
+  '</xml>'
+};
