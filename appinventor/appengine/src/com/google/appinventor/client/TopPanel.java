@@ -106,7 +106,6 @@ public class TopPanel extends Composite {
 
     final Ode ode = Ode.getInstance();
 
-    addHiddenDevButton(middleLinks);
     Label myApps = new Label(MESSAGES.tabNameProjects());
     myApps.addClickHandler(new ClickHandler() {
       @Override
@@ -178,24 +177,6 @@ public class TopPanel extends Composite {
 
     setStyleName("ode-TopPanel");
     setWidth("100%");
-  }
-
-  /**
-   * Adds a hidden button for developers that opens the debug view.
-   * @param panel
-   */
-  private void addHiddenDevButton(HorizontalPanel panel) {
-    final Label debugging = new Label(" ");
-    debugging.setWidth("15px");
-    //     final Label debugging = new Label(MESSAGES.tabNameDebugging());
-    debugging.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToDebuggingView();
-      }
-    }
-    );
-    panel.add(debugging);
   }
 
   private void addLogo(HorizontalPanel panel) {

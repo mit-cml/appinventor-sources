@@ -829,6 +829,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for admins to download a user's project source")
   String downloadUserSourceButton();
 
+  @DefaultMessage("Switch To Debug Panel")
+  @Description("Label of the button for admins to switch to the debug panel without an explicit error")
+  String switchToDebugButton();
+
   @DefaultMessage("Download User Source")
   @Description("Title of the dialog box for downloading a user's project source")
   String downloadUserSourceDialogTitle();

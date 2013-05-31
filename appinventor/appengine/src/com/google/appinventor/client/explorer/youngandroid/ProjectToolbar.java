@@ -42,6 +42,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_UPLOAD_SOURCE = "UploadSource";
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
@@ -80,6 +81,8 @@ public class ProjectToolbar extends Toolbar {
       List<ToolbarItem> adminItems = Lists.newArrayList();
       adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
           MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+      adminItems.add(new ToolbarItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
       addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
     }
     updateKeystoreButtons();
@@ -217,6 +220,13 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       new DownloadUserSourceWizard().center();
+    }
+  }
+
+  private static class SwitchToDebugAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToDebuggingView();
     }
   }
 
