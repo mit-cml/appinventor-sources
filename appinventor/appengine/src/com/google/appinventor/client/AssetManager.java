@@ -40,6 +40,7 @@ public final class AssetManager implements ProjectChangeListener {
   private Project project;
   private YoungAndroidAssetsFolder assetsFolder;
   private static AssetManager INSTANCE;
+  private static boolean DEBUG = false;
 
   private AssetManager() {
     exportMethodsToJavascript();
@@ -58,7 +59,8 @@ public final class AssetManager implements ProjectChangeListener {
     }
 
     this.projectId = projectId;
-    OdeLog.log("AssetManager: Loading assets for " + projectId);
+    if (DEBUG)
+      OdeLog.log("AssetManager: Loading assets for " + projectId);
     if (projectId != 0) {
       project = Ode.getInstance().getProjectManager().getProject(projectId);
       assetsFolder = ((YoungAndroidProjectNode) project.getRootNode()).getAssetsFolder();
@@ -85,7 +87,8 @@ public final class AssetManager implements ProjectChangeListener {
           assetInfo.fileContent = data;
           assetInfo.loaded = false; // Set to true when it is loaded to the repl
           assets.put(fileId, assetInfo);
-          OdeLog.log("Adding asset fileId = " + fileId);
+          if (DEBUG)
+            OdeLog.log("Adding asset fileId = " + fileId);
         }
 
         @Override
@@ -96,7 +99,8 @@ public final class AssetManager implements ProjectChangeListener {
   }
 
   private void refreshAssets1(String formName) {
-    OdeLog.log("AssetManager: formName = " + formName);
+    if (DEBUG)
+      OdeLog.log("AssetManager: formName = " + formName);
     for (AssetInfo a : assets.values()) {
       if (!a.loaded) {
         boolean didit = doPutAsset(formName, a.fileId, a.fileContent);
@@ -114,14 +118,16 @@ public final class AssetManager implements ProjectChangeListener {
 
   @Override
   public void onProjectLoaded(Project project) {
-    OdeLog.log("AssetManager: got onProjectLoaded for " + project.getProjectId() + ", current project is " + projectId);
+    if (DEBUG)
+      OdeLog.log("AssetManager: got onProjectLoaded for " + project.getProjectId() + ", current project is " + projectId);
     loadAssets(project.getProjectId());
   }
 
   @Override
   public void onProjectNodeAdded(Project project, ProjectNode node) {
-    OdeLog.log("AssetManager: got projectNodeAdded for node " + node.getFileId()
-      + " and project "  + project.getProjectId() + ", current project is " + projectId);
+    if (DEBUG)
+      OdeLog.log("AssetManager: got projectNodeAdded for node " + node.getFileId()
+        + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       loadAssets(project.getProjectId());
     }
@@ -129,8 +135,9 @@ public final class AssetManager implements ProjectChangeListener {
 
   @Override
   public void onProjectNodeRemoved(Project project, ProjectNode node) {
-    OdeLog.log("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
-      + " and project "  + project.getProjectId() + ", current project is " + projectId);
+    if (DEBUG)
+      OdeLog.log("AssetManager: got onProjectNodeRemoved for node " + node.getFileId()
+        + " and project "  + project.getProjectId() + ", current project is " + projectId);
     if (node instanceof YoungAndroidAssetNode) {
       loadAssets(project.getProjectId());
     }
