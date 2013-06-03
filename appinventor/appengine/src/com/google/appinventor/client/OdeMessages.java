@@ -135,7 +135,7 @@ public interface OdeMessages extends Messages {
   // Used in Ode.java
 
   // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("App Inventor for Android - Beta")
+  @DefaultMessage("MIT App Inventor 2 (Alpha)")
   //  @DefaultMessage("App Inventor for Android")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
