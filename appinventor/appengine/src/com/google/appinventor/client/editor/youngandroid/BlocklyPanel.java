@@ -379,6 +379,12 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
+  public void renderBlockly() {
+    if (blocksInited(formName)) {
+      doRenderBlockly(formName);
+    }
+  }
+
   /**
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
@@ -621,7 +627,7 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator);
   }-*/;
 
-  public static native void renderBlockly(String formName) /*-{
+  public static native void doRenderBlockly(String formName) /*-{
     $wnd.Blocklies[formName].BlocklyEditor.render();
   }-*/;
 

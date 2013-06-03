@@ -176,7 +176,7 @@ public final class YaBlocksEditor extends FileEditor
     blocksArea.showDifferentForm(fullFormName);
     loadBlocksEditor();
     makeYail();                 // Create yail and send to REPL (if connected).
-    BlocklyPanel.renderBlockly(fullFormName);
+    blocksArea.renderBlockly();
   }
 
   /*
