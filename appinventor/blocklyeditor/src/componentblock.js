@@ -638,7 +638,7 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
     };
     this.appendDummyInput().appendTitle(this.componentDropDown, "COMPONENT_SELECTOR");
     this.componentDropDown.setValue(this.instanceName);
-    this.setOutput(true, this.typeName);
+    this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIsInDefinition"}];
     this.onchange = Blockly.WarningHandler.checkErrors;
     // Renames the block's instanceName, type, and reset its title
