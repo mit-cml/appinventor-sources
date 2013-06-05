@@ -371,6 +371,58 @@ Blockly.Language.procedures_mutatorarg.validator = function(newVar) {
 };
 
 
+Blockly.Language.procedure_lexical_variable_get = {
+  // Variable getter.
+  category: 'Procedures',
+  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  init: function() {
+    this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
+    this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
+    this.fieldVar_.setBlock(this);
+    this.appendDummyInput()
+        .appendTitle("get")
+        .appendTitle(this.fieldVar_, 'VAR');
+    this.setOutput(true, null);
+    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+  },
+  getVars: function() {
+    return [this.getTitleValue('VAR')];
+  },
+  onchange: function() {
+     // [lyn, 11/10/12] Checks if parent has changed. If so, checks if curent variable name
+     //    is still in scope. If so, keeps it as is; if not, changes to ???
+     //    *** NEED TO MAKE THIS BEHAVIOR BETTER!
+    if (this.fieldVar_) {
+       var currentName = this.fieldVar_.getText();
+       var nameList = this.fieldVar_.getNamesInScope();
+       var cachedParent = this.fieldVar_.getCachedParent();
+       var currentParent = this.fieldVar_.getBlock().getParent();
+       // [lyn, 11/10/12] Allow current name to stay if block moved to workspace in "untethered" way.
+       //   Only changed to ??? if tether an untethered block.
+       if (currentParent != cachedParent) {
+         this.fieldVar_.setCachedParent(currentParent);
+         if  (currentParent != null) {
+           for (var i = 0; i < nameList.length; i++ ) {
+             if (nameList[i] === currentName) {
+               return; // no change
+             }
+           }
+           // Only get here if name not in list
+           this.fieldVar_.setText(" ");
+         }
+       }
+    }
+    Blockly.WarningHandler.checkErrors.call(this);
+  },
+  renameLexicalVar: function(oldName, newName) {
+    // console.log("Renaming lexical variable from " + oldName + " to " + newName);
+    if (oldName === this.getTitleValue('VAR')) {
+        this.setTitleValue(newName, 'VAR');
+    }
+  }
+};
+
 
 Blockly.Language.procedures_do_then_return = {
   // String length.
