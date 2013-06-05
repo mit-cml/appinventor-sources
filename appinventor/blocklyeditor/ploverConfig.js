@@ -45,6 +45,7 @@
     '../lib/blockly/src/core/warning.js',
     '../lib/blockly/src/core/workspace.js',
     '../lib/blockly/src/core/xml.js',
+    '../lib/blockly/src/core/typeblock.js',
 
 
     //finally, include any of our own .js file in any order

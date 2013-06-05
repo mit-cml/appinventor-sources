@@ -36,7 +36,8 @@ Blockly.Language.text = {
     this.setOutput(true, [Blockly.Language.text.connectionCheck]);
     this.setTooltip('A text string.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CATEGORY_TEXT }]
 };
 
 Blockly.Language.text.connectionCheck = function(myConnection,otherConnection) {
@@ -90,7 +91,8 @@ Blockly.Language.text_join = {
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.inputList[0].titleRow[0].setText("join");
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_JOIN_TITLE_JOIN }]
 
 };
 
@@ -120,7 +122,8 @@ Blockly.Language.text_length = {
       .appendTitle('length');
     this.setTooltip('Returns number of characters (including spaces)\n' + 'in the provided text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH }]
 };
 
 Blockly.Language.text_isEmpty = {
@@ -135,7 +138,8 @@ Blockly.Language.text_isEmpty = {
       .appendTitle('is empty');
     this.setTooltip('Returns true if the length of the\n' + 'text is 0, false otherwise.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY }]
 };
 
 Blockly.Language.text_compare = {
@@ -158,7 +162,26 @@ Blockly.Language.text_compare = {
       return Blockly.Language.text_compare.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_TEXT_COMPARE_INPUT_COMPARE + ' <',
+    dropDown: {
+      titleName: 'OP',
+      value: 'LT'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_COMPARE_INPUT_COMPARE  + ' =',
+    dropDown: {
+      titleName: 'OP',
+      value: 'EQUAL'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_COMPARE_INPUT_COMPARE + ' >',
+    dropDown: {
+      titleName: 'OP',
+      value: 'GT'
+    }
+  }]
 };
 
 Blockly.Language.text_compare.OPERATORS = [ [ '<', 'LT' ], [ '=', 'EQUAL' ], [ '>', 'GT' ] ];
@@ -188,7 +211,8 @@ Blockly.Language.text_trim = {
     this.setTooltip('Returns a copy of it text string arguments with any\n'
         + 'leading or trailing spaces removed.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_TRIM_TITLE_TRIM }]
 };
 
 Blockly.Language.text_changeCase = {
@@ -207,7 +231,20 @@ Blockly.Language.text_changeCase = {
       return Blockly.Language.text_changeCase.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE,
+    dropDown: {
+      titleName: 'OP',
+      value: 'UPCASE'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE,
+    dropDown: {
+      titleName: 'OP',
+      value: 'DOWNCASE'
+    }
+  }]
 };
 
 Blockly.Language.text_changeCase.OPERATORS = [ [ 'upcase', 'UPCASE' ], [ 'downcase', 'DOWNCASE' ] ];
@@ -236,7 +273,8 @@ Blockly.Language.text_starts_at = {
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT }]
 };
 
 Blockly.Language.text_contains = {
@@ -256,7 +294,8 @@ Blockly.Language.text_contains = {
       .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip('Tests whether the piece is contained in the text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_CONTAINS_INPUT_CONTAINS }]
 };
 
 Blockly.Language.text_split = {
@@ -281,7 +320,32 @@ Blockly.Language.text_split = {
       return Blockly.Language.text_split.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLITATFIRST'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLITATFIRSTOFANY'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLIT'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLITATANY'
+    }
+  }]
 };
 
 Blockly.Language.text_split.OPERATORS = [ [ 'split at first', 'SPLITATFIRST' ],
@@ -316,7 +380,8 @@ Blockly.Language.text_split_at_spaces = {
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('split at spaces');
     this.setTooltip('Split the text into pieces separated by spaces.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_SPLIT_AT_SPACES_TITLE }]
 };
 
 Blockly.Language.text_segment = {
@@ -342,7 +407,8 @@ Blockly.Language.text_segment = {
         + 'starting from the given text starting from the given position. Position\n'
         + '1 denotes the beginning of the text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_SEGMENT_TITLE_SEGMENT }]
 };
 
 Blockly.Language.text_replace_all = {
@@ -367,5 +433,6 @@ Blockly.Language.text_replace_all = {
     this.setTooltip('Returns a new text obtained by replacing all occurrences\n'
         + 'of the segment with the replacement.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL }]
 };

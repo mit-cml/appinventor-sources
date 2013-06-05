@@ -111,7 +111,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
       varString += param.name;
     }
     return varString;
-  }
+  };
 
   this.renameVar = function(oldName, newName) {
     for (var i = 0, param = this.paramName(i), input
@@ -125,6 +125,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
   this.paramName = function(i) {
     return "PARAM" + i;
   };
+  this.typeblock = [{ translatedName: this.instanceName + '.' + this.eventType.name }];
 };
 
 /**
@@ -205,6 +206,7 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
       }
     };
   };
+  this.typeblock = [{ translatedName: 'call ' + this.instanceName + '.' + this.methodType.name }];
 }
 
 /**
@@ -261,7 +263,8 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
       }
     };
   };
-}
+  this.typeblock = [{ translatedName: 'call ' + this.typeName + '.' + this.methodType.name}];
+};
 
 
 /**
@@ -348,6 +351,21 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
       }
     };
   };
+  var that = this;
+  this.typeblock = createTypeBlock();
+  function createTypeBlock(){
+    var tb = [];
+    goog.array.forEach(propNames, function(title){
+      tb.push({
+        translatedName: 'get ' + that.instanceName + '.' + title[0],
+        dropDown: {
+          titleName: 'PROP',
+          value: title[0]
+        }
+      });
+    });
+    return tb;
+  }
 };
 
 /**
@@ -421,6 +439,21 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
       }
     };
   };
+  var that = this;
+  this.typeblock = createTypeBlock();
+  function createTypeBlock(){
+    var tb = [];
+    goog.array.forEach(propNames, function(title){
+      tb.push({
+        translatedName: 'get ' + that.typeName + '.' + title[0],
+        dropDown: {
+          titleName: 'PROP',
+          value: title[0]
+        }
+      });
+    });
+    return tb;
+  }
 };
 
 
@@ -506,6 +539,21 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
       }
     };
   };
+  var that = this;
+  this.typeblock = createTypeBlock();
+  function createTypeBlock(){
+    var tb = [];
+    goog.array.forEach(propNames, function(title){
+      tb.push({
+        translatedName: 'set ' + that.instanceName + '.' + title[0],
+        dropDown: {
+          titleName: 'PROP',
+          value: title[0]
+        }
+      });
+    });
+    return tb;
+  }
 };
 
 /**
@@ -570,6 +618,21 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
       }
     };
   };
+  var that = this;
+  this.typeblock = createTypeBlock();
+  function createTypeBlock(){
+    var tb = [];
+    goog.array.forEach(propNames, function(title){
+      tb.push({
+        translatedName: 'set ' + that.typeName + '.' + title[0],
+        dropDown: {
+          titleName: 'PROP',
+          value: title[0]
+        }
+      });
+    });
+    return tb;
+  }
 };
 
 //Get the Blockly type of the argument for the property name that is
@@ -654,5 +717,6 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
       }
     };
   };
+  this.typeblock = [{ translatedName: this.instanceName }];
 };
 

@@ -6,6 +6,9 @@
  *
  * @author sharon@google.com (Sharon Perl)
  */
+'use strict';
+
+goog.require('Blockly.TypeBlock');
 
 if (!Blockly.Component) {
   Blockly.Component = {};
@@ -70,6 +73,8 @@ Blockly.Component.add = function(typeJsonString, name, uid) {
   // what to do? (old component should have been renamed or removed first?)
   // Also, detect case where we have the uid but with a different name (component
   // should have been renamed).
+
+  Blockly.TypeBlock.needsReload.components = true;
 
   // TODO: figure out the type name before we reparse the json string so that we can avoid
   // reparsing if we already have it.
@@ -233,7 +238,7 @@ Blockly.Component.display = function(instanceName) {
  */
 Blockly.Component.rename = function(oldname, newname, uid) {
   console.log("Got call to Blockly.Component.rename(" + oldname + ", " + newname + ", " + uid + ")");
-
+  Blockly.TypeBlock.needsReload.components = true;
   if (!Blockly.ComponentInstances.haveInstance(oldname, uid)) {
     console.log("Renaming, No such Component instance " + oldname + " aborting");
     return;
@@ -274,47 +279,39 @@ Blockly.Component.rename = function(oldname, newname, uid) {
     console.log("Regenerating code for " + newname + " blocks");
 
     var blocktype = Blockly.Language[newblockname].blockType;
-    if (blocktype == 'event') {
-      console.log("Generating event code for " + newname + " of type " + Blockly.Language[newblockname].eventType.name);
+    if (blocktype === 'event') {
       Blockly.Yail[newblockname] = Blockly.Yail.event(newname, Blockly.Language[newblockname].eventType.name);
+      Blockly.Language[newblockname].typeblock = [{ translatedName: newname + '.' + Blockly.Language[newblockname].eventType.name }];
     }
-    else if (blocktype == 'methodwithreturn') {
-      console.log("Generating methodwithreturn code for " + newname + " of type " + Blockly.Language[newblockname].methodType.name);
+    else if (blocktype === 'methodwithreturn') {
       Blockly.Yail[newblockname] = Blockly.Yail.methodWithReturn(newname, Blockly.Language[newblockname].methodType.name);
+      Blockly.Language[newblockname].typeblock = [{ translatedName: newname + '.' + Blockly.Language[newblockname].methodType.name }];
     }
-    else if (blocktype == 'methodnoreturn') {
-      console.log("Generating methodnoreturn code for " + newname + " of type " + Blockly.Language[newblockname].methodType.name);
+    else if (blocktype === 'methodnoreturn') {
       Blockly.Yail[newblockname] = Blockly.Yail.methodNoReturn(newname, Blockly.Language[newblockname].methodType.name);
+      Blockly.Language[newblockname].typeblock = [{ translatedName: newname + '.' + Blockly.Language[newblockname].methodType.name }];
     }
-    else if (blocktype == 'genericmethod') {
-      var typename = Blockly.Lanaguage[newblockname].typeName;
-      console.log("Generating generic  methodnoreturn code for " + typename + " of type " + Blockly.Language[newblockname].methodType.name);
-      Blockly.Yail[newblockname] = Blockly.Yail.genericMethodNoReturn(typename, Blockly.Language[newblockname].methodType.name);
-    }
-    else if (blocktype == 'genericmethod') {
-      var typename = Blockly.Lanaguage[newblockname].typeName;
-      console.log("Generating generic methodwithreturn code for " + typename + " of type " + Blockly.Language[newblockname].methodType.name);
-      Blockly.Yail[newblockname] = Blockly.Yail.genericMethodWithReturn(typename, Blockly.Language[newblockname].methodType.name);
-    }
-    else if (blocktype == 'getter') {
-      console.log("Generating getter code for " + newname);
+    else if (blocktype === 'getter') {
       Blockly.Yail[newblockname] = Blockly.Yail.getproperty(newname);
+      var tbOptions = Blockly.Language[newblockname].typeblock;
+      goog.array.forEach(tbOptions, function(option){
+        option.translatedName = 'get ' + newname + '.' + option.dropDown.value;
+      });
     }
-    else if (blocktype == 'setter') {
-      console.log("Generating setter code for " + newname);
+    else if (blocktype === 'setter') {
       Blockly.Yail[newblockname] = Blockly.Yail.setproperty(newname);
+      var tbOptions = Blockly.Language[newblockname].typeblock;
+      goog.array.forEach(tbOptions, function(option){
+        option.translatedName = 'set ' + newname + '.' + option.dropDown.value;
+      });
     }
-    else if (blocktype == 'genericgetter') {
-      console.log("generating genericgetter  block code for " + Blockly.Language[newblockname].typeName);
-      Blockly.Yail[newblockname] = Blockly.Yail.genericGetproperty(Blockly.Language[newblockname].typeName);
-    }
-    else if (blocktype == 'genericsetter') {
-      console.log("Generating genericsetter code for " + Blockly.Language[newblockname].typeName);
-      Blockly.Yail[newblockname] = Blockly.Yail.genericSetproperty(Blockly.Language[newblockname].typeName);
-    }
-    else if (blocktype == 'component') {
+    else if (blocktype === 'component') {
       console.log("Generating component block code for " + newname);
       Blockly.Yail[newblockname] = Blockly.Yail.componentObject(newname);
+      Blockly.Language[newblockname].typeblock = [{ translatedName: newname }];
+    }
+    else {// This is here for good measure, should never happen.
+      throw new Error('BlockType: ' + blocktype + ' not recognisable?');
     }
   }
 
@@ -355,7 +352,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
  */
 Blockly.Component.remove = function(type, name, uid) {
   console.log("Got call to Blockly.Component.remove(" + type + ", " + name + ", " + uid + ")");
-
+  Blockly.TypeBlock.needsReload.components = true;
   for (var i=0; i < Blockly.ComponentInstances[name].blocks.length; i++) {
     var elementName = Blockly.ComponentInstances[name].blocks[i]
     console.log("Deleting " + elementName + " from Blockly.Lanaguage");
@@ -449,7 +446,7 @@ Blockly.Component.getPropertyType = function(componentTypeName, propertyName) {
   // TODO: note that the old Yail code generator puts up an error message in this case but then
   // forges ahead using a property type of "text"
   throw "Can't find property type for " + componentType + "." + propertyName;
-}
+};
 
 /**
  * Blockly.ComponentTypes
@@ -467,21 +464,21 @@ Blockly.ComponentTypes = {};
 
 Blockly.ComponentTypes.haveType = function(typeName) {
   return Blockly.ComponentTypes[typeName] != undefined;
-}
+};
 
 Blockly.ComponentTypes.addType = function(typeName, typeDescription) {
   Blockly.ComponentTypes[typeName] = {};
   Blockly.ComponentTypes[typeName].type = typeDescription;
   Blockly.ComponentTypes[typeName].blocks = [];
-}
+};
 
 Blockly.ComponentTypes.addBlockName = function(typeName, blockName) {
   Blockly.ComponentTypes[typeName].blocks.push(blockName);
-}
+};
 
 Blockly.ComponentTypes.getType = function(typeName) {
   return Blockly.ComponentTypes[typeName].type;
-}
+};
 
 /**
  * Blockly.ComponentInstances
@@ -500,16 +497,16 @@ Blockly.ComponentInstances.addInstance = function(name, uid) {
   Blockly.ComponentInstances[name] = {};
   Blockly.ComponentInstances[name].uid = uid;
   Blockly.ComponentInstances[name].blocks = [];
-}
+};
 
 Blockly.ComponentInstances.haveInstance = function(name, uid) {
   return Blockly.ComponentInstances[name] != undefined
   && Blockly.ComponentInstances[name].uid == uid;
-}
+};
 
 Blockly.ComponentInstances.addBlockName = function(name, blockName) {
   Blockly.ComponentInstances[name].blocks.push(blockName);
-}
+};
 
 /**
  * Add a component-related block to the language
@@ -522,7 +519,7 @@ Blockly.Component.addBlockAndGenerator = function(instanceName, langName, langBl
   Blockly.Language[langName] = langBlock;
   Blockly.Yail[langName] = generator;
   Blockly.ComponentInstances.addBlockName(instanceName, langName);
-}
+};
 
 /**
  * Add a generic component-related block to the language
@@ -535,7 +532,7 @@ Blockly.Component.addGenericBlockAndGenerator = function(typeName, langName, lan
   Blockly.Language[langName] = langBlock;
   Blockly.Yail[langName] = generator;
   Blockly.ComponentTypes.addBlockName(typeName, langName);
-}
+};
 
 Blockly.Component.getComponentNamesByType = function(componentType) {
   var componentNameArray = [];
@@ -545,6 +542,6 @@ Blockly.Component.getComponentNamesByType = function(componentType) {
     }
   }
   return componentNameArray;
-}
+};
 
 

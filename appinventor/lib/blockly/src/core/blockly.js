@@ -50,6 +50,7 @@ goog.require('Blockly.Procedures');
 //goog.require('Blockly.Toolbox');
 goog.require('Blockly.utils');
 goog.require('Blockly.Workspace');
+goog.require('Blockly.TypeBlock');
 
 
 /**
@@ -267,11 +268,19 @@ Blockly.svgResize = function() {
 };
 
 /**
+ * latest clicked position is used to open the type blocking suggestions window
+ * Initial position is 0,0
+ * @type {{x: number, y:number}}
+ */
+Blockly.latestClick = { x: 0, y: 0 };
+
+/**
  * Handle a mouse-down on SVG drawing surface.
  * @param {!Event} e Mouse down event.
  * @private
  */
 Blockly.onMouseDown_ = function(e) {
+  Blockly.latestClick = { x: e.clientX, y: e.clientY };
   Blockly.Block.terminateDrag_(); // In case mouse-up event was lost.
   Blockly.hideChaff();
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
@@ -578,6 +587,7 @@ Blockly.hideChaff = function(opt_allowToolbox) {
       Blockly.Toolbox.flyout_.autoClose) {
     Blockly.Toolbox.clearSelection();
   }
+  Blockly.TypeBlock && Blockly.TypeBlock.hide();
 };
 
 /**

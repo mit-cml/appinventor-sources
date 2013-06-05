@@ -69,11 +69,13 @@ Blockly.parseOptions_ = function(options) {
     if (hasCollapse === undefined) {
       hasCollapse = hasCategories;
     }
+    var configForTypeBlock = options['typeblock_config'];
   } else {
     var hasCategories = false;
     var hasTrashcan = false;
     var hasCollapse = false;
     var tree = null;
+    var configForTypeBlock = null;
   }
   return {
     RTL: !!options['rtl'],
@@ -83,7 +85,8 @@ Blockly.parseOptions_ = function(options) {
     pathToBlockly: options['path'] || './',
     Toolbox: hasCategories ? Blockly.Toolbox : undefined,
     Trashcan: hasTrashcan ? Blockly.Trashcan : undefined,
-    languageTree: tree
+    languageTree: tree,
+    configForTypeBlock: configForTypeBlock
   };
 };
 

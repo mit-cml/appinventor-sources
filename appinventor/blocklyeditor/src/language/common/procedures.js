@@ -50,7 +50,7 @@ Blockly.Language.procedures_defnoreturn = {
     this.appendStatementInput('STACK')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFNORETURN_DO);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-    this.setTooltip(Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
   },
@@ -181,7 +181,9 @@ Blockly.Language.procedures_defnoreturn = {
   blocksInScope: function () {
     var body = this.getInputTargetBlock('STACK');
     return (body && [body]) || [];
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE +
+      ' ' + Blockly.LANG_PROCEDURES_DEFNORETURN_DO }]
 };
 
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
@@ -204,7 +206,7 @@ Blockly.Language.procedures_defreturn = {
         .setAlign(Blockly.ALIGN_RIGHT)
         .appendTitle(Blockly.LANG_PROCEDURES_DEFRETURN_RETURN);
     this.setMutator(new Blockly.Mutator(['procedures_mutatorarg']));
-    this.setTooltip(Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP);
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
   },
@@ -231,7 +233,9 @@ Blockly.Language.procedures_defreturn = {
     return [this.getTitleValue('NAME'), this.arguments_, true];
   },
   getVars: Blockly.Language.procedures_defnoreturn.getVars,
-  renameVar: Blockly.Language.procedures_defnoreturn.renameVar
+  renameVar: Blockly.Language.procedures_defnoreturn.renameVar,
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE +
+      ' ' + Blockly.LANG_PROCEDURES_DEFRETURN_RETURN }]
 };
 
 Blockly.Language.procedures_mutatorcontainer = {
@@ -457,7 +461,7 @@ Blockly.Language.procedures_callnoreturn = {
         .appendTitle(this.procDropDown,"PROCNAME");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_PROCEDURES_CALLNORETURN_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_PROCEDURES_CALLNORETURN_TOOLTIP);
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
@@ -621,7 +625,11 @@ Blockly.Language.procedures_callnoreturn = {
     for(var i=0;this.getInput('ARG' + i) != null;i++) {
       this.removeInput('ARG' + i);
     }
-  }
+  },
+  // This generates a single generic call to 'call no return' defaulting its value
+  // to the first procedure in the list. Calls for each procedure cannot be done here because the
+  // blocks have not been loaded yet (they are loaded in typeblock.js)
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' no return' }]
 };
 
 
@@ -639,7 +647,7 @@ Blockly.Language.procedures_callreturn = {
         .appendTitle("call ")
         .appendTitle(this.procDropDown,"PROCNAME");
     this.setOutput(true, null);
-    this.setTooltip(Blockly.LANG_PROCEDURES_CALLRETURN_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_PROCEDURES_CALLRETURN_TOOLTIP);
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
@@ -656,6 +664,10 @@ Blockly.Language.procedures_callreturn = {
   domToMutation: Blockly.Language.procedures_callnoreturn.domToMutation,
   renameVar: Blockly.Language.procedures_callnoreturn.renameVar,
   procCustomContextMenu: Blockly.Language.procedures_callnoreturn.procCustomContextMenu,
-  removeProcedureValue: Blockly.Language.procedures_callnoreturn.removeProcedureValue
+  removeProcedureValue: Blockly.Language.procedures_callnoreturn.removeProcedureValue,
+  // This generates a single generic call to 'call return' defaulting its value
+  // to the first procedure in the list. Calls for each procedure cannot be done here because the
+  // blocks have not been loaded yet (they are loaded in typeblock.js)
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' return' }]
 };
 

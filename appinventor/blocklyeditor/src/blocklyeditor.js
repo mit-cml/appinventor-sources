@@ -10,14 +10,29 @@
 Blockly.BlocklyEditor = {};
 
 Blockly.BlocklyEditor.startup = function(documentBody, formName) {
+  var typeblock_config = {
+    frame: 'ai_frame',
+    typeBlockDiv: 'ai_type_block',
+    inputText: 'ac_input_text'
+  };
 
-  //Blockly configurations
-  goog.mixin(Blockly, {
-    collapse : true
-  });
   Blockly.inject(documentBody);
+
+  //This is what Blockly's init function does when passing options.
+  //We are overriding the init process so putting it here
+  goog.mixin(Blockly, {
+    collapse : true,
+    configForTypeBlock: typeblock_config
+  });
+
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
+  //This would also be done in Blockly init, but we need to do it here cause of
+  //the different init process in drawer (it'd be undefined at the time it hits
+  //init in Blockly)
+  if (Blockly.editable)
+    new Blockly.TypeBlock(Blockly.configForTypeBlock);
+
   Blockly.BlocklyEditor.formName_ = formName;
 
   /* [Added by paulmw in patch 15]

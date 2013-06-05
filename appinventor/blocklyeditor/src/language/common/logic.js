@@ -40,7 +40,20 @@ Blockly.Language.logic_boolean = {
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_LOGIC_BOOLEAN_TRUE,
+    dropDown: {
+      titleName: 'BOOL',
+      value: 'TRUE'
+    }
+  },{
+    translatedName: Blockly.LANG_LOGIC_BOOLEAN_FALSE,
+    dropDown: {
+      titleName: 'BOOL',
+      value: 'FALSE'
+    }
+  }]
 };
 
 Blockly.Language.logic_boolean.OPERATORS = [
@@ -82,7 +95,8 @@ Blockly.Language.logic_negate = {
     this.setTooltip('Returns true if the input is false.\n' +
         'Returns false if the input is true.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName:Blockly.LANG_LOGIC_NEGATE_INPUT_NOT }]
 };
 
 Blockly.Language.logic_compare = {
@@ -98,7 +112,10 @@ Blockly.Language.logic_compare = {
     this.setTooltip('Tests whether two things are equal. \n' +
         'The things being compared can be any thing, not only numbers.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) compare has not been internationalized yet
+  // Potential clash with Math =, so using 'logic equal' for now
+  typeblock: [{ translatedName: 'logic equal' }]
 };
 
 Blockly.Language.logic_operation = {
@@ -118,7 +135,20 @@ Blockly.Language.logic_operation = {
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_LOGIC_OPERATION_AND,
+    dropDown: {
+      titleName: 'OP',
+      value: 'AND'
+    }
+  },{
+    translatedName: Blockly.LANG_LOGIC_OPERATION_OR,
+    dropDown: {
+      titleName: 'OP',
+      value: 'OR'
+    }
+  }]
 };
 
 Blockly.Language.logic_operation.OPERATORS =

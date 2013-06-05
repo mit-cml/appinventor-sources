@@ -18,6 +18,28 @@
       height: 100%;
       width: 100%;
     }
+    .ac-renderer {
+      font: normal 13px Arial, sans-serif;
+      position: absolute;
+      background: #fff;
+	  border: 1px solid #666;
+	  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+	  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+	  width: 300px;
+	}
+    .ac-row {
+      cursor: pointer;
+	  padding: .4em;
+	}
+    .ac-highlighted {
+	  font-weight: bold;
+	}
+    .ac-active {
+	  background-color: #b2b4bf;
+	}
+    #ai_type_block {
+	  position: absolute;
+	}
     </style>
 
     <script type="text/javascript">
@@ -43,5 +65,11 @@
       }
     </script>
   </head>
-<body onload="init()">  </body>
+  <body id="ai_frame" onload="init()">
+    <div id="ai_type_block" style="display:none">
+      <p>
+        <input id="ac_input_text" />
+	  </p>
+	</div>
+  </body>
 </html>

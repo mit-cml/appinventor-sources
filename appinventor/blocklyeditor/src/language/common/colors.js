@@ -12,7 +12,8 @@ Blockly.Language.color_black = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_BLACK }]
 };
 
 Blockly.Language.color_white = {
@@ -26,7 +27,8 @@ Blockly.Language.color_white = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_WHITE }]
 };
 
 Blockly.Language.color_red = {
@@ -40,7 +42,8 @@ Blockly.Language.color_red = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_RED }]
 };
 
 Blockly.Language.color_pink = {
@@ -54,7 +57,8 @@ Blockly.Language.color_pink = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_PINK }]
 };
 
 Blockly.Language.color_orange = {
@@ -68,7 +72,8 @@ Blockly.Language.color_orange = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_ORANGE }]
 };
 
 
@@ -84,7 +89,8 @@ Blockly.Language.color_yellow = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_YELLOW }]
 };
 
 Blockly.Language.color_green = {
@@ -98,7 +104,8 @@ Blockly.Language.color_green = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_GREEN }]
 };
 
 Blockly.Language.color_cyan = {
@@ -112,7 +119,8 @@ Blockly.Language.color_cyan = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_CYAN }]
 };
 
 
@@ -127,7 +135,8 @@ Blockly.Language.color_blue = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_BLUE }]
 };
 
 Blockly.Language.color_magenta = {
@@ -141,7 +150,8 @@ Blockly.Language.color_magenta = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAGENTA }]
 };
 
 Blockly.Language.color_light_gray = {
@@ -155,7 +165,8 @@ Blockly.Language.color_light_gray = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_LIGHT_GRAY }]
 };
 
 
@@ -171,7 +182,8 @@ Blockly.Language.color_gray = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_GRAY }]
 };
 
 
@@ -186,7 +198,8 @@ Blockly.Language.color_dark_gray = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Click the square to pick a color.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_DARK_GRAY }]
 };
 
 Blockly.Language.color_make_color = {
@@ -198,7 +211,8 @@ Blockly.Language.color_make_color = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("A color with the given red, green, blue, and optionally alpha components");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAKE_COLOUR }]
 };
 
 Blockly.Language.color_split_color = {
@@ -210,7 +224,8 @@ Blockly.Language.color_split_color = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.setTooltip("A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_COLOUR_SPLIT_COLOUR }]
 };
 
 

@@ -37,7 +37,7 @@ Blockly.Language.lists_create_with = {
     this.appendValueInput('ADD1');
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.setMutator(new Blockly.Mutator(['lists_create_with_item']));
-    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_TOOLTIP);
     this.itemCount_ = 2;
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'ADD';
@@ -63,7 +63,8 @@ Blockly.Language.lists_create_with = {
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST }]
 
 };
 
@@ -75,7 +76,7 @@ Blockly.Language.lists_create_with_item = {
         .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -113,8 +114,9 @@ Blockly.Language.lists_add_items = {
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
-    containerBlock.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1);
-  }
+    containerBlock.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP);
+  },
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_ADD_ITEMS_TITLE_ADD }]
 
 };
 
@@ -126,7 +128,7 @@ Blockly.Language.lists_add_items_item = {
         .appendTitle(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -143,7 +145,8 @@ Blockly.Language.lists_is_in = {
     Blockly.Language.setTooltip(this, 'Retuns true if the the thing is an item in the list, and '
         + 'false if not.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_IS_IN_TITLE_IS_IN }]
 };
 
 
@@ -157,7 +160,8 @@ Blockly.Language.lists_length = {
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('length of list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Counts the number of items in a list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_LENGTH_INPUT_LENGTH }]
 };
 
 Blockly.Language.lists_is_empty = {
@@ -170,7 +174,8 @@ Blockly.Language.lists_is_empty = {
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('is list empty?').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Tests if a list is empty \(has no items in it\)');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_TITLE_IS_EMPTY }]
 };
 
 Blockly.Language.lists_pick_random_item = {
@@ -183,7 +188,8 @@ Blockly.Language.lists_pick_random_item = {
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('pick a random item').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Pick an item at random from the list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM }]
 };
 
 Blockly.Language.lists_position_in = {
@@ -199,7 +205,8 @@ Blockly.Language.lists_position_in = {
     Blockly.Language.setTooltip(this, 'Find the position of the thing in the list. If it\'s not in '
         + 'the list, return 0.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION }]
 };
 
 
@@ -214,7 +221,8 @@ Blockly.Language.lists_select_item = {
     this.appendValueInput('NUM').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
     Blockly.Language.setTooltip(this, 'Get the nth item from a list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_SELECT_ITEM_TITLE_SELECT }]
 };
 
 Blockly.Language.lists_insert_item = {
@@ -230,7 +238,8 @@ Blockly.Language.lists_insert_item = {
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, 'Insert an item into a list at the specified position.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_INSERT_TITLE_INSERT_LIST }]
 };
 
 Blockly.Language.lists_replace_item = {
@@ -246,7 +255,8 @@ Blockly.Language.lists_replace_item = {
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, 'Replaces the nth item in a list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_REPLACE_ITEM_TITLE_REPLACE }]
 };
 
 Blockly.Language.lists_remove_item = {
@@ -261,7 +271,8 @@ Blockly.Language.lists_remove_item = {
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, 'Removes the item at the specified position from the list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_REMOVE_ITEM_TITLE_REMOVE }]
 };
 
 Blockly.Language.lists_append_list = {
@@ -277,7 +288,8 @@ Blockly.Language.lists_append_list = {
     Blockly.Language.setTooltip(this, 'Appends all the items in list2 onto the end of list1. After '
         + 'the append, list1 will include these additional elements, but list2 will be unchanged.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_APPEND_LIST_TITLE_APPEND }]
 };
 
 
@@ -291,7 +303,8 @@ Blockly.Language.lists_copy = {
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('copy list').appendTitle('list');
     Blockly.Language.setTooltip(this, 'Makes a copy of a list, including copying all sublists');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_COPY_TITLE_COPY }]
 };
 
 Blockly.Language.lists_is_list = {
@@ -304,7 +317,8 @@ Blockly.Language.lists_is_list = {
     this.appendValueInput('ITEM').appendTitle('is a list?').appendTitle('thing');
     Blockly.Language.setTooltip(this, 'Tests if something is a list.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_IS_LIST_TITLE_IS_LIST }]
 };
 
 Blockly.Language.lists_to_csv_row = {
@@ -321,7 +335,8 @@ Blockly.Language.lists_to_csv_row = {
         + 'Items are separated by commas. The returned row text does not have a line separator at '
         + 'the end.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV }]
 };
 
 Blockly.Language.lists_to_csv_table = {
@@ -339,7 +354,8 @@ Blockly.Language.lists_to_csv_table = {
         + 'text. In the returned text, items in rows are separated by commas and rows are '
         + 'separated by CRLF \(\\r\\n\).');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV }]
 };
 
 Blockly.Language.lists_from_csv_row = {
@@ -355,7 +371,8 @@ Blockly.Language.lists_from_csv_row = {
         + 'newlines inside fields \(effectively, multiple lines\). It is okay for the row text to '
         + 'end in a single newline or CRLF.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_FROM_CSV_ROW_TITLE_FROM_CSV }]
 };
 
 Blockly.Language.lists_from_csv_table = {
@@ -370,5 +387,6 @@ Blockly.Language.lists_from_csv_table = {
         + 'table to produce a list of rows, each of which is a list of fields. Rows can be '
         + 'separated by newlines \(\\n\) or CRLF \(\\r\\n\).');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV }]
 };

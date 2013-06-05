@@ -191,7 +191,8 @@ Blockly.Language.controls_if = {
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_IF_IF_TITLE_IF }]
 };
 
 Blockly.Language.controls_if_if = {
@@ -201,7 +202,7 @@ Blockly.Language.controls_if_if = {
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_CONTROLS_IF_IF_TITLE_IF);
     this.appendStatementInput('STACK');
-    this.setTooltip(Blockly.LANG_CONTROLS_IF_IF_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_CONTROLS_IF_IF_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -214,7 +215,7 @@ Blockly.Language.controls_if_elseif = {
         .appendTitle(Blockly.LANG_CONTROLS_IF_ELSEIF_TITLE_ELSEIF);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_CONTROLS_IF_ELSEIF_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_CONTROLS_IF_ELSEIF_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -226,7 +227,7 @@ Blockly.Language.controls_if_else = {
     this.appendDummyInput()
         .appendTitle(Blockly.LANG_CONTROLS_IF_ELSE_TITLE_ELSE);
     this.setPreviousStatement(true);
-    this.setTooltip(Blockly.LANG_CONTROLS_IF_ELSE_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_CONTROLS_IF_ELSE_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -277,7 +278,8 @@ Blockly.Language.controls_forRange = {
     if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
       this.setTitleValue(newName, 'VAR');
     }
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM }]
 };
 
 Blockly.Language.controls_forEach = {
@@ -323,7 +325,8 @@ Blockly.Language.controls_forEach = {
     if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
       this.setTitleValue(newName, 'VAR');
     }
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM }]
 };
 
 
@@ -393,7 +396,8 @@ Blockly.Language.controls_while = {
     Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\' section while the test is '
         + 'true.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_WHILE_TITLE }]
 };
 
 
@@ -421,7 +425,8 @@ Blockly.Language.controls_choose = {
        + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
        + 'at most one of the return slot expressions will be evaluated.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE }]
 };
 
 // [lyn, 01/15/2013] Added
@@ -437,7 +442,8 @@ Blockly.Language.controls_do_then_return = {
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO }]
 };
 
 // [lyn, 01/15/2013] Added
@@ -450,7 +456,8 @@ Blockly.Language.controls_eval_but_ignore = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE }]
 };
 
 // [lyn, 01/15/2013] Added
@@ -463,7 +470,8 @@ Blockly.Language.controls_nothing = {
         .appendTitle("nothing");
     this.setOutput(true, null);
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_NOTHING_TITLE }]
 };
 
 
@@ -477,7 +485,8 @@ Blockly.Language.controls_openAnotherScreen = {
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE }]
 };
 
 Blockly.Language.controls_openAnotherScreenWithStartValue = {
@@ -492,7 +501,8 @@ Blockly.Language.controls_openAnotherScreenWithStartValue = {
     Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app and passes the '
         + 'start value to that screen.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE }]
 };
 
 Blockly.Language.controls_getStartValue = {
@@ -507,7 +517,8 @@ Blockly.Language.controls_getStartValue = {
         + 'was opened, typically by another screen in a multiple-screen app. If no value was '
         + 'passed, returns the empty text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE }]
 };
 
 Blockly.Language.controls_closeScreen = {
@@ -520,7 +531,8 @@ Blockly.Language.controls_closeScreen = {
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Close the current screen');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE_CLOSE }]
 };
 
 Blockly.Language.controls_closeScreenWithValue = {
@@ -534,7 +546,8 @@ Blockly.Language.controls_closeScreenWithValue = {
     Blockly.Language.setTooltip(this, 'Closes the current screen and returns a result to the '
         + 'screen that opened this one.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE_CLOSE }]
 };
 
 Blockly.Language.controls_closeApplication = {
@@ -547,7 +560,8 @@ Blockly.Language.controls_closeApplication = {
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, 'Closes all screens in this app and stops the app.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE_CLOSE }]
 };
 
 Blockly.Language.controls_getPlainStartText = {
@@ -562,7 +576,8 @@ Blockly.Language.controls_getPlainStartText = {
         + 'it was started by another app. If no value was passed, returns the empty text. For '
         + 'multiple screen apps, use get start value rather than get plain start text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_INPUT_GET }]
 };
 
 Blockly.Language.controls_closeScreenWithPlainText = {
@@ -577,5 +592,6 @@ Blockly.Language.controls_closeScreenWithPlainText = {
         + 'opened this one. For multiple screen apps, use close screen with value rather than '
         + 'close screen with plain text.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE_CLOSE }]
 };

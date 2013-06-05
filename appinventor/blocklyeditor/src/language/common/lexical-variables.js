@@ -72,7 +72,7 @@ Blockly.Language.global_declaration = {
         .appendTitle("initialize global")
         .appendTitle(new Blockly.FieldTextInput('name', Blockly.LexicalVariable.renameGlobal), 'NAME')
         .appendTitle("to");
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -82,7 +82,8 @@ Blockly.Language.global_declaration = {
     if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
       this.setTitleValue(newName, 'VAR');
     }
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }]
 };
 
 Blockly.Language.lexical_variable_get = {
@@ -97,7 +98,7 @@ Blockly.Language.lexical_variable_get = {
         .appendTitle("get")
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
@@ -134,7 +135,8 @@ Blockly.Language.lexical_variable_get = {
     if (oldName === this.getTitleValue('VAR')) {
         this.setTitleValue(newName, 'VAR');
     }
-  }
+  },
+  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GET_TITLE_GET + ' variable' }]
 };
 
 Blockly.Language.lexical_variable_set = {
@@ -151,14 +153,15 @@ Blockly.Language.lexical_variable_set = {
         .appendTitle("to");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
   },
   onchange: Blockly.Language.lexical_variable_get.onchange,
-  renameLexicalVar: Blockly.Language.lexical_variable_get.renameLexicalVar
+  renameLexicalVar: Blockly.Language.lexical_variable_get.renameLexicalVar,
+  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_SET_TITLE_SET + ' variable' }]
 };
 
 Blockly.Language.local_declaration_statement = {
@@ -395,7 +398,9 @@ Blockly.Language.local_declaration_statement = {
       }
     }
         */
-    }
+  },
+  //TODO (user) this has not been internationalized yet
+  typeblock: [{ translatedName: 'initialize local in do' }]
 };
 
 Blockly.Language.local_declaration_expression = {
@@ -461,7 +466,9 @@ Blockly.Language.local_declaration_expression = {
   dispose: Blockly.Language.local_declaration_statement.dispose,
   saveConnections: Blockly.Language.local_declaration_statement.saveConnections,
   declaredNames: Blockly.Language.local_declaration_statement.declaredNames,
-  renameVar: Blockly.Language.local_declaration_statement.renameVar
+  renameVar: Blockly.Language.local_declaration_statement.renameVar,
+  //TODO (user) this has not been internationalized yet
+  typeblock: [{ translatedName: 'initialize local in return' }]
 };
 
 Blockly.Language.local_mutatorcontainer = {

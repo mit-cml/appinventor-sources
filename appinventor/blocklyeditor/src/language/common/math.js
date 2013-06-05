@@ -40,7 +40,8 @@ Blockly.Language.math_number = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("Report the number shown.");
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER }]
 };
 
 Blockly.Language.math_number.validator = function(text) {
@@ -68,7 +69,46 @@ Blockly.Language.math_compare = {
       return Blockly.Language.math_compare.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) compare has not been internationalized yet
+  // Potential clash with logic equal, using '=' for now
+  typeblock: [{
+    translatedName: '=',
+    dropDown: {
+      titleName: 'OP',
+      value: 'EQ'
+    }
+  },{
+    translatedName: '\u2260',
+    dropDown: {
+      titleName: 'OP',
+      value: 'NEQ'
+    }
+  },{
+    translatedName: '<',
+    dropDown: {
+      titleName: 'OP',
+      value: 'LT'
+    }
+  },{
+    translatedName: '\u2264',
+    dropDown: {
+      titleName: 'OP',
+      value: 'LTE'
+    }
+  },{
+    translatedName: '>',
+    dropDown: {
+      titleName: 'OP',
+      value: 'GT'
+    }
+  },{
+    translatedName: '\u2265',
+    dropDown: {
+      titleName: 'OP',
+      value: 'GTE'
+    }
+  }]
 };
 
 Blockly.Language.math_compare.onchange = function(value){
@@ -143,7 +183,10 @@ Blockly.Language.math_add = {
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.inputList[0].titleRow[0].setText("+");
-  }
+  },
+  //TODO (user) add has not been internationalized yet
+  // Using '+' for now
+  typeblock: [{ translatedName: '+' }]
 };
 
 Blockly.Language.math_mutator_item = {
@@ -178,7 +221,10 @@ Blockly.Language.math_subtract = {
       return 'Return the difference of the two numbers.';
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) subtract has not been internationalized yet
+  // Using '-' for now
+  typeblock: [{ translatedName: '-' }]
 };
 
 Blockly.Language.math_multiply = {
@@ -221,7 +267,10 @@ Blockly.Language.math_multiply = {
   },
   updateContainerBlock: function(containerBlock) {
     containerBlock.inputList[0].titleRow[0].setText("*");
-  }
+  },
+  //TODO (user) multiply has not been internationalized yet
+  // Using '*' for now
+  typeblock: [{ translatedName:  '*' }]
 };
 
 Blockly.Language.math_division = {
@@ -240,7 +289,10 @@ Blockly.Language.math_division = {
       return 'Return the quotient of the two numbers.';
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) division has not been internationalized yet
+  // Using '/' for now
+  typeblock: [{ translatedName: '/' }]
 };
 
 Blockly.Language.math_power = {
@@ -261,7 +313,10 @@ Blockly.Language.math_power = {
       'the power of the second number.';
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) power has not been internationalized yet
+  // Using '^' for now
+  typeblock: [{ translatedName: '^' }]
 };
 
 Blockly.Language.math_random_int = {
@@ -278,7 +333,8 @@ Blockly.Language.math_random_int = {
         'and the lower bound. The bounds will be clipped to be smaller\n' +
         'than 2**30.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_INT_TITLE_RANDOM }]
 };
 
 Blockly.Language.math_random_float = {
@@ -291,7 +347,8 @@ Blockly.Language.math_random_float = {
     this.appendDummyInput().appendTitle('random fraction');
     this.setTooltip('Return a random number between 0 and 1.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM }]
 };
 
 Blockly.Language.math_random_set_seed = {
@@ -307,7 +364,8 @@ Blockly.Language.math_random_set_seed = {
     this.setTooltip('specifies a numeric seed\n' +
         'for the random number generator');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_SEED_TITLE_RANDOM }]
 };
 
 Blockly.Language.math_on_list = {
@@ -363,7 +421,20 @@ Blockly.Language.math_on_list = {
       }
     }
 
-  }
+  },
+  typeblock: [{
+    translatedName: Blockly.LANG_MATH_ONLIST_OPERATOR_MIN,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MIN'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_ONLIST_OPERATOR_MAX,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MAX'
+    }
+  }]
 };
 
 Blockly.Language.math_on_list.OPERATORS =
@@ -391,7 +462,56 @@ Blockly.Language.math_single = {
       return Blockly.Language.math_single.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_MATH_SINGLE_OP_ROOT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'ROOT'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_SINGLE_OP_ABSOLUTE,
+    dropDown: {
+      titleName: 'OP',
+      value: 'ABS'
+    }
+  },{
+    translatedName: 'neg',
+    dropDown: {
+      titleName: 'OP',
+      value: 'NEG'
+    }
+  },{
+    translatedName: 'log',
+    dropDown: {
+      titleName: 'OP',
+      value: 'LN'
+    }
+  },{
+    translatedName: 'e^',
+    dropDown: {
+      titleName: 'OP',
+      value: 'EXP'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_ROUND_OPERATOR_ROUND,
+    dropDown: {
+      titleName: 'OP',
+      value: 'ROUND'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_ROUND_OPERATOR_CEILING,
+    dropDown: {
+      titleName: 'OP',
+      value: 'CEILING'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_ROUND_OPERATOR_FLOOR,
+    dropDown: {
+      titleName: 'OP',
+      value: 'FLOOR'
+    }
+  }]
 };
 
 Blockly.Language.math_single.OPERATORS =
@@ -527,7 +647,26 @@ Blockly.Language.math_divide = {
       return Blockly.Language.math_divide.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_MATH_DIVIDE_OPERATOR_MODULO,
+    dropDown: {
+      titleName: 'OP',
+      value: 'MODULO'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_DIVIDE_OPERATOR_REMAINDER,
+    dropDown: {
+      titleName: 'OP',
+      value: 'REMAINDER'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_DIVIDE_OPERATOR_QUOTIENT,
+    dropDown: {
+      titleName: 'OP',
+      value: 'QUOTIENT'
+    }
+  }]
 };
 
 Blockly.Language.math_divide.OPERATORS = 
@@ -556,7 +695,46 @@ Blockly.Language.math_trig = {
       return Blockly.Language.math_trig.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) sine has not been internationalized yet
+  //Using 'sine' for now
+  typeblock: [{
+    translatedName: 'sin',
+    dropDown: {
+      titleName: 'OP',
+      value: 'SIN'
+    }
+  },{
+    translatedName: 'cos',
+    dropDown: {
+      titleName: 'OP',
+      value: 'COS'
+    }
+  },{
+    translatedName: 'tan',
+    dropDown: {
+      titleName: 'OP',
+      value: 'TAN'
+    }
+  },{
+    translatedName: 'asin',
+    dropDown: {
+      titleName: 'OP',
+      value: 'ASIN'
+    }
+  },{
+    translatedName: 'acos',
+    dropDown: {
+      titleName: 'OP',
+      value: 'ACOS'
+    }
+  },{
+    translatedName: 'atan',
+    dropDown: {
+      titleName: 'OP',
+      value: 'ATAN'
+    }
+  }]
 };
 
 Blockly.Language.math_trig.OPERATORS =
@@ -629,7 +807,10 @@ Blockly.Language.math_atan2 = {
     this.setTooltip('Provides the angle in the range (-180, +180]\n' +
         'degrees with the given rectangular coordinates.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  //TODO (user) atan2 has not been internationalized yet
+  // Using 'atan2' for now
+  typeblock: [{ translatedName: 'atan2' }]
 };
 
 Blockly.Language.math_convert_angles = {
@@ -647,7 +828,22 @@ Blockly.Language.math_convert_angles = {
       return Blockly.Language.math_convert_angles.TOOLTIPS[mode];
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{
+    translatedName: Blockly.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT +
+        ' ' + Blockly.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG,
+    dropDown: {
+      titleName: 'OP',
+      value: 'RADIANS_TO_DEGREES'
+    }
+  },{
+    translatedName: Blockly.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT+
+        ' ' + Blockly.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD,
+    dropDown: {
+      titleName: 'OP',
+      value: 'DEGREES_TO_RADIANS'
+    }
+  }]
 };
 
 Blockly.Language.math_convert_angles.OPERATORS =
@@ -674,7 +870,8 @@ Blockly.Language.math_format_as_decimal = {
     this.setTooltip('Returns the number formatted as a decimal\n' +
         'with a specified number of places.');
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_FORMAT_AS_DECIMAL_TITLE }]
 };
 
 Blockly.Language.math_is_a_number = {
@@ -688,5 +885,6 @@ Blockly.Language.math_is_a_number = {
       return 'Tests if something is a number.';
     });
   },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_MATH_IS_A_NUMBER_INPUT_NUM }]
 };
