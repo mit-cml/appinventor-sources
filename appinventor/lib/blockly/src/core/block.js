@@ -457,6 +457,7 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
  * @private
  */
 Blockly.Block.prototype.onMouseUp_ = function(e) {
+  Blockly.resetWorkspaceArrangements();
   Blockly.Block.terminateDrag_();
   if (Blockly.selected && Blockly.highlightedConnection_) {
     // Connect two blocks together.

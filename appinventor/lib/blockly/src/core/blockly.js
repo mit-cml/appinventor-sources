@@ -155,6 +155,20 @@ Blockly.OPPOSITE_TYPE[Blockly.PREVIOUS_STATEMENT] = Blockly.NEXT_STATEMENT;
 Blockly.SOUNDS_ = {};
 
 /**
+ * Workspace blocks arrangements
+ */
+Blockly.BLKS_HORIZONTAL = 0;
+Blockly.BLKS_VERTICAL = 1;
+Blockly.BLKS_CATEGORY = 2;
+
+/**
+ * Current Workspace arrangement state for position (horizontal or vertical),
+ * and for type (category)
+ */
+Blockly.workspace_arranged_position = null;
+Blockly.workspace_arranged_type = null;
+
+/**
  * Currently selected block.
  * @type {Blockly.Block}
  */
@@ -426,6 +440,102 @@ Blockly.showContextMenu_ = function(x, y) {
     options.push(expandOption);
   }
 
+  // Arrange blocks in row order.
+  var arrangeOptionH = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_HORIZONTAL)};
+  arrangeOptionH.text = Blockly.MSG_ARRANGE_H;
+  arrangeOptionH.callback = function() {
+    Blockly.workspace_arranged_position = Blockly.BLKS_HORIZONTAL;
+    arrangeBlocks(Blockly.BLKS_HORIZONTAL);
+  };
+  options.push(arrangeOptionH);
+
+  // Arrange blocks in column order.
+  var arrangeOptionV = {enabled: (Blockly.workspace_arranged_position !== Blockly.BLKS_VERTICAL)};
+  arrangeOptionV.text = Blockly.MSG_ARRANGE_V;
+  arrangeOptionV.callback = function() {
+    Blockly.workspace_arranged_position = Blockly.BLKS_VERTICAL;
+    arrangeBlocks(Blockly.BLKS_VERTICAL);
+  };
+  options.push(arrangeOptionV);
+
+  // Arranges block in layout (Horizontal or Vertical).
+  function arrangeBlocks(layout) {
+    var SPACER = 25;
+    var topblocks = Blockly.mainWorkspace.topBlocks_;
+    var viewLeft = Blockly.getMainWorkspaceMetrics().viewLeft + 5;
+    var viewTop = Blockly.getMainWorkspaceMetrics().viewTop + 5;
+    var x = viewLeft;
+    var y = viewTop;
+    var wsRight = viewLeft + Blockly.getMainWorkspaceMetrics().viewWidth;
+    var wsBottom = viewTop + Blockly.getMainWorkspaceMetrics().viewHeight;
+    var maxHgt = 0;
+    var maxWidth = 0;
+    for (var i = 0, len = topblocks.length; i < len; i++) {
+      var blk = topblocks[i];
+      var blkXY = blk.getRelativeToSurfaceXY();
+      var blkHgt = blk.svg_.svgGroup_.getBBox().height;
+      var blkWidth = blk.svg_.svgGroup_.getBBox().width;
+      switch (layout) {
+        case Blockly.BLKS_HORIZONTAL:
+          if (x < wsRight) {
+            blk.moveBy(x - blkXY.x, y - blkXY.y);
+            blk.select();
+            x += blkWidth + SPACER;
+            if (blkHgt > maxHgt) // Remember highest block
+              maxHgt = blkHgt;
+          } else {
+            y += maxHgt + SPACER;
+            maxHgt = blkHgt;
+            x = viewLeft;
+            blk.moveBy(x - blkXY.x, y - blkXY.y);
+            blk.select();
+            x += blkWidth + SPACER;
+          }
+          break;
+        case Blockly.BLKS_VERTICAL:
+          if (y < wsBottom) {
+            blk.moveBy(x - blkXY.x, y - blkXY.y);
+            blk.select();
+            y += blkHgt + SPACER;
+            if (blkWidth > maxWidth)  // Remember widest block
+              maxWidth = blkWidth;
+          } else {
+            x += maxWidth + SPACER;
+            maxWidth = blkWidth;
+            y = viewTop;
+            blk.moveBy(x - blkXY.x, y - blkXY.y);
+            blk.select();
+            y += blkHgt + SPACER;
+          }
+          break;
+      }
+    }
+  }
+
+  // Sort by Category.
+  var sortOptionCat = {enabled: (Blockly.workspace_arranged_type !== Blockly.BLKS_CATEGORY)};
+  sortOptionCat.text = Blockly.MSG_SORT_C;
+  sortOptionCat.callback = function() {
+    Blockly.workspace_arranged_type = Blockly.BLKS_CATEGORY;
+    var blocks = Blockly.mainWorkspace.topBlocks_;
+    blocks.sort(function compare(a,b) {
+      if (a.category <  b.category) return -1;
+      else if (a.category > b.category) return +1;
+      else return 0;
+    });
+    rearrangeWorkspace();
+  };
+  options.push(sortOptionCat);
+
+  // Called after a sort or collapse/expand to redisplay blocks.
+  function rearrangeWorkspace() {
+    //default arrangement position set to Horizontal if it hasn't been set yet (is null)
+    if (Blockly.workspace_arranged_position === null || Blockly.workspace_arranged_position === Blockly.BLKS_HORIZONTAL)
+      arrangeOptionH.callback();
+    else if (Blockly.workspace_arranged_position === Blockly.BLKS_VERTICAL)
+      arrangeOptionV.callback();
+  }
+
   // Option to get help.
   var helpOption = {enabled: false};
   helpOption.text = Blockly.MSG_HELP;
@@ -433,6 +543,14 @@ Blockly.showContextMenu_ = function(x, y) {
   options.push(helpOption);
 
   Blockly.ContextMenu.show(x, y, options);
+};
+
+/**
+ * reset arrangement state; to be called when blocks in the workspace change
+ */
+Blockly.resetWorkspaceArrangements = function(){
+  // only the type gets reset, so the current horizontal or vertical state can be kept
+  Blockly.workspace_arranged_type = null;
 };
 
 /**

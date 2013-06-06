@@ -160,6 +160,8 @@ Blockly.Workspace.prototype.getBubbleCanvas = function() {
  * @param {!Blockly.Block} block Block to remove.
  */
 Blockly.Workspace.prototype.addTopBlock = function(block) {
+  if (block.workspace == Blockly.mainWorkspace) //Do not reset arrangements for the flyout
+    Blockly.resetWorkspaceArrangements();
   this.topBlocks_.push(block);
   this.fireChangeEvent();
 };
@@ -169,6 +171,8 @@ Blockly.Workspace.prototype.addTopBlock = function(block) {
  * @param {!Blockly.Block} block Block to remove.
  */
 Blockly.Workspace.prototype.removeTopBlock = function(block) {
+  if (block.workspace == Blockly.mainWorkspace) //Do not reset arrangements for the flyout
+    Blockly.resetWorkspaceArrangements();
   var found = false;
   for (var child, x = 0; child = this.topBlocks_[x]; x++) {
     if (child == block) {
