@@ -181,5 +181,18 @@ Blockly.Drawer.defaultBlocksXML = {
     '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
     '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
     '</block>' +
+  '</xml>',
+  color_make_color:
+  '<xml>' +
+    '<block type="color_make_color">' +
+      '<value name="COLORLIST">' +
+        '<block type="lists_create_with" inline="false">' +
+          '<mutation items="3"></mutation>' +
+          '<value name="ADD0"><block type="math_number"><title name="NUM">255</title></block></value>' +
+          '<value name="ADD1"><block type="math_number"><title name="NUM">0</title></block></value>' +
+          '<value name="ADD2"><block type="math_number"><title name="NUM">0</title></block></value>' +
+        '</block>' +
+      '</value>' +
+    '</block>' +
   '</xml>'
 };
