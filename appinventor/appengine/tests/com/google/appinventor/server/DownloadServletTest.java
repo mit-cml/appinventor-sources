@@ -5,16 +5,10 @@
 
 package com.google.appinventor.server;
 
-import static org.easymock.EasyMock.expect;
-
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
-
 import com.riq.MockHttpServletRequest;
 import com.riq.MockHttpServletResponse;
-
-import static junit.framework.Assert.*;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,6 +18,10 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.List;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.fail;
+import static org.easymock.EasyMock.expect;
 
 /**
  * Tests for {@link DownloadServlet}. Mocks out FileExporter. Mainly tests
@@ -40,8 +38,8 @@ public class DownloadServletTest {
   private static final long PROJECT_ID = 1234L;
   private static final String DUMMY_FILENAME = "filename123";
   private static final String DUMMY_APK_FILENAME = "filename123.apk";
-  private static final String DUMMY_ZIP_FILENAME = "filename123.zip";
-  private static final String DUMMY_ZIP_FILENAME_WITH_TITLE = "MyProjectTitle123.zip";
+  private static final String DUMMY_ZIP_FILENAME = "filename123.aia";
+  private static final String DUMMY_ZIP_FILENAME_WITH_TITLE = "MyProjectTitle123.aia";
   private static final String DOWNLOAD_URL = "http://localhost/baseUrl/download/";
 
   private ProjectSourceZip dummyZip;
@@ -83,7 +81,7 @@ public class DownloadServletTest {
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"filename123.zip\"");
+    checkResponseHeader(response, "attachment; filename=\"filename123.aia\"");
     assertEquals("application/zip; charset=utf-8", response.getContentType());
     PowerMock.verifyAll();
   }
@@ -93,13 +91,13 @@ public class DownloadServletTest {
     MockHttpServletRequest request = new MockHttpServletRequest(DOWNLOAD_URL +
         "project-source/1234/My Project Title 123");
     expect(exporterMock.exportProjectSourceZip(USER_ID, PROJECT_ID, true, false,
-                                               "MyProjectTitle123.zip"))
+                                               "MyProjectTitle123.aia"))
         .andReturn(dummyZipWithTitle);
     PowerMock.replayAll();
     DownloadServlet download = new DownloadServlet();
     MockHttpServletResponse response = new MockHttpServletResponse();
     download.doGet(request, response);
-    checkResponseHeader(response, "attachment; filename=\"MyProjectTitle123.zip\"");
+    checkResponseHeader(response, "attachment; filename=\"MyProjectTitle123.aia\"");
     assertEquals("application/zip; charset=utf-8", response.getContentType());
     PowerMock.verifyAll();
   }

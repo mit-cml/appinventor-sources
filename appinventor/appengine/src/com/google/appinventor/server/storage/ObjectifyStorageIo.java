@@ -1334,7 +1334,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     out.close();
 
     if (zipName == null) {
-      zipName = projectName.t + ".zip";
+      zipName = projectName.t + ".aia";
     }
     ProjectSourceZip projectSourceZip =
         new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);

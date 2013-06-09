@@ -1071,7 +1071,7 @@ public interface OdeMessages extends Messages {
   String projectUploadError();
 
   @DefaultMessage("The selected project is not a project source file!\n" +
-      "Project source files are zip files.")
+      "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
