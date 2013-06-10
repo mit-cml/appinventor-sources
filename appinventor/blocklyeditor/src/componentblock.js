@@ -51,8 +51,8 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     this.componentDropDown.menuGenerator_ = function(){ return Blockly.Component.getComponentNamesByType(this.block.typeName);};
     this.componentDropDown.changeHandler_ = function(value){
       if (value !== null && value != "") {
-        this.setValue(value);
-        this.block.instanceName = value;
+        var oldValue = this.getValue();
+        this.block.rename(oldValue, value);
       }
 
     };
@@ -308,8 +308,8 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
     this.componentDropDown.menuGenerator_ = function(){ return Blockly.Component.getComponentNamesByType(this.block.typeName);};
     this.componentDropDown.changeHandler_ = function(value){
       if (value !== null && value != "") {
-        this.setValue(value);
-        this.block.instanceName = value;
+        var oldValue = this.getValue();
+        this.block.rename(oldValue, value);
       }
 
     };
@@ -468,8 +468,8 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
     this.componentDropDown.menuGenerator_ = function(){ return Blockly.Component.getComponentNamesByType(this.block.typeName);};
     this.componentDropDown.changeHandler_ = function(value){
       if (value !== null && value != "") {
-        this.setValue(value);
-        this.block.instanceName = value;
+        var oldValue = this.getValue();
+        this.block.rename(oldValue, value);
       }
 
     };
@@ -630,8 +630,8 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
     this.componentDropDown.menuGenerator_ = function(){ return Blockly.Component.getComponentNamesByType(this.block.typeName);};
     this.componentDropDown.changeHandler_ = function(value){
       if (value !== null && value != "") {
-        this.setValue(value);
-        this.block.instanceName = value;
+        var oldValue = this.getValue();
+        this.block.rename(oldValue, value);
       }
 
     };
