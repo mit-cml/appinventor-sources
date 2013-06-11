@@ -56,10 +56,14 @@ public class Sound extends AndroidNonvisibleComponent
     implements Component, OnResumeListener, OnStopListener, OnDestroyListener, Deleteable {
 
   private static final int MAX_STREAMS = 10;
-  private static final float VOLUME_FULL = 1.0f;
+  //-----------------------------------------------------------------------------------------
+  //Gareth Haylings add following code 10/06/2013
+  // now not required as assign these by the user
+  //private static final float VOLUME_FULL = 1.0f;
   private static final int LOOP_MODE_NO_LOOP = 0;
-  private static final float PLAYBACK_RATE_NORMAL = 1.0f;
-
+  // private static final float PLAYBACK_RATE_NORMAL = 1.0f;
+  //-----------------------------------------------------------------------------------------
+  
   private SoundPool soundPool;
   // soundMap maps sounds (assets, etc) that are loaded into soundPool to their respective
   // soundIds.
@@ -71,7 +75,13 @@ public class Sound extends AndroidNonvisibleComponent
   private int minimumInterval;            // minimum interval between Play() calls
   private long timeLastPlayed;            // the system time when Play() was last called
   private final Vibrator vibe;
-
+  //-----------------------------------------------------------------------------------------
+  //Gareth Haylings add following code 10/06/2013
+  private int playback_rate;               // speed of playback
+  private int volume_left;                 // volume of left speaker
+  private int volume_right;                // volume of right speaker
+  //-----------------------------------------------------------------------------------------
+	
 
   public Sound(ComponentContainer container) {
     super(container.$form());
@@ -88,7 +98,13 @@ public class Sound extends AndroidNonvisibleComponent
 
     // Default property values
     MinimumInterval(500);
-  }
+    //-----------------------------------------------------------------------------------------
+	//Gareth Haylings add following code 10/06/2013
+	Playbackrate(100);  
+	Pan_left_right(0);
+	//-----------------------------------------------------------------------------------------
+
+	}
 
   /**
    * Returns the sound's filename.
@@ -148,21 +164,78 @@ public class Sound extends AndroidNonvisibleComponent
     }
   }
 
-  /**
+  //-----------------------------------------------------------------------------------------  
+  //Gareth Haylings add following code 10/06/2013
+   /**
    * Returns the minimum interval required between calls to Play(), in
-   * milliseconds.
+   * Playback Speed setting range 0.5 - 2.0
+   * 0.5 - half speed (lower pitch)
+   * 1.0 - normal speed 
+   * 2.0 - double speed (high pitch)
+   *
    * Once the sound starts playing, all further Play() calls will be ignored
    * until the interval has elapsed.
    * @return  minimum interval in ms
    */
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR,
-      description = "The minimum interval...")
-  public int MinimumInterval() {
-    return minimumInterval;
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "100")
+  @SimpleProperty
+  public void Playbackrate(int rate) {
+    playback_rate = rate;
   }
+  
+   /**
+   * Pan left right
+   * pan volume from left to right
+   * -100 - left speaker full & right speaker mute
+   * 0    - left speaker full & right speaker full
+   * 100  - left speaker mute & right speaker full
+   *
+   * Once the sound starts playing, all further Play() calls will be ignored
+   * until the interval has elapsed.
+   * @return  minimum interval in ms
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
+      defaultValue = "100")
+  @SimpleProperty
+  public void Pan_left_right(int pan) {
+	if (pan < -100)
+		{
+			volume_left = 100;
+			volume_right = 0;
+		}
+	else if (pan > 100)
+		{
+			volume_left = 0;
+			volume_right = 100;
+		}
+	else
+		{
+		//IF(pan<0,100+pan,100) right pan
+		//IF(pan>0,100-pan,100) left pan
+			if (pan < 0)
+			{
+				volume_left = 100 + pan;
+			}
+			else
+			{
+				volume_left  = 100;
+			}
+			if (pan > 0)
+			{
+				volume_right = 100 - pan;
+			}
+			else
+			{
+				volume_right = 100;
+			}
+	}
+  }
+  
+  //-----------------------------------------------------------------------------------------
+  
 
-  /**
+ /**
    * Specify the minimum interval required between calls to Play(), in
    * milliseconds.
    * Once the sound starts playing, all further Play() calls will be ignored
@@ -185,9 +258,13 @@ public class Sound extends AndroidNonvisibleComponent
       long currentTime = System.currentTimeMillis();
       if (timeLastPlayed == 0 || currentTime >= timeLastPlayed + minimumInterval) {
         timeLastPlayed = currentTime;
-        streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,
-            PLAYBACK_RATE_NORMAL);
-        Log.i("Sound", "SoundPool.play returned stream id " + streamId);
+        //-----------------------------------------------------------------------------------------
+        //Gareth Haylings add following code 10/06/2013
+        // streamId = soundPool.play(soundId, VOLUME_FULL, VOLUME_FULL, 0, LOOP_MODE_NO_LOOP,   PLAYBACK_RATE_NORMAL);
+        streamId = soundPool.play(soundId, ((float) volume_left)/100 , ((float) volume_right)/100, 0, LOOP_MODE_NO_LOOP,   ((float) playback_rate)/100);   // change speed of playback
+        //-----------------------------------------------------------------------------------------
+        
+		Log.i("Sound", "SoundPool.play returned stream id " + streamId);
         if (streamId == 0) {
           form.dispatchErrorOccurredEvent(this, "Play",
               ErrorMessages.ERROR_UNABLE_TO_PLAY_MEDIA, sourcePath);

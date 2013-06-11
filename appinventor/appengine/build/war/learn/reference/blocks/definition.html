@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Definition Blocks - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt;             Definition Blocks &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Definition Blocks
+       </h1>
+       <ul>
+        <li>
+         <a href="#procedure">
+          procedure
+         </a>
+        </li>
+        <li>
+         <a href="#procedurewithresult">
+          procedureWithResult
+         </a>
+        </li>
+        <li>
+         <a href="#name">
+          name
+         </a>
+        </li>
+        <li>
+         <a href="#variable">
+          variable
+         </a>
+        </li>
+        <li>
+         <a href="#gets">
+          |
+         </a>
+        </li>
+       </ul>
+       <h2 id="procedure">
+        procedure
+       </h2>
+       <img alt="" src="images/procedurename.png" />
+       <p>
+        Collects a sequence of blocks together into a group. You can then use the sequence
+                of blocks repeatedly by calling the procedure. If the procedure has arguments, you
+                specify the arguments by using
+        <code>
+         name
+        </code>
+        blocks. When you create a
+                procedure, App Inventor automatically generates a
+        <code>
+         call
+        </code>
+        block and
+                places it in the
+        <code>
+         My Definitions
+        </code>
+        drawer. You use the
+        <code>
+         call
+        </code>
+        block to invoke the procedure.
+       </p>
+       <p>
+        When you create a new procedure block, App Inventor chooses a unique name
+                automatically. You can click on the name and type to change it. Procedure names in
+                an app must be unique. App Inventor will not let you define two procedures in the
+                same app with the same name. You can rename a procedure at any time while you are
+                building the app, by changing the label in the block. App Inventor will
+                automatically rename the associated
+        <code>
+         call
+        </code>
+        blocks to match.
+       </p>
+       <h2 id="procedurewithresult">
+        procedureWithResult
+       </h2>
+       <img alt="" src="images/procedurewithresult.png" />
+       <p>
+        Same as a
+        <code>
+         procedure
+        </code>
+        block, but calling the procedure returns a result.
+                After the procedure executes, the result is returned to the block connected to the
+        <code>
+         return
+        </code>
+        socket.
+       </p>
+       <h2 id="name">
+        name
+       </h2>
+       <img alt="" src="images/name.png" />
+       <p>
+        Creates a named argument you can use when calling a procedure. You specify the
+                argument by placing the
+        <code>
+         name
+        </code>
+        block into the procedure definition's
+        <code>
+         arg
+        </code>
+        socket. You can specify as many arguments as you like: each time
+                you fill in an
+        <code>
+         arg
+        </code>
+        socket, another one will be created to accommodate
+                the next argument. To name the argument, you click on the "name" label and type to
+                change it.
+       </p>
+       <p>
+        When you specify procedure arguments, App Inventor will associate these with the
+        <code>
+         call
+        </code>
+        block generated for the procedure: the argument slots for the
+        <code>
+         call
+        </code>
+        block will show the argument names you specified.
+       </p>
+       <p>
+        For each
+        <code>
+         name
+        </code>
+        block you define, App Inventor creates an associated
+        <code>
+         value
+        </code>
+        block and places it in the
+        <code>
+         My Definitions
+        </code>
+        drawer.
+                You use this block to refer to the value of the argument that is passed to the
+                procedure when the procedure is called.
+       </p>
+       <p>
+        <b>
+         Note:
+        </b>
+        In the current version of App Inventor, argument names in an app must
+                be unique, even across procedures. For example you can't have two name procedures
+                each with a variable named "x". When you try to create the second "x" block, App
+                Inventor will not accept that name. This restriction will be relaxed in the future.
+       </p>
+       <h2 id="variable">
+        variable
+       </h2>
+       <img alt="" src="images/variable.png" />
+       <p>
+        Creates a value that can be changed while an app is running, and gives that value a
+                name. Variables are global in scope, which means you can refer to them from any
+                code in the app, including from within procedures.
+       </p>
+       <p>
+        When you create a new variable block, App Inventor chooses a unique name
+                automatically. You can click on the name and type to change it. Variable names in
+                an app must be unique. App Inventor will not let you define two variables in the
+                same app with the same name.
+       </p>
+       <p>
+        When you create a variable, App Inventor will automatically create two associated
+                blocks, and place them in the
+        <code>
+         My Definitions
+        </code>
+        drawer:
+       </p>
+       <ul>
+        <li>
+         The
+         <code>
+          global
+         </code>
+         block gets the value of the variable.
+        </li>
+        <li>
+         The
+         <code>
+          set global
+         </code>
+         block changes the value of the variable.
+        </li>
+       </ul>
+       You can rename a variable at any time while you are building the app, and the
+              associated blocks will be renamed automatically.
+       <h2 id="gets">
+        |
+       </h2>
+       <img alt="" src="images/gets.png" />
+       <p>
+        This block provides a "dummy socket" for fitting a block that has a plug on its
+                left into a place where there is no socket, such as one of the sequence of blocks
+                in the
+        <code>
+         do
+        </code>
+        part of a procedure or an
+        <code>
+         if
+        </code>
+        block. The block
+                you fit in will be run, but its returned result will be ignored. This can be useful
+                if you define a procedure that returns a result, but want to call it in a context
+                that does not accept a result.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

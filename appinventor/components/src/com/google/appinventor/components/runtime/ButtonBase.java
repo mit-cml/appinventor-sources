@@ -527,9 +527,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @return  font size in pixel
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE) //Gareth Haylings 11.06.2013 removed uservisible=false so font can be view in blockeditor
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -541,8 +539,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty                                         //Gareth Haylings 11.06.2013 removed uservisible=false so font can be view in blockeditor
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }
