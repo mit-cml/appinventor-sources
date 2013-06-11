@@ -435,7 +435,8 @@ Blockly.Language.procedures_do_then_return = {
         .appendTitle("then-return")
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
-  }
+  },
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 
