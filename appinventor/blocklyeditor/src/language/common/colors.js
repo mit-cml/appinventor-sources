@@ -194,7 +194,7 @@ Blockly.Language.color_make_color = {
   helpUrl: Blockly.LANG_COLOUR_PICKER_HELPURL,
   init: function() {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
-    this.appendValueInput('COLORLIST').appendTitle("make color");
+    this.appendValueInput('COLORLIST').appendTitle("make color").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.setTooltip("A color with the given red, green, blue, and optionally alpha components");
   },
@@ -206,8 +206,8 @@ Blockly.Language.color_split_color = {
   helpUrl: Blockly.LANG_COLOUR_PICKER_HELPURL,
   init: function() {
     this.setColour(Blockly.COLOR_CATEGORY_HUE);
-    this.appendValueInput('COLOR').appendTitle("split color");
-    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
+    this.appendValueInput('COLOR').appendTitle("split color").setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT));
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.setTooltip("A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.");
   },
   onchange: Blockly.WarningHandler.checkErrors
