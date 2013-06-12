@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
@@ -558,6 +559,10 @@ public class BlocklyPanel extends HTMLPanel {
     doStartRepl(formName, alreadyRunning, forEmulator);
   }
 
+  public static boolean checkIsAdmin() {
+    return Ode.getInstance().getUser().getIsAdmin();
+  }
+
   // ------------ Native methods ------------
 
   private static native void exportMethodsToJavascript() /*-{
@@ -567,6 +572,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
     $wnd.BlocklyPanel_checkWarningState =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkWarningState(Ljava/lang/String;));
+    $wnd.BlocklyPanel_checkIsAdmin =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkIsAdmin());
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
   }-*/;
 
