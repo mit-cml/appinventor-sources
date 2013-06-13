@@ -6,6 +6,13 @@
 bin/
 build/
 reports/
+*~
+*.out
 .DS_Store*
 *.out
 *~
+*.iml
+.idea/
+.externalToolBuilders/
+.gwt/
+out/
