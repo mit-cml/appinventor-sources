@@ -38,7 +38,7 @@ Blockly.Language.InstantInTime = function () { return 'InstantInTime'; };
 Blockly.Language.YailTypeToBlocklyTypeMap =
     {
         'number':{input:"Number",output:["Number","String"]},
-        'text':{input:"String",output:["Number","String","Array"]},
+        'text':{input:"String",output:["Number","String"]},
         'boolean':{input:"Boolean",output:["Boolean","String"]},
         'list':{input:"Array",output:["Array","String"]},
         'component':{input:"COMPONENT",output:"COMPONENT"},

@@ -107,16 +107,31 @@ Blockly.Language.logic_compare = {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('A');
-    this.appendValueInput('B').appendTitle('=');
+    this.appendValueInput('B').appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
-    this.setTooltip('Tests whether two things are equal. \n' +
-        'The things being compared can be any thing, not only numbers.');
+    // Assign 'this' to a variable for use in the tooltip closure below.
+    var thisBlock = this;
+    this.setTooltip(function() {
+      var mode = thisBlock.getTitleValue('OP');
+      return Blockly.Language.logic_compare.TOOLTIPS[mode];
+    });
   },
   onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) compare has not been internationalized yet
   // Potential clash with Math =, so using 'logic equal' for now
   typeblock: [{ translatedName: 'logic equal' }]
 };
+
+Blockly.Language.logic_compare.TOOLTIPS = {
+  EQ: 'Tests whether two things are equal. \n' +
+        'The things being compared can be any thing, not only numbers.',
+  NEQ: 'Tests whether two things are not equal. \n' +
+        'The things being compared can be any thing, not only numbers.'
+}
+
+Blockly.Language.logic_compare.OPERATORS =
+  [['=', 'EQ'],
+   ['\u2260', 'NEQ']];
 
 Blockly.Language.logic_operation = {
   // Logical operations: 'and', 'or'.

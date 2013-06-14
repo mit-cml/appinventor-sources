@@ -81,7 +81,8 @@ Blockly.Yail.logic_compare = function() {
   // // TODO: (Hal) handle any type?
   var argument0 = Blockly.Yail.valueToCode(this, 'A', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var argument1 = Blockly.Yail.valueToCode(this, 'B', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-equal?"
+  var yailCommand = (this.getTitleValue('OP') == "NEQ" ? 'yail-not-equal?' : "yail-equal?" );
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + yailCommand
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
       + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER

@@ -44,7 +44,7 @@ Blockly.Language.text.connectionCheck = function(myConnection,otherConnection) {
   var block = myConnection.sourceBlock_;
   var otherTypeArray = otherConnection.check_;
   for(var i=0;i<otherTypeArray.length;i++) {
-    if(otherTypeArray[i] == "String" || otherTypeArray[i] == "Array") {
+    if(otherTypeArray[i] == "String") {
       return true;
     } else if(otherTypeArray[i] == "Number" && !isNaN(parseFloat(block.getTitleValue('TEXT')))) {
       return true;
