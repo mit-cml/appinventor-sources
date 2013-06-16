@@ -179,7 +179,8 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
 
     Blockly.Language.setTooltip(this, this.methodType.description);
     for (var i = 0, param; param = this.params[i]; i++) {
-      var newInput = this.appendValueInput("ARG" + i).appendTitle(param);
+        var newInput = this.appendValueInput("ARG" + i).appendTitle(param);
+      newInput.setAlign(Blockly.ALIGN_RIGHT);
       newInput.connection.setCheck(this.paramTypes[i]);
     }
     // methodType.returnType is a Yail type

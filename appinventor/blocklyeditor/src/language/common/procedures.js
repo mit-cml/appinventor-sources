@@ -24,12 +24,12 @@
 'use strict';
 
 /*
- Lyn's Change History: 
+ Lyn's Change History:
    [lyn, 11/29/12] Integrated into App Inventor blocks. Known bugs:
    + Reordering mutator_args in mutator_container changes references to ??? because it interprets it
-     as removing and inserting rather than moving. 
+     as removing and inserting rather than moving.
    [lyn, 11/24/12] Implemented procedure parameter renaming:
-   + changing a variable name in mutator_arg for procedure changes it immediately in references in body. 
+   + changing a variable name in mutator_arg for procedure changes it immediately in references in body.
    + no duplicate names are allowed in mutator_args; alpha-renaming prevents this.
    + no variables can be captured by renaming; alpha-renaming prevents this.
 */
@@ -43,6 +43,7 @@ Blockly.Language.procedures_defnoreturn = {
     var name = Blockly.Procedures.findLegalName(
         Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE, this);
     this.appendDummyInput()
+        .appendTitle('to')
         .appendTitle(new Blockly.FieldTextInput(name,
         Blockly.Procedures.rename), 'NAME')
         .appendTitle('', 'PARAMS');
@@ -96,8 +97,8 @@ Blockly.Language.procedures_defnoreturn = {
     var containerBlock = new Blockly.Block(workspace,
                                            'procedures_mutatorcontainer');
     containerBlock.initSvg();
-    // [lyn, 11/24/12] Remember the associated procedure, so can 
-    // appropriately change body when update name in param block. 
+    // [lyn, 11/24/12] Remember the associated procedure, so can
+    // appropriately change body when update name in param block.
     containerBlock.setProcBlock(this);
     var connection = containerBlock.getInput('STACK').connection;
     for (var x = 0; x < this.arguments_.length; x++) {
@@ -179,7 +180,7 @@ Blockly.Language.procedures_defnoreturn = {
   // [lyn, 11/24/12] return list of procedure body (if there is one)
   blocksInScope: function () {
     var body = this.getInputTargetBlock('STACK');
-    return (body && [body]) || []; 
+    return (body && [body]) || [];
   }
 };
 
@@ -193,8 +194,9 @@ Blockly.Language.procedures_defreturn = {
     var name = Blockly.Procedures.findLegalName(
         Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE, this);
     this.appendDummyInput()
+        .appendTitle('to')
         .appendTitle(new Blockly.FieldTextInput(name,
-        Blockly.Procedures.rename), 'NAME')
+            Blockly.Procedures.rename), 'NAME')
         .appendTitle('', 'PARAMS');
     /* this.appendStatementInput('STACK')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFRETURN_DO); */
@@ -213,8 +215,8 @@ Blockly.Language.procedures_defreturn = {
     var returnBody = this.getInputTargetBlock('RETURN');
     // var doBodyList = (doBody && [doBody]) || []; // List of non-null doBody or empty list for null doBody
     var returnBodyList = (returnBody && [returnBody]) || []; // List of non-null returnBody or empty list for null returnBody
-    // return doBodyList.concat(returnBodyList); // List of non-null body elements. 
-    return returnBodyList; // List of non-null body elements. 
+    // return doBodyList.concat(returnBodyList); // List of non-null body elements.
+    return returnBodyList; // List of non-null body elements.
   },
   updateParams_: Blockly.Language.procedures_defnoreturn.updateParams_,
   mutationToDom: Blockly.Language.procedures_defnoreturn.mutationToDom,
@@ -242,22 +244,22 @@ Blockly.Language.procedures_mutatorcontainer = {
     this.setTooltip('');
     this.contextMenu = false;
   },
-  // [lyn. 11/24/12] Set procBlock associated with this container. 
+  // [lyn. 11/24/12] Set procBlock associated with this container.
   setProcBlock: function (procBlock) {
     this.procBlock_ = procBlock;
-  }, 
-  // [lyn. 11/24/12] Set procBlock associated with this container. 
+  },
+  // [lyn. 11/24/12] Set procBlock associated with this container.
   // Invariant: should not be null, since only created as mutator for a particular proc block.
   getProcBlock: function () {
     return this.procBlock_;
-  }, 
+  },
   // [lyn. 11/24/12] Return list of param names in this container
   // Invariant: there should be no duplicates!
-  declaredNames: function () { 
+  declaredNames: function () {
     var paramNames = [];
     var paramBlock = this.getInputTargetBlock('STACK');
     while (paramBlock) {
-      paramNames.push(paramBlock.getTitleValue('NAME')); 
+      paramNames.push(paramBlock.getTitleValue('NAME'));
       paramBlock = paramBlock.nextConnection &&
                    paramBlock.nextConnection.targetBlock();
     }
@@ -276,10 +278,10 @@ Blockly.Language.procedures_mutatorarg = {
     this.setNextStatement(true);
     this.setTooltip('');
     this.contextMenu = false;
-  }, 
+  },
   // [lyn, 11/24/12] Return the container this mutator arg is in, or null if it's not in one.
   // Dynamically calculate this by walking up chain, because mutator arg might or might not
-  // be in container stack. 
+  // be in container stack.
   getContainerBlock: function () {
     var parent = this.getParent();
     while (parent && ! (parent.type === "procedures_mutatorcontainer")) {
@@ -288,28 +290,28 @@ Blockly.Language.procedures_mutatorarg = {
     // [lyn, 11/24/12] Cache most recent container block so can reference it upon removal from mutator arg stack
     this.cachedContainerBlock_ = (parent && (parent.type === "procedures_mutatorcontainer") && parent) || null;
     return this.cachedContainerBlock_;
-  }, 
+  },
   // [lyn, 11/24/12] Return the procedure assocated with mutator arg is in, or null if there isn't one.
   // Dynamically calculate this by walking up chain, because mutator arg might or might not
-  // be in container stack. 
+  // be in container stack.
   getProcBlock: function () {
     var container = this.getContainerBlock();
     return (container && container.getProcBlock()) || null;
-  }, 
-  // [lyn, 11/24/12] Return the declared names in the procedure assocoated with mutator arg, 
+  },
+  // [lyn, 11/24/12] Return the declared names in the procedure assocoated with mutator arg,
   // or the empty list if there isn't one.
   // Dynamically calculate this by walking up chain, because mutator arg might or might not
-  // be in container stack. 
-  declaredNames: function () { 
-    var container = this.getContainerBlock(); 
+  // be in container stack.
+  declaredNames: function () {
+    var container = this.getContainerBlock();
     return (container && container.declaredNames()) || [];
   },
-  // [lyn, 11/24/12] Return the blocks in scope of proc params in the the procedure associated with mutator arg, 
+  // [lyn, 11/24/12] Return the blocks in scope of proc params in the the procedure associated with mutator arg,
   // or the empty list if there isn't one.
   // Dynamically calculate this by walking up chain, because mutator arg might or might not
-  // be in container stack. 
-  blocksInScope: function () { 
-    var proc = this.getProcBlock(); 
+  // be in container stack.
+  blocksInScope: function () {
+    var proc = this.getProcBlock();
     return (proc && proc.blocksInScope()) || [];
   },
   // [lyn, 11/24/12] Check for situation in which mutator arg has been removed from stack,
@@ -320,16 +322,16 @@ Blockly.Language.procedures_mutatorarg = {
       // console.log("Mutatorarg onchange: " + paramName);
       var cachedContainer = this.cachedContainerBlock_;
       var container = this.getContainerBlock(); // Order is important; this must come after cachedContainer
-                                                // since it sets cachedContainerBlock_       
-      // console.log("Mutatorarg onchange: " + paramName 
+                                                // since it sets cachedContainerBlock_
+      // console.log("Mutatorarg onchange: " + paramName
       //            + "; cachedContainer = " + JSON.stringify((cachedContainer && cachedContainer.type) || null)
       //            + "; container = " + JSON.stringify((container && container.type) || null));
       if ((! cachedContainer) && container) {
         // Event: added mutator arg to container stack
-        // console.log("Mutatorarg onchange ADDED: " + paramName);        
+        // console.log("Mutatorarg onchange ADDED: " + paramName);
         var declaredNames = this.declaredNames();
         var firstIndex = declaredNames.indexOf(paramName);
-        if (firstIndex != -1) { 
+        if (firstIndex != -1) {
           // Assertion: we should get here, since paramName should be among names
           var secondIndex = declaredNames.indexOf(paramName, firstIndex+1);
           if (secondIndex != -1) {
@@ -503,7 +505,7 @@ Blockly.Language.procedures_callnoreturn = {
     if(typeof fromChange == "undefined") {
       fromChange = null;
     }
-    
+
     if (!this.quarkArguments_ || fromChange) {
       // Initialize tracking for this block.
       this.quarkConnections_ = {};

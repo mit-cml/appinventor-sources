@@ -1,9 +1,9 @@
-//Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
  * @fileoverview Visual blocks editor for App Inventor
  * Initialize the blocks editor workspace.
- * 
+ *
  * @author sharon@google.com (Sharon Perl)
  */
 
@@ -19,9 +19,9 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
   Blockly.BlocklyEditor.formName_ = formName;
-  
+
   /* [Added by paulmw in patch 15]
-  There are three ways that you can change how lexical variables 
+  There are three ways that you can change how lexical variables
   are handled:
 
   1. Show prefixes to users, and separate namespace in yail
@@ -40,23 +40,23 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   It is not possible to hide the prefix and have separate namespaces
   because Blockly does not allow to items in a list to have the same name
   (plus it would be confusing...)
-  
+
   */
-  
-  Blockly.showPrefixToUser = false;
+
+  Blockly.showPrefixToUser = true;
   Blockly.usePrefixInYail = false;
 
   /******************************************************************************
    [lyn, 12/23-27/2012, patch 16]
-     Prefix labels for parameters, locals, and index variables, 
-     Might want to experiment with different combintations of these. E.g., 
+     Prefix labels for parameters, locals, and index variables,
+     Might want to experiment with different combintations of these. E.g.,
      + maybe all non global parameters have prefix "local" or all have prefix "param".
      + maybe index variables have prefix "index", or maybe instead they are treated as "param"
    */
 
   Blockly.globalNamePrefix = "global"; // For names introduced by global variable declarations
-  Blockly.procedureParameterPrefix = "parameter"; // For names introduced by procedure/function declarations
-  Blockly.handlerParameterPrefix = "parameter"; // For names introduced by event handlers
+  Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
+  Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
   Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
   Blockly.loopParameterPrefix = "index"; // For names introduced by for loops
 
@@ -67,7 +67,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.possiblyPrefixMenuNameWith = // e.g., "param x" vs "x"
     function (prefix) {
       return function (name) {
-        return (Blockly.showPrefixToUser ? (prefix + Blockly.menuSeparator) : "") + name; 
+        return (Blockly.showPrefixToUser ? (prefix + Blockly.menuSeparator) : "") + name;
       }
     };
 
@@ -75,7 +75,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.possiblyPrefixYailNameWith = // e.g., "param_x" vs "x"
     function (prefix) {
       return function (name) {
-        return (Blockly.usePrefixInYail ? (prefix + Blockly.yailSeparator) : "") + name; 
+        return (Blockly.usePrefixInYail ? (prefix + Blockly.yailSeparator) : "") + name;
       }
     };
 
@@ -87,7 +87,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.unprefixName = function (name) {
     if (name.indexOf(Blockly.globalNamePrefix + Blockly.menuSeparator) == 0) {
       // Globals always have prefix, regardless of flags. Handle these specially
-      return [Blockly.globalNamePrefix, name.substring(Blockly.globalNamePrefix.length + Blockly.menuSeparator.length)]; 
+      return [Blockly.globalNamePrefix, name.substring(Blockly.globalNamePrefix.length + Blockly.menuSeparator.length)];
     } else if (!Blockly.showPrefixToUser) {
       return ["", name];
     } else {
@@ -107,10 +107,10 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   }
 
   /******************************************************************************/
-  
+
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
-      function() { 
-    window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_); 
+      function() {
+    window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_);
   });
 };
 
@@ -120,10 +120,10 @@ Blockly.BlocklyEditor.render = function() {
 
 /**
  * Add a "Generate Yail" option to the context menu for every block. The generated yail will go in
- * the block's comment (if it has one) for now. 
- * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into 
+ * the block's comment (if it has one) for now.
+ * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
  * the bubble for "do it" output once we hook up to the REPL.
- */ 
+ */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
   if (window.parent.BlocklyPanel_checkIsAdmin()) {

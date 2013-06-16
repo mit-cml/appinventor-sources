@@ -372,7 +372,7 @@ Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP_1 = 'A procedure with a return value.'
 
 Blockly.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +
     'This procedure has\n' +
-    'duplicate parameters.';
+    'duplicate inputs.';
 
 Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL = 'http://en.wikipedia.org/wiki/Procedure_%28computer_science%29';
 Blockly.LANG_PROCEDURES_CALLNORETURN_CALL = 'do';
@@ -384,7 +384,7 @@ Blockly.LANG_PROCEDURES_CALLRETURN_CALL = Blockly.LANG_PROCEDURES_CALLNORETURN_C
 Blockly.LANG_PROCEDURES_CALLRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_CALLNORETURN_PROCEDURE;
 Blockly.LANG_PROCEDURES_CALLRETURN_TOOLTIP_1 = 'Call a procedure with a return value.';
 
-Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'parameters';
-Blockly.LANG_PROCEDURES_MUTATORARG_TITLE = 'variable:';
+Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
+Blockly.LANG_PROCEDURES_MUTATORARG_TITLE = 'input:';
 
 Blockly.LANG_PROCEDURES_HIGHLIGHT_DEF = 'Highlight Procedure';
