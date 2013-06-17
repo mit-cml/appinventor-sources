@@ -179,7 +179,17 @@ Blockly.WarningHandler.checkIsInDefinition = function(){
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
   for(var i=0;i<params.dropDowns.length;i++){
-    if(this.getTitle_(params.dropDowns[i]) && (this.getTitle_(params.dropDowns[i]).text_ == "" || this.getTitle_(params.dropDowns[i]).text_ == "???")){
+    var dropDown = this.getTitle_(params.dropDowns[i]);
+    var dropDownList = dropDown.menuGenerator_();
+    var text = dropDown.text_;
+    var textInDropDown = false;
+    for(var k=0;k<dropDownList.length;k++) {
+      if(dropDownList[k][0] == text && text != " "){
+        textInDropDown = true;
+        break;
+      }
+    }
+    if(!textInDropDown) {
       var errorMessage = "Select a valid value in the drop down.";
       if(this.errorIcon){
         this.errorIcon.setText(errorMessage);
