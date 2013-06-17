@@ -99,6 +99,10 @@ Blockly.Yail.controls_forRange = function() {
          + stepCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
+Blockly.Yail.for_lexical_variable_get = function() {
+  Blockly.Yail.lexical_variable_get.call(this);
+}
+
 Blockly.Yail.controls_while = function() {
   // While condition.
   var test = Blockly.Yail.valueToCode(this, 'TEST', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;

@@ -43,6 +43,10 @@ Blockly.Yail.procedures_defnoreturn = function() {
   return code;
 };
 
+Blockly.Yail.procedure_lexical_variable_get = function() {
+  Blockly.Yail.lexical_variable_get.call(this);
+}
+
 //call the do return in control category
 Blockly.Yail.procedures_do_then_return = function() {
   return Blockly.Yail.controls_do_then_return.call(this);
