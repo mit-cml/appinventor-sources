@@ -115,7 +115,9 @@ Blockly.Language.text_length = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
-    this.appendValueInput('VALUE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('length');
+    this.appendValueInput('VALUE')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('length');
     this.setTooltip('Returns number of characters (including spaces)\n' + 'in the provided text.');
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -128,7 +130,9 @@ Blockly.Language.text_isEmpty = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('VALUE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('is empty');
+    this.appendValueInput('VALUE')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('is empty');
     this.setTooltip('Returns true if the length of the\n' + 'text is 0, false otherwise.');
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -141,9 +145,12 @@ Blockly.Language.text_compare = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT1').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('compare texts');
-    this.appendValueInput('TEXT2').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle(
-        new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('TEXT1')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('compare texts');
+    this.appendValueInput('TEXT2')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     var thisBlock = this;
     this.setTooltip(function() {
@@ -175,7 +182,9 @@ Blockly.Language.text_trim = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('trim');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('trim');
     this.setTooltip('Returns a copy of it text string arguments with any\n'
         + 'leading or trailing spaces removed.');
   },
@@ -189,8 +198,9 @@ Blockly.Language.text_changeCase = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle(
-        new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getTitleValue('OP');
@@ -214,8 +224,14 @@ Blockly.Language.text_starts_at = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('starts at').appendTitle('text');
-    this.appendValueInput('PIECE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('piece');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('starts at')
+      .appendTitle('text');
+    this.appendValueInput('PIECE')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('piece')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip('Returns the starting index of the piece in the text.\n'
         + 'where index 1 denotes the beginning of the text. Returns 0 if the\n'
         + 'piece is not in the text.');
@@ -230,8 +246,14 @@ Blockly.Language.text_contains = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('contains').appendTitle('text');
-    this.appendValueInput('PIECE').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('piece');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('contains')
+      .appendTitle('text');
+    this.appendValueInput('PIECE')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('piece')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip('Tests whether the piece is contained in the text.');
   },
   onchange: Blockly.WarningHandler.checkErrors
@@ -245,9 +267,14 @@ Blockly.Language.text_split = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle(
-        new Blockly.FieldDropdown(this.OPERATORS), 'OP').appendTitle('text');
-    this.appendValueInput('AT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('at');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP')
+      .appendTitle('text');
+    this.appendValueInput('AT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('at')
+      .setAlign(Blockly.ALIGN_RIGHT);
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getTitleValue('OP');
@@ -299,9 +326,18 @@ Blockly.Language.text_segment = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('segment').appendTitle('text');
-    this.appendValueInput('START').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('start');
-    this.appendValueInput('LENGTH').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('length');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('segment')
+      .appendTitle('text');
+    this.appendValueInput('START')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+      .appendTitle('start')
+      .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('LENGTH')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+      .appendTitle('length')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip('Extracts the segment of the given length from the given text\n'
         + 'starting from the given text starting from the given position. Position\n'
         + '1 denotes the beginning of the text.');
@@ -316,9 +352,18 @@ Blockly.Language.text_replace_all = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('replace all').appendTitle('text');
-    this.appendValueInput('SEGMENT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('segment');
-    this.appendValueInput('REPLACEMENT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('replacement');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('replace all')
+      .appendTitle('text');
+    this.appendValueInput('SEGMENT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('segment')
+      .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('REPLACEMENT')
+      .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+      .appendTitle('replacement')
+      .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip('Returns a new text obtained by replacing all occurrences\n'
         + 'of the segment with the replacement.');
   },
