@@ -175,7 +175,7 @@ public final class YaBlocksEditor extends FileEditor
     super.onShow();
     blocksArea.showDifferentForm(fullFormName);
     loadBlocksEditor();
-    makeYail();                 // Create yail and send to REPL (if connected).
+    sendComponentData();        // Send Blockly the component information for generating Yail
     blocksArea.renderBlockly();
   }
 
@@ -268,13 +268,13 @@ public final class YaBlocksEditor extends FileEditor
       Ode.getInstance().getEditorManager().scheduleAutoSave(editor);
       FileEditor thiseditor = Ode.getInstance().getCurrentFileEditor();
       if (thiseditor instanceof YaBlocksEditor)
-        ((YaBlocksEditor)thiseditor).makeYail();
+        ((YaBlocksEditor)thiseditor).sendComponentData();
     }
   }
 
-  public synchronized void makeYail() {
+  public synchronized void sendComponentData() {
     try {
-      blocksArea.sendYail(myFormEditor.encodeFormAsJsonString(),
+      blocksArea.sendComponentData(myFormEditor.encodeFormAsJsonString(),
         packageNameFromPath(getFileId()));
     } catch (YailGenerationException e) {
       e.printStackTrace();

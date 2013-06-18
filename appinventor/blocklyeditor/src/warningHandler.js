@@ -7,7 +7,7 @@
  */
 
 Blockly.WarningHandler = {};
-Blockly.WarningHandler.allBlockErrors = [];
+Blockly.WarningHandler.allBlockErrors = [{name:"checkReplErrors"}];
 Blockly.WarningHandler.allBlockWarnings = [{name:"checkBlockAtRoot"},{name:"checkEmptySockets"}];
 Blockly.WarningHandler.showWarningsToggle = false;
 
@@ -258,4 +258,13 @@ Blockly.WarningHandler.checkBlockAtRoot = function(params){
   } else {
     return false;
   }
+}
+
+//Check to see if the repl (Companion App) reported any errors.
+Blockly.WarningHandler.checkReplErrors = function() {
+    if (this.replError) {
+        this.setErrorIconText(this.replError);
+        return true;
+    }
+    return false;
 }

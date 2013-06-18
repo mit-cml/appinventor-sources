@@ -257,13 +257,17 @@ Blockly.Yail.getComponentLines = function(formName, componentJson, parentName, c
   } else {
     code = Blockly.Yail.getComponentPropertiesLines(formName, componentJson, parentName, !forRepl);
   }
-  // Generate code for all top-level blocks related to this component
-  if (componentMap.components && componentMap.components[componentName]) {
-    var componentBlocks = componentMap.components[componentName];
-    for (var i = 0, block; block = componentBlocks[i]; i++) {
-      code.push(Blockly.Yail.blockToCode(block));
+
+  if (!forRepl) {
+    // Generate code for all top-level blocks related to this component
+    if (componentMap.components && componentMap.components[componentName]) {
+      var componentBlocks = componentMap.components[componentName];
+      for (var i = 0, block; block = componentBlocks[i]; i++) {
+        code.push(Blockly.Yail.blockToCode(block));
+      }
     }
   }
+
   // Generate code for child components of this component
   if (componentJson.$Components) {
     var children = componentJson.$Components;

@@ -499,12 +499,15 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   /**
-   * Generate Yail for the current project and stash it for
-   * sending to the REPL.
+   * Send component data (json and form name) to Blockly for building
+   * yail for the REPL.
+   *
+   * We also start the pollYail timer (every two seconds) to see if updated
+   * yail needs to be sent to the phone.
    *
    * @throws YailGenerationException if there was a problem generating the Yail
    */
-  public void sendYail(String formJson, String packageName) throws YailGenerationException {
+  public void sendComponentData(String formJson, String packageName) throws YailGenerationException {
     if (!blocksInited(formName)) {
       throw new YailGenerationException("Blocks area is not initialized yet", formName);
     }
@@ -521,7 +524,7 @@ public class BlocklyPanel extends HTMLPanel {
         OdeLog.log("Starting timer for " + formName);
       }
 
-      doSendYail(formName, doGetYailRepl(formName, formJson, packageName));
+      doSendJson(formName, formJson, packageName);
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
     }
@@ -642,8 +645,8 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.Blocklies[formName].Yail.getFormYail(formJson, packageName);
   }-*/;
 
-  public static native void doSendYail(String formName, String Yail) /*-{
-    $wnd.Blocklies[formName].ReplMgr.sendYail(Yail);
+  public static native void doSendJson(String formName, String formJson, String packageName) /*-{
+    $wnd.Blocklies[formName].ReplMgr.sendFormData(formJson, packageName);
   }-*/;
 
   public static native void doResetYail(String formName) /*-{

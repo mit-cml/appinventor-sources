@@ -179,13 +179,16 @@ public class AppInvHTTPD extends NanoHTTPD {
 
       Log.d(LOG_TAG, "To Eval: " + code);
 
+      Response res;
+
       try {
         scheme.eval(code);
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       } catch (Throwable ex) {
         Log.e(LOG_TAG, "newblocks: Scheme Failure", ex);
+        res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOK");
       }
 
-      Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
       res.addHeader("Access-Control-Allow-Origin", "*");
       res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
