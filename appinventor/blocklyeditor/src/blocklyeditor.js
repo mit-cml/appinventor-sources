@@ -131,6 +131,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 
 Blockly.BlocklyEditor.render = function() {
   Blockly.mainWorkspace.render();
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 }
 
 /**
