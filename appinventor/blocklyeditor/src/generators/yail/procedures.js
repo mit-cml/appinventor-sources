@@ -44,7 +44,7 @@ Blockly.Yail.procedures_defnoreturn = function() {
 };
 
 Blockly.Yail.procedure_lexical_variable_get = function() {
-  Blockly.Yail.lexical_variable_get.call(this);
+  return Blockly.Yail.lexical_variable_get.call(this);
 }
 
 //call the do return in control category
