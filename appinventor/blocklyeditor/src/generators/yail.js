@@ -469,7 +469,7 @@ Blockly.Yail.quotifyForREPL = function(s) {
         var u = s.charCodeAt(i);  // unicode of c
         if (u < ' '.charCodeAt(0) || u > '~'.charCodeAt(0)) {
           // Replace any special chars with \u1234 unicode
-          varhex = "000" + u.toString(16);
+          var hex = "000" + u.toString(16);
           hex = hex.substring(hex.length - 4);
           sb.push("\\u" + hex);
         } else {
