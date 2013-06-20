@@ -28,7 +28,8 @@ goog.require('goog.crypt.Hmac');
 Blockly.ReplMgr.rsState = {
     IDLE : 0,                   // Not connected nor connection requested
     RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
-    CONNECTED: 2                // Connected to Repl
+    CONNECTED: 2,               // Connected to Repl
+    WAITING: 3                  // Waiting for the Emulator to start
 };
 
 Blockly.ReplStateObj = function() {};
@@ -238,8 +239,10 @@ Blockly.ReplMgr.putYail = (function() {
                         console.log("putYail(poller): status = " + this.status);
                         if (work.failure)
                             work.failure("Network Connection Error");
+                        engine.pollphone(); // And on to the next!
                     }
                 }
+
             };
             encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count));
             encoder.add('seq', rs.seq_count);
@@ -251,24 +254,116 @@ Blockly.ReplMgr.putYail = (function() {
     return engine.putYail;
 })();
 
+Blockly.ReplMgr.startEmulator = function(rs) {
+    var first = true;
+    var blockly = this;
+    var counter = 0;            // Used to for counting down
+    var pc = 0;                 // Use to keep track of state
+    var dialog = null;          // We have one dialog for the block
+                                // so we don't create multiple ones
+    var progdialog = null;      // Tell the end-user about our progress
+    var interval;               // Our interval id, used to stop the train
+    progdialog = new goog.ui.Dialog(null, true);
+    progdialog.setContent('Starting the Android Emulator');
+    progdialog.setTitle('Connecting...');
+    progdialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                            addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CANCEL,
+                                      false, true));
+    goog.events.listen(progdialog, goog.ui.Dialog.EventType.SELECT, function() {
+        // We are punting!
+        if (interval)
+            clearInterval(interval);
+        if (dialog)
+            dialog.setVisible(false);
+        progdialog.setVisible(false);
+    });
+    progdialog.setVisible(true);
+    // 0 == starting emulator
+    // 1 == Counting down after emulator started
+    // 2 == Counting down after repl start requested
+    // 3 == Done (nothing to do), interval should be cleared
+    interval = setInterval(function() {
+        var xhr;
+        switch(pc) {
+        case 0:
+            xhr = goog.net.XmlHttp();
+            xhr.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.response == '"OK"') { // We're running!
+                        pc = 1;                    // Next State
+                        counter = 5;               // Wait five seconds
+                    } else {
+                        if (first) { // Need to actually start the thing!
+                            var xhr = goog.net.XmlHttp();
+                            xhr.open("GET", "http://localhost:8004/start/", false); // We don't look at the response
+                            xhr.send();
+                            first = false;
+                        }
+                    }
+                } else if (this.readyState == 4) {
+                    // readyState is 4 but status isn't 200 is daemon running?
+                    clearInterval(interval);
+                    progdialog.setVisible(false);
+                    if (!dialog) {
+                        dialog = new goog.ui.Dialog(null, true);
+                        dialog.setContent('The aiDaemon helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>');
+                        dialog.setTitle('Helper?');
+                        dialog.setButtonSet(new goog.ui.Dialog.ButtonSet.createOk());
+                        dialog.setVisible(true);
+                        goog.events.listen(dialog, goog.ui.Dialog.EventType.SELECT, function() {
+                            dialog.setVisible(false);
+                            dialog = null;
+                        });
+                    }
+                }
+            };
+            xhr.open("GET", "http://localhost:8004/check/", false);
+            xhr.send();
+            break;
+        case 1:
+            progdialog.setContent("Emulator started, waiting " + counter + " seconds to ensure all is running.");
+            counter -= 1;
+            if (counter <= 0) {
+                progdialog.setContent("Starting the Companion App in the emulator.");
+                pc = 2
+                counter = 5;
+                xhr = goog.net.XmlHttp();
+                xhr.open("GET", "http://localhost:8004/replstart/", false); // Don't look at response
+                xhr.send();
+            }
+            break;
+        case 2:
+            progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
+            counter -= 1;
+            if (counter <= 0) {
+                progdialog.setVisible(false);
+                rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
+                pc = 3;
+                clearInterval(interval);
+            }
+        }
+    }, 1000);                   // We poll once per second
+}
+
 Blockly.ReplMgr.startRepl = function(already, emulator) {
     var refreshAssets = window.parent.AssetManager_refreshAssets;
     var rs = this.ReplState;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
-    if (already.toString() == "false") {        // Have to test this way because already is a Java false
+    if (already.toString() == "false") {        // Have to test this way because already is a Java Boolean false
         if (this.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
         if (emulator.toString() != "false") {         // If we are talking to the emulator, don't use rendezvou server
-            rs.state = this.rsState.CONNECTED; // We know who to talk to!
+            this.startEmulator(rs);
+            rs.state = this.rsState.WAITING; // Wait for the emulator to start
             rs.replcode = "emulator";          // Must match code in Companion Source
             rs.url = 'http://127.0.0.1:8001/_newblocks';
             rs.asseturl = 'http://127.0.0.1:8001/';
             rs.seq_count = 1;
             rs.count = 0;
             this.pollYail();
-            refreshAssets();
+            refreshAssets(this.formName);
             return;             // All done
         }
         var rs = this.ReplState;
@@ -320,7 +415,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                 rs.dialog.setVisible(false);
                 context.pollYail(); // Start the connection with the Repl itself
-                refreshAssets();    // Start assets loading
+                refreshAssets(context.formName);    // Start assets loading
             } catch (err) {
             }
         }
