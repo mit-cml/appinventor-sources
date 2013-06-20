@@ -458,4 +458,25 @@ public class ActivityStarter extends AndroidNonvisibleComponent
   public void onDelete() {
     form.unregisterForActivityResult(this);
   }
+  
+  /**
+   * Block ShareText:
+   * Lauch activity for share text directly xcitizen.team@Gmail.com
+   *
+   */
+   
+  @SimpleFunction(description = "Start ShareText Type=text/html or text/plain, " +
+  "Subject=Only for mail share, Text=Insert text for share")
+  public void ShareText(String Type,String Subject,String Text) {
+         final Intent intent = new Intent(Intent.ACTION_SEND);
+ 
+         intent.setType(Type);
+         intent.putExtra(Intent.EXTRA_SUBJECT, Subject);
+         intent.putExtra(Intent.EXTRA_TEXT, Text);
+         container.$context().startActivityForResult(intent, requestCode);
+      String openAnim = container.$form().getOpenAnimType();
+      AnimationUtil.ApplyOpenScreenAnimation(container.$context(), openAnim);
+    }
+   
+   
 }
