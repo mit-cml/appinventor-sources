@@ -589,6 +589,9 @@ Blockly.LANG_LISTS_ADD_ITEMS_TITLE_ADD = 'add items to list';
 Blockly.LANG_LISTS_ADD_ITEMS_INPUT_ITEM = 'item';
 Blockly.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Adds items to the end of a list.';
 
+Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'list';
+Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1 = 'Add, remove, or reorder sections to reconfigure this list block.';
+
 Blockly.LANG_LISTS_COPY_HELPURL = '';
 Blockly.LANG_LISTS_COPY_TITLE_COPY = 'copy list';
 Blockly.LANG_LISTS_COPY_INPUT_LIST = 'list';
