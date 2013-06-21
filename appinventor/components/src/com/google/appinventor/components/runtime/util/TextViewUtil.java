@@ -188,4 +188,12 @@ public class TextViewUtil {
   public static void setTextColors(TextView textview, ColorStateList colorStateList) {
     textview.setTextColor(colorStateList);
   }
+  
+  /**
+   * Sets the text focus enable.
+   */
+  public static void setFocus(TextView textview) {
+    textview.setFocusableInTouchMode(true);
+    textview.requestFocus();
+   }
 }
