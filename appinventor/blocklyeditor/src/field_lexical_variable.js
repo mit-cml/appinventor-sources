@@ -453,14 +453,17 @@ Blockly.LexicalVariable.renameParam = function (newName) {
     }
     if(!oldNameInDeclaredNames){ 
     */
-    // Rename getters and setters
-    for (var i = 0; i < blocksToRename.length; i++) {
-      var block = blocksToRename[i];
-      var renamingFunction = block.renameLexicalVar;
-      if (renamingFunction) {
-	renamingFunction.call(block, 
-                              (Blockly.possiblyPrefixMenuNameWith(sourcePrefix))(oldName),
-                              (Blockly.possiblyPrefixMenuNameWith(sourcePrefix))(newName));
+    var oldNameValid = (declaredNames.indexOf(oldName) != -1);
+    if(!oldNameValid) {
+      // Rename getters and setters
+      for (var i = 0; i < blocksToRename.length; i++) {
+        var block = blocksToRename[i];
+        var renamingFunction = block.renameLexicalVar;
+        if (renamingFunction) {
+          renamingFunction.call(block,
+                                (Blockly.possiblyPrefixMenuNameWith(sourcePrefix))(oldName),
+                                (Blockly.possiblyPrefixMenuNameWith(sourcePrefix))(newName));
+        }
       }
     }
   }
