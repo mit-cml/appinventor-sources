@@ -20,9 +20,9 @@ public class BlocklyEvalTest extends TestCase {
   
   public static final String testpath = TestUtils.APP_INVENTOR_ROOT_DIR + "/blocklyeditor";
 
-  public void testButtonClick() throws Exception {
+  public void testBackgroundColor() throws Exception {
 
-    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/buttonClickTest.js" };
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/backgroundColorTest.js" };
     String result = "";
 
     try {
@@ -33,10 +33,10 @@ public class BlocklyEvalTest extends TestCase {
 
     assertEquals("true", result.toString());
   }
-  
-  public void testIfThenBlock() throws Exception {
 
-    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/ifThenBlockTest.js" };
+  public void testMoleMash() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/moleMashTest.js" };
     String result = "";
 
     try {
@@ -47,4 +47,19 @@ public class BlocklyEvalTest extends TestCase {
 
     assertEquals("true", result.toString());
   }
+
+  public void testPaintPot() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/paintPotTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
 }

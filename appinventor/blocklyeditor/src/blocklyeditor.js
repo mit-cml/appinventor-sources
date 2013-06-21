@@ -125,7 +125,9 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
       function() {
-    window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_);
+        if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
+          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_);
+        }
   });
 };
 

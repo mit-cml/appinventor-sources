@@ -1,0 +1,13 @@
+<xml>
+  <block type="Screen1_setproperty" inline="false" x="10" y="19">
+    <mutation yailtype="number"></mutation>
+    <title name="COMPONENT_SELECTOR">Screen1</title>
+    <title name="PROP">BackgroundColor</title>
+    <comment pinned="false" h="142" w="502">(set-and-coerce-property! 'Screen1 'BackgroundColor -16777216 'number)</comment>
+    <value name="VALUE">
+      <block type="color_black">
+        <title name="COLOR">#000000</title>
+      </block>
+    </value>
+  </block>
+</xml>

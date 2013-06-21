@@ -314,11 +314,14 @@ Blockly.init_ = function() {
       Blockly.Toolbox.init();
     } else if (Blockly.Flyout) {
       // Build a fixed flyout with the root blocks.
-      Blockly.mainWorkspace.flyout_.init(Blockly.mainWorkspace,
+      if(Blockly.mainWorkspace.flyout_){
+        Blockly.mainWorkspace.flyout_.init(Blockly.mainWorkspace,
           Blockly.getMainWorkspaceMetrics, true);
-      Blockly.mainWorkspace.flyout_.show(Blockly.languageTree.childNodes);
+        Blockly.mainWorkspace.flyout_.show(Blockly.languageTree.childNodes);
+        Blockly.mainWorkspace.scrollX = Blockly.mainWorkspace.flyout_.width_;
+      }
+
       // Translate the workspace sideways to avoid the fixed flyout.
-      Blockly.mainWorkspace.scrollX = Blockly.mainWorkspace.flyout_.width_;
       var translation = 'translate(' + Blockly.mainWorkspace.scrollX + ', 0)';
       Blockly.mainWorkspace.getCanvas().setAttribute('transform', translation);
       Blockly.mainWorkspace.getBubbleCanvas().setAttribute('transform',

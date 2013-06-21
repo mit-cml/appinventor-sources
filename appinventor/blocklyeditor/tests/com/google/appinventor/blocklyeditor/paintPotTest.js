@@ -1,10 +1,5 @@
 /**
  *  * User: Edwin Zhang (ehzhang@mit.edu)
- *  Before creating a test, make sure that there exists a corresponding .bky, .scm,
- *  and .yail file in the data folder, and that the test is in the same directory.
- *  Follow the naming convention of the testXXXX.js, with data files in a folder
- *  named XXXX, containing the classic .yail, newblocks .bky and newblocks .scm
- *  Details on generating classic .yail can be found in the README.
  */
 
 var fs = require('fs'); //Always required to read from files
@@ -12,10 +7,10 @@ var path = fs.absolute('.');
 
 
 //Read files from filesystem
-var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/<FOLDERNAME>/<EXPECTED_YAIL_FILE>');
-var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/<FOLDERNAME>/<NEWBLOCKS_SCM_FILE>');
-formJson = formJson.substring(9, formJson.length-2); // Cut off Leading $JSON
-var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/<FOLDERNAME>/<NEWBLOCKS_BKY_FILE>');
+var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/paintPot/PaintPotExpected.yail');
+var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/paintPot/Screen1.scm');
+formJson = formJson.substring(9, formJson.length-2);
+var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/paintPot/Screen1.bky');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();
@@ -29,10 +24,10 @@ page.onError = function (msg, trace) {
 }
 
 // Open the actual page and load all the JavaScript in it
-// If success is true, all went well
+// if success is true, all went well
 page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(status) {
   // The evaluate function has arguments passed after the callback
-  // We are passing in the .bky, .scm, and expected .yail
+  // in this case, we are passing in the yail files.
 
   if (status != 'success') {
     console.log('load unsuccessful');
