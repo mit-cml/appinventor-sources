@@ -62,4 +62,18 @@ public class BlocklyEvalTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
+  public void testHelloPurr() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/helloPurrTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
 }
