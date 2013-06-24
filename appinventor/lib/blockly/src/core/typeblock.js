@@ -446,6 +446,18 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
+          //If we are changing a property in a component, we need to change the connection Check
+          var typeForDropDown;
+          if (block.blockType === 'setter' || block.blockType === 'genericsetter'){
+            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
+                block.propYailTypes[blockToCreate.dropDown.value],'input');
+            block.getInput('VALUE').connection.setCheck(typeForDropDown);
+          }
+          else if (block.blockType === 'getter' || block.blockType === 'genericgetter'){
+            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
+                block.propYailTypes[blockToCreate.dropDown.value],'output');
+            block.outputConnection.setCheck(typeForDropDown);
+          }
         }
         else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
@@ -551,15 +563,15 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
 
   var matches = this.getPrefixMatches(token, maxMatches);
 
-  if (matches.length === 0 && this.useSimilar_) {
-    matches = this.getSimilarRows(token, maxMatches);
-  }
-
   // This is the added code to handle any number typed in the widget
   var reg = new RegExp('^\\d+$', 'g');
   var match = reg.exec(token);
   if (match && match.length === 1){
     matches.push(token);
+  }
+
+  if (matches.length === 0 && this.useSimilar_) {
+    matches = this.getSimilarRows(token, maxMatches);
   }
 
   matchHandler(token, matches);
