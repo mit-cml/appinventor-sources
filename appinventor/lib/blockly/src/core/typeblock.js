@@ -469,6 +469,11 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
 
       block.initSvg();
       block.render();
+      //If we are creating a local variable, we need to update the mutator names
+      if (block.type && (block.type === 'local_declaration_expression' ||
+              block.type === 'local_declaration_statement')){
+        block.domToMutation(block.mutationToDom());
+      }
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;
       if (blockSelected) {
