@@ -481,10 +481,20 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         selectedX = selectedXY.x;
         selectedY = selectedXY.y;
         Blockly.TypeBlock.connectIfPossible(blockSelected, block);
+        if(!block.parentBlock_){
+          //Place it close but a bit out of the way from the one we created.
+          block.moveBy(Blockly.selected.getRelativeToSurfaceXY().x + 110,
+              Blockly.selected.getRelativeToSurfaceXY().y + 50);
+        }
         block.select();
       }
       else {
-        block.moveBy(Blockly.latestClick.x, Blockly.latestClick.y);
+        //calculate positions relative to the view and the latest click
+        var left = Blockly.getMainWorkspaceMetrics().viewLeft +
+            Blockly.latestClick.x;
+        var top = Blockly.getMainWorkspaceMetrics().viewTop +
+            Blockly.latestClick.y;
+        block.moveBy(left, top);
         block.select();
       }
       Blockly.TypeBlock.hide();
