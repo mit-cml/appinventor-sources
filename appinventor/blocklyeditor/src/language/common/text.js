@@ -308,7 +308,7 @@ Blockly.Language.text_split = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT')
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
-      .appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP')
+      .appendTitle(new Blockly.FieldDropdown(this.OPERATORS,Blockly.Language.text_split.dropdown_onchange), 'OP')
       .appendTitle('text');
     this.appendValueInput('AT')
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
@@ -347,6 +347,15 @@ Blockly.Language.text_split = {
     }
   }]
 };
+
+Blockly.Language.text_split.dropdown_onchange = function(value) {
+
+  if(value == 'SPLITATFIRST' || value == 'SPLIT') {
+    this.sourceBlock_.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
+  } else if(value == 'SPLITATFIRSTOFANY' || value == 'SPLITATANY') {
+    this.sourceBlock_.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
+  }
+}
 
 Blockly.Language.text_split.OPERATORS = [ [ 'split at first', 'SPLITATFIRST' ],
     [ 'split at first of any', 'SPLITATFIRSTOFANY' ], [ 'split', 'SPLIT' ],
