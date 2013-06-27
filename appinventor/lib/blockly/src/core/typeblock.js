@@ -420,18 +420,29 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
   Blockly.TypeBlock.currentListener_ = goog.events.listen(Blockly.TypeBlock.ac_,
       goog.ui.ac.AutoComplete.EventType.UPDATE,
     function() {
-      var blockName = goog.dom.getElement(inputText).value.split(',')[0];
+      var blockName = goog.dom.getElement(inputText).value;
       var blockToCreate = goog.object.get(Blockly.TypeBlock.TBOptions_, blockName);
       if (!blockToCreate) {
-        //If the input passed is not a block, check if it is a number
-        var reg = new RegExp('^\\d+$', 'g');
-        var match = reg.exec(blockName);
-        if (match && match.length === 1){
+        //If the input passed is not a block, check if it is a number or a pre-populated text block
+        var numberReg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
+        var numberMatch = numberReg.exec(blockName);
+        var textReg = new RegExp('^[\"|\'].+', 'g');
+        var textMatch = textReg.exec(blockName);
+        if (numberMatch && numberMatch.length > 0){
           blockToCreate = {
             canonicName: 'math_number',
             dropDown: {
               titleName: 'NUM',
               value: blockName
+            }
+          };
+        }
+        else if (textMatch && textMatch.length === 1){
+          blockToCreate = {
+            canonicName: 'text',
+            dropDown: {
+              titleName: 'TEXT',
+              value: blockName.substring(1)
             }
           };
         }
@@ -578,10 +589,17 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
 
   var matches = this.getPrefixMatches(token, maxMatches);
 
-  // This is the added code to handle any number typed in the widget
-  var reg = new RegExp('^\\d+$', 'g');
+  // Added code to handle any number typed in the widget (including negatives and decimals)
+  var reg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
-  if (match && match.length === 1){
+  if (match && match.length > 0){
+    matches.push(token);
+  }
+
+  // Added code to handle default values for text fields (they start with " or ')
+  var textReg = new RegExp('^[\"|\'].+', 'g');
+  var textMatch = textReg.exec(token);
+  if (textMatch && textMatch.length === 1){
     matches.push(token);
   }
 
