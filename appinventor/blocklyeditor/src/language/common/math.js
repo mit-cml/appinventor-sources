@@ -32,13 +32,13 @@ if (!Blockly.Language) Blockly.Language = {};
 Blockly.Language.math_number = {
   // Numeric value.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_MATH_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.appendDummyInput().appendTitle(
         new Blockly.FieldTextInput('0', Blockly.Language.math_number.validator), 'NUM');
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
-    this.setTooltip("Report the number shown.");
+    this.setTooltip(Blockly.LANG_MATH_NUMBER_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER }]
@@ -55,7 +55,9 @@ Blockly.Language.math_compare = {
   // Basic arithmetic operator.
   // TODO(Andrew): equality block needs to have any on the sockets.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_compare.HELPURLS[mode];},
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -131,22 +133,27 @@ Blockly.Language.math_compare.OPERATORS =
    ['\u2265', 'GTE']];
 
 Blockly.Language.math_compare.TOOLTIPS = {
-  EQ: 'Return true if both numbers are equal to each other.',
-  NEQ: 'Return true if both numbers are not equal to each other.',
-  LT: 'Return true if the first number is smaller\n' +
-      'than the second number.',
-  LTE: 'Return true if the first number is smaller\n' +
-      'than or equal to the second number.',
-  GT: 'Return true if the first number is greater\n' +
-      'than the second number.',
-  GTE: 'Return true if the first number is greater\n' +
-      'than or equal to the second number.'
+  EQ: Blockly.LANG_MATH_COMPARE_TOOLTIP_EQ,
+  NEQ: Blockly.LANG_MATH_COMPARE_TOOLTIP_NEQ,
+  LT: Blockly.LANG_MATH_COMPARE_TOOLTIP_LT,
+  LTE: Blockly.LANG_MATH_COMPARE_TOOLTIP_LTE,
+  GT: Blockly.LANG_MATH_COMPARE_TOOLTIP_GT,
+  GTE: Blockly.LANG_MATH_COMPARE_TOOLTIP_GTE
+};
+
+Blockly.Language.math_compare.HELPURLS = {
+  EQ: Blockly.LANG_MATH_COMPARE_HELPURL_EQ,
+  NEQ: Blockly.LANG_MATH_COMPARE_HELPURL_NEQ,
+  LT: Blockly.LANG_MATH_COMPARE_HELPURL_LT,
+  LTE: Blockly.LANG_MATH_COMPARE_HELPURL_LTE,
+  GT: Blockly.LANG_MATH_COMPARE_HELPURL_GT,
+  GTE: Blockly.LANG_MATH_COMPARE_HELPURL_GTE
 };
 
 Blockly.Language.math_add = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_ARITHMETIC_HELPURL_ADD,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -156,7 +163,7 @@ Blockly.Language.math_add = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      return 'Return the sum of the numbers.';
+      return Blockly.LANG_MATH_ARITHMETIC_TOOLTIP_ADD;
     });
     this.setMutator(new Blockly.Mutator(['math_mutator_item']));
     this.emptyInputName = 'EMPTY';
@@ -208,7 +215,7 @@ Blockly.Language.math_mutator_item = {
 Blockly.Language.math_subtract = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_ARITHMETIC_HELPURL_MINUS ,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -218,7 +225,7 @@ Blockly.Language.math_subtract = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      return 'Return the difference of the two numbers.';
+      return Blockly.LANG_MATH_ARITHMETIC_TOOLTIP_MINUS;
     });
   },
   onchange: Blockly.WarningHandler.checkErrors,
@@ -230,7 +237,7 @@ Blockly.Language.math_subtract = {
 Blockly.Language.math_multiply = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_ARITHMETIC_HELPURL_MULTIPLY,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -240,7 +247,7 @@ Blockly.Language.math_multiply = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      return 'Return the product of the numbers.';
+      return Blockly.LANG_MATH_ARITHMETIC_TOOLTIP_MULTIPLY ;
     });
     this.setMutator(new Blockly.Mutator(['math_mutator_item']));
     this.emptyInputName = 'EMPTY';
@@ -276,7 +283,7 @@ Blockly.Language.math_multiply = {
 Blockly.Language.math_division = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_ARITHMETIC_HELPURL_DIVIDE,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -286,7 +293,7 @@ Blockly.Language.math_division = {
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      return 'Return the quotient of the two numbers.';
+      return Blockly.LANG_MATH_ARITHMETIC_TOOLTIP_DIVIDE;
     });
   },
   onchange: Blockly.WarningHandler.checkErrors,
@@ -298,7 +305,7 @@ Blockly.Language.math_division = {
 Blockly.Language.math_power = {
   // Basic arithmetic operator.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_ARITHMETIC_HELPURL_POWER,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -309,8 +316,7 @@ Blockly.Language.math_power = {
     var thisBlock = this;
     this.setTooltip(function() {
       //var mode = thisBlock.getTitleValue('OP');
-      return 'Return the first number raised to\n' +
-      'the power of the second number.';
+      return Blockly.LANG_MATH_ARITHMETIC_TOOLTIP_POWER;
     });
   },
   onchange: Blockly.WarningHandler.checkErrors,
@@ -322,16 +328,14 @@ Blockly.Language.math_power = {
 Blockly.Language.math_random_int = {
   // Random integer between [X] and [Y].
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_RANDOM_INT_HELPURL,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('FROM').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('random integer').appendTitle('from');
     this.appendValueInput('TO').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('to');
     this.setInputsInline(true);
-    this.setTooltip('Returns a random integer between the upper bound\n' +
-        'and the lower bound. The bounds will be clipped to be smaller\n' +
-        'than 2**30.');
+    this.setTooltip(Blockly.LANG_MATH_RANDOM_INT_TOOLTIP );
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_INT_TITLE_RANDOM }]
@@ -340,12 +344,12 @@ Blockly.Language.math_random_int = {
 Blockly.Language.math_random_float = {
   // Random fraction between 0 and 1.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_RANDOM_FLOAT_HELPURL,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('random fraction');
-    this.setTooltip('Return a random number between 0 and 1.');
+    this.setTooltip(Blockly.LANG_MATH_RANDOM_FLOAT_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM }]
@@ -354,21 +358,20 @@ Blockly.Language.math_random_float = {
 Blockly.Language.math_random_set_seed = {
   // Set the seed of the radom number generator
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: Blockly.LANG_MATH_RANDOM_SEED_HELPURL,
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(false, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('random set seed').appendTitle('to');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip('specifies a numeric seed\n' +
-        'for the random number generator');
+    this.setTooltip(Blockly.LANG_MATH_RANDOM_SEED_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_SEED_TITLE_RANDOM }]
 };
 
-Blockly.Language.math_on_list = {
+/*Blockly.Language.math_on_list = {
   // Evaluate a list of numbers to return sum, average, min, max, etc.
   // Some functions also work on text (min, max, mode, median).
   category: Blockly.LANG_CATEGORY_MATH,
@@ -445,12 +448,15 @@ Blockly.Language.math_on_list.TOOLTIPS = {
   MIN: 'Return the smallest of its arguments..',
   MAX: 'Return the largest of its arguments..'
 };
-
+*/
 
 Blockly.Language.math_single = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -525,22 +531,33 @@ Blockly.Language.math_single.OPERATORS =
    ['floor', 'FLOOR']];
 
 Blockly.Language.math_single.TOOLTIPS = {
-  ROOT: 'Return the square root of a number.',
-  ABS: 'Return the absolute value of a number.',
-  NEG: 'Return the negation of a number.',
-  LN: 'Return the natural logarithm of a number.',
-  EXP: 'Return e to the power of a number.',
-  ROUND : 'Round a number up or down.',
-  CEILING : 'Rounds the input to the smallest\n' +
-      'number not less then the input',
-  FLOOR : 'Rounds the input to the largest\n' +
-      'number not greater then the input'
+  ROOT: Blockly.LANG_MATH_SINGLE_TOOLTIP_ROOT,
+  ABS: Blockly.LANG_MATH_SINGLE_TOOLTIP_ABS,
+  NEG: Blockly.LANG_MATH_SINGLE_TOOLTIP_NEG,
+  LN: Blockly.LANG_MATH_SINGLE_TOOLTIP_LN,
+  EXP: Blockly.LANG_MATH_SINGLE_TOOLTIP_EXP,
+  ROUND : Blockly.LANG_MATH_ROUND_TOOLTIP_ROUND,
+  CEILING : Blockly.LANG_MATH_ROUND_TOOLTIP_CEILING,
+  FLOOR : Blockly.LANG_MATH_ROUND_TOOLTIP_FLOOR
+};
+Blockly.Language.math_single.HELPURLS = {
+  ROOT: Blockly.LANG_MATH_SINGLE_HELPURL_ROOT,
+  ABS: Blockly.LANG_MATH_SINGLE_HELPURL_ABS,
+  NEG: Blockly.LANG_MATH_SINGLE_HELPURL_NEG,
+  LN: Blockly.LANG_MATH_SINGLE_HELPURL_LN,
+  EXP: Blockly.LANG_MATH_SINGLE_HELPURL_EXP,
+  ROUND : Blockly.LANG_MATH_ROUND_HELPURL_ROUND,
+  CEILING : Blockly.LANG_MATH_ROUND_HELPURL_CEILING,
+  FLOOR : Blockly.LANG_MATH_ROUND_HELPURL_FLOOR
 };
 
 Blockly.Language.math_abs = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -558,7 +575,10 @@ Blockly.Language.math_abs = {
 Blockly.Language.math_neg = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -577,7 +597,10 @@ Blockly.Language.math_neg = {
 Blockly.Language.math_round = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -596,7 +619,10 @@ Blockly.Language.math_round = {
 Blockly.Language.math_ceiling = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -614,7 +640,10 @@ Blockly.Language.math_ceiling = {
 Blockly.Language.math_floor = {
   // Advanced math operators with single operand.
   category: Blockly.LANG_CATEGORY_MATH,
-  helpUrl: '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_single.HELPURLS[mode];
+    },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -633,7 +662,10 @@ Blockly.Language.math_floor = {
 Blockly.Language.math_divide = {
   // Remainder or quotient of a division.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_divide.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -675,15 +707,23 @@ Blockly.Language.math_divide.OPERATORS =
    [ 'quotient of', 'QUOTIENT' ]];
 
 Blockly.Language.math_divide.TOOLTIPS = {
-  MODULO: 'Return the modulo.',
-  REMAINDER: 'Return the remainder.',
-  QUOTIENT: 'Return the quotient.'
+  MODULO: Blockly.LANG_MATH_DIVIDE_TOOLTIP_MODULO,
+  REMAINDER: Blockly.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER,
+  QUOTIENT: Blockly.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT
+};
+Blockly.Language.math_divide.HELPURLS = {
+  MODULO: Blockly.LANG_MATH_DIVIDE_HELPURL_MODULO,
+  REMAINDER: Blockly.LANG_MATH_DIVIDE_HELPURL_REMAINDER,
+  QUOTIENT: Blockly.LANG_MATH_DIVIDE_HELPURL_QUOTIENT
 };
 
 Blockly.Language.math_trig = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_trig.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -746,21 +786,30 @@ Blockly.Language.math_trig.OPERATORS =
    [ 'atan', 'ATAN' ]];
 
 Blockly.Language.math_trig.TOOLTIPS = {
-  SIN : 'Provides the sine of the given angle in degrees.',
-  COS : 'Provides the cosine of the given angle in degrees.',
-  TAN : 'Provides the tangent of the given angle in degrees.',
-  ASIN : 'Provides the angle in the range (-90,+90]\n' + 
-      'degrees with the given sine value.',
-  ACOS : 'Provides the angle in the range [0, 180)\n' + 
-      'degrees with the given cosine value.',
-  ATAN : 'Provides the angle in the range (-90, +90)\n' + 
-      'degrees with the given tangent value.'
+  SIN : Blockly.LANG_MATH_TRIG_TOOLTIP_SIN,
+  COS : Blockly.LANG_MATH_TRIG_TOOLTIP_COS,
+  TAN : Blockly.LANG_MATH_TRIG_TOOLTIP_TAN,
+  ASIN : Blockly.LANG_MATH_TRIG_TOOLTIP_ASIN,
+  ACOS : Blockly.LANG_MATH_TRIG_TOOLTIP_ACOS,
+  ATAN : Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN
+};
+
+Blockly.Language.math_trig.HELPURLS = {
+  SIN : Blockly.LANG_MATH_TRIG_HELPURL_SIN,
+  COS : Blockly.LANG_MATH_TRIG_HELPURL_COS,
+  TAN : Blockly.LANG_MATH_TRIG_HELPURL_TAN,
+  ASIN : Blockly.LANG_MATH_TRIG_HELPURL_ASIN,
+  ACOS : Blockly.LANG_MATH_TRIG_HELPURL_ACOS,
+  ATAN : Blockly.LANG_MATH_TRIG_HELPURL_ATAN
 };
 
 Blockly.Language.math_cos = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_trig.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -778,7 +827,10 @@ Blockly.Language.math_cos = {
 Blockly.Language.math_tan = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl: function() {
+      var mode = thisBlock.getTitleValue('OP');
+      return Blockly.Language.math_trig.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -796,7 +848,7 @@ Blockly.Language.math_tan = {
 Blockly.Language.math_atan2 = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_MATH_TRIG_HELPURL_ATAN2,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -804,8 +856,7 @@ Blockly.Language.math_atan2 = {
     this.appendValueInput('Y').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('y').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('X').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('x').setAlign(Blockly.ALIGN_RIGHT);
     this.setInputsInline(false);
-    this.setTooltip('Provides the angle in the range (-180, +180]\n' +
-        'degrees with the given rectangular coordinates.');
+    this.setTooltip(Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN2);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) atan2 has not been internationalized yet
@@ -816,7 +867,10 @@ Blockly.Language.math_atan2 = {
 Blockly.Language.math_convert_angles = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl: function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.math_convert_angles.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -851,15 +905,18 @@ Blockly.Language.math_convert_angles.OPERATORS =
    [ 'degrees to radians', 'DEGREES_TO_RADIANS' ]];
 
 Blockly.Language.math_convert_angles.TOOLTIPS = {
-  RADIANS_TO_DEGREES : 'Returns the degree value in the range\n' +
-      '[0, 360) corresponding to its radians argument.',
-  DEGREES_TO_RADIANS : 'Returns the radian value in the range\n' +
-      '[-\u03C0, +\u03C0) corresponding to its degrees argument.'
+  RADIANS_TO_DEGREES : Blockly.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG,
+  DEGREES_TO_RADIANS : Blockly.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD
+};
+
+Blockly.Language.math_convert_angles.HELPURLS = {
+  RADIANS_TO_DEGREES : Blockly.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG,
+  DEGREES_TO_RADIANS : Blockly.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD
 };
 
 Blockly.Language.math_format_as_decimal = {
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
@@ -867,8 +924,7 @@ Blockly.Language.math_format_as_decimal = {
     this.appendValueInput('NUM').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('number').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('PLACES').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('places').setAlign(Blockly.ALIGN_RIGHT);
     this.setInputsInline(false);
-    this.setTooltip('Returns the number formatted as a decimal\n' +
-        'with a specified number of places.');
+    this.setTooltip(Blockly.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_FORMAT_AS_DECIMAL_TITLE }]
@@ -876,13 +932,13 @@ Blockly.Language.math_format_as_decimal = {
 
 Blockly.Language.math_is_a_number = {
   category : Blockly.LANG_CATEGORY_MATH,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_MATH_IS_A_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('NUM').appendTitle('is a number?');
     this.setTooltip(function() {
-      return 'Tests if something is a number.';
+      return Blockly.LANG_MATH_IS_A_NUMBER_TOOLTIP;
     });
   },
   onchange: Blockly.WarningHandler.checkErrors,

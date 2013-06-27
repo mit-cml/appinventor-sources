@@ -235,7 +235,7 @@ Blockly.Language.controls_if_else = {
 Blockly.Language.controls_forRange = {
   // For range.
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_FORRANGE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
@@ -255,9 +255,7 @@ Blockly.Language.controls_forRange = {
     this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\' section for each numeric '
-        + 'value in the range from start to end, stepping the value each time.  Use the given '
-        + 'variable name to refer to the current value.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FORRANGE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -285,7 +283,7 @@ Blockly.Language.controls_forRange = {
 Blockly.Language.controls_forEach = {
   // For each loop.
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_FOREACH_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
@@ -303,8 +301,7 @@ Blockly.Language.controls_forEach = {
         .appendTitle('do');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\'  section for each item in '
-        + 'the list.  Use the given variable name to refer to the current list item.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FOREACH_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -333,7 +330,7 @@ Blockly.Language.controls_forEach = {
 Blockly.Language.for_lexical_variable_get = {
   // Variable getter.
   category: Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.LANG_CONTROLS_GET_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
@@ -342,7 +339,7 @@ Blockly.Language.for_lexical_variable_get = {
         .appendTitle("get")
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
@@ -386,15 +383,14 @@ Blockly.Language.for_lexical_variable_get = {
 Blockly.Language.controls_while = {
   // While condition.
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_WHILE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEST').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('while').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    Blockly.Language.setTooltip(this, 'Runs the blocks in the \'do\' section while the test is '
-        + 'true.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_WHILE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_WHILE_TITLE }]
@@ -405,7 +401,7 @@ Blockly.Language.controls_while = {
 Blockly.Language.controls_choose = {
   // Choose.
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_CHOOSE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
@@ -420,10 +416,7 @@ Blockly.Language.controls_choose = {
        + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
        */
     // [lyn, 01/15/2013] Edit description to be consistent with changes to slots. 
-    Blockly.Language.setTooltip(this, 'If the condition being tested is true,'
-       + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
-       + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
-       + 'at most one of the return slot expressions will be evaluated.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE }]
@@ -433,6 +426,7 @@ Blockly.Language.controls_choose = {
 Blockly.Language.controls_do_then_return = {
   // String length.
   category: Blockly.LANG_CATEGORY_CONTROLS,
+  helpUrl: Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendStatementInput('STM')
@@ -441,6 +435,7 @@ Blockly.Language.controls_do_then_return = {
         .appendTitle("then-return")
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO }]
@@ -449,12 +444,14 @@ Blockly.Language.controls_do_then_return = {
 // [lyn, 01/15/2013] Added
 Blockly.Language.controls_eval_but_ignore = {
   category: Blockly.LANG_CATEGORY_CONTROLS,
+  helpUrl: Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('VALUE')
         .appendTitle("evaluate");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE }]
@@ -464,11 +461,13 @@ Blockly.Language.controls_eval_but_ignore = {
 Blockly.Language.controls_nothing = {
   // Expression for the nothing value
   category: Blockly.LANG_CATEGORY_CONTROLS,
+  helpUrl: Blockly.LANG_CONTROLS_NOTHING_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput()
         .appendTitle("nothing");
     this.setOutput(true, null);
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_NOTHING_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_NOTHING_TITLE }]
@@ -478,12 +477,12 @@ Blockly.Language.controls_nothing = {
 Blockly.Language.controls_openAnotherScreen = {
   // Open another screen
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREEN').appendTitle('open another screen').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT).setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE }]
@@ -492,14 +491,13 @@ Blockly.Language.controls_openAnotherScreen = {
 Blockly.Language.controls_openAnotherScreenWithStartValue = {
   // Open another screen with start value
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREENNAME').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('open another screen with start value').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('STARTVALUE').appendTitle('startValue').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Opens a new screen in a multiple screen app and passes the '
-        + 'start value to that screen.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE }]
@@ -508,14 +506,12 @@ Blockly.Language.controls_openAnotherScreenWithStartValue = {
 Blockly.Language.controls_getStartValue = {
   // Get start value
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_GET_START_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
     this.appendDummyInput().appendTitle('get start value');
-    Blockly.Language.setTooltip(this, 'Returns the value that was passed to this screen when it '
-        + 'was opened, typically by another screen in a multiple-screen app. If no value was '
-        + 'passed, returns the empty text.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_START_VALUE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE }]
@@ -524,12 +520,12 @@ Blockly.Language.controls_getStartValue = {
 Blockly.Language.controls_closeScreen = {
   // Close screen
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput().appendTitle('close screen');
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Close the current screen');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE_CLOSE }]
@@ -538,13 +534,12 @@ Blockly.Language.controls_closeScreen = {
 Blockly.Language.controls_closeScreenWithValue = {
   // Close screen with value
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('SCREEN').appendTitle('close screen with value').appendTitle('result').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Closes the current screen and returns a result to the '
-        + 'screen that opened this one.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE_CLOSE }]
@@ -553,12 +548,12 @@ Blockly.Language.controls_closeScreenWithValue = {
 Blockly.Language.controls_closeApplication = {
   // Close application
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendDummyInput().appendTitle('close application');
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Closes all screens in this app and stops the app.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE_CLOSE }]
@@ -567,14 +562,12 @@ Blockly.Language.controls_closeApplication = {
 Blockly.Language.controls_getPlainStartText = {
   // Get plain start text
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('get plain start text');
-    Blockly.Language.setTooltip(this, 'Returns the plain text that was passed to this screen when '
-        + 'it was started by another app. If no value was passed, returns the empty text. For '
-        + 'multiple screen apps, use get start value rather than get plain start text.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_INPUT_GET }]
@@ -583,14 +576,12 @@ Blockly.Language.controls_getPlainStartText = {
 Blockly.Language.controls_closeScreenWithPlainText = {
   // Close screen with plain text
   category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('close screen with plain text').appendTitle('text').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
-    Blockly.Language.setTooltip(this, 'Closes the current screen and returns text to the app that '
-        + 'opened this one. For multiple screen apps, use close screen with value rather than '
-        + 'close screen with plain text.');
+    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE_CLOSE }]

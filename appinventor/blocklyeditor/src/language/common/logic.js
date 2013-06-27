@@ -29,7 +29,6 @@ if (!Blockly.Language) Blockly.Language = {};
 Blockly.Language.logic_boolean = {
   // Boolean data type: true and false.
   category : Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -40,6 +39,9 @@ Blockly.Language.logic_boolean = {
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
   },
+  helpUrl : function() {
+    var op = thisBlock.getTitleValue('BOOL');
+    return Blockly.Language.logic_boolean.HELPURLS[op];},
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
     translatedName: Blockly.LANG_LOGIC_BOOLEAN_TRUE,
@@ -61,15 +63,18 @@ Blockly.Language.logic_boolean.OPERATORS = [
     [ Blockly.LANG_LOGIC_BOOLEAN_FALSE, 'FALSE' ]];
 
 Blockly.Language.logic_boolean.TOOLTIPS = {
-  TRUE : 'Reports the boolean true.',
-  FALSE : 'Reports the boolean false.'
+  TRUE : Blockly.LANG_LOGIC_BOOLEAN_TOOLTIP_TRUE,
+  FALSE : Blockly.LANG_LOGIC_BOOLEAN_TOOLTIP_FALSE
 };
 
+Blockly.Language.logic_boolean.HELPURLS = {
+  TRUE : Blockly.LANG_LOGIC_BOOLEAN_TRUE_HELPURL,
+  FALSE : Blockly.LANG_LOGIC_BOOLEAN_FALSE_HELPURL
+};
 
 Blockly.Language.logic_false = {
   // Boolean data type: true and false.
   category : Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl : '',
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -81,19 +86,21 @@ Blockly.Language.logic_false = {
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
   },
+  helpUrl : function() {
+    var op = this.getTitleValue('BOOL');
+    return Blockly.Language.logic_boolean.HELPURLS[op];},
   onchange: Blockly.WarningHandler.checkErrors
 };
 
 Blockly.Language.logic_negate = {
   // Negation.
   category : Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl : '',
+  helpUrl : Blockly.LANG_LOGIC_NEGATE_HELPURL,
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('BOOL').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('not');
-    this.setTooltip('Returns true if the input is false.\n' +
-        'Returns false if the input is true.');
+    this.setTooltip(Blockly.LANG_LOGIC_NEGATE_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName:Blockly.LANG_LOGIC_NEGATE_INPUT_NOT }]
@@ -102,7 +109,10 @@ Blockly.Language.logic_negate = {
 Blockly.Language.logic_compare = {
   // Comparison operator.
   category : Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl : '',
+  helpUrl : function() {
+      var mode = this.getTitleValue('OP');
+      return Blockly.Language.logic_compare.HELPURLS[mode];
+    },
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -129,6 +139,11 @@ Blockly.Language.logic_compare.TOOLTIPS = {
         'The things being compared can be any thing, not only numbers.'
 }
 
+Blockly.Language.logic_compare.HELPURLS = {
+  EQ: Blockly.LANG_LOGIC_COMPARE_HELPURL_EQ,
+  NEQ: Blockly.LANG_LOGIC_COMPARE_HELPURL_NEQ
+}
+
 Blockly.Language.logic_compare.OPERATORS =
   [['=', 'EQ'],
    ['\u2260', 'NEQ']];
@@ -136,7 +151,6 @@ Blockly.Language.logic_compare.OPERATORS =
 Blockly.Language.logic_operation = {
   // Logical operations: 'and', 'or'.
   category: Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -150,6 +164,10 @@ Blockly.Language.logic_operation = {
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
   },
+  helpUrl: function() {
+      var op = thisBlock.getTitleValue('OP');
+      return Blockly.Language.logic_operation.HELPURLS[op];
+    },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
     translatedName: Blockly.LANG_LOGIC_OPERATION_AND,
@@ -170,15 +188,19 @@ Blockly.Language.logic_operation.OPERATORS =
     [[Blockly.LANG_LOGIC_OPERATION_AND, 'AND'],
      [Blockly.LANG_LOGIC_OPERATION_OR, 'OR']];
 
-Blockly.Language.logic_operation.TOOLTIPS = {
-  AND : 'Returns true if all inputs are true.',
-  OR : 'Returns true if any input is true.'
+Blockly.Language.logic_operation.HELPURLS = {
+  AND : Blockly.LANG_LOGIC_OPERATION_HELPURL_AND,
+  OR : Blockly.LANG_LOGIC_OPERATION_HELPURL_OR
 };
+Blockly.Language.logic_operation.TOOLTIPS = {
+  AND : Blockly.LANG_LOGIC_OPERATION_TOOLTIP_AND,
+  OR : Blockly.LANG_LOGIC_OPERATION_TOOLTIP_OR
+};
+
 
 Blockly.Language.logic_or = {
   // Logical operations: 'and', 'or'.
   category: Blockly.LANG_CATEGORY_LOGIC,
-  helpUrl: Blockly.LANG_LOGIC_OPERATION_HELPURL,
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
@@ -193,5 +215,10 @@ Blockly.Language.logic_or = {
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
   },
+  helpUrl: function() {
+      var op = thisBlock.getTitleValue('OP');
+      return Blockly.Language.logic_operation.HELPURLS[op];
+    },
   onchange: Blockly.WarningHandler.checkErrors
 };
+

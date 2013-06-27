@@ -65,14 +65,14 @@ function myStringify (obj) {
 Blockly.Language.global_declaration = {
   // Global var defn
   category: Blockly.MSG_VARIABLE_CATEGORY,  
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL,
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendValueInput('VALUE')
         .appendTitle("initialize global")
         .appendTitle(new Blockly.FieldTextInput('name', Blockly.LexicalVariable.renameGlobal), 'NAME')
         .appendTitle("to");
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
+    this.setTooltip(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -89,7 +89,7 @@ Blockly.Language.global_declaration = {
 Blockly.Language.lexical_variable_get = {
   // Variable getter.
   category: Blockly.MSG_VARIABLE_CATEGORY,  
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.LANG_VARIABLES_GET_HELPURL, // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
@@ -142,7 +142,7 @@ Blockly.Language.lexical_variable_get = {
 Blockly.Language.lexical_variable_set = {
   // Variable setter.
   category: Blockly.MSG_VARIABLE_CATEGORY,  
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.LANG_VARIABLES_SET_HELPURL, // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
@@ -168,7 +168,7 @@ Blockly.Language.local_declaration_statement = {
   // Define a procedure with no return value.
   // category: null,  // Procedures are handled specially.
   category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/07/12] Fix this
+  helpUrl: Blockly.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL, // *** [lyn, 11/07/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.localNames_ = ["name"]; // list of declared local variable names; has one initially 
@@ -193,7 +193,7 @@ Blockly.Language.local_declaration_statement = {
     // Add mutator for editing local variable names
     this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
 
-    this.setTooltip("Fix this tooltip!"); // *** [lyn, 11/07/12] Fix this
+    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP); // *** [lyn, 11/07/12] Fix this
   },
   onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: function(names, inits) { 
@@ -406,7 +406,7 @@ Blockly.Language.local_declaration_statement = {
 Blockly.Language.local_declaration_expression = {
   // Define a procedure with a return value.
   category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/07/12] Fix this
+  helpUrl: Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL, // *** [lyn, 11/07/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.localNames_ = ["name"]; // list of declared local variable names; has one initially 
@@ -429,7 +429,7 @@ Blockly.Language.local_declaration_expression = {
     // Add mutator for editing local variable names
     this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
 
-    this.setTooltip("Fix this tooltip!"); // *** [lyn, 11/07/12] Fix this
+    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP); // *** [lyn, 11/07/12] Fix this
   },
   onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,

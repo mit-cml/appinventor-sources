@@ -380,7 +380,7 @@ Blockly.Language.procedures_mutatorarg.validator = function(newVar) {
 Blockly.Language.procedure_lexical_variable_get = {
   // Variable getter.
   category: 'Procedures',
-  helpUrl: "http://fakewebsite.com", // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.LANG_PROCEDURES_GET_HELPURL, // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
@@ -389,7 +389,7 @@ Blockly.Language.procedure_lexical_variable_get = {
         .appendTitle("get")
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP_1);
+    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
   },
   getVars: function() {
@@ -433,6 +433,7 @@ Blockly.Language.procedure_lexical_variable_get = {
 Blockly.Language.procedures_do_then_return = {
   // String length.
   category: 'Procedures',
+  helpUrl: Blockly.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendStatementInput('STM')
@@ -441,6 +442,7 @@ Blockly.Language.procedures_do_then_return = {
         .appendTitle("then-return")
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
+    this.setTooltip(Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP);
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
