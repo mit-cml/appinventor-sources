@@ -343,6 +343,10 @@ Blockly.LexicalVariable = {};
 
 // [lyn, 11/19/12] Rename global to a new name.
 Blockly.LexicalVariable.renameGlobal = function (newName) {
+  // require global variables to not be an empty string or only contain spaces
+  if(newName.trim() == "") {
+    return null;
+  }
   // this is bound to field_textinput object 
   var oldName = this.text_;
   // [lyn, 11/18/12] Strip leading and trailing whitespace, and ensure that 
@@ -374,6 +378,14 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
 // may be changed (by adding numbers to the end) so that it does not conflict
 // with existing names. Returns the (possibly changed) new name.
 Blockly.LexicalVariable.renameParam = function (newName) {
+  // require local variables to not be an empty string or only contain spaces
+  if(newName.trim() == "") {
+    return null;
+  }
+  var htmlInput = Blockly.FieldTextInput.htmlInput_;
+  if(htmlInput && htmlInput.defaultValue == newName){
+    return newName;
+  }
   // this is bound to field_textinput object 
   var oldName = this.text_; // name being changed to newName
   // [lyn, 11/18/12] Strip leading and trailing whitespace, and ensure that 
