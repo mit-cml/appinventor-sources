@@ -52,7 +52,7 @@ Blockly.Language.lists_create_with = {
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     this.appendDummyInput(this.emptyInputName)
-      .appendTitle(Blockly.LANG_LISTS_CREATE_EMPTY_TITLE_1);
+      .appendTitle(Blockly.LANG_LISTS_CREATE_EMPTY_TITLE);
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum);
