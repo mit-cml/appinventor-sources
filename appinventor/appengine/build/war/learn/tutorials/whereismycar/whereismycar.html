@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Where's My Car - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    img.c3 {border:0;}
+    img.c2 {margin-left: 20px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt;             Android, Where\'s My Car? &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Android, Where's My Car
+       </h1>
+              <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch7AndroidWhere.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <div class="imagecontainer">
+        <img align="right" alt="" border="0" class="c2" src="AndroidWhereAssets/android-where.jpg" />
+       </div>
+       
+       <p>
+        You parked somewhere near the stadium or bar, but when the concert/party ends you
+                don't have a clue where the car is. The friends you came with are equally as
+                clueless.
+       </p>
+       <p>
+        Fortunately you haven't lost your Android phone that never forgets anything, and
+                you remember you have the hot new app,
+        <em>
+         Android, Where's My Car?
+        </em>
+        . With this
+                app, you click a button when you park your car, and the Android uses its location
+                sensor to record the car's GPS coordinates and address. Later, when you reopen the
+                app, it shows you a map from where you are to the remembered location-- problem
+                solved!
+       </p>
+       <p>
+        <a href="http://www.flickr.com/photos/dailylifeofmojo/4128596089/">
+         Photo
+        </a>
+        licensed under
+        <a href="http://creativecommons.org/licenses/by/2.0/deed.en">
+         Creative Commons
+        </a>
+       </p>
+       <h2>
+        Download it, Customize it, Understand it
+       </h2>
+       <p>
+        Below is a customizable, annotated and explained
+        <em>
+         Android, Where's My Car?
+        </em>
+        app. You can:
+       </p>
+       <ul>
+        <li>
+         install the app on your phone by scanning a barcode
+        </li>
+        <li>
+         download the source code blocks for the app, upload them into App Inventor,
+                then customize the app or use it as the basis for another idea you have.
+        </li>
+        <li>
+         Study the annotated blocks and explanations below to better understand the app
+                and App Inventor programming in general.
+        </li>
+       </ul>
+       <h2>
+        Try It
+       </h2>
+       <table>
+        <tr>
+         <td width="90%">
+          <p>
+           Scan the barcode to your Android phone. It will step you through installing
+                      the app.
+          </p>
+          <p>
+           (If you don't have a scanner, download the free ZXing scanner by searching
+                      for it at the Android Market)
+          </p>
+         </td>
+         <td>
+          <img alt="" border="0" class="c3" height="155" src="AndroidWhereAssets/WheresMyBarCode.png" width="164" />
+         </td>
+        </tr>
+       </table>
+       <h2>
+        Customize It
+       </h2>
+       <table>
+        <tr>
+         <td width='90%'>
+          Download the source code blocks to create your own customized app.
+          <ol>
+           <li>
+            save the source file (.zip) to your computer (click icon to the right)
+           </li>
+           <li>
+            do not unzip it-- leave it as a zip file.
+           </li>
+           <li>
+            open the My Projects page in App Inventor.
+           </li>
+           <li>
+            select More Actions | Upload Source from the menu.
+           </li>
+           <li>
+            choose the file you just downloaded
+           </li>
+          </ol>
+         </td>
+         <td>
+          <a href="AndroidWhereAssets/wheresMyCar.zip">
+           <img alt="" class="alignright size-full wp-image-24" height="100" src="AndroidWhereAssets/customize.png" title="customize" width="200" />
+          </a>
+         </td>
+        </tr>
+       </table>
+       <h2>
+        Understand It
+        <br />
+       </h2>
+       <p>
+        The app demonstrates how to communicate with the Android location sensor, how to
+                record data in the phone's long-term memory (database), and how you can open the
+                Google Maps app from your app to show directions from one one location to another.
+                It makes use of the following App Inventor components:
+       </p>
+       <ul>
+        <li>
+         <span class="ButtonText">
+          Location Sensor
+         </span>
+        </li>
+        <li>
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         -- to store the data
+        </li>
+        <li>
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         -- to open a map
+         <br />
+        </li>
+       </ul>
+       <h2>
+        The User Interface
+       </h2>
+       <p>
+        Here are the components for the
+        <em>
+         Android, Where's My Car?
+        </em>
+        app, as shown in
+                the Component Designer:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="AndroidWhereAssets/WheresMyCarDesign.png" />
+       </div>
+       <p>
+        The user interface consists of labels to show location data and buttons to initiate
+                events. Some labels just show static text, e.g.,
+        <span class="ButtonText">
+         GPSLabel
+        </span>
+        is the text "GPS:" that appears in the user interface.
+                Others, such as
+        <span class="ButtonText">
+         CurrentLatLabel
+        </span>
+        , will display
+                dynamic data one the location sensor gets its readings. For these labels, a default
+                value is set (0.0) here in the Component Designer.
+       </p>
+       <p>
+        The
+        <span class="ButtonText">
+         ActivityStarter1
+        </span>
+        component is used to launch
+                the map when the user asks for directions. Its properties are only partially shown
+                above. Here is how they should be specified:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Property
+           </td>
+           <td class="tbl-header">
+            Value
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Action
+            </span>
+           </td>
+           <td>
+            android.intent.action.VIEW
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityPackage
+            </span>
+           </td>
+           <td>
+            com.google.android.apps.maps
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityClass
+            </span>
+           </td>
+           <td>
+            com.google.android.maps.MapsActivity
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <h2>
+        &nbsp;
+       </h2>
+       <h2>
+        The App's Behavior
+       </h2>
+       <p>
+        Here are the blocks for the
+        <em>
+         Android, Where's My Car?
+        </em>
+        app (the yellow
+                annotations will also appear when you load this app into App Inventor):
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="674" src="AndroidWhereAssets/WheresMyCarBlocks.png" width="950" />
+       </div>
+       <p>
+        Let's examine the four different event-handlers of the app, starting in the
+                top-left and working around in counter-clockwise order.
+       </p>
+       <p>
+        <strong>
+         LocationSensor1.LocationChanged
+        </strong>
+        . This event occurs when the
+                phone's location sensor first gets a reading, or when the phone is moved to produce
+                a new reading, The event-handler just places the readings--latitude, longitude, and
+                current (street) address-- into the corresponding "Current" labels so that they
+                appear on the phone.The
+        <span class="ButtonText">
+         RememberButton
+        </span>
+        is also
+                enabled in this event-handler. Its enabled setting should be unchecked in the
+                Component Designer because there is nothing for the user to remember until the
+                sensor gets a reading.
+       </p>
+       <p>
+        <strong>
+         RememberButton.Click.
+        </strong>
+        When the user clicks the
+        <span class="ButtonText">
+         RememberButton
+        </span>
+        , the location sensor's current readings are put
+                into the "remember" labels and stored to the database as well. The
+        <span class="ButtonText">
+         DirectionsButton
+        </span>
+        is enabled as it now makes sense for the user
+                click on it to see a map (though it will make more sense once the user changes
+                location).
+       </p>
+       <p>
+        <strong>
+         DirectionsButton.Click.
+        </strong>
+        When the user clicks the
+        <span class="ButtonText">
+         DirectionsButton
+        </span>
+        , the event-handler builds a URL for a map and
+                calls
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        to launch the Maps
+                application and load the map.
+        <span class="ButtonText">
+         make text
+        </span>
+        is used to
+                build the URL to send to the Maps application. The resulting URL consists of the
+                Maps domain along with two crucial parameters,
+        <span class="ButtonText">
+         saddr
+        </span>
+        and
+        <span class="ButtonText">
+         daddr
+        </span>
+        , which specify
+                the start and destination for the directions. For this app, the
+        <span class="ButtonText">
+         saddr
+        </span>
+        is set to the latitude and longitude of the current
+                location, and the
+        <span class="ButtonText">
+         daddr
+        </span>
+        is set to the latitude and
+                longitudeo of the location that was "remembered" (the location of your car!).
+       </p>
+       <p>
+        <strong>
+         Screen1.Initialize
+        </strong>
+        . This event is always triggered when an app
+                opens. To understand it, you have to envision the user recording the location of
+                the car, then closing the app, then later re-opening the app. When the app
+                re-opens, the user expects that the location remembered earlier should appear on
+                the phone. To facilitate this, the event-handler queries the database (
+        <span class="ButtonText">
+         TinyDB.GetValue
+        </span>
+        ). If there is indeed a remembered address
+                stored in the database-- the length of the stored address is greater than zero--the
+                remembered latitude, longitude, and street addres are placed in the corresponding
+                labels.
+       </p>
+       <h2>
+        Variations
+       </h2>
+       <ul>
+        <li>
+         Create "Android, Where is Everyone?", an app that lets a group of people track
+                each other's whereabouts. Whether your hiking or at the park, this app could help
+                save time and even lives.
+        </li>
+        <li>
+         Create a "breadcrumb" app that tracks your (phone's) whereabouts by recording
+                each location change. One interesting refinement would be to only record a new
+                "breadcrumb" if the location has changed by a certain amount.
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some of the ideas covered in this tutorial:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          LocationSensor
+         </span>
+         component can report the
+                phone's latitude, longitude, and current street address. Its
+         <span class="ButtonText">
+          LocationChanged
+         </span>
+         event is triggered when sensor gets its first
+                reading and when the reading changes (the phone has moved).
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         component can launch any
+                app including Google Maps. For Maps, you set the
+         <span class="ButtonText">
+          DataUri
+         </span>
+         property to the URL of the map you want to display. If
+                you want to show directions, the URL will be of the form:
+                http://maps.google.com/maps/?saddr=0.1,0.1&amp;daddr=0.2,0.2, where the numbers are
+                GPS coordinates.
+        </li>
+        <li>
+         <span class="ButtonText">
+          make text
+         </span>
+         is used to piece together (concatenate)
+                  separate text items into a single text object. It allows you to concatenate
+                  dynamic data with static text. With the Maps URL, the GPS coordinates are the
+                  dynamic data.
+        </li>
+        <li>
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         allows you to store data persistently in
+                  the phone's database. Whereas the data in a variable or property is lost when an
+                  app closes, the data you store in the database can be loaded into your app each
+                  time it is opened.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        &nbsp;
+       </h2>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://appinventor.org">
+         Professor David Wolber
+        </a>
+        ,
+                CS Professor at The University of San Francisco, for developing this tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

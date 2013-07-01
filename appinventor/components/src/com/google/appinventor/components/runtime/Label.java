@@ -150,8 +150,7 @@ public final class Label extends AndroidViewComponent {
    * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontBold() {
     return bold;
   }
@@ -179,8 +178,7 @@ public final class Label extends AndroidViewComponent {
    * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontItalic() {
     return italic;
   }
@@ -256,6 +254,48 @@ public final class Label extends AndroidViewComponent {
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
   }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  // Gareth Haylings 30.06.2013 added the following code
+  /**
+   * Specifies the fontstyle including
+   * Font as serif, sans serif, or monospace
+   * FontBold & FontItalic
+   *                              
+   *
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty()
+  public void FontStyle(String fontsytle) {
+    if (fontsytle == "SansSerif Normal") {fontTypeface = 1; bold = false; italic = false;}
+    if (fontsytle == "SansSerif Bold") {fontTypeface = 1; bold = true; italic = false;}
+    if (fontsytle == "Serif Normal") {fontTypeface = 2; bold = false; italic = false;}
+    if (fontsytle == "Serif Bold") {fontTypeface = 2; bold = true; italic = false;}
+    if (fontsytle == "Serif Italic") {fontTypeface = 2; bold = false; italic = true;}
+    if (fontsytle == "Serif Bold Italic") {fontTypeface = 2; bold = true; italic = true;}
+    if (fontsytle == "Monospace Normal") {fontTypeface = 3; bold = false; italic = false;}
+    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+  }
+  
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "The fontstyle for the text.")
+  public String FontStyle() {
+    if (fontTypeface == 0 && bold == false && italic == false) {return "SansSerif Normal";}
+    else if (fontTypeface == 0 && bold == true && italic == false) {return "SansSerif Bold";}
+    else if (fontTypeface == 1 && bold == false && italic == false) {return "SansSerif Normal";}
+    else if (fontTypeface == 1 && bold == true && italic == false) {return "SansSerif Bold";}
+    else if (fontTypeface == 2 && bold == false && italic == false) {return "Serif Normal";}
+    else if (fontTypeface == 2 && bold == true && italic == false) {return "Serif Bold";}
+    else if (fontTypeface == 2 && bold == false && italic == true) {return "Serif Italic";}
+    else if (fontTypeface == 2 && bold == true && italic == true) {return "Serif Bold Italic";}
+    else if (fontTypeface == 3 && bold == false && italic == false) {return "Monospace Normal";}
+    else {return "SansSerif Normal";}
+  }
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
   /**
    * Returns the text displayed by the label.

@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Text Group 2 - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    h2.c2 {font-weight: bold}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; Text Group 2 ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Text Group Part II: Adding and Removing Members
+       </h1>
+       <div class="imagecontainer">
+        <img align="right" alt="" src="TextGroup2Assets/textGroup2emulator.png" />
+       </div>
+       <p>
+        This tutorial extends the
+        <a href="/learn/tutorials/textgroup/textgroup.html">
+         Text
+                Group tutorial.
+        </a>
+        That app sent a text to a fixed list of phone numbers, and only
+                the programmer could change the numbers in the list. The app in this tutorial
+                allows the user to add and remove the phone numbers in the list, and it stores the
+                list persistently in a database.
+        <br />
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and open your textgroup project (if you
+                haven't completed that tutorial, do so now before continuing). SaveAs the app and
+                name it "TextGroup2". You can leave the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        as "Text Group". Open the Blocks Editor and connect to
+                the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the app so that the user adds phone numbers to the group by choosing
+                from the phone's contact list, and removes them by choosing from the items already
+                in the group.. You'll store the list of numbers in a database so that they are
+                there even when the app is closed and re-launched.
+       </p>
+       <p>
+        The tutorial covers the following App Inventor components and concepts:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          foreach
+         </span>
+         block for repeating operations on a
+                list.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          PhoneNumberPicker
+         </span>
+         component for accessing
+                the phone's contacts.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component for allowing the user
+                to choose a number for removal.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          Texting
+         </span>
+         component for sending texts.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         database component for storing the
+                phone list in a database.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+        <br />
+       </h2>
+       <p>
+        The user interface for Text Group, Part II has a textbox, button, and status label
+                for sending the group text, just as in Part I. If you performed a SaveAs to begin
+                this project, those components should already be in the view. You should then add a
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        and
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        components for adding and removing phone numbers
+                from the list, along with a
+        <span class="ButtonText">
+         Texting
+        </span>
+        component and a
+        <span class="ButtonText">
+         TinyDB
+        </span>
+        component, both of which will appear in the
+                "non-visual" component area. A table of detailed instructions for designing the
+                components is below, but you can also build it from the following picture of what
+                it should look like:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="TextGroup2Assets/designerPart2.png" width="963" />
+       </div>
+       <p>
+        The components listed below were used to create the designer window shown above.
+                The first four were part of TextGroup so will already be there if you built that
+                app and performed a SaveAs to begin this one. You'll need to drag each of the other
+                components from the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        and name it as specified below:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             MessageText
+            </span>
+           </td>
+           <td>
+            User will enter message here.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             TextGroupButton
+            </span>
+           </td>
+           <td>
+            user enters the message here
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             StatusLabel
+            </span>
+           </td>
+           <td>
+            Reports when texts have been sent
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting
+            </span>
+           </td>
+           <td>
+            Social
+           </td>
+           <td>
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td>
+            The component that sends the texts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             GroupHeadingLabel
+            </span>
+           </td>
+           <td>
+            Header for the list of phone numbers that will appear
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             MembersLabel
+            </span>
+           </td>
+           <td>
+            This is where the list of phone numbers will appear
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Horizontal Arrangement
+            </span>
+           </td>
+           <td>
+            Screen Arrangement
+           </td>
+           <td>
+            <span class="ButtonText">
+             Horizontal Arrangement1
+            </span>
+           </td>
+           <td>
+            To organize the add and remove buttons (pickers) horizontally
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             PhoneNumberPicker
+            </span>
+           </td>
+           <td>
+            Social
+           </td>
+           <td>
+            <span class="ButtonText">
+             PhoneNumberPicker1
+            </span>
+           </td>
+           <td>
+            Allow user to choose from numbers in contact list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             RemoveListPicker
+            </span>
+           </td>
+           <td>
+            Allow user to remove number from phone numbers in group
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             TinyDB1
+            </span>
+           </td>
+           <td>
+            For storing and retrieving group's phone numbers from database
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Set the properties of the components in the following way:
+       </p>
+       <ul>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Hint
+         </span>
+         of
+         <span class="ButtonText">
+          MessageText
+         </span>
+         to "enter a message"
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          TextGroupButton
+         </span>
+         to "Text Group"
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          StatusLabel
+         </span>
+         to "status".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          GroupHeadingLabel
+         </span>
+         to "-- Group -- ".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          MembersLabel
+         </span>
+         to "members will appear here".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          PhoneNumberPicker1
+         </span>
+         to "Add Member".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          RemoverListPicker
+         </span>
+         to "Remove Member"
+        </li>
+       </ul>
+       <h2>
+        Add behaviors to the components
+        <br />
+       </h2>
+       <p>
+        If you completed Text Group, Part I, you should have the following list defined in
+                the Blocks Editor:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="../textgroup/TextGroupAssets/phonelist.png" />
+       </div>
+       <p>
+        For this app, you still want the list but you don't want any pre-defined numbers in
+                it-- the numbers will be added by the end-user of the app. So remove the text
+                blocks with the numbers and leave the
+        <span class="ButtonText">
+         make a list
+        </span>
+        block empty:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="TextGroup2Assets/emptylist.png" />
+       </div>
+       <p>
+        You'll need to add the following behaviors:
+       </p>
+       <p>
+        1. When the user clicks the "Add Member" button (the button associated with the
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        ), the picker will appear for the
+                user to choose a number. When the choice is made, the app will add the chosen
+                number to the
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        list and update the
+                database.
+       </p>
+       <p>
+        2. When the user clicks the "Remove Member" button (the button associated with the
+        <span class="ButtonText">
+         RemovListPicker
+        </span>
+        ), the picker will appear for the
+                user to choose one of the numbers already in
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        . When the choice is made, the app will remove the
+                number from the list and update the database.
+       </p>
+       <p>
+        3. When the app begins, the numbers stored in the database are retrieved and loaded
+                into
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        .
+        <br />
+       </p>
+       <h2>
+        <strong>
+         Adding a
+        </strong>
+        Phone Number (Member) to the Group
+        <br />
+       </h2>
+       <p>
+        The list of phone numbers in the contact list will appear when the user clicks the
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        's associated button: that
+                behavior is built-in to the component. When the user makes a choice from the
+                contact list,
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        's
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        event is triggered-- your job is to program this
+                to add the chosen item to the list and update the database.
+        <br />
+       </p>
+       <p>
+        You'll need the following blocks:
+        <br />
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             PhoneNumberPicker1.AfterPicking
+            </span>
+           </td>
+           <td>
+            PhoneNumberPicker1
+           </td>
+           <td>
+            the event-handler that is triggered when user chooses from contact list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+           <td>
+            Lists
+            <br />
+           </td>
+           <td>
+            your goal is to add chosen number to list
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug this into list slot of add items to list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             PhoneNumberPicker1.PhoneNumber
+            </span>
+            <br />
+           </td>
+           <td>
+            PhoneNumberPicker1
+           </td>
+           <td>
+            this holds the chosen phone number, plug into
+            <span class="ButtonText">
+             item
+            </span>
+            slot of
+            <span class="ButtonText">
+             add items to
+                        list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB1.StoreValue
+            </span>
+           </td>
+           <td>
+            TinyDB1
+           </td>
+           <td>
+            since the list is updated, need to update the database
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("textGroup")
+           </td>
+           <td>
+            Text
+            <br />
+           </td>
+           <td>
+            plug this in as the tag of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug this in as the value of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set MembersLabel.Text to
+            </span>
+           </td>
+           <td>
+            MembersLabel
+           </td>
+           <td>
+            display the list on the phone
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            <span class="ButtonText">
+             plug into set MembersLabel.Text to
+            </span>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="270" src="TextGroup2Assets/addMember.png" width="459" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user chooses from the
+        <span class="ButtonText">
+         PhoneListPicker,
+        </span>
+        the
+        <span class="ButtonText">
+         PhoneListPicker1.AfterPicking
+        </span>
+        event is triggered.A
+        <span class="ButtonText">
+         PhoneListPicker'
+        </span>
+        s job is to put the user's choice
+                in its
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        property, so the event-handler
+                just calls
+        <span class="ButtonText">
+         add items to list
+        </span>
+        to get that choice
+                into the
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        list.
+       </p>
+       <p>
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        is a variable, and variables are
+                short-term memory that will disappear when the app is closed. Thus, after adding
+                the item to the variable,
+        <span class="ButtonText">
+         TinyDB1.StoreValue
+        </span>
+        block
+                is used to copy that list to the database-- the phone's long-term memory. The data
+                is tagged with "textGroup". Later, you'll use that tag to re-load the phone number
+                list from the database each time the app is opened.
+       </p>
+       <p>
+        After updating the database,
+        <span class="ButtonText">
+         set MembersLabel.Text
+                to
+        </span>
+        is called to display the list. This is necessary because list variables
+                are hidden from the user until they are placed in a visible component. Directly
+                placing a list into a label is a rudimentary way of displaying a list-- the list
+                will appear in the form: (111-1111 222-2222). In the next section, you'll program a
+                more elegant list display..
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        On the phone, click "Add Member" and choose a
+                number from the list of contacts that appears. Does the number appear in the
+                MembersLabel? Try adding additional numbers to see how the list is displayed.
+        <br />
+       </blockquote>
+       <h2 class="c2">
+        Displaying the List with Items on Separate Lines
+       </h2>
+       <p>
+        At this point the app shows the user the phone numbers that have been added, but
+                not very elegantly. Create a procedure
+        <span class="ButtonText">
+         displayMembers
+        </span>
+        , which displays the list with each phone number
+                on a separate line. Be sure and call the procedure in the
+        <span class="ButtonText">
+         PhonePicker1.AfterPicking
+        </span>
+        event, below the
+        <span class="ButtonText">
+         add items to list
+        </span>
+        block, so that the updated list is displayed.
+                The call to the procedure should replace the blocks that set the MembersLabel.Text
+                directly to the list. For help displaying the list on separate lines, see
+        <a href="/learn/reference/other/displaylist.html">
+         Displaying a List
+        </a>
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             procedure
+            </span>
+            ("displayMembers")
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            create a procedure as you'll want to call this from multiple places
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set MembersLabel.Text to
+            </span>
+           </td>
+           <td>
+            MembersLabel
+           </td>
+           <td>
+            display the list here
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            start the text out empty
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            iterate through the numbers
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             name number
+            </span>
+           </td>
+           <td>
+            in the foreach
+           </td>
+           <td>
+            name the foreach variable "number'. This is the current item of the
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into
+            <span class="ButtonText">
+             in list
+            </span>
+            slot of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td height="30">
+            <span class="ButtonText">
+             set MembersLabel.Text to
+            </span>
+           </td>
+           <td>
+            MembersLabel
+           </td>
+           <td>
+            modify with each of the numbers
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            build a text object from multiple parts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MembersLabel.Text
+            </span>
+           </td>
+           <td>
+            MembersLabel
+           </td>
+           <td>
+            add to the label on each iteration of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("\n")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            newline character so that next number is on next line
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value number
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the current number from the list
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Here's how the blocks should look:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="TextGroup2Assets/displayMembers.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         foreach
+        </span>
+        in
+        <span class="ButtonText">
+         displayMembers
+        </span>
+        successively adds a phone number to the end of
+                the label, placing a newline character in between each item.
+       </p>
+       <p>
+        Of course this procedure will not do anything unless you call it: you should add a
+                call to the procedure in the
+        <span class="ButtonText">
+         PhonePicker1.AfterPicking
+        </span>
+        event, below the
+        <span class="ButtonText">
+         add items to list
+        </span>
+        block. The
+        <span class="ButtonText">
+         call
+                displayMembers
+        </span>
+        block can be found in My Definitions, and it should replace
+                the blocks that directly set the
+        <span class="ButtonText">
+         MembersLabel.Text
+        </span>
+        in the list.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        On the phone, click "Add Member" to choose
+                another number to add to the list. When the modified list is displayed, does each
+                number appear on separate lines?
+        <br />
+       </blockquote>
+       <h2>
+        Removing a Number from the list
+       </h2>
+       <p>
+        To allow the user to remove a number from the list, you must first get the
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        list into the
+        <span class="ButtonText">
+         RemoveListPicker
+        </span>
+        that appears when the user clicks "Remove
+                Member". Unlike the
+        <span class="ButtonText">
+         PhonePicker
+        </span>
+        component, which
+                gets its data from the phone's contact list,
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        requires you to explicilty load the items that will
+                appear. You can do this by setting the
+        <span class="ButtonText">
+         Elements
+        </span>
+        property of the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component. You do this
+                within the
+        <span class="ButtonText">
+         RemoveListPicker.BeforePicking
+        </span>
+        event,
+                which is triggered right when the user clicks the button but before the list is
+                shown.
+       </p>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="105" src="TextGroup2Assets/BeforePicking.png" width="430" />
+       </div>
+       <p>
+        Next, code the
+        <span class="ButtonText">
+         RemoveListPicker.AfterPicking
+        </span>
+        event
+                so that the user's choice is removed from the
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        list. You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             RemoveListPicker.AfterPicking
+            </span>
+           </td>
+           <td>
+            RemoveListPicker
+           </td>
+           <td>
+            this is triggered after the user chooses a number from the list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             remove list item
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            removes the indexth item in a given list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into list slot of
+            <span class="ButtonText">
+             remove list item
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             position in list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            given an item in a list, this gives you its index
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             RemoveListPicker.Selection
+            </span>
+           </td>
+           <td>
+            RemoveListPicker
+           </td>
+           <td>
+            the number chosen by the user, plug into thing slot of
+            <span class="ButtonText">
+             position in list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into
+            <span class="ButtonText">
+             list
+            </span>
+            slot of
+            <span class="ButtonText">
+             position in list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call displayMembers
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            once the user removes one, display the modified list
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="267" src="TextGroup2Assets/RemoveAfterPicking.png" width="584" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user chooses a number from the
+        <span class="ButtonText">
+         RemoveListPicker
+        </span>
+        , the
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        event is triggered. The event-handler uses
+        <span class="ButtonText">
+         position in list
+        </span>
+        to get the index of the chosen
+                number, then uses that index to remove the number from the list
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        . The database is then updated and the list
+                displayed.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        On the phone, click "Remove Member" and choose
+                a number from the list that appears. When the list is re-displayed, is the number
+                you chose gone?
+        <br />
+       </blockquote>
+       <h2>
+        Loading the List from the Database
+       </h2>
+       <p>
+        The app so far works, and when changes are made to the PhoneNumbers list they are
+                also stored in a database. Now you just need to add the behavior such that the data
+                stored in the database is loaded when the app launches.
+       </p>
+       <p>
+        Program the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event-handler so
+                that the saved list of phone numbers is retrieved from the database and placed in
+                the
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        list and the display is updated to
+                show the list. You'll need to check the retrieved data to make sure there's
+                something there-- after all, the first time the app is used, the database will not
+                have any numbers in it.
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("valueFromDB")
+            <br />
+           </td>
+           <td>
+            Definitions
+            <br />
+           </td>
+           <td>
+            A temporary variable to hold the retrieved data
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text (blank)
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Initial value for the variable can be anything
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Screen1.Initialize
+            </span>
+           </td>
+           <td>
+            Screen1
+           </td>
+           <td>
+            This is triggered when app begins
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set valueFromDB to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            you'll set the variable to the value retrieved from db
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB1.GetValue
+            </span>
+           </td>
+           <td>
+            TinyDB1
+           </td>
+           <td>
+            get the stored response text from the database
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("textGroup")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            plug into tag slot of
+            <span class="ButtonText">
+             GetValue
+            </span>
+            , make sure
+                        text is same as was used in
+            <span class="ButtonText">
+             StoreValue
+            </span>
+            above
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             if test
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            to ask if the retrieved value has some text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             is list?
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            check if the data returned is a list (if no data is returned, this will be
+                        false)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global valueFromDB
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this variable holds the value retrieved from
+            <span class="ButtonText">
+             GetValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set PhoneNumbers to
+            </span>
+           </td>
+           <td>
+            PhoneNumbers
+           </td>
+           <td>
+            if we retrieved something, place it in
+            <span class="ButtonText">
+             PhoneNumbers
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global valueFromDB
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this variable holds the value retrieved from
+            <span class="ButtonText">
+             GetValue
+            </span>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="288" src="TextGroup2Assets/screenInit.png" width="512" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the app begins, the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event
+                is triggered. The event-handler queries the database with
+        <span class="ButtonText">
+         GetValue
+        </span>
+        and the tag "textGroup". If there is a value with that
+                tag in the database, its corresponding value will be placed in the variable
+        <span class="ButtonText">
+         valueFromDB
+        </span>
+        . The event-handler checks this value--
+                is it a list?-- and if it is puts the list into the variable
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        and calls
+        <span class="ButtonText">
+         displayMembers
+        </span>
+        .
+        <br />
+       </p>
+       <div class="advtutorial">
+        <blockquote class="testing">
+         <strong>
+          Test the app.
+         </strong>
+         To test the final app, first package and install
+                  it on the phone and run it. Live testing won't work in this case because every
+                  time you "Restart App", in clears the phone's database: even if you've stored
+                  some data persistently, it is cleared when you restart the app.
+         <br />
+         Click Restart App so that the app re-initializes. Does the list of numbers you've
+                  entered appear on reload? Try removing all items and testing again. Does the app
+                  launch without error?
+         <br />
+        </blockquote>
+        <h2>
+         Text Group Part II, Final Program
+        </h2>
+        <div class="imagecontainer">
+         <img alt="" height="695" src="TextGroup2Assets/textGroup2final.png" width="900" />
+        </div>
+        <h2>
+         Variations
+        </h2>
+        <p>
+         Once you get the Text Group app working, you might want to explore some
+                  variations. For example,
+        </p>
+        <ul>
+         <li>
+          Write a version that records both the contact name and phone number of each
+                  member of the group. You can also use ContactPicker to let the user choose from a
+                  contact name instead of a number.
+         </li>
+         <li>
+          Write a version that allows the user to define and make use of multiple
+                  groups. You'll need a group list in which each item is a list of
+                  contacts/numbers, and you'll need a more complex user interface.
+          <br />
+         </li>
+        </ul>
+        <h2>
+         Review
+        </h2>
+        Here are some of the ideas covered in this tutorial:
+        <br />
+        <ul>
+         <li>
+          PhoneListPicker allow the user to choose from the phone numbers of his
+                  contacts. The choice is placed in the Selection property and the AfterPicking
+                  event is called when the user makes a choice.
+          <br />
+         </li>
+         <li>
+          ListPicker is similar to PhoneListPicker but it displays a programmer-defined
+                  list, e.g., the list of phone numbers in the group. You define the list that will
+                  appear in the ListPicker by setting the Elements property, and you can do this in
+                  the BeforePicking event. The user's choice is placed in the Selection property,
+                  and the AfterPicking event is triggered when the user makes a choice.
+         </li>
+         <li>
+          TinyDB is used to store data persistently so that it can be loaded each time
+                  an app begins. StoreValue stores with a tag to identify the data and the data
+                  itself (the value). GetValue returns the data for a given tag. Often, an app will
+                  call GetValue when the app begins (Screen1.Initialize) to load the persistent
+                  data.
+         </li>
+         <li>
+          Currently, App Inventor does not provide full access and functionality for
+                  the contacts and groups of the phone. In this tutorial, you created your own
+                  group and app for processing the group (adding,removing, and texting all).
+          <br />
+         </li>
+        </ul>
+        <h2>
+         Scan the Sample App to your Phone
+        </h2>
+        <p>
+         Scan the following barcode onto your phone to install and run the sample app.
+        </p>
+        <div class="imagecontainer">
+         <img alt="" src="TextGroup2Assets/textgroup2barcode.png" />
+        </div>
+        <h2>
+         Download Source Code
+        </h2>
+        If you'd like to work with this sample in App Inventor, download the
+        <a href="TextGroup2Assets/textgroup2.zip">
+         source code
+        </a>
+        to your computer, then open App
+                Inventor, go to the
+        <span class="ButtonText">
+         My Projects
+        </span>
+        page, and choose
+        <span class="ButtonText">
+         More Actions | Upload Source
+        </span>
+        .
+       </div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

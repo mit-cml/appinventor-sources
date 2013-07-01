@@ -142,13 +142,15 @@ public class TextViewUtil {
         break;
     }
 
-    int style = 0;
-    if (bold) {
-      style |= Typeface.BOLD;
+     int style = 0;
+     if (bold) {
+       style |= Typeface.BOLD;
+     }
+     if (italic) {
+       style |= Typeface.ITALIC;
     }
-    if (italic) {
-      style |= Typeface.ITALIC;
-    }
+    
+    
     textview.setTypeface(Typeface.create(tf, style));
     textview.requestLayout();
   }

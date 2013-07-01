@@ -41,8 +41,8 @@ public final class MockForm extends MockContainer {
    * Widget for the mock form title bar.
    */
   private class TitleBar extends Composite {
-    private static final int HEIGHT = 24;
-    
+   private static final int HEIGHT = 0;     // Gareth Haylings changed  15/06/2013 code was = private static final int HEIGHT = 24;
+ 
 
 
     // UI elements
@@ -58,7 +58,7 @@ public final class MockForm extends MockContainer {
       title.setHorizontalAlignment(Label.ALIGN_LEFT);
 
       bar = new AbsolutePanel();
-      bar.add(title, 12, 4);
+      bar.add(title, 12, 0);   // Gareth Haylings changed  15/06/2013 code was = bar.add(title, 12, 4);
 
       initWidget(bar);
 
@@ -110,10 +110,10 @@ public final class MockForm extends MockContainer {
 
   // TODO(lizlooney) 320x480 is the resolution of the G1. Do we want to change this to the
   // resolution of the Nexus One?
-  private static final int PORTRAIT_WIDTH = 320;
-  private static final int PORTRAIT_HEIGHT = 480;
-  private static final int LANDSCAPE_WIDTH = 480;
-  private static final int LANDSCAPE_HEIGHT = 320;
+  private static final int PORTRAIT_WIDTH = 600;  // Gareth Haylings changed  15/06/2013  was 320
+  private static final int PORTRAIT_HEIGHT = 1024;  // Gareth Haylings changed  15/06/2013  was 480
+  private static final int LANDSCAPE_WIDTH = 1024;  // Gareth Haylings changed  15/06/2013  was 480
+  private static final int LANDSCAPE_HEIGHT = 600;  // Gareth Haylings changed  15/06/2013  was 320
 
   // Property names
   private static final String PROPERTY_NAME_TITLE = "Title";

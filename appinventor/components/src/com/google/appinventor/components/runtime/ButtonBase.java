@@ -174,13 +174,14 @@ public abstract class ButtonBase extends AndroidViewComponent
             //button pressed, provide visual feedback AND return false
             view.getBackground().setAlpha(70); // translucent
             view.invalidate();
-
+            TouchDown();          //Gareth Haylings 01.07.2013
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
             me.getAction() == MotionEvent.ACTION_CANCEL) {
             //button released, set button back to normal AND return false
             view.getBackground().setAlpha(255); // opaque
             view.invalidate();
-        }
+            TouchUp();          //Gareth Haylings 01.07.2013
+            }
 
         return false;
     }
@@ -190,6 +191,24 @@ public abstract class ButtonBase extends AndroidViewComponent
     return view;
   }
 
+  //----------------------------------------------------------------------------------------------------------------------
+  // Gareth Haylings 01.07.2013 
+  /**
+   * Indicates when the button is touch down
+   */
+  @SimpleEvent
+  public void TouchDown() {
+    EventDispatcher.dispatchEvent(this, "TouchDown");
+  }
+
+  /**
+   * Indicates when the button is touch ends 
+   */
+  @SimpleEvent
+  public void TouchUp() {
+    EventDispatcher.dispatchEvent(this, "TouchUp");
+  }
+  //----------------------------------------------------------------------------------------------------------------------
   /**
    * Indicates the cursor moved over the button so it is now possible
    * to click it.
@@ -441,8 +460,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontBold() {
     return bold;
   }
@@ -455,8 +473,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty(userVisible = false)
   public void FontBold(boolean bold) {
     this.bold = bold;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -501,8 +518,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontItalic() {
     return italic;
   }
@@ -515,8 +531,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty(userVisible = false)
   public void FontItalic(boolean italic) {
     this.italic = italic;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -527,9 +542,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    *
    * @return  font size in pixel
    */
-  @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE) //Gareth Haylings 11.06.2013 removed uservisible=false so font can be view in blockeditor
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -541,8 +554,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
-  @SimpleProperty(
-      userVisible = false)
+  @SimpleProperty                                         //Gareth Haylings 11.06.2013 removed uservisible=false so font can be view in blockeditor
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }
@@ -580,6 +592,48 @@ public abstract class ButtonBase extends AndroidViewComponent
     fontTypeface = typeface;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
   }
+
+  //----------------------------------------------------------------------------------------------------------------------------------------
+  // Gareth Haylings 30.06.2013 added the following code
+  /**
+   * Specifies the fontstyle including
+   * Font as serif, sans serif, or monospace
+   * FontBold & FontItalic
+   *                              
+   *
+   * @param typeface  one of {@link Component#TYPEFACE_DEFAULT},
+   *                  {@link Component#TYPEFACE_SERIF},
+   *                  {@link Component#TYPEFACE_SANSSERIF} or
+   *                  {@link Component#TYPEFACE_MONOSPACE}
+   */
+  @SimpleProperty()
+  public void FontStyle(String fontsytle) {
+    if (fontsytle == "SansSerif Normal") {fontTypeface = 1; bold = false; italic = false;}
+    if (fontsytle == "SansSerif Bold") {fontTypeface = 1; bold = true; italic = false;}
+    if (fontsytle == "Serif Normal") {fontTypeface = 2; bold = false; italic = false;}
+    if (fontsytle == "Serif Bold") {fontTypeface = 2; bold = true; italic = false;}
+    if (fontsytle == "Serif Italic") {fontTypeface = 2; bold = false; italic = true;}
+    if (fontsytle == "Serif Bold Italic") {fontTypeface = 2; bold = true; italic = true;}
+    if (fontsytle == "Monospace Normal") {fontTypeface = 3; bold = false; italic = false;}
+    TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
+  }
+  
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "The fontstyle for the text.")
+  public String FontStyle() {
+    if (fontTypeface == 0 && bold == false && italic == false) {return "SansSerif Normal";}
+    else if (fontTypeface == 0 && bold == true && italic == false) {return "SansSerif Bold";}
+    else if (fontTypeface == 1 && bold == false && italic == false) {return "SansSerif Normal";}
+    else if (fontTypeface == 1 && bold == true && italic == false) {return "SansSerif Bold";}
+    else if (fontTypeface == 2 && bold == false && italic == false) {return "Serif Normal";}
+    else if (fontTypeface == 2 && bold == true && italic == false) {return "Serif Bold";}
+    else if (fontTypeface == 2 && bold == false && italic == true) {return "Serif Italic";}
+    else if (fontTypeface == 2 && bold == true && italic == true) {return "Serif Bold Italic";}
+    else if (fontTypeface == 3 && bold == false && italic == false) {return "Monospace Normal";}
+    else {return "SansSerif Normal";}
+  }
+  //----------------------------------------------------------------------------------------------------------------------------------------
 
   /**
    * Returns the text displayed by the button.

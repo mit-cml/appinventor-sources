@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Map Tour - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials">Tutorials</a> &gt; Map Tour ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Map Tour
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+       <div class="imagecontainer">
+        <img align="right" alt="" border="0" src="MapTourAssets/listPicker.png" />
+       </div>
+       <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch6Map.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <p>
+        This is a two-part tutorial introduces the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        component for launching arbitrary Android Apps
+                and the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component for allowing a user to
+                choose from a list of items. You'll build MapTour, an app for visiting French
+                vacation destinations with a single click. Users of your app will be able to visit
+                the Eiffel Tower, the Louvre, and Notre Dame in quick succession.
+        <br />
+       </p>
+       <p>
+        This tutorial assumes you are familiar with the basics of App Inventor-- using the
+                Component Designer to build a user interface, and using the Blocks Editor to
+                specify event-handlers. If you are not familiar with the basics, try stepping
+                through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <p>
+        Once you complete the first part of this tutorial, try
+        <a href="/learn/tutorials/maptour/maptour2.html">
+         part 2
+        </a>
+        .
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it MapTour, and
+                also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to MapTour. Open the
+                Blocks Editor and connect to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the app so that a list of destinations appears. When the user chooses
+                one, the Google Maps app is launched to display a map of the destination.
+       </p>
+       <p>
+        The tutorial introduces the following App Inventor concepts:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The Activity Starter component for launching Android apps from your app.
+        </li>
+        <li>
+         The ListPicker component for allowing the user to choose from a list of
+                choices.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+        <br />
+       </h2>
+       <p>
+        The user interface for MapTour is simple: you'll have a single ListPicker component
+                and an ActivityStarter (non-visible) component. The design view should look like
+                this when you're done:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="MapTourAssets/designer.png" width="961" />
+       </div>
+       <p>
+        The components listed below were used to create this designer window. Drag each
+                component from the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        and name it as specified:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Image
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             Image1
+            </span>
+           </td>
+           <td>
+            Show a static image of Paris map on screen
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             ListPicker1
+            </span>
+           </td>
+           <td>
+            Display the list of destinations
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityStarter
+            </span>
+           </td>
+           <td>
+            other stuff
+           </td>
+           <td>
+            <span class="ButtonText">
+             ActivityStarter1
+            </span>
+           </td>
+           <td>
+            Launches the maps app when a destination is chosen
+            <br />
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Download the file
+        <a href="MapTourAssets/parismap.png">
+         parismap.png
+        </a>
+        onto your
+                computer, then choose
+        <span class="ButtonText">
+         Add
+        </span>
+        in the
+        <span class="ButtonText">
+         Media
+        </span>
+        section to load it into your project. For it to appear,
+                you'll also need to set this as the Picture property of Image1.
+       </p>
+       <p>
+        The
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component has an associated button--
+                when the user clicks it, the choices are listed. Set the text of that button by
+                setting the
+        <span class="ButtonText">
+         Text
+        </span>
+        property of
+        <span class="ButtonText">
+         ListPicker1
+        </span>
+        to "Choose Destination".
+       </p>
+       <h2>
+        Setting the properties of ActivityStarter
+       </h2>
+       <p>
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        is a component that lets you launch
+                any Android app-- the browser, Maps, even another one of your own apps. When
+                another app is launched from your app, the user can click the back button to get
+                back to your app. You'll build MapTour so that the Maps application is launched to
+                show particular maps based on the user's choice. The user can then hit the back
+                button to return to your app and choose a different destination.
+       </p>
+       <p>
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        is a relatively low-level component
+                in that you'll need to set some properties of the component with information
+                familiar to a Java Android SDK programmer, but foreign to the rest of the 99.999%
+                people in the world. Not to worry, however. By copying the sample protocol
+                information provided here, you can easily learn how to launch apps like Maps from
+                the apps you are creating.
+       </p>
+       <p>
+        So, to set-up the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        to launch the
+                Maps application, set the following ActivityStarter properties in the Component
+                Designer:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Property
+           </td>
+           <td class="tbl-header">
+            Value
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Action
+            </span>
+           </td>
+           <td>
+            android.intent.action.VIEW
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityPackage
+            </span>
+           </td>
+           <td>
+            com.google.android.apps.maps
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityClass
+            </span>
+           </td>
+           <td>
+            com.google.android.maps.MapsActivity
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        With these values set, you'll be able to launch the Maps application. In the Blocks
+                Editor, you'll set one more property,
+        <span class="ButtonText">
+         DataUri
+        </span>
+        ,
+                which will allow you to launch Maps with a particular map being displayed. This
+                property must be set in the Blocks Editor because it will change based on whether
+                the user chooses to visit the Louvre, the Eiffel Tower, or the Notre Dame.
+       </p>
+       <h2>
+        Create a list of destinations
+       </h2>
+       <p>
+        Open the blocks editor and create a variable with the list of destinations for the
+                MapTour. You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("Destinations")
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            create a list of the destinations
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td>
+            Lists
+            <br />
+           </td>
+           <td>
+            use to add the items to the list
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Tour Eiffel")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the first destination
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Musee du Louvre")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the second destination
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Cathedrale Notre Dame")
+            <br />
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            set the
+            <span class="ButtonText">
+             Message
+            </span>
+            property before sending
+            <br />
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks will look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="141" src="MapTourAssets/destinationList.png" width="489" />
+       </div>
+       <h2>
+        Add behaviors to the components
+       </h2>
+       <p>
+        MapTour has two behaviors:
+       </p>
+       <p>
+        1. When the app begins, the app loads the destinations into the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component so the user can choose.
+       </p>
+       <p>
+        2. When the user chooses a destination from the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        , the Maps application is launched to show a map of
+                that destination. For Part I, you'll just open Maps and tell it to invoke a search
+                for the chosen destination
+       </p>
+       <p>
+        The
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component displays a list of items
+                when the user clicks a button.
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        has a
+                property
+        <span class="ButtonText">
+         Elements
+        </span>
+        . If you set
+        <span class="ButtonText">
+         Elements
+        </span>
+        to a list, the items in the list will appear in the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        . For this app, you want to set the
+        <span class="ButtonText">
+         ListPicker'
+        </span>
+        s
+        <span class="ButtonText">
+         Elements
+        </span>
+        property to the destinations list you just created.
+                Because you want this to happen when the app begins, you'll define this behavior in
+                the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event. You'll need the
+                following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Screen1.Initialize
+            </span>
+           </td>
+           <td>
+            Screen1
+           </td>
+           <td>
+            this event is triggered when the app starts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ListPicker1.Elements to
+            </span>
+           </td>
+           <td>
+            ListPicker1
+           </td>
+           <td>
+            set this property to the list you want to appear
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global destinations
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the list of destinations
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="110" src="MapTourAssets/screenInit.png" width="369" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        is triggered when the app
+                begins. The event-handler just sets the
+        <span class="ButtonText">
+         Elements
+        </span>
+        property of
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        so that the three
+                destinations will appear.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        On the phone, click the button labeled "Choose
+                Destination". The list picker should appear with the three items.
+       </blockquote>
+       <h2>
+        Launching Maps with a search for the destination
+       </h2>
+       <p>
+        Next, you'll program the behavior that should occur when the user chooses one of
+                the destinations-- the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        should
+                launch Maps and search for the selected destination.
+       </p>
+       <p>
+        When the user chooses from the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component, the
+        <span class="ButtonText">
+         ListPicker.AfterPicking
+        </span>
+        event is
+                triggered. In the event-handler for
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        you need to set the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        of the ActivityStarter
+                component so it knows which map to open, then you need to launch the app using
+                StartActivity.
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker1.AfterPicking
+            </span>
+           </td>
+           <td>
+            ListPicker1
+           </td>
+           <td>
+            this event is triggered when the user chooses from
+            <span class="ButtonText">
+             ListPicker
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ActivityStarter1.DataUri to
+            </span>
+           </td>
+           <td>
+            ActivityStarter1
+            <br />
+           </td>
+           <td>
+            the
+            <span class="ButtonText">
+             DataUri
+            </span>
+            tells Maps which map to open on
+                        launch
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            build the
+            <span class="ButtonText">
+             DataUri
+            </span>
+            from two pieces of text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("geo:0,0?q=")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the first part of the
+            <span class="ButtonText">
+             DataUri
+            </span>
+            expected by
+                        Maps
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker1.Selection
+            </span>
+           </td>
+           <td>
+            ListPicker1
+           </td>
+           <td>
+            the item the user chose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityStarter1.StartActivity
+            </span>
+           </td>
+           <td>
+            ActivityStarter1
+           </td>
+           <td>
+            launch Maps
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="199" src="MapTourAssets/afterPicking.png" width="541" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user chooses from the
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        , the
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        event is triggered. Whatever item was
+                chosen is in the
+        <span class="ButtonText">
+         ListPicker1.Selection
+        </span>
+        property. So
+                if the user chose "Musee du Louvre", that value is in
+        <span class="ButtonText">
+         ListPicker1
+        </span>
+        's
+        <span class="ButtonText">
+         Selection
+        </span>
+        property.
+       </p>
+       <p>
+        In the Component Designer, you already setup the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        componenent with properties so that it will
+                launch the Maps application. Here, you just need to tell it which map to show. The
+        <span class="ButtonText">
+         DataUri
+        </span>
+        property of ActivityStarter allows you to
+                specify this using a special protocol.
+       </p>
+       <p>
+        In this case, you want to show the map that would appear if you typed in "Musee du
+                Louvre" in the search box of the Maps application. To do this, the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        should be set to:
+       </p>
+       <blockquote>
+        geo:0,0?q='Musee du Louvre'
+       </blockquote>
+       <p>
+        The
+        <span class="ButtonText">
+         make a text
+        </span>
+        block creates a text exactly like
+                this, only the text after "q=" will be the choice made by the user.
+       </p>
+       <p>
+        Once the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        is set,
+        <span class="ButtonText">
+         ActivityStarter1.StartActivity
+        </span>
+        launches the Maps app.
+       </p>
+       <blockquote class="notice">
+        For help with the Maps application parameters, see this
+        <a href="http://mapki.com/wiki/Google_Map_Parameters">
+         document
+        </a>
+        from mapki.com
+       </blockquote>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        Restart the app and click the "Choose
+                Destinations" button again. When you choose one of the destinations, does a map of
+                that destination appear? Can you click the back button to return to your app to
+                choose again (you may have to click a couple of times to leave the Maps app).
+       </blockquote>
+       <h2>
+        Map Tour, Final Program
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" height="451" src="MapTourAssets/mapTourFinal.png" width="541" />
+       </div>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some of the ideas covered in this tutorial:
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component lets the user choose
+                from a list of items.
+         <span class="ButtonText">
+          ListPicker'
+         </span>
+         s
+         <span class="ButtonText">
+          Elements
+         </span>
+         property holds the list, the
+         <span class="ButtonText">
+          Selection
+         </span>
+         property holds the selected item, and the
+         <span class="ButtonText">
+          AfterPicking
+         </span>
+         event is triggered when the user chooses.
+         <br />
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         component allows your app
+                to launch other apps. This tutorial demonstrated its use with the Maps application,
+                but you can launch a browser or any other Android app as well-- even another one of
+                your own.
+        </li>
+        <li>
+         See the
+         <a href="/learn/reference/other/activitystarter.html">
+          reference page on
+                Activity Starter
+         </a>
+         for more details.
+        </li>
+        <li>
+         Learn more sophisticated uses of the
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         and the
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         componants in
+         <a href="/learn/tutorials/maptour/maptour2.html">
+          MapTour Part 2
+         </a>
+         .
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Scan the Sample App to your Phone
+       </h2>
+       <p>
+        Scan the following barcode onto your phone to install and run the sample app.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="MapTourAssets/barcode.png" />
+       </div>
+       <h2>
+        Download Source Code
+       </h2>
+       If you'd like to work with this sample in App Inventor, download the
+       <a href="MapTourAssets/MapTour.zip">
+        source code
+       </a>
+       to your computer, then open App Inventor,
+              go to the
+       <span class="ButtonText">
+        My Projects
+       </span>
+       page, and choose
+       <span class="ButtonText">
+        More Actions | Upload Source
+       </span>
+       .
+      </div>
+      <div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+              Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+              tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+          var m = "Page last updated: " + document.lastModified;
+          var p = m.length-8;
+          document.writeln("<center>");
+            document.write(m.substring(p, 0));
+            document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Sensor Components - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    code.c2 {font-style: italic}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Sensors             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Sensor Components
+       </h1>
+       <ul>
+        <li>
+         <a href="#AccelerometerSensor">
+          AccelerometerSensor
+         </a>
+        </li>
+        <li>
+         <a href="#LocationSensor">
+          LocationSensor
+         </a>
+        </li>
+        <li>
+         <a href="#OrientationSensor">
+          OrientationSensor
+         </a>
+        </li>
+       </ul>
+       <h2 id="AccelerometerSensor">
+        AccelerometerSensor
+       </h2>
+       <img alt="" src="images/accelerometersensor.png" />
+       <p>
+        This component senses the Android device's accelerometer, which detects shaking and
+                measures acceleration in three dimensions. Acceleration is measured in SI units
+                (m/s
+        <sup>
+         2
+        </sup>
+        ). If the device is a rest lying flat on its back, the Z
+                acceleration will be about 9.8.
+       </p>
+       <p>
+        The component produces three values.
+       </p>
+       <ul>
+        <li>
+         <code>
+          XAccel
+         </code>
+         : Positive when the device is tilted to the right (that is,
+                  its left side is raised), and negative when the device is tilted to the left (its
+                  right size is raised).
+        </li>
+        <li>
+         <code>
+          YAccel
+         </code>
+         : Positive when its bottom is raised, and negative when its
+                  top is raised.
+        </li>
+        <li>
+         <code>
+          ZAccel
+         </code>
+         : Positive when the display is facing up, and negative when
+                  the display is facing down.
+        </li>
+       </ul>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code class="c2">
+          Available
+         </code>
+        </dt>
+        <dd>
+         Indicates whether the accelerometer is present on the Android device.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If set, accelerometer is enabled.
+        </dd>
+        <dt>
+         <code class="c2">
+          XAccel
+         </code>
+        </dt>
+        <dd>
+         Acceleration in the X-dimension.
+        </dd>
+        <dt>
+         <code class="c2">
+          YAccel
+         </code>
+        </dt>
+        <dd>
+         Acceleration in the Y-dimension.
+        </dd>
+        <dt>
+         <code class="c2">
+          ZAccel
+         </code>
+        </dt>
+        <dd>
+         Acceleration in the Z-dimension.
+        </dd>
+        <dt>
+         <code class="c2">
+           MinimumInterval
+         </code>
+        </dt>
+        <dd>
+         Minimum time interval between phone shakes.
+  		 <br/>
+           You may want to change the time interval depending on the activity you want to perform when the phone is shaken.
+           For example, you may want the phone to say "Stop shaking me" each time the user shakes the phone. At shorter time intervals, this 
+           will produce an unwanted echo effect. 
+  		   In another case, you may want a quick flick of the phone to be considered a single shake and perhaps increment a 
+           counter each time the phone shakes. In cases such as this, a shorter time interval will be more appropriate to properly count the shakes.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          AccelerationChanged(number xAccel, number yAccel, number zAccel)
+         </code>
+        </dt>
+        <dd>
+         Called when the acceleration has changed.
+        </dd>
+        <dt>
+         <code>
+          Shaking()
+         </code>
+        </dt>
+        <dd>
+         Called repeatedly when the Android device is being shaken.
+        </dd>
+       </dl>
+       <h2 id="LocationSensor">
+        LocationSensor
+       </h2>
+       <img alt="" src="images/locationsensor.png" />
+       <p>
+        This component provides the Android device's location, using GPS if available and
+                an alternative method otherwise, such as cellular towers or known wireless
+                networks.
+       </p>
+       <p>
+        <code>
+         LocationSensor
+        </code>
+        is a non-visible component providing location
+                information, including longitude, latitude, altitude (if supported by the device),
+                and address. This component can also provide geocoding, converting a given address
+                (not necessarily the current one) to a latitude (with the
+        <code>
+         LatitudeFromAddress
+        </code>
+        method) and a longitude (with the
+        <code>
+         LongitudeFromAddress
+        </code>
+        method).
+       </p>
+       <p>
+        In order to function, the component must have its
+        <code>
+         Enabled
+        </code>
+        property set
+                to true, and the device must have location sensing enabled through either GPS
+                satellites (if the device is outdoors) or an alternative method.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code class="c2">
+          Accuracy
+         </code>
+        </dt>
+        <dd>
+         Indicates Android device accuracy level, in meters.
+        </dd>
+        <dt>
+         <code class="c2">
+          Altitude
+         </code>
+        </dt>
+        <dd>
+         Altitude of the Android device, if available.
+        </dd>
+        <dt>
+         <code class="c2">
+          AvailableProviders
+         </code>
+        </dt>
+        <dd>
+         List of available service providers, such as
+         <em>
+          gps
+         </em>
+         or
+         <em>
+          network
+         </em>
+        </dd>
+        <dt>
+         <code class="c2">
+          CurrentAddress
+         </code>
+        </dt>
+        <dd>
+         Physical street address of the Android device.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If set, location information is available.
+        </dd>
+        <dt>
+         <code class="c2">
+          HasAccuracy
+         </code>
+        </dt>
+        <dd>
+         If true, Android device can report its accuracy level.
+        </dd>
+        <dt>
+         <code class="c2">
+          HasAltitude
+         </code>
+        </dt>
+        <dd>
+         If true, Android device can report its altitude.
+        </dd>
+        <dt>
+         <code class="c2">
+          HasLongitudeLatitude
+         </code>
+        </dt>
+        <dd>
+         If true, Android device can report longitude and latitude.
+        </dd>
+        <dt>
+         <code class="c2">
+          Latitude
+         </code>
+        </dt>
+        <dd>
+         Android device latitude.
+        </dd>
+        <dt>
+         <code class="c2">
+          Longitude
+         </code>
+        </dt>
+        <dd>
+         Android device longitude.
+        </dd>
+        <dt>
+         <code class="c2">
+          ProviderLocked
+         </code>
+        </dt>
+        <dd>
+         The device will not change the service provider.
+        </dd>
+        <dt>
+         <code class="c2">
+          ProviderName
+         </code>
+        </dt>
+        <dd>
+         The current service provider.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          LocationChanged(number latitude, number longitude, number altitude)
+         </code>
+        </dt>
+        <dd>
+         Called when the Android device reports a new location.
+        </dd>
+        <dt>
+         <code>
+          StatusChanged(text provider, text status)
+         </code>
+        </dt>
+        <dd>
+         Called when the status of the service provider changes.
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          LatitudeFromAddress(text locationName)
+         </code>
+        </dt>
+        <dd>
+         Determines the latitude of the given address.
+        </dd>
+        <dt>
+         <code>
+          LongitudeFromAddress(text locationName)
+         </code>
+        </dt>
+        <dd>
+         Determines the longitude of the given address.
+        </dd>
+       </dl>
+       <blockquote class="dogfood">
+        The location sensor currently gets results only for applications that have been
+                packaged and downloaded to the phone.
+       </blockquote>
+       <h2 id="OrientationSensor">
+        OrientationSensor
+       </h2>
+       <img alt="" src="images/orientationsensor.png" />
+       <p>
+        Use an orientation sensor component to determine the phone's spatial orientation.
+       </p>
+       <p>
+        An orientation sensor is a non-visible component that reports the following three
+                values, in degrees:
+       </p>
+       <ul>
+        <li>
+         <strong>
+          Roll
+         </strong>
+         : 0 degree when the device is level, increasing to 90
+                  degrees as the device is tilted up onto its left side, and decreasing to −90
+                  degrees when the device is tilted up onto its right side.
+        </li>
+        <li>
+         <strong>
+          Pitch
+         </strong>
+         : 0 degree when the device is level, increasing to 90
+                  degrees as the device is tilted so its top is pointing down, then decreasing
+                  to 0 degree as it gets turned over. Similarly, as the device is tilted so its
+                  bottom points down, pitch decreases to −90 degrees, then increases to 0 degree as
+                  it gets turned all the way over.
+        </li>
+        <li>
+         <strong>
+          Azimuth
+         </strong>
+         : 0 degree when the top of the device is pointing north,
+                  90 degrees when it is pointing east, 180 degrees when it is pointing south, 270
+                  degrees when it is pointing west, etc.
+        </li>
+       </ul>
+       These measurements assume that the device itself is not moving.
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code class="c2">
+          Available
+         </code>
+        </dt>
+        <dd>
+         Indicates whether the orientation sensor is present on the Android device.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If set, the orientation sensor is enabled.
+        </dd>
+        <dt>
+         <code class="c2">
+          Azimuth
+         </code>
+        </dt>
+        <dd>
+         Returns the azimuth angle of the device.
+        </dd>
+        <dt>
+         <code class="c2">
+          Pitch
+         </code>
+        </dt>
+        <dd>
+         Returns the pitch angle of the device.
+        </dd>
+        <dt>
+         <code class="c2">
+          Roll
+         </code>
+        </dt>
+        <dd>
+         Returns the roll angle of the device.
+        </dd>
+        <dt>
+         <code class="c2">
+          Magnitude
+         </code>
+        </dt>
+        <dd>
+         Returns a number between 0 and 1 that indicates how much the device is tilted. It
+                  gives the magnitude of the force that would be felt by a ball rolling on the
+                  surface of the device.
+        </dd>
+        <dt>
+         <code class="c2">
+          Angle
+         </code>
+        </dt>
+        <dd>
+         Returns an angle that tells the direction in which the device is tiled. That is,
+                  it tells the direction of the force that would be felt by a ball rolling on the
+                  surface of the device.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          OrientationChanged(number azimuth, number pitch, number roll)
+         </code>
+        </dt>
+        <dd>
+         Called when the orientation has changed.
+        </dd>
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

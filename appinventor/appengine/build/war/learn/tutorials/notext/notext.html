@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   No Text While Driving - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    h2.c3 {font-weight: bold}
+    img.c2 {margin-left: 20px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials">Tutorials</a> &gt; No Text             While Driving ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        No Text While Driving
+       </h1>
+       <div class="imagecontainer">
+        <img align="right" alt="" border="0" class="c2" src="NoTextWhileDrivingAssets/emulator.png" />
+       </div>
+               <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch4NoTexting.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <p>
+        This tutorial demonstrates how an app can respond to text messages automatically.
+                You'll build an app that sends back a response when a text message is received. The
+                idea for the app came from University of San Franciso student Daniel Finnegan.
+        <br />
+       </p>
+       <p>
+        This tutorial assumes you are familiar with the basics of App Inventor-- using the
+                Component Designer to build a user interface, and using the Blocks Editor to
+                specify event-handlers.If you are not familiar with the basics, try stepping
+                through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it
+                NoTextWhileDriving, and also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to NoTextWhileDriving. Open the Blocks Editor and connect to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the app so that it sends a response to any text message received.
+                You'll also allow the user to customize the response sent.
+       </p>
+       <p>
+        The tutorial introduces the following App Inventor concepts:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          Texting
+         </span>
+         component for sending texts and
+                processing received texts.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         database component for saving the
+                customized message even after the app is closed.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+        <br />
+       </h2>
+       <p>
+        The user interface for NoTextWhileDriving is simple: it has a text box for the
+                response message and a button for submitting a change to this message. You'll also
+                need a
+        <span class="ButtonText">
+         Texting
+        </span>
+        component and a
+        <span class="ButtonText">
+         TinyDB
+        </span>
+        component, both of which will appear in the "non-visual"
+                component area. A table of detailed instructions for designing the components is
+                below, but you can also build it from the following picture of what it should look
+                like:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="NoTextWhileDrivingAssets/NoTextDesigner.png" width="956" />
+       </div>
+       <p>
+        The components listed below were used to create the designer window shown above.
+                Drag each component from the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        and name it as specified below:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             PromptLabel
+            </span>
+           </td>
+           <td>
+            Let the user know how the app works
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             MessageTextbox
+            </span>
+           </td>
+           <td>
+            User will enter custom response here.
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+            <br />
+           </td>
+           <td>
+            <span class="ButtonText">
+             SubmitResponseButton
+            </span>
+           </td>
+           <td>
+            User clicks this to submit response
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting
+            </span>
+           </td>
+           <td>
+            Social
+           </td>
+           <td>
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td>
+            The component that processes the texts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             TinyDB1
+            </span>
+           </td>
+           <td>
+            The component that will store the response in the database
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Set the properties of the components in the following way:
+       </p>
+       <ul>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          PromptLabel
+         </span>
+         to "The text below will be sent in response to all
+                texts while this app is running."
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          MessageTextbox
+         </span>
+         to "I'm driving right now, I'll contact you
+                shortly".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          SubmitResponseButton
+         </span>
+         to
+         <span class="ButtonText">
+          "Modify
+                Response"
+         </span>
+         .
+        </li>
+       </ul>
+       <h2>
+        Add behaviors to the components
+        <br />
+       </h2>
+       <p>
+        NoTextWhileDriving has the following behaviors:
+       </p>
+       <p>
+        1. When a text is received, the message entered in
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        is sent as a text message response to the
+                sender.
+       </p>
+       <p>
+        2. When the user modifies the custom message in
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        and clicks the
+        <span class="ButtonText">
+         SubmitResponseButton
+        </span>
+        , the new message is saved persisently in
+                the phone's database.
+       </p>
+       <p>
+        3. When the app begins, the custom message is loaded from the database into
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        .
+        <br />
+       </p>
+       <h2>
+        <strong>
+         Responding to a text
+        </strong>
+        <br />
+       </h2>
+       <p>
+        When a text message is received by the phone, the
+        <span class="ButtonText">
+         Texting.MessageReceived
+        </span>
+        event is triggered. Your app should
+                handle this event by setting the
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        and
+        <span class="ButtonText">
+         Message
+        </span>
+        properties of the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component appropriately and sending the response
+                text.
+        <br />
+       </p>
+       <p>
+        You'll need the following blocks:
+        <br />
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting1.MessageReceived
+            </span>
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            the event-handler that is triggered when phone received a text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Texting1.PhoneNumber to
+            </span>
+           </td>
+           <td>
+            Texting1
+            <br />
+           </td>
+           <td>
+            set the
+            <span class="ButtonText">
+             PhoneNumber
+            </span>
+            property before
+                        sending
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value number
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this is the phone number of the person who sent the text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Texting1.Message to
+            </span>
+            <br />
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            set the
+            <span class="ButtonText">
+             Message
+            </span>
+            property before sending
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MessageText.Text
+            </span>
+           </td>
+           <td>
+            MessageText
+           </td>
+           <td>
+            This is the message the user has entered.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting1.SendMessage
+            </span>
+            <br />
+           </td>
+           <td>
+            Texting
+            <br />
+           </td>
+           <td>
+            send the message
+            <br />
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="212" src="NoTextWhileDrivingAssets/response1.png" width="455" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the phone receives any text message, the
+        <span class="ButtonText">
+         Texting1.MessageReceived
+        </span>
+        event is triggered. The phone number
+                of the sender is in the argument
+        <span class="ButtonText">
+         number,
+        </span>
+        and the
+                sender's message is in the argument
+        <span class="ButtonText">
+         messageText
+        </span>
+        .
+       </p>
+       <p>
+        In response, the app sends a text message to the sender. To send a text, the app
+                sets the two key properties of the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component:
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        and
+        <span class="ButtonText">
+         Message
+        </span>
+        .
+        <span class="ButtonText">
+         Texting.PhoneNumber
+        </span>
+        is
+                set to the number of the sender, and
+        <span class="ButtonText">
+         Texting.Message
+        </span>
+        is set to the text in
+        <span class="ButtonText">
+         MessagetextBox
+        </span>
+        -- this might be the default, "I'm driving right
+                now, I'll contact you shortly.", or the user may have modified it. Once these
+                properties are set,
+        <span class="ButtonText">
+         Texting1.SendMessage
+        </span>
+        is called
+                to actually send the response text message.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        You'll need a second phone to test this
+                behavior. From the second phone, send a text to the phone that is running the app.
+                Does the second phone receive the response text? If that works, try modifying the
+                response message and sending another message from the second phone. Is the new
+                response sent?
+        <br />
+       </blockquote>
+       <h2 class="c3">
+        Storing the custom response
+       </h2>
+       <p>
+        The app so far works, but if you close the app and reopen it, the custom message
+                will be lost. To make things more convenient for the user, store the custom
+                response message they enter into a database using the
+        <span class="ButtonText">
+         TinyDB
+        </span>
+        component.
+       </p>
+       <p>
+        <span class="ButtonText">
+         TinyDB
+        </span>
+        provides two blocks:
+        <span class="ButtonText">
+         StoreValue
+        </span>
+        and
+        <span class="ButtonText">
+         GetValue
+        </span>
+        . The
+                former allows you to store a tagged piece of information, while the latter let's
+                you retrieve one.
+       </p>
+       <p>
+        You'll need the following blocks to store the custom message:
+        <br />
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             SubmitResponseButton.Click
+            </span>
+           </td>
+           <td>
+            SubmitResponseButton
+           </td>
+           <td>
+            user clicks this button to submit new response message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB1.StoreValue
+            </span>
+            <br />
+           </td>
+           <td>
+            TinyDB1
+            <br />
+           </td>
+           <td>
+            store the custom message in the phone's database
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text ("responseMessage")
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            use this as the tag for the data
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MessageTextbox.Text
+            </span>
+           </td>
+           <td>
+            MessageTextbox
+           </td>
+           <td>
+            the response message entered by the user is here
+            <br />
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="143" src="NoTextWhileDrivingAssets/storeValue.png" width="452" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user clicks the
+        <span class="ButtonText">
+         SubmitResponseButton
+        </span>
+        , the
+                app will store the response message entered by the user in the database. The text
+                "responseMessage" is used as a tag to uniquely identify the information-- later,
+                you'll use that same tag to retrieve the message from the database.
+       </p>
+       <h2>
+        Retrieving the saved response message
+        <br />
+       </h2>
+       <p>
+        Program the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event-handler so
+                that the saved custom response message is retrieved from the database and placed in
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        . Check the retrieved data to make
+                sure there's something there-- after all, the first time the app is used, the
+                database will not have any message saved. If there is a stored message, place it in
+                the
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        so that the user can see it and
+                so that it will be used to respond to incoming texts.
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("response")
+            <br />
+           </td>
+           <td>
+            Definitions
+            <br />
+           </td>
+           <td>
+            A temporary variable to hold the retrieved data
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text (blank)
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Initial value for the variable can be anything
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            Screen1.Initialize
+           </td>
+           <td>
+            Screen1
+           </td>
+           <td>
+            This is triggered when app begins
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            set response to
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            you'll set the variable to the value retrieved from db
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            TinyDB1.GetValue
+           </td>
+           <td>
+            TinyDB1
+           </td>
+           <td>
+            get the stored response text from the database
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("responseMessage")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            plug into tag slot of
+            <span class="ButtonText">
+             GetValue
+            </span>
+            , make sure
+                        text is same as was used in
+            <span class="ButtonText">
+             StoreValue
+                        above
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            if test
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            to ask if the retrieved value has some text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             &gt;
+            </span>
+            block
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            check if length of retrieved value is greater than (&gt;) 0
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            length text
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            check if length of retrieved value is greater than 0
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            global response
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this variable holds the value retrieved from
+            <span class="ButtonText">
+             GetValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (0)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            to compare with length of response
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set MessageTextbox.Text to
+            </span>
+           </td>
+           <td>
+            MessageTextbox
+           </td>
+           <td>
+            if we retrieved something, place it in
+            <span class="ButtonText">
+             MessageTextbox
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            global response
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this variable holds the value retrieved from
+            <span class="ButtonText">
+             GetValue
+            </span>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+        <p>
+         The blocks should look like this:
+        </p>
+        <div class="imagecontainer">
+         <img alt="" height="265" src="NoTextWhileDrivingAssets/GetValue.png" width="547" />
+        </div>
+        <h2>
+         How the Blocks Work
+         <br />
+        </h2>
+        <p>
+         When the app begins, the
+         <span class="ButtonText">
+          Screen1.Initialize
+         </span>
+         event
+                  is triggered. The app calls the
+         <span class="ButtonText">
+          TinyDB1.GetValue
+         </span>
+         with a tag of "responseMessage"-- the same tag used when you stored the user's
+                  entry earlier. The resulting value is placed in the variable response.
+        </p>
+        <p>
+         The variable response is used so that the value returned from the database can be
+                  checked. If it has a length of 0, then there was no database entry with a tag of
+                  "responseMessage"-- something that will occur the first time a user runs this
+                  app. But if the length is greater than 0, the app knows that a custom response
+                  has been stored previously, and the retrieved value can be placed in the
+         <span class="ButtonText">
+          MessageTextBox
+         </span>
+         which the user will see and which
+                  is used as the message for any response texts sent.
+         <br />
+         <br />
+        </p>
+        <blockquote class="testing">
+         <strong>
+          Test the app.
+         </strong>
+         Enter a new response message in the
+         <span class="ButtonText">
+          MessageTextbox
+         </span>
+         and click the
+         <span class="ButtonText">
+          SubmitResponseButton
+         </span>
+         . Then restart the app by clicking the
+         <span class="ButtonText">
+          Restart App
+         </span>
+         button in the Blocks Editor. This
+                  will cause the app to re-initialize just like it will when a user closes the app
+                  and reopens it later. Does the custom message you entered appear?
+         <br />
+        </blockquote>
+        <h2>
+         No Text While Driving, Final Program
+        </h2>
+        <div class="imagecontainer">
+         <img alt="" height="422" src="NoTextWhileDrivingAssets/finalProg.png" width="940" />
+        </div>
+        <h2>
+         Variations
+        </h2>
+        <p>
+         Once you get the No Text While Driving app working, you might want to explore
+                  some variations. For example,
+        </p>
+        <ul>
+         <li>
+          Write a version that speaks the received texts aloud. You'll need to use the
+          <span class="ButtonText">
+           TextToSpeech
+          </span>
+          component.
+         </li>
+         <li>
+          Write a version that lets the user define custom responses for particular
+                  phone numbers.
+         </li>
+         <li>
+          Write a version that sends custom responses based on the user's location
+                  (e.g., I'm in church...)
+          <br />
+         </li>
+        </ul>
+        <h2>
+         Review
+        </h2>
+        Here are some of the ideas covered in this tutorial:
+        <br />
+        <ul>
+         <li>
+          The
+          <span class="ButtonText">
+           Texting
+          </span>
+          component can be used both to
+                  send text messages and process the ones that are received.
+          <br />
+         </li>
+         <li>
+          The
+          <span class="ButtonText">
+           TinyDB
+          </span>
+          component is used to store
+                  information persistently, in the phone's database, so that it there each time the
+                  app is opened.
+          <br />
+         </li>
+        </ul>
+        <h2>
+         Scan the Sample App to your Phone
+        </h2>
+        <p>
+         Scan the following barcode onto your phone to install and run the sample app.
+        </p>
+        <div class="imagecontainer">
+         <img alt="" src="NoTextWhileDrivingAssets/notextbarcode.png" />
+        </div>
+        <h2>
+         Download Source Code
+        </h2>
+        If you'd like to work with this sample in App Inventor, download the
+        <a href="NoTextWhileDrivingAssets/notextwhiledriving.zip">
+         source code
+        </a>
+        to your computer,
+                then open App Inventor, go to the
+        <span class="ButtonText">
+         My Projects
+        </span>
+        page,
+                and choose
+        <span class="ButtonText">
+         More Actions | Upload Source
+        </span>
+        .
+       </div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

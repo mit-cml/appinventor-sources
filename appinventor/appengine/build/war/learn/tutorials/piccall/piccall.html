@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   PicCall - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    img.c2 {padding: 10px}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; PicCall             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        PicCall
+       </h1>
+       <img align="right" alt="" class="c2" src="PicCallAssets/PicCallEmulator.png" width="200" />
+       <p>
+        <em>
+         PicCall
+        </em>
+        shows how you can use App Inventor to make apps that do actual
+                phone things, like calling friends.
+       </p>
+       This tutorial assumes that you have completed the
+       <a href="/learn/setup/index.html">
+        Set Up
+       </a>
+       process.
+       <h2>
+        Before starting
+       </h2>
+       <p>
+        To run
+        <em>
+         PicCall
+        </em>
+        , your phone must be set up and activated for making phone
+                calls. If it isn't, you can still build
+        <em>
+         PicCall
+        </em>
+        for practice, but the
+                phone won't actually make the calls.
+       </p>
+       <blockquote class="notice">
+        Warning: PicCall does not work on all Android phones in the current implementation
+                of App Inventor: you'll get an error notice on some phones when you try to pick a
+                phone number. Also, you won't see all your contacts — only those created from
+                Gmail. These limitations will be removed in the future.
+       </blockquote>
+       In this tutorial, unlike
+       <em>
+        HelloPurr
+       </em>
+       , you'll give names to
+              components, rather than just using the default names that App Inventor provides (like
+              "Button1"). Using meaningful names is good programming practice: it helps you keep
+              your programs straight in your own mind, and it helps others understand your
+              programs.
+       <p>
+        Your phone should also contain a few contacts with pictures. You can use the
+                Contacts app to save pictures for your contacts. You can also click on Contacts in
+                your Gmail account on your computer and add pictures there.
+       </p>
+       Make sure your computer and your phone are set up to use App Inventor, and browse
+              to the App Inventor Web site at
+       <a href="http://appinventor.mit.edu">
+        http://appinventor.mit.edu
+       </a>
+       . Start a new
+              project in the
+       <em>
+        Designer
+       </em>
+       window. Name it
+       <em>
+        PicCall
+       </em>
+       and change the
+              screen
+       <span class="ButtonText">
+        Title
+       </span>
+       to
+       <em>
+        PicCall
+       </em>
+       . Open the Blocks
+              Editor, click
+       <span class="ButtonText">
+        Connect to Phone
+       </span>
+       , and check that the
+              phone has started the App Inventor app.
+       <br clear="all" />
+       <h2>
+        Getting started
+       </h2>
+       <p>
+        Start out just like in
+        <em>
+         HelloPurr
+        </em>
+        by placing a button on the screen. Make
+                the button 150 pixels wide and 150 pixels high. Set button's
+        <span class="ButtonText">
+         Image
+        </span>
+        to a picture. You may as well use the picture of the
+                kitty if it's handy — you'll be changing the picture soon. Set the
+        <span class="ButtonText">
+         Text
+        </span>
+        of the button to "Press to Call", although you'll be
+                changing that soon, as well.
+       </p>
+       Change the name of the
+       <span class="ButtonText">
+        Button
+       </span>
+       component to
+       <span class="ButtonText">
+        TopButton
+       </span>
+       (You'll make a
+       <span class="ButtonText">
+        BottomButton
+       </span>
+       later in the tutorial.) To change a component's
+       <span class="ButtonText">
+        name
+       </span>
+       , click the
+       <em>
+        Rename
+       </em>
+       button in the
+              Components panel and enter the new name.
+       <blockquote class="notice">
+        In this tutorial, unlike
+        <em>
+         HelloPurr
+        </em>
+        , you'll give names to components,
+                rather than just using the default names that App Inventor provides (like
+                "Button1"). Using meaningful names is good programming practice: it helps you keep
+                your programs straight in your own mind, and it helps others understand your
+                programs. Don't confuse the
+        <span class="ButtonText">
+         name
+        </span>
+        of a component
+                with the
+        <span class="ButtonText">
+         text
+        </span>
+        of a component. The
+        <span class="ButtonText">
+         text
+        </span>
+        is what appears on the screen. The
+        <span class="ButtonText">
+         name
+        </span>
+        is the name your program uses to refer to the component.
+                You'll see the name in the
+        <span class="ButtonText">
+         Components
+        </span>
+        structure
+                list in the
+        <span class="ButtonText">
+         Designer
+        </span>
+        and on the drawers in the
+                Blocks editor.
+       </blockquote>
+       <h2>
+        Making phone calls
+       </h2>
+       <p>
+        In
+        <em>
+         HelloPurr
+        </em>
+        , you made the phone play a sound when the button was clicked.
+        <em>
+         PicCall
+        </em>
+        in almost the same, except that instead of playing a sound, the
+                phone makes a call.
+       </p>
+       App Inventor's
+       <span class="ButtonText">
+        PhoneCall
+       </span>
+       component makes phone
+              calls. You can find
+       <span class="ButtonText">
+        PhoneCall
+       </span>
+       in the
+       <em>
+        Social
+       </em>
+       section of the
+       <em>
+        Palette
+       </em>
+       . Open that section and drag out a
+       <span class="ButtonText">
+        PhoneCall
+       </span>
+       into the viewer. It will go into the Non-visible
+              components area. Name it
+       <span class="ButtonText">
+        TopCall
+       </span>
+       . The
+       <span class="ButtonText">
+        PhoneCall
+       </span>
+       's
+       <span class="ButtonText">
+        PhoneNumber
+       </span>
+       property
+              determines the number to call. Set that to some 10-digit phone number you'd like to
+              call. Here's how the
+       <span class="ButtonText">
+        Designer
+       </span>
+       should look:
+       <div class="imagecontainer">
+        <img alt="" src="PicCallAssets/PicCallDesigner.png" width="800" />
+       </div>
+       Now switch to the Blocks Editor and pull out the
+       <span class="Block">
+        when
+              TopButton.Click do
+       </span>
+       block. In the
+       <span class="ButtonText">
+        do
+       </span>
+       slot,
+              place a
+       <span class="Ball">
+        call TopCall.MakePhoneCall
+       </span>
+       block from the
+       <span class="ButtonText">
+        TopPhoneCall
+       </span>
+       drawer, so that the event handler looks
+              like this:
+       <div class="imagecontainer">
+        <img alt="" height="102" src="PicCallAssets/PicCallWhenClick.png" width="243" />
+       </div>
+       Go ahead and test what you have so far on the phone: Press the button and make
+              the call. You could package this up as an app right now. It would be a pretty limited
+              app, always calling the same fixed number, some people might find that useful.
+       <h2>
+        Phone contact information
+       </h2>
+       <p>
+        In addition to making phone calls, App Inventor apps can also get information from
+                the phone's contact list. You do this with the
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        component.
+       </p>
+       Pull out a
+       <span class="ButtonText">
+        PhoneNumberPicker
+       </span>
+       component from the
+       <em>
+        Social
+       </em>
+       section of the
+       <em>
+        Palette
+       </em>
+       , place it under
+       <span class="ButtonText">
+        TopButton
+       </span>
+       and rename it to
+       <span class="ButtonText">
+        TopPick
+       </span>
+       . A
+       <span class="ButtonText">
+        PhoneNumberPicker
+       </span>
+       a
+              kind of button: when you press it, it brings up your phone contacts list and lets you
+              pick someone. Change the name of the
+       <span class="ButtonText">
+        PhoneNumberPicker
+       </span>
+       to
+       <span class="ButtonText">
+        TopPick
+       </span>
+       , and
+              change its
+       <span class="ButtonText">
+        Text
+       </span>
+       to "Press to pick a number to call".
+              Try it by pressing the picker on your phone: you should see your contacts come up,
+              and you can pick one. Nothing will happen after you pick, because you haven't yet
+              told the components to do anything. You'll do that next.
+       <h2>
+        Using the picker
+       </h2>
+       <p>
+        Switch to the Blocks window and open the drawer for
+        <span class="ButtonText">
+         TopPick
+        </span>
+        . Drag out the
+        <span class="Block">
+         when
+                TopPick.AfterPicking do
+        </span>
+        block. This lets you define an event handler that
+                says what to do after you've picked a number from your contacts.
+       </p>
+       Now open the
+       <span class="ButtonText">
+        TopCall
+       </span>
+       drawer and drag out
+       <span class="Block">
+        set TopCall.PhoneNumber to
+       </span>
+       and fit it into the slot in the
+       <span class="Block">
+        when TopPick.AfterPicking do
+       </span>
+       block. Now drag out
+       <span class="Block">
+        TopPick.PhoneNumber
+       </span>
+       from the
+       <span class="ButtonText">
+        TopPick
+       </span>
+       drawer and plug it into the empty socket. Here's how your
+              event handler should look:
+       <div class="imagecontainer">
+        <img alt="" height="108" src="PicCallAssets/PicCallAfterPicking.png" width="405" />
+       </div>
+       Try it on the phone: Press the picker, choose a contact and a phone number.
+              Then press the phone call button to make the call. Add a command to the event handler
+              to set
+       <span class="ButtonText">
+        TopButton
+       </span>
+       's
+       <span class="ButtonText">
+        Text
+       </span>
+       property to
+       <span class="ButtonText">
+        TopPick.PhoneNumber
+       </span>
+       :
+       <div class="imagecontainer">
+        <img alt="" height="144" src="PicCallAssets/PicCallAfterPicking2.png" width="408" />
+       </div>
+       <h2>
+        Pictures
+       </h2>
+       <p>
+        If you have a picture stored with your contacts, you can make the button show that
+                along with the phone number, rather than always using the picture of the kitty. To
+                do this, add an command to the event handler, to set the
+        <span class="ButtonText">
+         Image
+        </span>
+        property of
+        <span class="ButtonText">
+         TopButton
+        </span>
+        to
+                be the the
+        <span class="ButtonText">
+         Picture
+        </span>
+        property of
+        <span class="ButtonText">
+         TopPick
+        </span>
+        :
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="187" src="PicCallAssets/PicCallAfterPicking3.png" width="410" />
+       </div>
+       <blockquote class="notice">
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        has two properties that are easy
+                to confuse:
+        <span class="ButtonText">
+         Picture
+        </span>
+        and
+        <span class="ButtonText">
+         Image
+        </span>
+        .
+        <span class="ButtonText">
+         Picture
+        </span>
+        is the picture
+                associated with the contact that's picked.
+        <span class="ButtonText">
+         Image
+        </span>
+        is
+                the image of the
+        <span class="ButtonText">
+         PhoneNumberPicker
+        </span>
+        component as it
+                appears in the
+        <span class="ButtonText">
+         Designer
+        </span>
+        and on the phone.
+       </blockquote>
+       <h2>
+        Enhancements
+       </h2>
+       <p>
+        Here are some variations for you to try:
+       </p>
+       <ul>
+        <li>
+         Add a second button,
+         <span class="ButtonText">
+          BottomButton
+         </span>
+         and a second
+                PhoneNumberPicker, so that your app gives you the choice of two numbers.
+        </li>
+        <li>
+         Add a label with instructions on how to use the app.
+        </li>
+        <li>
+         Show the name of the person being called in addition to the phone number. Use
+                an extra label to show the additional information.
+        </li>
+       </ul>
+       <h2>
+        Using PicCall
+       </h2>
+       <p>
+        You can package
+        <em>
+         PicCall
+        </em>
+        and download it to the phone so you can use it
+                when you're not connected to the computer. But there's a big limitation: Every time
+                you restart
+        <em>
+         PicCall
+        </em>
+        , it starts fresh and does not remember what you picked
+                last time. Later, we'll see how to use the
+        <span class="ButtonText">
+         TinyDB
+        </span>
+        component to create apps that can remember information from one time to the next.
+                Such information is called
+        <i>
+         persistent data
+        </i>
+        .
+       </p>
+       <h2>
+        Review
+       </h2>
+       Here are the key ideas covered in this tutorial:
+       <ul>
+        <li>
+         <p>
+          You can name components by means of the Rename button.
+         </p>
+        </li>
+        <li>
+         <p>
+          App Inventor has components that can use information stored on the phone. The
+          <span class="ButtonText">
+           PhoneNumberPicker
+          </span>
+          can get phone numbers and
+                    pictures for your contacts, and
+          <span class="ButtonText">
+           PhoneCall
+          </span>
+          can
+                    make calls.
+         </p>
+        </li>
+       </ul>
+       <blockquote class="Dogfooding">
+        <b>
+         Tip:
+        </b>
+        The list that comes up when you run the phone number picker does not
+                show the pictures associated with your contacts, on some Android systems. Even
+                though the image isn't shown, the "Picture" property will still return a picture
+                that will show up when you run the app, provided that the phone has a picture for
+                that contact.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

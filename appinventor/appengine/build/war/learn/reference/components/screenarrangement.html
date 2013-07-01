@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Screen Arrangement Components - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Screen             Arrangement &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Screen Arrangement Components
+       </h1>
+       <ul>
+        <li>
+         <a href="#HorizontalArrangement">
+          HorizontalArrangement
+         </a>
+        </li>
+        <li>
+         <a href="#TableArrangement">
+          TableArrangement
+         </a>
+        </li>
+        <li>
+         <a href="#VerticalArrangement">
+          VerticalArrangement
+         </a>
+        </li>
+       </ul>
+       <h2 id="HorizontalArrangement">
+        HorizontalArrangement
+       </h2>
+       <img alt="" src="images/horizontalarrangement.png" />
+       <p>
+        Use a horizontal arrangement component to display a group of components laid out
+                from left to right.
+       </p>
+       <p>
+        This component is a formatting element in which you place components that should be
+                displayed from left to right. If you want to have components displayed one over
+                another, use
+        <code>
+         VerticalArrangement
+        </code>
+        instead.
+       </p>
+       <p>
+        In a HorizontalArrangement, components are arranged along the horizontal axis,
+                vertically center-aligned.
+       </p>
+       <p>
+        If a HorizontalArrangement's Height property is set to Automatic, the actual height
+                of the arrangement is determined by the tallest component in the arrangement whose
+                Height property is not set to Fill Parent. If a HorizontalArrangment's Height
+                property is set to Automatic and it contains only components whose Height
+                properties are set to Fill Parent, the actual height of the arrangement is
+                calculated using the automatic heights of the components. If a
+                HorizontalArrangement's Height property is set to Automatic and it is empty, the
+                height will be 100.
+       </p>
+       <p>
+        If a HorizontalArrangement's Width property is set to Automatic, the actual width
+                of the arrangement is determined by the sum of the widths of the components.
+        <b>
+         If
+                a HorizontalArrangement's Width property is set to Automatic, any components whose
+                Width properties are set to Fill Parent will behave as if they were set to
+                Automatic.
+        </b>
+       </p>
+       <p>
+        If a HorizontalArrangement's Width property is set to Fill Parent or specified in
+                pixels, any components whose Width properties are set to Fill Parent will equally
+                take up the width not occupied by other components.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If true, component and its contents are visible.
+        </dd>
+        <dt>
+         <code>
+          Height
+         </code>
+        </dt>
+        <dd>
+         Horizontal arrangement height (y-size).
+        </dd>
+        <dt>
+         <code>
+          Width
+         </code>
+        </dt>
+        <dd>
+         Horizontal arrangement width (x-size).
+        </dd>
+       </dl>
+       <h2 id="TableArrangement">
+        TableArrangement
+       </h2>
+       <p>
+        Use a table arrangement component to display a group of components in a tabular
+                fashion.
+       </p>
+       <p>
+        This component is a formatting element in which you place components that should be
+                displayed in tabular form.
+       </p>
+       <p>
+        In a TableArrangement, components are arranged in a grid of rows and columns, with
+                not more than one component visible in each cell.
+        <b>
+         If multiple components occupy
+                the same cell, only the last one will be visible.
+        </b>
+       </p>
+       <p>
+        Within each row, components are vertically center-aligned.
+       </p>
+       <p>
+        The width of a column is determined by the widest component in that column. When
+                calculating column width, the automatic width is used for components whose Width
+                property is set to Fill Parent.
+        <b>
+         However, each component will always fill the
+                full width of the column that it occupies.
+        </b>
+       </p>
+       <p>
+        The height of a row is determined by the tallest component in that row whose Height
+                property is not set to Fill Parent. If a row contains only components whose Height
+                properties are set to Fill Parent, the height of the row is calculated using the
+                automatic heights of the components.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If true, component and its contents are visible.
+        </dd>
+        <dt>
+         <code>
+          Rows (number-of-rows)
+         </code>
+        </dt>
+        <dd>
+         The number of rows in the table.
+        </dd>
+        <dt>
+         <code>
+          Columns (number-of-columns)
+         </code>
+        </dt>
+        <dd>
+         The number of columns in the table.
+        </dd>
+        <dt>
+         <code>
+          Height
+         </code>
+        </dt>
+        <dd>
+         Table arrangement height (y-size).
+        </dd>
+        <dt>
+         <code>
+          Width
+         </code>
+        </dt>
+        <dd>
+         Table arrangement width (x-size).
+        </dd>
+       </dl>
+       <h2 id="VerticalArrangement">
+        VerticalArrangement
+       </h2>
+       <img alt="" src="images/verticalarrangement.png" />
+       <p>
+        Use a vertical arrangement component to display a group of components laid out from
+                top to bottom, left-aligned.
+       </p>
+       <p>
+        This component is a formatting element in which you place components that should be
+                displayed one below another. The first child component is stored on top, the second
+                beneath it, and so on. If you want to have components displayed next to one
+                another, use
+        <code>
+         HorizontalArrangement
+        </code>
+        instead.
+       </p>
+       <p>
+        In a VerticalArrangement, components are arranged along the vertical axis,
+                left-aligned.
+       </p>
+       <p>
+        If a VerticalArrangement's Width property is set to Automatic, the actual width of
+                the arrangement is determined by the widest component in the arrangement whose
+                Width property is not set to Fill Parent. If a VerticalArrangement's Width property
+                is set to Automatic and it contains only components whose Width properties are set
+                to Fill Parent, the actual width of the arrangement is calculated using the
+                automatic widths of the components. If a VerticalArrangement's Width property is
+                set to Automatic and it is empty, the width will be 100.
+       </p>
+       <p>
+        If a VerticalArrangement's Height property is set to Automatic, the actual height
+                of the arrangement is determined by the sum of the heights of the components.
+        <b>
+         If
+                a VerticalArrangement's Height property is set to Automatic, any components whose
+                Height properties are set to Fill Parent will behave as if they were set to
+                Automatic.
+        </b>
+       </p>
+       If a VerticalArrangement's Height property is set to Fill Parent or specified in
+              pixels, any components whose Height properties are set to Fill Parent will equally
+              take up the height not occupied by other components.
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If true, component and its contents are visible.
+        </dd>
+        <dt>
+         <code>
+          Height
+         </code>
+        </dt>
+        <dd>
+         Vertical arrangement height (y-size).
+        </dd>
+        <dt>
+         <code>
+          Width
+         </code>
+        </dt>
+        <dd>
+         Vertical arrangement width (x-size).
+        </dd>
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
