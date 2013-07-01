@@ -29,6 +29,7 @@ import com.google.common.collect.Maps;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.TreeItem;
 
@@ -98,6 +99,9 @@ public final class YaBlocksEditor extends FileEditor
 
   // Used to determine if the newly generated yail should be sent to the debugging phone
   private String lastYail = "";
+
+  //Timer used to poll blocks editor to check if it is initialized
+  private static Timer timer;
 
   YaBlocksEditor(YaProjectEditor projectEditor, YoungAndroidBlocksNode blocksNode) {
     super(projectEditor, blocksNode);
@@ -173,10 +177,27 @@ public final class YaBlocksEditor extends FileEditor
   public void onShow() {
     OdeLog.log("YaBlocksEditor: got onShow() for " + getFileId());
     super.onShow();
-    blocksArea.showDifferentForm(fullFormName);
-    loadBlocksEditor();
-    sendComponentData();        // Send Blockly the component information for generating Yail
-    blocksArea.renderBlockly();
+    showWhenInitialized();
+  }
+
+  public void showWhenInitialized() {
+    //check if blocks are initialized
+    if(BlocklyPanel.blocksInited(fullFormName)) {
+      blocksArea.showDifferentForm(fullFormName);
+      loadBlocksEditor();
+      sendComponentData();  // Send Blockly the component information for generating Yail
+      blocksArea.renderBlockly(); //Re-render Blockly due to firefox bug
+    } else {
+      //timer calls this function again if the blocks are not initialized
+      if(timer == null) {
+        timer = new Timer() {
+          public void run() {
+            showWhenInitialized();
+          }
+        };
+      }
+      timer.schedule(200); // Run every 200 milliseconds
+    }
   }
 
   /*

@@ -192,7 +192,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   // Returns true if the blocks for formName have been initialized (i.e.,
   // no componentOps entry exists for formName).
-  private static boolean blocksInited(String formName) {
+  public static boolean blocksInited(String formName) {
     return !componentOps.containsKey(formName);
   }
 
