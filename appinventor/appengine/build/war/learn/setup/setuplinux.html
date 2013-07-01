@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Linux Setup - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    p.c2 {font-weight: bold}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/setup/">Setup</a> &gt; Linux &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h2>
+        Installing the App Inventor Setup Software for GNU/Linux
+       </h2>
+       <p>
+        You'll need sudo privileges to do the installation.
+       </p>
+       <h3>
+        For systems that can install Debian packages
+       </h3>
+       <p>
+        Use these instructions for systems that can install Debian packages (e.g., Debian
+                or Ubuntu):
+       </p>
+       <ol>
+        <li>
+         Download the
+         <a href="http://dl.google.com/dl/appinventor/installers/linux/appinventor-setup_1.1_all.deb">
+          Appinventor Setup installer Debian package
+         </a>
+         . This is a file named
+                  appinventor-setup_1.1_all.deb (about 86 Megabytes). It is a Debian package
+                  installer file. The place it will end up on your computer depends on how your
+                  browser is configured. Typically, it will go into your Downloads folder.
+        </li>
+        <li>
+         If your system can install packages simply by clicking on the package file,
+                then do that.
+        </li>
+        <li>
+         If your system doesn't support clickable package installers, then navigate to
+                the directory where the file is located and run the command
+         <p class="c2">
+          sudo dpkg --install appinventor-setup_1.1_all.deb
+         </p>
+         With either method, you might need to ensure that the deb file as well as the
+                  directory it's in are world readable and world executable. On some systems, sudo
+                  does not have default privileges to read and execute all files.
+        </li>
+        <li>
+         The software will be installed under /usr/google/appinventor-setup.
+        </li>
+        <li>
+         You'll also need to configure your system to detect your device. See the
+                Android developer instructions at
+         <a href="http://d.android.com/guide/developing/device.html#setting-up">
+          Setting up a device
+                for development
+         </a>
+         . Follow the instructions under the step "set up your system to
+                detect your device" in the bullet under "If you're developing on Ubuntu Linux".
+        </li>
+       </ol>
+       <h3>
+        For other GNU/Linux systems
+       </h3>
+       <ol>
+        <li>
+         Download the
+         <a href="http://dl.google.com/dl/appinventor/installers/linux/appinventor-setup_1.1.tar.gz">
+          Appinventor Setup installer tar file
+         </a>
+         . This is a file named
+                  appinventor-setup_1.1.tar.gz (about 86 Megabytes). It is a Gzip compressed tar
+                  file.
+        </li>
+        <li>
+         Install the files using a method appropriate to your operating system. You need
+                to extract just the appinventor-setup_1.1/appinventor directory, which needs to end
+                up on your system with the full path name
+         <b>
+          /usr/google/appinventor
+         </b>
+         . If you
+                have installed this correctly, the file
+         <b>
+          /usr/google/appinventor/commands-for-Appinventor/adb will exist
+         </b>
+         .
+        </li>
+       </ol>
+       <h3>
+        Locating the Setup directory
+       </h3>
+       <p>
+        In most cases, App Inventor should be able to locate the installed Setup software
+                on its own. If it does ask you where the software is located, the directory path
+                you should enter is
+        <b>
+         /usr/google/appinventor/commands-for-Appinventor
+        </b>
+       </p>
+       <blockquote class="notice">
+        Something not working right? Visit the
+        <a href="../troubleshooting.html">
+         troubleshooting page
+        </a>
+        , or check the
+        <a href="/forum/">
+         App Inventor User Forum
+        </a>
+        for help.
+       </blockquote>
+       <h2>
+        Next Steps
+       </h2>
+       <a href="/learn/setup/phone.html">
+        Set up your Android phone
+       </a>
+       then
+       <a href="/learn/setup/hellopurr/hellopurrphonepart1.html">
+        build your first app with the
+              phone
+       </a>
+       <h3>
+        or
+       </h3>
+       <a href="/learn/setup/hellopurr/hellopurremulatorpart1.html">
+        Build your first
+              app with the emulator
+       </a>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

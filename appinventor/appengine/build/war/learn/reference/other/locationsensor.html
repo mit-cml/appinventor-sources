@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Display Lists - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference">Reference</a> &gt; Using             the Location Sensor &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Using the Location Sensor
+       </h1>
+       <p>
+        The LocationSensor component can determine the phone's latitude and longitude as
+                well as a street address. You can use it to share your location with others, record
+                "breadcrumbs" on a journey or treasure hunt, or as a way to take roll in class (as
+                long as the students have Android devices!)
+       </p>
+       <p>
+        The sample apps below are simple but illustrate the basic way that location can be
+                determined. Both apps report the current latitude, longitude, and addres on the
+                phone's display and, just for fun, speak the address aloud. The first app reports
+                the location as soon as the sensor gets the data and every time the phone's
+                location is changed. The second app only invokes the location sensor in response to
+                an event-- when the user clicks a button.
+       </p>
+       <p>
+        For each sample app, the following is provided:
+       </p>
+       <ul>
+        <li>
+         A barcode which can be scanned to
+         <strong>
+          install
+         </strong>
+         the app on your
+                phone.
+        </li>
+        <li>
+         The source code (blocks) for you to use/
+         <strong>
+          customize
+         </strong>
+         . Download
+                the file to your computer then upload it into App Inventor.
+        </li>
+        <li>
+         A snapshot of the app in the Component
+         <strong>
+          Designer
+         </strong>
+        </li>
+        <li>
+         <strong>
+          Annotated blocks
+         </strong>
+         to help you understand the app. The annotations
+                  are block comments that will appear in the app when you upload it as well.
+        </li>
+       </ul>
+       <h2>
+        Sample App 1: Location Reader
+       </h2>
+       <p>
+        Report location data as soon as sensor reads it and when the location changes
+       </p>
+       <table border="0">
+        <tr>
+         <td>
+          <strong>
+           TRY IT!
+          </strong>
+          Scan the QR code with your Android phone to install
+                    this app (if you haven't already, download a scanner from the Android Market)
+         </td>
+         <td>
+          <img alt="" height="179" src="LocationSensorAssets/locationBarcode.png" width="214" />
+         </td>
+        </tr>
+        <tr>
+         <td>
+          <strong>
+           CUSTOMIZE IT!
+          </strong>
+          . Download the source blocks to your phone by
+                    clicking the button on the right, then upload into App Inventor by choosing
+                    More Actions | Upload Source on the Projects page.
+         </td>
+         <td>
+          <a href="LocationSensorAssets/LocationTest.zip">
+           <img alt="" height="116" src="LocationSensorAssets/customize.png" width="211" />
+          </a>
+         </td>
+        </tr>
+       </table>
+       <strong>
+        UNDERSTAND IT!
+       </strong>
+       Here is the user interface and components for
+              the app:
+       <div class="imagecontainer">
+        <img alt="" height="587" src="LocationSensorAssets/designer.png" width="724" />
+       </div>
+       <p>
+        Here are the blocks for the app, with annotation:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="520" src="LocationSensorAssets/locationChangedBlocks.png" width="720" />
+       </div>
+       <h2>
+        Sample App 2: Get the location when a button is clicked
+       </h2>
+       <p>
+        This app illustrates how to access location information only when some event
+                occurs. The LocationSensor is disabled to begin, then enabled when the button is
+                clicked and disabled once again when the location is determined.
+       </p>
+       <table border="0">
+        <tr>
+         <td>
+          <strong>
+           TRY IT!
+          </strong>
+          Scan the QR code with your Android phone to install
+                    this app (if you haven't already, download a scanner from the Android Market)
+         </td>
+         <td>
+          <img alt="" src="LocationSensorAssets/locationOnclickBarcode.png" />
+         </td>
+        </tr>
+        <tr>
+         <td>
+          <strong>
+           CUSTOMIZE IT!
+          </strong>
+          . Download the source blocks to your phone by
+                    clicking the button on the right, then upload into App Inventor by choosing
+                    More Actions | Upload Source on the Projects page.
+         </td>
+         <td>
+          <a href="LocationSensorAssets/LocationOnClickTest.zip">
+           <img alt="" height="116" src="LocationSensorAssets/customize.png" width="211" />
+          </a>
+         </td>
+        </tr>
+       </table>
+       <p>
+        <strong>
+         UNDERSTAND IT!
+        </strong>
+        Here is the user interface and components for the
+                app:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="592" src="LocationSensorAssets/locationOnClickDesigner.png" width="912" />
+       </div>
+       <p>
+        Here are the blocks for the app, with annotation:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="631" src="LocationSensorAssets/locationOnClickBlocks.png" width="754" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       <ul>
+        <li>
+         The second app illustrates using location data in response to an event. Write
+                an app that responds to any received text by sending back a text that says, "I'm
+                driving right now, I'll get back to you later. My location is ..." with the current
+                location filled in.
+        </li>
+        <li>
+         Write a "breadcrumb" app that tracks your (phone's) whereabouts by recording
+                each location change. One interesting refinement would be to only record a new
+                "breadcrumb" if the location has changed by a certain amount.
+        </li>
+       </ul>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://appinventorblog.com">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

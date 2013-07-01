@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Text Group - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Text             Group &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Text Group
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+       <div class="imagecontainer">
+        <img align="right" alt="" height="493" src="TextGroupAssets/textGroupEmulator.png" width="334" />
+       </div>
+       <p>
+        This tutorial introduces the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component for
+                sending and processing SMS text messages.You'll build an app that texts a message
+                to a list of phone numbers. This tutorial assumes you are familiar with the basics
+                of App Inventor: using the Component Designer to build a user interface, and using
+                the Blocks Editor to specify event handlers. If you are not familiar with the
+                basics, try stepping through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it TextGroup,
+                and also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to TextGroup. Open
+                the Blocks Editor and connect to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the TextGroup app so that clicking on a button texts a message to a
+                list of phone numbers. The app introduces the following App Inventor concepts:
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          Texting
+         </span>
+         component for sending texts and
+                processing SMS texts.
+        </li>
+        <li>
+         List variables to keep track of the numbers to text.
+        </li>
+        <li>
+         The foreach block for repeating operations on a list of data (the list of phone
+                numbers)
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+       </h2>
+       <p>
+        The user interface for TextGroup is simple: it has a text box for entering the
+                message to send, a button to send the message, a label that reports when the
+                message is sent, and a
+        <span class="ButtonText">
+         Texting
+        </span>
+        component. Use the
+                Component Designer to create this interface. When you finish, it should look
+                something like the snapshot below (there are also more detailed instructions below
+                the snapshot).
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="581" src="TextGroupAssets/TextGroupDesigner.png" width="950" />
+       </div>
+       <p>
+        The following table describes the components you need. Drag each component from the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        and name it as specified below:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             MessageText
+            </span>
+           </td>
+           <td>
+            User will enter message here.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             TextGroupButton
+            </span>
+           </td>
+           <td>
+            User will click here after entering the message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             StatusLabel
+            </span>
+           </td>
+           <td>
+            Reports when texts have been sent
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting
+            </span>
+           </td>
+           <td>
+            Social
+           </td>
+           <td>
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td>
+            The component that sends the texts
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Set the properties of the components in the following way:
+       </p>
+       <ul>
+        <li>
+         Set the the
+         <span class="ButtonText">
+          Hint
+         </span>
+         of
+         <span class="ButtonText">
+          MessageText
+         </span>
+         to "enter a message".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          TextGroupButton
+         </span>
+         to
+         <span class="ButtonText">
+          "Text Group"
+         </span>
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          StatusLabel
+         </span>
+         to "status".
+        </li>
+       </ul>
+       <h2>
+        Add behaviors to the components
+       </h2>
+       <p>
+        TextGroup's behavior is as follows: when the user clicks the
+        <span class="ButtonText">
+         TextGroupButton
+        </span>
+        , the app should text the message entered by the
+                user in
+        <span class="ButtonText">
+         MessageText
+        </span>
+        to all the numbers in a list of
+                phone numbers. When all are sent, it should report the last message sent in the
+        <span class="ButtonText">
+         StatusLabel
+        </span>
+        .
+       </p>
+       <p>
+        <strong>
+         Text the entered message to one phone number.
+        </strong>
+       </p>
+       <p>
+        To introduce yourself to the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component,
+                begin by creating a simplified version that texts the message entered by the user
+                to your own phone. To send a text, you need to set two properties of the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component: the
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        and the
+        <span class="ButtonText">
+         Message
+        </span>
+        .
+                Once these properties are set, you call the
+        <span class="ButtonText">
+         SendMessage
+        </span>
+        function to actually send the text.
+       </p>
+       <p>
+        Open the Blocks Editor and drag out the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+           </td>
+           <td class="tbl-header">
+            <strong>
+             Drawer
+            </strong>
+           </td>
+           <td class="tbl-header">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextGroupButton.Click
+            </span>
+           </td>
+           <td>
+            <span class="ButtonText">
+             TextGroupButton
+            </span>
+           </td>
+           <td>
+            when the user clicks the button, this event handler is triggered.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Texting1.Message to
+            </span>
+           </td>
+           <td>
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td>
+            set the
+            <span class="ButtonText">
+             Message
+            </span>
+            property before sending
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             MessageText.Text
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             MessageText
+            </span>
+           </td>
+           <td class="c3">
+            This is the message the user has entered.
+           </td>
+          </tr>
+          <tr>
+           <td class="c4" height="29">
+            <span class="ButtonText">
+             set Texting1.PhoneNumber to
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td class="c3">
+            set the
+            <span class="ButtonText">
+             PhoneNumber
+            </span>
+            property before sending
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c1">
+            <span class="ButtonText">
+             text
+            </span>
+            ("1112222")
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Text
+            </span>
+           </td>
+           <td class="c3">
+            put your own phone number as the text.
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             Texting1.SendMessage
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Texting
+            </span>
+           </td>
+           <td class="c3">
+            send the message
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this (but with a real phone number instead of
+                "1112222").
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="TextGroupAssets/textone.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user clicks the TextGroupButton, the event-handler is triggered. The first
+                row of blocks gets the text entered by the user (MessageText.Text) and places it
+                into the Message property of the Texting1 component. The second row of blocks sets
+                the PhoneNumber property of the Texting1 component. After the first two rows of
+                blocks, Texting1 knows what to send and who to send it to; the last block just
+                instructs Texting1 to actually send the message.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        If your phone is connected, the app should
+                appear with the MessageText box and button. Enter a message and click on the
+                TextGroupButton. Does the text get sent? Check your phone (or the phone you sent
+                the text to) to see.
+       </blockquote>
+       <h2>
+        <strong>
+         Texting a list
+        </strong>
+       </h2>
+       <p>
+        Next, you'll modify the blocks to text more than one number at a time. You'll first
+                define
+        <em>
+         a global variable
+        </em>
+        to store the data for the app: the phone numbers.
+                Global variables are not seen by the user; they are the app's "hidden" memory. In
+                this case, you'll define the list of phone numbers to which the text is sent.
+       </p>
+       <p>
+        You'll need the following blocks to build a list of phone numbers:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c1">
+            <strong>
+             Block Type
+            </strong>
+           </td>
+           <td class="tbl-header c2">
+            <strong>
+             Drawer
+            </strong>
+           </td>
+           <td class="tbl-header c3">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c5">
+            <span class="ButtonText">
+             def variable
+            </span>
+           </td>
+           <td class="c6">
+            <span class="ButtonText">
+             Definitions
+            </span>
+           </td>
+           <td class="c7">
+            Defines the
+            <span class="ButtonText">
+             PhoneNumbers
+            </span>
+            variable (rename
+                        it)
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Lists
+            </span>
+           </td>
+           <td class="c3">
+            Used to define the items of the list
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             text
+            </span>
+            (3)
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Text
+            </span>
+           </td>
+           <td class="c3">
+            The actual phone numbers
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this, but with two or three phone numbers of your
+                friends.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="TextGroupAssets/phonelist.png" />
+       </div>
+       <p>
+        Note that
+        <span class="ButtonText">
+         text
+        </span>
+        blocks are used for the phone
+                numbers, not
+        <span class="ButtonText">
+         number
+        </span>
+        blocks.This will allow for
+                dashes, which are not allowed in
+        <span class="ButtonText">
+         number
+        </span>
+        blocks.
+        <span class="ButtonText">
+         number
+        </span>
+        blocks are used for data on which you want
+                to perform mathematical computations.
+       </p>
+       <p>
+        Now you're ready to modify the
+        <span class="ButtonText">
+         TextGroupButton
+        </span>
+        event-handler so that it texts each number in the variable
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        . You'll use a foreach block to specify that you
+                want to send the text to each phone number in the list.
+       </p>
+       <blockquote class="notice">
+        <p>
+         The
+         <span class="ButtonText">
+          foreach
+         </span>
+         block allows you to specify blocks
+                  that should be repeated for every item in a list.
+        </p>
+        <p>
+         Any blocks you place within the
+         <span class="ButtonText">
+          foreach
+         </span>
+         block
+                  will be repeated on all of the items in the specified list.
+        </p>
+        <p>
+         There are two slots (arguments) in the foreach block,
+         <span class="ButtonText">
+          variable
+         </span>
+         and
+         <span class="ButtonText">
+          in list
+         </span>
+         . The
+                  slot named "variable" is filled in by App Inventor with a
+         <span class="ButtonText">
+          name var
+         </span>
+         block. The name is by default "var", but you can
+                  change it to "item" or some other name. It represents the "current item" being
+                  processed as the foreach processes the items in a list. Do not remove this block.
+        </p>
+        <p>
+         You should fill the
+         <span class="ButtonText">
+          in list
+         </span>
+         slot with the list
+                  variable you want to process (e.g., PhoneNumbers).
+        </p>
+       </blockquote>
+       <p>
+        You'll reconfigure the blocks already in
+        <span class="ButtonText">
+         TextGroupButton.Click
+        </span>
+        , and you'll need the following additional
+                blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c1">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+           </td>
+           <td class="tbl-header c2">
+            <strong>
+             Drawer
+            </strong>
+           </td>
+           <td class="tbl-header c3">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c5">
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td class="c6">
+            Control
+           </td>
+           <td class="c7">
+            Encloses the operations to be repeated
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             value var
+            </span>
+           </td>
+           <td class="c8">
+            My Definitions
+           </td>
+           <td class="c3">
+            This block appears in
+            <span class="ButtonText">
+             My Definitions
+            </span>
+            after
+                        you drag in the
+            <span class="ButtonText">
+             foreach
+            </span>
+            ; it represents the
+                        current item being processed. Plug it into the Texting1.PhoneNumber block.
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             global PhoneNumbers
+            </span>
+           </td>
+           <td class="c8">
+            My Definitions
+           </td>
+           <td class="c3">
+            The list being processed, plug it into the
+            <span class="ButtonText">
+             in
+                        list
+            </span>
+            argument near the bottom of the
+            <span class="ButtonText">
+             foreach
+            </span>
+            .
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="256" src="TextGroupAssets/foreach1.png" width="393" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the
+        <span class="ButtonText">
+         TextGroupButton
+        </span>
+        is clicked, the
+        <span class="ButtonText">
+         Texting1.Message
+        </span>
+        property is set to the message
+                entered by the user in
+        <span class="ButtonText">
+         MessageText
+        </span>
+        . Then the
+        <span class="ButtonText">
+         foreach
+        </span>
+        block begins executing. The two lines of
+                blocks nested within the foreach will be executed three times, because there are
+                three items in the list
+        <span class="ButtonText">
+         PhoneNumbers
+        </span>
+        . The first
+                time they are executed, the value var will hold the value "1112222", and the
+                message will be sent to that number. As soon as the message is sent, the app will
+                "loop up" and repeat the
+        <span class="ButtonText">
+         foreach
+        </span>
+        blocks. The second
+                time through, the value var will hold "3334444", and the message will be sent to
+                it. On the third iteration, var will hold "5556666", and the third text will be
+                sent out.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        Click the
+        <span class="ButtonText">
+         TextGroupButton
+        </span>
+        on the phone. Is the text sent to all the
+                numbers in the list?
+       </blockquote>
+       <h2>
+        Reporting the Status of the app
+       </h2>
+       <p>
+        It's always a good idea to give the user feedback when they initiate an operation.
+                In the app you've built thus far, the user clicks on the
+        <span class="ButtonText">
+         TextGroupButton
+        </span>
+        and nothing changes in the app's user
+                interface. Though the user might hear the phone's chime for transmitting the text,
+                it's still better to report a status directly in the app.
+       </p>
+       <p>
+        Modify the blocks so that the status label reports the last message sent. You'll
+                need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c1" width="180">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+           </td>
+           <td class="tbl-header c2" width="96">
+            <strong>
+             Drawer
+            </strong>
+           </td>
+           <td class="tbl-header c9" width="391">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c5">
+            <span class="ButtonText">
+             set StatusLabel.Text to
+            </span>
+           </td>
+           <td class="c6">
+            <span class="ButtonText">
+             StatusLabel
+            </span>
+           </td>
+           <td class="c7">
+            this is where status will appear
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             join
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Text
+            </span>
+           </td>
+           <td class="c3">
+            to concatenate the two parts of the status message
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             text
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             Text
+            </span>
+           </td>
+           <td class="c3">
+            put "last message sent:" in this text.block
+           </td>
+          </tr>
+          <tr>
+           <td class="c1">
+            <span class="ButtonText">
+             MessageText.Text
+            </span>
+           </td>
+           <td class="c2">
+            <span class="ButtonText">
+             MessageText
+            </span>
+           </td>
+           <td class="c3">
+            the message just sent.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The updated
+        <span class="ButtonText">
+         TextGroupButton.Click
+        </span>
+        blocks should
+                look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="303" src="TextGroupAssets/foreach2.png" width="588" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The join block is used to concatenate two pieces of text. You need it when you want
+                to join data from a variable or property with some other text. If you want to piece
+                together more than two texts, there is also a
+        <span class="ButtonText">
+         make
+                text
+        </span>
+        block.
+       </p>
+       <div class="c10">
+       </div>
+       Test the status behavior. Does the status message report the
+              message that was sent?
+       <h2>
+        Final Program
+       </h2>
+       <p>
+        <strong>
+         TextGroup, Final Version
+        </strong>
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="302" src="TextGroupAssets/textGroupFinal.png" width="859" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       <p>
+        Once you get the TextGroup app working, you might want to explore some variations.
+                For example,
+       </p>
+       <ul>
+        <li>
+         Write a "random date" version that randomly chooses a number in the list to
+                call. You won't need a
+         <span class="ButtonText">
+          foreach
+         </span>
+         block, but you will
+                need the
+         <span class="ButtonText">
+          pick random item
+         </span>
+         function in the Lists
+                drawer.
+        </li>
+        <li>
+         Write a version in which "Missing You" is sent to the list of numbers as soon
+                as the app begins (on the
+         <span class="ButtonText">
+          Screen.Initialize
+         </span>
+         event).
+                This will allow for quick texting without clicking an additional button.
+        </li>
+        <li>
+         Write a version that allows the
+         <em>
+          user
+         </em>
+         to enter the numbers in the list.
+                This way you don't need to re-program the blocks to change the group you are
+                texting
+         <em>
+          and
+         </em>
+         your app can be used by others! You'll need to use
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         to store the numbers after they are
+                  entered.
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some of the ideas covered in this tutorial:
+       </p>
+       <ul>
+        <li>
+         Instead of placing data directly in event handlers, you can create list
+                variables and program event handlers to process the list.
+        </li>
+        <li>
+         An app can repeat functions on all items of a list using the
+         <span class="ButtonText">
+          foreach
+         </span>
+         block.
+        </li>
+       </ul>
+      </div>
+      <div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+              Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+              tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

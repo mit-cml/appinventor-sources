@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   MoleMash2 - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    th.c3 {font-size:16px}
+    img.c2 {padding: 10px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt;             MoleMash2 &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Mole Mash 2
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+               <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch3MoleMash.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+       <img align="right" alt="The game running on an emulator" class="c2" src="front-pic.png" width="230" />
+       <p>
+        This tutorial shows you how to build a game similar to the Whac-A-MoleTM arcade
+                game. Specifically, your goal is to whack (tap) a mole that randomly pops out of
+                one of five fixed holes. Every time you succeed, your score is increased by one
+                point.
+       </p>
+       <p>
+        In order to highlight new App Inventor features — the Advanced tab and Sprite
+                Z-layering — this app takes a different approach than the
+        <a href="../molemash/molemash.html">
+         original Mole Mash tutorial
+        </a>
+        , which you need not
+                have read in order to do this one. You should, however, be familiar with the basics
+                of App Inventor — using the Component Designer to build a user interface and using
+                the Blocks Editor to specify event handlers. If you are not familiar with the
+                basics, try stepping through some of the
+        <a href="../index.html">
+         basic
+                tutorials
+        </a>
+        before continuing.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        This tutorial includes:
+       </p>
+       <ol>
+        <li>
+         Creating a list of components
+        </li>
+        <li>
+         Using functionality from the Advanced section of the Blocks Editor to get and
+                set properties of arbitrary components
+        </li>
+        <li>
+         Having game events controlled by the
+         <span class="ButtonText">
+          Clock
+         </span>
+         component
+        </li>
+        <li>
+         Using Sprite Z-layering to ensure that one sprite (
+         <span class="ButtonText">
+          ImageSprite
+         </span>
+         or
+         <span class="ButtonText">
+          Ball
+         </span>
+         ) appears in
+                front of another
+        </li>
+       </ol>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        property to an appropriate name, such as
+                "Mole Mash". Open the Blocks Editor and connect it to the phone. Download these
+                image files (created by Yun Miao) by right-clicking on them, then add them to the
+                project by pressing the "Add..." button in the Media pane.
+       </p>
+       <table cellpadding="5">
+        <tr>
+         <td align="center">
+          <img alt="A hole for a mole to pop out of" src="hole.png" />
+         </td>
+         <td align="center">
+          <img alt="An unpleasant-looking mole" src="mole.png" />
+         </td>
+        </tr>
+        <tr>
+         <td align="center">
+          <a href="hole.png">
+           hole.png
+          </a>
+         </td>
+         <td align="center">
+          <a href="mole.png">
+           mole.png
+          </a>
+         </td>
+        </tr>
+       </table>
+       <h2>
+        Set up the Components
+       </h2>
+       <p>
+        The user interface will contain a total of 6 ImageSprites: 5 unmoving holes and 1
+                mole, which will move on top of the holes. Use the component designer to create the
+                user interface. When you are done, it should look something like the picture below.
+                Don't worry about lining up the holes evenly. You will specify their locations
+                through their
+        <span class="ButtonText">
+         X
+        </span>
+        and
+        <span class="ButtonText">
+         Y
+        </span>
+        properties. Additional instructions are below the picture.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="designer1.png" width="546" />
+       </div>
+       <p>
+        Create the following components by dragging them from the Palette into the Viewer.
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Canvas
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             GameCanvas
+            </span>
+           </td>
+           <td>
+            The game field
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ImageSprite
+            </span>
+            (5)
+           </td>
+           <td>
+            Animation
+           </td>
+           <td>
+            <span class="ButtonText">
+             Hole1
+            </span>
+            , ...,
+            <span class="ButtonText">
+             Hole5
+            </span>
+           </td>
+           <td>
+            Holes from which the mole can appear
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ImageSprite
+            </span>
+           </td>
+           <td>
+            Animation
+           </td>
+           <td>
+            <span class="ButtonText">
+             Mole
+            </span>
+           </td>
+           <td>
+            The mole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             HorizontalArrangement
+            </span>
+           </td>
+           <td>
+            ScreenArrangement
+           </td>
+           <td>
+            <span class="ButtonText">
+             ScoreArrangement
+            </span>
+           </td>
+           <td>
+            To display the score
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             ScoreTextLabel
+            </span>
+           </td>
+           <td>
+            To hold "Score: "
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             ScoreValueLabel
+            </span>
+           </td>
+           <td>
+            To hold the score (# of times the mole was hit)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Clock
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             MoleClock
+            </span>
+           </td>
+           <td>
+            To control the mole's movement
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Sound
+            </span>
+           </td>
+           <td>
+            Media
+           </td>
+           <td>
+            <span class="ButtonText">
+             Buzzer
+            </span>
+           </td>
+           <td>
+            To vibrate when the mole is touched
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Make the following changes to the components' properties:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component
+           </td>
+           <td class="tbl-header">
+            Action
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Canvas1
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             BackgroundColor
+            </span>
+            to Green. Set
+            <span class="ButtonText">
+             Width
+            </span>
+            to 320 pixels. Set
+            <span class="ButtonText">
+             Height
+            </span>
+            to 320 pixels.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Hole1
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             X
+            </span>
+            to 20 and
+            <span class="ButtonText">
+             Y
+            </span>
+            to 60 (upper left).
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Hole2
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             X
+            </span>
+            to 130 and
+            <span class="ButtonText">
+             Y
+            </span>
+            to 60 (upper center).
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Hole3
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             X
+            </span>
+            to 240 and
+            <span class="ButtonText">
+             Y
+            </span>
+            to 60 (upper right)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Hole4
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             X
+            </span>
+            to 75 and
+            <span class="ButtonText">
+             Y
+            </span>
+            to 140 (lower left).
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Hole5
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             X
+            </span>
+            to 185 and
+            <span class="ButtonText">
+             Y
+            </span>
+            to 140 (lower right).
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Mole
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             Picture
+            </span>
+            to "mole.png". Set
+            <span class="ButtonText">
+             Z
+            </span>
+            to 2 so the mole appears in front of the other
+            <span class="ButtonText">
+             ImageSprite
+            </span>
+            s, which have the default
+            <span class="ButtonText">
+             Z
+            </span>
+            value of 1.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ScoreTextLabel
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             Text
+            </span>
+            to "Score: ".
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ScoreTextValue
+            </span>
+           </td>
+           <td>
+            Set
+            <span class="ButtonText">
+             Text
+            </span>
+            to "0".
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Don't worry now about setting the
+        <span class="ButtonText">
+         Picture
+        </span>
+        property
+                for the holes; we'll set the property in the Blocks Editor.
+       </p>
+       <h2>
+        Add Behaviors to the Components
+       </h2>
+       Here is an overview of what we need to create blocks to do:
+       <ol>
+        <li>
+         Create variables:
+         <ol>
+          <li>
+           <span class="ButtonText">
+            holes
+           </span>
+           : a list of holes
+          </li>
+          <li>
+           <span class="ButtonText">
+            currentHole
+           </span>
+           : the hole the mole is currently
+                      coming out of
+          </li>
+         </ol>
+        </li>
+        <li>
+         When the app starts:
+         <ol>
+          <li>
+           Populate the list of holes.
+          </li>
+          <li>
+           Set each hole's
+           <span class="ButtonText">
+            Picture
+           </span>
+           property to
+                    "hole.png".
+          </li>
+          <li>
+           Call procedure
+           <span class="ButtonText">
+            MoveMole
+           </span>
+           (below).
+          </li>
+         </ol>
+        </li>
+        <li>
+         Create a procedure
+         <span class="ButtonText">
+          MoveMove
+         </span>
+         to:
+         <ol>
+          <li>
+           Set
+           <span class="ButtonText">
+            currentHole
+           </span>
+           to a random hole from the
+                    list
+           <span class="ButtonText">
+            holes
+           </span>
+           .
+          </li>
+          <li>
+           Move the mole to the location of
+           <span class="ButtonText">
+            currentHole
+           </span>
+           .
+          </li>
+         </ol>
+        </li>
+        <li>
+         Make
+         <span class="ButtonText">
+          MoleClock
+         </span>
+         call
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         whenever its timer goes off (every second).
+        </li>
+        <li>
+         Implement a handler that does the following when the mole is touched:
+         <ol>
+          <li>
+           Add one to the score.
+          </li>
+          <li>
+           Make the phone briefly vibrate.
+          </li>
+          <li>
+           Call
+           <span class="ButtonText">
+            MoveMole
+           </span>
+           .
+          </li>
+         </ol>
+        </li>
+       </ol>
+       To proceed, open the Blocks Editor.
+       <h3>
+        Creating variables
+       </h3>
+       Create the variables
+       <span class="ButtonText">
+        holes
+       </span>
+       and
+       <span class="ButtonText">
+        currentHole
+       </span>
+       . For now, we will give them "dummy" initial values;
+              we'll set their real initial values in the
+       <span class="ButtonText">
+        Screen1.Initialize
+       </span>
+       event handler, which is run when the app
+              starts. (For technical reasons, components cannot be referred to in
+       <span class="ButtonText">
+        def
+       </span>
+       blocks, which are run before the app has started.) Here is a
+              picture and list of the blocks you will need:
+       <div class="imagecontainer">
+        <img alt="" src="blocks1.png" width="590" />
+       </div>
+       <div class="advtutorial">
+        .
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable as
+            </span>
+            (holes)
+           </td>
+           <td>
+            Definition
+           </td>
+           <td>
+            Hold a list of holes.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            Create an empty list, to be filled in when the program starts.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable as
+            </span>
+            (currentHole)
+           </td>
+           <td>
+            Definition
+           </td>
+           <td>
+            Hold the mole's current hole.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (0)
+           </td>
+           <td>
+            Numbers
+           </td>
+           <td>
+            Provide a required initial value for
+            <span class="ButtonText">
+             currentHole
+            </span>
+            .
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        As always, comments (created by right-clicking on a block) are encouraged but not
+                required.
+       </p>
+       <h3>
+        Starting the App
+       </h3>
+       <p>
+        The first event to occur in any program in
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        , so we will put start-up code in that
+                handler. Specifically, we will add the hole components to the list
+        <span class="ButtonText">
+         holes
+        </span>
+        , set each hole's
+        <span class="ButtonText">
+         Picture
+        </span>
+        property to "hole.png", and call
+        <span class="ButtonText">
+         MoveMole
+        </span>
+        . Since we
+                have not yet written
+        <span class="ButtonText">
+         MoveMole
+        </span>
+        , we will create an
+                empty procedure with that name, which we will fill in later.
+       </p>
+       <p>
+        Below are a picture and table of the blocks you need to create. Note that the "Any
+                ImageSprite" drawer is found under the "Advanced" tab to the right of "Built-In"
+                and "My Blocks" in the Blocks Editor.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="blocks2.png" width="559" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Screen1.Initialize
+            </span>
+           </td>
+           <td>
+            Screen1
+           </td>
+           <td>
+            Specify what should happen when the app starts.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            Add the following values to...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             holes
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...the list of holes:
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             component Hole1
+            </span>
+           </td>
+           <td>
+            Hole1
+           </td>
+           <td>
+            • upper left hole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             component Hole2
+            </span>
+           </td>
+           <td>
+            Hole2
+           </td>
+           <td>
+            • the upper center hole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             component Hole3
+            </span>
+           </td>
+           <td>
+            Hole3
+           </td>
+           <td>
+            • the upper right hole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             component Hole4
+            </span>
+           </td>
+           <td>
+            Hole4
+           </td>
+           <td>
+            • the lower left hole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             component Hole5
+            </span>
+           </td>
+           <td>
+            Hole5
+           </td>
+           <td>
+            • the lower right hole
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            Specify that we would like...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             name (hole)
+            </span>
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            ...a variable named "hole"...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             holes
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...to take on each of the values in the list
+            <span class="ButtonText">
+             holes
+            </span>
+            .
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ImageSprite.Picture
+            </span>
+           </td>
+           <td>
+            Any Image Sprite
+           </td>
+           <td>
+            Set the
+            <span class="ButtonText">
+             Picture
+            </span>
+            property of...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value hole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...the
+            <span class="ButtonText">
+             ImageSprite
+            </span>
+            referred to by the
+                        variable
+            <span class="ButtonText">
+             hole
+            </span>
+            ...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text (hole.png)
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            ...to the picture of the empty hole.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             to procedure
+            </span>
+            (MoveMole)
+           </td>
+           <td>
+            Definition
+           </td>
+           <td>
+            Create an procedure, to be filled in later, for moving the mole.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MoveMole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            Call
+            <span class="ButtonText">
+             MoveMole
+            </span>
+            to make the first placement
+                        of the mole.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Compare the
+        <span class="ButtonText">
+         foreach
+        </span>
+        block to the equivalent blocks
+                that would be necessary without it:
+       </p>
+       <table>
+        <tr>
+         <th class="c3">
+          New
+         </th>
+         <th class="c3">
+          Old
+         </th>
+        </tr>
+        <tr>
+         <td width="450">
+          <img alt="" src="blocks3a.png" />
+         </td>
+         <td>
+          <img alt="" src="blocks3b.png" />
+         </td>
+        </tr>
+       </table>
+       <p>
+        Not only is the left set of blocks shorter, it is less repetitious, sparing the
+                programmer from semi-mindless copy-and-pasting and making it easier to modify, for
+                example, if the name of the picture is changed.
+       </p>
+       <h3>
+        Moving the Mole
+       </h3>
+       <p>
+        Now let's fill in the body of the procedure
+        <span class="ButtonText">
+         MoveMole
+        </span>
+        , which we'll call when the program starts, when the
+                mole gets touched, and when our timer goes off every second. What we want it to do
+                is to pick a random hole and move the mole on top of it. Here are a picture and
+                list of the new blocks:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="blocks4.png" width="501" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set currentHole to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            Save the...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call pick random item
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            ...randomly selected...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             holes
+            </span>
+           </td>
+           <td>
+            My Definition
+           </td>
+           <td>
+            ...hole.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call Mole.MoveTo
+            </span>
+           </td>
+           <td>
+            Mole
+           </td>
+           <td>
+            Move the mole to the...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ImageSprite.X
+            </span>
+           </td>
+           <td>
+            Advanced/ImageSprite
+           </td>
+           <td>
+            ..x-coordinate of...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             currentHole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...the chosen hole...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ImageSprite.Y
+            </span>
+           </td>
+           <td>
+            Advanced/ImageSprite
+           </td>
+           <td>
+            ...and the y-coordinate of...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             current Hole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...the chosen hole.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        We now need to specify that
+        <span class="ButtonText">
+         MoveMole
+        </span>
+        should be
+                called whenever
+        <span class="ButtonText">
+         MoleClock
+        </span>
+        's
+        <span class="ButtonText">
+         Timer
+        </span>
+        goes off. We just need two blocks to accomplish that:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="blocks5.png" width="182" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MoleClock.Timer
+            </span>
+           </td>
+           <td>
+            MoleClock
+           </td>
+           <td>
+            When the timer goes off...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call MoveMole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...move the mole.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <h3>
+        Registering Touches
+       </h3>
+       <p>
+        Finally, we need to specify what happens when the mole is touched. Specifically, we
+                want to:
+       </p>
+       <ol>
+        <li>
+         Increment the score.
+        </li>
+        <li>
+         Make the phone vibrate briefly.
+        </li>
+        <li>
+         Move the mole.
+        </li>
+       </ol>
+       <p>
+        We can easily translate these to blocks:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="blocks6.png" width="521" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Mole.Touched
+            </span>
+           </td>
+           <td>
+            Mole
+           </td>
+           <td>
+            When the mole is touched...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ScoreValueLabel.Text to
+            </span>
+           </td>
+           <td>
+            ScoreValueLabel
+           </td>
+           <td>
+            ...update the visible score to...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             +
+            </span>
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            ...the result of adding...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            ...1 [and]...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ScoreValueLabel.Text
+            </span>
+           </td>
+           <td>
+            ScoreValueLabel
+           </td>
+           <td>
+            ...the previous score.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call Buzzer.Vibrate
+            </span>
+           </td>
+           <td>
+            Buzzer
+           </td>
+           <td>
+            Make the phone vibrate for...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (100)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            ...100 milliseconds.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call MoveMole
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            Move the mole to a new location.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <h2>
+        Final Program
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" src="blocks-final.png" width="943" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       Here are some variations you might want to implement:
+       <ul>
+        <li>
+         Adding a Reset button to set the score back to 0.
+        </li>
+        <li>
+         Having the score depend not just on the number of hits but also the number of
+                misses and escaped moles.
+        </li>
+        <li>
+         Increasing the speed of the game of mole movement if the player is doing well
+                and decreasing it if the player is doing poorly.
+        </li>
+        <li>
+         Adding a second mole on a different timer.
+        </li>
+       </ul>
+       <p>
+        You can see how to implement the first two variations in the
+        <a href="../molemash/molemash.html">
+         original Mole Mash tutorial
+        </a>
+        .
+       </p>
+       <h2>
+        Review
+       </h2>
+       Here are some of the ideas covered in this tutorial:
+       <ul>
+        <li>
+         Putting components in a
+         <span class="ButtonText">
+          List
+         </span>
+         .
+        </li>
+        <li>
+         Performing an operation on every component in a
+         <span class="ButtonText">
+          List
+         </span>
+         using the
+         <span class="ButtonText">
+          foreach
+         </span>
+         block
+                and Advanced features.
+        </li>
+        <li>
+         Placing an
+         <span class="ButtonText">
+          ImageSprite
+         </span>
+         on top of another, using
+                their
+         <span class="ButtonText">
+          Z
+         </span>
+         properties to control which goes in front.
+        </li>
+        <li>
+         Using the
+         <span class="ButtonText">
+          Clock
+         </span>
+         component to control game play.
+        </li>
+        <li>
+         Creating a procedure and calling it from multiple places.
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

@@ -57,11 +57,11 @@ import org.json.JSONException;
 // and say what Android system permissions it requires.
 //
 
-
+ // Gareth Haylings 21/06/2013 changed catagory from EXPERIMENTAL to BASIC
 @DesignerComponent(version = YaVersion.TINYWEBDB_COMPONENT_VERSION,
     description = "Non-visible component that communicates with a Web service to store and " +
     "retrieve information.",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.BASIC,
     nonVisible = true,
     iconName = "images/tinyWebDB.png")
 @SimpleObject

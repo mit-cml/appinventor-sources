@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Broadcaster Hub - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    td.c3 {width: 180px; height: 24px;}
+    td.c2 {font-weight: bold}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt;             Broadcaster Hub &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Broadcast Hub
+       </h1>
+              <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch11BroadcastHub.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <p>
+        In this tutorial, you'll write an app that automatically responds to texts messages
+                and broadcasts texts messages it receives to a list of phone numbers.The app is
+                inspired by
+        <a href="http://www.frontlinesms.com/">
+         FrontLineSMS
+        </a>
+        , a tool that
+                has been used in developing countries to
+        <a href="http://news.bbc.co.uk/2/hi/technology/8209172.stm">
+         monitor elections
+        </a>
+        ,
+                broadcast weather changes, and in general connect people that don't have access to
+                the web but do have phones and mobile connectivity.
+        <br />
+       </p>
+       <p>
+        FrontllineSMS is software that runs on a computer with a phone plugged into it. The
+                computer and plugged-in phone serve as a hub for SMS text communication amongst a
+                group. You'll write a version of the software that runs on an Android phone, thus
+                allowing the hub to be as mobile as the phones it connects.
+       </p>
+       <p>
+        This tutorial assumes you are familiar with the basics of App Inventor-- using the
+                Component Designer to build a user interface, and using the Blocks Editor to
+                specify event-handlers. If you are not familiar with the basics, try stepping
+                through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <p>
+        The tutorial also assumes you have completed the
+        <a href="/learn/tutorials/textgroup/textgroup.html">
+         TextGroup
+        </a>
+        tutorial and thus are
+                familiar with the basics of the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it BroadcastHub,
+                and also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to BroadcastHub.
+                Open the Blocks Editor and connect to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        BroadcastHub processes text messages that are received in the following manner:
+        <br />
+       </p>
+       <ul>
+        <li>
+         If the text message is from an unknown source, the app responds with a text
+                that invites that source to join the broadcast list.
+        </li>
+        <li>
+         If the text message “joinabc” is received, the app adds the sender to the
+                broadcast list
+         <br />
+        </li>
+        <li>
+         If the text message is from a number already in the broadcast list, the message
+                is broadcast to all numbers in the list.
+        </li>
+       </ul>
+       <p>
+        The tutorial covers the following App Inventor concepts:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          Texting
+         </span>
+         component for sending texts and
+                processing received texts.
+        </li>
+        <li>
+         List variables to keep track of the numbers to text.
+         <br />
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          foreach
+         </span>
+         block that allows an app to repeat
+                operations on a list of data (the list of phone numbers)
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Setting up the Components
+       </h2>
+       <p>
+        BroadcasterHub facilitates communication between mobile phones. Those phones need
+                not have the BroadcasterHub app installed, or even be smart phones. The app is the
+                hub, and the app's user interface is only for the administrator of the
+                communications network.
+       </p>
+       <p>
+        For this sample, that user interface is simple: it will display the current
+        <em>
+         broadcast list
+        </em>
+        -- the list of phone numbers which have registered for the
+                service-- and it will report all texts it receives and broadcasts.
+       </p>
+       <p>
+        To build the interface, add the following components:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             BroadcsastListLabel
+            </span>
+           </td>
+           <td>
+            This will display the phone numbers that are registered
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+            <br />
+           </td>
+           <td>
+            <span class="ButtonText">
+             LogLabel
+            </span>
+           </td>
+           <td>
+            This will display a log of the texts received and broadcast
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Texting
+            </span>
+           </td>
+           <td>
+            Social
+            <br />
+           </td>
+           <td>
+            <span class="ButtonText">
+             Texting1
+            </span>
+           </td>
+           <td>
+            The component that processes the texts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TinyDB
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             TinyDB1
+            </span>
+           </td>
+           <td>
+            To store the list of registered phone numbers
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <ul>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Width
+         </span>
+         of each of the labels to
+         <span class="ButtonText">
+          Fill Parent
+         </span>
+         so that they span the phone
+                horizontally. Set the
+         <span class="ButtonText">
+          Height
+         </span>
+         for the labels to 200
+                pixels.
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         property of
+         <span class="ButtonText">
+          BroadcastListLabe
+         </span>
+         l to "Broadcast List...".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         property of
+         <span class="ButtonText">
+          LogLabel
+         </span>
+         to blank.
+        </li>
+       </ul>
+       <p>
+        BroadcastHub should look like this after its front-end is designed:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="BroadcasterHubAssets/broadcasterDesigner.png" width="949" />
+       </div>
+       <h2>
+        Add behaviors to the components
+       </h2>
+       <p>
+        The activity for Broadcast Hub is not triggered by the user entering information or
+                clicking a button, but by texts being received from outside sources. You'll need
+                the following behaviors:
+       </p>
+       <ul>
+        <li>
+         When the text message is from an unknown source, the app responds with a text
+                that invites that source to join the broadcast list.
+        </li>
+        <li>
+         When the text message "joinabc" is received, register the sender as part of the
+                broadcast list.
+         <br />
+        </li>
+        <li>
+         When the text message is from a number already in the broadcast list, the
+                message is broadcast to all numbers in the list.
+        </li>
+       </ul>
+       <p>
+        Start by creating the first behavior-- when you receive a text, send a message back
+                to the sender inviting them to text a code, "joinabc", in order to register for the
+                group. You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Texting1.MessageReceived
+           </td>
+           <td>
+            Texting1
+            <br />
+           </td>
+           <td>
+            event-handler triggered when the phone receives a text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            set Texting1.PhoneNumber to
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            to set the number for the return text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            value number
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            argument of MessageReceived, it is the phone number of sender
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            set Texting1.Message
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            to set the invite message to send
+           </td>
+          </tr>
+          <tr>
+           <td>
+            text
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the invite message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Texting1.SendMessage
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            send it!
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="206" src="BroadcasterHubAssets/messageRcvd1.png" width="639" />
+        <br />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        <span class="ButtonText">
+         Texting1.MessageReceived
+        </span>
+        is triggered when any text
+                message is received on the phone. The blocks within the event-handler set the
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        and
+        <span class="ButtonText">
+         Message
+        </span>
+        of the
+        <span class="ButtonText">
+         Texting1
+        </span>
+        component, then send the message
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        You'll need another phone besides the one on
+                which the app resides. From the second phone, send a text "hello" to the phone
+                running the app. The second phone should receive a text that invites them to the
+                group.
+       </blockquote>
+       <h2>
+        Handling the "joinabc" text message
+       </h2>
+       <p>
+        Create the blocks for the second behavior: "when the text message "joinabc" is
+                received, add the sender to the broadcast list." First, you'll need to define a
+                list variable,
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        , to store the phone
+                numbers that register. From
+        <span class="ButtonText">
+         Definitions
+        </span>
+        , drag out a
+                def var block and name it "BroadcastList". Initialize it with a
+        <span class="ButtonText">
+         make a list
+        </span>
+        block from
+        <span class="ButtonText">
+         Lists
+        </span>
+        :
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="59" src="BroadcasterHubAssets/BroadcastList.png" width="318" />
+       </div>
+       <p>
+        Next, modify the
+        <span class="ButtonText">
+         Texting1.MessageReceived
+        </span>
+        event-handler so that it adds the sender's phone number to the
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        if the message received is "joinabc". After you
+                add the number to the list, display the new list in the
+        <span class="ButtonText">
+         BroadcastListLabel
+        </span>
+        . You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td>
+            <b>
+             &nbsp;Block Type
+            </b>
+            <br />
+           </td>
+           <td>
+            <b>
+             Drawer
+            </b>
+            <br />
+           </td>
+           <td class="c2">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td class="c3" nowrap="nowrap">
+            <span class="ButtonText">
+             ifelse
+            </span>
+            <br />
+           </td>
+           <td>
+            Control
+            <br />
+           </td>
+           <td>
+            depending on message received, you'll do different things
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             =
+            </span>
+            block
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            the test will be: is messageText equal to "joinabc"
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            value messageText
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into = block
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("joinabc")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            plug into = block
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            to add the sender's number to
+            <span class="ButtonText">
+             BroadcastList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            BroadcastList
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the list
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            value number
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug in as item of
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            set BroadcastListLabel.Text to
+           </td>
+           <td>
+            BroadcastListLabel
+           </td>
+           <td>
+            display the new list
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            BroadcastList
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug in to
+            <span class="ButtonText">
+             set BroadcastListLabel.Text to
+                        block
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText">
+            set Texting1.Message to
+           </td>
+           <td>
+            Texting
+           </td>
+           <td>
+            prepare
+            <span class="ButtonText">
+             Texting1
+            </span>
+            to send message back to
+                        sender
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("congrats, you ...")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            congratulate sender for joining group
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="443" src="BroadcasterHubAssets/addtolist.png" width="691" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The first row of blocks sets
+        <span class="ButtonText">
+         Texting1.PhoneNumber
+        </span>
+        to the phone number of the message that was just received. The app then asks if the
+        <span class="ButtonText">
+         messageText
+        </span>
+        was of the special code "joinabc". If
+                so, the sender's phone number is added to the
+        <span class="ButtonText">
+         BroadcastList,
+        </span>
+        and a congratulations message is sent. If the
+        <span class="ButtonText">
+         messageText
+        </span>
+        is something other than "joinabc", the
+                reply message is just the invitation message from before. After the ifelse block,
+                the reply message is sent (bottom row).
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        From a second phone, send the text message
+                "joinabc" to the phone on which the app is running. Do you recieve the correct
+                reply? Try sending a different text message as well to check if the ifelse is
+                working correctly.
+       </blockquote>
+       <h2>
+        Broadcasting Messages
+       </h2>
+       <p>
+        Next, you'll add the behavior so that the app broadcasts messages to the numbers in
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        , if the message arrives from a number
+                in
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        . You'll need an additional
+        <span class="ButtonText">
+         ifelse
+        </span>
+        block to check if the number is in the list,
+                and a
+        <span class="ButtonText">
+         foreach
+        </span>
+        block to send broadcast the message
+                to each item in the list. Here are all the blocks you'll need:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ifelse
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            depending on whether sender is already in list, you'll do different
+                        things
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             is in list?
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            checks to see if something is in a list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global BroadcastList
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into list slot of
+            <span class="ButtonText">
+             is in list?
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value number
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into thing slot of
+            <span class="ButtonText">
+             is in list?
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            to repeatedly send out message to all in list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global BroadcastList
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into list slot of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Texting1.Message to
+            </span>
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            to set the message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value messageText
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the message that was received and to be broadcast
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Texting1.Number to
+            </span>
+           </td>
+           <td>
+            Texting1
+           </td>
+           <td>
+            to set the phone number
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value var
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            holds the current item of the
+            <span class="ButtonText">
+             BroadcastList
+            </span>
+            , its a (phone) number
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="717" src="BroadcasterHubAssets/broadcastitNolog.png" width="747" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The behavior is complex enough that it requires a "nested"
+        <span class="ButtonText">
+         ifelse
+        </span>
+        block. If the phone number of the received message is
+                already in the list, the
+        <span class="ButtonText">
+         foreach
+        </span>
+        block is executed
+                and the message relayed to all in the list. If the number is not in the list, the
+                outer else-do clause is executed, and it asks another question, which is the test
+                of the nested ifelse block: is the
+        <span class="ButtonText">
+         messageText
+        </span>
+        equal to "joinabc". The app then branches one of two ways based on the answer.
+       </p>
+       <p>
+        In general,
+        <span class="ButtonText">
+         if
+        </span>
+        and
+        <span class="ButtonText">
+         ifelse
+        </span>
+        blocks can be nested to arbitrary levels, giving you the
+                power to program arbitrarily complex behaviors.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior
+        </strong>
+        . First, have two different phones register with
+                the app by texting "joinabc" to the phone which is running the app.Then text
+                another message from one of the phones. Both phones should receive the text.
+       </blockquote>
+       <h2>
+        Logging the broadcasted texts
+       </h2>
+       <p>
+        When a text is received and broadcast out to the other phones, the app should log
+                that occurrence to the app so the administrator can monitor the activity. Earlier,
+                you added the label
+        <span class="ButtonText">
+         LogLabel
+        </span>
+        to the user interface
+                for this purpose. Now, you'll code some blocks that change
+        <span class="ButtonText">
+         LogLabel
+        </span>
+        each time a new text arrives.
+        <br />
+        <br />
+        You need to build a text that says something like "message from 111-2222
+                broadcast". The 111-2222 is not fixed data, but is the value of the variable number
+                that comes with the MessageReceived event. So to build the text, you'll concatenate
+                the first part "message from" with the variable number and finally with the last
+                part of the message, the text "broadcast".
+        <br />
+        <br />
+        There are two functions in the
+        <span class="ButtonText">
+         Text
+        </span>
+        drawer to build
+                text. One is the join function, which joins two pieces of text. Another function,
+        <span class="ButtonText">
+         make text
+        </span>
+        , is also available and more convenient to
+                use than join when you have more than two parts. You'll use it for this behavior.
+                Here are all the blocks you'll need:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set LogLabel.Text to
+            </span>
+           </td>
+           <td>
+            LogLabel
+           </td>
+           <td>
+            display the log here
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            build a text object out of multiple parts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("message from")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            report message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value number
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the number of sender
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("broadcast\n")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            text is "message from 111-2222 broadcast" with newline
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             LogLabel.Text
+            </span>
+           </td>
+           <td>
+            LogLabel
+           </td>
+           <td>
+            add new log to the previous ones
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="870" src="BroadcasterHubAssets/broadcastit.png" width="747" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        After broadcasting the message to all the numbers in
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        , the app now modifies the
+        <span class="ButtonText">
+         LogLabel
+        </span>
+        to include a report of the just broadcasted text. If
+                the sender's number (value number) is "1112222", then the
+        <span class="ButtonText">
+         make text
+        </span>
+        will build the text object:
+       </p>
+       <blockquote>
+        message from: 1112222 broadcast
+       </blockquote>
+       <p>
+        along with the log reports that were already in
+        <span class="ButtonText">
+         LogLabel.Text
+        </span>
+        from previously received texts. The "\n" is the
+                newline character that causes the old reports to be displayed on the next line,
+                e.g.,
+       </p>
+       <blockquote>
+        message from: 1112222 broadcast
+        <br />
+        message from: 555-6666 broadcast
+       </blockquote>
+       <h2>
+        Storing the BroadcastList in a Database
+       </h2>
+       As is, the app works, but every time you close the app the
+       <span class="ButtonText">
+        BroadcastList
+       </span>
+       will be lost and everyone would have to
+              re-register. To fix this, you'll use the
+       <span class="ButtonText">
+        TinyDB
+       </span>
+       component to store and retrieve the
+       <span class="ButtonText">
+        BroadcastList
+       </span>
+       to
+              and from a database.
+       <span class="ButtonText">
+        TinyDB
+       </span>
+       allows you to store data
+              persistently-- even if the app is closed, the next time you open the app the data
+              will be there.
+       <br />
+       <br />
+       The general scheme for storing data persistently is the following: When the app
+              begins, load the list from the database into a variable (e.g.,
+       <span class="ButtonText">
+        BroadcastList
+       </span>
+       ). Then, each time a new item is added to the list,
+              update the database version of the list.
+       <br />
+       <br />
+       Start by coding the blocks to store the list in the database. With the
+       <span class="ButtonText">
+        TinyDB
+       </span>
+       component, a tag is used to identify the data and
+              distinguish it from other data stored in the database. In this case, you can tag the
+              data as "broadcastList". Do the following:
+       <br />
+       <ol>
+        <li>
+         Drag out a
+         <span class="ButtonText">
+          TinyDB1.StoreValue
+         </span>
+         block from the
+         <span class="ButtonText">
+          TinyDB1
+         </span>
+         drawer.
+        </li>
+        <li>
+         Create a
+         <span class="ButtonText">
+          text
+         </span>
+         block and give it the text
+                "broadcastList". Place this
+         <span class="ButtonText">
+          text
+         </span>
+         block as the tag
+                of
+         <span class="ButtonText">
+          StoreValue
+         </span>
+         .
+        </li>
+        <li>
+         Drag out a reference to
+         <span class="ButtonText">
+          BroadcastList
+         </span>
+         from
+         <span class="ButtonText">
+          My Definitions
+         </span>
+         . Place it as the value argument of
+         <span class="ButtonText">
+          StoreValue
+         </span>
+         .
+        </li>
+        <li>
+         Place the
+         <span class="ButtonText">
+          StoreValue
+         </span>
+         block right below the
+                blocks that add an item to the
+         <span class="ButtonText">
+          BroadcastList
+         </span>
+         .
+        </li>
+       </ol>
+       <p>
+        The bottom part of the modified
+        <span class="ButtonText">
+         Texting1.MessageReceived
+        </span>
+        event-handler should look like the
+                following:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="460" src="BroadcasterHubAssets/storeBroadcastList.png" width="747" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        <span class="ButtonText">
+         TinyDB1.StoreValue
+        </span>
+        stores the data in
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        to a database with a tag that you can later use
+                to retrieve the data into your app. In this case, the tag is the text,
+                "broadcastList", and he value is the actual list
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        .
+        <br />
+       </p>
+       <h2>
+        Loading the BroadcastList from a Database
+       </h2>
+       <p>
+        Now add the blocks for loading the list back in each time the app begins. When the
+                app begins, the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event is
+                triggered, so your blocks will go in that event-handler. You’ll call
+        <span class="ButtonText">
+         TinyDB.GetValue
+        </span>
+        , using the same tag you used to store the list
+                (“broadcastList”). Check if the returned value is a list, because it won’t be if
+                there isn’t any data in the list yet.
+       </p>
+       <p>
+        The blocks should look like:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="242" src="BroadcasterHubAssets/getValue.png" width="540" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The blocks first define a variable,
+        <span class="ButtonText">
+         valueFromDB
+        </span>
+        ,
+                which is used to temporarily store the data returned from the database. When the
+                app begins, the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event is
+                triggered.
+        <span class="ButtonText">
+         TinyDB.GetValue
+        </span>
+        is called, and the data
+                from the database is placed in
+        <span class="ButtonText">
+         valueFromDB
+        </span>
+        .
+       </p>
+       <p>
+        The variable is then checked to see if it is a list. If it is not, that means there
+                was no data for the tag “broadcastList” in the database, and an empty text has been
+                returned. This will happen the first time a user opens the app.
+       </p>
+       <p>
+        If
+        <span class="ButtonText">
+         valueFromDB
+        </span>
+        is a list, the list is placed into
+                the variable
+        <span class="ButtonText">
+         BroadcastList
+        </span>
+        and the list is
+                displayed.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        Choose
+        <span class="ButtonText">
+         Restart
+                App
+        </span>
+        which will trigger the
+        <span class="ButtonText">
+         Screen.Initialize
+        </span>
+        . Do the numbers registered earlier appear?
+       </blockquote>
+       <h2>
+        Display BroadcastList with each number on separate lines
+       </h2>
+       <p>
+        Create a procedure
+        <span class="ButtonText">
+         displayBroadcastList
+        </span>
+        , which
+                displays the list with each phone number on a separate line. Be sure and call the
+                procedure from below the
+        <span class="ButtonText">
+         add items to list
+        </span>
+        block so
+                that the updated list is displayed.
+       </p>
+       <p>
+        For help displaying the list on separate lines, see
+        <a href="/learn/reference/other/displaylist.html">
+         Displaying a List
+        </a>
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             procedure
+            </span>
+            ("displayBroadcastList")
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            create the procedure
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set BroadcastListLabel.Text to
+            </span>
+           </td>
+           <td>
+            BroadcastListLabel
+           </td>
+           <td>
+            display the list here
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Phone Numbers...")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the header for the list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            iterate through the numbers
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             name pnumber
+            </span>
+           </td>
+           <td>
+            in the foreach
+           </td>
+           <td>
+            name the foreach variable "pnumber'. This is the current item of the
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             BroadcastList
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into
+            <span class="ButtonText">
+             in list
+            </span>
+            slot of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set BroadcastListLabel.Text to
+            </span>
+           </td>
+           <td>
+            BroadcastListLabel
+           </td>
+           <td>
+            modify with each of the numbers
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            build a text object from multiple parts
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             BroadcastListLabel.Text
+            </span>
+           </td>
+           <td>
+            BroadcastListLabel
+           </td>
+           <td>
+            add to the label on each iteration of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("\n")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            newline character so that next number is on next line
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value pnumber
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the current number from the list
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The
+        <span class="ButtonText">
+         displayBroadcastList
+        </span>
+        procedure should look like
+                this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="306" src="BroadcasterHubAssets/displayBroadcastList.png" width="623" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         foreach
+        </span>
+        in
+        <span class="ButtonText">
+         displayBroadcastList
+        </span>
+        successively adds a phone number to the
+                end of the label, placing a newline character in between each item.
+       </p>
+       <p>
+        Of course this procedure will not do anything unless you call it: you should add
+                two calls to the procedure: one within the
+        <span class="ButtonText">
+         Texting1.MessageReceived event-handler
+        </span>
+        , and one within the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event-handler. The
+        <span class="ButtonText">
+         call displayBroadcastList
+        </span>
+        block can be found in My Definitions,
+                and it should replace the blocks that directly set the
+        <span class="ButtonText">
+         BroadcastListLabel.Text
+        </span>
+        to the list. You can see how these
+                calls to
+        <span class="ButtonText">
+         displayBroadcastList
+        </span>
+        should look in the
+                snapshot of the final version below.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        Try adding some more phone numbers to the
+                list. Do the registered phone numbers now appear on separate lines?
+       </blockquote>
+       <h2>
+        Broadcast Hub, Final Version
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" height="663" src="BroadcasterHubAssets/finalversion.png" width="900" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       <p>
+        Once you get the Broadcast Hub app working, you might want to explore some
+                variations. For example,
+       </p>
+       <ul>
+        <li>
+         Allow client phones to remove themselves from the list by texting "quitabc" to
+                the app.
+        </li>
+        <li>
+         Let the hub administrator (the user of your app) add and remove numbers from
+                the broadcast list.
+        </li>
+        <li>
+         Let the hub administrator specify numbers that should not be allowed into the
+                list.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       Here are some of the ideas covered in this tutorial:
+       <br />
+       <ul>
+        <li>
+         Apps can react to events, like a text being received, that are not initiated by
+                the user of the app.
+        </li>
+        <li>
+         Nested
+         <span class="ButtonText">
+          ifelse
+         </span>
+         and
+         <span class="ButtonText">
+          foreach
+         </span>
+         blocks can be used to code complex behaviors.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          make text
+         </span>
+         block can be used to build a text
+                object out of multiple parts.
+        </li>
+        <li>
+         <span class="ButtonText">
+          TinyDB
+         </span>
+         can be used to store and retrieve data
+                  from a database. A general scheme is to call
+         <span class="ButtonText">
+          StoreValue
+         </span>
+         to update the database whenever the data changes,
+                  and call
+         <span class="ButtonText">
+          GetValue
+         </span>
+         to retrieve the database data
+                  when the app begins.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Scan the Sample App to your Phone
+       </h2>
+       <p>
+        Scan the following barcode onto your phone to install and run the sample app.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="BroadcasterHubAssets/broadcastbarcode.png" />
+       </div>
+       <h2>
+        Download Source Code
+       </h2>
+       If you'd like to work with this sample in App Inventor, download the
+       <a href="BroadcasterHubAssets/broadcastHub.zip">
+        source code
+       </a>
+       to your computer, then open
+              App Inventor, go to the
+       <span class="ButtonText">
+        My Projects
+       </span>
+       page, and choose
+       <span class="ButtonText">
+        More Actions | Upload Source
+       </span>
+       .
+      </div>
+      <div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+              Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+              tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

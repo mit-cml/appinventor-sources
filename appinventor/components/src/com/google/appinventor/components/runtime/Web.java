@@ -58,9 +58,10 @@ import java.util.Map;
  * @author lizlooney@google.com (Liz Looney)
  * @author josmasflores@gmail.com (Jose Dominguez)
  */
-@DesignerComponent(version = YaVersion.WEB_COMPONENT_VERSION,
+// Gareth Haylings 21/06/2013 changed catagory from MISC to BASIC
+ @DesignerComponent(version = YaVersion.WEB_COMPONENT_VERSION,
     description = "Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.BASIC,
     nonVisible = true,
     iconName = "images/web.png")
 @SimpleObject

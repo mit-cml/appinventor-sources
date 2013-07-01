@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Animation Components - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt;             Animation &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Animation Components
+       </h1>
+       <ul>
+        <li>
+         <a href="#Ball">
+          Ball
+         </a>
+        </li>
+        <li>
+         <a href="#ImageSprite">
+          ImageSprite
+         </a>
+        </li>
+       </ul>
+       <h2 id="Ball">
+        Ball
+       </h2>
+       <img alt="" src="images/ball.png" />
+       <p>
+        A ball component is a particular kind of sprite (animated object) that looks like a
+                ball.
+       </p>
+       <p>
+        A ball is a round sprite that is contained by a canvas, can react to touches and
+                drags, interact with other sprites (image sprites and other balls) and the edge of
+                the canvas, and move according to its properties. For example, to have a ball move
+                4 pixels toward the top of a canvas every 500 milliseconds (half second), you can
+                set the
+        <code>
+         Speed
+        </code>
+        property to 4, the
+        <code>
+         Interval
+        </code>
+        property to
+                500, the
+        <code>
+         Heading
+        </code>
+        property to 90 (degrees), and the
+        <code>
+         Enabled
+        </code>
+        property to True. You can change these and other properties to
+                modify the ball's behavior.
+       </p>
+       <p>
+        The difference between a ball and an image sprite is that the latter can get its
+                appearance from an image, while a ball's appearance can only be changed by varying
+                its
+        <code>
+         PaintColor
+        </code>
+        and
+        <code>
+         Radius
+        </code>
+        properties.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Radius
+         </code>
+        </dt>
+        <dd>
+         Radius of the ball.
+        </dd>
+        <dt>
+         <code>
+          PaintColor
+         </code>
+        </dt>
+        <dd>
+         Color used for drawing the ball.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If true, ball is active.
+        </dd>
+        <dt>
+         <code>
+          Interval
+         </code>
+        </dt>
+        <dd>
+         Frequency of ball's movement in milliseconds.
+        </dd>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If set, ball is visible.
+        </dd>
+        <dt>
+         <code>
+          Heading
+         </code>
+        </dt>
+        <dd>
+         Direction of the ball's travel.
+        </dd>
+        <dt>
+         <code>
+          X
+         </code>
+        </dt>
+        <dd>
+         Ball's x-coordinate.
+        </dd>
+        <dt>
+         <code>
+          Y
+         </code>
+        </dt>
+        <dd>
+         Ball's y-coordinate.
+        </dd>
+        <dt>
+         <code>
+          Speed
+         </code>
+        </dt>
+        <dd>
+         Number of pixels ball moves each period.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          CollidedWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Called when two animated components (image sprites or balls) have collided. The
+                  argument
+         <code>
+          other
+         </code>
+         represents the other component in the collision.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          Dragged(number startX, number startY, number prevX, number prevY, number
+                  currentX, number currentY)
+         </code>
+        </dt>
+        <dd>
+         The ball was dragged. See the canvas
+         <code>
+          Dragged
+         </code>
+         event for a description
+                  of the arguments.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          EdgeReached(number edge)
+         </code>
+        </dt>
+        <dd>
+         Called when ball reaches the edge of the screen. The
+         <code>
+          edge
+         </code>
+         argument
+                  tells which edge (or corner) was reached, encoded as follows:
+         <ul>
+          <li>
+           north = 1
+          </li>
+          <li>
+           northeast = 2
+          </li>
+          <li>
+           east = 3
+          </li>
+          <li>
+           southeast = 4
+          </li>
+          <li>
+           south = -1
+          </li>
+          <li>
+           southwest = -2
+          </li>
+          <li>
+           west = -3
+          </li>
+          <li>
+           northwest = -4
+          </li>
+         </ul>
+         Note that opposite directions are negations of each other.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          Flung(number startX, number startY, number xSpeed, number ySpeed)
+         </code>
+        </dt>
+        <dd>
+         When the user performs a fling (quick swipe) on the ball. Provides
+                  the (x, y) position of the ball at the start of the fling,
+                  relative to the upper left of the canvas. Also provides
+                  the x velocity and y velocity of the fling.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          NoLongerCollidingWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Called when two animated components have stopped colliding.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          TouchDown(number x, number y)
+         </code>
+        </dt>
+        <dd>
+         When the user starts touching the ball (putting finger down for the first time).
+                  Provides the (x,y) position of the touch relative to the upper-left
+                  corner of the canvas.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          Touched(number x, number y)
+         </code>
+        </dt>
+        <dd>
+         Called when user touches the ball.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          TouchUp(number x, number y)
+         </code>
+        </dt>
+        <dd>
+         When the user stops touching the canvas (lifting his/her finger up). Provides
+                  the (x, y) position of the touch relative to the upper left corner
+                  of the canvas.
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Bounce(number edge)
+         </code>
+        </dt>
+        <dd>
+         Makes the ball bounce, as if off a wall (or corner). The meaning of the argument
+                  is the same as in
+         <code>
+          EdgeReached
+         </code>
+         . You can set up the
+         <code>
+          EdgeReached
+         </code>
+         event to make the ball bounce off whichever edge was
+                  reached, causing the ball to appear to bounce elastically from all edges and
+                  corners.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          boolean CollidingWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Reports whether this ball is colliding with the given component.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          MoveIntoBounds()
+         </code>
+        </dt>
+        <dd>
+         If the ball is out of bounds, this method moves it back in bounds.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          MoveTo(number x,number y)
+         </code>
+        </dt>
+        <dd>
+         Moves the ball directly to the given point.
+        </dd>
+       </dl>
+       <h2 id="ImageSprite">
+        ImageSprite
+       </h2>
+       <img alt="" src="images/imagesprite.png" />
+       <p>
+        An image sprite component is an animated object that can interact with a canvas,
+                balls, and other image sprites.
+       </p>
+       <p>
+        An image sprite is an animated object that is contained by a canvas, can react to
+                touches and drags, interact with other sprites (image sprites and other balls) and
+                the edge of the canvas, and move according to its properties. For example, to have
+                a sprite move 10 pixels to the left every second, you can set the
+        <code>
+         Speed
+        </code>
+        property to 10, the
+        <code>
+         Interval
+        </code>
+        property to 1000
+                (milliseconds), the
+        <code>
+         Heading
+        </code>
+        property to 180 (degrees), and the
+        <code>
+         Enabled
+        </code>
+        property to True. You can change these and other properties to
+                modify the image sprite's behavior.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Picture
+         </code>
+        </dt>
+        <dd>
+         Picture displayed for the sprite.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If set, the sprite is active.
+        </dd>
+        <dt>
+         <code>
+          Interval
+         </code>
+        </dt>
+        <dd>
+         Frequency of sprite's movement, in milliseconds.
+        </dd>
+        <dt>
+         <code>
+          Picture
+         </code>
+        </dt>
+        <dd>
+         The picture that determines the sprite's appearence
+        </dd>
+        <dt>
+         <code>
+          Rotates
+         </code>
+        </dt>
+        <dd>
+         If true, the sprite image rotates to match the sprite's heading.If false, the
+                  sprite image does not rotate when the sprite changes heading.
+        </dd>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If set, image sprite is visible.
+        </dd>
+        <dt>
+         <code>
+          Heading
+         </code>
+        </dt>
+        <dd>
+         Direction of the image sprite's travel in degrees. Zero is horizontally to the
+                  right (east), 90 is straight up, 180 is to the left, and 270 is straight down.
+        </dd>
+        <dt>
+         <code>
+          X
+         </code>
+        </dt>
+        <dd>
+         Image sprite's x-coordinate. Zero is the left edge of the canvas.
+        </dd>
+        <dt>
+         <code>
+          Y
+         </code>
+        </dt>
+        <dd>
+         Image sprite's y-coordinate. Zero is the top edge of the canvas.
+        </dd>
+        <dt>
+         <code>
+          Speed
+         </code>
+        </dt>
+        <dd>
+         Number of pixels image sprite moves each period.
+        </dd>
+        <dt>
+         <code>
+          Width
+         </code>
+        </dt>
+        <dd>
+         Image sprite width.
+        </dd>
+        <dt>
+         <code>
+          Height
+         </code>
+        </dt>
+        <dd>
+         Image sprite height.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          CollidedWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Called when two animated components (image sprites or balls) have collided. The
+                  argument
+         <code>
+          other
+         </code>
+         represents the other sprite in the collision.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          Dragged(number startX, number startY, number prevX, number prevY, number
+                  currentX, number currentY)
+         </code>
+        </dt>
+        <dd>
+         The sprite was dragged. See the Canvas
+         <code>
+          Dragged
+         </code>
+         event for a
+                  description of the arguments.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          EdgeReached(number edge)
+         </code>
+        </dt>
+        <dd>
+         Called when image sprite reaches the edge of the screen. The
+         <code>
+          edge
+         </code>
+         argument tells which edge (or corner) was reached, encoded as follows:
+         <ul>
+          <li>
+           north = 1
+          </li>
+          <li>
+           northeast = 2
+          </li>
+          <li>
+           east = 3
+          </li>
+          <li>
+           southeast = 4
+          </li>
+          <li>
+           south = -1
+          </li>
+          <li>
+           southwest = -2
+          </li>
+          <li>
+           west = -3
+          </li>
+          <li>
+           northwest = -4
+          </li>
+         </ul>
+         Note that opposite directions are negations of each other.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          NoLongerCollidingWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Called when two animated components have stopped colliding.
+        </dd>
+        <dd>
+         <dl>
+          <dt>
+           <code>
+            Touched(number x, number y)
+           </code>
+          </dt>
+          <dd>
+           Called when user touches the image sprite.
+          </dd>
+         </dl>
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Bounce(number edge)
+         </code>
+        </dt>
+        <dd>
+         Makes the image sprite bounce, as if off a wall (or corner). The meaning of the
+                  argument is the same as in
+         <code>
+          EdgeReached
+         </code>
+         . You can set up the
+         <code>
+          EdgeReached
+         </code>
+         event to make the sprite bounce off whichever edge was
+                  reached, causing the sprite to appear to bounce elastically from all edges and
+                  corners.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          boolean CollidingWith(component other)
+         </code>
+        </dt>
+        <dd>
+         Reports whether this image sprite is colliding with the given component.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          MoveIntoBounds()
+         </code>
+        </dt>
+        <dd>
+         If the image sprite is out of bounds, this method moves it back in bounds.
+        </dd>
+       </dl>
+       <dl>
+        <dt>
+         <code>
+          MoveTo(number x,number y)
+         </code>
+        </dt>
+        <dd>
+         Moves the image sprite directly to the given point.
+        </dd>
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

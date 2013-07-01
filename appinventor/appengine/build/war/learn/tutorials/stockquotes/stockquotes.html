@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Stock Quotes - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Stock             Quotes&gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        StockQuotes
+       </h1>
+       <h2>
+        What You’re Building
+       </h2>
+       <p>
+        Just like you can access web pages from your phone -- for example, to look up a
+                stock price -- so can App Inventor. &nbsp;This app enables the user to enter a
+                stock symbol, then looks up the price of the stock on Yahoo! Finance and displays
+                the price on the phone.
+       </p>
+       <p>
+        This tutorial assumes that you are familiar with the basics of App Inventor --
+                using the Component Designer to build a user interface and using the Blocks Editor
+                to specify event handlers. &nbsp;If you are not familiar with the basics, try
+                stepping through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        This tutorial includes:
+       </p>
+       <ol>
+        <li>
+         Accepting text input from the user to specify the stock symbol.
+        </li>
+        <li>
+         Using the Web component to ask Google Finance for the latest price for the
+                stock.
+        </li>
+        <li>
+         Displaying the result.
+        </li>
+       </ol>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. &nbsp;Name it
+                StockQuotes, and also set the screen’s
+        <span class="ButtonText">
+         Title
+        </span>
+        to
+                “Stock Quotes”. &nbsp; Open the Blocks Editor and connect it to the phone.
+       </p>
+       <h2>
+        Set up the Components
+       </h2>
+       <p>
+        Use the component designer to create the user interface. &nbsp;When you are done,
+                it should look something like the picture below. &nbsp;Additional instructions are
+                below the picture.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="630" src="StockQuotesAssets/components1.png" width="579" />
+       </div>
+       <p>
+        Create the following components by dragging them from the Palette into the Viewer.
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             StockSymbolTextBox
+            </span>
+           </td>
+           <td>
+            Where the user enters the stock symbol
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             GetQuoteButton
+            </span>
+           </td>
+           <td>
+            To request the stock quote
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             ValueLabel
+            </span>
+           </td>
+           <td>
+            To display the stock quote
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Web
+            </span>
+           </td>
+           <td>
+            Other stuff
+           </td>
+           <td>
+            <span class="ButtonText">
+             Web1
+            </span>
+           </td>
+           <td>
+            To request and receive the stock quote
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Stick with the default properties except for the following changes:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component
+           </td>
+           <td class="tbl-header">
+            Action
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             StockSymbolTextBox
+            </span>
+           </td>
+           <td>
+            Set its
+            <span class="ButtonText">
+             Hint
+            </span>
+            property to "Enter a stock
+                        symbol". Clear its
+            <span class="ButtonText">
+             Text
+            </span>
+            property by
+                        deleting or backspacing over the contents.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             GetQuoteButton
+            </span>
+           </td>
+           <td>
+            Set its
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "Get Stock Quote".
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ValueLabel
+            </span>
+           </td>
+           <td>
+            Clear its
+            <span class="ButtonText">
+             Text
+            </span>
+            property.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <h2>
+        The Yahoo! Finance API
+       </h2>
+       <p>
+        Many web services provide an
+        <em>
+         application programmer interface
+        </em>
+        (API) for
+                developers to enable their programs to access the service. Some ways to discover
+                APIs are through the website
+        <a href="http://programmableweb.com">
+         http://programmableweb.com
+        </a>
+        or just by doing a web
+                search for the service name and “API”.
+       </p>
+       <p>
+        The Yahoo! Finance API is documented in gory detail at
+        <a href="http://www.gummy-stuff.org/Yahoo-data.htm">
+         http://www.gummy-stuff.org/Yahoo-data.htm
+        </a>
+        .
+                The highlights are that you can get the latest price for the stock with the symbol
+                "GOOG", for example, with the URL
+        <a href="http://finance.yahoo.com/d/quotes.csv?f=l1&amp;s=GOOG">
+         http://finance.yahoo.com/d/quotes.csv?f=l1&amp;s=GOOG
+        </a>
+        .
+                The section "f=l1" (lower-case letter L, followed by the number 1) says we would
+                like the latest price, and the section “s=GOOG” says we would like information
+                about the stock whose symbol is “GOOG”. &nbsp;The result is returned in
+                comma-separated value (CSV) format, which you may be familiar with from
+                spreadsheets. &nbsp;Since only one value will be returned for our query, the result
+                will be a plain old number, such as “511.5”, without any commas. &nbsp;(Commas
+                would be used if we requested multiple pieces of data from Yahoo!, such as the name
+                of the company and the daily trade volume.)
+       </p>
+       <h2>
+        Add Behaviors to the Components
+       </h2>
+       <h3>
+        Requesting the Data
+       </h3>
+       <p>
+        The blocks to make the web request are shown here and detailed below:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="179" src="StockQuotesAssets/request-data.png" width="615" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             GetQuoteButton.Click
+            </span>
+           </td>
+           <td>
+            GetQuoteButton
+           </td>
+           <td>
+            Handle a click of the "Get Quote" button.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set Web1.Url to
+            </span>
+           </td>
+           <td>
+            Web1
+           </td>
+           <td>
+            Specify the URL to request.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Concatenate the parts of the URL.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            (http://finance.yahoo.com/d/quotes.csv?f=l1&amp;s=)
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Specify the first unchanging part of the URL.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             StockSymbolTextBox.Text
+            </span>
+           </td>
+           <td>
+            StockSymbolTextBox
+           </td>
+           <td>
+            Get the stock symbol from the text box.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call Web1.Get
+            </span>
+           </td>
+           <td>
+            Web1
+           </td>
+           <td>
+            Make the web request.
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The meaning is: When
+        <span class="ButtonText">
+         GetQuoteButton
+        </span>
+        is clicked:
+       </p>
+       <ol>
+        <li>
+         Build the Web component’s URL by concatenating
+                “http://finance.yahoo.com/d/quotes.csv?f=l1&amp;s=” (which you should copy and
+                paste into the
+         <span class="ButtonText">
+          text
+         </span>
+         block) and the symbol entered
+                by the user (
+         <span class="ButtonText">
+          StockSymbolTextBox.Text
+         </span>
+         ).
+        </li>
+        <li>
+         Request the page specified by the URL. &nbsp;(This is like pressing return
+                after entering a URL in your web browser.)
+        </li>
+       </ol>
+       <h3>
+        Receiving the Data
+       </h3>
+       <p>
+        When the response to the web request arrives, the
+        <span class="ButtonText">
+         Web.GotText
+        </span>
+        event is raised with four parameters (only some of
+                which we’ll use in this app):
+       </p>
+       <ol>
+        <li>
+         <span class="ButtonText">
+          url
+         </span>
+         : the URL of the original request (which is
+                  useful if requests are made with many different URLs).
+        </li>
+        <li>
+         <span class="ButtonText">
+          responseCode
+         </span>
+         :
+         <a href="http://en.wikipedia.org/wiki/List_of_HTTP_status_codes">
+          the HTTP status
+                  code
+         </a>
+         , which indicates whether the web request succeeded or how it failed; for
+                  example, 200 means that the request succeeded, 404 that the page could not be
+                  found, etc.
+        </li>
+        <li>
+         <span class="ButtonText">
+          responseType
+         </span>
+         :
+         <a href="http://en.wikipedia.org/wiki/Mime_type">
+          the MIME type
+         </a>
+         of the response, such
+                  as “text/csv” in this app, “image/jpeg”, etc.
+        </li>
+        <li>
+         <span class="ButtonText">
+          responseContent
+         </span>
+         : the data being returned, such as
+                  “511.5”.
+        </li>
+       </ol>
+       <p>
+        Here are a picture and table of the blocks you need to create:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="337" src="StockQuotesAssets/receive-data.png" width="606" />
+       </div>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Web1.GotText
+            </span>
+           </td>
+           <td>
+            Web1
+           </td>
+           <td>
+            Specify what to do when the reply comes back from the web.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ifelse
+            </span>
+           </td>
+           <td>
+            Control
+           </td>
+           <td>
+            Provide different behavior depending on whether the request succeeded.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value responseCode
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            The response code returned for the web request, which...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             =
+            </span>
+            (equals) block
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            ...is checked for equality with...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (200)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            ...200, the code for valid web responses.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ValueLabel.Text to
+            </span>
+           </td>
+           <td>
+            ValueLabel
+           </td>
+           <td>
+            Display the result on the screen.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             call make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Build the result by concatenating...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Current value: ")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            ...the text “Current value: “ and...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             value responseContent
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            ...the value returned from the web.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ValueLabel.Text to
+            </span>
+           </td>
+           <td>
+            ValueLabel
+           </td>
+           <td>
+            Display an error message.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("Error getting stock quote")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            The error message
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Here’s a description of the block’s behavior:
+       </p>
+       <ol>
+        <li>
+         If the response code indicates that the web request succeeded (= 200), set the
+                label to the concatenation of “Current value: “ and the returned data (e.g.,
+                511.5).
+        </li>
+        <li>
+         Otherwise, set the label to “Error getting stock quote”.
+        </li>
+       </ol>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some ideas introduced in this tutorial:
+       </p>
+       <ol>
+        <li>
+         Using an application programmer interface (API)
+        </li>
+        <li>
+         Making a request with the Web component
+        </li>
+        <li>
+         Checking whether a web request was successful
+        </li>
+        <li>
+         Displaying information returned from the web
+        </li>
+       </ol>
+       <p>
+        These ideas will be developed further in the second part of this tutorial, which is
+                under development.
+       </p>
+       <h2>
+        Credits
+       </h2>
+       <p>
+        This tutorial is based on
+        <a href="http://appinventorblog.com/2011/06/02/app-inventor-has-a-new-component-the-web/">
+         an
+                app created by Prof. David Wolber
+        </a>
+        &nbsp;and relies on the Yahoo! Finance API.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

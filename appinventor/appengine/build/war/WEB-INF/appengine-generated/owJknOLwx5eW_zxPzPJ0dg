@@ -1,0 +1,721 @@
+<!DOCTYPE YACodeBlocks SYSTEM "support/save_format.dtd">
+<YACodeBlocks ya-version="76" lang-version="17">
+<Pages><Page page-name=" " page-color="237 245 211" page-width="1366" page-height="1600" page-drawer="My Definitions" >
+<PageBlocks>
+<BlockStub><StubParentName>BTN_font6.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2207" genus-name="componentGetter" >
+<Location><X>202</X><Y>473</Y></Location>
+<Label>BTN_font6.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1548" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font7.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2205" genus-name="componentGetter" >
+<Location><X>202</X><Y>549</Y></Location>
+<Label>BTN_font7.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1550" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="2025" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>502</X><Y>334</Y></Location>
+<Label>BTN_font8.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="2133" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2133" genus-name="componentSetter" >
+<Location><X>530</X><Y>367</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>2025</BeforeBlockId>
+<AfterBlockId>2141</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2185" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2141" genus-name="componentSetter" >
+<Location><X>530</X><Y>405</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>2133</BeforeBlockId>
+<AfterBlockId>2145</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2181" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2145" genus-name="componentSetter" >
+<Location><X>530</X><Y>443</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>2141</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2177" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2177" genus-name="componentGetter" >
+<Location><X>690</X><Y>446</Y></Location>
+<Label>BTN_font8.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2145" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2181" genus-name="componentGetter" >
+<Location><X>700</X><Y>408</Y></Location>
+<Label>BTN_font8.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2141" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2185" genus-name="componentGetter" >
+<Location><X>684</X><Y>370</Y></Location>
+<Label>BTN_font8.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2133" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="2017" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>493</X><Y>229</Y></Location>
+<Label>BTN_font6.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="2121" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2121" genus-name="componentSetter" >
+<Location><X>521</X><Y>262</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>2017</BeforeBlockId>
+<AfterBlockId>2123</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2161" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2123" genus-name="componentSetter" >
+<Location><X>521</X><Y>300</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>2121</BeforeBlockId>
+<AfterBlockId>2125</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2157" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2125" genus-name="componentSetter" >
+<Location><X>521</X><Y>338</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>2123</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2153" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font6.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2153" genus-name="componentGetter" >
+<Location><X>681</X><Y>341</Y></Location>
+<Label>BTN_font6.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2125" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font6.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2157" genus-name="componentGetter" >
+<Location><X>691</X><Y>303</Y></Location>
+<Label>BTN_font6.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2123" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font6.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2161" genus-name="componentGetter" >
+<Location><X>675</X><Y>265</Y></Location>
+<Label>BTN_font6.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2121" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1822" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>489</X><Y>188</Y></Location>
+<Label>BTN_font5.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1808" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="1808" genus-name="componentSetter" >
+<Location><X>517</X><Y>221</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>1822</BeforeBlockId>
+<AfterBlockId>1955</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2119" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1955" genus-name="componentSetter" >
+<Location><X>517</X><Y>259</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>1808</BeforeBlockId>
+<AfterBlockId>2203</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2115" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2203" genus-name="componentSetter" >
+<Location><X>517</X><Y>297</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>1955</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2111" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font5.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2111" genus-name="componentGetter" >
+<Location><X>677</X><Y>300</Y></Location>
+<Label>BTN_font5.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2203" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font5.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2115" genus-name="componentGetter" >
+<Location><X>687</X><Y>262</Y></Location>
+<Label>BTN_font5.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1955" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font5.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2119" genus-name="componentGetter" >
+<Location><X>671</X><Y>224</Y></Location>
+<Label>BTN_font5.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1808" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1818" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>491</X><Y>140</Y></Location>
+<Label>BTN_font4.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1814" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="1814" genus-name="componentSetter" >
+<Location><X>519</X><Y>173</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>1818</BeforeBlockId>
+<AfterBlockId>1943</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2107" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1943" genus-name="componentSetter" >
+<Location><X>519</X><Y>211</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>1814</BeforeBlockId>
+<AfterBlockId>2201</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2103" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2201" genus-name="componentSetter" >
+<Location><X>519</X><Y>249</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>1943</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2099" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font4.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2099" genus-name="componentGetter" >
+<Location><X>679</X><Y>252</Y></Location>
+<Label>BTN_font4.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2201" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font4.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2103" genus-name="componentGetter" >
+<Location><X>689</X><Y>214</Y></Location>
+<Label>BTN_font4.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1943" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font4.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2107" genus-name="componentGetter" >
+<Location><X>673</X><Y>176</Y></Location>
+<Label>BTN_font4.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1814" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1796" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>494</X><Y>97</Y></Location>
+<Label>BTN_font3.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1802" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="1802" genus-name="componentSetter" >
+<Location><X>522</X><Y>130</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>1796</BeforeBlockId>
+<AfterBlockId>1931</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2075" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1931" genus-name="componentSetter" >
+<Location><X>522</X><Y>168</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>1802</BeforeBlockId>
+<AfterBlockId>2199</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2083" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2199" genus-name="componentSetter" >
+<Location><X>522</X><Y>206</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>1931</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2079" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font3.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2079" genus-name="componentGetter" >
+<Location><X>682</X><Y>209</Y></Location>
+<Label>BTN_font3.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2199" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font3.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2083" genus-name="componentGetter" >
+<Location><X>692</X><Y>171</Y></Location>
+<Label>BTN_font3.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1931" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font3.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2075" genus-name="componentGetter" >
+<Location><X>676</X><Y>133</Y></Location>
+<Label>BTN_font3.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1802" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1782" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>490</X><Y>51</Y></Location>
+<Label>BTN_font2.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1788" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="1788" genus-name="componentSetter" >
+<Location><X>518</X><Y>84</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>1782</BeforeBlockId>
+<AfterBlockId>1919</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2095" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1919" genus-name="componentSetter" >
+<Location><X>518</X><Y>122</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>1788</BeforeBlockId>
+<AfterBlockId>2197</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2091" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2197" genus-name="componentSetter" >
+<Location><X>518</X><Y>160</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>1919</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2087" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font2.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2087" genus-name="componentGetter" >
+<Location><X>678</X><Y>163</Y></Location>
+<Label>BTN_font2.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2197" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font2.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2091" genus-name="componentGetter" >
+<Location><X>688</X><Y>125</Y></Location>
+<Label>BTN_font2.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1919" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font2.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2095" genus-name="componentGetter" >
+<Location><X>672</X><Y>87</Y></Location>
+<Label>BTN_font2.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1788" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2071" genus-name="componentGetter" >
+<Location><X>674</X><Y>130</Y></Location>
+<Label>BTN_font1.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2195" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2195" genus-name="componentSetter" >
+<Location><X>514</X><Y>127</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>1909</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2071" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font7.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1550" genus-name="componentSetter" >
+<Location><X>54</X><Y>546</Y></Location>
+<Label>BTN_font7.Text</Label>
+<BeforeBlockId>2193</BeforeBlockId>
+<AfterBlockId>2051</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2205" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2051" genus-name="componentSetter" >
+<Location><X>54</X><Y>584</Y></Location>
+<Label>BTN_font8.FontStyle</Label>
+<BeforeBlockId>1550</BeforeBlockId>
+<AfterBlockId>1770</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1564" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1770" genus-name="componentSetter" >
+<Location><X>54</X><Y>622</Y></Location>
+<Label>BTN_font8.Text</Label>
+<BeforeBlockId>2051</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2053" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font8.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2053" genus-name="componentGetter" >
+<Location><X>202</X><Y>625</Y></Location>
+<Label>BTN_font8.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1770" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1564" genus-name="fontstyle-monospacebold" >
+<Location><X>228</X><Y>587</Y></Location>
+<Label>Monospace Bold</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2051" ></BlockConnector></Plug>
+</Block>
+<Block id="1562" genus-name="fontstyle-monospacenormal" >
+<Location><X>228</X><Y>511</Y></Location>
+<Label>Monospace Normal</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2193" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font7.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2193" genus-name="componentSetter" >
+<Location><X>54</X><Y>508</Y></Location>
+<Label>BTN_font7.FontStyle</Label>
+<BeforeBlockId>1548</BeforeBlockId>
+<AfterBlockId>1550</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1562" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font6.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1548" genus-name="componentSetter" >
+<Location><X>54</X><Y>470</Y></Location>
+<Label>BTN_font6.Text</Label>
+<BeforeBlockId>2191</BeforeBlockId>
+<AfterBlockId>2193</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2207" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="1560" genus-name="fontstyle-sansserifbolditalic" >
+<Location><X>228</X><Y>435</Y></Location>
+<Label>SansSerif Bold Italic</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2191" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font6.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2191" genus-name="componentSetter" >
+<Location><X>54</X><Y>432</Y></Location>
+<Label>BTN_font6.FontStyle</Label>
+<BeforeBlockId>1546</BeforeBlockId>
+<AfterBlockId>1548</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1560" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font5.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1546" genus-name="componentSetter" >
+<Location><X>54</X><Y>394</Y></Location>
+<Label>BTN_font5.Text</Label>
+<BeforeBlockId>2189</BeforeBlockId>
+<AfterBlockId>2191</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2059" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font5.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2059" genus-name="componentGetter" >
+<Location><X>202</X><Y>397</Y></Location>
+<Label>BTN_font5.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1546" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1558" genus-name="fontstyle-sansserifitalic" >
+<Location><X>228</X><Y>359</Y></Location>
+<Label>SansSerif Italic</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2189" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font5.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2189" genus-name="componentSetter" >
+<Location><X>54</X><Y>356</Y></Location>
+<Label>BTN_font5.FontStyle</Label>
+<BeforeBlockId>1766</BeforeBlockId>
+<AfterBlockId>1546</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1558" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font4.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1766" genus-name="componentSetter" >
+<Location><X>54</X><Y>318</Y></Location>
+<Label>BTN_font4.Text</Label>
+<BeforeBlockId>2187</BeforeBlockId>
+<AfterBlockId>2189</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2043" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font4.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2043" genus-name="componentGetter" >
+<Location><X>202</X><Y>321</Y></Location>
+<Label>BTN_font4.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1766" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1556" genus-name="fontstyle-sansserifbold" >
+<Location><X>228</X><Y>283</Y></Location>
+<Label>SansSerif Bold</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2187" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font4.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2187" genus-name="componentSetter" >
+<Location><X>54</X><Y>280</Y></Location>
+<Label>BTN_font4.FontStyle</Label>
+<BeforeBlockId>1544</BeforeBlockId>
+<AfterBlockId>1766</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1556" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="2021" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>496</X><Y>283</Y></Location>
+<Label>BTN_font7.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="2129" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2129" genus-name="componentSetter" >
+<Location><X>524</X><Y>316</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>2021</BeforeBlockId>
+<AfterBlockId>2137</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2173" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2137" genus-name="componentSetter" >
+<Location><X>524</X><Y>354</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>2129</BeforeBlockId>
+<AfterBlockId>2149</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2169" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Button1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2149" genus-name="componentSetter" >
+<Location><X>524</X><Y>392</Y></Location>
+<Label>Button1.FontStyle</Label>
+<BeforeBlockId>2137</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2165" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font7.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2165" genus-name="componentGetter" >
+<Location><X>684</X><Y>395</Y></Location>
+<Label>BTN_font7.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2149" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font7.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2169" genus-name="componentGetter" >
+<Location><X>694</X><Y>357</Y></Location>
+<Label>BTN_font7.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2137" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font7.FontSize</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2173" genus-name="componentGetter" >
+<Location><X>678</X><Y>319</Y></Location>
+<Label>BTN_font7.FontSize</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2129" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1772" genus-name="Button-Click" >
+<Collapsed/>
+<Location><X>486</X><Y>18</Y></Location>
+<Label>BTN_font1.Click</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="1776" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Label1.FontStyle</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="1776" genus-name="componentSetter" >
+<Location><X>514</X><Y>51</Y></Location>
+<Label>Label1.FontStyle</Label>
+<BeforeBlockId>1772</BeforeBlockId>
+<AfterBlockId>1909</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2063" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>TextBox1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1909" genus-name="componentSetter" >
+<Location><X>514</X><Y>89</Y></Location>
+<Label>TextBox1.FontStyle</Label>
+<BeforeBlockId>1776</BeforeBlockId>
+<AfterBlockId>2195</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2067" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2067" genus-name="componentGetter" >
+<Location><X>684</X><Y>92</Y></Location>
+<Label>BTN_font1.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1909" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2063" genus-name="componentGetter" >
+<Location><X>668</X><Y>54</Y></Location>
+<Label>BTN_font1.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1776" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font3.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2039" genus-name="componentGetter" >
+<Location><X>202</X><Y>245</Y></Location>
+<Label>BTN_font3.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1544" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1554" genus-name="fontstyle-sansserifnormal" >
+<Location><X>228</X><Y>207</Y></Location>
+<Label>SansSerif Normal</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2037" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font3.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2037" genus-name="componentSetter" >
+<Location><X>54</X><Y>204</Y></Location>
+<Label>BTN_font3.FontStyle</Label>
+<BeforeBlockId>1542</BeforeBlockId>
+<AfterBlockId>1544</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1554" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font2.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2035" genus-name="componentGetter" >
+<Location><X>202</X><Y>169</Y></Location>
+<Label>BTN_font2.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1542" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="1552" genus-name="fontstyle-serifbold" >
+<Location><X>228</X><Y>131</Y></Location>
+<Label>Serif Bold</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2033" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font2.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2033" genus-name="componentSetter" >
+<Location><X>54</X><Y>128</Y></Location>
+<Label>BTN_font2.FontStyle</Label>
+<BeforeBlockId>1540</BeforeBlockId>
+<AfterBlockId>1542</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="1552" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2031" genus-name="componentGetter" >
+<Location><X>202</X><Y>93</Y></Location>
+<Label>BTN_font1.FontStyle</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="1540" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="393" genus-name="fontstyle-serifnormal" >
+<Location><X>228</X><Y>55</Y></Location>
+<Label>Serif Normal</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="2029" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>BTN_font1.FontStyle</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="2029" genus-name="componentSetter" >
+<Location><X>54</X><Y>52</Y></Location>
+<Label>BTN_font1.FontStyle</Label>
+<BeforeBlockId>395</BeforeBlockId>
+<AfterBlockId>1540</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="393" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font3.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1544" genus-name="componentSetter" >
+<Location><X>54</X><Y>242</Y></Location>
+<Label>BTN_font3.Text</Label>
+<BeforeBlockId>2037</BeforeBlockId>
+<AfterBlockId>2187</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2039" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font2.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1542" genus-name="componentSetter" >
+<Location><X>54</X><Y>166</Y></Location>
+<Label>BTN_font2.Text</Label>
+<BeforeBlockId>2033</BeforeBlockId>
+<AfterBlockId>2037</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2035" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>BTN_font1.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="1540" genus-name="componentSetter" >
+<Location><X>54</X><Y>90</Y></Location>
+<Label>BTN_font1.Text</Label>
+<BeforeBlockId>2029</BeforeBlockId>
+<AfterBlockId>2033</AfterBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="2031" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="395" genus-name="Screen-Initialize" >
+<Location><X>26</X><Y>19</Y></Location>
+<Label>Screen1.Initialize</Label>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="2029" ></BlockConnector>
+</Sockets>
+</Block>
+</PageBlocks>
+</Page>
+
+</Pages><YoungAndroidMaps><YoungAndroidUuidMap>
+<YoungAndroidUuidEntry uuid="21097316" component-id="BTN_font8" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1108506434" component-id="HorizontalArrangement2" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="300218877" component-id="BTN_font5" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1936841570" component-id="Button1" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="705551385" component-id="BTN_font2" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1296158659" component-id="BTN_font7" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1426316056" component-id="HorizontalArrangement3" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-746483725" component-id="HorizontalArrangement1" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="0" component-id="Screen1" component-genus="Form" component-version="0" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1870341415" component-id="BTN_font4" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1611292083" component-id="Label1" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="293798486" component-id="BTN_font3" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1396249517" component-id="TextBox1" component-genus="TextBox" component-version="4" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1761355792" component-id="Label2" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="909730887" component-id="BTN_font1" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="378215700" component-id="BTN_font6" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+</YoungAndroidUuidMap>
+</YoungAndroidMaps>
+</YACodeBlocks>

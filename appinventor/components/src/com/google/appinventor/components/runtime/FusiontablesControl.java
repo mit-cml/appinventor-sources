@@ -79,6 +79,7 @@ import java.util.ArrayList;
  * transmitted to the Fusiontables service as part of all Http requests.
  *
  */
+  // Gareth Haylings 21/06/2013 changed catagory from EXPERIMENTAL to BASIC
 @DesignerComponent(version = YaVersion.FUSIONTABLESCONTROL_COMPONENT_VERSION,
     description = "<p>A non-visible component that communicates with Google Fusion Tables. " +
     "Fusion Tables let you store, share, query and visualize data tables; " +
@@ -106,7 +107,7 @@ import java.util.ArrayList;
     "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, " +
     "which means that things like capitalization for names of columns matters, and " +
     "that single quotes must be used around column names if there are spaces in them.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.BASIC,
     nonVisible = true,
     iconName = "images/fusiontables.png")
 @SimpleObject

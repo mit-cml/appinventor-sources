@@ -1,0 +1,1 @@
+    <LangSpecProperty key="ya-prop-%4$d" value="%1$s/%2$s-property/%3$s/%5$s"/>
