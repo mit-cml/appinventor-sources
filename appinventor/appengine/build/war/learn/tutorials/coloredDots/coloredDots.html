@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Colored Dots - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Colored Dots&gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+              <h1>
+                Colored Dots: Creating Apps with Multiple Screens
+              </h1>
+
+              <p> This tutorial shows how to create apps that have multiple screens.  In App Inventor,
+              you can have a screen open a second screen. Later the second screen can return to
+              the screen that opened it.  You can have as many screens as you like, but each
+              screen closes by returning to the screen that opened it.  The screens can share
+              information by passing and returning values when they open and close.  The
+              screens also share the same TinyDB data, which they can use to store and shared
+              values.
+              </p>
+              
+              <p>Building an app with multiple screens is a lot like creating several
+              individual apps.  Every screen that you create has its own components in the
+              Designer window. In the Blocks Editor, you will be able to see only the
+              components of the screen currently selected in the Designer. Similarly, the
+              blocks of code related to a screen cannot refer to blocks of code in another
+              screen.  </p>
+
+              <p>The demonstration app is a simple drawing program called
+              ColoredDots.  It has two screens.  ColoredDots is
+              similar to <a
+              href="/docs/learn/tutorials/paintpot/paintpot-part1.html">PaintPot</a>,
+              but it uses a second screen to let the user create new
+              colors by providing numerical values for the red, green,
+              and blue color composition (RGB). In the PaintPot app, a
+              user can only paint with one of the three predefined
+              colors.  Adding more colors to Paintpot would have
+              required new buttons on the screen, thereby reducing the
+              amount of space available for painting.  In ColoredDots,
+              the ability to choose a new color is implemented with a
+              second screen called Settings. Once a new color has been
+              created in the second screen, its value is passed back to
+              the first screen.  You can also save and name the colors you
+              create in the second screen, and use them in painting.
+              </p>
+
+              <p>
+              Here are the two screens for the ColoredDots app:
+              </p>
+                <table border="0">
+                  <tr><td><div class="imagecontainer"><img alt="Painting Screen"
+                    src="coloredDotsAssets/paintingScreen.png" width="250"></div></td>
+                    <td width="50">&nbsp;</td>
+                    <td><div class="imagecontainer"><img alt="Settings Screen"
+                      src="coloredDotsAssets/settingsScreen.png"
+                      width="250"></div></td>
+                    </tr>
+                  </table>
+
+             <h2>
+                Building the Main Screen (Screen1)
+              </h2>
+
+              <p>You start building a multiscreen app by creating a new project, just as
+               with any other app.  As usual, App Inventor automatically creates the main
+               screen and names it <span class="ButtonText">Screen1</span> and you can
+               add components.   Here's the Designer and the Components panel when all
+               the components for <span class="ButtonText">Screen1</span> have been added.
+            
+              <div class="imagecontainer"><img alt="Screen1 Designer Window"
+                  src="coloredDotsAssets/screen1Designer.png" width="635"></div>
+
+             The components are:
+             </p>
+
+              <div class="advtutorial">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="tbl-header">
+                        Component Type
+                      </td>
+                      <td class="tbl-header">
+                        Palette Group
+                      </td>
+                      <td class="tbl-header">
+                        What you'll name it
+                      </td>
+                      <td class="tbl-header">
+                        Purpose of Component
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">TitleLabel</span>
+                      </td>
+                      <td>
+                        Shows the title "Paint with Colored Dots"
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">ColorLabel</span>
+                      </td>
+                      <td>
+                        Shows the text "Current Color"
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">ColorSample</span>
+                      </td>
+                      <td>
+                       Blank label whose background color is the current color
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">DotSizeLabel</span>
+                      </td>
+                      <td>
+                        Shows the text "Dot size"
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">DotSizeValue</span>
+                      </td>
+                      <td>
+                        Shows the current dot size
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Canvas</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">Canvas1</span>
+                      </td>
+                      <td>
+                        Shows dots at the places you touch
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">EraseButton</span>
+                      </td>
+                      <td>
+                        Clears the canvas
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">SettingsButton</span>
+                      </td>
+                      <td>
+                        Launches the second screen
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">GetColorButton</span>
+                      </td>
+                      <td>
+                        Loads the color from the data base
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Notifier</span>
+                      </td>
+                      <td>
+                        Other stuff
+                      </td>
+                      <td>
+                        <span class="ButtonText">Notifier1</span>
+                      </td>
+                      <td>
+                        Shows a dialog for entering a color name
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TinyDB</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">TinyDB1</span>
+                      </td>
+                      <td>
+                        Stores color names and values
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+             <p> We'll look at the blocks for <span class="ButtonText">Screen1</span>
+              below.  But first let's add the other screen.  </p>
+
+             <h2>Adding a second screen</h2>
+
+              <p>To add a new screen to your app, click the <span class="ButtonText">Add
+              Screen</span> button in the top toolbar of the Designer window. A dialog window
+              will appear, in which you can provide a name for the new screen.</p>
+
+              <table border="0">
+                <tr><td><div class="imagecontainer"><img alt="Adding a new screen"
+                  src="coloredDotsAssets/addscreen.png"></div></td>
+                <td width="50">&nbsp;</td>
+                <td><div class="imagecontainer"><img alt="Naming new screen"
+                   src="coloredDotsAssets/creatingScreen.png"></div></td>
+              </tr>
+            </table>
+            
+            <blockquote class="notice"> <strong>Note:</strong>
+            You should make the name of the new screen something meaningful when you add
+            it.  Do that now, because once a screen has been added, its name cannot be
+            changed -- the Rename button for the screen component itself is disabled
+            -- it's good to have meaningful names for the parts of your program.  One
+            limitation here is that <span class="ButtonText">Screen1</span> cannot be
+            renamed.  Remember also that the screen's <em>title</em> (shown in the title
+            bar when the app is running) is different from its name.  You can change the
+            screen title in the Properties pane.
+            </blockquote> </p>
+
+            <p>When you create a new screen, the Designer window switches to display it.
+            Initially there will be no components, just like with a new app, and you add
+            new components by dragging them from the Palette, just as with any screen.
+            Here's the Designer window for the second screen, named <span
+            class="ButtonText">SettingsScreen</span>, after the components have been
+            added. Notice that <span class="ButtonText">SettingsScreen</span> is a dark
+            green color, meaning <span class="ButtonText">SettingsScreen</span> is current
+            screen.
+            </p>
+
+           <div class="imagecontainer"><img alt="Second screen - Designer window"
+            src="coloredDotsAssets/settingsDesigner.png" width="680"></div>
+
+	    <p>The components for the settings screen are:
+              </p>
+
+	    <p>
+              <div class="advtutorial">
+                <table>
+                  <tbody>
+                    <tr>
+                      <td class="tbl-header">
+                        Component Type
+                      </td>
+                      <td class="tbl-header">
+                        Palette Group
+                      </td>
+                      <td class="tbl-header">
+                        What you'll name it
+                      </td>
+                      <td class="tbl-header">
+                        Purpose of Component
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">RedLabel</span>
+                      </td>
+                      <td>
+                        Shows the text "Red"
+                      </td>
+                    </tr>
+
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TextBox</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">Red</span>
+                      </td>
+                      <td>
+                        For entering the amount of red in the color (0-255)
+                      </td>
+                    </tr>
+
+                   <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">GreenLabel</span>
+                      </td>
+                      <td>
+                        Shows the text "Green"
+                      </td>
+                    </tr>
+
+
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TextBox</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">Green</span>
+                      </td>
+                      <td>
+                        For entering the amount of green in the color (0-255)
+                      </td>
+                    </tr>
+
+
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">BlueLabel</span>
+                      </td>
+                      <td>
+                        Shows the text "Blue"
+                      </td>
+                    </tr>
+
+
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TextBox</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">Blue</span>
+                      </td>
+                      <td>
+                        For enteriing the amount of blue in the color (0-255)
+                      </td>
+                    </tr>
+
+
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">TestColorButton</span>
+                      </td>
+                      <td>
+                        Press to create the new color
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">LabelTestColorSample</span>
+                      </td>
+                      <td>
+                       Blank label whose background color is the new color
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Label</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">DotRadius</span>
+                      </td>
+                      <td>
+                        Shows the text "Dot size"
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TextBox</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">RadiusTextBox</span>
+                      </td>
+                      <td>
+                        Shows the current dot size
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">SaveAndQuitButton</span>
+                      </td>
+                      <td>
+                        Returns to the main screen with the new color and dot size
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Button</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">StoreColorButton</span>
+                      </td>
+                      <td>
+                        Names the color and stores it for use in the main screen
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">Notifier</span>
+                      </td>
+                      <td>
+                        Other stuff
+                      </td>
+                      <td>
+                        <span class="ButtonText">Notifier1</span>
+                      </td>
+                      <td>
+                        Shows a dialog for entering a color name
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <span class="ButtonText">TinyDB</span>
+                      </td>
+                      <td>
+                        Basic
+                      </td>
+                      <td>
+                        <span class="ButtonText">TinyDB1</span>
+                      </td>
+                      <td>
+                        Stores color names and values
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              </p>
+            
+            <p> Here and in general with multiple screen apps, only the components that
+            belong to the current screen (in this case <span class="ButtonText">SettingsScreen</span>)
+            are shown in the Designer and the Components pane.   You can switch between
+            screens by pressing the <span class="ButtonText">SettingsScreen</span> and the
+            <span class="ButtonText">Screen1</span> buttons, and the view in the Designer
+            will show the corresponding screen.
+            The same is true for the Blocks Editor:
+            When you're working on a screen you'll see only the blocks for that screen
+            
+            <blockquote class="notice">
+            None of the components, variable definitions, and procedures that you define
+            in one screen will be accessible from any other screen.  We'll see below how
+            to pass information between screens.
+            </blockquote>
+
+            <blockquote class="dogfood">
+            Warning: When you switch between screens, you are effectively telling the
+            Blocks Editor to load a new project, and this takes a little time.  Wait until
+            the Blocks Editor is done loading the blocks for the new screen before
+            changing things.  Most especially, wait until the new
+            screen has finished loading before clicking on blocks or
+            links with the mouse.  If you don't wait, you may get
+            errors, or even lose blocks from your project.
+            </blockquote>
+            </p>
+
+            <h2>
+            Blocks for the main screen (Screen1)
+             </h2>
+
+            <p>The <span class="ButtonText">Screen1</span> is essentially a drawing
+            program.  When you touch the Canvas, the app draws a dot of the current radius
+            and color.  The color is specified by the background of the <span
+            class="ButtonText">ColorSample</span> label.  The erase button clears the
+            canvas.  When the screen opens, it initializes the radius to 3 and the color
+            to black.  Here are the corresponding blocks:
+            </p>
+
+            <div class="imagecontainer"><img alt="Blocks for screen 1"
+            src="coloredDotsAssets/Screen1Basic.png" width="500"></div>
+
+            <h3>Communicating with the settings screen</h3>
+
+            <p>
+            The multiple screen aspect of the app involves getting the settings: the new
+            color and the new dot radius.  It's the job of <span
+            class="ButtonText">SettingScreen</span> to create these values and return
+            these to <span class="ButtonText">Screen1</span> as a list of two items: the
+            color and the dotsize.  We'll see how <span
+            class="ButtonText">SettingsScreen</span> does this below, but from the
+            perspective of <span class="ButtonText">Screen1</span>, all it needs to do is
+            open <span class="ButtonText">SettingsScreen</span> and get the result.
+            </p>
+
+            <p>Here's how this happens: when the <span class="ButtonText">Settings</span> button
+            is pressed, <span class="ButtonText">Screen1</span> uses <span
+            class="Block">open another screen</span> to open <span
+            class="ButtonText">SettingsScreen</span>.  When
+            <span class="ButtonText">SettingsScreen</span> returns, it will signal the
+            <span class="Block">other screen closed</span> event, which provides the
+            name of the screen (here <span class="ButtonText">SettingsScreen</span>) and
+            the value returned (here the two-element list).  The event handler for <span
+            class="ButtonText">Screen1</span> extracts the two items from the list and
+            sets the <span class="ButtonText">ColorSample</span>
+            background and the <span
+            class="ButtonText">DotSizeValue</span> text properties.
+            Here are the blocks:
+            </p>
+            
+            <div class="imagecontainer"><img alt="Blocks for Screen1 opening
+            SettingsScreen and for getting the returned result"
+            src="coloredDotsAssets/Screen1OtherScreen.png" width="500"></div>
+
+            <p>In general, a screen opens another screen with <span class="Block">open
+            another screen</span> and gets a result back though the <span
+            class="Block">when other screen closed</span> event.  It's also possible,
+            although ColoredDots doesn't use this, for a screen to open another screen and
+            pass it a value, by means of <span class="Block">open another screen with
+            value</span>.  The other screen can then access the value using <span
+            class="Block">get start value</span>.
+            </p>
+            
+            <h3>Sharing data via TinyDB</h3>
+
+            <p>Besides opening screens and returning values, the different screens in a
+            multiple screen app can communicate through TinyDB.  To do this, give every
+            screen its individual TinyDB component.  Even though these will be "different"
+            TinyDB components, they will in fact all share the same keys and values:  If
+            one screen stores a value under a key, the other screen can get that value by
+            using the same key.</p>
+
+            <p>ColoredDots uses TinyDB to let you name the colors you create and
+            save them to later use.  The saving and naming will be done in <span
+            class="ButtonText">SettingsScreen</span>, as shown in the blocks below.  When
+            you press the <span class="ButtonText">GetColorButton</span> in <span
+            class="ButtonText">Screen1</span>, the app uses the Notifier to ask you to
+            enter the name of the color you want, and looks it up in TinyDB.  If there's
+            a color stored under that name, it sets the drawing color to the result.</p>
+
+            <div class="imagecontainer"><img alt="Using TinyDB to retrieve saved colors."
+            src="coloredDotsAssets/Screen1Notifier.png" width="600"></div>
+
+            <h2>
+            Blocks for the settings screen
+             </h2>
+
+
+            <p> The main job of <span class="ButtonText">SettingsScreen</span> is to
+            create a color from the red-green-blue values entered in the text boxes and
+            provide that color to <span class="ButtonText">Screen1</span>.  When you click
+            the <span class="ButtonText">TestColorButton</span>, the color is created
+            for you as the background of <span
+            class="ButtonText">LabelTestColorSample</span>.  When you click <span
+            class="ButtonText">SaveAndQuit</span> the new color and the new dot size
+            (taken from the <span class="ButtonText">RadiusTextBox</span>) are returned to
+            <span class="ButtonText">Screen1</span> as a two-item list.
+	    </p>
+
+            <p> To return the list to <span class="ButtonText">Screen1</span>, <span
+            class="ButtonText">SettingsScreen</span> uses <span class="Block">close screen
+            with value</span>, which takes as an argument the value to be returned (in
+            this case, the list).  When a screen closes, the app returns to the
+            screen that opened it.
+            </p>
+
+            <p> Here are the blocks that do this. <span
+            class="ButtonText">SettingsScreen</span> uses the procedures CheckColor and
+            LimitRange to ensure that the values entered in the text boxes are valid
+            numbers for colors and dot size.  We'll examine these procedure below.  </p>
+
+            <div class="imagecontainer"><img alt="Blocks for SettingsScreen
+            creating the color and returning the result."
+            src="coloredDotsAssets/SettingsScreenBasic.png" width="600"></div>
+
+            <p> The next blocks show how <span class="ButtonText">SettingsScreen</span>
+            associates a name with a color for use by <span class="ButtonText">Screen1</span>.  When you click
+            <span class="ButtonText">StoreColor</span> the Notifier ask you to enter a
+            name for the color.  When you make your entry, the color is stored in TinyDB,
+            using the name you entered as a key.  <span class="ButtonText">Screen1</span>
+            can then retrieve the color using its own TinyDB component.  </p>
+
+            <div class="imagecontainer"><img alt="Blocks for SettingsScreen to store a
+            color in TinyDB."
+            src="coloredDotsAssets/SettingsScreenNotifier.png" width="500"></div>
+
+            <h3>
+            Limiting numbers to a range
+             </h3>
+
+            <p>
+            The only thing left is to show how <span
+            class="ButtonText">SettingsScreen</span> checks that it's using good
+            values for colors and dot size.   Each of the red, green, blue values
+            should be a number between 0 and 255.  But you could have entered anything in
+            those text boxes.   The checkColor procedure takes a value and limits its
+            range to between 0 and 255: If it's less than 0 (or not a number at all) the
+            result will be 0.  It it's greater than 255, the result will be 255:
+            </p>
+
+            <div class="imagecontainer"><img alt="The checkColor procedure."
+            src="coloredDotsAssets/checkColor.png" width="400"></div>
+
+            <p>
+            The final bit is <span class="ButtonText">LimitRange</span>.  This is a
+            general procedure that takes an input, a lower limit, and an upper limit, and
+            restricts the input to lie within that range (and it returns the lower limit if
+            the input is not a number).   The procedure is simple, but tricky:  To
+            restrict the range, take the maximum of the input and the lower limit, then
+            take the minimum of the result and the upper limit.  This
+            programming "trick" has little to do with multiple screens or App
+            Inventor.  You might want to take a few moments to convince yourself that it
+            really works.
+            </p>
+
+            <div class="imagecontainer"><img alt="The LimitRange procedure."
+            src="coloredDotsAssets/LimitRange.png" width="500"></div>
+
+            <h2>Comments on multiple screens</h2>
+
+            <p>You can have many screens in an App Inventor
+            app, but a screen always returns to the screen that opened it.  On the other
+            hand, you can get the effect of screens switching to arbitrary other screen by
+            setting up a "manager screen" that is used for opening all the other screens.
+            When a screen wants to switch, it returns to the manager with a value saying
+            which screen to open next.
+	    </p>
+
+            <p>In the current version of App Inventor, it is not yet possible to test a
+            multiple-screen app in live development mode. You can test each screen
+            separately, but you cannot test the communication between two screens. When
+            try to switch between screens, you'll get an error message.
+            To test whether the screens are properly communicating, you'll need to <span
+            class="ButtonText">Package for Phone</span> and open the installed app.</p>
+
+	    <p>
+            <blockquote class="notice">
+            This tutorial is based on work by Eni Mustafaraj of Wellesley College.
+            </blockquote> </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

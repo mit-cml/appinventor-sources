@@ -28,9 +28,10 @@ import java.io.IOException;
  * {@link android.media.MediaRecorder}.
  *
  */
+ // Gareth Haylings 21/06/2013 changed catagory from EXPERIMENTAL to MEDIA
 @DesignerComponent(version = YaVersion.SOUND_RECORDER_COMPONENT_VERSION,
     description = "<p>Multimedia component that records audio.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/soundRecorder.png")
 @SimpleObject

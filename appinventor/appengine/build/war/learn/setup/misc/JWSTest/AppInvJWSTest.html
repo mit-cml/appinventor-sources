@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+    <head>
+
+        <style type="text/css">
+            div.ok {
+                background: transparent url("images/ok.png") no-repeat scroll 0% 0% !important;
+                border: none;
+                clear: both;
+                color: #00cd00;
+                display: block;
+                //font-family: Arial, "Arial Black",sans-serif;
+                //font-size: 1.15em;
+                //font-weight: 600;
+                margin: 0px 0px 0px 0px;
+                padding: 5px 0px 7px 35px;
+            }
+
+            div.oops {
+               border: none;
+                clear: both;
+                color: #ff3333;
+                display: block;
+                //font-family: Arial, "Arial Black",sans-serif;
+                //font-size: 1.15em;
+                //font-weight: 600;
+                margin: 0px 0px 0px 0px;
+                padding: 5px 0px 7px 35px;
+            }
+        </style>
+
+        <script language="javascript" type="text/javascript">
+            function jwsInstalled() {
+                // For Internet Explorer.
+                if (navigator.userAgent.indexOf('MSIE') > -1) {
+                    try {
+                        var jws = new ActiveXObject('JavaWebStart.isInstalled');
+                        return true;
+                    }
+                    catch (e) {
+                        return false;
+                    }
+                }
+
+                // Firefox is happy with "x-java-jnlp-file". For Chrome and Safari
+                // this does not work, instead I just check for "x-java-vm".
+                // If they have a recent JVM installed, then they usually also have
+                // Java WebStart installed.
+                return navigator.mimeTypes &&
+                    navigator.mimeTypes.length &&
+                    (navigator.mimeTypes['application/x-java-jnlp-file'] != null ||
+                    navigator.mimeTypes['application/x-java-vm'] != null);
+            }
+
+            document.write('<h3><img src="images/appinventor-logo.jpg" valign="middle"> \
+                             Check Java on your computer for App Inventor<\/h3>');
+
+            document.write('<p>Part 1: App Inventor is checking your \
+            browser for running programs with Java Web Start. <i>Checking<\/i> &hellip;<\/p>');
+
+           if (  jwsInstalled() ) {
+                document.write( '<div class="ok">Your browser appears to be configured properly.<\/div>' );
+                document.write('<p>Part 2: Try to launch a program \
+                from the Web.  This test should download and run a file (notepad.jnlp), which will create \
+                a window named "Notepad" where you can enter text.  Depending on your browser, you might need \
+                to manually open the jnlp file after it downloads.</p>  \
+                <p>If Notepad does not run, then the test fails.</p>  \
+                <p>Do not go on to try to use App Inventor if the test fails.</p>');
+                document.write( '<p><a href="notepad.jnlp"><img src="images/launch.png"\/><\/a><\/p>' );
+                document.write( '<p>If the test fails, reasons might include: \
+                  <ul> \
+                    <li>Your computer is behind a firewall that will not let the program download.<\/li> \
+                    <li>Your browser is not configured to use Java Web Start to open jnlp files, even though \
+                        part 1 of this test succeeded.  Fixing this might \
+                        require creating an association from .jnlp files to Java Web Start, \
+                        or reinstalling Java. \
+                    <li>Your computer does not have enough memory to \
+                        run App Inventor.   It requires a Java heap size of about 950Mb of contiguous memory.<\/li> \
+                    <li>Your network proxy settings for Java need to be changed.<\/li> \
+                 <\/ul><\/p>');
+           } else {
+                document.write( '<div class="oops"><img src="images/android-error.png" valign="middle"> \
+                        Your browser is <i>not<\/i> configured properly for Java and Java Web Start. \
+                        Please install Java and then repeat this test. \
+                        <br />Note that on GNU/Linux, AppInventor requires Sun Java, not OpenJDK. \
+                        <p>Click to <a href="http://www.java.com/en/download/index.jsp">install Java<\/a>.<\/p><\/div>' );
+                        }
+        </script>
+
+        <title>Check Java for App Inventor</title>
+    </head>
+
+    <body>
+
+    </body>
+</html>

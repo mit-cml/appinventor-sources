@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Known issues - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c6 {border-width:0}
+    div.c5 {clear:left;}
+    div.c4 {float: left; width: 600px; height: 500px;}
+    img.c3 {width: 60px; height: 60px; border: 1px solid #efefef;}
+    div.c2 {float: right; width: 300px; margin: 0 20px 0 20px; padding: 10px 10px 10px 10px; height: 300px; background: #efefef url('/static/images/sidepanel-bg.png') top left repeat-x;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb">             Known issues &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+
+<h3>App Inventor Beta Preview Known Issues</h3>
+
+<p>This is a beta preview release of App Inventor.  There are known minor bugs and glitches,
+  and occasional failures in connecting to the phone or in getting projects to build.
+  This version should be stable enough for personal or educational use,
+  although it would be a good idea to maintain backup copies of important projects.</>
+
+<p>There are also a couple of specific issues to watch out for.  We're
+  working on these, but we didn't want to hold up this release to wait until they 
+  were fixed.
+  <p>
+  
+<h4>Known Issues List:</h4>
+
+<ul style="disc">
+
+<li>Unable to load large projects: This version of App Inventor cannot load projects as
+  large as last year's Google version.   If you are trying to transfer over a large
+  project (e.g., large numbers of image or sound files, or very large individual files)
+  you may see the error "Unable to load project".  The problem may be worse on slow
+  connections.
+</li>
+  
+<p />
+
+<li>Manipulating blocks while switching screens:  If you are working with a multiscreen
+app and you switch screens, do not move blocks with the mouse or click links in the
+Blocks Editor until the new screen is done loading.  If you do so, the Blocks editor
+can become confused about which screen you are working on, and you can get errors, or even
+lose blocks.  The same warning applies when you switch between projects. When loading a new
+project, don't use the Blocks editor until the project has finished loading.
+</li>
+
+<p />
+
+<li>Unstable project loading:
+We've gotten reports of projects loading incorrectly, with blocks missing.   We're trying
+to track this down, but in the meantime be diligent about keeping local backups,
+especially for large and important projects.
+</li>
+
+<p />
+
+<li>Failure to package projects:
+We're currently seeing a 6% failure rate in attempts to package projects.
+Many of these appear to be intermittent.  If your project fails to
+package, try again once or twice.  Another source of failure may
+result from case collisions in the names of media files: If your
+project has two pictures named, for example, MyPict.jpg and mypict.jpg, this may cause
+errors.
+</li>
+
+</ul>
+</div>
+</div>
+
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
+
+

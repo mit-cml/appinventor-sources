@@ -155,7 +155,7 @@ public class Form extends Activity
   private String nextFormName;
 
   private FullScreenVideoUtil fullScreenVideoUtil;
-
+  
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
@@ -236,6 +236,10 @@ public class Form extends Activity
       });
     }
   }
+  //---------------------------------------------------------------------------------------------------------------------------
+  /** Gareth Haylings 01.07.2013
+  * Changed code to detect other Android buttons pressed along with the BackPressed
+  */
 
   /*
    * Here we override the hardware back button, just to make sure
@@ -253,14 +257,30 @@ public class Form extends Activity
       } else {
         return true;
       }      
-    }
+    } else {
+      DeviceButtonPressed(keyCode); //Gareth Haylings 26.06.2013
+    } 
     return super.onKeyDown(keyCode, event);
   }
 
-  @SimpleEvent(description = "Device back button pressed.")
+  @SimpleEvent(
+      description = "Device back button pressed.",
+      userVisible = false)
   public boolean BackPressed() {
-    return EventDispatcher.dispatchEvent(this, "BackPressed");
+    return DeviceButtonPressed(4);
+    //return EventDispatcher.dispatchEvent(this, "BackPressed");
   }
+  
+  
+  //Gareth Haylings 26.06.2013
+  //Event for any android device button passed here so user can add their own block code
+  @SimpleEvent(description = "Device button pressed.")
+  public boolean DeviceButtonPressed(int keyCode) {
+    //TODO: Gareth Haylings add blocks family for DeviceButton names against keycodes
+	//      or need api to be 9 so keynames automatically brought in
+    return EventDispatcher.dispatchEvent(this, "DeviceButtonPressed", keyCode);
+  }
+  //---------------------------------------------------------------------------------------------------------------------------
   
   // onActivityResult should be triggered in only two cases:
   // (1) The result is for some other component in the app, not this Form itself
@@ -1196,54 +1216,61 @@ public class Form extends Activity
     }
   }
 
-  // Configure the system menu to include a button to kill the application
+//---------------------------------------------------------------------------------------------------------------------------
+/** Gareth Haylings 01.07.2013
+  * Commented out the following code as not want the menu button decected here
+  */
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
-    // we would use onPrepareOptionsMenu.
-    super.onCreateOptionsMenu(menu);
-    // add the menu items
-    // Comment out the next line if we don't want the exit button
-    addExitButtonToMenu(menu);
-    return true;
-  }
+//  // Configure the system menu to include a button to kill the application
 
-  public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Stop this application")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showExitApplicationNotification();
-        return true;
-      }
-    });
-    stopApplicationItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-  }
+//  @Override
+//  public boolean onCreateOptionsMenu(Menu menu) {
+//    // This procedure is called only once.  To change the items dynamically
+//    // we would use onPrepareOptionsMenu.
+//    super.onCreateOptionsMenu(menu);
+//    // add the menu items
+//    // Comment out the next line if we don't want the exit button
+//    addExitButtonToMenu(menu);
+//    return true;
+//  }
 
-  private void showExitApplicationNotification() {
-    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-    alertDialog.setTitle("Stop application?");
-    // prevents the user from escaping the dialog by hitting the Back button
-    alertDialog.setCancelable(false);
-    alertDialog.setMessage("Stop this application and exit? You'll need to relaunch " +
-    "the application to use it again.");
-    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Stop and exit",
-        new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // We call closeApplication here, not finishApplication which is a static method and
-        // assumes that activeForm is the foreground activity.
-        closeApplicationFromMenu();
-      }});
-    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Don't stop",
-        new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // nothing to do here
-      }
-    });
-    alertDialog.show();
-  }
+//  public void addExitButtonToMenu(Menu menu) {
+//    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+//    "Stop this application")
+//    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+//      public boolean onMenuItemClick(MenuItem item) {
+//        showExitApplicationNotification();
+//        return true;
+//      }
+//    });
+//    stopApplicationItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+//  }
 
+//  private void showExitApplicationNotification() {
+//    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
+//    alertDialog.setTitle("Stop application?");
+//    // prevents the user from escaping the dialog by hitting the Back button
+//    alertDialog.setCancelable(false);
+//    alertDialog.setMessage("Stop this application and exit? You'll need to relaunch " +
+//    "the application to use it again.");
+//    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Stop and exit",
+//        new DialogInterface.OnClickListener() {
+//      public void onClick(DialogInterface dialog, int which) {
+//        // We call closeApplication here, not finishApplication which is a static method and
+//        // assumes that activeForm is the foreground activity.
+//        closeApplicationFromMenu();
+//      }});
+//    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Don't stop",
+//        new DialogInterface.OnClickListener() {
+//      public void onClick(DialogInterface dialog, int which) {
+//        // nothing to do here
+//      }
+//    });
+//    alertDialog.show();
+//  }
+
+//---------------------------------------------------------------------------------------------------------------------------
+  
   // This is called from clear-current-form in runtime.scm.
   public void clear() {
     viewLayout.getLayoutManager().removeAllViews();

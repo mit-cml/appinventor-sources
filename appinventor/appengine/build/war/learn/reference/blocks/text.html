@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Text Blocks - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Text             Blocks &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Text Blocks
+       </h1>
+       <ul>
+        <li>
+         <a href="#text">
+          text
+         </a>
+        </li>
+        <li>
+         <a href="#equals">
+          =
+         </a>
+        </li>
+        <li>
+         <a href="#join">
+          join
+         </a>
+        </li>
+        <li>
+         <a href="#maketext">
+          make text
+         </a>
+        </li>
+        <li>
+         <a href="#length">
+          length
+         </a>
+        </li>
+        <li>
+         <a href="#text%3C">
+          text&lt;
+         </a>
+        </li>
+        <li>
+         <a href="#text=">
+          text=
+         </a>
+        </li>
+        <li>
+         <a href="#text%3E">
+          text&gt;
+         </a>
+        </li>
+        <li>
+         <a href="#trim">
+          trim
+         </a>
+        </li>
+        <li>
+         <a href="#upcase">
+          upcase
+         </a>
+        </li>
+        <li>
+         <a href="#downcase">
+          downcase
+         </a>
+        </li>
+        <li>
+         <a href="#startsat">
+          starts at
+         </a>
+        </li>
+        <li>
+         <a href="#contains">
+          contains
+         </a>
+        </li>
+        <li>
+         <a href="#splitatfirst">
+          split at first
+         </a>
+        </li>
+        <li>
+         <a href="#splitatfirstofany">
+          split at first of any
+         </a>
+        </li>
+        <li>
+         <a href="#split">
+          split
+         </a>
+        </li>
+        <li>
+         <a href="#splitatany">
+          split at any
+         </a>
+        </li>
+        <li>
+         <a href="#splitatspaces">
+          split at spaces
+         </a>
+        </li>
+        <li>
+         <a href="#segment">
+          segment
+         </a>
+        </li>
+        <li>
+         <a href="#replaceall">
+          replace all
+         </a>
+        </li>
+       </ul>
+       <h2 id="text">
+        text
+       </h2>
+       <img alt="" src="images/text.png" />
+       <p>
+        Contains a text string.
+       </p>
+       <h2 id="equals">
+        equals
+       </h2>
+       <img alt="" src="images/equals.png" />
+       <p>
+        Tests whether two given values are equal. If so, returns true; otherwise, returns
+                false. This is the same block found in the logic drawer and is repeated here for
+                convenience. The arguments can be anything, not just text.
+       </p>
+       <h2 id="join">
+        join
+       </h2>
+       <img alt="" src="images/join.png" />
+       <p>
+        Appends the second given string to the first. For this operation, and all text
+                operations, numbers can be treated as text. For example, using a
+        <code>
+         join
+        </code>
+        block to join 1 plus 1 and 2 times 3 results in 26 (2 joined with 6).
+       </p>
+       <h2 id="maketext">
+        make text
+       </h2>
+       <img alt="" src="images/maketext.png" />
+       <p>
+        Joins all given values into one text string.
+       </p>
+       <h2 id="length">
+        length
+       </h2>
+       <img alt="" src="images/length.png" />
+       <p>
+        Returns the length of the given string.
+       </p>
+       <h2 id="text&lt;">
+        text&lt;
+       </h2>
+       <p>
+        Reports whether the first text string argument is alphabetically less than the
+                second text string. If two strings begin with the same characters, the shorter
+                string is considered smaller. Uppercase characters precede lowercase characters.
+       </p>
+       <h2 id="text=">
+        text=
+       </h2>
+       <p>
+        Reports whether the text strings are identical, i.e., have the same characters in
+                the same order.
+       </p>
+       <p>
+        Note that if you are comparing text boxes that contain digits, there is a
+                difference between comparing them numerically using ordinary equality
+                (
+        <code>
+         =
+        </code>
+        ) versus comparing them as text strings (
+        <code>
+         text=
+        </code>
+        ). If you
+                create two text boxes, one with the characters
+        <code>
+         123
+        </code>
+        and one with the
+                characters
+        <code>
+         0123
+        </code>
+        , then these will be equal numerically but not equal as
+                text strings. Be careful that, when it comes to comparisons like this, there is a
+                difference between entering the digits using number boxes, versus entering them as
+                text boxes. Suppose you create two number boxes, on with
+        <code>
+         123
+        </code>
+        and one
+                with
+        <code>
+         0123
+        </code>
+        . If you compare those two boxes using
+        <code>
+         text=
+        </code>
+        you'll get the result that they are equal. The reason is that the digits you enter
+                into a number box get converted to a number; the actual string of digits is not
+                preserved. If you want to take account of the actual string of digits, then use a
+                text box.
+       </p>
+       <h2 id="text&gt;">
+        text&gt;
+       </h2>
+       <p>
+        Reports whether the first text string argument is alphabetically greater than the
+                second text string. If two strings begin with the same characters, the shorter
+                string is considered smaller. Uppercase characters precede lowercase characters.
+       </p>
+       <h2 id="upcase">
+        upcase
+       </h2>
+       <p>
+        Returns a copy of its text string argument converted to uppercase.
+       </p>
+       <h2 id="downcase">
+        downcase
+       </h2>
+       <p>
+        Returns a copy of its text string argument converted to lowercase.
+       </p>
+       <h2 id="trim">
+        trim
+       </h2>
+       <p>
+        Returns a copy of its text string argument with any leading or trailing spaces
+                removed.
+       </p>
+       <h2 id="startsat">
+        starts at
+       </h2>
+       <img alt="" src="images/startsat.png" />
+       <p>
+        Returns the character position where the first character of
+        <code>
+         piece
+        </code>
+        first appears in
+        <code>
+         text
+        </code>
+        , or 0 if not present. For example, the location
+                of
+        <code>
+         ana
+        </code>
+        in
+        <code>
+         havana banana
+        </code>
+        is 4.
+       </p>
+       <h2 id="contains">
+        contains
+       </h2>
+       <img alt="" src="images/contains.png" />
+       <p>
+        Returns true if
+        <code>
+         piece
+        </code>
+        appears in
+        <code>
+         text
+        </code>
+        ; otherwise, returns
+                false.
+       </p>
+       <h2 id="splitatfirst">
+        split at first
+       </h2>
+       <img alt="" src="images/splitatfirst.png" />
+       <p>
+        Divides the given text into two pieces using the location of the first occurrence
+                of
+        <code>
+         at
+        </code>
+        as the dividing point, and returns a two-item list consisting of
+                the piece before the dividing point and the piece after the dividing point.
+                Splitting
+        <code>
+         apple,banana,cherry,dogfood
+        </code>
+        with a comma as the splitting
+                point returns a list of two items: the first is the text
+        <code>
+         apple
+        </code>
+        and the
+                second is the text
+        <code>
+         banana,cherry,dogfood
+        </code>
+        . Notice that the comma after
+                apple doesn't appear in the result, because that is the dividing point.
+       </p>
+       <h2 id="splitatfirstofany">
+        split at first of any
+       </h2>
+       <img alt="" src="images/splitatfirstofany.png" />
+       <p>
+        Divides the given text into a two-item list, using the location of any item in the
+                list at as the dividing point.
+       </p>
+       <h2 id="split">
+        split
+       </h2>
+       <img alt="" src="images/split.png" />
+       <p>
+        Divides
+        <code>
+         text
+        </code>
+        into pieces using
+        <code>
+         at
+        </code>
+        as the dividing points
+                and produces a list of the results. Splitting
+        <code>
+         one,two,three,four
+        </code>
+        at
+        <code>
+         ,
+        </code>
+        (comma) returns the list
+        <code>
+         (one two three four)
+        </code>
+        .
+                Splitting
+        <code>
+         one-potato,two-potato,three-potato,four
+        </code>
+        at
+        <code>
+         -potato,
+        </code>
+        returns the list
+        <code>
+         (one two three four)
+        </code>
+        .
+       </p>
+       <h2 id="splitatany">
+        split at any
+       </h2>
+       <img alt="" src="images/splitatany.png" />
+       <p>
+        Divides the given text into a list, using any of the items in
+        <code>
+         at
+        </code>
+        as
+                the dividing point, and returns a list of the results. Splitting
+        <code>
+         appleberry,banana,cherry,dogfood
+        </code>
+        with
+        <code>
+         at
+        </code>
+        as the
+                two-element list whose first item is a comma and whose second item is
+        <code>
+         rry
+        </code>
+        returns a list of four items:
+        <code>
+         (applebe banana che
+                dogfood)
+        </code>
+       </p>
+       <h2 id="splitatspaces">
+        split at spaces
+       </h2>
+       <img alt="" src="images/splitatspaces.png" />
+       <p>
+        Divides the given text at any occurrence of a space, producing a list of the
+                pieces.
+       </p>
+       <h2 id="segment">
+        segment
+       </h2>
+       <img alt="" src="images/segment.png" />
+       <p>
+        Extracts part of the text starting at
+        <code>
+         start
+        </code>
+        position and continuing
+                for length characters.
+       </p>
+       <h2 id="replaceall">
+        replace all
+       </h2>
+       <p>
+        Returns a new text string obtained by replacing all occurrences of the substring
+                with the replacement.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

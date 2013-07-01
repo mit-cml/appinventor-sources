@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Map Tour 2 - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    span.c2 {font-size: smaller}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/index.html">Tutorials</a>             &gt; <a href="/learn/tutorials/maptour/maptour.html">MapTour</a> &gt; MapTour2 &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Map Tour, Part 2
+       </h1>
+       <div class="imagecontainer">
+        <img align="right" alt="" border="0" src="MapTourAssets/eiffel-tower.png" />
+       </div>
+       <br />
+       <span class="c2">
+        Image from Google Maps ÂŠ 2010 Aerodata International Surveys, The
+              GeoInformation Group
+       </span>
+       .
+       <p>
+        This tutorial extends the
+        <a href="/learn/tutorials/maptour/maptour.html">
+         Map
+                Tour
+        </a>
+        app described in a previous tutorial. Whereas that app launched Maps with
+                simple search terms, this app will launch specific maps showing zoomed in views of
+                the Eiffel Tower and Louvre, and a street view map of Notre Dame. You'll learn more
+                sophisticated use of the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        and
+        <span class="ButtonText">
+         ListPicker
+        </span>
+        component and you'll learn in general
+                how to add links to specifically chosen maps to your apps.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site,
+        <span class="ButtonText">
+         SaveAs
+        </span>
+        the
+                MapTour app into MapTourSpecific, and also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to Map Tour Specific. Open the Blocks Editor and connect
+                to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        As in Part I, this app will use Parisian landmarks for the destinations. When the
+                user chooses one, Google Maps will still be launched, but instead of a simple
+                search, it will display a specific zoomed or street-view map of the destination.
+       </p>
+       <p>
+        The general idea is to first use Google Maps to find or create topic-specific maps,
+                then use App Inventor to integrate these maps into an informational app you are
+                building.
+       </p>
+       <p>
+        The tutorial covers more sophisticated use of the following App Inventor
+                components:
+        <br />
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         component for launching
+                Android apps from your app.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component for allowing the user
+                to choose from a list of choices.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+       </h2>
+       <br />
+       <p>
+        The user interface for MapTourSpecific is exactly the same as in Part 1 of this
+                tutorial. You can also leave the properties of
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        exactly the same.
+       </p>
+       <h2>
+        Finding the DataUri for specific maps
+       </h2>
+       <p>
+        The key to this application is finding the maps you want to show and setting the
+        <span class="ButtonText">
+         ActivityStarter.DataURI
+        </span>
+        property accordingly for
+                each of the landmarks. The maps for this sample were found in the following way:
+       </p>
+       <ul>
+        <li>
+         On your computer, browse to
+         <a href="http://maps.google.com">
+          maps.google.com
+         </a>
+        </li>
+        <li>
+         Search for a landmark (e.g., Eiffel Tower)
+        </li>
+        <li>
+         Zoom in to the level you desire, perhaps choosing Street View.
+        </li>
+        <li>
+         Click on the Link button near the top-right of the Maps window and copy the URL
+                for the map. You'll use this URL or parts of it to launch a map from App Inventor.
+        </li>
+       </ul>
+       <p>
+        Using this scheme, the following Maps URLs were discovered:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Landmark
+           </td>
+           <td class="tbl-header">
+            Maps URL
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Eiffel Tower
+           </td>
+           <td width="600">
+            http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=eiffel+tower&amp;sll=37.0625,-95.677068
+            <br />
+            &amp;sspn=48.909425,72.333984&amp;ie=UTF8&amp;hq=Tour+Eiffel&amp;hnear=Tour+Eiffel,+Quai+Branly,+75007+Paris,+Ile-de-France,+France&amp;ll=48.857942,2.294748&amp;spn=0.001249,0.002207&amp;t=h&amp;z=19
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Musee Louvre
+           </td>
+           <td width="600">
+            <p>
+             http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;q=louvre&amp;sll=48.86096,2.335421&amp;sspn=0.002499,0.004415&amp;ie=UTF8&amp;t=h&amp;split=1
+             <br />
+             &amp;filter=0&amp;rq=1&amp;ev=zi&amp;radius=0.12&amp;hq=louvre&amp;hnear=&amp;ll=48.86096,2.335421&amp;spn=0.002499,0.004415&amp;z=18
+            </p>
+           </td>
+          </tr>
+          <tr>
+           <td height="48" nowrap="nowrap">
+            <p>
+             Notre Dame,
+             <br />
+             Street View
+            </p>
+           </td>
+           <td width="600">
+            <p>
+             http://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;q=french+landmarks&amp;sll=48.853252,2.349111&amp;sspn=0.002411,0.004415
+             <br />
+             &amp;ie=UTF8&amp;t=h&amp;radius=0.12&amp;split=1&amp;filter=0&amp;rq=1&amp;ev=zi&amp;hq=french+landmarks&amp;hnear=&amp;ll=48.853252,2.349111&amp;spn=0,0.004415
+             <br />
+             &amp;z=18&amp;layer=c&amp;cbll=48.853046,2.348861&amp;panoid=74fLTqeYdgkPYj6KKLlqgQ&amp;cbp=12,63.75,,0,-35.58
+            </p>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        To see what these maps look like, paste the URLs above into a browser. The first
+                two are regular maps zoomed in, while the last is a street view.
+       </p>
+       <p>
+        MapTourSpecific allows the user to choose one of these landmarks from a list and
+                see the corresponding map appear on the phone. You'll need to use the data in the
+                URLs of the maps above to set the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        of the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        . You can either use an entire URL
+                as the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        , or use the latitude and longitude
+                data from a URL, placing it into the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        in the
+                following format:
+       </p>
+       <blockquote>
+        geo:latitude, longitude
+       </blockquote>
+       <p>
+        For instance, you could show the Eiffel Tower map with the following:
+       </p>
+       <blockquote>
+        geo:48.857942,2.294748?t=h&amp;z=19
+       </blockquote>
+       <p>
+        The "t=h" parameter specifies that the map is a hybrid showing both satellite and
+                address views. The "z=19" sets the zoom level. Note that the latitude and longitude
+                numbers come from the "ll" parameter of the URL shown above.
+       </p>
+       <p>
+        You can also place the entire URL of a map into the
+        <span class="ButtonText">
+         ActivityStarter.DataUri
+        </span>
+        property. This technique will be used
+                for the third map (the map of Notre Dame).
+       </p>
+       <h2>
+        Defining the dataUri List
+       </h2>
+       <p>
+        You'll need a list named
+        <span class="ButtonText">
+         dataURIs
+        </span>
+        , one for each of
+                the maps you want to show. Create this list so that the items correspond to the
+                items in the destinations list-- the first
+        <span class="ButtonText">
+         dataURI
+        </span>
+        should correspond to the first destination (Tour Eiffel) and so on. The list should
+                look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="95" src="MapTourAssets/dataURIlist.png" width="934" />
+       </div>
+       <p>
+        The first two items shown are
+        <span class="ButtonText">
+         DataURIs
+        </span>
+        for the
+                Eiffel Tower and the Louvre. They both use the "geo:" prototcol. The third
+        <span class="ButtonText">
+         DataURI
+        </span>
+        is not shown completely as the block is too
+                long for this page. You should copy this URL from the entry for "Notre Dame, Street
+                View" in the table above and place it in a
+        <span class="ButtonText">
+         text
+        </span>
+        block.
+       </p>
+       <h2>
+        Modify the ListPicker.AfterPicking Behavior
+       </h2>
+       <p>
+        In Part I of this tutorial, the
+        <span class="ButtonText">
+         ListPicker.AfterPicking
+        </span>
+        Behavior set the
+        <span class="ButtonText">
+         DataUri
+        </span>
+        to the concatenation of "geo:0,0?q=" and the
+                destination the user chose from the list, e.g., Tour Eiffel. In this second part,
+                the
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        behavior must be more
+                sophisticated. Specifically, when the user chooses one of the items from the
+        <span class="ButtonText">
+         ListPicker,
+        </span>
+        you need to know the
+        <em>
+         index
+        </em>
+        of
+                the choice. You can then use that index to select the correct
+        <span class="ButtonText">
+         DataUri
+        </span>
+        from the dataURIs list.
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("index")
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            this variable will hold the index of the user's choice
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            initialize the index variable to 1
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker1.AfterPicking
+            </span>
+           </td>
+           <td>
+            ListPicker1
+           </td>
+           <td>
+            this event is triggered when the user chooses an item
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set index to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            set this variable to the position of the selected item
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             position in list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            gets the position (index) of a selected item
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ListPicker1.Selection
+            </span>
+           </td>
+           <td>
+            ListPicker1
+           </td>
+           <td>
+            the selected item, e.g., "Tour Eiffel". Plug into the
+            <span class="ButtonText">
+             thing
+            </span>
+            slot of
+            <span class="ButtonText">
+             position in
+                        list
+            </span>
+            .
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global destinations
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug this into the
+            <span class="ButtonText">
+             list
+            </span>
+            slot of
+            <span class="ButtonText">
+             position in list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set ActivityStarter.DataUri
+            </span>
+           </td>
+           <td>
+            ActivityStarter
+           </td>
+           <td>
+            set this before starting activity to open map
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             select list item
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            need to select an item from the
+            <span class="ButtonText">
+             DataURIs
+            </span>
+            list
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global DataURIs
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            the list of
+            <span class="ButtonText">
+             DataURIs
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global index
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            this variable holds the position of the chosen item
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             ActivityStarter.StartActivity
+            </span>
+           </td>
+           <td>
+            ActivityStarter
+           </td>
+           <td>
+            launch the Maps app
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="238" src="MapTourAssets/AfterPickingPt2.png" width="536" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user chooses an item from the
+        <span class="ButtonText">
+         ListPicker,
+        </span>
+        the
+        <span class="ButtonText">
+         AfterPicking
+        </span>
+        event is triggered. The chosen
+                item, e.g., "Tour Eiffel" is in
+        <span class="ButtonText">
+         ListPicker.Selection
+        </span>
+        . The event-handler first uses the
+        <span class="ButtonText">
+         position in list
+        </span>
+        block to find the position of the
+                selected item in the list of destinations. If "Tour Eiffel" is chosen,
+        <span class="ButtonText">
+         index
+        </span>
+        will be 1, if "Musee du Louvre" is chosen,
+        <span class="ButtonText">
+         index
+        </span>
+        will be 2", and if "Cathedrale Notre Dame" is chosen,
+        <span class="ButtonText">
+         index
+        </span>
+        will be 3.
+       </p>
+       <p>
+        The index is then used to select an item from the other list,
+        <span class="ButtonText">
+         dataURIs
+        </span>
+        , and to set that entry as the
+        <span class="ButtonText">
+         ActivityStarter
+        </span>
+        's
+        <span class="ButtonText">
+         DataUri
+        </span>
+        . Once
+                this is set, the map can be launched with
+        <span class="ButtonText">
+         ActivityStarter.StartActivity
+        </span>
+        .
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        On the phone, click the button labeled "Choose
+                Destination". The list picker should appear with the three items. Choose one of the
+                items and see what map appears.
+        <br />
+       </blockquote>
+       <h2>
+        Review
+       </h2>
+       Here are some of the ideas covered in this tutorial:
+       <br />
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component lets the user choose
+                from a list of items. The
+         <span class="ButtonText">
+          Elements
+         </span>
+         property holds
+                the list, the
+         <span class="ButtonText">
+          Selection
+         </span>
+         property holds the selected
+                item, and the
+         <span class="ButtonText">
+          AfterPicking
+         </span>
+         event is triggered when
+                the user chooses. You can also identify the index of the chosen item by calling
+         <span class="ButtonText">
+          position in list
+         </span>
+         to find the position of
+         <span class="ButtonText">
+          Selection
+         </span>
+         in the list.
+         <br />
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          ActivityStarter
+         </span>
+         component allows your app
+                to launch other apps. Maps is one such application-- you can launch it and provide
+                a
+         <span class="ButtonText">
+          DataUri
+         </span>
+         which specifies the specific map to open.
+                That
+         <span class="ButtonText">
+          DataUr
+         </span>
+         i can be the URL of a specific map, or
+                it can be a query for specific search terms.
+         <br />
+        </li>
+       </ul>
+       <h2>
+        Scan the Sample App to your Phone
+       </h2>
+       <p>
+        Scan the following barcode onto your phone to install and run the sample app.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="MapTourAssets/barcode2.png" />
+       </div>
+       <div>
+        <h2>
+         Download Source Code
+        </h2>
+        If you'd like to work with this sample in App Inventor, download the
+        <a href="MapTourAssets/MapTourSpecific.zip">
+         source code
+        </a>
+        to your computer, then open App
+              Inventor, go to the
+        <span class="ButtonText">
+         My Projects
+        </span>
+        page, and choose
+        <span class="ButtonText">
+         More Actions | Upload Source
+        </span>
+        .
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

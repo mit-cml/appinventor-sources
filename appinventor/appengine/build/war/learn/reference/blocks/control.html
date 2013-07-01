@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Control Blocks - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Control             Blocks &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Control Blocks
+       </h1>
+       <ul>
+        <li>
+         <a href="#if">
+          if
+         </a>
+        </li>
+        <li>
+         <a href="#ifelse">
+          ifelse
+         </a>
+        </li>
+        <li>
+         <a href="#choose">
+          choose
+         </a>
+        </li>
+        <li>
+         <a href="#foreach">
+          foreach
+         </a>
+        </li>
+        <li>
+         <a href="#forrange">
+          for range
+         </a>
+        </li>
+        <li>
+         <a href="#while">
+          while
+         </a>
+        </li>
+        <li>
+         <a href="#getstarttext">
+          get start text
+         </a>
+        </li>
+        <li>
+         <a href="#closescreen">
+          close screen
+         </a>
+        </li>
+        <li>
+         <a href="#closescreenwithresult">
+          close screen with result
+         </a>
+        </li>
+       </ul>
+       <h2 id="if">
+        if
+       </h2>
+       <img alt="" src="images/if.png" />
+       <p>
+        Tests a given condition. If the condition is true, performs the actions in a given
+                sequence of blocks; otherwise, the blocks are ignored.
+       </p>
+       <h2 id="ifelse">
+        ifelse
+       </h2>
+       <img alt="" src="images/ifelse.png" />
+       <p>
+        Tests a given condition. If the result is true, performs the actions in the
+        <code>
+         then-do
+        </code>
+        sequence of blocks; otherwise, performs the actions in the
+        <code>
+         else-do
+        </code>
+        sequence of blocks.
+       </p>
+       <h2 id="choose">
+        choose
+       </h2>
+       <img alt="" src="images/choose.png" />
+       <p>
+        Tests a given condition. If the condition is true, performs the actions in the
+        <code>
+         then-do
+        </code>
+        sequence of blocks and returns the
+        <code>
+         then-return
+        </code>
+        value; otherwise, performs the actions in the
+        <code>
+         else-do
+        </code>
+        sequence of
+                blocks and returns the
+        <code>
+         else-return
+        </code>
+        value.
+       </p>
+       <h2 id="foreach">
+        foreach
+       </h2>
+       <img alt="" src="images/foreach.png" />
+       <p>
+        Runs the blocks in the
+        <code>
+         do
+        </code>
+        section for each item in the list
+        <code>
+         in
+                list
+        </code>
+        . Use the given variable name to refer to the current list item.
+       </p>
+       <h2 id="forrange">
+        for range
+       </h2>
+       <p>
+        Runs the block in the
+        <code>
+         do
+        </code>
+        section for each numeric value in the range
+                from start to end, stepping the value each time. Use the given variable name to
+                refer to the current value.
+       </p>
+       <h2 id="while">
+        while
+       </h2>
+       <img alt="" src="images/while.png" />
+       <p>
+        Tests the
+        <code>
+         test
+        </code>
+        condition. If true, performs the action given in
+        <code>
+         do
+        </code>
+        , then tests again. When
+        <code>
+         test
+        </code>
+        is false, the block ends.
+       </p>
+       <h2 id="getstarttext">
+        get start text
+       </h2>
+       <img alt="" src="images/getstarttext.png" />
+       <p>
+        Returns the text passed to this app when the app was started, if any.
+       </p>
+       <h2 id="closescreen">
+        close screen
+       </h2>
+       <img alt="" src="images/closescreen.png" />
+       <p>
+        Closes the app.
+       </p>
+       <h2 id="closescreenwithresult">
+        close screen with result
+       </h2>
+       <img alt="" src="images/closescreenwithresult.png" />
+       <p>
+        Closes the app and sets the variable APP_INVENTOR_RESULT to the given value.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

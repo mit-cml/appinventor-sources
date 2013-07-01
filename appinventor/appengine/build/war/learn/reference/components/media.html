@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Media Components - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   img.c3 {border-width:0}
+    code.c2 {font-style: italic}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Media             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Media Components
+       </h1>
+       <ul>
+        <li>
+         <a href="#Camcorder">
+          Camcorder
+         </a>
+        </li>
+        <li>
+         <a href="#Camera">
+          Camera
+         </a>
+        </li>
+        <li>
+         <a href="#ImagePicker">
+          ImagePicker
+         </a>
+        </li>
+        <li>
+         <a href="#Player">
+          Player
+         </a>
+        </li>
+        <li>
+         <a href="#Sound">
+          Sound
+         </a>
+        </li>
+        <li>
+         <a href="#VideoPlayer">
+          VideoPlayer
+         </a>
+        </li>
+       </ul>
+       <h2 id="Camcorder">
+        Camcorder
+       </h2>
+       <img alt="" src="images/camcorder.png" />
+       <p>
+	A component to record a video using the device's camcorder.After the video is recorded, the name of the file on the phone containing the   			clip is available as an argument to the AfterRecording event. The file name can be used, for example, to set the source property of a 			VideoPlayer component.
+	</p>
+	<h3>
+	Properties
+	</h3>
+	none
+	<h3>
+	Events
+	</h3>
+	<dl>
+  	<dt>
+	<code>
+	AfterRecording(text clip)
+	</code>
+	</dt>
+  	<dd>
+	Indicates that a video was recorded with the camera and provides the path to
+ 	the stored picture.
+	</dd>
+	</dl>
+	<h3>
+	Methods
+	</h3>
+	<dl>
+  	<dt>
+	<code>
+	RecordVideo()
+	</code>
+	</dt>
+  	<dd>
+	Records a video, then raises the AfterRecoding event.
+	</dd>
+	</dl>
+       <h2 id="Camera">
+        Camera
+       </h2>
+       <img alt="" src="images/camera.png" />
+       <p>
+        Use a camera component to take a picture on the phone.
+       </p>
+       <p>
+        Camera is a non-visible component that takes a picture using the device's camera.
+                After the picture is taken, the path to the file on the phone containing the
+                picture is available as an argument to the AfterPicture event. The path can be
+                used, for example, as the Picture property of an Image component.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       none
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          TakePicture()
+         </code>
+        </dt>
+        <dd>
+         Opens the phone's camera to allow a picture to be taken.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          AfterPicture(Text image)
+         </code>
+        </dt>
+        <dd>
+         Called after the picture is taken. The text argument
+         <code>
+          image
+         </code>
+         is the
+                  path that can be used to locate the image on the phone.
+        </dd>
+       </dl>
+       <h2 id="ImagePicker">
+        ImagePicker
+       </h2>
+       <img alt="" src="images/imagepicker.png" />
+       <p>
+        Use an image picker component to choose an image from your image gallery.
+       </p>
+       <p>
+        An image picker is a kind of button. When the user taps an image picker, the
+                device's image gallery appears, and the user can choose an image. After the user
+                picks an image, the property
+        <code>
+         ImagePath
+        </code>
+        is set to a text string that
+                represents that image. You can then use that result, for example, to set the image
+                of a button.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code class="c2">
+          ImagePath
+         </code>
+        </dt>
+        <dd>
+         The image the user chose, represented as a text string that gives the location of
+                  the images.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If true, image picker can be used.
+        </dd>
+        <dt>
+         <code>
+          BackgroundColor
+         </code>
+        </dt>
+        <dd>
+         Color for image picker background.
+        </dd>
+        <dt>
+         <code>
+          Enabled
+         </code>
+        </dt>
+        <dd>
+         If set, user can tap image picker to cause action.
+        </dd>
+        <dt>
+         <code>
+          FontBold
+         </code>
+        </dt>
+        <dd>
+         If set, image picker button text is displayed in bold.
+        </dd>
+        <dt>
+         <code>
+          FontItalic
+         </code>
+        </dt>
+        <dd>
+         If set, image picker button text is displayed in italics.
+        </dd>
+        <dt>
+         <code>
+          FontSize
+         </code>
+        </dt>
+        <dd>
+         Point size for image picker button text.
+        </dd>
+        <dt>
+         <code>
+          FontTypeface
+         </code>
+        </dt>
+        <dd>
+         Font family for image picker button text.
+        </dd>
+        <dt>
+         <code>
+          Height
+         </code>
+        </dt>
+        <dd>
+         image picker button height (y-size).
+        </dd>
+        <dt>
+         <code>
+          Width
+         </code>
+        </dt>
+        <dd>
+         image picker button width (x-size).
+        </dd>
+        <dt>
+         <code>
+          Image
+         </code>
+        </dt>
+        <dd>
+         Image to display on image picker button.
+        </dd>
+        <dt>
+         <code>
+          Text
+         </code>
+        </dt>
+        <dd>
+         Text to display on image picker button.
+        </dd>
+        <dt>
+         <code>
+          TextAlignment
+         </code>
+        </dt>
+        <dd>
+         Left, center, or right.
+        </dd>
+        <dt>
+         <code>
+          TextColor
+         </code>
+        </dt>
+        <dd>
+         Color for image picker button text.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          AfterPicking()
+         </code>
+        </dt>
+        <dd>
+         User selected an item from the image picker.
+        </dd>
+        <dt>
+         <code>
+          BeforePicking()
+         </code>
+        </dt>
+        <dd>
+         User has tapped the image picker but hasn't yet selected an item.
+        </dd>
+        <dt>
+         <code>
+          GotFocus()
+         </code>
+        </dt>
+        <dd>
+         Image picker became the focused component.
+        </dd>
+        <dt>
+         <code>
+          LostFocus()
+         </code>
+        </dt>
+        <dd>
+         Image picker is no longer the focused component.
+        </dd>
+       </dl>
+       <h2 id="Player">
+        Player
+       </h2>
+       <img alt="" src="images/player.png" />
+       <p>
+        Use a player component to play an audio or video file, or to vibrate the phone.
+       </p>
+       <p>
+        Player is a non-visible component that plays audio or video and controls phone
+                vibration. The name of a media file is specified in the
+        <code>
+         Source
+        </code>
+        property, which can be set in the Designer or in the Blocks Editor. To use a Player for
+        		streaming, set the
+        <code>
+         Source
+        </code>
+        inside the Blocks Editor to a text block with the URL. The length of
+                time for a vibration is specified in the Blocks Editor in milliseconds (thousandths
+                of a second). The volume should be an integer between 0 and 100.
+       </p>
+       <p>
+        See
+        <a href="http://developer.android.com/guide/appendix/media-formats.html">
+         Android Supported
+                Media Formats
+        </a>
+        for more information on which types of files you can use.
+       </p>
+       <p>
+        Use a player component for playing long sound files, video files, and vibrating the
+                phone. For playing short sound files, such as sound effects, use a
+        <code>
+         Sound
+        </code>
+        component instead.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          IsLooping
+         </code>
+        </dt>
+        <dd>
+         If set, the media is looping.
+        </dd>
+        <dt>
+         <code>
+          IsPlaying
+         </code>
+        </dt>
+        <dd>
+         Whether the media is playing.
+        </dd>
+        <dt>
+         <code>
+          Source
+         </code>
+        </dt>
+        <dd>
+         Audio or video file associated with this player.
+        </dd>
+        <dt>
+         <code>
+          Volume
+         </code>
+        </dt>
+        <dd>
+         A number between 0 and 100.
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Pause()
+         </code>
+        </dt>
+        <dd>
+         Pauses playing the audio or video file.
+        </dd>
+        <dt>
+         <code>
+          Start()
+         </code>
+        </dt>
+        <dd>
+         Starts playing the audio or video file.
+        </dd>
+        <dt>
+         <code>
+          Stop()
+         </code>
+        </dt>
+        <dd>
+         Stops playing the audio or video file.
+        </dd>
+        <dt>
+         <code>
+          Vibrate(number milliseconds)
+         </code>
+        </dt>
+        <dd>
+         Activate the phone's vibration motor for the given number of milliseconds.
+        </dd>
+       </dl>
+       <h3>
+        Events
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Completed()
+         </code>
+        </dt>
+        <dd>
+         Media has finished playing.
+        </dd>
+       </dl>
+       <h2 id="Sound">
+        Sound
+       </h2>
+       <img alt="" src="images/sound.png" />
+       <p>
+        Use a sound component to play an audio file, or to vibrate the phone.
+       </p>
+       <p>
+        Sound is a non-visible component that plays sound files and vibrates for the number
+                of milliseconds (thousandths of a second) specified in the Blocks Editor. The name
+                of the sound file to play can be specified either in the Designer or in the Blocks
+                Editor.
+       </p>
+       <p>
+        See
+        <a href="http://developer.android.com/guide/appendix/media-formats.html">
+         Android Supported
+                Media Formats
+        </a>
+        for more information on which types of files you can use.
+       </p>
+       <p>
+        This component is best for short sound files, such as sound effects, while the
+        <code>
+         Player
+        </code>
+        component is more efficient for longer sounds, such as songs.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Source
+         </code>
+        </dt>
+        <dd>
+         Audio file associated with this sound.
+        </dd>
+        <dt>
+         <code>
+          MinimumInterval
+         </code>
+        </dt>
+        <dd>
+         Minimum time before sound is repeated.
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Pause()
+         </code>
+        </dt>
+        <dd>
+         Pauses playing the audio file.
+        </dd>
+        <dt>
+         <code>
+          Play()
+         </code>
+        </dt>
+        <dd>
+         Starts playing the audio file.
+        </dd>
+        <dt>
+         <code>
+          Resume()
+         </code>
+        </dt>
+        <dd>
+         Resumes playing a paused audio file.
+        </dd>
+        <dt>
+         <code>
+          Stop()
+         </code>
+        </dt>
+        <dd>
+         Stops playing the audio file.
+        </dd>
+        <dt>
+         <code>
+          Vibrate(number millisecs)
+         </code>
+        </dt>
+        <dd>
+         Activate the phone's vibration motor for the given number of milliseconds.
+        </dd>
+       </dl>
+       <h2 id="VideoPlayer">
+        VideoPlayer
+       </h2>
+       <img alt="" src="images/videoplayer.png" />
+       <p>
+        Use a VideoPlayer component to play a video file.
+       </p>
+       <p>
+        Video player is a media component that plays videos. A video player appears in your
+                app as a rectangle. If the user taps the rectangle, media controls appear:
+                play/pause, skip ahead, and skip backward. Your app can control playback behavior
+                by calling the
+        <code>
+         Start
+        </code>
+        ,
+        <code>
+         Pause
+        </code>
+        , and
+        <code>
+         SeekTo
+        </code>
+        methods.
+       </p>
+       <p>
+        Video files should be in Windows Media Video (.wmv), 3GPP (.3gp), or MPEG-4 (.mp4)
+                format. For more details about formats, see
+        <a href="http://developer.android.com/guide/appendix/media-formats.html">
+         Android Supported
+                Media Formats
+        </a>
+        .
+       </p>
+       <p>
+        App Inventor accepts video files up to 1 MB in size and limits the total size of an
+                app to 5 MB, not all of which is available for media files. If your media files are
+                too large, you might get errors when packaging or installing your app, in which
+                case you should reduce the number of media files or their sizes. Video editing
+                software, such as Windows Movie Maker or Apple iMovie, can help you decrease the
+                size of videos by shortening them or re-encoding them into more compact formats.
+       </p>
+       <h3>
+        Properties
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Source
+         </code>
+        </dt>
+        <dd>
+         Video file associated with this player.
+        </dd>
+        <dt>
+         <code>
+          Visible
+         </code>
+        </dt>
+        <dd>
+         If set, VideoPlayer is visible.
+        </dd>
+       </dl>
+       <h3>
+        Methods
+       </h3>
+       <dl>
+        <dt>
+         <code>
+          Pause()
+         </code>
+        </dt>
+        <dd>
+         Pauses playing the video file.
+        </dd>
+        <dt>
+         <code>
+          Start()
+         </code>
+        </dt>
+        <dd>
+         Starts playing the video file.
+        </dd>
+        <dt>
+         <code>
+          SeekTo(number millisecs)
+         </code>
+        </dt>
+        <dd>
+         Seeks to the requested time (specified in milliseconds) in the video.
+        </dd>
+        <dt>
+         <code>
+          GetDuration()
+         </code>
+        </dt>
+        <dd>
+         Returns the duration of the video in milliseconds.
+        </dd>
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
+

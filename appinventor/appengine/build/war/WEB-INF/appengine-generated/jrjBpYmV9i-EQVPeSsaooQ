@@ -1,0 +1,262 @@
+<!DOCTYPE YACodeBlocks SYSTEM "support/save_format.dtd">
+<YACodeBlocks ya-version="76" lang-version="17">
+<Pages><Page page-name=" " page-color="237 245 211" page-width="1423" page-height="2090" page-drawer="My Definitions" >
+<PageBlocks>
+<Block id="4113" genus-name="Screen-DeviceButtonPressed" has-focus="yes" >
+<Location><X>51</X><Y>26</Y></Location>
+<Label>Screen1.DeviceButtonPressed</Label>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="keyCode" position-type="single" con-block-id="4117" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="do" is-indented="yes" position-type="single" con-block-id="4127" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4127" genus-name="if" >
+<Location><X>109</X><Y>62</Y></Location>
+<Label>if</Label>
+<BeforeBlockId>4113</BeforeBlockId>
+<AfterBlockId>4141</AfterBlockId>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="test" position-type="single" con-block-id="4129" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="then-do" is-indented="yes" position-type="single" con-block-id="4125" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4141" genus-name="if" >
+<Location><X>109</X><Y>157</Y></Location>
+<Label>if</Label>
+<BeforeBlockId>4127</BeforeBlockId>
+<AfterBlockId>4155</AfterBlockId>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="test" position-type="single" con-block-id="4143" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="then-do" is-indented="yes" position-type="single" con-block-id="4149" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4155" genus-name="if" >
+<Location><X>109</X><Y>252</Y></Location>
+<Label>if</Label>
+<BeforeBlockId>4141</BeforeBlockId>
+<AfterBlockId>4169</AfterBlockId>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="test" position-type="single" con-block-id="4157" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="then-do" is-indented="yes" position-type="single" con-block-id="4163" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4169" genus-name="if" >
+<Location><X>109</X><Y>347</Y></Location>
+<Label>if</Label>
+<BeforeBlockId>4155</BeforeBlockId>
+<AfterBlockId>4123</AfterBlockId>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="test" position-type="single" con-block-id="4171" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="cmd" init-type="cmd" label="then-do" is-indented="yes" position-type="single" con-block-id="4177" ></BlockConnector>
+</Sockets>
+</Block>
+<BlockStub><StubParentName>Button_Test.Text</StubParentName><StubParentGenus>read-write-property</StubParentGenus><Block id="4123" genus-name="componentSetter" >
+<Location><X>109</X><Y>442</Y></Location>
+<Label>Button_Test.Text</Label>
+<BeforeBlockId>4169</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="4121" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>keyCode</StubParentName><StubParentGenus>argument</StubParentGenus><Block id="4121" genus-name="getter" >
+<Location><X>267</X><Y>445</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4123" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Image1.Animation</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="4177" genus-name="componentSetter" >
+<Location><X>161</X><Y>391</Y></Location>
+<Label>Image1.Animation</Label>
+<BeforeBlockId>4169</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="4179" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="4179" genus-name="imageanimation-scrollrightfast" >
+<Location><X>323</X><Y>394</Y></Location>
+<Label>ScrollRightFast</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4177" ></BlockConnector></Plug>
+</Block>
+<Block id="4171" genus-name="yail-equal" >
+<Location><X>191</X><Y>350</Y></Location>
+<Label>=</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4169" ></BlockConnector></Plug>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4173" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4175" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4175" genus-name="number" >
+<Location><X>364</X><Y>357</Y></Location>
+<Label>25</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4171" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>keyCode</StubParentName><StubParentGenus>argument</StubParentGenus><Block id="4173" genus-name="getter" >
+<Location><X>201</X><Y>357</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4171" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Image1.Animation</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="4163" genus-name="componentSetter" >
+<Location><X>161</X><Y>296</Y></Location>
+<Label>Image1.Animation</Label>
+<BeforeBlockId>4155</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="4165" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="4165" genus-name="imageanimation-scrollrightslow" >
+<Location><X>323</X><Y>299</Y></Location>
+<Label>ScrollRightSlow</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4163" ></BlockConnector></Plug>
+</Block>
+<Block id="4157" genus-name="yail-equal" >
+<Location><X>191</X><Y>255</Y></Location>
+<Label>=</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4155" ></BlockConnector></Plug>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4159" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4161" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4161" genus-name="number" >
+<Location><X>364</X><Y>262</Y></Location>
+<Label>24</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4157" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>keyCode</StubParentName><StubParentGenus>argument</StubParentGenus><Block id="4159" genus-name="getter" >
+<Location><X>201</X><Y>262</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4157" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Image1.Animation</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="4149" genus-name="componentSetter" >
+<Location><X>161</X><Y>201</Y></Location>
+<Label>Image1.Animation</Label>
+<BeforeBlockId>4141</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="4151" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="4151" genus-name="imageanimation-scrollleftfast" >
+<Location><X>323</X><Y>204</Y></Location>
+<Label>ScrollLeftFast</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4149" ></BlockConnector></Plug>
+</Block>
+<Block id="4143" genus-name="yail-equal" >
+<Location><X>191</X><Y>160</Y></Location>
+<Label>=</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4141" ></BlockConnector></Plug>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4145" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4147" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4147" genus-name="number" >
+<Location><X>364</X><Y>167</Y></Location>
+<Label>4</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4143" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>keyCode</StubParentName><StubParentGenus>argument</StubParentGenus><Block id="4145" genus-name="getter" >
+<Location><X>201</X><Y>167</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4143" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<BlockStub><StubParentName>Image1.Animation</StubParentName><StubParentGenus>write-only-property</StubParentGenus><Block id="4125" genus-name="componentSetter" >
+<Location><X>161</X><Y>106</Y></Location>
+<Label>Image1.Animation</Label>
+<BeforeBlockId>4127</BeforeBlockId>
+<Sockets num-sockets="1" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="to" position-type="single" con-block-id="4137" ></BlockConnector>
+</Sockets>
+</Block>
+</BlockStub>
+<Block id="4137" genus-name="imageanimation-scrollleftslow" >
+<Location><X>323</X><Y>109</Y></Location>
+<Label>ScrollLeftSlow</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4125" ></BlockConnector></Plug>
+</Block>
+<Block id="4129" genus-name="yail-equal" >
+<Location><X>191</X><Y>65</Y></Location>
+<Label>=</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4127" ></BlockConnector></Plug>
+<Sockets num-sockets="2" >
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4133" ></BlockConnector>
+<BlockConnector connector-kind="socket" connector-type="poly" init-type="poly" label="" position-type="bottom" con-block-id="4135" ></BlockConnector>
+</Sockets>
+</Block>
+<Block id="4135" genus-name="number" >
+<Location><X>364</X><Y>72</Y></Location>
+<Label>82</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4129" ></BlockConnector></Plug>
+</Block>
+<BlockStub><StubParentName>keyCode</StubParentName><StubParentGenus>argument</StubParentGenus><Block id="4133" genus-name="getter" >
+<Location><X>201</X><Y>72</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4129" ></BlockConnector></Plug>
+</Block>
+</BlockStub>
+<Block id="4117" genus-name="argument" >
+<Location><X>331</X><Y>29</Y></Location>
+<Label>keyCode</Label>
+<Plug><BlockConnector connector-kind="plug" connector-type="poly" init-type="poly" label="" position-type="single" con-block-id="4113" ></BlockConnector></Plug>
+</Block>
+</PageBlocks>
+</Page>
+
+</Pages><YoungAndroidMaps><YoungAndroidUuidMap>
+<YoungAndroidUuidEntry uuid="-780557252" component-id="BTN_fontstyle5" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-200049853" component-id="HorizontalArrangement3" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-259679544" component-id="LBL2" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="906379847" component-id="BTN_fontstyle1" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1156970978" component-id="TextBox_Test" component-genus="TextBox" component-version="4" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="60981482" component-id="Label23" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="2109722679" component-id="LBL_test" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-877480586" component-id="BTN_fontstyle6" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1771189047" component-id="Button_Test" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-439441678" component-id="PanelH_titlebar" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="0" component-id="Screen1" component-genus="Form" component-version="0" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-431617315" component-id="HorizontalArrangement14" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1777031138" component-id="HorizontalArrangement12" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="281006630" component-id="HorizontalArrangement9" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="246942023" component-id="HorizontalArrangement1" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-943752485" component-id="Label30" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1428755922" component-id="BTN_fontstyle4" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="669277482" component-id="VerticalArrangement4" component-genus="VerticalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="929758600" component-id="Label20" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1290279648" component-id="Label38" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1188597699" component-id="BTN_fontstyle2" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-417154803" component-id="Label14" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1011793992" component-id="PanelH_SplashScreen" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-786384853" component-id="Label35" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-432093434" component-id="PanelV_player_controls" component-genus="VerticalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1039915794" component-id="BTN_moredemos" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-750490147" component-id="BTN_about" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1776889624" component-id="Image1" component-genus="Image" component-version="1" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="724695572" component-id="BTN_fontstyle7" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1938471358" component-id="Label34" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="217566233" component-id="VerticalArrangement2" component-genus="VerticalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1456003406" component-id="VerticalArrangement5" component-genus="VerticalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1947725678" component-id="Label24" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-217546146" component-id="LBL1" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1792678357" component-id="PanelV_SplashScreen" component-genus="VerticalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1621764270" component-id="ActivityStarter1" component-genus="ActivityStarter" component-version="4" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1358298478" component-id="Label13" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1681196950" component-id="HorizontalArrangement11" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1103731292" component-id="Label22" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1098039988" component-id="Label5" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-357040655" component-id="Label21" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-1500285024" component-id="BTN_fontstyle3" component-genus="Button" component-version="5" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="1427332936" component-id="Label39" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-604997393" component-id="HorizontalArrangement15" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="956167171" component-id="HorizontalArrangement10" component-genus="HorizontalArrangement" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-2008321524" component-id="Label16" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+<YoungAndroidUuidEntry uuid="-647581503" component-id="LBL3" component-genus="Label" component-version="2" ></YoungAndroidUuidEntry>
+</YoungAndroidUuidMap>
+</YoungAndroidMaps>
+</YACodeBlocks>

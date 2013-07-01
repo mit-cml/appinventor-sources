@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   MoleMash - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c5 {border-width:0}
+    li.c4 {list-style: none; display: inline}
+    li.c3 {list-style: none}
+    img.c2 {padding: 10px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt;             MoleMash &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        MoleMash
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+        <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch3MoleMash.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+       <img align="right" alt="" class="c2" src="MoleMashAssets/MoleOnEmulator.png" width="300" />
+       <p>
+        In the game MoleMash, a mole pops up at random positions on a playing field, and
+                the player scores points by hitting the mole before it jumps away. This tutorial
+                shows how to build MoleMash as an example of a simple game that uses animation.
+       </p>
+       The tutorial assumes that you have completed the
+       <a href="/learn/tutorials/hellopurr/hellopurr-part1.html">
+        <em>
+         HelloPurr
+        </em>
+       </a>
+       and
+       <a href="/learn/tutorials/paintpot/paintpot-part1.html">
+        <em>
+         PaintPot
+        </em>
+       </a>
+       tutorials.
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it MoleMash, and
+                also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to MoleMash. Open the
+                Blocks Editor and connect to the phone.
+       </p>
+       Also download this
+       <a href="MoleMashAssets/mole.png">
+        picture of a mole
+       </a>
+       and
+              save it on your computer.
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the game so that the mole moves once every half-second. If it is
+                touched, the score increases by one, and the phone vibrates. Pressing restart
+                resets the score to zero.
+       </p>
+       <p>
+        This tutorial introduces:
+       </p>
+       <ul>
+        <li>
+         image sprites
+        </li>
+        <li>
+         timers and the
+         <span class="ButtonText">
+          Clock
+         </span>
+         component
+        </li>
+        <li>
+         procedures
+        </li>
+        <li>
+         picking random numbers between 0 and 1
+        </li>
+        <li>
+         text blocks
+        </li>
+        <li>
+         typeblocking
+        </li>
+       </ul>
+       <h2>
+        The first components
+       </h2>
+       <p>
+        Several components should be familiar from previous tutorials:
+       </p>
+       <ul>
+        <li>
+         A
+         <span class="ButtonText">
+          Canvas
+         </span>
+         named
+         <span class="ButtonText">
+          MyCanvas
+         </span>
+         . This is the area where the mole moves.
+        </li>
+        <li>
+         A
+         <span class="ButtonText">
+          Label
+         </span>
+         named
+         <span class="ButtonText">
+          ScoreLabel
+         </span>
+         that shows the score, i.e., the number of times the
+                player has hit the mole.
+        </li>
+        <li>
+         A
+         <span class="ButtonText">
+          Button
+         </span>
+         named
+         <span class="ButtonText">
+          ResetButton
+         </span>
+        </li>
+       </ul>
+       Drag these components from the
+       <span class="ButtonText">
+        Palette
+       </span>
+       onto the
+       <span class="ButtonText">
+        Viewer
+       </span>
+       and assign their names. Put
+       <span class="ButtonText">
+        MyCanvas
+       </span>
+       on top and set its dimensions to 300 pixels wide by 300
+              pixels high. Set the
+       <span class="ButtonText">
+        Text
+       </span>
+       of
+       <span class="ButtonText">
+        ScoreLabel
+       </span>
+       to
+       <span class="ButtonText">
+        Score: ---
+       </span>
+       . Set the
+       <span class="ButtonText">
+        Text
+       </span>
+       of
+       <span class="ButtonText">
+        ResetButton
+       </span>
+       to
+       <span class="ButtonText">
+        Reset
+       </span>
+       . Also add a
+       <span class="ButtonText">
+        Sound
+       </span>
+       component and name it
+       <span class="ButtonText">
+        Noise
+       </span>
+       . You'll use
+       <span class="ButtonText">
+        Noise
+       </span>
+       to make
+              the phone vibrate when the mole is hit, similar to the way you made the kitty purr in
+       <span class="ButtonText">
+        HelloPurr
+       </span>
+       .
+       <h2>
+        Timers and the
+        <span class="ButtonText">
+         Clock
+        </span>
+        component
+       </h2>
+       <p>
+        You need to arrange for the mole to jump periodically, and you'll do this with the
+                aid of a
+        <span class="ButtonText">
+         Clock
+        </span>
+       </p>
+       component. The
+       <span class="ButtonText">
+        Clock
+       </span>
+       component provides various
+              operations dealing with time, like telling you what the date is. Here, you'll use the
+              component as a timer that fires at regular internals. The firing interval is
+              determined by the
+       <span class="ButtonText">
+        Clock
+       </span>
+       's
+       <span class="ButtonText">
+        TimerInterval
+       </span>
+       property. Drag out a
+       <span class="ButtonText">
+        Clock
+       </span>
+       component; it will go into the non-visible components area.
+              Name it
+       <span class="ButtonText">
+        MoleTimer
+       </span>
+       . Set its
+       <span class="ButtonText">
+        TimeInterval
+       </span>
+       to 500 milliseconds to make the mole move every half
+              second. Make sure that
+       <span class="ButtonText">
+        Enabled
+       </span>
+       is checked.
+       <h2>
+        Adding an Image Sprite
+       </h2>
+       <p>
+        To add the moving mole we'll use a
+        <em>
+         sprite
+        </em>
+        .
+       </p>
+       Sprites are images that can move on the screen within a
+       <span class="ButtonText">
+        Canvas
+       </span>
+       . Each sprite has a speed and a heading, and also an
+              interval that determines how often the sprite moves at its designated speed. Sprites
+              can also detect when they are touched. In
+       <span class="ButtonText">
+        MoleMash
+       </span>
+       ,
+              the mole has a speed zero, so it won't move by itself. Instead, you'll be setting the
+              mole's position each time the timer fires. Drag an
+       <span class="ButtonText">
+        ImageSprite
+       </span>
+       component onto the
+       <span class="ButtonText">
+        Viewer
+       </span>
+       . You'll find this component in the
+       <span class="ButtonText">
+        Animation
+       </span>
+       category of the
+       <span class="ButtonText">
+        Palette
+       </span>
+       . Place it within
+       <span class="ButtonText">
+        MyCanvas
+       </span>
+       area. Set these properties for the
+       <span class="ButtonText">
+        Mole
+       </span>
+       sprite:
+       <ul>
+        <li>
+         <span class="ButtonText">
+          Picture
+         </span>
+         : Use mole.png, which you downloaded to
+                  your computer at the beginning of this tutorial.
+        </li>
+        <li>
+         <span class="ButtonText">
+          Enabled
+         </span>
+         : checked
+        </li>
+        <li>
+         <span class="ButtonText">
+          Interval
+         </span>
+         : 500
+        </li>
+        <li class="c3">
+         The interval doesn't matter here, because the mole's speed is zero:
+                it's not moving by itself.
+        </li>
+        <li>
+         <span class="ButtonText">
+          Heading
+         </span>
+         : 0 The heading doesn't matter here
+                  either, because the speed is 0.
+        </li>
+        <li>
+         <span class="ButtonText">
+          Speed
+         </span>
+         : 0.0
+        </li>
+        <li>
+         <span class="ButtonText">
+          Visible
+         </span>
+         : checked
+        </li>
+        <li>
+         <span class="ButtonText">
+          Width
+         </span>
+         : Automatic
+        </li>
+        <li>
+         <span class="ButtonText">
+          Height
+         </span>
+         : Automatic
+        </li>
+       </ul>
+       You should see the
+       <span class="ButtonText">
+        X
+       </span>
+       and
+       <span class="ButtonText">
+        Y
+       </span>
+       properties already filled in. They were determined by where you
+              placed the mole when you dragged it onto
+       <span class="ButtonText">
+        MyCanvas
+       </span>
+       . Go
+              ahead and drag the mole some more. You should see
+       <span class="ButtonText">
+        X
+       </span>
+       and
+       <span class="ButtonText">
+        Y
+       </span>
+       change. You should also see the mole on your
+              connected phone, and the mole moving around on the phone you drag it around in the
+       <span class="ButtonText">
+        Designer
+       </span>
+       . You've now specified all the components.
+              The
+       <span class="ButtonText">
+        Designer
+       </span>
+       should look like this. Notice how
+       <span class="ButtonText">
+        Mole
+       </span>
+       is indented under
+       <span class="ButtonText">
+        MyCanvas
+       </span>
+       in the component structure list, indicating that the
+              sprite is a sub-component of the canvas.
+       <div class="imagecontainer">
+        <img alt="" src="MoleMashAssets/MoleMashDesigner.png" width="800" />
+       </div>
+       <h2>
+        Component Behavior and Event Handlers
+       </h2>
+       <p>
+        Now you'll specify the component behavior. This introduces some new App Inventor
+                ideas. The first is the idea of a
+        <em>
+         procedure
+        </em>
+        .
+       </p>
+       A procedure is a sequence of statements that you can refer to all at once as
+              single command. If you have a sequence that you need to use more than once in a
+              program, you can define that as a procedure, and then you don't have to repeat the
+              sequence each time you use it. Procedures in App Inventor can take arguments and
+              return values. This tutorial covers only the simplest case: procedures that take no
+              arguments and return no values.
+       <h2>
+        Define Procedures
+       </h2>
+       <p>
+        Define two procedures:
+       </p>
+       <ul>
+        <li>
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         moves the Mole sprite to a new random
+                  position on the canvas.
+        </li>
+        <li>
+         <span class="ButtonText">
+          UpdateScore
+         </span>
+         shows the score, by changing the text
+                  of the
+         <span class="ButtonText">
+          ScoreLabel
+         </span>
+        </li>
+       </ul>
+       Start with
+       <span class="ButtonText">
+        MoveMole
+       </span>
+       :
+       <ul>
+        <li>
+         In the Blocks Editor, under
+         <span class="ButtonText">
+          Built-In
+         </span>
+         , open the
+         <span class="ButtonText">
+          Definition
+         </span>
+         drawer. Drag out a
+         <span class="Block">
+          to procedure
+         </span>
+         block and change the label
+         <span class="ButtonText">
+          procedure
+         </span>
+         to
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         .
+         <blockquote class="notice">
+          Note: There are two similar blocks:
+          <span class="ButtonText">
+           procedure
+          </span>
+          and
+          <span class="ButtonText">
+           procedureWithResult
+          </span>
+          . Here you should use
+          <span class="ButtonText">
+           procedure
+          </span>
+          .
+         </blockquote>
+         The
+         <span class="Block">
+          to MoveMole
+         </span>
+         block has a slot labeled
+         <span class="ButtonText">
+          do
+         </span>
+         . That's where you put the statements for the
+                  procedure. In this case there will be two statements: one to set the mole's
+         <em>
+          x
+         </em>
+         position and one to set its
+         <em>
+          y
+         </em>
+         position. In each case, you'll
+                  set the position to be a random fraction, between 0 and 1, of the difference
+                  between the size of the canvas and the size of the mole. You create that value
+                  using blocks for
+         <span class="ButtonText">
+          random
+         </span>
+         -fraction and
+                  multiplication and subtraction. You can find these in the
+         <span class="ButtonText">
+          Math
+         </span>
+         drawer.
+        </li>
+        <li>
+         Build the
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         procedure. The completed
+                definition should look like this:
+         <div class="imagecontainer">
+          <img alt="" height="170" src="MoleMashAssets/MoveMole.png" width="645" />
+         </div>
+         Leave the
+         <span class="ButtonText">
+          arg
+         </span>
+         socket for
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         empty because
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         does not take any arguments. Observe how the blocks
+                  connect together: The first statement uses the
+         <span class="Block">
+          Mole.X
+                  gets
+         </span>
+         block to set mole's horizontal position. The value plugged into the
+                  block's socket is the result of multiplying:
+         <ol>
+          <li>
+           the result of the
+           <span class="Block">
+            call random-fraction
+           </span>
+           block,
+                    which a value between 0 and 1
+          </li>
+          <li>
+           the result of subtracting the mole's width from the canvas's width.
+          </li>
+         </ol>
+         The vertical position is handled similarly.
+        </li>
+       </ul>
+       With
+       <span class="ButtonText">
+        MoveMole
+       </span>
+       done, the next step is to define a
+              variable called
+       <span class="ButtonText">
+        score
+       </span>
+       to hold the score (number of
+              hits) and give it initial value 0. Also define a procedure
+       <span class="ButtonText">
+        UpdateScore
+       </span>
+       that shows the score in
+       <span class="ButtonText">
+        ScoreLabel
+       </span>
+       . The actual contents to be shown in
+       <span class="ButtonText">
+        ScoreLabel
+       </span>
+       will be the text "Score: " joined to the value of the
+       <span class="ButtonText">
+        score
+       </span>
+       .
+       <ul>
+        <li>
+         To create the "Score: " part of the label, drag out a
+         <span class="Block">
+          text
+         </span>
+         block from the
+         <span class="ButtonText">
+          Text
+         </span>
+         drawer.
+                Change the block to read "Score: " rather than "text".
+        </li>
+        <li>
+         Use a
+         <span class="Block">
+          join
+         </span>
+         block to attach this to a block that
+                gives the value of the
+         <span class="ButtonText">
+          score
+         </span>
+         variable. You can find
+                the
+         <span class="Block">
+          join
+         </span>
+         block in the
+         <span class="ButtonText">
+          Text
+         </span>
+         drawer.
+        </li>
+        <li class="c4">
+         Here's how
+         <span class="ButtonText">
+          score
+         </span>
+         and
+         <span class="ButtonText">
+          UpdateScore
+         </span>
+         should look:
+         <div class="imagecontainer">
+          <img alt="" height="171" src="MoleMashAssets/UpdateScore.png" width="485" />
+         </div>
+        </li>
+       </ul>
+       <h2>
+        Add a Timer
+       </h2>
+       <p>
+        The next step is to make the mole keep moving. Here's where you'll use
+        <span class="ButtonText">
+         MoleTimer
+        </span>
+        .
+        <span class="ButtonText">
+         Clock
+        </span>
+        components
+                have an event handler called
+        <span class="Block">
+         when ... Timer
+        </span>
+        that
+                triggers repeatedly at a rate determined by the
+        <span class="ButtonText">
+         TimerInterval
+        </span>
+        .
+       </p>
+       Set up
+       <span class="ButtonText">
+        MoleTimer
+       </span>
+       to call
+       <span class="ButtonText">
+        MoveMole
+       </span>
+       each time the timer fires, by building the event handler
+              like this:
+       <div class="imagecontainer">
+        <img alt="" height="103" src="MoleMashAssets/MoleMashTimerEventHandler.png" width="211" />
+       </div>
+       <blockquote class="notice">
+        Notice how the mole starts jumping around on the phone as soon as you define the
+                event handler. This is an example of how things in App Inventor start happening
+                instantaneously, as soon as you define them.
+       </blockquote>
+       <h2>
+        Add a Mole Touch Handler
+       </h2>
+       <p>
+        The program should increment the score each time the mole is touched. Sprites, like
+                canvases, respond to touch events. So create a touch event handler for
+        <span class="ButtonText">
+         Mole
+        </span>
+        that:
+       </p>
+       <ol>
+        <li>
+         Increments the score.
+        </li>
+        <li>
+         Calls
+         <span class="ButtonText">
+          UpdateScore
+         </span>
+         to show the new score.
+        </li>
+        <li>
+         Makes the phone vibrate for 1/10 second (100 milliseconds).
+        </li>
+        <li>
+         Calls
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         so that the mole moves right
+                away, rather than waiting for the timer.
+        </li>
+       </ol>
+       Here's what this looks like in blocks. Go ahead and assemble the
+       <span class="ButtonText">
+        Mole.Touched
+       </span>
+       blocks as shown.
+       <div class="imagecontainer">
+        <img alt="" height="247" src="MoleMashAssets/MoleMashTouchEventHandler.png" width="430" />
+       </div>
+       Here's a tip: You can use typeblocking: typing to quickly create blocks.
+       <ul>
+        <li>
+         To create a value block containing 100, just type 100 and press return.
+        </li>
+        <li>
+         To create a
+         <span class="ButtonText">
+          MoveMole
+         </span>
+         block, just type
+         <em>
+          MoveMole
+         </em>
+         and select the block you want from the list
+        </li>
+       </ul>
+       <h2>
+        Reset the Score
+       </h2>
+       <p>
+        One final detail is resetting the score. That's simply a matter of making the
+        <span class="ButtonText">
+         Reset
+        </span>
+        button change the score to 0 and calling
+        <span class="ButtonText">
+         UpdateScore
+        </span>
+        .
+       </p>
+       <h2>
+        Complete Program
+       </h2>
+       <p>
+        Here's the complete MoleMash program:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="513" src="MoleMashAssets/MoleMashComplete.png" width="800" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       <p>
+        Once you get the game working, you might want to explore some variations. For
+                example:
+       </p>
+       <ul>
+        <li>
+         Make the game vary the speed of the mole in response to how well the player is
+                doing. To vary how quickly the mole moves, you'll need to change the
+         <span class="ButtonText">
+          MoleTimer's
+         </span>
+         <span class="ButtonText">
+          Interval
+         </span>
+         property.
+        </li>
+        <li>
+         Keep track of when the player hits the mole and when the player misses the
+                mole, and show a score with both hits and misses. To do this, you'll need do define
+                touched handlers both for
+         <span class="ButtonText">
+          Mole
+         </span>
+         , same as now, and
+                for
+         <span class="ButtonText">
+          MyCanvas
+         </span>
+         . One subtle issue, if the player
+                touches the mole, does that also count as a touch for the Canvas? The answer is
+                yes. Both touch events will register.
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some of the ideas covered in this project:
+       </p>
+       <ul>
+        <li>
+         Sprites are touch-sensitive shapes that you can program to move around on a
+                Canvas.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          Clock
+         </span>
+         component can be used as a time to
+                make events that happen at regular intervals.
+        </li>
+        <li>
+         Procedures are defined using
+         <span class="Block">
+          to
+         </span>
+         blocks.
+        </li>
+        <li>
+         For each procedure you define, App Inventor automatically creates an associated
+                call block and places it in the
+         <span class="ButtonText">
+          My Definitions
+         </span>
+         drawer.
+        </li>
+        <li>
+         calling
+         <span class="ButtonText">
+          random-fraction
+         </span>
+         produces a number
+                between 0 and 1
+        </li>
+        <li>
+         text blocks specify literal text, similar to the way that number blocks specify
+                literal numbers
+        </li>
+        <li>
+         typeblocking is a way to create blocks quickly, by typing a block's name
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
