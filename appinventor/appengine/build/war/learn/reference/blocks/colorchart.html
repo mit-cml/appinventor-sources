@@ -1,0 +1,1858 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Color Chart - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   td {
+    border-top: 1px solid #efefef;
+    }
+    .td-header {
+    background-color: #efefef;
+    border: 0;
+    font-weight: bold;
+    }
+  </style>
+  <style>
+   img.c128 {border-width:0}
+    td.c127 {background-color: #9ACD32}
+    td.c126 {background-color: #F5F5F5}
+    td.c125 {background-color: #F5DEB3}
+    td.c124 {background-color: #EE82EE}
+    td.c123 {background-color: #40E0D0}
+    td.c122 {background-color: #FF6347}
+    td.c121 {background-color: #D8BFD8}
+    td.c120 {background-color: #008080}
+    td.c119 {background-color: #D2B48C}
+    td.c118 {background-color: #4682B4}
+    td.c117 {background-color: #00FF7F}
+    td.c116 {background-color: #FFFAFA}
+    td.c115 {background-color: #708090}
+    td.c114 {background-color: #6A5ACD}
+    td.c113 {background-color: #87CEEB}
+    td.c112 {background-color: #C0C0C0}
+    td.c111 {background-color: #A0522D}
+    td.c110 {background-color: #FFF5EE}
+    td.c109 {background-color: #2E8B57}
+    td.c108 {background-color: #F4A460}
+    td.c107 {background-color: #FA8072}
+    td.c106 {background-color: #8B4513}
+    td.c105 {background-color: #4169E1}
+    td.c104 {background-color: #BC8F8F}
+    td.c103 {background-color: #800080}
+    td.c102 {background-color: #B0E0E6}
+    td.c101 {background-color: #DDA0DD}
+    td.c100 {background-color: #CD853F}
+    td.c99 {background-color: #FFDAB9}
+    td.c98 {background-color: #FFEFD5}
+    td.c97 {background-color: #D87093}
+    td.c96 {background-color: #AFEEEE}
+    td.c95 {background-color: #98FB98}
+    td.c94 {background-color: #EEE8AA}
+    td.c93 {background-color: #DA70D6}
+    td.c92 {background-color: #FF4500}
+    td.c91 {background-color: #6B8E23}
+    td.c90 {background-color: #808000}
+    td.c89 {background-color: #FDF5E6}
+    td.c88 {background-color: #000080}
+    td.c87 {background-color: #FFDEAD}
+    td.c86 {background-color: #FFE4B5}
+    td.c85 {background-color: #FFE4E1}
+    td.c84 {background-color: #F5FFFA}
+    td.c83 {background-color: #191970}
+    td.c82 {background-color: #C71585}
+    td.c81 {background-color: #48D1CC}
+    td.c80 {background-color: #00FA9A}
+    td.c79 {background-color: #7B68EE}
+    td.c78 {background-color: #3CB371}
+    td.c77 {background-color: #9370D8}
+    td.c76 {background-color: #BA55D3}
+    td.c75 {background-color: #0000CD}
+    td.c74 {background-color: #66CDAA}
+    td.c73 {background-color: #800000}
+    td.c72 {background-color: #FAF0E6}
+    td.c71 {background-color: #32CD32}
+    td.c70 {background-color: #FFFFE0}
+    td.c69 {background-color: #B0C4DE}
+    td.c68 {background-color: #778899}
+    td.c67 {background-color: #87CEFA}
+    td.c66 {background-color: #20B2AA}
+    td.c65 {background-color: #FFA07A}
+    td.c64 {background-color: #FFB6C1}
+    td.c63 {background-color: #90EE90}
+    td.c62 {background-color: #FAFAD2}
+    td.c61 {background-color: #E0FFFF}
+    td.c60 {background-color: #F08080}
+    td.c59 {background-color: #ADD8E6}
+    td.c58 {background-color: #FFFACD}
+    td.c57 {background-color: #7CFC00}
+    td.c56 {background-color: #FFF0F5}
+    td.c55 {background-color: #E6E6FA}
+    td.c54 {background-color: #F0E68C}
+    td.c53 {background-color: #FFFFF0}
+    td.c52 {background-color: #4B0082}
+    td.c51 {background-color: #CD5C5C}
+    td.c50 {background-color: #FF69B4}
+    td.c49 {background-color: #F0FFF0}
+    td.c48 {background-color: #ADFF2F}
+    td.c47 {background-color: #DAA520}
+    td.c46 {background-color: #FFD700}
+    td.c45 {background-color: #F8F8FF}
+    td.c44 {background-color: #DCDCDC}
+    td.c43 {background-color: #FF00FF}
+    td.c42 {background-color: #228B22}
+    td.c41 {background-color: #FFFAF0}
+    td.c40 {background-color: #B22222}
+    td.c39 {background-color: #1E90FF}
+    td.c38 {background-color: #696969}
+    td.c37 {background-color: #00BFFF}
+    td.c36 {background-color: #FF1493}
+    td.c35 {background-color: #9400D3}
+    td.c34 {background-color: #00CED1}
+    td.c33 {background-color: #2F4F4F}
+    td.c32 {background-color: #483D8B}
+    td.c31 {background-color: #8FBC8F}
+    td.c30 {background-color: #E9967A}
+    td.c29 {background-color: #8B0000}
+    td.c28 {background-color: #9932CC}
+    td.c27 {background-color: #FF8C00}
+    td.c26 {background-color: #556B2F}
+    td.c25 {background-color: #8B008B}
+    td.c24 {background-color: #BDB76B}
+    td.c23 {background-color: #006400}
+    td.c22 {background-color: #B8860B}
+    td.c21 {background-color: #008B8B}
+    td.c20 {background-color: #00008B}
+    td.c19 {background-color: #DC143C}
+    td.c18 {background-color: #FFF8DC}
+    td.c17 {background-color: #6495ED}
+    td.c16 {background-color: #FF7F50}
+    td.c15 {background-color: #D2691E}
+    td.c14 {background-color: #7FFF00}
+    td.c13 {background-color: #5F9EA0}
+    td.c12 {background-color: #DEB887}
+    td.c11 {background-color: #A52A2A}
+    td.c10 {background-color: #8A2BE2}
+    td.c9 {background-color: #FFEBCD}
+    td.c8 {background-color: #FFE4C4}
+    td.c7 {background-color: #F5F5DC}
+    td.c6 {background-color: #F0FFFF}
+    td.c5 {background-color: #7FFFD4}
+    td.c4 {background-color: #00FFFF}
+    td.c3 {background-color: #FAEBD7}
+    td.c2 {background-color: #F0F8FF}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt;             <a href="/learn/reference/blocks/colors.html">Color Blocks</a> &gt; Color Chart ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        App Inventor Color Chart
+       </h1>
+       (with thanks to James Laroche)
+       <p>
+        This chart gives the AppInventor numeric codes for a variety of colors.
+       </p>
+       <table border="0" cellspacing="0" width="100%">
+        <tr>
+         <td class="td-header" width="20%">
+          Color Name
+         </td>
+         <td class="td-header" width="10%">
+          Color
+         </td>
+         <td class="td-header" width="5%">
+          &nbsp;
+         </td>
+         <td class="td-header" width="65%">
+          App Inventor Color Number
+         </td>
+        </tr>
+        <tr>
+         <td>
+          AliceBlue
+         </td>
+         <td class="c2">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -984833
+         </td>
+        </tr>
+        <tr>
+         <td>
+          AntiqueWhite
+         </td>
+         <td class="c3">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -332841
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Aqua
+         </td>
+         <td class="c4">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16711681
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Aquamarine
+         </td>
+         <td class="c5">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8388652
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Azure
+         </td>
+         <td class="c6">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -983041
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Beige
+         </td>
+         <td class="c7">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -657966
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Bisque
+         </td>
+         <td class="c8">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6972
+         </td>
+        </tr>
+        <tr>
+         <td>
+          BlanchedAlmond
+         </td>
+         <td class="c9">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5171
+         </td>
+        </tr>
+        <tr>
+         <td>
+          BlueViolet
+         </td>
+         <td class="c10">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7722014
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Brown
+         </td>
+         <td class="c11">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5952982
+         </td>
+        </tr>
+        <tr>
+         <td>
+          BurlyWood
+         </td>
+         <td class="c12">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2180985
+         </td>
+        </tr>
+        <tr>
+         <td>
+          CadetBlue
+         </td>
+         <td class="c13">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -10510688
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Chartreuse
+         </td>
+         <td class="c14">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8388864
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Chocolate
+         </td>
+         <td class="c15">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2987746
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Coral
+         </td>
+         <td class="c16">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -32944
+         </td>
+        </tr>
+        <tr>
+         <td>
+          CornflowerBlue
+         </td>
+         <td class="c17">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -10185235
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Cornsilk
+         </td>
+         <td class="c18">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1828
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Crimson
+         </td>
+         <td class="c19">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2354116
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkBlue
+         </td>
+         <td class="c20">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16777077
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkCyan
+         </td>
+         <td class="c21">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16741502
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkGoldenRod
+         </td>
+         <td class="c22">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4684277
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkGreen
+         </td>
+         <td class="c23">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16751616
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkKhaki
+         </td>
+         <td class="c24">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4343957
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkMagenta
+         </td>
+         <td class="c25">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -76675773
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkOliveGreen
+         </td>
+         <td class="c26">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -11179217
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Darkorange
+         </td>
+         <td class="c27">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -29696
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkOrchid
+         </td>
+         <td class="c28">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6737204
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkRed
+         </td>
+         <td class="c29">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7667712
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkSalmon
+         </td>
+         <td class="c30">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1468806
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkSeaGreen
+         </td>
+         <td class="c31">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7357297
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkSlateBlue
+         </td>
+         <td class="c32">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12042869
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkSlateGray
+         </td>
+         <td class="c33">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -13676721
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkTurquoise
+         </td>
+         <td class="c34">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16724271
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DarkViolet
+         </td>
+         <td class="c35">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7077677
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DeepPink
+         </td>
+         <td class="c36">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -60269
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DeepSkyBlue
+         </td>
+         <td class="c37">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16728065
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DimGray
+         </td>
+         <td class="c38">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -9868951
+         </td>
+        </tr>
+        <tr>
+         <td>
+          DodgerBlue
+         </td>
+         <td class="c39">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -14774017
+         </td>
+        </tr>
+        <tr>
+         <td>
+          FireBrick
+         </td>
+         <td class="c40">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5103070
+         </td>
+        </tr>
+        <tr>
+         <td>
+          FloralWhite
+         </td>
+         <td class="c41">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1296
+         </td>
+        </tr>
+        <tr>
+         <td>
+          ForestGreen
+         </td>
+         <td class="c42">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -14513374
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Fuchsia
+         </td>
+         <td class="c43">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -65281
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Gainsboro
+         </td>
+         <td class="c44">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2302756
+         </td>
+        </tr>
+        <tr>
+         <td>
+          GhostWhite
+         </td>
+         <td class="c45">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -460545
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Gold
+         </td>
+         <td class="c46">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -10496
+         </td>
+        </tr>
+        <tr>
+         <td>
+          GoldenRod
+         </td>
+         <td class="c47">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2448096
+         </td>
+        </tr>
+        <tr>
+         <td>
+          GreenYellow
+         </td>
+         <td class="c48">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5374161
+         </td>
+        </tr>
+        <tr>
+         <td>
+          HoneyDew
+         </td>
+         <td class="c49">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -983056
+         </td>
+        </tr>
+        <tr>
+         <td>
+          HotPink
+         </td>
+         <td class="c50">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -38476
+         </td>
+        </tr>
+        <tr>
+         <td>
+          IndianRed
+         </td>
+         <td class="c51">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -3318692
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Indigo
+         </td>
+         <td class="c52">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -11861886
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Ivory
+         </td>
+         <td class="c53">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Khaki
+         </td>
+         <td class="c54">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -989556
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Lavender
+         </td>
+         <td class="c55">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -102801
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LavenderBlush
+         </td>
+         <td class="c56">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -3851
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LawnGreen
+         </td>
+         <td class="c57">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8586240
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LemonChiffon
+         </td>
+         <td class="c58">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1331
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightBlue
+         </td>
+         <td class="c59">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5383962
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightCoral
+         </td>
+         <td class="c60">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1015680
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightCyan
+         </td>
+         <td class="c61">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2031617
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightGoldenRodYellow
+         </td>
+         <td class="c62">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -329006
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightGreen
+         </td>
+         <td class="c63">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7278960
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightPink
+         </td>
+         <td class="c64">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -18751
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightSalmon
+         </td>
+         <td class="c65">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -24454
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightSeaGreen
+         </td>
+         <td class="c66">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -14241110
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightSkyBlue
+         </td>
+         <td class="c67">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7876870
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightSlateGray
+         </td>
+         <td class="c68">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8943463
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightSteelBlue
+         </td>
+         <td class="c69">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5192482
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LightYellow
+         </td>
+         <td class="c70">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -32
+         </td>
+        </tr>
+        <tr>
+         <td>
+          LimeGreen
+         </td>
+         <td class="c71">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -13447886
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Linen
+         </td>
+         <td class="c72">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -331546
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Maroon
+         </td>
+         <td class="c73">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8388608
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumAquaMarine
+         </td>
+         <td class="c74">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -10039894
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumBlue
+         </td>
+         <td class="c75">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16777011
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumOrchid
+         </td>
+         <td class="c76">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4565549
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumPurple
+         </td>
+         <td class="c77">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7180172
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumSeaGreen
+         </td>
+         <td class="c78">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12799119
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumSlateBlue
+         </td>
+         <td class="c79">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8689426
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumSpringGreen
+         </td>
+         <td class="c80">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16713062
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumTurquoise
+         </td>
+         <td class="c81">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12004916
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MediumVioletRed
+         </td>
+         <td class="c82">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -3730043
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MidnightBlue
+         </td>
+         <td class="c83">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -15132304
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MintCream
+         </td>
+         <td class="c84">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -655366
+         </td>
+        </tr>
+        <tr>
+         <td>
+          MistyRose
+         </td>
+         <td class="c85">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6940
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Moccasin
+         </td>
+         <td class="c86">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6987
+         </td>
+        </tr>
+        <tr>
+         <td>
+          NavajoWhite
+         </td>
+         <td class="c87">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8531
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Navy
+         </td>
+         <td class="c88">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16777088
+         </td>
+        </tr>
+        <tr>
+         <td>
+          OldLace
+         </td>
+         <td class="c89">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -133658
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Olive
+         </td>
+         <td class="c90">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8355840
+         </td>
+        </tr>
+        <tr>
+         <td>
+          OliveDrab
+         </td>
+         <td class="c91">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -9728477
+         </td>
+        </tr>
+        <tr>
+         <td>
+          OrangeRed
+         </td>
+         <td class="c92">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -47872
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Orchid
+         </td>
+         <td class="c93">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2461482
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PaleGoldenRod
+         </td>
+         <td class="c94">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1120086
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PaleGreen
+         </td>
+         <td class="c95">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6751336
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PaleTurquoise
+         </td>
+         <td class="c96">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5247250
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PaleVioletRed
+         </td>
+         <td class="c97">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2592621
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PapayaWhip
+         </td>
+         <td class="c98">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4139
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PeachPuff
+         </td>
+         <td class="c99">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -9543
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Peru
+         </td>
+         <td class="c100">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -3308225
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Plum
+         </td>
+         <td class="c101">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2252579
+         </td>
+        </tr>
+        <tr>
+         <td>
+          PowderBlue
+         </td>
+         <td class="c102">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -5185306
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Purple
+         </td>
+         <td class="c103">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -8388480
+         </td>
+        </tr>
+        <tr>
+         <td>
+          RosyBrown
+         </td>
+         <td class="c104">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4419697
+         </td>
+        </tr>
+        <tr>
+         <td>
+          RoyalBlue
+         </td>
+         <td class="c105">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12490271
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SaddleBrown
+         </td>
+         <td class="c106">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7650029
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Salmon
+         </td>
+         <td class="c107">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -360334
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SandyBrown
+         </td>
+         <td class="c108">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -744352
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SeaGreen
+         </td>
+         <td class="c109">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -13726889
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SeaShell
+         </td>
+         <td class="c110">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2578
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Sienna
+         </td>
+         <td class="c111">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -6270419
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Silver
+         </td>
+         <td class="c112">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -4144960
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SkyBlue
+         </td>
+         <td class="c113">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7876885
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SlateBlue
+         </td>
+         <td class="c114">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -9807155
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SlateGray
+         </td>
+         <td class="c115">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -9404272
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Snow
+         </td>
+         <td class="c116">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1286
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SpringGreen
+         </td>
+         <td class="c117">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16711809
+         </td>
+        </tr>
+        <tr>
+         <td>
+          SteelBlue
+         </td>
+         <td class="c118">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12156236
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Tan
+         </td>
+         <td class="c119">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2968436
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Teal
+         </td>
+         <td class="c120">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -16744320
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Thistle
+         </td>
+         <td class="c121">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -2572328
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Tomato
+         </td>
+         <td class="c122">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -40121
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Turquoise
+         </td>
+         <td class="c123">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -12525360
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Violet
+         </td>
+         <td class="c124">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -1146130
+         </td>
+        </tr>
+        <tr>
+         <td>
+          Wheat
+         </td>
+         <td class="c125">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -663885
+         </td>
+        </tr>
+        <tr>
+         <td>
+          WhiteSmoke
+         </td>
+         <td class="c126">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -657931
+         </td>
+        </tr>
+        <tr>
+         <td>
+          YellowGreen
+         </td>
+         <td class="c127">
+         </td>
+         <td>
+          &nbsp;
+         </td>
+         <td>
+          -7221966
+         </td>
+        </tr>
+       </table>
+       <br />
+       <br />
+       <br />
+       <br />
+       <br />
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

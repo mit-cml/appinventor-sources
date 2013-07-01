@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Paint Pot (Part 1) - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    ul.c3 {list-style-type: lower-alpha}
+    img.c2 {padding: 10px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Paint             Pot (Part 1) &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        PaintPot: (Part 1)
+       </h1>
+       <p>
+        This tutorial introduces the
+        <span class="ButtonText">
+         Canvas
+        </span>
+        component for
+                creating simple two-dimensional graphics. You'll build an app that lets you draw on
+                the phone screen in different colors.
+       </p>
+       <blockquote class="notice">
+        <em>
+         Historical note:
+        </em>
+        PaintPot was one of the first programs developed to
+                demonstrate the potential of personal computers, as far back as the 1970s.
+       </blockquote>
+       <h2>
+        What You're Building
+       </h2>
+       <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch2PaintPot.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+       <img align="right" alt="Screenshot of finished paint pot app." class="c2" src="PaintPotAssets/PaintPotPart1PhoneImage.png" width="300" />
+       <p>
+        With the PaintPot app, you can:
+       </p>
+       <ul>
+        <li>
+         <p>
+          Dip your finger into a virtual paint pot to draw in that color.
+         </p>
+        </li>
+        <li>
+         <p>
+          Drag your finger along the screen to draw a line.
+         </p>
+        </li>
+        <li>
+         <p>
+          Poke the screen to make dots.
+         </p>
+        </li>
+        <li>
+         <p>
+          Use the button at the bottom to wipe the screen clean.
+         </p>
+        </li>
+        <li>
+         <p>
+          Include an image as a drawing background.
+         </p>
+        </li>
+       </ul>
+       This tutorial assumes that you have completed the
+       <a href="../hellopurr/hellopurr-part1.html">
+        <em>
+         HelloPurr tutorial
+        </em>
+       </a>
+       . It introduces
+              the following App Inventor concepts:
+       <ul>
+        <li>
+         <p>
+          The
+          <span class="ButtonText">
+           Canvas
+          </span>
+          component for drawing.
+         </p>
+        </li>
+        <li>
+         <p>
+          Controlling screen layout with
+          <span class="ButtonText">
+           Arrangement
+          </span>
+          components.
+         </p>
+        </li>
+        <li>
+         <p>
+          Event handlers that take arguments.
+         </p>
+        </li>
+        <li>
+         <p>
+          Variables
+         </p>
+        </li>
+       </ul>
+       <br clear="all" />
+       <h2>
+        Before starting
+       </h2>
+       <p>
+        Make sure your computer and your phone are set up to use App Inventor, and browse
+                to the App Inventor Web site at
+        <a href="http://appinventor.mit.edu">
+         http://appinventor.mit.edu
+        </a>
+        . Start a new
+                project in the
+        <em>
+         Designer
+        </em>
+        window, and name it
+        <em>
+         PaintPot
+        </em>
+        . Open the
+                Blocks Editor, click
+        <span class="ButtonText">
+         Connect to Phone
+        </span>
+        , and make
+                sure the phone has started the App Inventor app.
+       </p>
+       <h2>
+        Screen title
+       </h2>
+       <p>
+        To get started, go to the
+        <span class="ButtonText">
+         Properties
+        </span>
+       </p>
+       panel on the right of the
+       <span class="ButtonText">
+        Designer
+       </span>
+       and change the
+              screen
+       <span class="ButtonText">
+        Title
+       </span>
+       to
+       <em>
+        PaintPot
+       </em>
+       . You should see
+              this change on phone, with the new title showing in the title bar.
+       <blockquote>
+        There are three names in App Inventor, and it's easy to confuse them:
+        <ol>
+         <li>
+          The name you choose for your project as you work on it. This will also be the
+                  name of the application if you package it for the phone.
+         </li>
+         <li>
+          The name "Screen1", which you'll see in the panel that lists the
+                  application's components. You can't change this name in the current version of
+                  App Inventor.
+         </li>
+         <li>
+          The
+          <span class="ButtonText">
+           Title
+          </span>
+          of the screen, which is what you'll
+                  see in the phone's title bar. This starts out being "Screen1", which is what you
+                  used in HelloPurr. But you can change it, as you're doing for Paintpot.
+         </li>
+        </ol>
+       </blockquote>
+       <h2>
+        Set up the Components
+       </h2>
+       <p>
+        You'll use these components to make PaintPot:
+       </p>
+       <ul>
+        <li>
+         Three
+         <span class="ButtonText">
+          button
+         </span>
+         s for selecting red, blue, or green
+                paint, and another button for wiping the drawing.
+        </li>
+        <li>
+         A
+         <span class="ButtonText">
+          canvas
+         </span>
+         , the drawing surface. This
+         <span class="ButtonText">
+          canvas
+         </span>
+         has a
+         <span class="ButtonText">
+          BackgroundImage
+         </span>
+         , which is the kitty from the HelloPurr
+                  tutorial. You can also draw on a blank Canvas. That's just a
+         <span class="ButtonText">
+          canvas
+         </span>
+         without a background image.
+        </li>
+        <li>
+         There's also a component you don't see: you use a
+         <span class="ButtonText">
+          HorizontalArrangement
+         </span>
+         to make the three color buttons line up.
+        </li>
+       </ul>
+       <p>
+        That makes five components in all. Let's get them and build the app.
+       </p>
+       <h2>
+        Color Buttons
+       </h2>
+       <ul>
+        <li>
+         Drag a
+         <span class="ButtonText">
+          Button
+         </span>
+         component onto the viewer and
+                change the button's
+         <span class="ButtonText">
+          Text
+         </span>
+         attribute to "Red" and
+                make its
+         <span class="ButtonText">
+          BackgroundColor
+         </span>
+         red.
+        </li>
+        <li>
+         Click on
+         <span class="ButtonText">
+          Button1
+         </span>
+         in the components list in the
+                Viewer to highlight it (it might already be highlighted) and use the
+         <span class="ButtonText">
+          Rename...
+         </span>
+         button to change its name from
+         <span class="ButtonText">
+          Button1
+         </span>
+         to
+         <span class="ButtonText">
+          ButtonRed
+         </span>
+         .
+        </li>
+        <li>
+         Similarly, make two more buttons for blue and green, named
+         <span class="ButtonText">
+          ButtonBlue
+         </span>
+         and
+         <span class="ButtonText">
+          ButtonGreen
+         </span>
+         ,
+                placing them vertically under the red button.
+        </li>
+       </ul>
+       Here's how this should look in the designer, with the button names appearing in
+              the list of project components. In this project, you're changing the names of the
+              components rather than leaving them as the default names as you did with HelloPurr.
+              Using meaningful names makes your projects more readable to yourself and others.
+       <div class="imagecontainer">
+        <img alt="Screenshot with 3 vertical buttons." src="PaintPotAssets/PaintPotThreeButtonsVertically.png" width="600" />
+       </div>
+       <p>
+        You should also see the three buttons on the phone screen.
+       </p>
+       <h2>
+        Layout with Screen Arrangement
+       </h2>
+       <p>
+        You should now have three buttons, one above the other. The next step is to make
+                them line up horizontally. You do this using a
+        <span class="ButtonText">
+         HorizontalArrangement
+        </span>
+        component.
+       </p>
+       <ol>
+        <li>
+         From the Palette's Screen Arrangement category, drag out a
+         <span class="ButtonText">
+          HorizontalArrangement
+         </span>
+         component and place it under the buttons.
+                Change the name of this component from
+         <span class="ButtonText">
+          HorizontalArrangement1
+         </span>
+         to
+         <span class="ButtonText">
+          ThreeButtons
+         </span>
+        </li>
+        <li>
+         In the
+         <span class="ButtonText">
+          Properties
+         </span>
+         panel, change the
+         <span class="ButtonText">
+          Width
+         </span>
+         of the
+         <span class="ButtonText">
+          ThreeButtons
+         </span>
+         to
+         <em>
+          Fill Parent...
+         </em>
+         so that it fills the
+                  entire width of the screen.
+        </li>
+        <li>
+         Move the three buttons side by side into the
+         <span class="ButtonText">
+          HorizontalArrangement
+         </span>
+         component.
+         <em>
+          Hint:
+         </em>
+         You'll see a
+                blue vertical line that shows where the piece you're dragging will go.
+        </li>
+       </ol>
+       <p>
+        If you look in the list of project components, you'll see the three buttons
+                indented under the
+        <span class="ButtonText">
+         ThreeButtons
+        </span>
+        to show that they
+                are now its subcomponents. Notice that all the components are indented under
+                Screen1.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="PaintPotAssets/PaintPotThreeButtonsHorizontally.png" width="600" />
+       </div>
+       <p>
+        You should also see your three buttons line up in a row on the phone screen,
+                although things might not look exactly as on the
+        <span class="ButtonText">
+         Designer
+        </span>
+        . For example, the Arrangement's outline shows in the
+        <span class="ButtonText">
+         Designer
+        </span>
+        but not on the phone.
+       </p>
+       <p>
+        In general, you use Screen Arrangement to create simple vertical or horizontal
+                layouts. You can create more complex layouts by nesting Screen Arrangement
+                components. There is also a
+        <span class="ButtonText">
+         TableArrangement
+        </span>
+        component (not covered in this tutorial).
+       </p>
+       <h2>
+        Canvas and wipe button
+       </h2>
+       <p>
+        The final two components are the canvas and the wipe button.
+       </p>
+       <ol>
+        <li>
+         From the Palette's
+         <em>
+          Basic
+         </em>
+         category drag a
+         <span class="notice">
+          Canvas
+         </span>
+         component onto the Viewer. Change its name to
+         <span class="ButtonText">
+          DrawingCanvas
+         </span>
+         . Set its
+         <span class="ButtonText">
+          Width
+         </span>
+         to
+         <span class="ButtonText">
+          Fill Parent
+         </span>
+         Set its
+         <span class="ButtonText">
+          Height
+         </span>
+         to 300 pixels.
+        </li>
+        <li>
+         Add a Background Image to the
+         <span class="ButtonText">
+          Canvas
+         </span>
+         . Click on
+                the field containing
+         <em>
+          None...
+         </em>
+         next to
+         <span class="ButtonText">
+          BackgroundImage
+         </span>
+         in the
+         <span class="ButtonText">
+          Canvas
+         </span>
+         Properties panel. You can use the same kitty.png file, if you still have it on your
+                desktop from an earlier tutorial. Or you can use another image.
+         <blockquote class="notice">
+          You can use any image you like, but you'll get the best results if the size of
+                    the image (in pixels) is close to the size at which you'll be showing it on the
+                    phone. Also, large images will take a long time to load, and might exceed the
+                    memory capacity of the phone allocates for applications.
+         </blockquote>
+        </li>
+        <li>
+         From the Palette, drag the final button onto the screen, placing it under the
+                canvas. Change its
+         <span class="ButtonText">
+          id
+         </span>
+         to
+         <em>
+          ButtonWipe
+         </em>
+         Change
+                its
+         <span class="ButtonText">
+          Text
+         </span>
+         attribute to
+         <em>
+          Wipe
+         </em>
+         .
+        </li>
+       </ol>
+       <p>
+        You've now completed the steps to set the appearance of your app. Here's how this
+                should look in the
+        <span class="ButtonText">
+         Designer
+        </span>
+        . Next, you'll define
+                how the components behave.
+       </p>
+       <div class="imagecontainer">
+        <img alt="Designer view of finished paint pot app." src="PaintPotAssets/PaintPotDesigner.png" width="600" />
+       </div>
+       <h2>
+        Add behaviors to the components
+       </h2>
+       <p>
+        The Blocks Editor should already be open. First set up the buttons that change the
+                paint color.
+       </p>
+       <h2>
+        Add button event handlers
+       </h2>
+       <p>
+        In the Blocks Editor:
+       </p>
+       <ol>
+        <li>
+         Switch to the
+         <em>
+          My Blocks
+         </em>
+         column.
+        </li>
+        <li>
+         <p>
+          Open the drawer for
+          <span class="ButtonText">
+           ButtonRed
+          </span>
+          and drag out the
+          <span class="Block">
+           when ButtonRed.Click
+          </span>
+          block.
+         </p>
+        </li>
+        <li>
+         <p>
+          Open the
+          <span class="ButtonText">
+           DrawingCanvas
+          </span>
+          drawer. Drag out the
+          <span class="Block">
+           set DrawingCanvas.PaintColor to
+          </span>
+          block (you may have
+                    to scroll the list of blocks in the drawer to find it) and place it in the
+          <span class="Block">
+           do
+          </span>
+          section of
+          <span class="Block">
+           when
+                    ButtonRed.Click
+          </span>
+          .
+         </p>
+        </li>
+        <li>
+         <p>
+          Switch to the
+          <span class="ButtonText">
+           Built-In
+          </span>
+          Column. Open the
+          <span class="ButtonText">
+           Colors
+          </span>
+          drawer and drag out the block for the
+                    color
+          <span class="ButtonText">
+           Red
+          </span>
+          and put it into
+          <span class="ButtonText">
+           set DrawingCanvas.PaintColor to
+          </span>
+          .
+         </p>
+        </li>
+        <li>
+         <p>
+          Repeat steps 2-4 for the blue and green buttons.
+         </p>
+        </li>
+        <li>
+         <p>
+          The final button to set up is the
+          <span class="ButtonText">
+           Wipe
+          </span>
+          button.
+                    Switch back to the
+          <span class="ButtonText">
+           My Blocks
+          </span>
+          column. Make a
+                    click event handler for
+          <span class="ButtonText">
+           ButtonWipe
+          </span>
+          by dragging
+          <span class="Block">
+           when ButtonWipe.Click
+          </span>
+          from the
+          <span class="ButtonText">
+           ButtonWipe
+          </span>
+          drawer. From the
+          <span class="ButtonText">
+           DrawingCanvas
+          </span>
+          drawer, drag
+          <span class="Block">
+           call
+                    DrawingCanvas.Clear
+          </span>
+          and place it in the
+          <span class="Block">
+           do
+          </span>
+          area of the
+          <span class="Block">
+           when ButtonWipe.Click
+          </span>
+          block.
+         </p>
+        </li>
+       </ol>
+       The blocks for the buttons should look like this:
+       <div class="imagecontainer">
+        <img alt="Button blocks in the blocks editor." src="PaintPotAssets/PaintPotButtonBlocks.png" width="600" />
+       </div>
+       <h2>
+        Add touch-event handlers
+       </h2>
+       <p>
+        Now for the next step: drawing on the Canvas. You'll arrange things so that when
+                you touch the Canvas, you get a dot at the spot where you touch. If you drag your
+                finger slowly along the canvas, it draws a line.
+       </p>
+       <ul>
+        <li>
+         <p>
+          In the Blocks Editor, open the drawer for the canvas and drag the
+          <span class="Block">
+           when DrawingCanvas.Touched
+          </span>
+          block to the workspace.
+         </p>
+        </li>
+       </ul>
+       <p>
+        As soon as you drag the block out, the three plugs on the right automatically fill
+                in with name blocks called
+        <span class="ButtonText">
+         x
+        </span>
+        ,
+        <span class="ButtonText">
+         y
+        </span>
+        , and
+        <span class="ButtonText">
+         touchedSprite
+        </span>
+        .
+       </p>
+       <p>
+        You've already seen button click events. Clicks are simple, because there's nothing
+                to know about the click other than that it happened. Other event handlers such as
+        <span class="Block">
+         when ... Touched
+        </span>
+        , need information about the event. In
+                App Inventor, this information is expressed as the value of
+        <em>
+         arguments
+        </em>
+        associated with the event handler. For the
+        <span class="Block">
+         when ...
+                Touched
+        </span>
+        event, the first two arguments stand for the
+        <em>
+         x
+        </em>
+        and
+        <em>
+         y
+        </em>
+        coordinates of where the touch happened. We'll save
+        <span class="ButtonText">
+         touchedSprite
+        </span>
+        for a later tutorial.
+       </p>
+       <p>
+        For this touch event, make the canvas draw a small circle at the point with
+                coordinates
+        <em>
+         x
+        </em>
+        ,
+        <em>
+         y
+        </em>
+        .
+       </p>
+       <ul>
+        <li>
+         Drag out a
+         <span class="Block">
+          call DrawingCanvas.DrawCircle
+         </span>
+         command
+                from the canvas drawer and place it in the
+         <span class="Block">
+          do
+         </span>
+         section of
+         <span class="Block">
+          when DrawingCanvas.Touched
+         </span>
+         .
+        </li>
+       </ul>
+       <p>
+        On the right side of the
+        <span class="Block">
+         when DrawingCanvas.DrawCircle
+        </span>
+        are are three sockets where you must specify values for the
+        <em>
+         x
+        </em>
+        and
+        <em>
+         y
+        </em>
+        coordinates where the circle should be drawn, and
+        <span class="ButtonText">
+         r
+        </span>
+        , which is the radius of the circle.
+       </p>
+       <p>
+        For
+        <em>
+         x
+        </em>
+        and
+        <em>
+         y
+        </em>
+        , you'll use values of the arguments that were
+                supplied to the
+        <span class="ButtonText">
+         Touched
+        </span>
+        handler:
+       </p>
+       <ol>
+        <li>
+         Open the
+         <span class="ButtonText">
+          My Definitions
+         </span>
+         drawer at the top of
+                the column. Find the blocks for
+         <span class="ButtonText">
+          value x
+         </span>
+         and
+         <span class="ButtonText">
+          value y
+         </span>
+         . The blocks were automatically created when
+                you dragged out the touch event handler block.
+        </li>
+        <li>
+         <p>
+          Drag out the
+          <span class="Block">
+           value x
+          </span>
+          and
+          <span class="Block">
+           value
+                    y
+          </span>
+          blocks and plug them into the corresponding sockets in the
+          <span class="Block">
+           when DrawingCanvas.Touched
+          </span>
+          block. Make sure to drag
+                    the
+          <span class="Block">
+           value
+          </span>
+          blocks, not the corresponding
+          <span class="Block">
+           name
+          </span>
+          blocks; they look very similar.
+         </p>
+        </li>
+       </ol>
+       You'll also need to specify the radius of the circle to draw. Five (pixels) is a
+              good value for this app:
+       <ul>
+        <li>
+         <p>
+          Click in a blank area of the screen to bring up the hover menu and select
+          <span class="ButtonText">
+           math
+          </span>
+          (green). Select 123 from the dropdown
+                    list, to create a number block. Change the 123 to 5 and plug that in for the
+                    radius slot.
+         </p>
+         <blockquote class="notice">
+          <p>
+           You can also just type 5 followed by return, to create a number block with a
+                      value of 5. This is an example of
+           <em>
+            typeblocking
+           </em>
+           : if you start typing,
+                      the Blocks Editor shows a list of blocks whose names match what you are
+                      typing; if you type a number it creates a number block.
+          </p>
+         </blockquote>
+        </li>
+       </ul>
+       Here's how the touch event handler should look:
+       <div class="imagecontainer">
+        <img alt="Blocks for the touch event handler." height="228" src="PaintPotAssets/PaintPotTouchHandler.png" width="445" />
+       </div>
+       <p>
+        Try out what you have so far on the phone. Touch a color button. Now touch the
+                canvas, and your finger should leave a spot at each place you touch. Touching the
+        <span class="ButtonText">
+         Wipe
+        </span>
+        button should clear your drawing.
+       </p>
+       <h2>
+        Add Drag Events
+       </h2>
+       <p>
+        Finally, add the drag event handler. Here's the difference between a touch and a
+                drag:
+       </p>
+       <ul>
+        <li>
+         A touch is when you place your finger on the canvas and lift it without moving
+                it.
+        </li>
+        <li>
+         A drag is when you place your finger on the canvas and move your finger while
+                keeping it in contact.
+        </li>
+       </ul>
+       <p>
+        When you drag your finger across the screen, it appears to draw a giant, curved
+                line where you moved your finger. What you're actually doing is drawing hundreds of
+                tiny straight lines: each time you move your finger, even a little bit, you extend
+                the line from your finger's immediate last position to its new position.
+       </p>
+       <p>
+        A drag event comes with 6 arguments. These are three pairs of
+        <em>
+         x
+        </em>
+        and
+        <em>
+         y
+        </em>
+        coordinates that show:
+       </p>
+       <ul class="c3">
+        <li>
+         The position of your finger back where the drag started.
+        </li>
+        <li>
+         The current position of your finger.
+        </li>
+        <li>
+         The immediately previous position of your finger.
+        </li>
+       </ul>
+       <p>
+        There's also a sprite, which we'll ignore for this tutorial.
+       </p>
+       <p>
+        Now make dragging draw a line between the previous position and the current
+                position by creating a drag handler:
+       </p>
+       <ol>
+        <li>
+         <p>
+          From the
+          <span class="ButtonText">
+           DrawingCanvas
+          </span>
+          drawer, drag the
+          <span class="Block">
+           when DrawingCanvas.Dragged
+          </span>
+          block to the workspace.
+         </p>
+        </li>
+        <li>
+         <p>
+          Also from the
+          <span class="ButtonText">
+           DrawingCanvas
+          </span>
+          drawer, drag the
+          <span class="Block">
+           call DrawingCanvas.DrawLine
+          </span>
+          block into the
+          <span class="Block">
+           do
+          </span>
+          slot of the
+          <span class="Block">
+           when
+                    DrawingCanvas.Dragged
+          </span>
+          block.
+         </p>
+        </li>
+        <li>
+         <p>
+          Click on the
+          <span class="ButtonText">
+           My Definitions
+          </span>
+          drawer. You should
+                    see the blocks for the arguments you need. Drag the corresponding
+          <span class="ButtonText">
+           value
+          </span>
+          blocks to the appropriate slots in
+          <span class="Block">
+           when DrawingCanvas.Dragged
+          </span>
+          :
+          <span class="ButtonText">
+           x1
+          </span>
+          and
+          <span class="ButtonText">
+           y1
+          </span>
+          should be
+          <span class="ButtonText">
+           prevX
+          </span>
+          and
+          <span class="ButtonText">
+           prevY
+          </span>
+          ;
+          <span class="ButtonText">
+           x2
+          </span>
+          and
+          <span class="ButtonText">
+           y2
+          </span>
+          should be
+          <span class="ButtonText">
+           currentX
+          </span>
+          and
+          <span class="ButtonText">
+           currentY
+          </span>
+         </p>
+        </li>
+       </ol>
+       Here's the result:
+       <div class="imagecontainer">
+        <img alt="" height="367" src="PaintPotAssets/PaintPotDragHandler.png" width="452" />
+       </div>
+       <p>
+        Test your work by trying it on the phone: drag your finger around on the screen to
+                draw lines and curves. Touch the screen to make spots. Use the
+        <span class="ButtonText">
+         Wipe
+        </span>
+        button to clear the screen.
+       </p>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are some of the ideas covered in this tutorial:
+       </p>
+       <ul>
+        <li>
+         You can use Screen Arrangement components to specify screen layouts other than
+                just placing components one under the other.
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          Canvas
+         </span>
+         component lets you draw on it. It
+                can also sense touches and drags.
+        </li>
+        <li>
+         Some event handlers are called with information about the event, such as the
+                coordinates of where the screen was touched. This information is represented by
+                arguments. When you select an event handler that has arguments, App Inventor
+                creates
+         <span class="Block">
+          value
+         </span>
+         blocks for these and places them in the
+         <span class="ButtonText">
+          My Definitions
+         </span>
+         drawer.
+        </li>
+       </ul>
+       In
+       <a href="paintpot-part2.html">
+        Part 2
+       </a>
+       , you'll see how to use
+       <em>
+        global
+              variables
+       </em>
+       to create dots of different sizes.
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

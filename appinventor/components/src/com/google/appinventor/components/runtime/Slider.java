@@ -68,6 +68,9 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
   private final static int initialLeftColor = Component.COLOR_ORANGE;
   private final static String initialLeftColorString = Component.DEFAULT_VALUE_COLOR_ORANGE;
 
+  //Gareth Haylings 01.07.2013 flag if the slider is touched
+  private boolean istouched = false; 
+  
   /**
    * Creates a new Slider component.
    *
@@ -90,7 +93,7 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     minValue = Component.SLIDER_MIN_VALUE;
     maxValue = Component.SLIDER_MAX_VALUE;
     thumbPosition = Component.SLIDER_THUMB_VALUE;
-
+    
     seekbar.setOnSeekBarChangeListener(this);
 
     //NOTE(kashi01): The boundaries for Seekbar are between 0-100 and there is no lower-limit that could
@@ -328,15 +331,48 @@ public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarCha
     EventDispatcher.dispatchEvent(this, "PositionChanged", thumbPosition);
   }
 
+
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  // Gareth Haylings 28/06/2013 code modified
+  // Detect when SeekBar is touched down then user can add there own code blocks 
   @Override
   public void onStartTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+     TouchDown();
   }
+  
+  @SimpleEvent
+  public void TouchDown() {
+    istouched = true;
+    EventDispatcher.dispatchEvent(this, "TouchDown");
+  } 
 
+  
+  // Detect when SeekBar is touched up then user can add there own code blocks
   @Override
   public void onStopTrackingTouch(SeekBar seekBar) {
-    // TODO Auto-generated method stub
+    TouchUp();
   }
+
+  @SimpleEvent
+  public void TouchUp() {
+    istouched = false;
+    EventDispatcher.dispatchEvent(this, "TouchUp");
+  } 
+ 
+ 
+  /**
+   * Returns if the slider is touched.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Is the slide being touched.")
+  public boolean IsTouched() {
+    return istouched;
+  }
+
+ //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
   /**
    * Returns the component's vertical height, measured in pixels.

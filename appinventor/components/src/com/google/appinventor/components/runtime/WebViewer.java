@@ -38,8 +38,9 @@ import android.webkit.WebViewClient;
  * @author halabelson@google.com (Hal Abelson)
  */
 
+// Gareth Haylings 21/06/2013 changed catagory from EXPERIMENTAL to BASIC
 @DesignerComponent(version = YaVersion.WEBVIEWER_COMPONENT_VERSION,
-                   category = ComponentCategory.EXPERIMENTAL,
+                   category = ComponentCategory.BASIC,
                    description = "Component for viewing Web pages.  The Home URL can be " +
                    "specified in the Designer or in the Blocks Editor.  The view can be set " +
                    "to follow links when they are tapped, and users can fill in Web forms. " +

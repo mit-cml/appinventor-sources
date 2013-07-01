@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Apps To Google Play - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Google Play             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Uploading Apps to Google Play
+       </h1>
+       Applications built with App Inventor can be uploaded to Google Play!
+       <dl>
+        <dt>
+        <h2>Version Your App</h2>
+        </dt>
+        <dd>
+         <p>
+          Every app you publish must have a <code>VersionCode</code> and a
+          <code>VersionName</code>. You can set these in the designer under the
+          properties panel for the <code>Screen1</code> component.
+         </p>
+         <p>
+          <code>VersionCode</code> is an integer value that will not be visible to
+          Google Play Store users. It is used by other apps to check if your app
+          has been upgraded or downgraded. It defaults to 1 and should be increased by
+          one with every successive change whether it is a major change or a minor change.
+         </p>
+         <p>
+          <code>VersionName</code> is a String which can be anything you would like. It is
+          defaulted to 1.0. A common structure is a decimal number which is
+          increased by 1 for every major change and 0.1 for every minor change. For example,
+          an initial <code>VersionName</code> could be 1.0 which can be updated to 1.1 after
+          a small change and 2.0 after a larger change.
+         </p>
+	 <p>
+	   You will need to increase the VersionCode and change the
+	   VersionName of your application when you upload a new
+	   version to the Play Store.
+	 </p>
+        </dd>
+        <dt>
+         <h2>Download <code>.apk</code></h2>
+        </dt>
+        <dd>
+         <p>
+            Once you are done making your app, you can download your Android
+            <code>.apk</code>
+            file as follows:
+         </p>
+         <p>
+          1. Navigate to the home screen of the app you want to download in App Inventor<br />
+          2. Click the dropdown labled “Package for phone”<br />
+          3. Click “Download to This Computer”<br />
+         </p>
+         <p>
+         This will prompt you to save the application somewhere. Once you have the .apk downloaded, you are ready to begin the publishing process.
+         </p>
+        </dd>
+        <dt>
+         <h2>Publish Your App</h2>
+        </dt>
+        <dd>
+         <p>
+            You can now go
+            to <a href="https://play.google.com/apps/publish/Home" target="_blank">Google Play Publishing Home</a> and follow the steps to publish your app to Google Play.
+         </p>
+         <p>
+            For more details, you may want to start
+            with <a href="http://developer.android.com/guide/publishing/publishing.html"
+            target="_blank">Introduction to Publishing on Google Play</a>
+            and
+            <a href="https://support.google.com/googleplay/android-developer/bin/answer.py?hl=en&answer=113469&topic=2365624&ctx=topic"
+            target="_blank">Google Support on Uploading to Google Play</a>.
+
+         </p>
+        </dd>
+	<dt>
+	  <h2>A Word about Backups</h2>
+	</dt>
+	<dd>
+	  <p>
+	    Once you publish your application in the Google Play
+	    Store, other people will now be depending upon you to fix
+	    bugs and otherwise maintain your application. It is
+	    therefore very important that you backup your
+	    application's source code.. Go to "My Projects", check the
+	    box next to the name of your project and select
+	    "More Options->Download Source." This will download a zip
+	    file which contains your projects source code. Store it in
+	    a safe place!
+	  </p>
+	  <p>
+	    MIT and Google, which operates the App Engine service on
+	    which MIT App Inventor relies, make best efforts to ensure
+	    that MIT App Inventor does not lose projects. HOWEVER WE
+	    CAN OFFER NO GUARANTEE THAT DATA (LIKE YOUR PROJECTS) WILL
+	    NEVER BE LOST. IT IS IMPERATIVE THAT YOU MAKE YOUR OWN BACKUPS!
+	  </p>
+	  <h3>A Word about keystores</h3>
+	  <p>
+	    During the .apk building process your application
+	    is <code>signed</code> with a digital private key which is
+	    associated with your account. Whenever you build a new
+	    version this same key is used to sign the new
+	    version. When an android phone has an application
+	    installed on it, it remembers the key that was used to
+	    sign it. In order to install an updated version of an
+	    application, the new application must be signed by the
+	    same key. It is therefore important that you not lose this
+	    key!
+	  </p>
+	  <p>
+	    Your private digital key is stored in
+	    a <code>keystore</code> file. Normally the MIT App
+	    Inventor server will create this file when needed and
+	    store it for you so you do not need to worry about
+	    it. Although we do not anticipate losing your keystore
+	    file, we recommend that you back it up. From the designer
+	    under "My Projects", under the "More Options" menu there
+	    is a choice labeled "Download Keystore". Select this
+	    option. This will download your keystore file to your
+	    local computer. Save it in a safe place. It
+	    should <b>not</b> be publicly readable as your private
+	    digital key is a secret which should not be shared.
+	  </p>
+	  <p>
+	    If you move your project to another App Inventor server,
+	    you will want to upload your keystore to that server (you
+	    will see that under "More Options" there is a "Upload
+	    Keystore" option as well). You only need to do this if you
+	    are publishing .apk files to Google Play or if you intend
+	    to share your application with other people in general.
+	  </p>
+	  <p>
+	    IF YOUR keyfile IS LOST OR DELETED IT CANNOT BE RECOVERED. If you
+	    were to lose your project's source code, you could always
+	    re-enter it from scratch (this may be a lot of work, but
+	    is something you can do). NEITHER YOU NOR MIT CAN RECOVER A
+	    LOST keyfile. NO AMOUNT OF EFFORT WILL RECOVER IT, SO BE
+	    SURE TO BACK IT UP!!!
+	  </p>
+	</dd>
+
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

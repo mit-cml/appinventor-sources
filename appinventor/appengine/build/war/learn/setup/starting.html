@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Connect To Your Phone - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    div.c2 {text-align: center;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/gettingstarted.html">Getting             Started</a> &gt; <a href="/learn/setup/">Setup</a> &gt; Connect To Your Phone &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Connect App Inventor to Your Phone
+       </h1>
+       <p>
+        App Inventor runs through a Web browser. Your phone will be connected to your
+                computer through a USB cord and your app will emerge on the phone as you work in
+                the Web browser. When you're done, you can "package" your finished app to produce
+                an "application package" (Android apk file) that can be shared around and installed
+                on any Android phone, just like any other Android app.
+       </p>
+       Before you can use App Inventor, your computer and phone need to be set up. If
+              someone has already done this for you, you can continue right below. Otherwise, visit
+       <a href="index.html">
+        Setting up your computer and phone to use App Inventor
+       </a>
+       and
+              then return here.
+       <h2>
+        Create a New Project
+       </h2>
+       <p>
+        Using a web browser to go to
+        <a href="http://appinventor.mit.edu">
+         http://appinventor.mit.edu
+        </a>
+        . You
+                should see an empty Projects page. To create a new project:
+       </p>
+       <ol>
+        <li>
+         Press the
+         <span class="ButtonText">
+          New
+         </span>
+         button near the top left of the
+                page.
+        </li>
+        <li>
+         Enter a project name in the dialog box that appears and press OK.
+        </li>
+       </ol>
+       <p>
+        The browser page should change to look like the figure below. This is the App
+                Inventor
+        <span class="ButtonText">
+         Designer
+        </span>
+        . This is where you'll create the
+                pieces of your apps — buttons, text labels, pictures, and so on — by dragging them
+                from the column of components on the left to the viewer in the center.
+       </p>
+       <div class="c2">
+        <img alt="" height="408" src="StartingAssets/designer.png" width="620" />
+       </div>
+       <h2>
+        Open the Blocks Editor
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         Designer
+        </span>
+        is one of two key tools you'll use in
+                creating your apps. The other is the Blocks Editor. You'll use the Blocks Editor to
+                assign behaviors to your components, such as what should happen when the user taps
+                a button. To open the Blocks editor click on
+        <span class="ButtonText">
+         Open the
+                Blocks Editor
+        </span>
+        button on the Designer screen. This will download the App
+                Inventor Codeblocks Application and start the Blocks Editor. This brings up a new
+                window, as in the figure below.
+       </p>
+       <div class="c2">
+        <img alt="" height="356" src="StartingAssets/blockseditor.png" width="620" />
+       </div>
+       <blockquote class="notice">
+        <b>
+         Tips:
+        </b>
+        <ol>
+         <li>
+          It may take 30 seconds or so to download and start the Blocks Editor
+                  &amp;mdash that's normal. You'll also need to allow permission for the
+                  application to run.
+         </li>
+         <li>
+          Depending on how your browser is configured, it might download the
+                  application, but not automatically launch the Blocks editor, in which case you'll
+                  have to launch the application manually after it downloads.
+         </li>
+         <li>
+          When the Blocks editor starts, it attempts to find the adb (Android Debug
+                  Bridge) program, which it uses to connect to the phone. If App Inventor cannot
+                  locate the program automatically, it will ask you to enter the location where adb
+                  is stored. Be sure to enter the complete file name, including (on the Mac or
+                  GNU/Linux) adb, and (on Windows) adb.exe. Once you've entered this, App Inventor
+                  will remember the location for future sessions. If you change computers, you may
+                  need to enter a new location.
+         </li>
+         <li>
+          App Inventor will become confused if, in the step above, you enter the name
+                  of a path that exists on your computer but is not the adb program -- for example,
+                  if you enter just the directory name without adb or adb.exe. App Inventor will
+                  now keep trying to use this "bad" path as a place to find adb. One way to fix
+                  this is to temporarily rename the file or directory at the path you entered, so
+                  that App Inventor won't find something at that path. That will make App Inventor
+                  forget the bad path it is using. Then you can undo the name change, restart the
+                  Block Editor, and enter the correct place for it to look.
+         </li>
+        </ol>
+       </blockquote>
+       <h2>
+        Connect the Phone to the Computer
+       </h2>
+       <p>
+        To finish connecting the phone to your computer, select it from the list
+        of available devices at the top of the Blocks Editor in the
+        <span class="ButtonText">
+         Connect to Device...
+        </span>
+        list as shown in the following picture (the number of your device will
+        be different):
+       </p>
+       <div class="c2">
+        <img alt="" height="78" src="StartingAssets/list_available_devices.png" width="344" />
+       </div>
+       <p>
+        Once the device is connected, the phone icon beside the list should
+        change to a green colour:
+       </p>
+
+       <div class="c2">
+        <img alt="" height="40" src="StartingAssets/device_icon_green.png" width="344"/>
+       </div>
+       <p>
+        Unfolding the list again, a green arrow will appear beside the name of
+        the connected device:
+       </p>
+       <div class="c2">
+        <img alt="" height="78" src="StartingAssets/arrow_on_selected_device.png" width="344"/>
+       </div>
+       <p>
+        Selecting the device again will open up a dialog box that will allow you
+        to restart the app on the device:
+       </p>
+       <div class="c2">
+        <img alt="" height="110" src="StartingAssets/restart_app_on_device.png" width="700"/>
+       </div>
+       <p>
+        The phone should start the AppInventor Phone Application, which
+                displays on the phone as a blank white screen with the word
+        <span class="ButtonText">
+         Screen1
+        </span>
+        at the top, as shown here:
+       </p>
+       <div class="c2">
+        <img alt="" height="402" src="StartingAssets/PhoneApp.png" width="300" />
+       </div>
+       Later, while you're working, you can use the Restart Phone App button to
+              restart the phone if things get hung up. Also, if the phone becomes disconnected, the
+              button will change back to Connect to Phone as a signal that the connection has
+              broken. You can press the button to reconnect.
+       <p>
+        At last, everything is set up. You're ready to go to
+        <a href="/learn/tutorials/index.html">
+         the tutorials
+        </a>
+        to work on your first App Inventor
+                app!
+       </p>
+       <blockquote class="notice">
+        <b>
+         Tips:
+        </b>
+        <ol>
+         <li>
+          If your app on the phone doesn't look or act as you expect it to, try
+                  clicking the Restart Phone App button to reload your current project to the
+                  phone. This is a good troubleshooting approach.
+         </li>
+         <li>
+          If App Inventor is unable to communicate with the app on the phone the button
+                  text will change back to
+          <span class="ButtonText">
+           Connect to Phone
+          </span>
+         </li>
+         <li>
+          If you unplug your phone from your computer or close the Blocks Editor
+                  window, your app on the phone will go away. Don't worry, it will come back the
+                  next time you plug in your phone and click the
+          <span class="ButtonText">
+           Connect
+                  to Phone
+          </span>
+          button
+         </li>
+        </ol>
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

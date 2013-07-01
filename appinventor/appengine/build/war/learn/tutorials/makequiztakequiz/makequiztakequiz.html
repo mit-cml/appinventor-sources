@@ -1,0 +1,2725 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Make Quiz Take Quiz - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Make             Quiz Take Quiz &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        MakeQuiz and TakeQuiz
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+       <div class="imagecontainer">
+        <img align="right" alt="" height="453" src="MakeQuizAssets/MakeQuizEmulator.png" width="197" />
+       </div>
+       <p>
+        MakeQuiz and TakeQuiz are two apps that, in tandem, allow a teacher to create
+                quizzes for a student. Parents can create fun trivia apps for their children during
+                a long road trip, grade school teachers can build "Math Blaster" quizzes, and
+                college students can build quizzes to help their study groups prepare for a final.
+                This tutorial will walk you through creating both the MakeQuiz and the TakeQuiz
+                app.
+       </p>
+       <p>
+        This tutorial is a followup of the
+        <a href="/learn/tutorials/quizme/quizme.html">
+         QuizMe tutorial
+        </a>
+        -- if you haven't
+                completed that tutorial you should do so before continuing.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it MakeQuiz, and
+                also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to MakeQuiz. Open the
+        <span class="ButtonText">
+         Blocks Editor
+        </span>
+        and connect to the phone.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design two apps, MakeQuiz for the "teacher" and TakeQuiz for the "student".
+                With MakeQuiz:
+       </p>
+       <ul>
+        <li>
+         The user enters questions and answers in an input form.
+        </li>
+        <li>
+         The previously entered question-answer pairs are displayed.
+        </li>
+        <li>
+         The quiz is stored persistently, in a database.
+        </li>
+       </ul>
+       <p>
+        TakeQuiz will work similarly to the
+        <a href="/learn/tutorials/quizme/quizme.html">
+         QuizMe
+        </a>
+        app-- in fact you'll build it
+                using QuizMe as a basis. TakeQuiz will differ in that the questions asked will be
+                those that were entered into the database using MakeQuiz.
+       </p>
+       <p>
+        This tutorial introduces the following App Inventor concepts:
+       </p>
+       <ul>
+        <li>
+         Input forms for allowing the user to enter information.
+        </li>
+        <li>
+         Displaying lists: serializing a list variable to display it on separate lines.
+        </li>
+        <li>
+         Persistent data: MakeQuiz will save the quiz questions and answers in a
+                database and TakeQuiz will load them in from the database.
+        </li>
+        <li>
+         Data Sharing: the two apps together illustrate how two phones (and even two
+                apps) can communicate through a shared, web database:
+        </li>
+       </ul>
+       <div class="imagecontainer">
+        <img alt="" height="192" src="MakeQuizAssets/dbdiagram.png" width="315" />
+       </div>
+       <h2>
+        Set up the Components for MakeQuiz
+       </h2>
+       <p>
+        Use the Component Designer to create the interface for MakeQuiz. When you finish,
+                it should look something like the snapshot below (there are also more detailed
+                instructions below the snapshot).
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="594" src="MakeQuizAssets/makeQuizComponents.png" width="950" />
+       </div>
+       <p>
+        You'll use the following components to create MakeQuiz. Drag each component from
+                the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        and name it as specified below:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c3">
+            &nbsp;
+            <strong>
+             Component Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c4" nowrap="nowrap">
+            <strong>
+             Palette Group
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c5">
+            &nbsp;
+            <strong>
+             What you'll name it
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c6" nowrap="nowrap">
+            &nbsp;
+            <strong>
+             Purpose of Component
+            </strong>
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             HorizontalArrangement
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Screen Arrangement
+           </td>
+           <td>
+            <span class="ButtonText">
+             HorizontalArrangement1
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            Display the question prompt and texbox on one line
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             Label1
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            The "Question:" prompt
+           </td>
+          </tr>
+          <tr>
+           <td class="c3">
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+           </td>
+           <td class="c5">
+            <span class="ButtonText">
+             QuestionText
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            User enters questions here
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             HorizontalArrangement
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Screen Arrangement
+           </td>
+           <td>
+            <span class="ButtonText">
+             HorizontalArrangement2
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            Display the answer prompt and textbox on one line
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             Label2
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            The "Answer:" prompt
+           </td>
+          </tr>
+          <tr>
+           <td class="c3">
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+            <br />
+           </td>
+           <td class="c5">
+            <span class="ButtonText">
+             AnswerText
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            User enters answers here
+           </td>
+          </tr>
+          <tr>
+           <td class="c3">
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+            <br />
+           </td>
+           <td class="c5">
+            <span class="ButtonText">
+             SubmitButton
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            User clicks to submit a QA pair.
+           </td>
+          </tr>
+          <tr>
+           <td class="c3">
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Basic
+           </td>
+           <td class="c5">
+            <span class="ButtonText">
+             QuestionsAnswersLabel
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            This will display previously entered QAs
+           </td>
+          </tr>
+          <tr>
+           <td class="c3">
+            <span class="ButtonText">
+             TinyWebDB
+            </span>
+           </td>
+           <td class="c4" nowrap="nowrap">
+            Not Ready for Prime Time
+           </td>
+           <td class="c5">
+            <span class="ButtonText">
+             TinyWebDB1
+            </span>
+           </td>
+           <td class="c6" nowrap="nowrap">
+            to store to and retrieve from database
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Set the properties of the components in the following way:
+       </p>
+       <ul>
+        <li>
+         Set the text of
+         <span class="ButtonText">
+          Label1
+         </span>
+         to "Question": and the
+                text of
+         <span class="ButtonText">
+          Label2
+         </span>
+         to "Answer":
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Hint
+         </span>
+         of
+         <span class="ButtonText">
+          QuestionText
+         </span>
+         to "enter a question" and the
+         <span class="ButtonText">
+          Hint
+         </span>
+         of
+         <span class="ButtonText">
+          AnswerText
+         </span>
+         to "enter an
+                answer".
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          SubmitButton
+         </span>
+         to
+         <span class="ButtonText">
+          "
+         </span>
+         Submit
+         <span class="ButtonText">
+          "
+         </span>
+        </li>
+        <li>
+         Set the
+         <span class="ButtonText">
+          Text
+         </span>
+         of
+         <span class="ButtonText">
+          QuestionsAnswersLabel
+         </span>
+         to "Questions and Answers".
+        </li>
+       </ul>
+       <p>
+        Put
+        <span class="ButtonText">
+         Label1
+        </span>
+        and
+        <span class="ButtonText">
+         QuestionText
+        </span>
+        in
+        <span class="ButtonText">
+         HorizontalArrangement1
+        </span>
+        , and
+        <span class="ButtonText">
+         Label2
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerText
+        </span>
+        in
+        <span class="ButtonText">
+         HorizontalArrangement2
+        </span>
+        .
+       </p>
+       <h2>
+        Add Behaviors to the Components
+       </h2>
+       <p>
+        Open the Blocks Editor to add the behaviors for the app. As with the original
+                QuizMe app, you'll first define some
+        <em>
+         global variables
+        </em>
+        for the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        ,
+                but this time you won't provide fixed questions and answers. You'll need the
+                following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" width="220">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" width="232">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" width="499">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c7">
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("QuestionList")
+            <br />
+           </td>
+           <td class="ButtonText c8">
+            Definitions
+           </td>
+           <td class="c9">
+            Defines the
+            <span class="ButtonText">
+             QuestionList
+            </span>
+            variable (rename
+                        it)
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c7">
+            <span class="ButtonText">
+             def variable
+            </span>
+            ("AnswerList")
+           </td>
+           <td class="ButtonText c8">
+            Definitions
+           </td>
+           <td class="c9">
+            Defines the
+            <span class="ButtonText">
+             AnswerList
+            </span>
+            variable (rename it)
+           </td>
+          </tr>
+          <tr>
+           <td class="c10" height="29">
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td class="c8">
+            Lists
+           </td>
+           <td class="c9">
+            to set up the
+            <span class="ButtonText">
+             QuestionList
+            </span>
+            for new items
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td class="c8">
+            Lists
+            <br />
+           </td>
+           <td class="c9">
+            to set up the
+            <span class="ButtonText">
+             AnswerList
+            </span>
+            for new items
+            <br />
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="MakeQuizAssets/lists.png" />
+       </div>
+       <p>
+        Note that, unlike the original QuizMe app, the lists are empty to begin with. This
+                is because with MakeQuiz and TakeQuiz, all data is created by the user of the app
+                (it is
+        <em>
+         user-generated
+        </em>
+        ).
+        <br />
+       </p>
+       <h2>
+        Handle the User's entries
+       </h2>
+       <p>
+        The first behavior you'll build is for handling the user's input. Specifically,
+                when the user enters a question and answer and clicks submit, you'll use
+        <span class="ButtonText">
+         add item to list
+        </span>
+        blocks to update the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        .
+        <br />
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" nowrap="nowrap" width="220">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" nowrap="nowrap" width="232">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" nowrap="nowrap" width="499">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c7" nowrap="nowrap">
+            <span class="ButtonText">
+             SubmitButton.Click
+            </span>
+            <br />
+           </td>
+           <td class="ButtonText c8" nowrap="nowrap">
+            SubmitButton
+           </td>
+           <td class="c9" nowrap="nowrap">
+            This event is triggered when the user clicks this button.
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c7" nowrap="nowrap">
+            <span class="ButtonText">
+             add items to list
+            </span>
+            (2)
+           </td>
+           <td class="ButtonText c8" nowrap="nowrap">
+            Lists
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Use these to add the data entered by the user to the lists
+           </td>
+          </tr>
+          <tr>
+           <td class="c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Plug into
+            <span class="ButtonText">
+             list
+            </span>
+            slot of first
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             QuestionText.Text
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            QuestionText
+            <br />
+           </td>
+           <td class="c9" nowrap="nowrap">
+            User's entry; plug it into
+            <span class="ButtonText">
+             item
+            </span>
+            slot of
+                        first
+            <span class="ButtonText">
+             add items to list.
+            </span>
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             global AnswerList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Plug into
+            <span class="ButtonText">
+             list
+            </span>
+            slot of second
+            <span class="ButtonText">
+             add items to list
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             AnswerText.Text
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            AnswerText
+           </td>
+           <td class="c9" nowrap="nowrap">
+            User's entry; plug it into
+            <span class="ButtonText">
+             item
+            </span>
+            slot of
+                        second
+            <span class="ButtonText">
+             add items to list
+            </span>
+            .
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" height="255" src="MakeQuizAssets/submitNoDisplay.png" width="367" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        <span class="ButtonText">
+         add items to list
+        </span>
+        appends each item to the end of a
+                list. Here, the app takes the text the user has entered in the
+        <span class="ButtonText">
+         QuestionText
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerText
+        </span>
+        text boxes and appends each to the corresponding list.
+       </p>
+       <p>
+        The behavior updates the hidden
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        variables, but the changes are not shown
+                to the user. To display these lists, create a procedure "displayQAs" which makes a
+                text object with both lists and places it into the QuestionsAnswersLabel. Then make
+                sure to call the procedure at the bottom of SubmitButton.Click. You'll need the
+                following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" nowrap="nowrap" width="220">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" nowrap="nowrap" width="232">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" nowrap="nowrap" width="499">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             procedure
+            </span>
+            "displayQAs"
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            put the code to display questions and answers here
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             set QuestionsAnswersLabel.Text to
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            QuestionsAnswersLabel
+           </td>
+           <td class="c9" nowrap="nowrap">
+            display the lists in this label.
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            make a text object out of two lists and a colon separator
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             text
+            </span>
+            (":")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             global AnswerList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             call displayQAs
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            place in the bottom of the SubmitButton.Click event-handler
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="284" src="MakeQuizAssets/displayQAs1.png" width="943" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        procedure is called after the lists
+                are modified in
+        <span class="ButtonText">
+         SubmitButton.Click
+        </span>
+        . The
+        <span class="ButtonText">
+         QuestionsAnswersLabel
+        </span>
+        is modified to display the
+                two lists separated by a colon. By default, App Inventor displays lists with
+                surrounding parenthesis and spaces between items:
+       </p>
+       <blockquote>
+        (item1 item2 item3)
+       </blockquote>
+       <p>
+        Of course, this is not the ideal way to display the lists, but it will allow you to
+                test your behavior for now. Later, you'll modify the
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        procedure to display a list on separate lines, and
+                to display each question together with its corresponding answer.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        On the phone, enter a question and answer and
+                click Submit. The app should display the single entry in the QuestionList, a colon,
+                and then the single entry in the AnswerList. Add a second question and answer to
+                make sure the lists are being created correctly.
+        <br />
+       </blockquote>
+       <h2>
+        Blanking Out the Question and Answer
+       </h2>
+       <p>
+        When a user submits a question-answer pair, you should clear the
+        <span class="ButtonText">
+         QuestionText
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerText
+        </span>
+        text boxes so they're ready for a new entry.
+       </p>
+       <p>
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" width="220">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" width="232">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" width="499">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             set QuestionText.Text to
+            </span>
+           </td>
+           <td class="c8">
+            QuestionText
+            <br />
+           </td>
+           <td class="c9">
+            To blank out question
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             set AnswerText.Text to
+            </span>
+           </td>
+           <td class="c8">
+            AnswerText
+           </td>
+           <td class="c9">
+            To blank out answer
+           </td>
+          </tr>
+          <tr>
+           <td class="c10">
+            <span class="ButtonText">
+             text
+            </span>
+            (2 blank ones)
+           </td>
+           <td class="c8">
+            &nbsp;
+           </td>
+           <td class="c9">
+            &nbsp;
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Here's how the blocks for the updated event handler should look:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" height="359" src="MakeQuizAssets/submitWithBlank.png" width="365" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the user submits a new question and answer, they are added to their respective
+                lists. At that point, the text in the
+        <span class="ButtonText">
+         QuestionText
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerText
+        </span>
+        is "blanked out" with empty text
+                blocks (you create an empty text block by clicking on the the block's text and
+                pressing the delete button).
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior
+        </strong>
+        . Add some questions and answers. When you submit
+                them, the QuestionText and AnswerText should show only their hint (when a TextBox's
+                Text property is empty it shows the hint until the user clicks it).
+       </blockquote>
+       <h2>
+        Storing the questions and answers in a database
+       </h2>
+       <p>
+        As is, the app records the questions and answers entered by the user, but only in
+                the phone's temporary memory. All variables in App Inventor are transient data--
+                they are stored on the phone and the data only "lives" through one run of an app.
+                When the user closes the app, the data is lost.
+       </p>
+       <p>
+        The MakeQuiz app needs to record the questions and answers in a database. This will
+                allow the quiz creator (teacher) to always edit the latest update of the quiz. It
+                will also allow the TakeQuiz app to load the quiz and administer it to the student.
+       </p>
+       <p>
+        You'll use the
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        component to store and
+                retrieve the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        to and from a database.
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        allows you to store data in AppInventor-compliant
+                databases that live on the web instead of on the phone.
+        <br />
+        <br />
+        The general scheme for storing a list persistently is the following: each time a
+                new item is added to the list, use
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        to
+                update the database version of the list. Then each time the app is opened
+                (Screen1.Initialize event), reload the database version of the list into the
+                variable.
+       </p>
+       <p>
+        Start by storing the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        in the database each time the user enters a new
+                pair. You'll need the following blocks:
+        <br />
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" width="314">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" nowrap="nowrap" width="196">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" width="441">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c11" height="42">
+            <span class="ButtonText">
+             TinyWebDB1.StoreValue
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            TinyWebDB1
+            <br />
+           </td>
+           <td class="c9">
+            for storing questions in the database
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             text
+            </span>
+            ("questions")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9">
+            Plug in "questions" as the tag of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9">
+            plug into the value slot of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             TinyWebDB1.StoreValue
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            TinyWebDB1
+           </td>
+           <td class="c9">
+            for storing answers in the database
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             text
+            </span>
+            ("answers")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9">
+            Plug in "answers" as the tag of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             global AnswerList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9">
+            plug into the value slot of
+            <span class="ButtonText">
+             StoreValue
+            </span>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" height="493" src="MakeQuizAssets/submitWithStore.png" width="459" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The last two rows of blocks store data in the database. The tag arguments label the
+                data being stored so that you can retrieve it later. The
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        is stored with a tag of "questions" while the
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        is stored with a tag of "answers".
+       </p>
+       <p>
+        Although our example uses "questions" as the tag, you should actually use your own
+                tag, e.g., "DavesQuestions", because by default, the database entries of all App
+                Inventor programs share the same namespace and so your list of questions may get
+                confused with someone else's list of questions since you both used the same tag.
+                For more information, see
+        <a href="/learn/reference/other/tinywebdb.html">
+         Creating
+                a Custom TinyWebDB service
+        </a>
+        .
+       </p>
+       <blockquote class="testing">
+        <p>
+         <strong>
+          Test this behavior.
+         </strong>
+         TinyWebDB stores information on the web, so
+                  you can open a browser page to test whether this behavior is working. By default,
+                  TinyWebDB stores information at
+         <a href="http://appinvtinywebdb.appspot.com/">
+          http://appinvtinywebdb.appspot.com
+         </a>
+         .
+                  Browse there to check if your data was stored as desired. There will be many
+                  entries, as the default service is for testing and is used by many programmers.
+                  If you search on the page, you should find the tag-value pairs you just stored.
+        </p>
+        <p>
+         Because the default service is shared amongst programmers and apps, it is only
+                  for testing. Fortunately, setting up your own database service is straight
+                  forward. For more information, see
+         <a href="/learn/reference/other/tinywebdb.html">
+          Creating a Custom TinyWebDB service
+         </a>
+         .
+        </p>
+       </blockquote>
+       <h2>
+        Loading Data from the Database
+       </h2>
+       <p>
+        Once the blocks for storing the lists are working, you can add the blocks for
+                loading the lists back in each time the app begins.
+        <br />
+        <br />
+        Loading data from a
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        database is a
+                two-step process. First, you request the data by calling
+        <span class="ButtonText">
+         TinyWebDB.GetValue
+        </span>
+        and providing a tag.
+        <br />
+        <br />
+        <span class="ButtonText">
+         GetValue
+        </span>
+        only
+        <em>
+         requests
+        </em>
+        the data from the
+                web service. After the request is made, your app can do other things, such as
+                responding to user actions, while it waits for the
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        web service to send the data. When the data arrives,
+                a
+        <span class="ButtonText">
+         TinyWebDB.GotValue
+        </span>
+        event is triggered. When that
+                event occurs, the data requested is in a variable named "valueFromWebDB". The tag
+                you requested is in the variable "tagFromWebDB". You can access these variables in
+                the
+        <span class="ButtonText">
+         TinyWebDB.GotValue
+        </span>
+        event handler.
+        <br />
+        <br />
+        In this case, the app needs to request two things from the
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        web service, the questions and the answers, so the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        will make two calls to
+        <span class="ButtonText">
+         getValue
+        </span>
+        . When the data arrives and the
+        <span class="ButtonText">
+         GotValue
+        </span>
+        event-handler is triggered, the app should
+                check the tag to see which request has arrived, and then load the corresponding
+                list. Once the lists are both loaded, displayQAs can be called to display them.
+        <br />
+        <br />
+        You'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" width="314">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" nowrap="nowrap" width="196">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" nowrap="nowrap" width="441">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c11" height="29">
+            <span class="ButtonText">
+             Screen1.Initialize
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Screen1
+            <br />
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Event handler triggered when app begins
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             TinyWebDB.GetValue
+            </span>
+            (2)
+           </td>
+           <td class="c8" nowrap="nowrap">
+            TinyWebDB
+           </td>
+           <td class="c9" nowrap="nowrap">
+            to request the stored
+            <span class="ButtonText">
+             QuestionList
+            </span>
+            and
+            <span class="ButtonText">
+             AnswerList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             text
+            </span>
+            ("questions")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            use as the tag to retrieve
+            <span class="ButtonText">
+             QuestionList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             text
+            </span>
+            ("answers")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            use as the tag to retrieve
+            <span class="ButtonText">
+             AnswerList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             TinyWebDB.GotValue
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            TinyWebDB
+           </td>
+           <td class="c9" nowrap="nowrap">
+            event handler triggered when data arrives
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             ifelse
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Control
+           </td>
+           <td class="c9" nowrap="nowrap">
+            need to ask which
+            <span class="ButtonText">
+             GetValue
+            </span>
+            request arrived
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             =
+            </span>
+            block
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Math
+           </td>
+           <td class="c9" nowrap="nowrap">
+            compare
+            <span class="ButtonText">
+             tagFromWebDB
+            </span>
+            to "questions"
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             text
+            </span>
+            ("questions")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            this is the tag that was used to store
+            <span class="ButtonText">
+             QuestionList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             value TagFromWebDB
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            An argument of
+            <span class="ButtonText">
+             GotValue
+            </span>
+            , specifies which
+                        request
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             set QuestionList to
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            if
+            <span class="ButtonText">
+             TagFromWebDB
+            </span>
+            is "questions" this list
+                        will be set
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             set AnswerList to
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            if
+            <span class="ButtonText">
+             TagFromWebDB
+            </span>
+            is not "questions" this
+                        list will be set
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29">
+            <span class="ButtonText">
+             value ValueFromWebDB
+            </span>
+            (2)
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            this holds the value returned from database
+           </td>
+          </tr>
+          <tr>
+           <td nowrap="nowrap">
+            <span class="ButtonText">
+             if
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Control
+           </td>
+           <td class="c9" nowrap="nowrap">
+            check if both the lists are loaded before displaying
+           </td>
+          </tr>
+          <tr>
+           <td class="c7" nowrap="nowrap">
+            <span class="ButtonText">
+             =
+            </span>
+            block
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Math
+           </td>
+           <td class="c9" nowrap="nowrap">
+            compare the lengths of the lists
+           </td>
+          </tr>
+          <tr>
+           <td class="c7" nowrap="nowrap">
+            <span class="ButtonText">
+             length of list
+            </span>
+            (2)
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Lists
+           </td>
+           <td class="c9" nowrap="nowrap">
+            check if the length of the lists are the same
+           </td>
+          </tr>
+          <tr>
+           <td nowrap="nowrap">
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into one of the length of list blocks
+           </td>
+          </tr>
+          <tr>
+           <td nowrap="nowrap">
+            <span class="ButtonText">
+             global AnswerList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into the other length of list block
+           </td>
+          </tr>
+          <tr>
+           <td nowrap="nowrap">
+            <span class="ButtonText">
+             call displayQAs
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            display the newly loaded questions and answers
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="482" src="MakeQuizAssets/gotValue.png" width="847" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the app begins, the
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event
+                is triggered. The app calls
+        <span class="ButtonText">
+         TinyWebDB1.GetValue
+        </span>
+        twice, once to request the stored QuestionList and once to request the stored
+        <span class="ButtonText">
+         AnswerList.
+        </span>
+        After requesting the data, the app can
+                handle other events while it waits for the web database to answer the request.
+       </p>
+       <p>
+        When the data arrives from the web database, the
+        <span class="ButtonText">
+         TinyWebDB1.GotValue
+        </span>
+        event is triggered. Since two requests were
+                made, it will be triggered twice, once for each list.
+       </p>
+       <p>
+        In the
+        <span class="ButtonText">
+         GotValue
+        </span>
+        event-handler, the value returned
+                is in the variable
+        <span class="ButtonText">
+         valueFromWebDB
+        </span>
+        . The
+                corresponding tag is in
+        <span class="ButtonText">
+         tagFromWebDB
+        </span>
+        . The blocks
+                first check to see which request has returned (even though the request for
+                "questions" is made first in
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        ,
+                there is no guarantee that the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        will
+                arrive first). If the tag is "questions", the
+        <span class="ButtonText">
+         valueFromWebDB
+        </span>
+        is put into the variable
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        . Otherwise (else) it is placed in the
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        .
+       </p>
+       <p>
+        At the bottom of
+        <span class="ButtonText">
+         GotValue
+        </span>
+        , the app checks to see if
+                both lists have been loaded-- one way to check is to see if the lengths of the
+                lists are the same. If they are,
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        is
+                called to display them on the phone.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        Select Restart Phone in the Blocks Editor.
+                When the app initializes, it should display the previously entered questions and
+                answers. If you close the app and restart again, the previous quiz should still
+                appear.
+       </blockquote>
+       <p>
+        The version of MakeQuiz you've created so far works: the user can create a quiz and
+                it will be stored persistently in the database. If you can accept the fact that the
+                quiz is displayed in an inelegant way, you can proceed to creating the sister app,
+        <a href="#takeQuiz">
+         TakeQuiz
+        </a>
+        , which lets a user step through the quiz and
+                answer the questions.
+       </p>
+       <p>
+        If you'd like to learn how to display list data in a more elegant fashion, step
+                through the steps directly below.
+       </p>
+       <h2>
+        Displaying a List on Multiple Lines
+       </h2>
+       <p>
+        In the app you've built so far, the question and answer lists are displayed
+                separately and with the default list display format, e.g.,
+       </p>
+       <blockquote>
+        (question1 question2 question3): (answer1 answer2 answer3)
+       </blockquote>
+       <p>
+        In this section, you'll modify the app so that the newly entered question-answer
+                pairs are displayed in tandem, one on each line:
+       </p>
+       <blockquote>
+        question1:answer1
+        <br />
+        question2:answer2
+        <br />
+        question3:answer3
+        <br />
+       </blockquote>
+       <p>
+        Displaying the data in this way is non-trivial, so you'll start by first displaying
+                a single list, the
+        <span class="ButtonText">
+         QuestionList,
+        </span>
+        with each item on
+                a separate line.
+       </p>
+       <blockquote class="notice">
+        To display a list on separate lines, you must
+        <em>
+         serialize it
+        </em>
+        . This means to
+                build a single text object with all the items of the list in it and a special
+                character, '\n', between each item. A "\n" within a text object appears as a
+                newline character when displayed.
+        <br />
+        <br />
+        For example, suppose the user has entered two questions, "What is the capital of
+                California?" and "What is the capital of New York?" and these have succesfully been
+                added to the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        . Your
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        procedure should build a text object from
+                QuestionList that looks like:
+        <blockquote>
+         "\nWhat is the capital of California\nWhat is the capital of New York?"
+        </blockquote>
+        <p>
+         When displayed on the phone, such text would appear as:
+         <br />
+         <br />
+         <span>
+          &nbsp;&nbsp;&nbsp;
+         </span>
+         What is the capital of California?
+         <br />
+         <span>
+          &nbsp;&nbsp;&nbsp;
+         </span>
+         What is the capital of New York?
+        </p>
+       </blockquote>
+       All the changes will occur in the procedure
+       <span class="ButtonText">
+        displayQAs
+       </span>
+       . You'll remove the blocks within that procedure, and
+              use a
+       <span class="ButtonText">
+        foreach
+       </span>
+       block to build the text by successively
+              adding each question. The blocks within the
+       <span class="ButtonText">
+        foreach
+       </span>
+       should add the current item (question) to the end of the text object (
+       <span class="ButtonText">
+        QuestionsAnswersLabel
+       </span>
+       ) you are building. You'll need the
+              following blocks:
+       <br />
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header c7" nowrap="nowrap" width="314">
+            <strong>
+             &nbsp;Block Type
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c8" nowrap="nowrap" width="196">
+            <strong>
+             Drawer
+            </strong>
+            <br />
+           </td>
+           <td class="tbl-header c9" nowrap="nowrap" width="441">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             set QuestionsAnswersLabel.Text to
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            QuestionsAnswersLabel
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Initialize the label to empty before repeatedly adding to it
+           </td>
+          </tr>
+          <tr>
+           <td class=" c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             text
+            </span>
+            (blank)
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into
+            <span class="ButtonText">
+             set QuestionsAnswersLabel.Text to
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Control
+           </td>
+           <td class="c9" nowrap="nowrap">
+            For each item in list, you'll concatenate it to the
+            <span class="ButtonText">
+             QuestionsAnswersLabel
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             name var
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            already in foreach
+           </td>
+           <td class="c9" nowrap="nowrap">
+            the current item of
+            <span class="ButtonText">
+             foreach
+            </span>
+            ; rename it to
+                        "question"
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug this into "in list" slot of
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             set QuestionsAnswersLabel.Text to
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            QuestionsAnswersLabel
+           </td>
+           <td class="c9" nowrap="nowrap">
+            Iteratively build the text
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            build a text object
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             QuestionsAnswersLabel.Text
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            QuestionsAnswersLabel
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into make text
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             value question
+            </span>
+           </td>
+           <td class="c8" nowrap="nowrap">
+            My Definitions
+           </td>
+           <td class="c9" nowrap="nowrap">
+            plug into make text (make sure you've renamed foreach variable to
+                        "question" )
+           </td>
+          </tr>
+          <tr>
+           <td class="ButtonText c10" height="29" nowrap="nowrap">
+            <span class="ButtonText">
+             text
+            </span>
+            ("\n")
+           </td>
+           <td class="c8" nowrap="nowrap">
+            Text
+           </td>
+           <td class="c9" nowrap="nowrap">
+            New-line character so following text on another line
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="MakeQuizAssets/displayQA1.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the procedure is called, the
+        <span class="ButtonText">
+         QuestionsAnswersLabel.Text
+        </span>
+        is first set to the empty text. This
+                is in preparation for the foreach block that comes next, which will build the text
+                in
+        <span class="ButtonText">
+         QuestionsAnswersLabel.Text
+        </span>
+        incrementally.
+        <br />
+        <br />
+        The foreach block specifies that the blocks within it are to be executed once for
+                every item in
+        <span class="ButtonText">
+         QuestionList.
+        </span>
+        If there are three
+                questions, then the inner blocks will be executed three times. Within the foreach,
+                the current item being processed is named
+        <span class="ButtonText">
+         question
+        </span>
+        .
+       </p>
+       <p>
+        On each iteration,
+        <span class="ButtonText">
+         QuestionsAnswersLabel.Text
+        </span>
+        is
+                modified. Each time it is set to its previous value, along with the newline
+                character, "\n" and the current question being processed.
+        <br />
+        <br />
+        When the
+        <span class="ButtonText">
+         foreach
+        </span>
+        completes,
+        <span class="ButtonText">
+         QuestionsAnswersLabel.Text
+        </span>
+        will be text string with all the
+                items separated by newline characters. As the app is processing each iteration of
+                the
+        <span class="ButtonText">
+         foreach
+        </span>
+        , the phone display doesn't change. But
+                when it completes, the text in
+        <span class="ButtonText">
+         QuestionsAnswersLabel.Text
+        </span>
+        is displayed on the phone and the
+                items appear on separate lines.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        On the phone, add another question and answer
+                and click Submit. Now, only the questions should be displayed and they should be
+                displayed on separate lines.
+       </blockquote>
+       <br />
+       <h2>
+        Including the answer in DisplayQAs
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        procedure you've created ignores
+                answers and only displays questions. In the next version of
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        , you'll display the data as question-answer pairs,
+                e.g.,
+        <br />
+        <br />
+        <span>
+         &nbsp;&nbsp;&nbsp;
+        </span>
+        What is the capital of California?: Sacramento
+        <br />
+        <span>
+         &nbsp;&nbsp;&nbsp;
+        </span>
+        What is the capital of New York?: Albany
+        <br />
+       </p>
+       <p>
+        Modify
+        <span class="ButtonText">
+         displayQAs
+        </span>
+        . Use an index variable to access
+                each answer as the
+        <span class="ButtonText">
+         foreach
+        </span>
+        block walks through the
+                questions. You'll need the following blocks:
+        <br />
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def var
+            </span>
+            ( "answer")
+           </td>
+           <td>
+            Definitions
+            <br />
+           </td>
+           <td>
+            To temporarily store each answer
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def var
+            </span>
+            ( "answerIndex")
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            To keep track of which answer (and question) you're on
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("text")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Initialize the variable
+            <span class="ButtonText">
+             answer
+            </span>
+            to text.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            Initialize the variable
+            <span class="ButtonText">
+             answerIndex
+            </span>
+            to 1
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set answerIndex to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            Re-initialize
+            <span class="ButtonText">
+             answerIndex
+            </span>
+            each time
+            <span class="ButtonText">
+             displayQAs
+            </span>
+            called
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            to re-initialize
+            <span class="ButtonText">
+             answerIndex
+            </span>
+            to 1
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set answer to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            set this variable each time in the
+            <span class="ButtonText">
+             foreach
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             select list item
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            select from the list
+            <span class="ButtonText">
+             AnswerList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global AnswerList
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into list slot of
+            <span class="ButtonText">
+             select list item
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global answerIndex
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            plug into index slot of
+            <span class="ButtonText">
+             select list item
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set answerIndex to
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            In order to increment it each iteration through loop
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global answerIndex
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            to increment
+            <span class="ButtonText">
+             answerIndex
+            </span>
+            , add 1 to itself.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            to increment
+            <span class="ButtonText">
+             answerIndex
+            </span>
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="MakeQuizAssets/displayQAsWithAnswers.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         foreach
+        </span>
+        only allows you to iterate through one
+                list. In this case, there are two lists and you need to step through and select
+                each answer as you proceed through the questions. The strategy is to use an index
+                variable, as was done with the
+        <span class="ButtonText">
+         currentQuestionIndex
+        </span>
+        in the QuizMe tutorial.
+       </p>
+       <p>
+        For this behavior, the index is a position in the
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        , so its named
+        <span class="ButtonText">
+         answerIndex
+        </span>
+        . The index is set to 1 before the foreach begins.
+                Within the
+        <span class="ButtonText">
+         foreach
+        </span>
+        , it is used to select the
+                current answer from the
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        , and then it is
+                incremented.
+       </p>
+       <p>
+        <strong>
+         Test this behavior
+        </strong>
+        . On the phone, add some more question/answer
+                pairs. The display should now show each question with its corresponding answer, and
+                each question:answer pair on separate lines.
+       </p>
+       <h2>
+        Final MakeQuiz App
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" height="568" src="MakeQuizAssets/makeQuizFinal.png" width="900" />
+       </div>
+       <h2>
+        <a name="takeQuiz">
+        </a>
+        Take Quiz
+       </h2>
+       Building TakeQuiz is simpler; it can be built with a few modifications to the
+       <a href="../quizme/quizme.html">
+        QuizMe app
+       </a>
+       you completed earlier (if you have not
+              completed that tutorial, do so now before continuing).
+       <br />
+       <br />
+       Begin by opening your QuizMe app, choosing
+       <span class="ButtonText">
+        SaveAs
+       </span>
+       ,
+              and naming the new project TakeQuiz. This will leave your QuizMe app as is and allow
+              you to use a copy of it as the basis for TakeQuiz.
+       <br />
+       <br />
+       This version of MakeQuiz/TakeQuiz does not handle images, so first remove the images
+              from the TakeQuiz app:
+       <br />
+       <ol>
+        <li>
+         In the
+         <span class="ButtonText">
+          Component Designer,
+         </span>
+         choose each image
+                from the media palette and delete it. Also delete the
+         <span class="ButtonText">
+          Image1
+         </span>
+         component, which will remove all references to it from
+                the
+         <span class="ButtonText">
+          Blocks Editor
+         </span>
+         .
+        </li>
+        <li>
+         In the
+         <span class="ButtonText">
+          Blocks Editor
+         </span>
+         , drag the
+         <span class="ButtonText">
+          PictureList
+         </span>
+         to the trash.
+        </li>
+       </ol>
+       <p>
+        Since TakeQuiz will work with database data, drag a
+        <span class="ButtonText">
+         TinyWebDB
+        </span>
+        component into the Component Designer viewer.
+       </p>
+       <p>
+        Now modify the blocks so that the quiz given to the user is the one from the
+                database. First, since there are no fixed questions and answers, remove all of the
+                actual question and answer text blocks from the make a list blocks within the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        . The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="MakeQuizAssets/emptylists.png" />
+       </div>
+       <p>
+        Now modify your Screen1.Initialize so that it calls TinyWebDB.GetValue twice to
+                load the lists. The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="MakeQuizAssets/screenInit.png" />
+       </div>
+       <p>
+        Finally, drag out a
+        <span class="ButtonText">
+         TinyWebDB.GotValue
+        </span>
+        event-handler. This event-hanlder should look similar to the one used in MakeQuiz,
+                but here you only want to show the first question and none of the answers. The
+                blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" height="318" src="MakeQuizAssets/TakeQuizGotValue.png" width="661" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        When the app begins,
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        is
+                triggered and the app requests the questions and the answers from the web database.
+                When each of those requests arrives, the
+        <span class="ButtonText">
+         TinyWebDB.GotValue
+        </span>
+        event-handler is triggered. The app asks
+                which request has come in, using
+        <span class="ButtonText">
+         tagFromWebDB
+        </span>
+        , and
+                places the
+        <span class="ButtonText">
+         valueFromWebDB
+        </span>
+        into the appropriate
+                list. If it is the
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        being loaded, the
+                first question is selected from
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        and
+                displayed.
+       </p>
+       <blockquote class="testing">
+        Test the behavior. Click
+        <span class="ButtonText">
+         Restart Phone App
+        </span>
+        . Does
+                the first question from the quiz you created with MakeQuiz appear? Can you take the
+                quiz just as you did with QuizMe (except for the pictures)?
+       </blockquote>
+       <h2>
+        Final Program (Take Quiz)
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" height="744" src="MakeQuizAssets/takequizfinal.png" width="900" />
+       </div>
+       <h2>
+        Variations
+       </h2>
+       <p>
+        Once you get MakeQuiz and TakeQuiz working, you might want to explore some
+                variations. For example,
+       </p>
+       <ul>
+        <li>
+         Incorporate images into the apps. The images will need to be URLs from the web,
+                and the test creator will need to specify these URLs as a third item in the
+                MakeQuiz form.
+        </li>
+        <li>
+         Allow the user to delete items from the questions and answers. You can let the
+                user choose using the
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component, and you
+                can remove an item with the
+         <span class="ButtonText">
+          remove list item
+         </span>
+        </li>
+        <li>
+         Allow multiple quizzes to be created. You'll need to conceptualize the list of
+                quizzes as a list of lists.
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       Here are some of the ideas covered in this tutorial:
+       <br />
+       <ul>
+        <li>
+         You can store data persistently in a web database with the
+         <span class="ButtonText">
+          TinyWebDB
+         </span>
+         component.
+        </li>
+        <li>
+         You retrieve data from a
+         <span class="ButtonText">
+          TinyWebDB
+         </span>
+         database by
+                requesting it with
+         <span class="ButtonText">
+          GetValue
+         </span>
+         . When the web database
+                returns the data, the
+         <span class="ButtonText">
+          TinyWebDB.GotValue
+         </span>
+         event is
+                triggered. At that point, you can put the data in a list or process it in some
+                way.
+         <br />
+        </li>
+        <li>
+         <span class="ButtonText">
+          TinyWebDB
+         </span>
+         data can be shared amongst multiple
+                  phones and apps.
+        </li>
+       </ul>
+      </div>
+      <div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+              Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+              tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

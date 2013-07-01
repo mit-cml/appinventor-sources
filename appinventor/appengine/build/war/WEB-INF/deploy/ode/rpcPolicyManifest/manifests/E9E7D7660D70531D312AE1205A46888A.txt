@@ -1,0 +1,2 @@
+serviceClass: com.google.appinventor.shared.rpc.help.HelpService
+path: 27705D9FEAEFEC46D7D9F143C89B79EE.gwt.rpc

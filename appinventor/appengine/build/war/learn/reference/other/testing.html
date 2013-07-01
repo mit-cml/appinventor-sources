@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Testing - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Testing             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Live Development, Testing and Debugging
+       </h1>
+       <p>
+        The Blocks editor includes several valuable features to support
+        <em>
+         incremental
+                development and testing
+        </em>
+        as you create your applications. You can also make use
+                of the Java console and the Android log to explore problems, but these will be
+                mostly of use in reporting bugs in App Inventor rather than in debugging your own
+                apps.
+       </p>
+       <h2>
+        Incremental development with the Blocks editor
+       </h2>
+       <p>
+        When you create apps with App Inventor, you are working on the phone
+        <em>
+         live
+        </em>
+        :
+                Drag a button icon to the Viewer and the button appears on the phone right then;
+                change the button's color in the Designer and the color changes; drag out a block
+                that makes something happen when the button is pressed, and you can press the
+                button right then on the phone to see it happen.
+       </p>
+       <p>
+        This kind of feedback is enormously useful, because it lets you develop and test
+                your apps
+        <em>
+         incrementally
+        </em>
+        , defining each bit of new behavior and testing as
+                you go along. Inexperienced programmers often make the mistake of building a large
+                amount of stuff before they test any of it. Then, when they run into bugs, they're
+                faced with a huge tangle to sort out, where they don't know which pieces are
+                working and which are not. So try to work incrementally. You'll still surely
+                encounter bugs, but incremental development will let you isolate bugs more quickly
+                and fix them more easily.
+       </p>
+       <p>
+        In addition to letting you try things by interacting with the phone itself, App
+                Inventor includes features to aid in testing and debugging while you are using the
+                Blocks editor. You can see these if you right-click on a block. This will bring up
+                a menu, as shown here for a block that calls the procedure
+        <code>
+         MoveMole
+        </code>
+        :
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="158" src="images/editorMoveMoleMenu.png" width="260" />
+       </div>
+       <p>
+        Not all blocks will offer the same choice in the menu.
+       </p>
+       <h3>
+        Do It
+       </h3>
+       <p>
+        You can perform the action for a block with
+        <em>
+         Do It
+        </em>
+        . In debugging a program
+                like MoleMash, you could select
+        <em>
+         Do It
+        </em>
+        for
+        <code>
+         MoveMole
+        </code>
+        and see if
+                the mole moves on the phone.
+       </p>
+       <p>
+        <em>
+         Do It
+        </em>
+        not only does the block's action, but also puts up a balloon that
+                shows the value returned. The figure below shows the use of
+        <em>
+         Do It
+        </em>
+        on an
+                addition block to show the result of addding two numbers called
+        <code>
+         this
+        </code>
+        and
+        <code>
+         that
+        </code>
+        .
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="166" src="images/editorDoItAdd.png" width="404" />
+       </div>
+       <p>
+        Result balloons are attached to blocks at a point indicated by a small equals sign.
+                You can click on the equals sign to hide and show the result. Moving the mouse away
+                from the block makes the result balloon go away.
+       </p>
+       <h3>
+        Deactivate
+       </h3>
+       <p>
+        Sometimes you want to keep a block around that's not really part of your app. Maybe
+                it's a part of the program that's not yet finished, or a block that's only
+                partially implemented. Choosing
+        <em>
+         Deactivate
+        </em>
+        from the block menu will keep
+                the block from becoming part of the app when you package it. Selecting
+        <em>
+         Activate
+        </em>
+        restores the deactivated block.
+       </p>
+       <h3>
+        Collapsing blocks
+       </h3>
+       <p>
+        If your app has many blocks, they won't all fit on the screen at once. You'll need
+                to scroll the Blocks Editor window, and that can be awkward. One way to help keep
+                screen real-estate small is to use
+        <em>
+         block collapsing
+        </em>
+        . If you click on the
+                minus sign at the lower left of a procedure block or an event-handler block, the
+                block will collapse so that only the title will be visible. Clicking on the plus
+                sign will restore the block to full visibility.
+       </p>
+       <h3>
+        Comments
+       </h3>
+       <p>
+        Adding comments to blocks is a good way to help others understand your programs.
+                It's also useful for keeping track of your own programs. Selecting
+        <em>
+         Add
+                Comment
+        </em>
+        from the block menu brings up a balloon attached to the block, where
+                you can type a comment as shown:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="152" src="images/editorMoveMoleComment.png" width="252" />
+       </div>
+       <p>
+        You can drag the balloon around, or resize it. The comment balloon is attached to
+                the block at a spot with a small question mark, that you can click to hide and show
+                the comment. Or you can remove the comment permanently by right clicking on the
+                block and choosing
+        <em>
+         Remove Comment
+        </em>
+        .
+       </p>
+       <h3>
+        Watching variables
+       </h3>
+       <p>
+        If you click
+        <em>
+         Do It
+        </em>
+        on a block that shows the value of a variable, you'll
+                get a result balloon showing that value of the variable at the time you clicked.
+                But sometimes, especially in debugging, what you really want to see is how the
+                value changes as your program runs. Clicking "Watch" opens a baloon whose result
+                constantly monitors the value of the variable, so you can see if your program is
+                changing it as anticipated.
+       </p>
+       <h3>
+        Complaints
+       </h3>
+       <p>
+        Sometimes the result of doing a block will be an error. In the picture below, we
+                changed the value of
+        <code>
+         that
+        </code>
+        to be the text "apple", and clicked
+        <em>
+         Do
+                It
+        </em>
+        to add
+        <code>
+         this
+        </code>
+        and
+        <code>
+         that
+        </code>
+        . The result is an error, and
+                a
+        <em>
+         complaint
+        </em>
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="200" src="images/editorDoItAddComplaint.png" width="404" />
+       </div>
+       <p>
+        The complaint balloon is attached to the block at a small exclamation point, which
+                you can use to hide and show the complaint. You can also remove the complaint by
+                choosing
+        <em>
+         Remove Complaint
+        </em>
+        from the block menu.
+       </p>
+       <h2>
+        System Logs
+       </h2>
+       <p>
+        Besides the debugging tools in the Blocks editor, you can sometimes get information
+                from various logs. This is generally for advanced users only.
+       </p>
+       <h3>
+        The Android Log and adb(Advanced)
+       </h3>
+       <p>
+        If you have problems on the Android device, you can sometimes get information by
+                inspecting the
+        <em>
+         Android Log
+        </em>
+        . For example, if your application runs out of
+                space, that will be recorded in the log. The messages in the log are not generally
+                intelligible, but you can use the
+        <em>
+         Notifier
+        </em>
+        component to make your app
+                write messages into the log, and this can be of some use in debugging.
+       </p>
+       <p>
+        You can read the log using the
+        <em>
+         Android Debug Bridge (adb)
+        </em>
+        . The
+        <em>
+         adb
+        </em>
+        program is installed on your computer as part of the App Inventor
+                installation process, and you can use the
+        <em>
+         logcat
+        </em>
+        option to view the log.
+                You can launch adb from the terminal on your machine. Go to the directory
+                containing the AppInventor Extras software and run the command
+        <br />
+        adb logcat
+        <br />
+        This will display the entire (large) system log. If you are debugging, you should
+                open the log, stimulate the bug again, and see what appears at the end of the log.
+       </p>
+       <p>
+        The actual directory for adb depends on your operating system:
+       </p>
+       <ul>
+        <li>
+         For MacOs it's /Applications/AppInventor/commands-for-Appinventor.
+        </li>
+        <li>
+         For GNU/Linux it's /usr/google/appinventor-extras/commands-for-Appinventor
+        </li>
+        <li>
+         For Windows, it can be in one of several places, depending on how it was
+                installed. Search on your machine for the \Android\appinventor-extras folder,
+                containing the file adb.exe.
+        </li>
+       </ul>
+       <p>
+        For more information on adb, see see the
+        <a href="http://developer.android.com/guide/developing/tools/adb.html">
+         Android Debug
+                Bridge
+        </a>
+        web page.
+       </p>
+       <h3>
+        The Java system log (Advanced)
+       </h3>
+       <p>
+        Not all bugs will be your bugs. App Inventor has bugs, too, and you might encounter
+                them. There's not much you can do here, other than report the bug, but you might
+                get some idea of what's going on — or at least get information for reporting error
+                messages — by using the Java console to display the system log.
+       </p>
+       <p>
+        The Blocks editor is a Java program, and many of its operations write messages to
+                the Java system log. You can see these messages if you run the Blocks editor with
+                the Java console open.
+       </p>
+       <p>
+        Running with the Java console open is a preference you specify for Java before you
+                start up App Inventor. The details depend on which operating system you're using:
+       </p>
+       <ul>
+        <li>
+         For MacOS, go under Applications → Utilities → Java Preferences, and choose the
+         <em>
+          Advanced
+         </em>
+         tab. You'll see an option under
+         <em>
+          Java Console
+         </em>
+         to show the
+                console.
+        </li>
+        <li>
+         For Windows, go under
+         <em>
+          Java
+         </em>
+         in the control panel and choose the
+         <em>
+          Advanced
+         </em>
+         tab. You'll see an option under
+         <em>
+          Java Console
+         </em>
+         to show the
+                console.
+        </li>
+        <li>
+         For GNU/Linux you'll need to find the program
+         <code>
+          javaws
+         </code>
+         , which should
+                be in the directory where Java was installed. The command
+         <br />
+         <code>
+          javaws -viewer
+         </code>
+         <br />
+         will open a control panel. Choose the
+         <em>
+          Advanced
+         </em>
+         tab. You'll see an option
+                  under
+         <em>
+          Java Console
+         </em>
+         to show the console.
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

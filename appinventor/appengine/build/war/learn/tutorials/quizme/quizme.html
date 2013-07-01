@@ -1,0 +1,2386 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Quiz Me - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Quiz Me             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Quiz Me
+       </h1>
+       <h2>
+        What You're Building
+       </h2>
+              <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch8Quiz.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Alternate Example Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <div class="imagecontainer">
+        <img align="right" alt="" height="453" src="QuizMeAssets/quizOnEmulator.png" width="197" />
+       </div>
+       <p>
+        QuizMe is a trivia game about baseball, but you can use it as a template to build
+                quizzes on any topic. With QuizMe:
+       </p>
+       <ul>
+        <li>
+         The user steps through a series of questions, clicking a button to proceed to
+                the next question.
+        </li>
+        <li>
+         The user enters an answer for each question and the app reports whether each
+                answer is correct or not.
+        </li>
+       </ul>
+       <p>
+        With QuizMe, the quiz questions are always the same unless you, the programmer,
+                change them. Later, you can create
+        <a href="/learn/tutorials/makequiztakequiz/makequiztakequiz.html">
+         MakeQuiz
+        </a>
+        , an app that
+                lets users of the app create and modify the quiz questions.
+       </p>
+       <p>
+        This tutorial assumes you are familiar with the basics of App Inventor -- using the
+                Component Designer to build a user interface, and using the Blocks Editor to
+                specify event-handlers. If you are not familiar with the basics, try stepping
+                through some of the
+        <a href="/learn/tutorials/index.html">
+         basic tutorials
+        </a>
+        before continuing.
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        Connect to the App Inventor web site and start a new project. Name it QuizMe, and
+                also set the screen's
+        <span class="ButtonText">
+         Title
+        </span>
+        to QuizMe. Open the
+                Blocks Editor and connect to the phone.
+       </p>
+       <p>
+        Also download these pictures of baseball players and save them on your
+                computer:
+        <a href="QuizMeAssets/Larsenberra.jpg">
+         Larsenberra.jpg
+        </a>
+        ,
+        <a href="QuizMeAssets/dallasbraden.jpg">
+         dallasbraden.jpg
+        </a>
+        ,
+        <a href="QuizMeAssets/cyyoung.jpg">
+         cyyoung.jpg
+        </a>
+        ,
+        <a href="QuizMeAssets/nolanryan.jpg">
+         nolanryan.jpg
+        </a>
+        . Later, you'll load these images
+                into your project.
+       </p>
+       <h2>
+        Introduction
+       </h2>
+       <p>
+        You'll design the quiz game so that the user proceeds from question to question by
+                clicking a Next button, and receives simple correct/incorrect feedback on each
+                answer.
+       </p>
+       <p>
+        This tutorial introduces:
+       </p>
+       <ul>
+        <li>
+         Defining and displaying lists of information
+        </li>
+        <li>
+         Sequencing through a list using an index variable -- a variable that keeps
+                track of a position in a list.
+        </li>
+        <li>
+         Conditional behaviors-- performing certain operations only when a condition is
+                met.
+        </li>
+        <li>
+         Switching an image to show a different picture at different times.
+        </li>
+       </ul>
+       <h2>
+        Set up the Components
+       </h2>
+       <p>
+        Use the component designer to create the interface for QuizMe. When you finish, it
+                should look something like the snapshot below (there are also more detailed
+                instructions below the snapshot).
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="515" src="QuizMeAssets/designer.png" width="950" />
+       </div>
+       <p>
+        To create this interface, first load the images you downloaded into the project.
+                Click on the
+        <span class="ButtonText">
+         Add
+        </span>
+        button in the
+        <span class="ButtonText">
+         Media
+        </span>
+        area and select one of the downloaded files (e.g.,
+        <span class="ButtonText">
+         Larsenberra.jpg
+        </span>
+        ). Then do the same for the other
+                three images.
+       </p>
+       <p>
+        Next, create the following components by dragging them from the
+        <span class="ButtonText">
+         Palette
+        </span>
+        into the
+        <span class="ButtonText">
+         Viewer
+        </span>
+        .
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component Type
+           </td>
+           <td class="tbl-header">
+            Palette Group
+           </td>
+           <td class="tbl-header">
+            What you'll name it
+           </td>
+           <td class="tbl-header">
+            Purpose of Component
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Image
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Image1
+            </span>
+           </td>
+           <td>
+            &nbsp;The picture part of the question
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             QuestionLabel
+            </span>
+           </td>
+           <td>
+            &nbsp;Displays the current question
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             HorizontalArrangement
+            </span>
+           </td>
+           <td>
+            Screen Arrangement
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             HorizontalArrangement1
+            </span>
+           </td>
+           <td>
+            &nbsp;Organizes the AnswerPrompt and Text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             AnswerPromptLabel
+            </span>
+           </td>
+           <td>
+            &nbsp;Text prompting for an anwer
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             TextBox
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             AnswerText
+            </span>
+           </td>
+           <td>
+            &nbsp;User will enter answer here.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Label
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            <span class="ButtonText">
+             RightWrongLabel
+            </span>
+           </td>
+           <td>
+            Correct/Incorrect is displayed here.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             HorizontalArrangement
+            </span>
+           </td>
+           <td>
+            Screen Arrangement
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             HorizontalArrangement2
+            </span>
+           </td>
+           <td>
+            &nbsp;Organizes the AnswerButton and NextButton
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             AnswerButton
+            </span>
+           </td>
+           <td>
+            &nbsp;User clicks to submit an answer
+           </td>
+          </tr>
+          <tr>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             Button
+            </span>
+           </td>
+           <td>
+            Basic
+           </td>
+           <td>
+            &nbsp;
+            <span class="ButtonText">
+             NextButton
+            </span>
+           </td>
+           <td>
+            &nbsp;User clicks to proceed to the next answer
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Set the properties of the components as described below:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Component
+           </td>
+           <td class="tbl-header">
+            Action
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Image1
+            </span>
+           </td>
+           <td>
+            Set its
+            <span class="ButtonText">
+             Picture
+            </span>
+            property to
+            <span class="ButtonText">
+             Larsenberra.jpg
+            </span>
+            . This is the first picture that should
+                        appear.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             QuestionLabel
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "question"
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             AnswerPromptLabel
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "Enter Answer:". On
+            <span class="ButtonText">
+             Viewer
+            </span>
+            screen, move this label into
+            <span class="ButtonText">
+             HorizontalArrangement1
+            </span>
+            .
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             AnswerText
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Hint
+            </span>
+            to "please enter an answer". On
+            <span class="ButtonText">
+             Viewer
+            </span>
+            , move
+            <span class="ButtonText">
+             AnswerText
+            </span>
+            into
+            <span class="ButtonText">
+             HorizontalArrangement1
+            </span>
+            .
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             AnswerButton
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "Submit". On
+            <span class="ButtonText">
+             Viewer
+            </span>
+            , move the button into
+            <span class="ButtonText">
+             HorizontalArrangment2.
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             NextButton
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "Next". Move the
+                        button into
+            <span class="ButtonText">
+             HorizontalArrangement2
+            </span>
+            .
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             RightWrongLabel
+            </span>
+           </td>
+           <td>
+            Change
+            <span class="ButtonText">
+             Text
+            </span>
+            property to "correct/incorrect
+                        "
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <h2>
+        Add behaviors to the components
+       </h2>
+       <p>
+        Open the Blocks Editor to add the behaviors for the app. First, you'll define two
+                list variables,
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        to hold the list of
+                questions, and
+        <span class="ButtonText">
+         AnswerList
+        </span>
+        to hold the list of
+                corresponding answers.
+       </p>
+       <p>
+        To define the two list variables, you'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            Defines the
+            <span class="ButtonText">
+             QuestionList
+            </span>
+            variable (rename
+                        it)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            Defines the
+            <span class="ButtonText">
+             AnswerList
+            </span>
+            variable (rename it)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            Used to insert the items of the
+            <span class="ButtonText">
+             QuestionList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            (3 of them)
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the actual questions
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make a list
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            Used to insert the items of the
+            <span class="ButtonText">
+             AnswerList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            (3 of them)
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            the actual answers
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        You create global variables by dragging in a def variable block from the
+        <span class="ButtonText">
+         Definitions
+        </span>
+        drawer and double-clicking the default
+                name "variable" to change its name. The
+        <span class="ButtonText">
+         def
+                variable
+        </span>
+        block has a slot for the initial value of the variable. The
+                variable can represent a number or text, or even a list, for
+                which you can plug in a
+        <span class="ButtonText">
+         make a list
+        </span>
+        block into the variable definition.
+       </p>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="143" src="QuizMeAssets/questionlist.png" width="668" />
+       </div>
+       <div class="imagecontainer">
+        <img alt="" height="135" src="QuizMeAssets/AnswerList.png" width="424" />
+       </div>
+       <h2>
+        Define the Hidden Index Variable
+       </h2>
+       <p>
+        Each time the user clicks the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        to proceed
+                through the quiz, the app needs to remember which question it is on. In
+                programming, to remember something, you define a new variable.&nbsp; In this case,
+                the app needs to remember the current question number -- the index into the list
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        .
+       </p>
+       <p>
+        To create the variable
+        <span class="ButtonText">
+         currentQuestionIndex
+        </span>
+        , you'll
+                need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            Defines the
+            <span class="ButtonText">
+             currentQuestionIndex
+            </span>
+            variable
+                        (rename it)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            Set the initial value of
+            <span class="ButtonText">
+             currentQuestionIndex
+            </span>
+            to 1
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="51" src="QuizMeAssets/index.png" width="282" />
+       </div>
+       <h2>
+        Display the First Question
+       </h2>
+       <p>
+        To start, you'll ignore the answers and just work on the behavior to sequence
+                through the questions. The desired behavior is the following: when the app starts,
+                the first question should appear in the label named
+        <span class="ButtonText">
+         QuestionLabel
+        </span>
+        . When the user clicks the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        , the second question should appear. When the user
+                clicks again, the third should appear. When the last question is reached, clicking
+                the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        should result in the first question
+                once again appearing in the
+        <span class="ButtonText">
+         QuestionLabel
+        </span>
+        .
+       </p>
+       <blockquote class="notice">
+        <p>
+         With App Inventor, you select particular items in a list with the
+         <span class="ButtonText">
+          select list item
+         </span>
+         block. The block asks you to specify the
+                  list and an index--a position in the list. If a list has three items, the indexes
+                  1,2,and 3 are valid.
+        </p>
+       </blockquote>
+       <p>
+        For
+        <span class="ButtonText">
+         QuizMe
+        </span>
+        , when the app starts, the app should
+                choose the first question in the list and display it in the
+        <span class="ButtonText">
+         QuestionLabel
+        </span>
+        component.
+       </p>
+       <p>
+        For this app initialization behavior, you'll need the following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             Screen1.Initialize
+            </span>
+           </td>
+           <td>
+            Screen1
+           </td>
+           <td>
+            When app begins,this event-handler is triggered.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set QuestionLabel.Text to
+            </span>
+           </td>
+           <td>
+            QuestionLabel
+           </td>
+           <td>
+            Need to put the first question in
+            <span class="ButtonText">
+             QuestionLabel
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             select list item
+            </span>
+           </td>
+           <td>
+            Lists
+           </td>
+           <td>
+            Need to select the first question from
+            <span class="ButtonText">
+             QuestionList
+            </span>
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global QuestionList
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            The list to select from
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+            (1)
+           </td>
+           <td>
+            Math
+           </td>
+           <td>
+            select the first question by using an index of 1
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" border="0" src="QuizMeAssets/screenInit.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The
+        <span class="ButtonText">
+         Screen1.Initialize
+        </span>
+        event is triggered when the
+                app begins. The first item of the variable
+        <span class="ButtonText">
+         QuestionList
+        </span>
+        is selected and placed into
+        <span class="ButtonText">
+         QuestionLabel.Text
+        </span>
+        . So when the app begins, the user will see
+                the first question.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test this behavior.
+        </strong>
+        Click
+        <span class="ButtonText">
+         Restart Phone
+                App
+        </span>
+        (or
+        <span class="ButtonText">
+         Connect Phone
+        </span>
+        if not connected).
+                What appears on the phone? If you created the QuestionList as described above, the
+                first item of QuestionList,"Who pitched a perfect game in the World Series?",
+                should appear in the QuestionLabel.
+       </blockquote>
+      </div>
+      <h2>
+       Iterating Through the Questions
+      </h2>
+      Now program the behavior of the
+      <span class="ButtonText">
+       NextButton
+      </span>
+      . You've
+            already defined the
+      <span class="ButtonText">
+       currentQuestionIndex
+      </span>
+      to remember
+            the question the user is on. When
+      <span class="ButtonText">
+       NextButton
+      </span>
+      is
+            clicked, the app needs to increment this variable, e.g., change it from 1 to 2 or from
+            2 to 3, etc., and then use the resulting value to select the new "current" question.
+            For this behavior, you'll need the following blocks:
+      <div class="advtutorial">
+       <table>
+        <tbody>
+         <tr>
+          <td class="tbl-header">
+           Block Type
+          </td>
+          <td class="tbl-header">
+           Drawer
+          </td>
+          <td class="tbl-header">
+           Purpose
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            NextButton.Click
+           </span>
+          </td>
+          <td>
+           NextButton
+          </td>
+          <td>
+           When user clicks Next, this event-handler is triggered.
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            set currentQuestionIndex to
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           Need to put the first question in
+           <span class="ButtonText">
+            QuestionLabel
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            +
+           </span>
+           block
+          </td>
+          <td>
+           Math
+          </td>
+          <td>
+           Used to increment
+           <span class="ButtonText">
+            currentQuestionIndex
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global currentQuestionIndex
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           New value will be old value + 1
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            number
+           </span>
+           (1)
+          </td>
+          <td>
+           Math
+          </td>
+          <td>
+           For the + 1
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            set QuestionLabel.Text to
+           </span>
+          </td>
+          <td>
+           QuestionLabel
+          </td>
+          <td>
+           Need to display the next question here
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            select list item
+           </span>
+          </td>
+          <td>
+           Lists
+          </td>
+          <td>
+           Need to select the first question from
+           <span class="ButtonText">
+            QuestionList
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global QuestionList
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           Plug into
+           <span class="ButtonText">
+            list
+           </span>
+           slot of call select list item
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global currentQuestionIndex
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           Plug into
+           <span class="ButtonText">
+            index
+           </span>
+           slot of call select list
+                      item, we want nth item
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+      <p>
+       The blocks should look like this:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" border="0" src="QuizMeAssets/firstNext.png" />
+      </div>
+      <h2>
+       How the Blocks Work
+      </h2>
+      <p>
+       The first row of blocks increments the variable
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       . If
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       has a 1 in it, it is changed to 2. If it has
+              a 2, it is changed to 3, and so on. Once the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       variable has been changed, the app uses it
+              to select the
+       <em>
+        "
+       </em>
+       current
+       <em>
+        "
+       </em>
+       question.
+      </p>
+      <p>
+       Recall that in the
+       <span class="ButtonText">
+        Screen.Initialize
+       </span>
+       event-handler,
+              the app selected the first question to display:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" border="0" src="QuizMeAssets/selectFirst.png" />
+      </div>
+      <div class="c4">
+       <p>
+        When the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        is clicked, the app doesn't
+                choose the first item in the list, or the 2nd or 3rd, it chooses the
+        <span class="ButtonText">
+         currentQuestionIndex
+        </span>
+        <em class="c3">
+         th
+        </em>
+        item.
+       </p>
+      </div>
+      <div class="imagecontainer">
+       <img alt="" src="QuizMeAssets/chooseCurrent.png" />
+      </div>
+      <p>
+       The blocks are executed in a right-to-left manner. The app first evaluates the
+       <span class="ButtonText">
+        index
+       </span>
+       parameter of
+       <span class="ButtonText">
+        select
+              list item
+       </span>
+       , which is the variable
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       . The number is stored in
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is used as the index when the select list
+              item is executed.
+      </p>
+      <p>
+       When the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked for the first time,
+              the increment blocks will set
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       from 1 to 2, so the app will select the second item from
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       , "who pitched the first perfect game of 2010?". The
+              second time
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked,
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       will be set from 2 to 3, and the app will
+              select the 3rd question in the list, "who pitched the first perfect game of the
+              modern era?"
+      </p>
+      <blockquote class="testing">
+       <p>
+        <strong>
+         Test this behavior.
+        </strong>
+        Test the behavior of the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        to see if the app is working correctly thus far. To
+                test, play the role of the user and click the NextButton on the phone. Does the
+                phone display the second question, "Who pitched the first perfect game of 2010?" It
+                should, and the third question should appear when you click the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        again. If this is working, pat yourself on the back
+                quickly, and then go on.
+       </p>
+       <p>
+        Try clicking the
+        <span class="ButtonText">
+         NextButton
+        </span>
+        again (a third time).
+                You should see an error: "Attempting to get item 4 of a list of length 3". The app
+                has a bug-- do you know what the problem is?
+       </p>
+      </blockquote>
+      <p>
+       The problem with the app is that it
+       <em>
+        always
+       </em>
+       increments the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       variable when the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked.&nbsp; When
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is already 3 and the user clicks the
+              NextButton, the app changes
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       from
+              3 to 4, then calls select list item to get the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       <em class="c3">
+        th
+       </em>
+       , or in this case, the
+              4th item. Since there are only three items in the variable
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       , Android complains.
+      </p>
+      <p>
+       What the app needs to do is ask a question-- check a condition-- when the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked, and execute different blocks
+              dependending on the answer. One way to ask the question is to ask, "is the variable
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       already 3?" If the answer is
+              yes, you should set
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       back to 0 so
+              the user is taken back to the first question.
+      </p>
+      <p>
+       You'll need the following blocks:
+      </p>
+      <div class="advtutorial">
+       <table>
+        <tbody>
+         <tr>
+          <td class="tbl-header">
+           Block Type
+          </td>
+          <td class="tbl-header">
+           Drawer
+          </td>
+          <td class="tbl-header">
+           Purpose
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            if test then-do
+           </span>
+          </td>
+          <td>
+           Control
+          </td>
+          <td>
+           To ask if user is on last question
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            =
+           </span>
+           block
+          </td>
+          <td>
+           Math
+          </td>
+          <td>
+           to test if
+           <span class="ButtonText">
+            currentQuestionIndex
+           </span>
+           is 3
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global currentQuestionIndex
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           &nbsp;
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            number
+           </span>
+           3
+          </td>
+          <td>
+           Math
+          </td>
+          <td>
+           3 is number of items in the list
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            set currentQuestionIndex to
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           set to 0 to go back to first question
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            number
+           </span>
+           (0)
+          </td>
+          <td>
+           Math
+          </td>
+          <td>
+           set to 0 because next blocks will increment to 1
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+      <p>
+       The modified NextButton.Click event-handler should look like this:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" border="0" src="QuizMeAssets/nextif3.png" />
+      </div>
+      <h2>
+       How the Blocks Work
+      </h2>
+      <p>
+       When the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked, the app first checks
+              to see if
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       has a 3 in it. If it
+              does,
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is set back to 0 so that
+              when 1 is added to it with the blocks below, it will be 1 and the quiz will loop back
+              to display the first question. Note that only the blocks inset within the
+       <span class="ButtonText">
+        if-test-then-do
+       </span>
+       block are dependent on the
+              condition-- the increment and
+       <span class="ButtonText">
+        set QuestionLabel.Text
+              to
+       </span>
+       blocks are executed under all conditions.
+      </p>
+      <blockquote class="testing">
+       <strong>
+        Test this behavior
+       </strong>
+       . Because variables like currentQuestionIndex are
+              hidden, they are often the source of bugs in a program. Fortunately, App Inventor
+              provides a way to make such hidden variables transparent during testing.
+              Specifically, App Inventor allows you to "watch" how the value of a variable change
+              as an app progresses. For this test, right-click the currentQuestionIndex def block
+              in the Blocks Editor and choose
+       <em>
+        Watch
+       </em>
+       . Then choose
+       <span class="ButtonText">
+        Restart Phone App
+       </span>
+       The def block will then appear with a watch box
+              showing the initial value of currentQuestionIndex (1):
+       <div class="imagecontainer">
+        <img alt="" src="QuizMeAssets/watchindex1.png" />
+       </div>
+       <p>
+        Now pick up the phone and click the NextButon. The second question, "who pitched
+                the most recent perfect game in the major leagues?" should appear in the
+                QuestionLabel on the phone, as before. On the App Inventor screen, 2 should appear
+                in the currentQuestionIndex memory cell:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="QuizMeAssets/watchindex2.png" />
+       </div>
+       <p>
+        When you click again, the third question should appear on the phone and 3 should
+                appear in the memory cell . If you click again, 1 should appear in
+                currentQuestionIndex and the first question on the phone.
+       </p>
+      </blockquote>
+      <h2>
+       A Maintainable App: Making it Easy to Modify the Questions
+      </h2>
+      <p>
+       Next, you'll modify the app to make it easy to add and remove elements from the list.
+              You'll rewrite the blocks so that they'll work on any list, not just one with exactly
+              three items. To begin, add a fourth question to
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       and another answer into
+       <span class="ButtonText">
+        AnswerList
+       </span>
+       . The blocks should look like this:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" height="325" src="QuizMeAssets/listsWith4.png" width="667" />
+      </div>
+      <blockquote class="testing">
+       <strong>
+        Test the modified app
+       </strong>
+       . Click the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       a number of times. You should see that the fourth
+              question never appears, no matter how many times you click
+       <span class="ButtonText">
+        Next
+       </span>
+       .
+      </blockquote>
+      <p>
+       The problem is that the test to see if the user is on the last question is too
+              specific: it asks if the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       variable is 3:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" border="0" src="QuizMeAssets/if3.png" />
+      </div>
+      <p>
+       You could just change the number 3 to a 4, and the app would again work correctly.
+              The problem with this solution, however, is that each time you modify the questions
+              and answers, you also have to remember to make this change. Such dependencies in a
+              computer program often lead to bugs, especially as an app grows in complexity. It's
+              much better to set the program up so that it will work no matter how many questions
+              there are. Such generality is even more important when the list you are working with
+              changes dynamically, e.g., a quiz app that allows the user to add new questions.
+      </p>
+      <p>
+       The better solution is to ask the question in a more general way. You really want to
+              know if the current question the user is on-- the value of
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       -- is as large as the number of items in
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       . If the app asks the question in this
+              more general manner, it will work even when you add to or remove items from the
+              QuestionList. To modify the
+       <span class="ButtonText">
+        NextButton.Click
+       </span>
+       event-handler you'll replace the previous test that referred directly to 3. You'll
+              need the following blocks:
+      </p>
+      <div class="advtutorial">
+       <table>
+        <tbody>
+         <tr>
+          <td class="tbl-header">
+           <strong>
+            Block Type
+           </strong>
+          </td>
+          <td class="tbl-header">
+           <strong>
+            Drawer
+           </strong>
+          </td>
+          <td class="tbl-header">
+           <strong>
+            Purpose
+           </strong>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            length of list
+           </span>
+          </td>
+          <td>
+           Lists
+          </td>
+          <td>
+           asks how many items are in
+           <span class="ButtonText">
+            QuestionList
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global QuestionList
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           put into list slot of
+           <span class="ButtonText">
+            length of list
+           </span>
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+      <p>
+       Your
+       <span class="ButtonText">
+        NextButton.Click
+       </span>
+       event-handler should now appear
+              as:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" src="QuizMeAssets/nextWithLength.png" />
+      </div>
+      <h2>
+       How the Blocks Work
+      </h2>
+      <p>
+       The
+       <span class="ButtonText">
+        if
+       </span>
+       test now compares the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       to the length of the
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       . So if
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       has a 4 in it, and the length of the
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       is 4, then the
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       will be set to 0 (and then 1 after the
+              increment operation in the first row of blocks after the if). Note that, because the
+              blocks no longer refer to 3 or any specific size, the behavior will work no matter
+              how many items are in the list.
+      </p>
+      <blockquote class="testing">
+       <strong>
+        Test the modified behavior.
+       </strong>
+       When you click the NextButton, does the
+              app now sequence through the four questions, moving to the first one after the
+              fourth?
+      </blockquote>
+      <h2>
+       Switching the Image for Each Question
+      </h2>
+      <p>
+       The current app shows the same image, no matter what question is being asked. You can
+              change this so an image pertaining to each question appears when the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked. Earlier, you added four pictures as media
+              for the project. Now, you'll create a third list,
+       <span class="ButtonText">
+        PictureList
+       </span>
+       , with the names of the image files as its items. and
+              you'll modify the
+       <span class="ButtonText">
+        NextButton.Click
+       </span>
+       event-handler to
+              switch the picture each time.
+      </p>
+      <p>
+       First, create a
+       <span class="ButtonText">
+        PictureList
+       </span>
+       and initialize it with
+              the names of the image files. Be sure that the names are exactly the same as the
+              names of the files that were loaded in to the media of the project. Here's how the
+              blocks for the
+       <span class="ButtonText">
+        PictureList
+       </span>
+       should look:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" src="QuizMeAssets/pictureList.png" />
+      </div>
+      <p>
+       Next, you need to modify the
+       <span class="ButtonText">
+        NextButton.Click
+       </span>
+       event-handler so that it modifies the picture depending on what question the user is
+              on. If you set the
+       <span class="ButtonText">
+        Image.Picture
+       </span>
+       property to a file
+              name of an image that has been loaded, that image will appear. To modify
+       <span class="ButtonText">
+        NextButton.Click
+       </span>
+       , you'll need the following blocks:
+      </p>
+      <div class="advtutorial">
+       <table>
+        <tbody>
+         <tr>
+          <td class="tbl-header c5">
+           <strong>
+            Block Type
+           </strong>
+          </td>
+          <td class="tbl-header c6">
+           <strong>
+            Drawer
+           </strong>
+          </td>
+          <td class="tbl-header c7">
+           <strong>
+            Purpose
+           </strong>
+          </td>
+         </tr>
+         <tr>
+          <td class="c5">
+           <span class="ButtonText">
+            set Image1.Picture to
+           </span>
+          </td>
+          <td class="c6">
+           Image1
+          </td>
+          <td class="c7">
+           set this to change the picture
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            select list item
+           </span>
+          </td>
+          <td class="c9">
+           Lists
+          </td>
+          <td class="c10">
+           need to select the picture corresponding to current question
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            global PictureList
+           </span>
+          </td>
+          <td class="c9">
+           My Definitions
+          </td>
+          <td class="c10">
+           select a file name from this list
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            global currentQuestionIndex
+           </span>
+          </td>
+          <td class="c9">
+           My Definitions
+          </td>
+          <td class="c10">
+           select the
+           <span class="ButtonText">
+            currentQuestionIndex
+           </span>
+           <em>
+            th
+           </em>
+           item
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+      <p>
+       Here is how the blocks should look:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" src="QuizMeAssets/nextWithImageSwitch.png" />
+      </div>
+      <h2>
+       How the Blocks Work
+      </h2>
+      <p>
+       The
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       serves as the index for the
+       <span class="ButtonText">
+        QuestionList
+       </span>
+       and the
+       <span class="ButtonText">
+        PictureList
+       </span>
+       . When
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is 1, the app selects the first question and
+              the first picture. When
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is 2,
+              the app selects the second question and second picture. Of course this scheme depends
+              on the lists being in sync and indeed they are. For instance, the first picture,
+       <span class="ButtonText">
+        LarsenBerra.jpg
+       </span>
+       is a picture of Don Larsen, and Don
+              Larsen is the answer to the first question, "Who pitched a perfect game in the World
+              Series?" Test the modified behavior. Does a different image appear each time you
+              click the NextButton?
+      </p>
+      <h2>
+       Evaluating Answers
+      </h2>
+      <p>
+       Next, you'll add blocks that report whether the user has answered a question
+              correctly or not. The user enters the answer in
+       <span class="ButtonText">
+        AnswerText
+       </span>
+       and then clicks the
+       <span class="ButtonText">
+        AnswerButton
+       </span>
+       . The app must compare the user's entry with the
+              answer to the "current" question, using an
+       <span class="ButtonText">
+        ifelse
+       </span>
+       block to check. The
+       <span class="ButtonText">
+        RightWrongLabel
+       </span>
+       should be
+              modified to report whether or not the answer is correct. You'll need the following
+              blocks for this behavior:
+      </p>
+      <div class="advtutorial">
+       <table border="1">
+        <tbody>
+         <tr>
+          <td class="tbl-header c5">
+           <strong>
+            Block Type
+           </strong>
+          </td>
+          <td class="tbl-header c6">
+           <strong>
+            Drawer
+           </strong>
+          </td>
+          <td class="tbl-header c7">
+           &nbsp;
+           <strong>
+            Purpose
+           </strong>
+          </td>
+         </tr>
+         <tr>
+          <td class="c5">
+           <span class="ButtonText">
+            AnswerButton.Click
+           </span>
+          </td>
+          <td class="c6">
+           AnswerButton
+          </td>
+          <td class="c7">
+           the behavior is triggered when user clicks the
+           <span class="ButtonText">
+            AnswerButton
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            ifelse
+           </span>
+          </td>
+          <td class="c9">
+           Control
+          </td>
+          <td class="c10">
+           if answer is correct, do one thing, else do another
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            =
+           </span>
+           block
+          </td>
+          <td class="c9">
+           Math
+          </td>
+          <td class="c10">
+           to ask if answer is correct
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            AnswerText.Text
+           </span>
+          </td>
+          <td>
+           AnswerText
+          </td>
+          <td>
+           the user's answer is in this textbox
+          </td>
+         </tr>
+         <tr>
+          <td class="c8">
+           <span class="ButtonText">
+            select list item
+           </span>
+          </td>
+          <td class="c9">
+           Lists
+          </td>
+          <td class="c10">
+           to select the current answer from
+           <span class="ButtonText">
+            AnswerList
+           </span>
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global AnswerList
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           The list to select from
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            global currentQuestionIndex
+           </span>
+          </td>
+          <td>
+           My Definitions
+          </td>
+          <td>
+           the question number (and answer number) the user is on
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            set RightWrongLabel.Text to
+           </span>
+          </td>
+          <td>
+           RightWrongLabel
+          </td>
+          <td>
+           report the answer here
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            text
+           </span>
+           "correct"
+          </td>
+          <td>
+           Text
+          </td>
+          <td>
+           if answer is right
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            set RightWrongLabel.Text to
+           </span>
+          </td>
+          <td>
+           RightWrongLabel
+          </td>
+          <td>
+           report the answer here
+          </td>
+         </tr>
+         <tr>
+          <td>
+           <span class="ButtonText">
+            text
+           </span>
+           "incorrect"
+          </td>
+          <td>
+           Text
+          </td>
+          <td>
+           if answer is wrong
+          </td>
+         </tr>
+        </tbody>
+       </table>
+      </div>
+      <p>
+       The blocks should look like this:
+      </p>
+      <div class="imagecontainer">
+       <img alt="" src="QuizMeAssets/answerButton.png" />
+      </div>
+      <h2>
+       <strong>
+        How the Blocks Work
+       </strong>
+      </h2>
+      <p>
+       The
+       <span class="ButtonText">
+        ifelse
+       </span>
+       test reads, "is the user's answer
+              (
+       <span class="ButtonText">
+        AnswerText.Text)
+       </span>
+       equal to the
+       <span class="ButtonText">
+        currentQuestionIndext
+       </span>
+       <em class="c3">
+        h
+       </em>
+       item in the
+       <span class="ButtonText">
+        AnswerList
+       </span>
+       ?" If
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is 1, the app will compare the user's answer
+              with the first item in AnswerList, "Don Larsen". If
+       <span class="ButtonText">
+        currentQuestionIndex
+       </span>
+       is 2, the app will compare the user's answer
+              with the second answer in the list, "Dallas Braden", and so on. If the test result is
+              positive, the
+       <span class="ButtonText">
+        then-do
+       </span>
+       blocks are executed and the
+       <span class="ButtonText">
+        RightWrongLabel
+       </span>
+       is set to "correct!". If the test is
+              false, the else-do blocks are executed and the RightWrongLabel is set to "incorrect".
+      </p>
+      <div class="c12">
+       <div class="c4">
+       </div>
+       <blockquote class="testing">
+        <p>
+         Test the modified app. Try answering one of the questions. It should report
+                  whether or not you answered the question exactly as is specified in the
+         <span class="ButtonText">
+          AnswerList
+         </span>
+         . Test with both a correct and
+                  incorrect answer (because text is being compared, the test is case-sensitive).
+        </p>
+        <p>
+         Click the
+         <span class="ButtonText">
+          NextButton
+         </span>
+         and answer a second
+                  question. Does it still work? It should, but you might notice that when you click
+                  the
+         <span class="ButtonText">
+          NextButton
+         </span>
+         , the "correct"/"incorrect" text
+                  and the previous answer are still there. Though it's fairly innocuous, such user
+                  interface issues will definitely be noticed by the users of your app.
+        </p>
+       </blockquote>
+       <p>
+        To blank out the
+        <span class="ButtonText">
+         RightWrongLabel
+        </span>
+        and the
+        <span class="ButtonText">
+         AnswerText,
+        </span>
+        you'll put the following blocks within
+                the NextButton.click event-handler:
+       </p>
+       <div class="advtutorial">
+        <table border="1">
+         <tbody>
+          <tr>
+           <td class="tbl-header c5">
+            <strong>
+             Block Type
+            </strong>
+           </td>
+           <td class="tbl-header c6">
+            <strong>
+             Drawer
+            </strong>
+           </td>
+           <td class="tbl-header c7">
+            &nbsp;
+            <strong>
+             Purpose
+            </strong>
+           </td>
+          </tr>
+          <tr>
+           <td class="c5">
+            <span class="ButtonText">
+             set RightWrongLabel.Text to
+            </span>
+           </td>
+           <td class="c6">
+            RightWrongLabel
+           </td>
+           <td class="c7">
+            the label to blank out
+           </td>
+          </tr>
+          <tr>
+           <td class="c8">
+            <span class="ButtonText">
+             text
+            </span>
+            (blank)
+           </td>
+           <td class="c9">
+            Text
+           </td>
+           <td class="c10">
+            When Next is clicked, erase old answer critique
+           </td>
+          </tr>
+          <tr>
+           <td class="c8">
+            <span class="ButtonText">
+             set AnswerText.Text to
+            </span>
+           </td>
+           <td class="c9">
+            AnswerText
+           </td>
+           <td class="c10">
+            the user's answer from previous question
+           </td>
+          </tr>
+          <tr>
+           <td class="c8">
+            <span class="ButtonText">
+             text
+            </span>
+            (blank)
+           </td>
+           <td class="c9">
+            Text
+           </td>
+           <td class="c10">
+            When Next is clicked, erase old answer
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="QuizMeAssets/nextButtonFinal.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       When the
+       <span class="ButtonText">
+        NextButton
+       </span>
+       is clicked, the user is
+              moving on to the next question, so the top two rows of the event-handler blank out
+              the
+       <span class="ButtonText">
+        RightWrongLabel
+       </span>
+       and the
+       <span class="ButtonText">
+        AnswerText.
+       </span>
+       <blockquote class="testing">
+        <p>
+         Test this behavior. Answer a question and click
+         <span class="ButtonText">
+          Submit
+         </span>
+         , then click the
+         <span class="ButtonText">
+          NextButton
+         </span>
+         . Does your previous answer and the apps critique
+                  disappear?
+        </p>
+       </blockquote>
+       <h2>
+        Final Program
+       </h2>
+       <strong>
+        QuizMe! Final Version
+       </strong>
+       <div class="imagecontainer">
+        <img alt="" border="0" height="626" src="QuizMeAssets/quizmeFinal.png" width="900" />
+       </div>
+       <p>
+        Package the final version of the app by choosing
+        <span class="ButtonText">
+         Package
+                For Phone | Barcode
+        </span>
+        from the
+        <span class="ButtonText">
+         Component
+                Designer
+        </span>
+        menu. When the barcode appears, use the barcode scanner on your
+                phone to download and install the app.
+       </p>
+       <h2>
+        Variations
+       </h2>
+       <p>
+        Once you get a quiz working, you might want to explore some variations. For
+                example,
+       </p>
+       <ul>
+        <li>
+         Instead of just showing images for each question, try playing a sound clip or a
+                short video. With sound, you can turn your quiz app into a
+         <em>
+          Name That Tune
+         </em>
+         app.
+        </li>
+        <li>
+         The quiz is very rigid in terms of what is accepted as a valid answer. There
+                are a number of ways to modify this. One is to use the text.contains block to see
+                if the user's answer is contained in the actual answer. Another is to provide
+                multiple answers for each question, and check by iterating (
+         <span class="ButtonText">
+          foreach
+         </span>
+         ) through them to see if any match.
+        </li>
+        <li>
+         Transform the quiz so that it is multiple-choice. The list of answers will need
+                to be a list of lists, with each sub-list holding the answer choices. Use the
+         <span class="ButtonText">
+          ListPicker
+         </span>
+         component to allow the user to choose an
+                answer.
+        </li>
+       </ul>
+       <h2>
+        Review
+       </h2>
+       Here are some of the ideas covered in this tutorial:
+       <ul>
+        <li>
+         Apps can be written in a general manner so that they work with any data list.
+        </li>
+        <li>
+         Index variables are used to track the current position within a list . When you
+                increment them, be careful about reaching the end of the list.
+        </li>
+       </ul>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

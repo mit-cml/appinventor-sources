@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Building Your First App - Emulator (Part 1)
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c4 {border-width:0}
+    div.c3 {text-align: center;}
+    img.c2 {padding-top: 10px; padding-right: 10px;}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/setup/">Set Up</a> &gt; Building Your             First App with the Emulator (Part 1) ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Building your first app with the emulator (Part 1): Hello Purr
+       </h1>
+              <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch1HelloPurr.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       
+       <blockquote class="notice">
+        Please visit
+        <a href="/learn/setup/hellopurr/hellopurrphonepart1.html">
+         Building
+                your first app with a phone
+        </a>
+        rather than proceeding here if you'd prefer to use
+                a phone.
+       </blockquote>
+       <img align="right" alt="" class="c2" src="/learn/tutorials/hellopurr/HelloPurrAssets/HelloPurrPart1PhoneImage.png" width="128" />
+       <p>
+        This page will get you started building your first app: A picture of a kitty that
+                meows when you pet it. You can also
+        <a href="http://www.youtube.com/watch?v=nC_x9iOby0g">
+         watch a video
+        </a>
+        (http://www.youtube.com/watch?v=nC_x9iOby0g) of this app being built. When you're
+                done building Hello Purr, you'll be ready to design and build apps on your own.
+                Before starting, make sure that you've
+        <a href="/learn/setup/index.html">
+         set up
+                your computer
+        </a>
+        .
+       </p>
+       As you build Hello Purr you'll learn how the three key tools of App Inventor
+              work:
+       <ul>
+        <li>
+         The
+         <b>
+          Designer
+         </b>
+         , the place were you design your app. It runs in your web
+                browser.
+        </li>
+        <li>
+         The
+         <b>
+          Blocks Editor
+         </b>
+         , the place were you set the behavior of the app. It is
+                a separate application with its own window.
+        </li>
+        <li>
+         The
+         <b>
+          emulator
+         </b>
+         , a virtual mobile device that runs on your computer along
+                side App Inventor.
+        </li>
+       </ul>
+       <p>
+        To build
+        <em>
+         Hello Purr
+        </em>
+        you'll need a picture of the kitty and also a meow
+                sound. Download these files to your computer:
+       </p>
+       <ul>
+        <li>
+         <a href="../../tutorials/hellopurr/HelloPurrAssets/kitty.png">
+          kitty picture
+         </a>
+        </li>
+        <li>
+         <a href="../../tutorials/hellopurr/HelloPurrAssets/meow.mp3">
+          meow sound
+         </a>
+        </li>
+       </ul>
+       <h2>
+        Start the Designer and create a new project
+       </h2>
+       <p>
+        In your web browser, go to the App Inventor Web site at
+        <a href="http://appinventor.mit.edu">
+         http://appinventor.mit.edu
+        </a>
+        . If this
+                is the first time you've used App Inventor, you'll see the
+        <em>
+         Projects
+        </em>
+        page,
+                with no projects in it yet. It should look like this:
+       </p>
+       <div class="c3">
+        <img alt="" height="408" src="/learn/tutorials/hellopurr/HelloPurrAssets/projects.png" width="620" />
+       </div>
+       <h4>
+        Create a new project
+       </h4>
+       <ol>
+        <li>
+         Click
+         <span class="ButtonText">
+          New
+         </span>
+         on the left side, near the top of the
+                page.
+        </li>
+        <li>
+         Enter the project name HelloPurr (one word, with no spaces) in the dialog box
+                that appears, click OK.
+        </li>
+       </ol>
+       <p>
+        The browser will open the
+        <em>
+         Designer
+        </em>
+        , the place where you select
+        <em>
+         components
+        </em>
+        for your app, and should look like this:
+       </p>
+       <div class="c3">
+        <img alt="" height="408" src="/learn/tutorials/hellopurr/HelloPurrAssets/designer.png" width="620" />
+       </div>
+       <h2>
+        Selecting components to design your app
+       </h2>
+       <p>
+        App Inventor components are located on the left hand side of the Designer screen
+                under the title
+        <b>
+         Palette
+        </b>
+        . Components are the basic elements you use to make
+                apps on the Android phone. They're like the ingredients in a recipe. Some
+                components are very simple, like a
+        <em>
+         Label
+        </em>
+        component, which just shows text
+                on the screen, or a
+        <em>
+         Button
+        </em>
+        component that you tap to initiate an action.
+                Other components are more elaborate: a drawing
+        <em>
+         Canvas
+        </em>
+        that can hold still
+                images or animations, an
+        <em>
+         accelerometer (motion) sensor
+        </em>
+        that works like a
+                Wii controller and detects when you move or shake the phone, components that make
+                or send text messages, components that play music and video, components that get
+                information from Web sites, and so on.
+       </p>
+       <p>
+        App Inventor components are located on the left hand side of the Designer screen
+                under the title
+        <b>
+         Palette
+        </b>
+        . To use a component in your app you need to click
+                and drag it onto the viewer in the middle of the Designer. When you add a component
+                to the viewer it will also appear in the components list on the right hand side of
+                the viewer.
+       </p>
+       <p>
+        Components have properties that can be adjusted to change the way the component
+                appears within the app. To view and change the properties of a component you must
+                first select the desired component in your list of components.
+       </p>
+       <h4>
+        Steps for selecting components and setting properties
+       </h4>
+       <p>
+        HelloPurr will use a
+        <b>
+         Button
+        </b>
+        component that has the image property set to the
+                kitty.png file you downloaded earlier. To do this:
+       </p>
+       <ol>
+        <li>
+         Drag and drop the
+         <span class="ButtonText">
+          Button
+         </span>
+         component to
+         <b>
+          Screen1
+         </b>
+         . The
+         <span class="ButtonText">
+          Button
+         </span>
+         component is located
+                under
+         <b>
+          Palette
+         </b>
+         .
+        </li>
+        <li>
+         Click on
+         <b>
+          Button1
+         </b>
+         listed under
+         <b>
+          Components
+         </b>
+         .
+        </li>
+        <li>
+         In the list of properties, under image, click on
+         <b>
+          none...
+         </b>
+        </li>
+        <li>
+         Click
+         <span class="ButtonText">
+          add
+         </span>
+         .
+        </li>
+        <li>
+         Upload the the kitty.png file.
+        </li>
+        <li>
+         Delete
+         <i>
+          Text for Button1
+         </i>
+         listed under the
+         <b>
+          Text
+         </b>
+         property.
+        </li>
+       </ol>
+       Your Designer should look like this:
+       <div class="c3">
+        <img alt="" height="408" src="/learn/tutorials/hellopurr/HelloPurrAssets/designerwithkittybutton.png" width="620" />
+       </div>
+       <h2>
+        Open the Blocks Editor and connect to the emulator
+       </h2>
+       <p>
+        The Designer is one of three key tools you'll use in creating your apps. The second
+                is the
+        <em>
+         Blocks Editor
+        </em>
+        . You'll use the Blocks Editor to assign behaviors to
+                your components, such as what should happen when the user of your app taps a
+                button.
+       </p>
+       The Blocks Editor runs in a separate window. When you click
+       <span class="ButtonText">
+        Open the blocks editor
+       </span>
+       from the Designer window, the Blocks
+              Editor program file should download and run. This process may take 30 seconds or
+              longer. If the Blocks Editor never opens, it might be because your browser is not set
+              up to run downloaded Java applications automatically. In this case, find the
+              downloaded file named AppInventorForAndroidCodeblocks.jnlp and open it. The Blocks
+              Editor window should look as shown below, with "drawers" for the program blocks to
+              the left, and a large empty "canvas" space for placing blocks to assemble the
+              program, which you'll do below.
+       <div class="c3">
+        <img alt="" height="360" src="/learn/tutorials/hellopurr/HelloPurrAssets/blockseditorhellopurr.png" width="600" />
+       </div>
+       <p>
+        Before continuing to build the app, you'll need to start the emulator. Click the
+        <span class="ButtonText">
+         New emulator
+        </span>
+        button at top of the window. You'll
+                get a notice saying that the emulator is starting, and asking you to be patient:
+                starting the emulator can take a couple of minutes. The emulator will initially
+                appear with an empty black screen. Wait until the emulator is ready, with a colored
+                screen background as shown below. Even after the background appears, you should
+                wait until the emulated phone has finished preparing its SD card: there will be a
+                notice at the top of the phone screen while the card is being prepared. You might
+                also need to use your mouse on the emulated phone screen to unlock the device by
+                dragging the green lock button to the right.
+       </p>
+       <div class="c3">
+        <img alt="" height="360" src="/learn/tutorials/hellopurr/HelloPurrAssets/readyemulator.png" width="200" />
+       </div>
+       <p>
+        When the emulator is finally ready, click the
+        <span class="ButtonText">
+         Connect to
+                device...
+        </span>
+        button, select the emulator from the dropdown list and click it.
+                You'll see a yellow animated arrow move back and forth, showing that App Inventor
+                is connecting to the emulated phone. Creating this connection can take another
+                minute or two. When it's all done, the arrow will stop moving and turn green, and
+                if you look at the emulated phone screen, you'll see the kitty there â&euro;&rdquo; this is the
+                beginning of your app!
+       </p>
+       <h2>
+        Next Steps
+       </h2>
+       <p>
+        Now that the Designer, the Blocks Editor, and the emulator are all connected, you
+                can
+        <a href="hellopurrpart2.html">
+         Complete the HelloPurr app
+        </a>
+       </p>
+       <blockquote class="notice">
+        Something not working right? Visit the
+        <a href="/learn/troubleshooting.html">
+         troubleshooting page
+        </a>
+        , or check the
+        <a href="/forum/">
+         App Inventor User Forum
+        </a>
+        for help.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>
