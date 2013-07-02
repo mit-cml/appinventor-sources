@@ -34,7 +34,7 @@ preferably containing the .scm and .blk file.
     java -jar <PATH_TO_YailGenerator.jar> <PATH_TO_Screen1.scm> <PATH_TO_Screen1.blk> fakepackagename > <WHAT_YOU'RE_TESTING>Expected.yail
 
 - If all three files are in the same directory, the command can be as simple as:
-    java -jar YailGenerator.jar Screen1.scm Screen2.blk fakepackagename > paintPotExpected.yail
+    java -jar YailGenerator.jar Screen1.scm Screen1.blk fakepackagename > paintPotExpected.yail
 - Copy the XXXXExpected.yail into the folder along with the original .scm and .bky files.
 
 *** Using the template:
