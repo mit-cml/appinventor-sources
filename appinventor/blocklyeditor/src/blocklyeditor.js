@@ -31,7 +31,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   //the different init process in drawer (it'd be undefined at the time it hits
   //init in Blockly)
   if (Blockly.editable)
-    new Blockly.TypeBlock(Blockly.configForTypeBlock);
+    Blockly.TypeBlock(Blockly.configForTypeBlock);
 
   Blockly.BlocklyEditor.formName_ = formName;
 

@@ -23,7 +23,7 @@ goog.require('goog.ui.ac.InputHandler');
 goog.require('goog.ui.ac.Renderer');
 
 /**
- * Main Type Block function
+ * Main Type Block function for configuration.
  * @param {Object} htmlConfig an object of the type:
      {
        frame: 'ai_frame',
@@ -32,16 +32,14 @@ goog.require('goog.ui.ac.Renderer');
      }
  * stating the ids of the attributes to be used in the html enclosing page
  * create a new block
- * @constructor
  */
 Blockly.TypeBlock = function( htmlConfig ){
-  Blockly.TypeBlock.htmlConfig_ = htmlConfig;
   var frame = htmlConfig['frame'];
   Blockly.TypeBlock.typeBlockDiv_ = htmlConfig['typeBlockDiv'];
-  Blockly.TypeBlock.inputText = htmlConfig['inputText'];
+  Blockly.TypeBlock.inputText_ = htmlConfig['inputText'];
 
   Blockly.TypeBlock.docKh_ = new goog.events.KeyHandler(goog.dom.getElement(frame));
-  Blockly.TypeBlock.inputKh_ = new goog.events.KeyHandler(goog.dom.getElement(Blockly.TypeBlock.inputText));
+  Blockly.TypeBlock.inputKh_ = new goog.events.KeyHandler(goog.dom.getElement(Blockly.TypeBlock.inputText_));
 
   Blockly.TypeBlock.handleKey = function(e){
     if (e.altKey || e.ctrlKey || e.metaKey || e.keycode === 9) return; // 9 is tab
@@ -76,14 +74,8 @@ Blockly.TypeBlock = function( htmlConfig ){
 
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
   // Create the auto-complete panel
-  Blockly.TypeBlock.createAutoComplete_(Blockly.TypeBlock.inputText);
+  Blockly.TypeBlock.createAutoComplete_(Blockly.TypeBlock.inputText_);
 };
-
-/**
- * configuration object
- * @private
- */
-Blockly.TypeBlock.htmlConfig_ = {};
 
 /**
  * Div where the type block panel will be rendered
@@ -176,10 +168,10 @@ Blockly.TypeBlock.show = function(){
   goog.style.setStyle(panel, 'top', Blockly.latestClick.y);
   goog.style.setStyle(panel, 'left', Blockly.latestClick.x);
   goog.style.showElement(panel, true);
-  goog.dom.getElement(Blockly.TypeBlock.inputText).focus();
+  goog.dom.getElement(Blockly.TypeBlock.inputText_).focus();
   // If the input gets cleaned before adding the handler, all keys are read
   // correctly (at times it was missing the first char)
-  goog.dom.getElement(Blockly.TypeBlock.inputText).value = '';
+  goog.dom.getElement(Blockly.TypeBlock.inputText_).value = '';
   goog.events.unlisten(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
   goog.events.listen(Blockly.TypeBlock.inputKh_, 'key', Blockly.TypeBlock.handleKey);
   Blockly.TypeBlock.visible = true;
@@ -283,7 +275,7 @@ Blockly.TypeBlock.generateOptions = function() {
 Blockly.TypeBlock.reloadOptionsAfterChanges_ = function () {
   Blockly.TypeBlock.TBOptionsNames_ = goog.object.getKeys(Blockly.TypeBlock.TBOptions_);
   goog.array.sort(Blockly.TypeBlock.TBOptionsNames_);
-  Blockly.TypeBlock.ac_.matcher_.setRows(Blockly.TypeBlock.TBOptionsNames_); //TODO (Jose) would be better to share the matcher instead of the option names?
+  Blockly.TypeBlock.ac_.matcher_.setRows(Blockly.TypeBlock.TBOptionsNames_);
 };
 
 /**
