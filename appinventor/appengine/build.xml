@@ -61,6 +61,13 @@
     </copy>
   </target>
 
+  <target name="CopyBlocklyToBuildWar"
+          description="Create blockly-all.js and add to war"
+          depends="init,blocklyeditor_BlocklyCompile">
+    <copy todir="${build.war.dir}/">
+      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
+    </copy>
+  </target>
   <!-- =====================================================================
        Create the keystore that is used by AiServerLib to encrypt user and
        project IDs.

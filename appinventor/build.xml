@@ -32,6 +32,10 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
   </target>
 
+  <target name="Blockly">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="CopyBlocklyToBuildWar"/>
+  </target>
+
   <target name="tests">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
