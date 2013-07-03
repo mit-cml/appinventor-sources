@@ -149,6 +149,7 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
   var procedureParamNames = []; // from procedure/function declarations
   var handlerParamNames = []; // from event handlers
   var loopNames = []; // from for loops
+  var rangeNames = []; // from range loops
   var localNames = []; // from local variable declaration
   var allLexicalNames = []; // all non-global names
   var innermostPrefix = {}; // paulmw's mechanism for keeping track of innermost prefix in case
@@ -179,11 +180,15 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
               rememberName(params[j].name, handlerParamNames, Blockly.handlerParameterPrefix); 
             }
           // [lyn, 11/29/12] Added parameters for control constructs.
-          } else if ( ( (parent.type === "controls_forEach") 
-                        || (parent.type === "controls_forRange") )
+          } else if ( (parent.type === "controls_forEach")
                      && (parent.getInputTargetBlock('DO') == child)) {// Only DO is in scope, not other inputs!
               var loopName = parent.getTitleValue('VAR');
               rememberName(loopName, loopNames, Blockly.loopParameterPrefix); 
+          } else if ( (parent.type === "controls_forRange")
+                     && (parent.getInputTargetBlock('DO') == child)) {// Only DO is in scope, not other inputs!
+              var rangeName = parent.getTitleValue('VAR');
+              rememberName(rangeName, rangeNames, Blockly.loopRangeParameterPrefix);
+
           } else if ( ( parent.type === "local_declaration_expression" 
                         && parent.getInputTargetBlock('RETURN') == child ) // only body is in scope of names
                       || ( parent.type === "local_declaration_statement"  
@@ -205,6 +210,7 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
   if(!Blockly.usePrefixInYail){ // Only a single namespace
     allLexicalNames = procedureParamNames.concat(handlerParamNames)
                                          .concat(loopNames)
+                                         .concat(rangeNames)
                                          .concat(localNames);
     allLexicalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(allLexicalNames);
     // Add prefix as annotation only when Blockly.showPrefixToUser is true
@@ -220,6 +226,7 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
        procedureParamNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.procedureParameterPrefix) )
        .concat(handlerParamNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.handlerParameterPrefix) ))
        .concat(loopNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.loopParameterPrefix) ))
+       .concat(rangeNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.loopRangeParameterPrefix) ))
        .concat(localNames.map( Blockly.possiblyPrefixMenuNameWith(Blockly.localNamePrefix) ));
     allLexicalNames = Blockly.LexicalVariable.sortAndRemoveDuplicates(allLexicalNames);
   }
@@ -400,8 +407,10 @@ Blockly.LexicalVariable.renameParam = function (newName) {
   if (Blockly.showPrefixToUser) {
     if (sourceBlock.type == "procedures_mutatorarg") {
       sourcePrefix = Blockly.procedureParameterPrefix;
-    } else if (sourceBlock.type == "controls_forEach" || sourceBlock.type == "controls_forRange") {
+    } else if (sourceBlock.type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;
+    } else if ( sourceBlock.type == "controls_forRange") {
+      sourcePrefix = Blockly.loopRangeParameterPrefix;
     } else if (sourceBlock.type == "local_declaration_statement"
                || sourceBlock.type == "local_declaration_expression" 
                || sourceBlock.type == "local_mutatorarg") {
@@ -512,7 +521,7 @@ Blockly.LexicalVariable.referenceResult = function (block, name, prefix, env) {
   } else if (block.type === "controls_forRange") {
     var loopVar = block.getTitleValue('VAR');
     if (Blockly.usePrefixInYail) { // Invariant: Blockly.showPrefixToUser must also be true!
-      loopVar = (Blockly.possiblyPrefixMenuNameWith(Blockly.loopParameterPrefix))(loopVar)
+      loopVar = (Blockly.possiblyPrefixMenuNameWith(Blockly.loopRangeParameterPrefix))(loopVar)
     }
     var newEnv = env.concat([loopVar]);
     var startResults = Blockly.LexicalVariable.referenceResult(block.getInputTargetBlock('START'), name, prefix, env);

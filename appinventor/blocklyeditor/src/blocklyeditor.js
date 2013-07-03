@@ -58,7 +58,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 
   */
 
-  Blockly.showPrefixToUser = true;
+  Blockly.showPrefixToUser = false;
   Blockly.usePrefixInYail = false;
 
   /******************************************************************************
@@ -73,7 +73,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
   Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
   Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
-  Blockly.loopParameterPrefix = "index"; // For names introduced by for loops
+  Blockly.loopParameterPrefix = "item"; // For names introduced by for loops
+  Blockly.loopRangeParameterPrefix = "counter"; // For names introduced by for range loops
 
   Blockly.menuSeparator = " "; // Separate prefix from name with this. E.g., space in "param x"
   Blockly.yailSeparator = "_"; // Separate prefix from name with this. E.g., underscore "param_ x"
@@ -109,7 +110,8 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
       var prefixes = [Blockly.procedureParameterPrefix,
                       Blockly.handlerParameterPrefix,
                       Blockly.localNamePrefix,
-                      Blockly.loopParameterPrefix]
+                      Blockly.loopParameterPrefix,
+                      Blockly.loopRangeParameterPrefix]
       for (i=0; i < prefixes.length; i++) {
         if (name.indexOf(prefixes[i]) == 0) {
           // name begins with prefix
