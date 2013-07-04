@@ -95,7 +95,7 @@ Blockly.Language.text_join = {
 
 };
 
-/*Blockly.Language.text_join_item = {
+Blockly.Language.text_join_item = {
   // Add items.
   init: function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -107,7 +107,7 @@ Blockly.Language.text_join = {
     this.contextMenu = false;
   },
   onchange: Blockly.WarningHandler.checkErrors
-};*/
+};
 
 Blockly.Language.text_length = {
   // String length.
