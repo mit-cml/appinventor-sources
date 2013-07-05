@@ -189,7 +189,7 @@ Blockly.Language.math_add = {
     return input;
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.inputList[0].titleRow[0].setText("+");
+    containerBlock.setTitleValue("+","CONTAINER_TEXT");
   },
   //TODO (user) add has not been internationalized yet
   // Using '+' for now
@@ -273,7 +273,7 @@ Blockly.Language.math_multiply = {
     return input;
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.inputList[0].titleRow[0].setText("*");
+    containerBlock.setTitleValue("*","CONTAINER_TEXT");
   },
   //TODO (user) multiply has not been internationalized yet
   // Using '*' for now
@@ -371,7 +371,7 @@ Blockly.Language.math_random_set_seed = {
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_SEED_TITLE_RANDOM }]
 };
 
-/*Blockly.Language.math_on_list = {
+Blockly.Language.math_on_list = {
   // Evaluate a list of numbers to return sum, average, min, max, etc.
   // Some functions also work on text (min, max, mode, median).
   category: Blockly.LANG_CATEGORY_MATH,
@@ -420,7 +420,7 @@ Blockly.Language.math_random_set_seed = {
 
     for(var i=0;i<Blockly.Language.math_on_list.OPERATORS.length;i++){
       if(Blockly.Language.math_on_list.OPERATORS[i][1] == this.getTitleValue("OP") ){
-        containerBlock.inputList[0].titleRow[0].setText(Blockly.Language.math_on_list.OPERATORS[i][0]);
+        containerBlock.setTitleValue(Blockly.Language.math_on_list.OPERATORS[i][0],"CONTAINER_TEXT");
       }
     }
 
@@ -448,7 +448,7 @@ Blockly.Language.math_on_list.TOOLTIPS = {
   MIN: 'Return the smallest of its arguments..',
   MAX: 'Return the largest of its arguments..'
 };
-*/
+
 
 Blockly.Language.math_single = {
   // Advanced math operators with single operand.

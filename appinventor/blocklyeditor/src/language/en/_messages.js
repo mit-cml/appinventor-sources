@@ -568,16 +568,19 @@ Blockly.LANG_TEXT_REPLACE_ALL_TOOLTIP = 'Returns a new text obtained by replacin
 
 // Lists Blocks.
 Blockly.LANG_CATEGORY_LISTS = 'Lists';
-/*Blockly.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list#Empty_lists';
+//Blockly.LANG_LISTS_CREATE_EMPTY_HELPURL = 'http://en.wikipedia.org/wiki/Linked_list#Empty_lists';
 Blockly.LANG_LISTS_CREATE_EMPTY_TITLE = 'create empty list';
-Blockly.LANG_LISTS_CREATE_EMPTY_TOOLTIP = 'Returns a list, of length 0, containing no data records';*/
+//Blockly.LANG_LISTS_CREATE_EMPTY_TOOLTIP = 'Returns a list, of length 0, containing no data records';
 
 Blockly.LANG_LISTS_CREATE_WITH_EMPTY_HELPURL = 'http://appinventor.mit.edu/explore/support/blocks/lists#makealist';
 Blockly.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST = 'make a list';
 Blockly.LANG_LISTS_CREATE_WITH_TOOLTIP = 'Create a list with any number of items.';
 
-/*Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_INPUT_LIST = 'list';
-Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';*/
+Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'list';
+Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';
+
+Blockly.LANG_LISTS_CREATE_WITH_ITEM_TITLE = 'item';
+Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP = 'Add an item to the list.';
 
 Blockly.LANG_LISTS_ADD_ITEM_TITLE = 'item';
 Blockly.LANG_LISTS_ADD_ITEM_TOOLTIP = 'Add an item to the list.';
@@ -645,8 +648,8 @@ Blockly.LANG_LISTS_ADD_ITEMS_TITLE_ADD = 'add items to list';
 Blockly.LANG_LISTS_ADD_ITEMS_INPUT_ITEM = 'item';
 Blockly.LANG_LISTS_ADD_ITEMS_TOOLTIP = 'Adds items to the end of a list.';
 
-Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD = 'list';
-Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1 = 'Add, remove, or reorder sections to reconfigure this list block.';
+Blockly.LANG_LISTS_ADD_ITEMS_CONTAINER_TITLE_ADD = 'list';
+Blockly.LANG_LISTS_ADD_ITEMS_CONTAINER_TOOLTIP = 'Add, remove, or reorder sections to reconfigure this list block.';
 
 Blockly.LANG_LISTS_COPY_HELPURL = 'http://appinventor.mit.edu/explore/support/blocks/lists#copy';
 Blockly.LANG_LISTS_COPY_TITLE_COPY = 'copy list';

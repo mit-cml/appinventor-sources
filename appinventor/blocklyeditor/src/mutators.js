@@ -8,7 +8,7 @@ Blockly.Language.mutator_container = {
     this.setColour(210);
     this.appendDummyInput()
         //.appendTitle(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
-        .appendTitle("MIN/MAX");
+        .appendTitle("","CONTAINER_TEXT");
     this.appendStatementInput('STACK');
     //this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1);
     this.contextMenu = false;

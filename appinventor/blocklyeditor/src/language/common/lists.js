@@ -62,7 +62,7 @@ Blockly.Language.lists_create_with = {
     return input;
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
+    containerBlock.setTitleValue(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD,"CONTAINER_TEXT");
   },
   typeblock: [{ translatedName: Blockly.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST }]
 
@@ -113,8 +113,8 @@ Blockly.Language.lists_add_items = {
     return input;
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.inputList[0].titleRow[0].setText(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
-    containerBlock.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP);
+    containerBlock.setTitleValue(Blockly.LANG_LISTS_ADD_ITEMS_CONTAINER_TITLE_ADD,"CONTAINER_TEXT");
+    containerBlock.setTooltip(Blockly.LANG_LISTS_ADD_ITEMS_CONTAINER_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.LANG_LISTS_ADD_ITEMS_TITLE_ADD }]
 
