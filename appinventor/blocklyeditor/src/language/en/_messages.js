@@ -54,10 +54,10 @@ Blockly.LANG_COLOUR_MAGENTA = 'magenta';
 Blockly.LANG_COLOUR_LIGHT_GRAY = 'light gray';
 Blockly.LANG_COLOUR_DARK_GRAY = 'dark gray';
 Blockly.LANG_COLOUR_GRAY = 'gray';
-Blockly.LANG_COLOUR_SPLIT_COLOUR = 'split colour';
+Blockly.LANG_COLOUR_SPLIT_COLOUR = 'split color';
 Blockly.LANG_COLOUR_SPLIT_COLOUR_HELPURL = 'http://appinventor.mit.edu/explore/support/blocks/colors#split';
 Blockly.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP = "A list of four elements, each in the range 0 to 255, representing the red, green, blue and alpha components.";
-Blockly.LANG_COLOUR_MAKE_COLOUR = 'make colour';
+Blockly.LANG_COLOUR_MAKE_COLOUR = 'make color';
 Blockly.LANG_COLOUR_MAKE_COLOUR_HELPURL = 'http://appinventor.mit.edu/explore/support/blocks/colors#make';
 Blockly.LANG_COLOUR_MAKE_COLOUR_TOOLTIP = "A color with the given red, green, blue, and optionally alpha components";
 
