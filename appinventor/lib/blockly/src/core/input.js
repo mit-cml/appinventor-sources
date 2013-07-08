@@ -41,7 +41,12 @@ goog.require('Blockly.FieldLabel');
  * @constructor
  */
 Blockly.Input = function(type, name, block, connection) {
-  this.type = type;
+  if (type == Blockly.INDENTED_VALUE){
+    this.type = Blockly.INPUT_VALUE;
+    this.subtype = Blockly.INDENTED_VALUE;
+  } else {
+    this.type = type;
+  }
   this.name = name;
   this.sourceBlock_ = block;
   this.connection = connection;

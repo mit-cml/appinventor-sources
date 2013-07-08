@@ -310,9 +310,8 @@ Blockly.Language.local_declaration_statement = {
         }
     } else {
         // for local variable declaration expression
-        var returnInput = this.appendValueInput('RETURN')
-                              .appendTitle("in return")
-                              .setAlign(Blockly.ALIGN_RIGHT);
+        var returnInput = this.appendIndentedValueInput('RETURN')
+                              .appendTitle("in return");
         if (containerBlock.bodyExpressionConnection_) { // for local variable declaration expression
             returnInput.connection.connect(containerBlock.bodyExpressionConnection_);
         }
@@ -419,8 +418,7 @@ Blockly.Language.local_declaration_expression = {
             .appendTitle("to")
             .setAlign(Blockly.ALIGN_RIGHT);
 
-	this.appendValueInput('DUMMYRETURN')
-        .setAlign(Blockly.ALIGN_RIGHT)
+    this.appendIndentedValueInput('DUMMYRETURN')
         .appendTitle("in return");
         
     // Create plug for expression output
@@ -452,8 +450,7 @@ Blockly.Language.local_declaration_expression = {
     this.addDeclarationInputs_(this.localNames_); // add declarations; inits are undefined
 
     // Declaration body = return value of expression
-    this.appendValueInput('RETURN')
-        .setAlign(Blockly.ALIGN_RIGHT)
+    this.appendIndentedValueInput('RETURN')
         .appendTitle("in return");
   },
   blocksInScope: function () {

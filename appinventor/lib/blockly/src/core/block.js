@@ -1305,6 +1305,17 @@ Blockly.Block.prototype.appendStatementInput = function(name) {
 };
 
 /**
+ * Shortcut for appending an inline value input row.
+ * @param {string} name Language-neutral identifier which may used to find this
+ *     input again.  Should be unique to this block.
+ * @return {!Blockly.Input} The input object created.
+ */
+
+Blockly.Block.prototype.appendIndentedValueInput = function(name) {
+    return this.appendInput_(Blockly.INDENTED_VALUE, name);
+};
+
+/**
  * Shortcut for appending a dummy input row.
  * @param {string} opt_name Language-neutral identifier which may used to find
  *     this input again.  Should be unique to this block.
@@ -1323,11 +1334,14 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
  * @return {!Blockly.Input} The input object created.
  * @private
  */
+
 Blockly.Block.prototype.appendInput_ = function(type, name) {
   var connection = null;
-  if (type == Blockly.INPUT_VALUE || type == Blockly.NEXT_STATEMENT) {
+  console.log(type+" "+name);
+  if (type == Blockly.INPUT_VALUE || type == Blockly.NEXT_STATEMENT || type == Blockly.INDENTED_VALUE) {
     connection = new Blockly.Connection(this, type);
   }
+
   var input = new Blockly.Input(type, name, this, connection);
   // Append input to list.
   this.inputList.push(input);

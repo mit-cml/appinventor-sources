@@ -38,7 +38,12 @@ goog.require('Blockly.Workspace');
 Blockly.Connection = function(source, type) {
   this.sourceBlock_ = source;
   this.targetConnection = null;
-  this.type = type;
+  if (type == Blockly.INDENTED_VALUE) {
+    this.type = Blockly.INPUT_VALUE;
+    this.subtype = Blockly.INDENTED_VALUE;
+  } else {
+    this.type = type;
+  }
   this.x_ = 0;
   this.y_ = 0;
   this.inDB_ = false;
