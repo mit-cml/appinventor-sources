@@ -5,17 +5,20 @@ $Source $Yail
 (define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 
-(def (startemulator )  (let ( (ignore "")  )   (set-lexical! ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"  ) '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
-(def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The Version of the blocks are not compatible with this Companion" 'text))
-(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)  ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
+(def Version "2.07nb")
 (def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")  ) '(list))  ) '(text)))
+(def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The Version of the blocks are not compatible with this Companion" 'text))
+(def (startemulator )  (let ( (ignore "")  )   (set-lexical! ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"  ) '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
+(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)  ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* ) '()))
 ;;; Screen1
 
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "MIT NewBlocks Companion" 'text)
+ (set-and-coerce-property! 'Screen1 'VersionCode 207 'number)
+ (set-and-coerce-property! 'Screen1 'VersionName "2.07nb" 'text)
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (if (call-component-method 'PhoneStatus1 'isEmulator (*list-for-runtime* ) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)((get-var startemulator) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) 'text))))
+    (if (call-component-method 'PhoneStatus1 'isEmulator (*list-for-runtime* ) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)((get-var startemulator) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime* ) '()) 'text)))(set-and-coerce-property! 'VersionLabel 'Text (call-yail-primitive string-append (*list-for-runtime* "Companion Version: " (get-var Version) ) '(text text ) "join") 'text))
 ;;; Label3
 
 (add-component Screen1 Label Label3 
@@ -97,6 +100,11 @@ $Source $Yail
 
 (define-event ScanButton Click()(set-this-form)
     (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime* ) '()))
+;;; VersionLabel
+
+(add-component Screen1 Label VersionLabel 
+)
+
 ;;; PhoneStatus1
 
 (add-component Screen1 PhoneStatus PhoneStatus1 
