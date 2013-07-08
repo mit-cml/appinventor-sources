@@ -350,7 +350,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     }
     if (autoSaver.getWorkspaceChanged()) {
       // This always happens on the Event Dispatch thread.
-      final CodeblocksSourceOutput sourceOutputInfo = takeSnapshot(true /* tell autosaver */);
+      final CodeblocksSourceOutput sourceOutputInfo = takeSnapshot(true /* tell autosaver */, false /* don't synchronize */);
 
       Runnable saveRunnable = new Runnable() {
         @Override
@@ -391,10 +391,25 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
     }
   }
 
+  // Wraper around takeSnapshot(boolean) that may or may not be synchronized based
+  // on the dosync argument. We call it with false (no synchronization) if we are calling
+  // from a synchornized method in this class.
+
+  protected CodeblocksSourceOutput takeSnapshot(boolean tellAutosaver, boolean dosync)
+    throws SaveException {
+    if (dosync) {
+      synchronized(this) {
+        return takeSnapshot(tellAutosaver);
+      }
+    } else {
+      return takeSnapshot(tellAutosaver);
+    }
+  }
+
   // Snapshot the current blocks workspace and return the save string for it,
   // along with the path for saving it on the server. tellAutosaver should be
   // true if we should let the autosaver know that we're going to save
-  protected CodeblocksSourceOutput takeSnapshot(final boolean tellAutosaver)
+  private CodeblocksSourceOutput takeSnapshot(final boolean tellAutosaver)
     throws SaveException {
     final StringBuilder sourcePath = new StringBuilder();
     final StringBuilder saveString = new StringBuilder();
@@ -769,7 +784,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
           autoSaver.reset();
           autoSaver.saveFormProperties(formProperties);
           try {
-            takeSnapshot(true);
+            takeSnapshot(true, false);
           } catch (SaveException e) {
             FeedbackReporter.showErrorMessageWithExit(AutoSaver.SAVE_FAILURE_MESSAGE);
           }
@@ -869,7 +884,7 @@ public class WorkspaceController implements IWorkspaceController, WorkspaceListe
           } else {
             if (codeblocksSource.length() == 0) {
               try {
-                takeSnapshot(true);
+                takeSnapshot(true, false);
               } catch (SaveException e) {
                 FeedbackReporter.showErrorMessageWithExit(AutoSaver.SAVE_FAILURE_MESSAGE);
               }

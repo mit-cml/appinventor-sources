@@ -569,6 +569,9 @@ public class RenderableBlock extends JComponent implements SearchableElement,
     if (DEBUG) {
       System.out.println("reseting all renderable blocks");
     }
+    for (RenderableBlock block : ALL_RENDERABLE_BLOCKS.values()) {
+      block.setVisible(false);
+    }
     ALL_RENDERABLE_BLOCKS.clear();
     BlockUtilities.reset();
     Block.reset();

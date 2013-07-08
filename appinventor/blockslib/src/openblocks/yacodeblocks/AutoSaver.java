@@ -376,7 +376,7 @@ public class AutoSaver implements WorkspaceListener {
     synchronized (saverLock) {
       if (workspaceChangedByUser) {
         CodeblocksSourceOutput sourceOutput =
-          controller.takeSnapshot(false /* don't tell autosaver */);
+          controller.takeSnapshot(false /* don't tell autosaver */, true /* we need to synchronize */);
         addToHistory(sourceOutput.getContents());
         workspaceChangedByUser = false;
       }

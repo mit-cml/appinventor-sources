@@ -678,7 +678,7 @@ public class Workspace extends JLayeredPane
    * save String only.
    * @return the save String of this.
    */
-  public String getSaveString(){
+  public synchronized String getSaveString(){
     return blockCanvas.getSaveString();
   }
 
@@ -693,7 +693,7 @@ public class Workspace extends JLayeredPane
    * @param originalLangRoot the original language/workspace specification content
    * @requires originalLangRoot != null
    */
-  public void loadWorkspaceFrom(Element newRoot, Element originalLangRoot){
+  public synchronized void loadWorkspaceFrom(Element newRoot, Element originalLangRoot){
     if(newRoot != null){
       //load pages, page drawers, and their blocks from save file
       blockCanvas.loadSaveString(newRoot);
@@ -763,7 +763,7 @@ public class Workspace extends JLayeredPane
    *
    * Want to get the Workspace ready to load another workspace
    */
-  public void reset(){
+  public synchronized void reset(){
     //we can't iterate and remove widgets at the same time so
     //we remove widgets after we've collected all the widgets we want to remove
     //TreeSet.remove() doesn't always work on the TreeSet, so instead,

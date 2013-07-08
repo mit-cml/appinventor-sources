@@ -21,6 +21,11 @@ public interface Component {
   public HandlesEventDispatching getDispatchDelegate();
 
   /*
+   * Components asset directory.
+   */
+  public static final String ASSET_DIRECTORY = "component";
+
+  /*
    * Text alignment constants.
    */
   static final int ALIGNMENT_NORMAL = 0;

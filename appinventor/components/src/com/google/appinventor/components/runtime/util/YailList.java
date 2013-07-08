@@ -145,7 +145,7 @@ public class YailList extends Pair {
    * Return the String at the given index.
    */
   public String getString(int index) {
-    return (String) get(index + 1);
+    return get(index + 1).toString();
   }
 
   /**

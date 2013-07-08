@@ -11,7 +11,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to indicate Android permissions required by components.
+ * Annotation to indicate library files required by components.
  *
  * @author ralph.morelli@trincoll.edu
  */

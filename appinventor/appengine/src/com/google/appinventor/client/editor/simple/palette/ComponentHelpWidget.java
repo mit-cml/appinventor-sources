@@ -59,10 +59,10 @@ public final class ComponentHelpWidget extends Image {
       String categoryDocUrlString = scd.getCategoryDocUrlString();
       if (categoryDocUrlString == null) {
         link = new HTML("<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-            "/learn/reference/components/index.html\" target=_blank>" + MESSAGES.moreInformation() + "</a>");
+            "http://appinventor.mit.edu/explore/content/index.html\" target=_blank>" + MESSAGES.moreInformation() + "</a>");
       } else {
         link = new HTML("<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-            "/learn/reference/components/" + categoryDocUrlString + ".html#" + scd.getName() +
+            "http://appinventor.mit.edu/explore/content/" + categoryDocUrlString + ".html#" + scd.getName() +
             "\" target=_blank>" + MESSAGES.moreInformation() + "</a>");
       }
       link.setStyleName("ode-ComponentHelpPopup-Link");

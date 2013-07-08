@@ -38,7 +38,6 @@
   <property name="run.dir" location="${local.build.dir}/run" />
   <property name="run.lib.dir" location="${run.dir}/lib" />
 
-
   <!-- =====================================================================
        Targets
        ===================================================================== -->
@@ -125,7 +124,7 @@
     <copy todir="${classes.files.dir}" flatten="true">
       <fileset dir="${src.dir}/${buildserver.pkg}/resources" includes="*"/>
       <fileset dir="${build.dir}/components"
-               includes="AndroidRuntime.jar,simple_components.txt,simple_components_permissions.json,simple_components_libraries.json"/>
+               includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
     <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
@@ -139,7 +138,7 @@
     <copy toFile="${classes.files.dir}/google-http-client-android3-beta.jar" file="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-oauth-client-beta.jar" file="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
     <copy toFile="${classes.files.dir}/guava-14.0.1.jar" file="${lib.dir}/guava/guava-14.0.1.jar" />
-    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/2.2/android.jar" />
+    <copy toFile="${classes.files.dir}/android.jar" file="${lib.dir}/android/4.2.2/android.jar" />
     <copy toFile="${classes.files.dir}/dx.jar" file="${lib.dir}/android/tools/dx.jar" />
     <copy toFile="${classes.files.dir}/CommonVersion.jar" file="${build.dir}/common/CommonVersion.jar" />
 
@@ -170,6 +169,8 @@
       <fileset dir="${local.lib.dir}" includes="*.jar"/>
       <fileset dir="${build.dir}" includes="common/CommonUtils.jar" />
       <fileset dir="${build.dir}" includes="common/CommonVersion.jar" />
+      <fileset dir="${lib.dir}" includes="bouncycastle/bcprov-jdk15on-149.jar"/>
+      <fileset dir="${lib.dir}" includes="bouncycastle/bcpkix-jdk15on-149.jar"/>
       <fileset dir="${lib.dir}" includes="android/tools/sdklib.jar"/>
       <fileset dir="${lib.dir}" includes="guava/guava-14.0.1.jar"/>
       <fileset dir="${lib.dir}" includes="commons-io/commons-io-2.0.1.jar"/>

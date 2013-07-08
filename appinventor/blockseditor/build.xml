@@ -128,7 +128,7 @@
       <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
       <zipfileset src="${lib.dir}/json/json.jar"/>
       <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
-      <zipfileset src="${lib.dir}/android/tools/ddmlib.jar"/>
+      <zipfileset src="${lib.dir}/android/tools/ddmlib_2.2.jar"/>
       <zipfileset src="${lib.dir}/QRGenerator/core.jar"/>
       <zipfileset src="${lib.dir}/QRGenerator/javase.jar"/>
     </jar>

@@ -42,7 +42,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 /**
  * Component for accessing Twitter.
- * 
+ *
  * @author sharon@google.com (Sharon Perl) - added OAuth support
  * @author ajcolter@gmail.com (Aubrey Colter) - added the twitter4j 2.2.6 jars
  * @author josmasflores@gmail.com (Jose Dominguez) - added the twitter4j 3.0.3 jars and fixed auth bug 2413
@@ -67,7 +67,8 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
     + "<li> Getting the most recent mentions of the logged-in user "
     + "     (<code>RequestMentions</code>)</li></ul></p> "
     + "<p>You must obtain a Comsumer Key and Consumer Secret for Twitter authorization "
-    + " specific to your app from http://twitter.com/oauth_clients/new </p>", category = ComponentCategory.SOCIAL, nonVisible = true, iconName = "images/twitter.png")
+    + " specific to your app from http://twitter.com/oauth_clients/new </p>",
+    category = ComponentCategory.SOCIAL, nonVisible = true, iconName = "images/twitter.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "twitter4j.jar")
@@ -108,7 +109,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
 
   /**
    * The maximum number of mentions returned by the following methods:
-   * 
+   *
    * <table>
    * <tr>
    * <td>component</td>
@@ -175,7 +176,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * ConsumerKey property setter method: sets the consumer key to be used when
    * authorizing with Twitter via OAuth.
-   * 
+   *
    * @param consumerKey
    *          the key for use in Twitter OAuth
    */
@@ -196,7 +197,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   /**
    * ConsumerSecret property setter method: sets the consumer secret to be used
    * when authorizing with Twitter via OAuth.
-   * 
+   *
    * @param consumerSecret
    *          the secret for use in Twitter OAuth
    */
