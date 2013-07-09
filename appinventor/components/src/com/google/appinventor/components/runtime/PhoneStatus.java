@@ -16,6 +16,8 @@ import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ReplForm;
 
 /**
  * Component for obtaining Phone Information. Currently supports
@@ -34,9 +36,11 @@ import com.google.appinventor.components.common.YaVersion;
 public class PhoneStatus extends AndroidNonvisibleComponent implements Component {
 
   private static Activity activity;
+  private final Form form;
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
+    this.form = container.$form();
     activity = container.$context();
   }
 
@@ -63,6 +67,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
         connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
     }
     return networkInfo == null ? false : networkInfo.isConnected();
+  }
+
+  @SimpleFunction(description = "Declare that we have loaded our initial assets and other assets should come from the sdcard")
+  public void setAssetsLoaded() {
+    if (form instanceof ReplForm) {
+      ((ReplForm) form).setAssetsLoaded();
+    }
   }
 
   public static String intToIp(int i) {

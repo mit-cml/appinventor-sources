@@ -114,7 +114,10 @@ public class MediaUtil {
     }
 
     if (form instanceof ReplForm) {
-      return MediaSource.REPL_ASSET;
+      if (((ReplForm)form).isAssetsLoaded())
+        return MediaSource.REPL_ASSET;
+      else
+        return MediaSource.ASSET;
     }
 
     return MediaSource.ASSET;
