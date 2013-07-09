@@ -22,6 +22,8 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.Form;
+import com.google.appinventor.components.runtime.ReplForm;
 
 /**
  * Component for obtaining Phone Information. Currently supports
@@ -41,9 +43,11 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
 
   private static Activity activity;
   private static final String LOG_TAG = "PhoneStatus";
+  private final Form form;
 
   public PhoneStatus(ComponentContainer container) {
     super(container.$form());
+    this.form = container.$form();
     activity = container.$context();
   }
 
@@ -106,6 +110,13 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")
   public void startHTTPD() {
     ReplForm.topform.startHTTPD();
+  }
+
+  @SimpleFunction(description = "Declare that we have loaded our initial assets and other assets should come from the sdcard")
+  public void setAssetsLoaded() {
+    if (form instanceof ReplForm) {
+      ((ReplForm) form).setAssetsLoaded();
+    }
   }
 
   public static String intToIp(int i) {
