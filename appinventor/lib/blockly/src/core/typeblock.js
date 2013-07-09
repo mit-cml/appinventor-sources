@@ -330,7 +330,6 @@ Blockly.TypeBlock.loadProcedures_ = function(){
     });
     return options;
   }
-//  this.reloadOptionsAfterChanges_();
 };
 
 /**
@@ -455,11 +454,6 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
             typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
                 block.propYailTypes[blockToCreate.dropDown.value],'input');
             block.getInput('VALUE').connection.setCheck(typeForDropDown);
-          }
-          else if (block.blockType === 'getter' || block.blockType === 'genericgetter'){
-            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value],'output');
-            block.outputConnection.setCheck(typeForDropDown);
           }
         }
         else {
