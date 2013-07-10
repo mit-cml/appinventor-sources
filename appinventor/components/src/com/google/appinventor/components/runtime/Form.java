@@ -135,6 +135,7 @@ public class Form extends Activity
   // Application lifecycle related fields
   private final HashMap<Integer, ActivityResultListener> activityResultMap = Maps.newHashMap();
   private final Set<OnStopListener> onStopListeners = Sets.newHashSet();
+  private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
@@ -367,6 +368,19 @@ public class Form extends Activity
    */
   public void registerForOnInitialize(OnInitializeListener component) {
     onInitializeListeners.add(component);
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    Log.d(LOG_TAG, "Form " + formName + " got onNewIntent " + intent);
+    for (OnNewIntentListener onNewIntentListener : onNewIntentListeners) {
+      onNewIntentListener.onNewIntent(intent);
+    }
+  }
+
+  public void registerForOnNewIntent(OnNewIntentListener component) {
+    onNewIntentListeners.add(component);
   }
 
   @Override

@@ -225,7 +225,9 @@ public class YaVersion {
   // - PLAYER_COMPONENT_VERSION was incremented to 5
   // For YOUNG_ANDROID_VERSION 77:
   // - TWITTER_COMPONENT_VERSION was incremented to 3
-  public static final int YOUNG_ANDROID_VERSION = 77;
+  // For YOUNG_ANDROID_VERSION 78:
+  // - NEARFIELD_COMPONENT_VERSION was incremented to 1
+  public static final int YOUNG_ANDROID_VERSION = 78;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -488,6 +490,9 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
+
+  // For NEARFIELD_COMPONENT_VERSION 1:
+  public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
