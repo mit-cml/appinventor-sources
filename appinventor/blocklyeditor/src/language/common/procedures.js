@@ -53,6 +53,7 @@ Blockly.Language.procedures_defnoreturn = {
     this.setTooltip(Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP);
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["STACK"]}];
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('NAME'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   updateParams_: function() {
@@ -183,7 +184,10 @@ Blockly.Language.procedures_defnoreturn = {
     return (body && [body]) || [];
   },
   typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE +
-      ' ' + Blockly.LANG_PROCEDURES_DEFNORETURN_DO }]
+      ' ' + Blockly.LANG_PROCEDURES_DEFNORETURN_DO }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.getTitleValue('NAME'));
+  }
 };
 
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
@@ -208,6 +212,7 @@ Blockly.Language.procedures_defreturn = {
     this.setTooltip(Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP);
     this.arguments_ = [];
     this.warnings = [{name:"checkEmptySockets",sockets:["RETURN"]}];
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('NAME'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   // [lyn, 11/24/12] return list of procedure body (if there is one)
@@ -234,7 +239,10 @@ Blockly.Language.procedures_defreturn = {
   getVars: Blockly.Language.procedures_defnoreturn.getVars,
   renameVar: Blockly.Language.procedures_defnoreturn.renameVar,
   typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE +
-      ' ' + Blockly.LANG_PROCEDURES_DEFRETURN_RETURN }]
+      ' ' + Blockly.LANG_PROCEDURES_DEFRETURN_RETURN }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.getTitleValue('NAME'));
+  }
 };
 
 Blockly.Language.procedures_mutatorcontainer = {
@@ -390,6 +398,7 @@ Blockly.Language.procedure_lexical_variable_get = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -442,6 +451,7 @@ Blockly.Language.procedures_do_then_return = {
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
@@ -469,6 +479,7 @@ Blockly.Language.procedures_callnoreturn = {
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
     //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn(false)[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('PROCNAME'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
@@ -630,7 +641,10 @@ Blockly.Language.procedures_callnoreturn = {
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' no return' }]
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' no return' }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.getTitleValue('PROCNAME'));
+  }
 };
 
 
@@ -655,6 +669,7 @@ Blockly.Language.procedures_callreturn = {
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
     //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn()[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('PROCNAME'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,
@@ -669,6 +684,9 @@ Blockly.Language.procedures_callreturn = {
   // This generates a single generic call to 'call return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' return' }]
+  typeblock: [{ translatedName: Blockly.LANG_PROCEDURES_CALLNORETURN_CALL + ' return' }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.getTitleValue('PROCNAME'));
+  }
 };
 

@@ -532,10 +532,6 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       inputRows.rightEdge = Math.max(inputRows.rightEdge,
         Blockly.BlockSvg.NOTCH_WIDTH + Blockly.BlockSvg.SEP_SPACE_X);
     }
-    if (this.block_.collapsed) {
-      // Collapsed blocks have no visible inputs.
-      return inputRows;
-    }
     var titleValueWidth = 0;  // Width of longest external value title.
     var titleStatementWidth = 0;  // Width of longest statement title.
     var hasValue = false;
@@ -543,6 +539,21 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
     var hasDummy = false;
     var lastType = undefined;
     for (var i = 0, input; input = inputList[i]; i++) {
+      // For collapsed blocks, show only DUMMY_COLLAPSED_INPUT
+      // Blocks that are not wanted are skipped with 'continue'
+      if (this.block_.collapsed) {
+        if (input.subtype && input.subtype !== Blockly.DUMMY_COLLAPSED_INPUT){
+          continue;
+        }
+        else if (!input.subtype){
+          continue;
+        }
+      }
+      else {
+        if (input.subtype && input.subtype === Blockly.DUMMY_COLLAPSED_INPUT){
+          continue;
+        }
+      }
       var row;
       if (!this.block_.inputsInline ||
         !lastType ||

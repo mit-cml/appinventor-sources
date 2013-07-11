@@ -44,7 +44,11 @@ Blockly.Input = function(type, name, block, connection) {
   if (type == Blockly.INDENTED_VALUE){
     this.type = Blockly.INPUT_VALUE;
     this.subtype = Blockly.INDENTED_VALUE;
-  } else {
+  } else if (type == Blockly.DUMMY_COLLAPSED_INPUT){
+    this.type = Blockly.DUMMY_INPUT;
+    this.subtype = Blockly.DUMMY_COLLAPSED_INPUT;
+  }
+  else {
     this.type = type;
   }
   this.name = name;
@@ -85,6 +89,10 @@ Blockly.Input.prototype.appendTitle = function(title, opt_name) {
     // Add any suffix.
     this.appendTitle(title.suffixTitle);
   }
+
+  //If it's a COLLAPSE_TEXT input, hide it by default
+  if (opt_name === 'COLLAPSED_TEXT')
+    this.sourceBlock_.getTitle_(opt_name).getRootElement().style.display = 'none';
 
   if (this.sourceBlock_.rendered) {
     this.sourceBlock_.render();

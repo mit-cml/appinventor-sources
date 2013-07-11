@@ -66,6 +66,7 @@ Blockly.Language.controls_if = {
     this.elseifCount_ = 0;
     this.elseCount_ = 0;
     this.warnings = [{name:"checkEmptySockets",sockets:[{baseName:"IF"},{baseName:"DO"}]}];
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: function() {
@@ -256,6 +257,7 @@ Blockly.Language.controls_forRange = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FORRANGE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('for range', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -302,6 +304,7 @@ Blockly.Language.controls_forEach = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FOREACH_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('for each', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -341,6 +344,7 @@ Blockly.Language.for_lexical_variable_get = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -391,6 +395,7 @@ Blockly.Language.controls_while = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_WHILE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('while', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_WHILE_TITLE }]
@@ -417,6 +422,7 @@ Blockly.Language.controls_choose = {
        */
     // [lyn, 01/15/2013] Edit description to be consistent with changes to slots. 
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('choose', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE }]
@@ -436,6 +442,7 @@ Blockly.Language.controls_do_then_return = {
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO }]
@@ -452,6 +459,7 @@ Blockly.Language.controls_eval_but_ignore = {
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('evaluate', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE }]
@@ -468,6 +476,7 @@ Blockly.Language.controls_nothing = {
         .appendTitle("nothing");
     this.setOutput(true, null);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_NOTHING_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('nothing', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_NOTHING_TITLE }]
@@ -483,6 +492,7 @@ Blockly.Language.controls_openAnotherScreen = {
     this.appendValueInput('SCREEN').appendTitle('open another screen').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT).setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('open screen', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE }]
@@ -498,6 +508,7 @@ Blockly.Language.controls_openAnotherScreenWithStartValue = {
     this.appendValueInput('STARTVALUE').appendTitle('startValue').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('open screen with value', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE }]
@@ -512,6 +523,7 @@ Blockly.Language.controls_getStartValue = {
     this.setOutput(true, null);
     this.appendDummyInput().appendTitle('get start value');
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_START_VALUE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('get start value', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE }]
@@ -526,6 +538,7 @@ Blockly.Language.controls_closeScreen = {
     this.appendDummyInput().appendTitle('close screen');
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('close screen', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE_CLOSE }]
@@ -540,6 +553,7 @@ Blockly.Language.controls_closeScreenWithValue = {
     this.appendValueInput('SCREEN').appendTitle('close screen with value').appendTitle('result').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('close screen with value', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE_CLOSE }]
@@ -554,6 +568,7 @@ Blockly.Language.controls_closeApplication = {
     this.appendDummyInput().appendTitle('close application');
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('close application', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE_CLOSE }]
@@ -568,6 +583,7 @@ Blockly.Language.controls_getPlainStartText = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('get plain start text');
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('get text', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_INPUT_GET }]
@@ -582,6 +598,7 @@ Blockly.Language.controls_closeScreenWithPlainText = {
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('close screen with plain text').appendTitle('text').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('close screen with text', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE_CLOSE }]

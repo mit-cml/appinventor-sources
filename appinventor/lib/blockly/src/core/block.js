@@ -1229,14 +1229,23 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
     return;
   }
   this.collapsed = collapsed;
+  //Prepare the string for collapsing if needed
+  if (collapsed){
+    if (this.prepareCollapsedText && goog.isFunction(this.prepareCollapsedText))
+      this.prepareCollapsedText();
+  }
   // Show/hide the inputs.
   var display = collapsed ? 'none' : 'block';
+  var displayCollapsedTtile = collapsed ? 'block' : 'none';
   var renderList = [];
   for (var x = 0, input; input = this.inputList[x]; x++) {
     for (var y = 0, title; title = input.titleRow[y]; y++) {
       var titleElement = title.getRootElement ?
           title.getRootElement() : title;
-      titleElement.style.display = display;
+      if (input.subtype && input.subtype === Blockly.DUMMY_COLLAPSED_INPUT)
+        titleElement.style.display = displayCollapsedTtile;
+      else
+        titleElement.style.display = display;
     }
     if (input.connection) {
       // This is a connection.
@@ -1326,9 +1335,19 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
 };
 
 /**
+ * Shortcut for appending a collapsed dummy input row.
+ * @param {string} opt_name Language-neutral identifier which may used to find
+ *     this input again.  Should be unique to this block.
+ * @return {!Blockly.Input} The input object created.
+ */
+Blockly.Block.prototype.appendCollapsedInput = function(opt_name) {
+  return this.appendInput_(Blockly.DUMMY_COLLAPSED_INPUT, opt_name || '');
+};
+
+/**
  * Add a value input, statement input or local variable to this block.
- * @param {number} type Either Blockly.INPUT_VALUE or Blockly.NEXT_STATEMENT or
- *     Blockly.DUMMY_INPUT.
+ * @param {number} type Either Blockly.INPUT_VALUE, Blockly.NEXT_STATEMENT, Blockly.DUMMY_INPUT,
+ *     or subtypes Blockly.INDENTED_VALUE, Blockly.DUMMY_COLLAPSED_INPUT.
  * @param {string} name Language-neutral identifier which may used to find this
  *     input again.  Should be unique to this block.
  * @return {!Blockly.Input} The input object created.

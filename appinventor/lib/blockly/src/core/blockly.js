@@ -131,6 +131,12 @@ Blockly.DUMMY_INPUT = 5;
 Blockly.INDENTED_VALUE = 6;
 
 /**
+ * ENUM for a collapsed dummy input.  Used to show block titles while collapsed.
+ * @const
+ */
+Blockly.DUMMY_COLLAPSED_INPUT = 7;
+
+/**
  * ENUM for left alignment.
  * @const
  */

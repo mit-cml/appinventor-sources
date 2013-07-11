@@ -38,6 +38,7 @@ Blockly.Language.logic_boolean = {
       var op = thisBlock.getTitleValue('BOOL');
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_LOGIC_BOOLEAN_TRUE, 'COLLAPSED_TEXT');
   },
   helpUrl : function() {
     var op = thisBlock.getTitleValue('BOOL');
@@ -55,7 +56,11 @@ Blockly.Language.logic_boolean = {
       titleName: 'BOOL',
       value: 'FALSE'
     }
-  }]
+  }],
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('BOOL'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.logic_boolean.OPERATORS = [
@@ -85,11 +90,17 @@ Blockly.Language.logic_false = {
       var op = thisBlock.getTitleValue('BOOL');
       return Blockly.Language.logic_boolean.TOOLTIPS[op];
     });
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_LOGIC_BOOLEAN_FALSE, 'COLLAPSED_TEXT');
   },
   helpUrl : function() {
     var op = this.getTitleValue('BOOL');
     return Blockly.Language.logic_boolean.HELPURLS[op];},
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(
+        Blockly.Language.logic_boolean.OPERATORS, this.getTitleValue('BOOL'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.logic_negate = {
@@ -101,6 +112,7 @@ Blockly.Language.logic_negate = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.OUTPUT));
     this.appendValueInput('BOOL').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('not');
     this.setTooltip(Blockly.LANG_LOGIC_NEGATE_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('not', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName:Blockly.LANG_LOGIC_NEGATE_INPUT_NOT }]
@@ -125,11 +137,17 @@ Blockly.Language.logic_compare = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_compare.TOOLTIPS[mode];
     });
+    this.appendCollapsedInput().appendTitle(
+        Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP')), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) compare has not been internationalized yet
   // Potential clash with Math =, so using 'logic equal' for now
-  typeblock: [{ translatedName: 'logic equal' }]
+  typeblock: [{ translatedName: 'logic equal' }],
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.logic_compare.TOOLTIPS = {
@@ -137,12 +155,12 @@ Blockly.Language.logic_compare.TOOLTIPS = {
         'The things being compared can be any thing, not only numbers.',
   NEQ: 'Tests whether two things are not equal. \n' +
         'The things being compared can be any thing, not only numbers.'
-}
+};
 
 Blockly.Language.logic_compare.HELPURLS = {
   EQ: Blockly.LANG_LOGIC_COMPARE_HELPURL_EQ,
   NEQ: Blockly.LANG_LOGIC_COMPARE_HELPURL_NEQ
-}
+};
 
 Blockly.Language.logic_compare.OPERATORS =
   [['=', 'EQ'],
@@ -163,6 +181,7 @@ Blockly.Language.logic_operation = {
       var op = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
+    this.appendCollapsedInput().appendTitle('and', 'COLLAPSED_TEXT');
   },
   helpUrl: function() {
       var op = thisBlock.getTitleValue('OP');
@@ -181,7 +200,11 @@ Blockly.Language.logic_operation = {
       titleName: 'OP',
       value: 'OR'
     }
-  }]
+  }],
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.logic_operation.OPERATORS =
@@ -214,11 +237,17 @@ Blockly.Language.logic_or = {
       var op = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_operation.TOOLTIPS[op];
     });
+    this.appendCollapsedInput().appendTitle('or', 'COLLAPSED_TEXT');
   },
   helpUrl: function() {
       var op = thisBlock.getTitleValue('OP');
       return Blockly.Language.logic_operation.HELPURLS[op];
     },
-  onchange: Blockly.WarningHandler.checkErrors
+  onchange: Blockly.WarningHandler.checkErrors,
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(
+        Blockly.Language.logic_operation.OPERATORS, this.getTitleValue('OP'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 

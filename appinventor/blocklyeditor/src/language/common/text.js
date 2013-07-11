@@ -31,13 +31,21 @@ Blockly.Language.text = {
   helpUrl : Blockly.LANG_TEXT_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendTitle('\u201C').appendTitle(new Blockly.FieldTextBlockInput(''),
+    this.appendDummyInput().appendTitle('\u201C').appendTitle(
+        new Blockly.FieldTextBlockInput(''),
         'TEXT').appendTitle('\u201D');
     this.setOutput(true, [Blockly.Language.text.connectionCheck]);
     this.setTooltip(Blockly.LANG_TEXT_TEXT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_CATEGORY_TEXT }]
+  typeblock: [{ translatedName: Blockly.LANG_CATEGORY_TEXT }],
+  prepareCollapsedText: function(){
+    var textToDisplay = this.getTitleValue('TEXT');
+    if (textToDisplay.length > 8 ) // 8 is a length of 5 plus 3 dots
+        textToDisplay = textToDisplay.substring(0, 5) + '...';
+    this.getTitle_('COLLAPSED_TEXT').setText(textToDisplay, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.text.connectionCheck = function(myConnection,otherConnection) {
@@ -68,6 +76,7 @@ Blockly.Language.text_join = {
     this.emptyInputName = 'EMPTY';
     this.repeatingInputName = 'ADD';
     this.itemCount_ = 2;
+    this.appendCollapsedInput().appendTitle('join', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
@@ -120,6 +129,7 @@ Blockly.Language.text_length = {
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
       .appendTitle('length');
     this.setTooltip(Blockly.LANG_TEXT_LENGTH_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('length', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_LENGTH_INPUT_LENGTH }]
@@ -136,6 +146,7 @@ Blockly.Language.text_isEmpty = {
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
       .appendTitle('is empty');
     this.setTooltip(Blockly.LANG_TEXT_ISEMPTY_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('empty', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY }]
@@ -160,6 +171,7 @@ Blockly.Language.text_compare = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_compare.TOOLTIPS[mode];
     });
+    this.appendCollapsedInput().appendTitle('compare', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
@@ -208,6 +220,7 @@ Blockly.Language.text_trim = {
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
       .appendTitle('trim');
     this.setTooltip(Blockly.LANG_TEXT_TRIM_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('trim', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_TRIM_TITLE_TRIM }]
@@ -231,6 +244,7 @@ Blockly.Language.text_changeCase = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_changeCase.TOOLTIPS[mode];
     });
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
@@ -245,7 +259,11 @@ Blockly.Language.text_changeCase = {
       titleName: 'OP',
       value: 'DOWNCASE'
     }
-  }]
+  }],
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.text_changeCase.OPERATORS = [ [ 'upcase', 'UPCASE' ], [ 'downcase', 'DOWNCASE' ] ];
@@ -276,6 +294,7 @@ Blockly.Language.text_starts_at = {
       .appendTitle('piece')
       .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip(Blockly.LANG_TEXT_STARTS_AT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('starts', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT }]
@@ -297,6 +316,7 @@ Blockly.Language.text_contains = {
       .appendTitle('piece')
       .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip(Blockly.LANG_TEXT_CONTAINS_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('contains', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_CONTAINS_INPUT_CONTAINS }]
@@ -326,6 +346,7 @@ Blockly.Language.text_split = {
       var mode = thisBlock.getTitleValue('OP');
       return Blockly.Language.text_split.TOOLTIPS[mode];
     });
+    this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
@@ -352,7 +373,11 @@ Blockly.Language.text_split = {
       titleName: 'OP',
       value: 'SPLITATANY'
     }
-  }]
+  }],
+  prepareCollapsedText: function(){
+    var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP'));
+    this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+  }
 };
 
 Blockly.Language.text_split.dropdown_onchange = function(value) {
@@ -362,7 +387,7 @@ Blockly.Language.text_split.dropdown_onchange = function(value) {
   } else if(value == 'SPLITATFIRSTOFANY' || value == 'SPLITATANY') {
     this.sourceBlock_.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
   }
-}
+};
 
 Blockly.Language.text_split.OPERATORS = [ [ 'split at first', 'SPLITATFIRST' ],
     [ 'split at first of any', 'SPLITATFIRSTOFANY' ], [ 'split', 'SPLIT' ],
@@ -391,6 +416,7 @@ Blockly.Language.text_split_at_spaces = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
     this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('split at spaces');
     this.setTooltip(Blockly.LANG_TEXT_SPLIT_AT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('split at spaces', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_SPLIT_AT_SPACES_TITLE }]
@@ -416,6 +442,7 @@ Blockly.Language.text_segment = {
       .appendTitle('length')
       .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip(Blockly.LANG_TEXT_SEGMENT_AT_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('segment', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_SEGMENT_TITLE_SEGMENT }]
@@ -441,6 +468,7 @@ Blockly.Language.text_replace_all = {
       .appendTitle('replacement')
       .setAlign(Blockly.ALIGN_RIGHT);
     this.setTooltip(Blockly.LANG_TEXT_REPLACE_ALL_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('replace all', 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL }]

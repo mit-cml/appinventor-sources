@@ -447,6 +447,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         blockToCreateName = blockToCreate.canonicName;
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
+          block.initSvg(); //Need to init the block before doing anything else
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
           //If we are changing a property in a component, we need to change the connection Check
           var typeForDropDown;
@@ -455,16 +456,22 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
                 block.propYailTypes[blockToCreate.dropDown.value],'input');
             block.getInput('VALUE').connection.setCheck(typeForDropDown);
           }
+          // change type checking for split blocks
+          if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
+            block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
+          } else if(blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
+            block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
+          }
         }
         else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
+          block.initSvg();
         }
       }
       else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
 
-      block.initSvg();
       block.render();
       //If we are creating a local variable, we need to update the mutator names
       if (block.type && (block.type === 'local_declaration_expression' ||

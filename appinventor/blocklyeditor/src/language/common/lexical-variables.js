@@ -73,6 +73,7 @@ Blockly.Language.global_declaration = {
         .appendTitle(new Blockly.FieldTextInput('name', Blockly.LexicalVariable.renameGlobal), 'NAME')
         .appendTitle("to");
     this.setTooltip(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('global ' + this.getTitleValue('NAME'), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -83,7 +84,10 @@ Blockly.Language.global_declaration = {
       this.setTitleValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }]
+  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText('global ' + this.getTitleValue('NAME'));
+  }
 };
 
 Blockly.Language.lexical_variable_get = {
@@ -100,6 +104,7 @@ Blockly.Language.lexical_variable_get = {
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -155,6 +160,7 @@ Blockly.Language.lexical_variable_set = {
     this.setNextStatement(true);
     this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.appendCollapsedInput().appendTitle('set to', 'COLLAPSED_TEXT');
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
@@ -194,6 +200,7 @@ Blockly.Language.local_declaration_statement = {
     this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
 
     this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP); // *** [lyn, 11/07/12] Fix this
+    this.appendCollapsedInput().appendTitle('local ' + this.localNames_.join(', '), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: function(names, inits) { 
@@ -399,7 +406,10 @@ Blockly.Language.local_declaration_statement = {
         */
   },
   //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in do' }]
+  typeblock: [{ translatedName: 'initialize local in do' }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText('local ' + this.localNames_.join(', '));
+  }
 };
 
 Blockly.Language.local_declaration_expression = {
@@ -427,7 +437,8 @@ Blockly.Language.local_declaration_expression = {
     // Add mutator for editing local variable names
     this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
 
-    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP); // *** [lyn, 11/07/12] Fix this
+    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('local ' + this.localNames_.join(', '), 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,
@@ -465,7 +476,10 @@ Blockly.Language.local_declaration_expression = {
   declaredNames: Blockly.Language.local_declaration_statement.declaredNames,
   renameVar: Blockly.Language.local_declaration_statement.renameVar,
   //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in return' }]
+  typeblock: [{ translatedName: 'initialize local in return' }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT').setText('local ' + this.localNames_.join(', '));
+  }
 };
 
 Blockly.Language.local_mutatorcontainer = {

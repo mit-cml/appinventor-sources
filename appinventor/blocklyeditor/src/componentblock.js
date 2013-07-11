@@ -39,7 +39,7 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
   this.helpUrl = function() {
       var mode = this.typeName;
       return Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
-    }, // TODO: fix
+    },
   this.instanceName = instanceName;
   this.eventType = eventType;
   this.typeName = typeName;
@@ -87,14 +87,13 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     this.rename = function(oldname, newname) {
       if (this.instanceName == oldname) {
         this.instanceName = newname;
-        //var title = this.inputList[0].titleRow[0];
-        //title.setText('when ' + this.instanceName + '.' + this.eventType.name);  // Revise title
         this.componentDropDown.setValue(this.instanceName);
         if (this.type.indexOf(oldname) != -1) {
           this.type = this.type.replace(oldname, newname);
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.eventType.name, 'COLLAPSED_TEXT');
   };
 
   this.getVars = function() {
@@ -129,6 +128,9 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     return "PARAM" + i;
   };
   this.typeblock = [{ translatedName: this.instanceName + '.' + this.eventType.name }];
+  this.prepareCollapsedText = function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.eventType.name);
+  };
 };
 
 /**
@@ -140,7 +142,7 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
   this.helpUrl = function() {
       var mode = this.typeName;
       return Blockly.ComponentBlock.METHODS_HELPURLS[mode];
-    },  // TODO: fix
+    },
   this.instanceName = instanceName;
   this.methodType = methodType;
   this.typeName = typeName;
@@ -206,14 +208,22 @@ Blockly.ComponentBlock.method = function(methodType, instanceName, typeName) {
         //var title = this.inputList[0].titleRow[0];
         //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
         this.componentDropDown.setValue(this.instanceName);
+        this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodType.name);
         if (this.type.indexOf(oldname) != -1) {
           this.type = this.type.replace(oldname, newname);
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.methodType.name, 'COLLAPSED_TEXT');
   };
   this.typeblock = [{ translatedName: 'call ' + this.instanceName + '.' + this.methodType.name }];
-}
+  this.prepareCollapsedText = function(){
+    //If the block was copy+pasted from another block, instanaceName is set to the original block
+    if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName)
+      this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
+    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.methodType.name);
+  };
+};
 
 /**
  * Create a generic method block of the given type for a component type with the given name.
@@ -271,6 +281,7 @@ Blockly.ComponentBlock.genericMethod = function(methodType, typeName) {
         title.setText('call' + this.typeName + '.' + this.methodType.name);
       }
     };
+    this.appendCollapsedInput().appendTitle(this.typeName + '.' + this.methodType.name, 'COLLAPSED_TEXT');
   };
   this.typeblock = [{ translatedName: 'call ' + this.typeName + '.' + this.methodType.name}];
 };
@@ -357,11 +368,13 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
         //var title = this.inputList[0].titleRow[0];
         //title.setText(this.instanceName + '.');
         this.componentDropDown.setValue(this.instanceName);
+        this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.getTitleValue('PROP'));
         if (this.type.indexOf(oldname) != -1) {
           this.type = this.type.replace(oldname, newname);
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
   };
   var that = this;
   this.typeblock = createTypeBlock();
@@ -378,6 +391,12 @@ Blockly.ComponentBlock.getter = function(propNames, propYailTypes, propTooltips,
     });
     return tb;
   }
+  this.prepareCollapsedText = function(){
+    //If the block was copy+pasted from another block, instanaceName is set to the original block
+    if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName)
+      this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
+    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.getTitleValue('PROP'));
+  };
 };
 
 /**
@@ -453,6 +472,7 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
   };
   var that = this;
   this.typeblock = createTypeBlock();
@@ -469,6 +489,9 @@ Blockly.ComponentBlock.genericGetter = function(propNames, propYailTypes, propTo
     });
     return tb;
   }
+  this.prepareCollapsedText = function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.typeName + '.' + this.getTitleValue('PROP'));
+  };
 };
 
 
@@ -551,11 +574,13 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
         //var title = this.inputList[0].titleRow[0];
         //title.setText('set ' + this.instanceName + '.');
         this.componentDropDown.setValue(this.instanceName);
+        this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName+ '.' + this.getTitleValue('PROP'));
         if (this.type.indexOf(oldname) != -1) {
           this.type = this.type.replace(oldname, newname);
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
   };
   var that = this;
   this.typeblock = createTypeBlock();
@@ -572,6 +597,9 @@ Blockly.ComponentBlock.setter = function(propNames, propYailTypes, propTooltips,
     });
     return tb;
   }
+  this.prepareCollapsedText = function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.getTitleValue('PROP'));
+  };
 };
 
 /**
@@ -638,6 +666,7 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
         title.setText('set ' + this.typeName + '.');
       }
     };
+    this.appendCollapsedInput().appendTitle(this.typeName + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
   };
   var that = this;
   this.typeblock = createTypeBlock();
@@ -654,6 +683,9 @@ Blockly.ComponentBlock.genericSetter = function(propNames, propYailTypes, propTo
     });
     return tb;
   }
+  this.prepareCollapsedText = function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.typeName + '.' + this.getTitleValue('PROP'));
+  };
 };
 
 //Get the Blockly type of the argument for the property name that is
@@ -735,13 +767,18 @@ Blockly.ComponentBlock.component = function(instanceName, typeName) {
         //var title = this.inputList[0].titleRow[0];
         //title.setText(this.instanceName);
         this.componentDropDown.setValue(this.instanceName);
+        this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName);
         if (this.type.indexOf(oldname) != -1) {
           this.type = this.type.replace(oldname, newname);
         }
       }
     };
+    this.appendCollapsedInput().appendTitle(this.instanceName, 'COLLAPSED_TEXT');
   };
   this.typeblock = [{ translatedName: this.instanceName }];
+  this.prepareCollapsedText = function(){
+    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName);
+  };
 };
 
 Blockly.ComponentBlock.HELPURLS = {
