@@ -52,8 +52,8 @@ public class TopPanel extends Composite {
     "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
     " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor beta release.<BR>" +
-      GALLERY_LINK_AND_TEXT + "." 
+  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" +
+      GALLERY_LINK_AND_TEXT + "."
   );
 
   private HTML divider() {
@@ -185,6 +185,7 @@ public class TopPanel extends Composite {
     // Add timestamp to logo url to get around browsers that agressively cache
     // the image! This same trick is used in StorageUtil.getFilePath().
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
+    logo.setSize("191px", "47px");
     panel.add(logo);
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);

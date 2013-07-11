@@ -16,7 +16,7 @@ import com.google.appinventor.client.widgets.boxes.Box.BoxDescriptor;
  */
 public final class MotdBox extends Box {
 
-  private static final int HEIGHT = 80;
+  private static final int HEIGHT = 55;
   private static final int WIDTH = 250;
 
   // Singleton log box instance
