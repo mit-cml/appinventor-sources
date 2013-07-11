@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.annotations.SimpleFunction;
 
 /**
  * Button with the ability to launch events on initialization, focus
@@ -63,5 +64,21 @@ public final class Button extends ButtonBase {
   @SimpleEvent
   public boolean LongClick() {
     return EventDispatcher.dispatchEvent(this, "LongClick");
+  }
+  
+  /**
+   * xcitizen.team@gmail.com
+   * Simula el click de un boton y mantener pulsado un botón.
+   * Simulates a click of a button and hold down a button.
+   */
+   
+  @SimpleFunction(description = "Simula la pulsación de un botón" + "/" + "Simulates a click of a button")
+  public void SimulateClickButton() {
+    EventDispatcher.dispatchEvent(this, "Click");
+  }
+  
+  @SimpleFunction(description = "Simula la pulsación larga de un botón" + "/" + "Simulates hold down a button")
+  public void SimulateLongClickButton() {
+    EventDispatcher.dispatchEvent(this, "LongClick");
   }
 }
