@@ -342,12 +342,12 @@ Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN2 = 'Provides the angle in the range (-180, +
   'degrees with the given rectangular coordinates.';
 Blockly.LANG_MATH_TRIG_HELPURL_ATAN2 = 'http://appinventor.mit.edu/explore/ai2/support/blocks/math#atan2';
 
+Blockly.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
+Blockly.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
 //TODO: I don't think any of this is useful anymore...Delete?
 /*Blockly.LANG_MATH_ONLIST_HELPURL = '';
 Blockly.LANG_MATH_ONLIST_INPUT_OFLIST = 'of list';
 Blockly.LANG_MATH_ONLIST_OPERATOR_SUM = 'sum';
-Blockly.LANG_MATH_ONLIST_OPERATOR_MIN = 'min';
-Blockly.LANG_MATH_ONLIST_OPERATOR_MAX = 'max';
 Blockly.LANG_MATH_ONLIST_OPERATOR_AVERAGE = 'average';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'median';
 Blockly.LANG_MATH_ONLIST_OPERATOR_MODE = 'modes';
