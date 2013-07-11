@@ -118,8 +118,9 @@ public final class VideoPlayer extends AndroidViewComponent implements
   
   /**
   * Activa los controles del reproductor
+  * Enables the player controls
+  * @author xcitizen.team@gmail.com (José Mª Martín)
   */
-
   private boolean MC;
   
   @SimpleProperty(description = "Añade los controles al reproductor de vídeo",
@@ -131,7 +132,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
   
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "True")
-  @SimpleFunction(description = "Añade los controles al reproductor de video")
+  @SimpleProperty(description = "Añade los controles al reproductor de video")
   public void MediaControls(boolean bold){
     if (bold) {
     videoView.setMediaController(new MediaController(container.$context()));
@@ -139,14 +140,14 @@ public final class VideoPlayer extends AndroidViewComponent implements
   }
   
   /**
-   * Auto inicio del video
+   * Auto inicio del vídeo
+   * Auto start video
+   * @author xcitizen.team@gmail.com (José Mª Martín)
    */
-
-  // Backing for font Zoom
   private boolean AutoPlay;
 
-  @SimpleProperty(description = "Devuelve el valor de la etiqueta (true/false)",
-      category = PropertyCategory.APPEARANCE,
+  @SimpleProperty(description = "Devuelve el valor (true/false)" + "/" + 
+      "Returns the value (true / false)" ,category = PropertyCategory.APPEARANCE,
       userVisible = true)
   public boolean AutoStart() {
     return AutoPlay;
@@ -154,8 +155,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
    
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(description = "Activa o desactiva la posibilidad de tener zoom en la pagina",
-      userVisible = true)
+  @SimpleProperty(description = "Inicia el vídeo automaticamente" + "/" +
+      "Video start automatically" , userVisible = true)
   public void AutoStart(boolean bold) {
     if (bold) {
     videoView.start();
