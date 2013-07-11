@@ -115,6 +115,53 @@ public final class VideoPlayer extends AndroidViewComponent implements
   private boolean mediaReady = false;
 
   private boolean delayedStart = false;
+  
+  /**
+  * Activa los controles del reproductor
+  */
+
+  private boolean MC;
+  
+  @SimpleProperty(description = "Añade los controles al reproductor de vídeo",
+      category = PropertyCategory.APPEARANCE,
+      userVisible = true)
+  public boolean MediaControls() {
+    return MC;
+  }
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleFunction(description = "Añade los controles al reproductor de video")
+  public void MediaControls(boolean bold){
+    if (bold) {
+    videoView.setMediaController(new MediaController(container.$context()));
+    }  
+  }
+  
+  /**
+   * Auto inicio del video
+   */
+
+  // Backing for font Zoom
+  private boolean AutoPlay;
+
+  @SimpleProperty(description = "Devuelve el valor de la etiqueta (true/false)",
+      category = PropertyCategory.APPEARANCE,
+      userVisible = true)
+  public boolean AutoStart() {
+    return AutoPlay;
+  }
+   
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(description = "Activa o desactiva la posibilidad de tener zoom en la pagina",
+      userVisible = true)
+  public void AutoStart(boolean bold) {
+    if (bold) {
+    videoView.start();
+    }
+  }
+
 
   /**
    * Creates a new VideoPlayer component.
@@ -125,7 +172,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
     super(container);
     container.$form().registerForOnDestroy(this);
     videoView = new ResizableVideoView(container.$context());
-    videoView.setMediaController(new MediaController(container.$context()));
+    //videoView.setMediaController(new MediaController(container.$context()));
     videoView.setOnCompletionListener(this);
     videoView.setOnErrorListener(this);
     videoView.setOnPreparedListener(this);
