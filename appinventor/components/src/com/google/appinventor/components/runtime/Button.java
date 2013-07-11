@@ -67,9 +67,9 @@ public final class Button extends ButtonBase {
   }
   
   /**
-   * xcitizen.team@gmail.com
    * Simula el click de un boton y mantener pulsado un botón.
    * Simulates a click of a button and hold down a button.
+   * @author xcitizen.team@gmail.com (Jose Mª Martin)
    */
    
   @SimpleFunction(description = "Simula la pulsación de un botón" + "/" + "Simulates a click of a button")
