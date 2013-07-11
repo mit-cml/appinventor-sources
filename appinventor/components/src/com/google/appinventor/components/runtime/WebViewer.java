@@ -64,6 +64,41 @@ public final class WebViewer extends AndroidViewComponent {
 
   // Whether or not to prompt for permission in the WebViewer
   private boolean prompt = true;
+  
+  // Tener o no Zoom en html
+  // To take or remove zoom in html
+  private boolean Zoom;
+
+  /**
+   * Devuelve el valor de la etiqueta Zoom (true/false)
+   * Returns the value of the label Zoom (true/false)
+   * @author xcitizen.team@gmail.com (José Mª Martín)
+   */
+  @SimpleProperty(description = "Devuelve el valor de la etiqueta (true/false)" + "/" +
+      "Returns the value of the label Zoom (true/false)",
+      category = PropertyCategory.APPEARANCE,
+      userVisible = true)
+      public boolean ShowZoom() {
+      return Zoom;
+      }
+
+  /**
+   * Especifica si queremos Zoom o no: Si es true añadimos Zoom, si es false quitamos el Zoom
+   * Specifies whether or not we want Zoom: If true add Zoom, if false removed the Zoom
+   * @author xcitizen.team@gmail.com (José Mª Martín)
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
+  @SimpleProperty(description = "Activa o desactiva la posibilidad de tener zoom en la pagina" +
+      "Enables or disables the ability to have zoom on page", userVisible = true)
+      public void ShowZoom(boolean zoom) {
+      zoom = Zoom;
+      if (zoom) {
+      webview.getSettings().setBuiltInZoomControls(true);
+      } else {
+      webview.getSettings().setBuiltInZoomControls(false);
+      }
+     }
 
   /**
    * Creates a new WebViewer component.
