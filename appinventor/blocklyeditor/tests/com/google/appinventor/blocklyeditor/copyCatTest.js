@@ -3,10 +3,10 @@ var path = fs.absolute('.');
 
 
 //Read files from filesystem
-var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/pictureCycle/pictureCycleExpected.yail');
-var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/pictureCycle/Screen1.scm');
+var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/copyCat/copyCatExpected.yail');
+var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/copyCat/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2); // Cut off Leading $JSON
-var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/pictureCycle/Screen1.bky');
+var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/copyCat/Screen1.bky');
 
 // PhantomJS page object to open and load an URL
 var page = require('webpage').create();

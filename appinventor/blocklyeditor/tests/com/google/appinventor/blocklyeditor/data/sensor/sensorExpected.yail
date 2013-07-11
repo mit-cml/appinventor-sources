@@ -1,0 +1,72 @@
+#|
+$Source $Yail
+|#
+
+(define-form fakepackagename Screen1)
+(require <com.google.youngandroid.runtime>)
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+(set-and-coerce-property! 'Screen1 'Title "SensorTest" 'text)
+)
+;;; Label1
+(add-component Screen1 Label Label1 (set-and-coerce-property! 'Label1 'FontSize 30 'number)
+(set-and-coerce-property! 'Label1 'Text "Shake to Display:" 'text)
+)
+;;; VerticalArrangement1
+(add-component Screen1 VerticalArrangement VerticalArrangement1 )
+;;; HorizontalArrangement1
+(add-component VerticalArrangement1 HorizontalArrangement HorizontalArrangement1 )
+;;; Label2
+(add-component HorizontalArrangement1 Label Label2 (set-and-coerce-property! 'Label2 'FontBold #t 'boolean)
+(set-and-coerce-property! 'Label2 'Text "Altitude:" 'text)
+)
+;;; Label6
+(add-component HorizontalArrangement1 Label Label6 )
+;;; HorizontalArrangement2
+(add-component VerticalArrangement1 HorizontalArrangement HorizontalArrangement2 )
+;;; Label3
+(add-component HorizontalArrangement2 Label Label3 (set-and-coerce-property! 'Label3 'FontBold #t 'boolean)
+(set-and-coerce-property! 'Label3 'Text "Latitude:" 'text)
+)
+;;; Label7
+(add-component HorizontalArrangement2 Label Label7 )
+;;; HorizontalArrangement3
+(add-component VerticalArrangement1 HorizontalArrangement HorizontalArrangement3 )
+;;; Label4
+(add-component HorizontalArrangement3 Label Label4 (set-and-coerce-property! 'Label4 'FontBold #t 'boolean)
+(set-and-coerce-property! 'Label4 'Text "Longitude:" 'text)
+)
+;;; Label8
+(add-component HorizontalArrangement3 Label Label8 )
+;;; HorizontalArrangement4
+(add-component VerticalArrangement1 HorizontalArrangement HorizontalArrangement4 )
+;;; Label5
+(add-component HorizontalArrangement4 Label Label5 (set-and-coerce-property! 'Label5 'FontBold #t 'boolean)
+(set-and-coerce-property! 'Label5 'Text "Compass Angle:" 'text)
+)
+;;; Label9
+(add-component HorizontalArrangement4 Label Label9 )
+;;; AccelerometerSensor1
+(add-component Screen1 AccelerometerSensor AccelerometerSensor1 )
+(define-event AccelerometerSensor1 Shaking()
+ (set-this-form)
+ (set-and-coerce-property! 'LocationSensor1 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'Label6 'Text (get-property 'LocationSensor1 'Altitude)
+ 'text)
+
+(set-and-coerce-property! 'Label7 'Text (get-property 'LocationSensor1 'Latitude)
+ 'text)
+
+(set-and-coerce-property! 'Label8 'Text (get-property 'LocationSensor1 'Longitude)
+ 'text)
+
+(set-and-coerce-property! 'Label9 'Text (get-property 'OrientationSensor1 'Angle)
+ 'text)
+
+)
+;;; LocationSensor1
+(add-component Screen1 LocationSensor LocationSensor1 )
+;;; OrientationSensor1
+(add-component Screen1 OrientationSensor OrientationSensor1 )
+(init-runtime)

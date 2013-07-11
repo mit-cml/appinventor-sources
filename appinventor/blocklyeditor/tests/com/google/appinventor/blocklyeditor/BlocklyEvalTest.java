@@ -104,4 +104,73 @@ public class BlocklyEvalTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
+  public void testSensor() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/sensorTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
+  public void testClock() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/clockTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
+  public void testCamcorder() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/camcorderTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
+  public void testCopyCat() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/copyCatTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
+
+  public void testProductLookup() throws Exception {
+
+    String[] params = { "phantomjs", testpath + "/tests/com/google/appinventor/blocklyeditor/productLookupTest.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
 }

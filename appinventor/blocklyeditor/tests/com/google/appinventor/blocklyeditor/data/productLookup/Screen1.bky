@@ -1,0 +1,64 @@
+<xml>
+  <block type="Button1_Click" x="30" y="28">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="BarcodeScanner1_DoScan">
+        <title name="COMPONENT_SELECTOR">BarcodeScanner1</title>
+      </block>
+    </statement>
+  </block>
+  <block type="BarcodeScanner1_AfterScan" x="32" y="117">
+    <title name="COMPONENT_SELECTOR">BarcodeScanner1</title>
+    <statement name="DO">
+      <block type="Label1_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">Label1</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="lexical_variable_get">
+            <title name="VAR">result</title>
+          </block>
+        </value>
+        <next>
+          <block type="ActivityStarter1_setproperty" inline="false">
+            <mutation yailtype="text"></mutation>
+            <title name="COMPONENT_SELECTOR">ActivityStarter1</title>
+            <title name="PROP">Action</title>
+            <value name="VALUE">
+              <block type="text">
+                <title name="TEXT">android.intent.action.VIEW</title>
+              </block>
+            </value>
+            <next>
+              <block type="ActivityStarter1_setproperty" inline="false">
+                <mutation yailtype="text"></mutation>
+                <title name="COMPONENT_SELECTOR">ActivityStarter1</title>
+                <title name="PROP">DataUri</title>
+                <value name="VALUE">
+                  <block type="text_join" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">http://www.upcdatabase.com/item/</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="lexical_variable_get">
+                        <title name="VAR">result</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <next>
+                  <block type="ActivityStarter1_StartActivity">
+                    <title name="COMPONENT_SELECTOR">ActivityStarter1</title>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>
