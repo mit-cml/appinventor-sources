@@ -223,7 +223,9 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 76:
   // - PLAYER_COMPONENT_VERSION was incremented to 5
-  public static final int YOUNG_ANDROID_VERSION = 76;
+  // For YOUNG_ANDROID_VERSION 77:
+  // - TWITTER_COMPONENT_VERSION was incremented to 3
+  public static final int YOUNG_ANDROID_VERSION = 77;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -586,7 +588,12 @@ public class YaVersion {
   // - The friend timeline was changed to be a list of tuples (lists), where
   //   each sub-list is (username message). The old format was just a list
   //   of messages and didn't include the username associated with each message.
-  public static final int TWITTER_COMPONENT_VERSION = 2;
+  // For TWITTER_COMPONENT_VERSION 3:
+  // - The 'SetStatus' procedure has been changed to 'Tweet' to be more intuitive.
+  // - Added 'TweetWithImage' which uploads an image to TwitPic and adds it to
+  //   a tweet to allow a user to tweet with a picture. This requires a TwitPic_API_Key
+  //   property.
+  public static final int TWITTER_COMPONENT_VERSION = 3;
 
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added

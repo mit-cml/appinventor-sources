@@ -1171,6 +1171,17 @@ public class BlockSaveFile {
       // Blocks related to this component have now been upgraded to version 2.
       blkCompVersion = 2;
     }
+    if (blkCompVersion < 3) {
+      // SetStatus has been changed to Tweet because it's more intuitive.
+      for (Element block : getAllMatchingMethodOrEventBlocks(componentName,
+          "Twitter", "SetStatus")) {
+        changeBlockGenusName(block, "Twitter-Tweet");
+        Node labelChild = getBlockLabelChild(block);
+        String newLabel = componentName + ".Tweet";
+        labelChild.setNodeValue(newLabel);
+      }
+      blkCompVersion = 3;
+    }
     return blkCompVersion;
   }
 
