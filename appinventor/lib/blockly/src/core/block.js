@@ -1337,7 +1337,6 @@ Blockly.Block.prototype.appendDummyInput = function(opt_name) {
 
 Blockly.Block.prototype.appendInput_ = function(type, name) {
   var connection = null;
-  console.log(type+" "+name);
   if (type == Blockly.INPUT_VALUE || type == Blockly.NEXT_STATEMENT || type == Blockly.INDENTED_VALUE) {
     connection = new Blockly.Connection(this, type);
   }
