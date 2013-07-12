@@ -350,8 +350,9 @@ public class DesignToolbar extends Toolbar {
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateYailCommand(
                 new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new ShowBarcodeCommand(target)))));
+                    new ShowProgressBarCommand(target,
+                        new WaitForBuildResultCommand(target,
+                            new ShowBarcodeCommand(target)), "BarcodeAction"))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
             new Command() {
@@ -373,8 +374,9 @@ public class DesignToolbar extends Toolbar {
         ChainableCommand cmd = new SaveAllEditorsCommand(
             new GenerateYailCommand(
                 new BuildCommand(target,
-                    new WaitForBuildResultCommand(target,
-                        new DownloadProjectOutputCommand(target)))));
+                    new ShowProgressBarCommand(target,
+                        new WaitForBuildResultCommand(target,
+                            new DownloadProjectOutputCommand(target)), "DownloadAction"))));
         updateBuildButton(true);
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
             new Command() {
