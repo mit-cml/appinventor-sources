@@ -861,17 +861,50 @@ public class Form extends Activity
    }
  }
 
+ /**
+  * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The animation for switching to another screen. Valid" +
+    " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
+  public String OpenScreenAnimation() {
+    return openAnimType;
+  }
+
   /**
    * Sets the animation type for the transition to another screen.
    *
    * @param animType the type of animation to use for the transition
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
-      defaultValue = "default")
-  @SimpleFunction(description = "Sets the animation for switching to another screen. Valid" +
- 		" options are default, fade, zoom, slidehorizontal, slidevertical, and none")
+    defaultValue = "default")
+  @SimpleProperty
   public void OpenScreenAnimation(String animType) {
+    if ((animType != "default") &&
+      (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
+      (animType != "slidevertical") && (animType != "none")) {
+      this.dispatchErrorOccurredEvent(this, "Screen",
+        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+      return;
+    }
     openAnimType = animType;
+  }
+
+ /**
+  * Returns the type of close screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The animation for closing current screen and returning " +
+    " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
+    "slidevertical, and none")
+  public String CloseScreenAnimation() {
+    return closeAnimType;
   }
 
   /**
@@ -881,11 +914,16 @@ public class Form extends Activity
    * @param animType the type of animation to use for the transition
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
-      defaultValue = "default")
-  @SimpleFunction(description = "Sets the animation for closing current screen and returning " +
-     " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
-     "slidevertical, and none")
+    defaultValue = "default")
+  @SimpleProperty
   public void CloseScreenAnimation(String animType) {
+    if ((animType != "default") &&
+      (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
+      (animType != "slidevertical") && (animType != "none")) {
+      this.dispatchErrorOccurredEvent(this, "Screen",
+        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+      return;
+    }
     closeAnimType = animType;
   }
 

@@ -227,7 +227,9 @@ public class YaVersion {
   // - TWITTER_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 78:
   // - NEARFIELD_COMPONENT_VERSION was incremented to 1
-  public static final int YOUNG_ANDROID_VERSION = 78;
+  // For YOUNG_ANDROID_VERSION 79:
+  // - FORM_COMPONENT_VERSION was incremented to 11.
+  public static final int YOUNG_ANDROID_VERSION = 79;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -416,7 +418,9 @@ public class YaVersion {
   // - The CloseScreenAnimation property was added
   // For FORM_COMPONENT_VERSION 10:
   // - The BackPressed event was added.
-  public static final int FORM_COMPONENT_VERSION = 10;
+  // For FORM_COMPONENT_VERSION 11:
+  // - OpenScreenAnimation and CloseScreenAnimation are now properties.
+  public static final int FORM_COMPONENT_VERSION = 11;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
