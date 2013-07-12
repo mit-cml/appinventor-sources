@@ -69,6 +69,9 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   // The path to the saved image
   private String selectionSavedImage = "";
 
+  // Tried EXTERNAL_CONTENT_URI
+  private static int triedExternal = 0;
+
   /**
    * Create a new ImagePicker component.
    *
@@ -89,7 +92,12 @@ public class ImagePicker extends Picker implements ActivityResultListener {
   
   @Override
   protected Intent getIntent() {
-    return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+    if (triedExternal == 0) {
+      return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    }
+    else {
+      return new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+    }
   }
 
   /**
@@ -116,6 +124,12 @@ public class ImagePicker extends Picker implements ActivityResultListener {
       // that includes the extension
       saveSelectedImageToExternalStorage(extension);
       AfterPicking();
+    }
+    else if (requestCode == this.requestCode && resultCode == Activity.RESULT_CANCELED) {
+      if ((data == null || data.getData() == null) && triedExternal == 0) {
+        triedExternal = 1;
+        ((Activity) container.$context()).startActivityForResult(getIntent(), this.requestCode);
+      }
     }
   }
   
