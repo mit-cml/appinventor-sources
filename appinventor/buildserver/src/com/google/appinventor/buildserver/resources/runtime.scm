@@ -2055,27 +2055,35 @@ list, use the make-yail-list constructor with no arguments.
 ;;;;Color implementation
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(define *max-color-component* 255)
-(define *color-alpha-position* 24)
-(define *color-red-position* 16)
-(define *color-green-position* 8)
-(define *color-blue-position* 0)
-(define *alpha-opaque* 255)
+;;; explicit conversion to exact is redundant, because Kawa's
+;;; reader will return exact integers here.  But we'll
+;;; do it just to be conservative
+
+(define *max-color-component* (exact 255))
+(define *color-alpha-position* (exact 24))
+(define *color-red-position* (exact 16))
+(define *color-green-position* (exact 8))
+(define *color-blue-position* (exact 0))
+(define *alpha-opaque* (exact 255))
+
+(define (make-exact-yail-integer x)
+  (exact (round (coerce-to-number x))))
 
 ;;; Note that this procedure expects the color components in the order
 ;;; red, green, blue, alpha, even though they are combined into an integer
 ;;; ordered alpha, red, green, blue.  I chose the different ordering
 ;;; because I thought alpha would be less clear/important to users, and
 ;;; putting it at the end makes it easy to make optional.
+
 (define (make-color color-components)
   ;; The explict coercions to number are necessary because the ordinary
   ;; method call coercion mechanism won't convert a list of string to a
-  ;; list of number.
-  (let ((red (coerce-to-number (yail-list-get-item color-components 1)))
-        (green (coerce-to-number (yail-list-get-item color-components 2)))
-        (blue (coerce-to-number (yail-list-get-item color-components 3)))
+  ;; list of numbers.   Also note that Kawa bitwise operations require exact integers.
+  (let ((red (make-exact-yail-integer (yail-list-get-item color-components 1)))
+        (green (make-exact-yail-integer (yail-list-get-item color-components 2)))
+        (blue (make-exact-yail-integer (yail-list-get-item color-components 3)))
         (alpha (if (> (yail-list-length color-components) 3)
-                   (coerce-to-number (yail-list-get-item color-components 4))
+                   (make-exact-yail-integer (yail-list-get-item color-components 4))
                    *alpha-opaque*)))
     (bitwise-ior
      (bitwise-arithmetic-shift-left (bitwise-and alpha *max-color-component*)
@@ -2088,24 +2096,25 @@ list, use the make-yail-list constructor with no arguments.
                                     *color-blue-position*))))
 
 (define (split-color color)
+  (let ((intcolor (make-exact-yail-integer color)))
   (kawa-list->yail-list
    (list
     ;; red
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-red-position*)
                  *max-color-component*)
     ;; green
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-green-position*)
                  *max-color-component*)
     ;; blue
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-blue-position*)
                  *max-color-component*)
     ;; alpha
-    (bitwise-and (bitwise-arithmetic-shift-right color
+    (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-alpha-position*)
-                 *max-color-component*))))
+                 *max-color-component*)))))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
