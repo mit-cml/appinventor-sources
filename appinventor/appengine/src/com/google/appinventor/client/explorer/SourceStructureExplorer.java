@@ -41,7 +41,6 @@ public class SourceStructureExplorer extends Composite {
   private final Tree tree;
   private final TextButton renameButton;
   private final TextButton deleteButton;
-  private final TextButton warningButton;
 
   /**
    * Creates a new source structure explorer.
@@ -142,24 +141,6 @@ public class SourceStructureExplorer extends Composite {
     buttonPanel.setCellHorizontalAlignment(deleteButton,
                                            HorizontalPanel.ALIGN_LEFT);
 
-    warningButton = new TextButton(MESSAGES.showWarnings());
-    warningButton.setEnabled(true);
-    warningButton.setVisible(false);
-    warningButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        if(BlocklyPanel.isWarningVisible){
-          warningButton.setText(MESSAGES.showWarnings());
-        } else {
-          warningButton.setText(MESSAGES.hideWarnings());
-        }
-        YaBlocksEditor.toggleWarning();
-      }
-    });
-    buttonPanel.add(warningButton);
-    buttonPanel.setCellHorizontalAlignment(warningButton,
-                                           HorizontalPanel.ALIGN_LEFT);
-
     VerticalPanel panel = new VerticalPanel();
     panel.add(scrollPanel);
     panel.add(new Label());
@@ -178,9 +159,6 @@ public class SourceStructureExplorer extends Composite {
     deleteButton.setEnabled(false);
   }
 
-  public void setWarningButtonVisibility(boolean visible) {
-    warningButton.setVisible(visible);
-  }
   
   /* move this logic to declarations of SourceStructureExplorerItem subtypes
   private void showBlocks(SourceStructureExplorerItem item) {

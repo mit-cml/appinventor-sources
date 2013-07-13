@@ -408,6 +408,10 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }
 
+  public static void callToggleWarning() {
+    YaBlocksEditor.toggleWarning();
+  }
+
   /**
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
@@ -575,6 +579,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
     $wnd.BlocklyPanel_checkWarningState =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkWarningState(Ljava/lang/String;));
+    $wnd.BlocklyPanel_callToggleWarning =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::callToggleWarning());
     $wnd.BlocklyPanel_checkIsAdmin =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkIsAdmin());
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split

@@ -600,8 +600,6 @@ public class DesignToolbar extends Toolbar {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
     setButtonVisible(WIDGET_NAME_WIRELESS_BUTTON, blocks);
     setButtonVisible(WIDGET_NAME_EMULATOR_BUTTON, blocks);
-    //show or hide the warning button
-    BlockSelectorBox.getBlockSelectorBox().getSourceStructureExplorer().setWarningButtonVisibility(blocks);
   }
 
 }

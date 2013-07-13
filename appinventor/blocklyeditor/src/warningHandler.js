@@ -22,6 +22,7 @@ Blockly.WarningHandler.warningState = {
 
 Blockly.WarningHandler.updateWarningErrorCount = function() {
   //update the error and warning count in the UI
+  Blockly.mainWorkspace.warningIndicator.updateWarningAndErrorCount();
 }
 
 //Call to toggle the visibility of the warnings on the blocks
@@ -33,6 +34,7 @@ Blockly.WarningHandler.warningToggle = function() {
     Blockly.WarningHandler.showWarningsToggle = true;
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors(false);
   }
+  Blockly.mainWorkspace.warningIndicator.updateWarningToggleText();
 }
 
 //Hide warnings on the blocks
@@ -230,7 +232,7 @@ Blockly.WarningHandler.checkEmptySockets = function(params){
   var containsEmptySockets = false;
   for(var i=0;i<this.inputList.length;i++){
     var inputName = this.inputList[i].name;
-    if(this.inputList[i].connection && !this.getInputTargetBlock(inputName)){
+    if(this.inputList[i].type == Blockly.INPUT_VALUE && this.inputList[i].connection && !this.getInputTargetBlock(inputName)){
       containsEmptySockets = true;
       break;
     }

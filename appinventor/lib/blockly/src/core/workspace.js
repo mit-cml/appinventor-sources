@@ -77,6 +77,12 @@ Blockly.Workspace.prototype.scrollY = 0;
 Blockly.Workspace.prototype.trashcan = null;
 
 /**
+ * The workspace's warning indicator.
+ * @type {Blockly.WarningIndicator}
+ */
+Blockly.Workspace.prototype.warningIndicator = null;
+
+/**
  * PID of upcoming firing of a change event.  Used to fire only one event
  * after multiple changes.
  * @type {?number}
@@ -124,6 +130,10 @@ Blockly.Workspace.prototype.dispose = function() {
     this.trashcan.dispose();
     this.trashcan = null;
   }
+  if (this.warningIndicator) {
+    this.warningIndicator.dispose();
+    this.warningIndicator = null;
+  }
 };
 
 /**
@@ -138,6 +148,20 @@ Blockly.Workspace.prototype.addTrashcan = function(getMetrics) {
     this.trashcan.init();
   }
 };
+
+/**
+ * Adds the warning indicator.
+ * @param {!Function} getMetrics A function that returns workspace's metrics.
+ */
+Blockly.Workspace.prototype.addWarningIndicator = function(getMetrics) {
+  if (Blockly.WarningIndicator && this.editable) {
+    this.warningIndicator = new Blockly.WarningIndicator(getMetrics);
+    var svgWarningIndicator = this.warningIndicator.createDom();
+    this.svgGroup_.insertBefore(svgWarningIndicator, this.svgBlockCanvas_);
+    this.warningIndicator.init();
+  }
+};
+
 
 /**
  * Get the SVG element that forms the drawing surface.

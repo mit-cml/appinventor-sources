@@ -336,6 +336,7 @@ Blockly.init_ = function() {
   }
 
   Blockly.mainWorkspace.addTrashcan(Blockly.getMainWorkspaceMetrics);
+  Blockly.mainWorkspace.addWarningIndicator(Blockly.getMainWorkspaceMetrics);
 
   // Load the sounds.
   Blockly.loadAudio_('media/click.wav', 'click');

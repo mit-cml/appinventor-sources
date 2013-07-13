@@ -61,6 +61,7 @@
     "./src/warningHandler.js",
     "./src/field_procedure.js",
     "./src/field_textblockinput.js",
+    "./src/warningIndicator.js",
 
     //language files
     './src/language/common/control.js',
