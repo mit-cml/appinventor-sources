@@ -640,6 +640,10 @@ public final class YoungAndroidFormUpgrader {
       // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
       srcCompVersion = 10;
     }
+    if (srcCompVersion < 11) {
+      // OpenScreenAnimation and CloseScreenAnimation are now properties.
+      srcCompVersion = 11;
+    }
     return srcCompVersion;
   }
 
@@ -910,6 +914,11 @@ public final class YoungAndroidFormUpgrader {
       // The designer properties ConsumerKey and ConsumerSecret were added
       // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The designer property TwitPic_API_Key was added
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

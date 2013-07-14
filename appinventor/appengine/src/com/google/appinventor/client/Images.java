@@ -69,8 +69,14 @@ public interface Images extends Resources {
   /**
    * Designer palette item: accelerometersensor component
    */
-  @Source("com/google/appinventor/images/accelerometersensor.png")
-  ImageResource accelerometersensor();
+  @Source("com/google/appinventor/images/nearfield.png")
+  ImageResource nearfield();
+
+   /**
+    * Designer palette item: accelerometersensor component
+    */
+   @Source("com/google/appinventor/images/accelerometersensor.png")
+   ImageResource accelerometersensor();
 
   /**
    * Designer palette item: barcode scanner component

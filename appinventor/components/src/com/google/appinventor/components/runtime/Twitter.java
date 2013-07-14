@@ -8,6 +8,7 @@ package com.google.appinventor.components.runtime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.io.File;
 
 import twitter4j.DirectMessage;
 import twitter4j.IDs;
@@ -18,6 +19,11 @@ import twitter4j.TwitterFactory;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import twitter4j.conf.Configuration;
+import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.media.ImageUpload;
+import twitter4j.media.ImageUploadFactory;
+import twitter4j.media.MediaProvider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -46,13 +52,16 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
  * @author sharon@google.com (Sharon Perl) - added OAuth support
  * @author ajcolter@gmail.com (Aubrey Colter) - added the twitter4j 2.2.6 jars
  * @author josmasflores@gmail.com (Jose Dominguez) - added the twitter4j 3.0.3 jars and fixed auth bug 2413
+ * @author edwinhzhang@gmail.com (Edwin Zhang) - added twitter4j-media-support-3.03 jar, status + image upload
  */
 @DesignerComponent(version = YaVersion.TWITTER_COMPONENT_VERSION, description = "<p>A non-visible component that enables communication "
     + "with <a href=\"http://www.twitter.com\" target=\"_blank\">Twitter</a>. "
     + "Once a user has logged into their Twitter account (and the authorization has been confirmed successful by the "
     + "<code>IsAuthorized</code> event), many more operations are available:<ul>"
     + "<li> Searching Twitter for tweets or labels (<code>SearchTwitter</code>)</li>"
-    + "<li> Setting the status of the logged-in user (<code>SetStatus</code>)"
+    + "<li> Sending a Tweet (<code>Tweet</code>)"
+    + "     </li>"
+    + "<li> Sending a Tweet with an Image (<code>TweetWithImage</code>)"
     + "     </li>"
     + "<li> Directing a message to a specific user "
     + "     (<code>DirectMessage</code>)</li> "
@@ -71,7 +80,7 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
     category = ComponentCategory.SOCIAL, nonVisible = true, iconName = "images/twitter.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
-@UsesLibraries(libraries = "twitter4j.jar")
+@UsesLibraries(libraries = "twitter4j.jar," + "twitter4jmedia.jar")
 public final class Twitter extends AndroidNonvisibleComponent implements
     ActivityResultListener, Component {
   private static final String ACCESS_TOKEN_TAG = "TwitterOauthAccessToken";
@@ -86,6 +95,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   // the following fields should only be accessed from the UI thread
   private String consumerKey = "";
   private String consumerSecret = "";
+  private String TwitPic_API_Key = "";
   private final List<String> mentions;
   private final List<String> followers;
   private final List<List<String>> timeline;
@@ -205,6 +215,27 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   @SimpleProperty
   public void ConsumerSecret(String consumerSecret) {
     this.consumerSecret = consumerSecret;
+  }
+
+  /**
+   * TwitPicAPIkey property getter method.
+   */
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
+  public String TwitPic_API_Key() {
+     return TwitPic_API_Key;
+  }
+
+  /**
+   * TwitPicAPIkey property setter method: sets the TwitPicAPIkey to be used
+   * for image uploading with twitter.
+   *
+   * @param TwitPic_API_Key
+   *          the API Key for image uploading, given by TwitPic
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty
+  public void TwitPic_API_Key(String TwitPic_API_Key) {
+    this.TwitPic_API_Key = TwitPic_API_Key;
   }
 
   /**
@@ -411,25 +442,25 @@ public final class Twitter extends AndroidNonvisibleComponent implements
   }
 
   /**
-   * Sets the status of the currently logged in user.
+   * Sends a Tweet of the currently logged in user.
    */
-  @SimpleFunction(description = "This updates the logged-in user's status to the "
+  @SimpleFunction(description = "This sends a tweet as the logged-in user with the "
       + "specified Text, which will be trimmed if it exceeds "
       + MAX_CHARACTERS
       + " characters. "
       + "<p><u>Requirements</u>: This should only be called after the "
       + "<code>IsAuthorized</code> event has been raised, indicating that the "
       + "user has successfully logged in to Twitter.</p>")
-  public void SetStatus(final String status) {
+  public void Tweet(final String status) {
 
     if (twitter == null || userName.length() == 0) {
-      form.dispatchErrorOccurredEvent(this, "SetStatus",
+      form.dispatchErrorOccurredEvent(this, "Tweet",
           ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, "Need to login?");
       return;
     }
     // TODO(sharon): note that if the user calls DeAuthorize immediately
     // after
-    // SetStatus it is possible that the DeAuthorize call can slip in
+    // Tweet it is possible that the DeAuthorize call can slip in
     // and invalidate the authorization credentials for myTwitter, causing
     // the call below to fail. If we want to prevent this we could consider
     // using an ExecutorService object to serialize calls to Twitter.
@@ -438,11 +469,52 @@ public final class Twitter extends AndroidNonvisibleComponent implements
         try {
           twitter.updateStatus(status);
         } catch (TwitterException e) {
-          form.dispatchErrorOccurredEvent(Twitter.this, "SetStatus",
+          form.dispatchErrorOccurredEvent(Twitter.this, "Tweet",
               ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, e.getMessage());
         }
       }
     });
+  }
+
+  /**
+   * Tweet with Image, Uploaded to TwitPic
+   */
+  @SimpleFunction(description = "This sends a tweet as the logged-in user with the "
+      + "specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds"
+      + MAX_CHARACTERS
+      + " characters. If an image is not found or invalid, only the text will be tweeted."
+      + "<p><u>Requirements</u>: This should only be called after the "
+      + "<code>IsAuthorized</code> event has been raised, indicating that the "
+      + "user has successfully logged in to Twitter.</p>" )
+  public void TweetWithImage(final String status, final String ImagePath) {
+    if (twitter == null || userName.length() == 0) {
+      form.dispatchErrorOccurredEvent(this, "TweetWithImage",
+          ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, "Need to login?");
+      return;
+    }
+
+    AsynchUtil.runAsynchronously(new Runnable() {
+      public void run() {
+        try {
+          ConfigurationBuilder builder = new ConfigurationBuilder().setMediaProviderAPIKey(TwitPic_API_Key);
+          builder.setOAuthConsumerKey(ConsumerKey());
+          builder.setOAuthConsumerSecret(ConsumerSecret());
+          builder.setOAuthAccessToken(accessToken.getToken());
+          builder.setOAuthAccessTokenSecret(accessToken.getTokenSecret());
+          Configuration conf = builder.build();
+          ImageUpload upload = new ImageUploadFactory(conf).getInstance(MediaProvider.TWITPIC);
+          String url = "";
+            if (new File(ImagePath).exists()) {
+              url = upload.upload(new File(ImagePath));
+            }
+          twitter.updateStatus(status + " " + url);
+        } catch (TwitterException e) {
+          form.dispatchErrorOccurredEvent(Twitter.this, "TweetWithImage",
+              ErrorMessages.ERROR_TWITTER_SET_STATUS_FAILED, e.getMessage());
+        }
+      }
+    });
+
   }
 
   /**
