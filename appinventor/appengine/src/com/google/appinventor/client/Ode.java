@@ -68,10 +68,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -79,7 +81,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -626,21 +630,23 @@ public class Ode implements EntryPoint {
       }
     });
 
-    // Check if the user has any saved projects.
-    // If the user has no saved projects, then show the welcome dialog.
-    getProjectService().getProjects(new AsyncCallback<long[]>() {
-      @Override
-      public void onSuccess(long[] projectIds) {
-        if (projectIds.length == 0) {
-          createWelcomeDialog(true);
-        }
-      }
+    if (AppInventorFeatures.showSplashScreen()) {
+      createWelcomeDialog(true);
+    } else {
+      getProjectService().getProjects(new AsyncCallback<long[]>() {
+          @Override
+          public void onSuccess(long [] projectIds) {
+            if (projectIds.length == 0) {
+              createNoProjectsDialog(true);
+            }
+          }
 
-      @Override
-      public void onFailure(Throwable projectIds) {
-        OdeLog.elog("Could not get project list");
-      }
-    });
+          @Override
+          public void onFailure(Throwable projectIds) {
+            OdeLog.elog("Could not get project list");
+          }
+        });
+    }
 
     setupMotd();
   }
@@ -884,7 +890,7 @@ public class Ode implements EntryPoint {
    * @param showDialog Convenience variable to show the created DialogBox.
    * @return The created and optionally displayed Dialog box.
    */
-  public DialogBox createWelcomeDialog(boolean showDialog) {
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
@@ -938,4 +944,53 @@ public class Ode implements EntryPoint {
     }
     return dialogBox;
   }
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createWelcomeDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setHeight("400px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>");
+    message.setStyleName("DialogBox-message");
+    SimplePanel holder = new SimplePanel();
+    Button ok = new Button("Continue");
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          getProjectService().getProjects(new AsyncCallback<long[]>() {
+              @Override
+              public void onSuccess(long [] projectIds) {
+                if (projectIds.length == 0) {
+                  createNoProjectsDialog(true);
+                }
+              }
+
+              @Override
+              public void onFailure(Throwable projectIds) {
+                OdeLog.elog("Could not get project list");
+              }
+            });
+        }
+      });
+    holder.add(ok);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+    return dialogBox;
+  }
+
 }

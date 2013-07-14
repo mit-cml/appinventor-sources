@@ -46,4 +46,11 @@ public final class AppInventorFeatures {
     // Set this to true if you want to track events with Google Analytics.
     return false;
   }
+
+  public static boolean showSplashScreen() {
+    // Set this to true to display a splash screen with an informative message
+    // each time MIT App Inventor is started. See Ode.java
+    return false;
+  }
+
 }
