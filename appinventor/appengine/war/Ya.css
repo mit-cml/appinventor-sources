@@ -391,6 +391,16 @@ body {
   padding-top: 10px;
 }
 
+/* Overrides for gwt.css */
+.gwt-StackPanel .gwt-StackPanelContent {
+  padding: 2px 2px 0px 5px;
+}
+.gwt-StackPanel .gwt-StackPanelItem {
+  padding: 0px;
+  border: 0px;
+}
+
+
 .ode-SimplePaletteItem {
   background-color: #f7f9f2; /* needed on Firefox */
   height: 15px;
