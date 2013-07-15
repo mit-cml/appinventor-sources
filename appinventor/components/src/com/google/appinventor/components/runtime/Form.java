@@ -243,24 +243,159 @@ public class Form extends Activity
    * 5, we can simply override the onBackPressed method rather
    * than bothering with onKeyDown)
    */
-  @Override
-  public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if (keyCode == KeyEvent.KEYCODE_BACK) {      
-      if (!BackPressed()) {
-        boolean handled = super.onKeyDown(keyCode, event);
-        AnimationUtil.ApplyCloseScreenAnimation(this, closeAnimType);
-        return handled;
-      } else {
-        return true;
-      }      
-    }
-    return super.onKeyDown(keyCode, event);
+  @SimpleEvent(description = "Fires when menu button is pressed")
+  public void OnMenuKey() {
+    
   }
 
-  @SimpleEvent(description = "Device back button pressed.")
-  public boolean BackPressed() {
-    return EventDispatcher.dispatchEvent(this, "BackPressed");
+  @SimpleEvent(description = "Fires when search button is pressed")
+  public void OnSearchKey() {
+    
   }
+
+  @SimpleEvent(description = "Fires when back button is pressed")
+  public void OnBackKey() {
+    
+  }
+
+  @SimpleEvent(description = "Fires when Vol + button is pressed")
+  public void OnVolumeupKey() {
+    
+  }
+
+  @SimpleEvent(description = "Fires when Vol - button is pressed")
+  public void OnVolumedownKey() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key A")
+  public void KeyA() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key B")
+  public void KeyB() {
+    
+  }
+   
+  @SimpleEvent(description = "Press Key C")
+  public void KeyC() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key D")
+  public void KeyD() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key E")
+  public void KeyE() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key F")
+  public void KeyF() {
+    
+  }
+
+  @SimpleEvent(description = "Press Key Enter")
+  public void KeyEnter() {
+    
+  }
+
+
+  @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+      
+
+
+        /*if(keyCode == KeyEvent.KEYCODE_HOME) {
+    	Toast.makeText(getApplicationContext(),"HIT! H", Toast.LENGTH_SHORT).show();
+		return true;
+	} else 
+*/
+	if(keyCode == KeyEvent.KEYCODE_MENU) {
+		if (EventDispatcher.dispatchEvent(this, "OnMenuKey")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_SEARCH) {
+		if (EventDispatcher.dispatchEvent(this, "OnSearchKey")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_BACK) {
+		if (EventDispatcher.dispatchEvent(this, "OnBackKey")) {			
+                       return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+		if (EventDispatcher.dispatchEvent(this, "OnVolumeupKey")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                }
+
+        } else if(keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+		if (EventDispatcher.dispatchEvent(this, "OnVolumedownKey")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                } 
+        } else if(keyCode == KeyEvent.KEYCODE_A) {
+		if (EventDispatcher.dispatchEvent(this, "KeyA")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_B) {
+		if (EventDispatcher.dispatchEvent(this, "KeyB")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_C) {
+		if (EventDispatcher.dispatchEvent(this, "KeyC")) {			
+                       return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+		}
+	} else if(keyCode == KeyEvent.KEYCODE_D) {
+		if (EventDispatcher.dispatchEvent(this, "KeyD")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                }
+
+        } else if(keyCode == KeyEvent.KEYCODE_E) {
+		if (EventDispatcher.dispatchEvent(this, "KeyE")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                } 
+        } else if(keyCode == KeyEvent.KEYCODE_F) {
+		if (EventDispatcher.dispatchEvent(this, "KeyF")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                } 
+        } else if(keyCode == KeyEvent.KEYCODE_ENTER) {
+		if (EventDispatcher.dispatchEvent(this, "KeyEnter")) {
+			return true;
+		} else {
+			return super.onKeyDown(keyCode, event);
+                }
+        
+	} else {
+
+
+        return super.onKeyDown(keyCode, event);
+	}
+    }
   
   // onActivityResult should be triggered in only two cases:
   // (1) The result is for some other component in the app, not this Form itself
@@ -1197,7 +1332,7 @@ public class Form extends Activity
   }
 
   // Configure the system menu to include a button to kill the application
-
+  // Add control menu actions by xcitizen.team@gmail.com
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // This procedure is called only once.  To change the items dynamically
@@ -1209,17 +1344,92 @@ public class Form extends Activity
     return true;
   }
 
+   @SimpleEvent(description = "Create function on menu item 2")
+  public void FunctionMenuItem2() {
+    EventDispatcher.dispatchEvent(this, "FunctionMenuItem2");
+  }
+
+   @SimpleEvent(description = "Create function on menu item 3")
+  public void FunctionMenuItem3() {
+    EventDispatcher.dispatchEvent(this, "FunctionMenuItem3");
+  }
+
+   @SimpleEvent(description = "Create function on menu item 4")
+  public void FunctionMenuItem4() {
+    EventDispatcher.dispatchEvent(this, "FunctionMenuItem4");
+  }
+
+   @SimpleEvent(description = "Create function on menu item 5")
+  public void FunctionMenuItem5() {
+    EventDispatcher.dispatchEvent(this, "FunctionMenuItem5");
+  }
+
+
+   @SimpleEvent(description = "Create function on menu item 6")
+  public void FunctionMenuItem6() {
+    EventDispatcher.dispatchEvent(this, "FunctionMenuItem6");
+  }
+  
   public void addExitButtonToMenu(Menu menu) {
     MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Stop this application")
+    "Salir")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
         showExitApplicationNotification();
         return true;
       }
     });
+    MenuItem CompartirApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Compartir")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        FunctionMenuItem2();
+        return true;
+    }
+    });
+    MenuItem MapaApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Mapa")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        FunctionMenuItem3();
+        return true;
+   }
+    });
+
+    MenuItem OpcionesApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Opciones")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        FunctionMenuItem4();
+        return true;
+   }
+    });
+
+    MenuItem CamaraApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Camara")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        FunctionMenuItem5();
+        return true;
+   }
+    });
+
+    MenuItem EnviarApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Enviar")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        FunctionMenuItem6();
+        return true;
+   }
+    });
     stopApplicationItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
-  }
+    CompartirApplicationItem.setIcon(android.R.drawable.ic_menu_share);
+    MapaApplicationItem.setIcon(android.R.drawable.ic_menu_compass);
+    OpcionesApplicationItem.setIcon(android.R.drawable.ic_menu_manage);
+    CamaraApplicationItem.setIcon(android.R.drawable.ic_menu_camera);
+    EnviarApplicationItem.setIcon(android.R.drawable.ic_menu_send);
+   }
+
 
   private void showExitApplicationNotification() {
     AlertDialog alertDialog = new AlertDialog.Builder(this).create();
