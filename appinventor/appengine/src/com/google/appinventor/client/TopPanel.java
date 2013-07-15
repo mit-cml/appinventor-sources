@@ -79,6 +79,7 @@ public class TopPanel extends Composite {
     // First row - right side is account, report bug, sign out
     rightPanel = new VerticalPanel();
     rightPanel.setHeight("100%");
+    rightPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
     HorizontalPanel account = new HorizontalPanel();
     account.setStyleName("ode-TopPanelAccount");
     account.add(userEmail);
@@ -98,6 +99,9 @@ public class TopPanel extends Composite {
     account.add(signOutLink);
 
     rightPanel.add(account);
+
+    topPanel.setWidth("width: 100%");
+
     addLogo(topPanel);
 
     HorizontalPanel middleLinks = new HorizontalPanel();
@@ -114,6 +118,7 @@ public class TopPanel extends Composite {
       }
     }
     );
+    myApps.setStyleName("gwt-TitleLabel");
     middleLinks.add(myApps);
 
     Label aboutButton = new Label(MESSAGES.aboutLink());
@@ -154,6 +159,7 @@ public class TopPanel extends Composite {
       }
     });
     //    rightMiddleLinks.add(aboutButton);
+    aboutButton.setStyleName("gwt-TitleLabel");
     middleLinks.add(aboutButton);
 
     Label spacer = new Label("|");
@@ -161,15 +167,17 @@ public class TopPanel extends Composite {
     middleLinks.add(spacer);
 
     Anchor learn = new Anchor(MESSAGES.tabNameLearn(), LEARN_URL, "_blank");
+    learn.setStyleName("gwt-TitleLabel");
     middleLinks.add(learn);
 
     Anchor gallery = new Anchor("Gallery", "http://gallery.appinventor.mit.edu", "_blank");
+    gallery.setStyleName("gwt-TitleLabel");
     middleLinks.add(gallery);
 
     topPanel.add(middleLinks);
     topPanel.add(rightPanel);
 
-    topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_TOP);
+    topPanel.setCellVerticalAlignment(rightPanel, HorizontalPanel.ALIGN_MIDDLE);
     rightPanel.setCellHorizontalAlignment(account, HorizontalPanel.ALIGN_RIGHT);
     topPanel.setCellHorizontalAlignment(rightPanel, HorizontalPanel.ALIGN_RIGHT);
 
@@ -185,11 +193,22 @@ public class TopPanel extends Composite {
     // Add timestamp to logo url to get around browsers that agressively cache
     // the image! This same trick is used in StorageUtil.getFilePath().
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
-    logo.setSize("191px", "47px");
+    logo.setSize("40px", "40px");
+    logo.setStyleName("ode-Logo");
     panel.add(logo);
+    panel.setCellWidth(logo, "50px");
+    Label title = new Label("MIT App Inventor 2");
+    Label version = new Label("alpha");
+    VerticalPanel titleContainer = new VerticalPanel();
+    titleContainer.add(title);
+    titleContainer.add(version);
+    titleContainer.setCellHorizontalAlignment(version, HorizontalPanel.ALIGN_RIGHT);
+    panel.add(titleContainer);
+    panel.setCellWidth(titleContainer, "180px");
+    title.setStyleName("ode-LogoText");
+    version.setStyleName("ode-LogoVersion");
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
-    panel.setCellWidth(logo, "228px");
   }
 
   private void addMotd(VerticalPanel panel) {

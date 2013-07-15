@@ -506,7 +506,7 @@ public class Ode implements EntryPoint {
       }
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
-    deckPanel.setWidth("100%");
+    deckPanel.setStyleName("ode-DeckPanel");
 
     // Projects tab
     VerticalPanel pVertPanel = new VerticalPanel();
@@ -616,7 +616,7 @@ public class Ode implements EntryPoint {
 
     //Commenting out for now to gain more space for the blocks editor
     //mainPanel.add(statusPanel, DockPanel.SOUTH);
-    mainPanel.setSize("100%", "98%");
+    mainPanel.setSize("100%", "100%");
     RootPanel.get().add(mainPanel);
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
