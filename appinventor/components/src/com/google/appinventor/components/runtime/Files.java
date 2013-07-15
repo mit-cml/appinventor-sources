@@ -19,7 +19,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import java.util.zip.*;
 import java.io.*;
 
-@DesignerComponent(version = YaVersion.FILES_COMPONENT_VERSION,
+@DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
     category = ComponentCategory.MISC,
     description = "I/O Files, Save, Read, Delete, Zip, Unzip ...",
     nonVisible = true,
