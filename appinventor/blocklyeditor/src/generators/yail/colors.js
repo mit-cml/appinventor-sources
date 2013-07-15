@@ -50,6 +50,10 @@ Blockly.Yail.color_white = function() {
   return Blockly.Yail.color.call(this);
 };
 
+Blockly.Yail.color_orange = function() {
+  return Blockly.Yail.color.call(this);
+};
+
 Blockly.Yail.color_yellow = function() {
   return Blockly.Yail.color.call(this);
 };

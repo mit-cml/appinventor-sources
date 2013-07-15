@@ -100,7 +100,7 @@ Blockly.Yail.controls_forRange = function() {
 };
 
 Blockly.Yail.for_lexical_variable_get = function() {
-  Blockly.Yail.lexical_variable_get.call(this);
+  return Blockly.Yail.lexical_variable_get.call(this);
 }
 
 Blockly.Yail.controls_while = function() {
