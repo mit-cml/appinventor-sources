@@ -126,10 +126,10 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.iconErrorMark_.appendChild(document.createTextNode('!'));
 
   this.warningToggle_ = Blockly.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"100", 'height':"20", 'x':"-5",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"150", 'height':"20", 'x':"-30",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningToggleText_ = Blockly.createSvgElement('text',
-      {'fill': "black", 'transform':"translate(0,35)",'style':"font-size:10pt;cursor:pointer;"},
+      {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
       this.svgGroup_);
   this.warningToggleText_.textContent = "Show Warnings";
 
