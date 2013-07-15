@@ -24,6 +24,7 @@ import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.ProgressDialog;
 
 /**
  * The Notifier component displays alert messages and creates Android log entries through
