@@ -174,7 +174,7 @@ public class DesignToolbar extends Toolbar {
         MESSAGES.showBarcodeButton(), new BarcodeAction()));
     buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_DOWNLOAD,
         MESSAGES.downloadToComputerButton(), new DownloadAction()));
-    if (AppInventorFeatures.hasYailGenerationOption()) {
+    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
       buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_YAIL,
           MESSAGES.generateYailButton(), new GenerateYailAction()));
     }
