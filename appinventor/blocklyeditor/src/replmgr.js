@@ -427,7 +427,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
     if (this.ReplState.state == this.rsState.RENDEZVOUS) {
-        this.ReplState.count = Blockly.ReplState.count + 1;
+        this.ReplState.count = this.ReplState.count + 1;
         if (this.ReplState.count > 40) {
             this.ReplState.state = this.rsState.IDLE;
             this.ReplState.dialog.setVisible(false); // Punt the dialog
