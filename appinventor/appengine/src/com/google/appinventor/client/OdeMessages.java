@@ -84,6 +84,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for removing a screen")
   String removeFormButton();
 
+  @DefaultMessage("Connect To")
+  @Description("Label of the button for selecting phone connection")
+  String connectToButton();
+
   @DefaultMessage("Deleting this screen will completely remove the screen from your project. " +
       "All components and blocks associated with this screen will be deleted.\n" +
       "There is no undo.\nAre you sure you want to delete {0}?")
@@ -1163,7 +1167,7 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Connect to Companion")
+  @DefaultMessage("Connect Companion")
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButton();
 
@@ -1171,7 +1175,7 @@ public interface OdeMessages extends Messages {
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButtonConnected();
 
-  @DefaultMessage("Connect to Emulator")
+  @DefaultMessage("Connect Emulator")
   @Description("Message providing details about starting the emulator connection.")
   String emulatorButton();
 

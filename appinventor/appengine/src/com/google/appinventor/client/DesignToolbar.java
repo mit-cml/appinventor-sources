@@ -7,7 +7,6 @@ package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
@@ -110,6 +109,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
+  private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
 
@@ -158,11 +158,12 @@ public class DesignToolbar extends Toolbar {
           new RemoveFormAction()));
     }
 
-    addButton(new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButton(), new EmulatorAction()), true);
-    addButton(new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton(), new WirelessAction()), true);
+    List<ToolbarItem> connectToItems = Lists.newArrayList();
+    addDropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectToButton(), connectToItems, true);
+    updateConnectToDropDownButton(false, false);
+
     List<ToolbarItem> screenItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems, true);
-
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
@@ -582,24 +583,36 @@ public class DesignToolbar extends Toolbar {
     screen.blocksEditor.startRepl(replStarted, forEmulator);
     if (!replStarted) {
       replStarted = true;
-      if (forEmulator)
-        setButtonCaption(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButtonConnected());
-      else
-        setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButtonConnected());
+      if (forEmulator) {        // We are starting the emulator...
+        updateConnectToDropDownButton(true, false);
+      } else {
+        updateConnectToDropDownButton(false, true);
+      }
     } else {
       replStarted = false;
-      if (forEmulator)
-        setButtonCaption(WIDGET_NAME_EMULATOR_BUTTON, MESSAGES.emulatorButton());
-      else
-        setButtonCaption(WIDGET_NAME_WIRELESS_BUTTON, MESSAGES.wirelessButton());
+      updateConnectToDropDownButton(false, false);
+    }
+  }
+
+  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning){
+    clearDropDownMenu(WIDGET_NAME_CONNECT_TO);
+    if (!isEmulatorRunning && !isCompanionRunning) {
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
+          MESSAGES.wirelessButton(), new WirelessAction()));
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
+          MESSAGES.emulatorButton(), new EmulatorAction()));
+    } else if (isEmulatorRunning) {
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
+          MESSAGES.emulatorButtonConnected(), new EmulatorAction()));
+    } else {
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
+          MESSAGES.wirelessButtonConnected(), new WirelessAction()));
     }
   }
 
   private void toggleEditor(boolean blocks) {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
-    setButtonVisible(WIDGET_NAME_WIRELESS_BUTTON, blocks);
-    setButtonVisible(WIDGET_NAME_EMULATOR_BUTTON, blocks);
+    setDropDownButtonVisible(WIDGET_NAME_CONNECT_TO, blocks);
   }
-
 }

@@ -185,6 +185,16 @@ public class Toolbar extends Composite {
   }
 
   /**
+   * Sets drop down button visibility
+   *
+   * @param widgetName name of button
+   * @param enabled enabled status
+   */
+  public void setDropDownButtonVisible(String widgetName, boolean enabled) {
+    dropDownButtonMap.get(widgetName).setVisible(enabled);
+  }
+
+  /**
    * Sets enabled for drop down item
    *
    * @param dropWidgetName name of drop-down widget
