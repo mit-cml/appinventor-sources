@@ -1,7 +1,14 @@
 // @author xcitizen.team@gmail.com (José Mª Martín)
 
-
 package com.google.appinventor.components.runtime;
+
+import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.SimpleEvent;
+import com.google.appinventor.components.annotations.SimpleFunction;
+import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import java.io.File; 
 import java.io.FileInputStream;
@@ -19,20 +26,39 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import java.util.zip.*;
 import java.io.*;
 
+import android.widget.TextView;
+import android.widget.Toast;
+import android.os.Handler;
+import android.app.Activity;
+
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
     category = ComponentCategory.MISC,
     description = "I/O Files, Save, Read, Delete, Zip, Unzip ...",
     nonVisible = true,
     iconName = "images/files.png")
 @SimpleObject
-
 public final class Files extends AndroidNonvisibleComponent implements Component {
-
-  private ProgressDialog progress = null;
+  private final Activity activity;
+  private final Handler handler;
   private final TextView view;
   private static final int BUFFER_SIZE = 1024;
   private static final int BUFFER = 2048; 
+
+/**
+   * Creates a new Files component.
+   *
+   * @param container the enclosing component
+   */
+  public Files (ComponentContainer container) {
+    super(container.$form());
+    activity = container.$context();
+    handler = new Handler();
+    view = new TextView(container.$context()); // Añadido
+  }
+
+
   
+
   
   /**
    * SaveSD
