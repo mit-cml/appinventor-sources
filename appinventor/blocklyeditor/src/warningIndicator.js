@@ -42,7 +42,7 @@ Blockly.WarningIndicator = function(getMetrics) {
  * @type {number}
  * @private
  */
-Blockly.WarningIndicator.prototype.INDICATOR_HEIGHT_ = 60;
+Blockly.WarningIndicator.prototype.INDICATOR_HEIGHT_ = 40;
 
 /**
  * Distance between warning indicator and bottom edge of workspace.
@@ -126,7 +126,7 @@ Blockly.WarningIndicator.prototype.createDom = function() {
   this.iconErrorMark_.appendChild(document.createTextNode('!'));
 
   this.warningToggle_ = Blockly.createSvgElement('rect',
-      {'fill': "#eeeeee",'width':"150", 'height':"20", 'x':"-30",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
+      {'fill': "#eeeeee",'width':"120", 'height':"20", 'x':"-15",'y':"20",'style':"stroke:black;stroke-width:1;cursor:pointer;"},
       this.svgGroup_);
   this.warningToggleText_ = Blockly.createSvgElement('text',
       {'fill': "black", 'transform':"translate(45,35)",'text-anchor':"middle",'style':"font-size:10pt;cursor:pointer;"},
