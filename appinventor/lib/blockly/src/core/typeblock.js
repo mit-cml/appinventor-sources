@@ -453,8 +453,13 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
           var typeForDropDown;
           if (block.blockType === 'setter' || block.blockType === 'genericsetter'){
             typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value],'input');
+                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.INPUT);
             block.getInput('VALUE').connection.setCheck(typeForDropDown);
+          }
+          else if (block.blockType === 'getter' || block.blockType === 'genericgetter'){
+            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
+                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.OUTPUT);
+            block.outputConnection.setCheck(typeForDropDown);
           }
           // change type checking for split blocks
           if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
