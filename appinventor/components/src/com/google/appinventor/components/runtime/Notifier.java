@@ -60,6 +60,7 @@ import android.app.ProgressDialog;
 public final class Notifier extends AndroidNonvisibleComponent implements Component {
 
   private static final String LOG_TAG = "Notifier";
+  private ProgressDialog progress = null;
   private final Activity activity;
   private final Handler handler;
 
