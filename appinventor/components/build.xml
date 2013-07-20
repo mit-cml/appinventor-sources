@@ -123,6 +123,7 @@
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
+		<pathelement location="${lib.dir}/gcm/gcm.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
@@ -219,6 +220,7 @@
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
+		  <pathelement location="${lib.dir}/gcm/gcm.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
