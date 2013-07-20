@@ -97,6 +97,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
  
 	
   private String apiProjectNumber;
+  private boolean notificationsEnabled;
   private boolean isInitialized;
   private static boolean isRunning;
   
