@@ -76,6 +76,8 @@ import android.widget.Toast;
 import android.os.Handler;
 import android.app.Activity;
 
+import android.util.Log;
+
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
     category = ComponentCategory.MISC,
     description = "Google Cloud Messaging",
