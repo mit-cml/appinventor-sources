@@ -76,6 +76,7 @@ import android.widget.Toast;
 import android.os.Handler;
 import android.app.Activity;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
@@ -94,9 +95,16 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
   public static final String TAG = "GCM Component";
  
- 
+	
+  private String apiProjectNumber;
   private boolean isInitialized;
   private static boolean isRunning;
+  
+  private static final String PREF_FILE = "GCMState";    // State of GCM component
+  private static final String PREF_NENABLED = "nenabled";   // Boolean flag for GV is enabled
+  private static final String CACHE_FILE = "gcmcachedmsg";
+  private static int messagesCached;
+  private static Object cacheLock = new Object();
   
   
 /**
@@ -110,6 +118,13 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     activity = container.$context();
     handler = new Handler();
 	
+	
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+	if (prefs != null) {
+		notificationsEnabled = prefs.getBoolean(PREF_NENABLED, false);
+	} else {
+		notificationsEnabled = true;
+	}
 	
 	container.$form().registerForOnInitialize(this);
     container.$form().registerForOnResume(this);
@@ -165,6 +180,58 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public void onStop() {
     Log.i(TAG, "onStop()");
   }
+  
+  
+  
+  
+  
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "Goto https://code.google.com/apis/console/ to obtain one (not the API Key)")
+  public void APIProjectNumber(String api) {
+    this.apiProjectNumber = api;
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "Goto https://code.google.com/apis/console/ to obtain one (not the API Key)")
+  public String APIProjectNumber() {
+    return apiProjectNumber;
+  }
+  
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+	  description = "Enable or disable notifications")
+  public boolean NotificationsEnabled() {
+    return notificationsEnabled;
+  }
+
+  /**
+   * If this property is true, then SendMessage will attempt to send messages over
+   * WiFi, using Google voice.
+   *
+   * @param enabled  Set to 'true' or 'false' depending on whether you want to
+   *  use Google Voice to send/receive messages.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @SimpleProperty()
+  public void NotificationsEnabled(boolean enabled) {
+
+      this.notificationsEnabled = enabled;
+      SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+      SharedPreferences.Editor editor = prefs.edit();
+      editor.putBoolean(PREF_NENABLED, enabled);
+      editor.commit();  
+   
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   
   
 }
