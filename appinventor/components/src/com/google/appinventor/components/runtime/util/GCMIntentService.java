@@ -126,7 +126,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		
 					
 					
-					String[] lines = message.split("||");
+					String[] lines = message.split("\\|\\|");
 					
 					
 					String nscreen = ".Screen1";
