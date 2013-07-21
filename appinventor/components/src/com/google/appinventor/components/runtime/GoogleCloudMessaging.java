@@ -320,7 +320,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description =  "get phone IMEI")
   public String GetPhoneIMEI() {
-	TelephonyManager mngr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE); 
+	TelephonyManager mngr = (TelephonyManager) activity.getSystemService(Context.TELEPHONY_SERVICE); 
     return mngr.getDeviceId();
   }
   
