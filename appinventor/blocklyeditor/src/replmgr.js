@@ -9,7 +9,6 @@
 
 Blockly.ReplMgr = {};
 
-Blockly.ReplMgr.savedCode = null;
 Blockly.ReplMgr.yail = null;
 
 goog.require('goog.ui.Dialog');
@@ -54,7 +53,6 @@ Blockly.ReplMgr.buildYail = function() {
     var code = [];
     var blocks;
     var block;
-    console.log("buldYail called");
     if (!this.ReplState.phoneState) { // If there is no phone state, make some!
         this.ReplState.phoneState = {};
     }
@@ -92,7 +90,7 @@ Blockly.ReplMgr.buildYail = function() {
         componentNames = Blockly.Yail.getDeepNames(formProperties, componentNames);
         // Remove the duplicates
         var uniqueNames = componentNames.filter(function(elem, pos) {
-            return componentNames.indexOf(elem) == pos});
+            return componentNames.indexOf(elem) == pos;});
         componentNames = uniqueNames;
 
         code.push(Blockly.Yail.getComponentInitializationString(formName, componentNames));
@@ -109,7 +107,7 @@ Blockly.ReplMgr.buildYail = function() {
     }
 
     blocks = Blockly.mainWorkspace.getTopBlocks(true);
-    for (var x = 0, block; block = blocks[x]; x++) {
+    for (var x = 0; (block = blocks[x]); x++) {
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
             continue;           // Errors, unless they were errors signaled by the repl
         }
@@ -141,13 +139,17 @@ Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
 Blockly.ReplMgr.RefreshAssets = null;
 
 Blockly.ReplMgr.pollYail = function() {
-    if (window == undefined)    // If window is gone, then we are a zombie timer firing
-        return;                 // in a destroyed frame.
+    try {
+        if (window === undefined)    // If window is gone, then we are a zombie timer firing
+            return;                  // in a destroyed frame.
+    } catch (err) {                  // We get an error on FireFox when window is gone.
+        return;
+    }
     if (this.ReplState.state == this.rsState.CONNECTED) {
         this.buildYail();
     }
     this.rendPoll();            // Poll the rendezvous mechanism
-    if (this.RefreshAssets == null) {
+    if (this.RefreshAssets === null) {
         try {
             this.RefreshAssets = window.parent.AssetManager_refreshAssets;
         } catch (err) {
@@ -340,6 +342,7 @@ Blockly.ReplMgr.startEmulator = function(rs) {
                 rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
                 pc = 3;
                 clearInterval(interval);
+                window.parent.BlocklyPanel_blocklyWorkspaceChanged(blockly.formName);
             }
         }
     }, 1000);                   // We poll once per second
@@ -382,7 +385,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator) {
         if (this.ReplState.state == this.rsState.RENDEZVOUS) {
             this.ReplState.dialog.setVisible(false);
         }
-        this.savedCode = null;
+        this.resetYail();
         this.ReplState.state = this.rsState.IDLE;
     }
 }
@@ -414,7 +417,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.asseturl = 'http://' + json.ipaddr + ':8001/';
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                 rs.dialog.setVisible(false);
-                context.pollYail(); // Start the connection with the Repl itself
+                window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
+                  // Start the connection with the Repl itself
                 refreshAssets(context.formName);    // Start assets loading
             } catch (err) {
             }

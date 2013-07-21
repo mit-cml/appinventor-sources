@@ -546,7 +546,8 @@ public class BlocklyPanel extends HTMLPanel {
       timerForm = formName;
     }
     // Nuke Yail for form we are leaving so it will reload when we return
-    doResetYail(formName);
+    if (!formName.equals(newFormName))
+      doResetYail(formName);
     formName = newFormName;
     if (timer == null) {      // If we don't have the timer running, start it now
       final String sendYailFormName = formName;
@@ -660,7 +661,12 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public static native void doPollYail(String formName) /*-{
-    $wnd.Blocklies[formName].ReplMgr.pollYail();
+    try {
+      $wnd.Blocklies[formName].ReplMgr.pollYail();
+    } catch (e) {
+      $wnd.console.log("doPollYail() Failed");
+      $wnd.console.log(e);
+    }
   }-*/;
 
   public static native void doStartRepl(String formName, Boolean alreadyRunning, Boolean forEmulator) /*-{

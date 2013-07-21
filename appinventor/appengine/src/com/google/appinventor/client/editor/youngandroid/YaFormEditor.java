@@ -252,7 +252,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
   public boolean isScreen1() {
     return formNode.isScreen1();
   }
-  
+
   // FormChangeListener implementation
 
   @Override
@@ -262,6 +262,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       // If the property isn't actually persisted to the .scm file, we don't need to do anything.
       if (component.isPropertyPersisted(propertyName)) {
         Ode.getInstance().getEditorManager().scheduleAutoSave(this);
+        updatePhone();          // Push changes to the phone if it is connected
       }
     } else {
       OdeLog.elog("onComponentPropertyChanged called when loadComplete is false");
@@ -432,7 +433,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Add component type to the blocks editor
     YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
     YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
-    blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(), 
+    blockEditor.addComponent(mockComponent.getType(), mockComponent.getName(),
         mockComponent.getUuid());
 
     // Add nested components
@@ -497,6 +498,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     // Update source structure panel
     sourceStructureExplorer.updateTree(form.buildComponentsTree(),
         form.getSelectedComponent().getSourceStructureExplorerItem());
+    updatePhone();          // Push changes to the phone if it is connected
   }
 
   private void populateComponentsMap(MockComponent component, Map<String, MockComponent> map) {
@@ -587,4 +589,14 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     propertiesBox.clear();
     propertiesBox.setVisible(false);
   }
+
+  /*
+   * Push changes to a connected phone (or emulator).
+   */
+  private void updatePhone() {
+    YaProjectEditor yaProjectEditor = (YaProjectEditor) projectEditor;
+    YaBlocksEditor blockEditor = yaProjectEditor.getBlocksFileEditor(formNode.getFormName());
+    blockEditor.onBlocksAreaChanged(getProjectId() + "_" + formNode.getFormName());
+  }
+
 }

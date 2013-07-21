@@ -288,9 +288,8 @@ public final class YaBlocksEditor extends FileEditor
     if (editor != null) {
       OdeLog.log("Got blocks area changed for " + formName);
       Ode.getInstance().getEditorManager().scheduleAutoSave(editor);
-      FileEditor thiseditor = Ode.getInstance().getCurrentFileEditor();
-      if (thiseditor instanceof YaBlocksEditor)
-        ((YaBlocksEditor)thiseditor).sendComponentData();
+      if (editor instanceof YaBlocksEditor)
+        editor.sendComponentData();
     }
   }
 
