@@ -28,7 +28,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onRegistered(Context context, String registrationId) {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         //displayMessage(context, "Your device registred with GCM");
-        Log.d("NAME", MainActivity.name);
+        //Log.d("NAME", MainActivity.name);
         /////////////ServerUtilities.register(context, MainActivity.name, MainActivity.email, registrationId);
     }
 
@@ -61,7 +61,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onDeletedMessages(Context context, int total) {
         Log.i(TAG, "Received deleted messages notification");
-        String message = getString(R.string.gcm_deleted, total);
+        //String message = getString(R.string.gcm_deleted, total);
         //displayMessage(context, message);
         // notifies user
         generateNotification(context, message);
@@ -89,7 +89,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * Issues a notification to inform the user that server has sent a message.
      */
     private static void generateNotification(Context context, String message) {
-        int icon = R.drawable.ic_launcher;
+        int icon = R.drawable.sym_call_incoming;
         long when = System.currentTimeMillis();
 		String packageName = context.getPackageName();
 		String classname = packageName + ".Screen1";
