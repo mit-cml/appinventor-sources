@@ -347,7 +347,9 @@ public final class Compiler {
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
       if (componentTypes.contains("GoogleCloudMessaging")) {
-		out.write("  <uses-sdk android:minSdkVersion=\"8\" />\n");
+		out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" /> \n" +
+				  "<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" /> \n" +
+		"<uses-sdk android:minSdkVersion=\"8\" />\n");
 	  } else {
 		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
