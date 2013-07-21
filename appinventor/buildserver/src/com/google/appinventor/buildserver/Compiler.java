@@ -346,8 +346,11 @@ public final class Compiler {
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
-      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
-
+      if (componentTypes.contains("GoogleCloudMessaging")) {
+		ut.write("  <uses-sdk android:minSdkVersion=\"8\" />\n");
+	  } else {
+		ut.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+	  }
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
       // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
@@ -431,6 +434,27 @@ public final class Compiler {
             "</intent-filter>  \n" +
         "</receiver> \n");
       }
+	  
+	  
+	  
+	  // BroadcastReceiver for GoogleCloudMessaging Component
+      if (componentTypes.contains("GoogleCloudMessaging")) {
+        System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
+        out.write(
+            "<receiver \n" +
+            "android:name=\"com.google.appinventor.components.runtime.util.MyGCMBroadcastReceiver\" \n" + 
+            "android:permission=\"com.google.android.c2dm.permission.SEND\" > \n" +
+            "<intent-filter>\n" +
+            "    <action android:name=\"com.google.android.c2dm.intent.RECEIVE\" />\n" +
+            "    <action android:name=\"com.google.android.c2dm.intent.REGISTRATION\" />\n" +
+            "    <category android:name=\"" + packageName + "\" />\n" +
+            "</intent-filter>\n" +
+        "</receiver>\n" +
+        "<service android:name=\"com.google.appinventor.components.runtime.util.GCMIntentService\" /> \n");
+      }
+	  
+	  
+	  
 
       out.write("  </application>\n");
       out.write("</manifest>\n");

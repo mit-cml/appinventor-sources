@@ -72,7 +72,7 @@ public class BuildServer {
 
     @Option(name = "--maxSimultaneousBuilds",
       usage = "Maximum number of builds that can run in parallel. O means unlimited.")
-    int maxSimultaneousBuilds = 0;  // The default is unlimited.
+    int maxSimultaneousBuilds = 10;  // The default is unlimited.
 
     @Option(name = "--port",
       usage = "The port number to bind to on the local machine.")
