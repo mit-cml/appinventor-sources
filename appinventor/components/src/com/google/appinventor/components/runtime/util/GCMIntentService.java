@@ -29,7 +29,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         //displayMessage(context, "Your device registred with GCM");
         //Log.d("NAME", MainActivity.name);
-        /////////////ServerUtilities.register(context, MainActivity.name, MainActivity.email, registrationId);
+        GCMServerUtilities.register(context, "NAME", "EMAIL", registrationId);
     }
 
     /**
@@ -39,7 +39,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onUnregistered(Context context, String registrationId) {
         Log.i(TAG, "Device unregistered");
         //displayMessage(context, getString(R.string.gcm_unregistered));
-        ////////////ServerUtilities.unregister(context, registrationId);
+        GCMServerUtilities.ServerUtilities.unregister(context, registrationId);
     }
 
     /**
@@ -121,7 +121,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			// Vibrate if vibrate is enabled
 			notification.defaults |= Notification.DEFAULT_VIBRATE;
 			notificationManager.notify(0, notification);   
-			
+			//wakelocker here!
 		} catch (ClassNotFoundException e) {
 		  e.printStackTrace();
 		}

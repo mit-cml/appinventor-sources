@@ -77,6 +77,10 @@ import android.os.Handler;
 import android.app.Activity;
 
 import android.content.SharedPreferences;
+
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+
 import android.util.Log;
 
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
@@ -107,7 +111,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   private static int messagesCached;
   private static Object cacheLock = new Object();
   
-  
+  private ComponentContainer container; // Need this for error reporting
 /**
    * Creates a new GoogleCloudMessaging component.
    *
@@ -119,6 +123,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     activity = container.$context();
     handler = new Handler();
 	
+	this.container = container;
 	
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {
@@ -227,12 +232,80 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   }
   
   
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+	  description = "Register into GCM")
+  public String Register() {
+	if (!isConnectedToInternet()) {
+			// Internet Connection is not present
+			Log.i(TAG, "NO INTERNET NO FUN :C");
+			// stop executing code by return
+			return;
+	}
+	
+		// Make sure the device has the proper dependencies.
+		GCMRegistrar.checkDevice(activity);
+
+		// Make sure the manifest was properly set - comment out this line
+		// while developing the app, then uncomment it when it's ready.
+		GCMRegistrar.checkManifest(activity);
+	
+		// Get GCM registration id
+		final String regId = GCMRegistrar.getRegistrationId(activity);
+
+		// Check if regid already presents
+		if (regId.equals("")) {
+			// Registration is not present, register now with GCM			
+			GCMRegistrar.register(activity, APIProjectNumber());
+		} else {
+			// Device is already registered on GCM
+			if (GCMRegistrar.isRegisteredOnServer(activity)) {
+				// Skips registration.				
+				///Toast.makeText(getApplicationContext(), "Already registered with GCM", Toast.LENGTH_LONG).show();
+			} else {
+				// Try to register again, but not in the UI thread.
+				// It's also necessary to cancel the thread onDestroy(),
+				// hence the use of AsyncTask instead of a raw thread.
+				final Context context = this;
+				mRegisterTask = new AsyncTask<Void, Void, Void>() {
+
+					@Override
+					protected Void doInBackground(Void... params) {
+						// Register on our server
+						// On server creates a new user
+						GCMServerUtilities.register(context, "X", "Y", regId);
+						return null;
+					}
+
+					@Override
+					protected void onPostExecute(Void result) {
+						mRegisterTask = null;
+					}
+
+				};
+				mRegisterTask.execute(null, null, null);
+			}
+		}
+  }
   
   
   
   
-  
-  
-  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+	  description = "Internet pls")
+  public boolean isConnectedToInternet(){
+        ConnectivityManager connectivity = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+          if (connectivity != null)
+          {
+              NetworkInfo[] info = connectivity.getAllNetworkInfo();
+              if (info != null)
+                  for (int i = 0; i < info.length; i++)
+                      if (info[i].getState() == NetworkInfo.State.CONNECTED)
+                      {
+                          return true;
+                      }
+ 
+          }
+          return false;
+    }
   
 }
