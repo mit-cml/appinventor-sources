@@ -126,13 +126,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 		
 					
 					
-					String[] lines = message.split("\\|\\|");
+					
 					
 					
 					String nscreen = ".Screen1";
 					
 					
-					if (message.contains("\\|\\|") || message.contains("||")) {
+					if (!message.contains("\\|\\|") || !message.contains("||")) {
+					
+					
+						String[] lines = message.split("\\|\\|");
 						lines[1]=message;
 						//prefs default notification title
 						lines[0] =  prefs.getString(PREF_DEFTITLE, "");
