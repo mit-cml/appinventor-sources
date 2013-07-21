@@ -132,13 +132,15 @@ public class GCMIntentService extends GCMBaseIntentService {
 					String nscreen = ".Screen1";
 					
 					
-					if (lines.length<2) {
-						lines[1]=lines[0];
+					if (message.contains("\\|\\|") || message.contains("||")) {
+						lines[1]=message;
 						//prefs default notification title
 						lines[0] =  prefs.getString(PREF_DEFTITLE, "");
-						nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");
+						
 						
 					}
+					
+					nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");
 					
 					
 					String classname = packageName + nscreen;
