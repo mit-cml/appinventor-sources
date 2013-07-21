@@ -103,7 +103,9 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public static final String TAG = "GCM Component";
  
   private String GCMregId = "";
-  private String apiProjectNumber;
+  private String apiProjectNumber = "";
+  private String defaultNotificationTitle = "";
+  private String defaultNotificationScreen = "";
   private boolean notificationsEnabled;
   private boolean isInitialized;
   private static boolean isRunning;
@@ -111,6 +113,8 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   private static final String PREF_FILE = "GCMState";    // State of GCM component
   private static final String PREF_NENABLED = "nenabled";   // Boolean flag for GV is enabled
   private static final String PREF_SENDERID = "sid";
+  private static final String PREF_DEFTITLE = "deftitle";
+  private static final String PREF_DEFSCREEN = "defscreen";
   private static final String CACHE_FILE = "gcmcachedmsg";
   private static int messagesCached;
   private static Object cacheLock = new Object();
@@ -193,6 +197,49 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public void onStop() {
     Log.i(TAG, "onStop()");
   }
+  
+  
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "Default notification title if not using <title>||<msg> as msg")
+  public void DefaultNotificationTitle(String title) {
+    this.defaultNotificationTitle = title;
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString(PREF_DEFTITLE, api);
+    editor.commit();  
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "Default notification title if not using <title>||<msg> as msg")
+  public String DefaultNotificationTitle() {
+    return this.defaultNotificationTitle;
+  }
+  
+  
+  
+  
+  
+  
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "1")
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "MUST BE NUMBER!")
+  public void DefaultNotificationScreen(String screen) {
+    this.defaultNotificationScreen = screen;
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString(PREF_DEFSCREEN, api);
+    editor.commit();  
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "")
+  public String DefaultNotificationScreen() {
+    return this.defaultNotificationScreen;
+  }
+  
+  
   
   
   

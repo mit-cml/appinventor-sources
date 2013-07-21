@@ -21,6 +21,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static final String PREF_FILE = "GCMState";    // State of GCM component
     private static final String PREF_NENABLED = "nenabled";   // Boolean flag for GV is enabled
     private static final String PREF_SENDERID = "sid";
+	private static final String PREF_DEFTITLE = "deftitle";
+    private static final String PREF_DEFSCREEN = "defscreen";
 	
 	/*
     public GCMIntentService() {
@@ -52,7 +54,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         Log.i(TAG, "Device registered: regId = " + registrationId);
         //displayMessage(context, "Your device registred with GCM");
         //Log.d("NAME", MainActivity.name);
-        GCMServerUtilities.register(context, "NAME", "EMAIL", registrationId);
+        //GCMServerUtilities.register(context, "NAME", "EMAIL", registrationId);
     }
 
     /**
@@ -62,7 +64,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onUnregistered(Context context, String registrationId) {
         Log.i(TAG, "Device unregistered");
         //displayMessage(context, getString(R.string.gcm_unregistered));
-        GCMServerUtilities.unregister(context, registrationId);
+        //GCMServerUtilities.unregister(context, registrationId);
     }
 
     /**
@@ -87,7 +89,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         String message = "";
         //displayMessage(context, message);
         // notifies user
-        generateNotification(context, message);
+        //generateNotification(context, message);
     }
 
     /**
@@ -112,7 +114,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * Issues a notification to inform the user that server has sent a message.
      */
     private static void generateNotification(Context context, String message) {
-        int icon = R.drawable.sym_call_incoming;
+        int icon = android.R.drawable.ya;
         long when = System.currentTimeMillis();
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
@@ -120,14 +122,34 @@ public class GCMIntentService extends GCMBaseIntentService {
 				try {
 		
 					String packageName = context.getPackageName();
-					String classname = packageName + ".Screen1";
 					
+					String[] lines = message.split("||");
+					
+					
+					String nscreen = ".Screen1";
+					
+					
+					if (!lines[1]) {
+						lines[1]=lines[0];
+						//prefs default notification title
+						SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+						if (prefs != null) {
+							lines[0] = ".Screen" + prefs.getString(PREF_DEFTITLE, "");
+							nscreen = prefs.getString(PREF_DEFSCREEN, ".Screen1");
+						} else {
+							lines[0] = "";
+							nscreen = ".Screen1";
+						}
+					}
+					
+					
+					String classname = packageName + nscreen;
 					
 					NotificationManager notificationManager = (NotificationManager)
 							context.getSystemService(Context.NOTIFICATION_SERVICE);
-					Notification notification = new Notification(icon, message, when);
+					Notification notification = new Notification(icon, lines[1], when);
 					
-					String title = "GCM TEST AI";
+					String title = lines[0];
 					
 					Intent notificationIntent = new Intent(context, Class.forName(classname));
 					// set intent so it does not start a new activity
@@ -135,7 +157,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 							Intent.FLAG_ACTIVITY_SINGLE_TOP);
 					PendingIntent intent =
 							PendingIntent.getActivity(context, 0, notificationIntent, 0);
-					notification.setLatestEventInfo(context, title, message, intent);
+					notification.setLatestEventInfo(context, title, lines[1], intent);
 					notification.flags |= Notification.FLAG_AUTO_CANCEL;
 					
 					// Play default notification sound
