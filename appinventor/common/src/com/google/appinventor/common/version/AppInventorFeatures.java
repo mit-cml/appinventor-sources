@@ -33,7 +33,7 @@ public final class AppInventorFeatures {
   public static boolean showInternalComponentsCategory() {
     // Set this to true if you want to show the "For internal use only" section of the components
     // palette in the designer.
-    return false;
+    return true;
   }
 
   public static boolean trackClientEvents() {
