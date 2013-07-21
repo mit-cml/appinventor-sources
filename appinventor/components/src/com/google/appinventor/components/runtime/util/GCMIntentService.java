@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.R;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
