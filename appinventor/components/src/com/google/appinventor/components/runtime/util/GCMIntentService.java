@@ -135,8 +135,8 @@ public class GCMIntentService extends GCMBaseIntentService {
 					if (lines.length<2) {
 						lines[1]=lines[0];
 						//prefs default notification title
-						lines[0] = ".Screen" + prefs.getString(PREF_DEFTITLE, "");
-						nscreen = prefs.getString(PREF_DEFSCREEN, ".Screen1");
+						lines[0] =  prefs.getString(PREF_DEFTITLE, "");
+						nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");
 						
 					}
 					
