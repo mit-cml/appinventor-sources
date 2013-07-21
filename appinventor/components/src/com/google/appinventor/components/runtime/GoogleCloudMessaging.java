@@ -207,7 +207,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     this.defaultNotificationTitle = title;
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     SharedPreferences.Editor editor = prefs.edit();
-    editor.putString(PREF_DEFTITLE, api);
+    editor.putString(PREF_DEFTITLE, title);
     editor.commit();  
   }
   
@@ -229,7 +229,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     this.defaultNotificationScreen = screen;
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
     SharedPreferences.Editor editor = prefs.edit();
-    editor.putString(PREF_DEFSCREEN, api);
+    editor.putString(PREF_DEFSCREEN, screen);
     editor.commit();  
   }
   

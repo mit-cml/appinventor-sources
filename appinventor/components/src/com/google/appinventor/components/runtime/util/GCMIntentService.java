@@ -114,14 +114,16 @@ public class GCMIntentService extends GCMBaseIntentService {
      * Issues a notification to inform the user that server has sent a message.
      */
     private static void generateNotification(Context context, String message) {
-        int icon = Android.R.drawable.ya;
+        //int icon = Android.R.drawable.ya;
+		String packageName = context.getPackageName();
+		int icon = getResources().getIdentifier("ya", "drawable", packageName);
         long when = System.currentTimeMillis();
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
 			if (prefs.getBoolean(PREF_NENABLED, false)) {
 				try {
 		
-					String packageName = context.getPackageName();
+					
 					
 					String[] lines = message.split("||");
 					
