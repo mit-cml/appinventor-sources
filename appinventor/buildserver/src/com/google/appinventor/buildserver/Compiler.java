@@ -347,9 +347,9 @@ public final class Compiler {
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
       if (componentTypes.contains("GoogleCloudMessaging")) {
-		ut.write("  <uses-sdk android:minSdkVersion=\"8\" />\n");
+		out.write("  <uses-sdk android:minSdkVersion=\"8\" />\n");
 	  } else {
-		ut.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
