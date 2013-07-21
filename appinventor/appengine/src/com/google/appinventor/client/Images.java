@@ -374,6 +374,15 @@ public interface Images extends Resources {
   // www.pdclipart.org/displayimage.php/?pid=1047
   @Source("com/google/appinventor/images/webviewerbig.png")
   ImageResource webviewerbig();
+  
+  @Source("com/google/appinventor/images/sqlite.png")
+  ImageResource sqlite();
+  
+  @Source("com/google/appinventor/images/files.png")
+  ImageResource files();
+  
+  @Source("com/google/appinventor/images/GoogleCloudMessaging.png")
+  ImageResource GoogleCloudMessaging();
 
   /**
    * Designer palette item: Web component
