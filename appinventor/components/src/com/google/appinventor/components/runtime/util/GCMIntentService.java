@@ -114,7 +114,7 @@ public class GCMIntentService extends GCMBaseIntentService {
      * Issues a notification to inform the user that server has sent a message.
      */
     private static void generateNotification(Context context, String message) {
-        int icon = android.R.drawable.ya;
+        int icon = Android.R.drawable.ya;
         long when = System.currentTimeMillis();
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
@@ -129,17 +129,12 @@ public class GCMIntentService extends GCMBaseIntentService {
 					String nscreen = ".Screen1";
 					
 					
-					if (!lines[1]) {
+					if (lines.length<2) {
 						lines[1]=lines[0];
 						//prefs default notification title
-						SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
-						if (prefs != null) {
-							lines[0] = ".Screen" + prefs.getString(PREF_DEFTITLE, "");
-							nscreen = prefs.getString(PREF_DEFSCREEN, ".Screen1");
-						} else {
-							lines[0] = "";
-							nscreen = ".Screen1";
-						}
+						lines[0] = ".Screen" + prefs.getString(PREF_DEFTITLE, "");
+						nscreen = prefs.getString(PREF_DEFSCREEN, ".Screen1");
+						
 					}
 					
 					
