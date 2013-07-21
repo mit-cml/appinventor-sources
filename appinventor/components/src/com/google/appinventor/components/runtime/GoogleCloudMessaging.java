@@ -236,14 +236,13 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   }
   
   
-  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-	  description = "Register into GCM")
-  public String Register() {
+  @SimpleFunction
+  public void Register() {
 	if (!isConnectedToInternet()) {
 			// Internet Connection is not present
 			Log.i(TAG, "NO INTERNET NO FUN :C");
 			// stop executing code by return
-			return "";
+			return ;
 	}
 	
 		// Make sure the device has the proper dependencies.
@@ -289,7 +288,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 				mRegisterTask.execute(null, null, null);
 			}
 		}
-	return regId;
+	return ;
   }
   
   
