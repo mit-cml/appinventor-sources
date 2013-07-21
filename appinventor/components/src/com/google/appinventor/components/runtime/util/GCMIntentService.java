@@ -18,7 +18,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static final String TAG = "GCMIntentService";
 
     public GCMIntentService() {
-        super(SENDER_ID);
+        super("97180579230");
     }
 
     /**
@@ -61,7 +61,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     @Override
     protected void onDeletedMessages(Context context, int total) {
         Log.i(TAG, "Received deleted messages notification");
-        //String message = getString(R.string.gcm_deleted, total);
+        String message = "";
         //displayMessage(context, message);
         // notifies user
         generateNotification(context, message);
