@@ -86,7 +86,7 @@ import android.util.Log;
     iconName = "images/GoogleCloudMessaging.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.GET_ACCOUNTS, " +
-					"android.permission.WAKE_LOCK, com.google.android.c2dm.permission.RECEIVE")
+					"android.permission.WAKE_LOCK, com.google.android.c2dm.permission.RECEIVE, android.permission.VIBRATE")
 @UsesLibraries(libraries = "gcm.jar")
 public final class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
@@ -124,7 +124,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 	if (prefs != null) {
 		notificationsEnabled = prefs.getBoolean(PREF_NENABLED, false);
 	} else {
-		notificationsEnabled = true;
+		notificationsEnabled = false;
 	}
 	
 	container.$form().registerForOnInitialize(this);
@@ -214,7 +214,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
    * @param enabled  Set to 'true' or 'false' depending on whether you want to
    *  use Google Voice to send/receive messages.
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "True")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
   @SimpleProperty()
   public void NotificationsEnabled(boolean enabled) {
 
