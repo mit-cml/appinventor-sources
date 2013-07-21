@@ -260,7 +260,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 		GCMRegistrar.checkManifest(activity);
 	
 		// Get GCM registration id
-		final String regId = GCMRegistrar.getRegistrationId(activity);
+		String regId = GCMRegistrar.getRegistrationId(activity);
 
 		// Check if regid already presents
 		if (regId.equals("")) {
@@ -320,7 +320,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description =  "get phone IMEI")
   public String GetPhoneIMEI() {
-	TelephonyManager mngr = (TelephonyManager)getSystemService(Context.Telephony_service); 
+	TelephonyManager mngr = (TelephonyManager) activity.getSystemService(Context.Telephony_service); 
     return mngr.getDeviceId();
   }
   

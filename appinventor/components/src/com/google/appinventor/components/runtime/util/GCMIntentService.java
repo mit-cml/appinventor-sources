@@ -3,6 +3,7 @@ package com.google.appinventor.components.runtime.util;
 
 //import static com.androidhive.pushnotifications.CommonUtilities.SENDER_ID;
 //import static com.androidhive.pushnotifications.CommonUtilities.displayMessage;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -34,7 +35,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		String[] ids = new String[1];
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
-			ids[0] = prefs.getString(PREF_SENDERID, false);
+			ids[0] = prefs.getString(PREF_SENDERID, "");
 		} else {
 			ids[0] = "";
 		}
@@ -113,7 +114,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     private static void generateNotification(Context context, String message) {
         int icon = R.drawable.sym_call_incoming;
         long when = System.currentTimeMillis();
-		SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
 			if (prefs.getBoolean(PREF_NENABLED, false)) {
 				try {
