@@ -289,7 +289,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			}
 		}
 		
-		Log.i(TAG, "regid : " + regId);
+		Log.i(TAG, "regid = " + regId);
 	return ;
   }
   
