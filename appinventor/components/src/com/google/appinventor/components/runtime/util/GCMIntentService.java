@@ -117,7 +117,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     private static void generateNotification(Context context, String message) {
         //int icon = Android.R.drawable.ya;
 		String packageName = context.getPackageName();
-		int icon = getResources().getIdentifier("ya", "drawable", packageName);
+		int icon = context.getResources().getIdentifier("ya", "drawable", packageName);
         long when = System.currentTimeMillis();
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
