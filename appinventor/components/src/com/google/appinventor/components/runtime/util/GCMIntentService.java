@@ -39,7 +39,7 @@ public class GCMIntentService extends GCMBaseIntentService {
     protected void onUnregistered(Context context, String registrationId) {
         Log.i(TAG, "Device unregistered");
         //displayMessage(context, getString(R.string.gcm_unregistered));
-        GCMServerUtilities.ServerUtilities.unregister(context, registrationId);
+        GCMServerUtilities.unregister(context, registrationId);
     }
 
     /**

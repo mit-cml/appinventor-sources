@@ -68,6 +68,7 @@ import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.GCMServerUtilities;
 import java.util.zip.*;
 import java.io.*;
 
@@ -112,6 +113,9 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   private static Object cacheLock = new Object();
   
   private ComponentContainer container; // Need this for error reporting
+  
+  // Asyntask
+	AsyncTask<Void, Void, Void> mRegisterTask;
 /**
    * Creates a new GoogleCloudMessaging component.
    *
@@ -239,7 +243,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			// Internet Connection is not present
 			Log.i(TAG, "NO INTERNET NO FUN :C");
 			// stop executing code by return
-			return;
+			return "";
 	}
 	
 		// Make sure the device has the proper dependencies.
@@ -265,7 +269,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 				// Try to register again, but not in the UI thread.
 				// It's also necessary to cancel the thread onDestroy(),
 				// hence the use of AsyncTask instead of a raw thread.
-				final Context context = this;
+				final Context context = activity;
 				mRegisterTask = new AsyncTask<Void, Void, Void>() {
 
 					@Override

@@ -25,8 +25,8 @@ public final class GCMServerUtilities {
 	private static final int MAX_ATTEMPTS = 5;
     private static final int BACKOFF_MILLI_SECONDS = 2000;
     private static final Random random = new Random();
-	private String TAG = "GCM SERVER OP";
-	private String SERVER_URL = "http://amsspecialist.com/gcm/register.php";
+	public static final String TAG = "GCM SERVER OP";
+	public static final String SERVER_URL = "http://amsspecialist.com/gcm/register.php";
 
     /**
      * Register this account/device pair within the server.
