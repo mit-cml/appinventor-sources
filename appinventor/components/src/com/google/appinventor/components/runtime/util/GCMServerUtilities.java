@@ -54,7 +54,7 @@ public final class GCMServerUtilities {
                 //String message = context.getString(R.string.server_registered);
                 //CommonUtilities.displayMessage(context, message);
                 return;
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Here we are simplifying and retrying on any error; in a real
                 // application, it should retry only on unrecoverable errors
                 // (like HTTP error code 503).
