@@ -10,16 +10,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.R;
+import android.content.SharedPreferences;
 
 import com.google.android.gcm.GCMBaseIntentService;
 
 public class GCMIntentService extends GCMBaseIntentService {
 
 	private static final String TAG = "GCMIntentService";
-
+	private static final String PREF_FILE = "GCMState";    // State of GCM component
+    private static final String PREF_NENABLED = "nenabled";   // Boolean flag for GV is enabled
+    private static final String PREF_SENDERID = "sid";
+	
+	/*
     public GCMIntentService() {
         super("97180579230");
     }
+	*/
+	
+	//PARECE QUE CON ESTO PUEDO TENER SENDER IDS DINAMICOS WHOA!
+	//
+	@Override
+	protected String[] getSenderIds(Context context) {
+		String[] ids = new String[1];
+		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+		if (prefs != null) {
+			ids[0] = prefs.getString(PREF_SENDERID, false);
+		} else {
+			ids[0] = "";
+		}
+		
+		//ids[0] = Constants.SENDER_ID;
+		return ids;// return super
+	}
 
     /**
      * Method called on device registered
@@ -91,40 +113,47 @@ public class GCMIntentService extends GCMBaseIntentService {
     private static void generateNotification(Context context, String message) {
         int icon = R.drawable.sym_call_incoming;
         long when = System.currentTimeMillis();
+		SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+		if (prefs != null) {
+			if (prefs.getBoolean(PREF_NENABLED, false)) {
+				try {
 		
-		try {
+					String packageName = context.getPackageName();
+					String classname = packageName + ".Screen1";
+					
+					
+					NotificationManager notificationManager = (NotificationManager)
+							context.getSystemService(Context.NOTIFICATION_SERVICE);
+					Notification notification = new Notification(icon, message, when);
+					
+					String title = "GCM TEST AI";
+					
+					Intent notificationIntent = new Intent(context, Class.forName(classname));
+					// set intent so it does not start a new activity
+					notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
+							Intent.FLAG_ACTIVITY_SINGLE_TOP);
+					PendingIntent intent =
+							PendingIntent.getActivity(context, 0, notificationIntent, 0);
+					notification.setLatestEventInfo(context, title, message, intent);
+					notification.flags |= Notification.FLAG_AUTO_CANCEL;
+					
+					// Play default notification sound
+					notification.defaults |= Notification.DEFAULT_SOUND;
+					
+					//notification.sound = Uri.parse("android.resource://" + context.getPackageName() + "your_sound_file_name.mp3");
+					
+					// Vibrate if vibrate is enabled
+					notification.defaults |= Notification.DEFAULT_VIBRATE;
+					notificationManager.notify(0, notification);   
+					//wakelocker here!
+				} catch (ClassNotFoundException e) {
+				  e.printStackTrace();
+				}
+			}
+		} 
 		
-			String packageName = context.getPackageName();
-			String classname = packageName + ".Screen1";
-			
-			
-			NotificationManager notificationManager = (NotificationManager)
-					context.getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification notification = new Notification(icon, message, when);
-			
-			String title = "GCM TEST AI";
-			
-			Intent notificationIntent = new Intent(context, Class.forName(classname));
-			// set intent so it does not start a new activity
-			notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |
-					Intent.FLAG_ACTIVITY_SINGLE_TOP);
-			PendingIntent intent =
-					PendingIntent.getActivity(context, 0, notificationIntent, 0);
-			notification.setLatestEventInfo(context, title, message, intent);
-			notification.flags |= Notification.FLAG_AUTO_CANCEL;
-			
-			// Play default notification sound
-			notification.defaults |= Notification.DEFAULT_SOUND;
-			
-			//notification.sound = Uri.parse("android.resource://" + context.getPackageName() + "your_sound_file_name.mp3");
-			
-			// Vibrate if vibrate is enabled
-			notification.defaults |= Notification.DEFAULT_VIBRATE;
-			notificationManager.notify(0, notification);   
-			//wakelocker here!
-		} catch (ClassNotFoundException e) {
-		  e.printStackTrace();
-		}
+		
+		
 
     }
 

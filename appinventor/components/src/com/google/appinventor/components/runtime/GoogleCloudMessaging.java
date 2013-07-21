@@ -82,6 +82,8 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import android.telephony.TelephonyManager;
+
 import android.util.Log;
 
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
@@ -91,7 +93,7 @@ import android.util.Log;
     iconName = "images/GoogleCloudMessaging.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.GET_ACCOUNTS, " +
-					"android.permission.WAKE_LOCK, com.google.android.c2dm.permission.RECEIVE, android.permission.VIBRATE")
+					"android.permission.WAKE_LOCK, com.google.android.c2dm.permission.RECEIVE, android.permission.VIBRATE, android.permission.READ_PHONE_STATE")
 @UsesLibraries(libraries = "gcm.jar")
 public final class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
@@ -100,7 +102,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
   public static final String TAG = "GCM Component";
  
-	
+  private String GCMregId = "";
   private String apiProjectNumber;
   private boolean notificationsEnabled;
   private boolean isInitialized;
@@ -108,6 +110,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
   private static final String PREF_FILE = "GCMState";    // State of GCM component
   private static final String PREF_NENABLED = "nenabled";   // Boolean flag for GV is enabled
+  private static final String PREF_SENDERID = "sid";
   private static final String CACHE_FILE = "gcmcachedmsg";
   private static int messagesCached;
   private static Object cacheLock = new Object();
@@ -198,13 +201,17 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description =  "Goto https://code.google.com/apis/console/ to obtain one (not the API Key)")
+      description =  "Goto google api console to obtain one (not the API Key)")
   public void APIProjectNumber(String api) {
     this.apiProjectNumber = api;
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString(PREF_SENDERID, api);
+    editor.commit();  
   }
   
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-      description =  "Goto https://code.google.com/apis/console/ to obtain one (not the API Key)")
+      description =  "Goto google api console to obtain one (not the API Key)")
   public String APIProjectNumber() {
     return apiProjectNumber;
   }
@@ -265,35 +272,57 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 				// Skips registration.				
 				///Toast.makeText(getApplicationContext(), "Already registered with GCM", Toast.LENGTH_LONG).show();
 			} else {
-				// Try to register again, but not in the UI thread.
-				// It's also necessary to cancel the thread onDestroy(),
-				// hence the use of AsyncTask instead of a raw thread.
+
 				final Context context = activity;
-				mRegisterTask = new AsyncTask<Void, Void, Void>() {
 
-					@Override
-					protected Void doInBackground(Void... params) {
-						// Register on our server
-						// On server creates a new user
-						GCMServerUtilities.register(context, "X", "Y", regId);
-						return null;
-					}
-
-					@Override
-					protected void onPostExecute(Void result) {
-						mRegisterTask = null;
-					}
-
-				};
-				mRegisterTask.execute(null, null, null);
+				regId = GCMRegistrar.getRegistrationId(activity);
 			}
 		}
+		GCMregId = regId;
 		
+	  
 		Log.i(TAG, "regid = " + regId);
 	return ;
   }
   
   
+  @SimpleFunction
+  public void Unegister() {
+	if (!isConnectedToInternet()) {
+			// Internet Connection is not present
+			Log.i(TAG, "NO INTERNET NO FUN :C");
+			// stop executing code by return
+			return ;
+	}
+	
+	GCMRegistrar.setRegisteredOnServer(activity, false);
+	GCMRegistrar.unregister(activity);
+	
+	GCMregId = "";
+		
+	Log.i(TAG, "unregistered from gcm");
+	return ;
+  }
+  
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "your regid to receive push")
+  public String RegistrationID() {
+    return GCMRegistrar.getRegistrationId(activity);
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "get phone name")
+  public String GetPhoneName() {
+    return android.os.Build.MODEL;
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "get phone IMEI")
+  public String GetPhoneIMEI() {
+	TelephonyManager mngr = (TelephonyManager)getSystemService(Context.Telephony_service); 
+    return mngr.getDeviceId();
+  }
   
   
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
