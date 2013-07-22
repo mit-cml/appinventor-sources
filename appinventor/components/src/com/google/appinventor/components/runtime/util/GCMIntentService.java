@@ -1,3 +1,4 @@
+// @author pablomorpheo@gmail.com (Pablo García)
 package com.google.appinventor.components.runtime.util;
 
 
@@ -32,6 +33,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	*/
 	
 	//PARECE QUE CON ESTO PUEDO TENER SENDER IDS DINAMICOS WHOA!
+	// belencruzz@gmail.com (Belén Cruz)
 	//
 	@Override
 	protected String[] getSenderIds(Context context) {
@@ -76,7 +78,7 @@ public class GCMIntentService extends GCMBaseIntentService {
         Log.i(TAG, "Received message");
         String message = intent.getExtras().getString("price");
         
-        //displayMessage(context, message);
+        displayMessage(context, message);
         // notifies user
         generateNotification(context, message);
     }
@@ -111,6 +113,21 @@ public class GCMIntentService extends GCMBaseIntentService {
         return super.onRecoverableError(context, errorId);
     }
 
+	
+	
+	
+	
+	 static void displayMessage(Context context, String message) {
+		String packageName = context.getPackageName();
+        Intent intent = new Intent(packageName + ".DISPLAY_MESSAGE");
+        intent.putExtra("message", message);
+        context.sendBroadcast(intent);
+    }
+  
+	
+	
+	
+	
     /**
      * Issues a notification to inform the user that server has sent a message.
      */
@@ -130,17 +147,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 					
 					
 					String nscreen = ".Screen1";
-					
+					String[] lines = new String[3];
 					
 					if (!message.contains("\\|\\|") || !message.contains("||")) {
 					
-					
-						String[] lines = message.split("\\|\\|");
 						lines[1]=message;
 						//prefs default notification title
-						lines[0] =  prefs.getString(PREF_DEFTITLE, "");
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
 						
-						
+					} else {
+					
+						lines = message.split("\\|\\|");
+					
 					}
 					
 					nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");

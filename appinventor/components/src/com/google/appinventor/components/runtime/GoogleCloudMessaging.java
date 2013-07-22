@@ -4,14 +4,6 @@ package com.google.appinventor.components.runtime;
 
 
 
-
-
-/*
-import static com.google.appinventor.components.runtime.util.CommonUtilities.DISPLAY_MESSAGE_ACTION;
-import static com.google.appinventor.components.runtime.util.CommonUtilities.EXTRA_MESSAGE;
-import static com.google.appinventor.components.runtime.util.CommonUtilities.SENDER_ID;
-import static com.google.appinventor.components.runtime.util.CommonUtilities.SERVER_URL;
-*/
 import com.google.android.gcm.GCMRegistrar;
 
 import android.app.Activity;
@@ -69,7 +61,8 @@ import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.GCMServerUtilities;
-import java.util.zip.*;
+import com.google.appinventor.components.runtime.util.WakeLocker;
+
 import java.io.*;
 
 import android.widget.TextView;
@@ -174,6 +167,10 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public void onResume() {
     Log.i(TAG, "onResume()");
     isRunning = true;
+	
+	String packageName = context.getPackageName();
+	activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(packageName + ".DISPLAY_MESSAGE"));
+	
     if (isInitialized) {
       //processCachedMessages();
       //NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -196,6 +193,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   @Override
   public void onStop() {
     Log.i(TAG, "onStop()");
+	activity.unregisterReceiver(mHandleMessageReceiver);
   }
   
   
@@ -350,6 +348,42 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 	Log.i(TAG, "unregistered from gcm");
 	return ;
   }
+  
+  
+  
+
+  
+  
+  private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			String newMessage = intent.getExtras().getString("message");
+			// Waking up mobile if it is sleeping
+			WakeLocker.acquire(activity);
+			
+			/**
+			 * Take appropriate action on this message
+			 * depending upon your app requirement
+			 * For now i am just displaying it on the screen
+			 * */
+			
+			// Showing received message
+			EventDispatcher.dispatchEvent(this, "OnPush", newMessage)
+			//lblMessage.append(newMessage + "\n");			
+			///Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
+			
+			// Releasing wake lock
+			WakeLocker.release();
+		}
+	};
+  
+  
+  
+  @SimpleEvent(description = "Fires when push message is recieved")
+  public void OnPush(String PushMessage) {
+    
+  }
+  
   
   
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
