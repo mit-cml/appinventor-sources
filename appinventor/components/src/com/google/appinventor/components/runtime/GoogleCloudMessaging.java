@@ -169,7 +169,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     isRunning = true;
 	
 	String packageName = activity.getPackageName();
-	activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(packageName + ".DISPLAY_MESSAGE"));
+	/////////////////activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(packageName + ".DISPLAY_MESSAGE"));
 	
     if (isInitialized) {
       //processCachedMessages();
@@ -193,7 +193,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   @Override
   public void onStop() {
     Log.i(TAG, "onStop()");
-	activity.unregisterReceiver(mHandleMessageReceiver);
+	////////////////////activity.unregisterReceiver(mHandleMessageReceiver);
   }
   
   
@@ -353,7 +353,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
 
   
-  
+  /*
   private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -361,11 +361,6 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			// Waking up mobile if it is sleeping
 			WakeLocker.acquire(activity);
 			
-			/**
-			 * Take appropriate action on this message
-			 * depending upon your app requirement
-			 * For now i am just displaying it on the screen
-			 * */
 			
 			// Showing received message
 			EventDispatcher.dispatchEvent(GoogleCloudMessaging.this, "OnPush", newMessage);
@@ -377,13 +372,13 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 		}
 	};
   
-  
-  
+  */
+  /*
   @SimpleEvent(description = "Fires when push message is recieved")
   public void OnPush(String PushMessage) {
     
   }
-  
+  */
   
   
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,

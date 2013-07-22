@@ -118,10 +118,10 @@ public class GCMIntentService extends GCMBaseIntentService {
 	
 	
 	 static void displayMessage(Context context, String message) {
-		String packageName = context.getPackageName();
+		/*String packageName = context.getPackageName();
         Intent intent = new Intent(packageName + ".DISPLAY_MESSAGE");
         intent.putExtra("message", message);
-        context.sendBroadcast(intent);
+        context.sendBroadcast(intent);*/
     }
   
 	
@@ -149,16 +149,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 					String nscreen = ".Screen1";
 					String[] lines = new String[3];
 					
-					if (!message.contains("\\|\\|") || !message.contains("||")) {
+					if (message.contains("\\|\\|") || message.contains("||")) {
 					
-						lines[1]=message;
-						//prefs default notification title
-						lines[0] = prefs.getString(PREF_DEFTITLE, "");
+						String[] lin = message.split("\\|\\|");
+						lines[0] = lin[0];
+						lines[1] = lin[1];
 						
 					} else {
 					
-						lines = message.split("\\|\\|");
-					
+						lines[1]=message;
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
 					}
 					
 					nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");
