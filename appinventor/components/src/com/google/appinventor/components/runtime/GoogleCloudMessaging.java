@@ -168,7 +168,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     Log.i(TAG, "onResume()");
     isRunning = true;
 	
-	String packageName = context.getPackageName();
+	String packageName = activity.getPackageName();
 	activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(packageName + ".DISPLAY_MESSAGE"));
 	
     if (isInitialized) {
@@ -368,7 +368,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			 * */
 			
 			// Showing received message
-			EventDispatcher.dispatchEvent(this, "OnPush", newMessage);
+			EventDispatcher.dispatchEvent(GoogleCloudMessaging.this, "OnPush", newMessage);
 			//lblMessage.append(newMessage + "\n");			
 			///Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
 			
