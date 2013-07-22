@@ -156,6 +156,8 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
+  private HorizontalPanel workColumns;
+  private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
@@ -522,18 +524,24 @@ public class Ode implements EntryPoint {
     deckPanel.add(pVertPanel);
 
     // Design tab
-    VerticalPanel vertPanel = new VerticalPanel();
-    vertPanel.setWidth("100%");
-    designToolbar = new DesignToolbar();
-    vertPanel.add(designToolbar);
-    HorizontalPanel workColumns = new HorizontalPanel();
-    workColumns.setWidth("100%");
-    Box box = PaletteBox.getPaletteBox();
-    box.setWidth("225px");
-    workColumns.add(box);
-    //workColumns.setCellWidth(box, "1%");
+    VerticalPanel dVertPanel = new VerticalPanel();
+    dVertPanel.setWidth("100%");
 
-    VerticalPanel structureAndAssets = new VerticalPanel();
+    designToolbar = new DesignToolbar();
+    dVertPanel.add(designToolbar);
+
+    workColumns = new HorizontalPanel();
+    workColumns.setWidth("100%");
+
+    Box palletebox = PaletteBox.getPaletteBox();
+    palletebox.setWidth("225px");
+    workColumns.add(palletebox);
+
+    Box viewerbox = ViewerBox.getViewerBox();
+    workColumns.add(viewerbox);
+    workColumns.setCellWidth(viewerbox, "97%");
+
+    structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
     // Only one of the SourceStructureBox and the BlockSelectorBox is visible
     // at any given time, according to whether we are showing the form editor
@@ -542,20 +550,15 @@ public class Ode implements EntryPoint {
     structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
     structureAndAssets.add(AssetListBox.getAssetListBox());
     workColumns.add(structureAndAssets);
-    //workColumns.setCellWidth(structureAndAssets, "1%");
 
-    box = ViewerBox.getViewerBox();
-    workColumns.add(box);
-    workColumns.setCellWidth(box, "97%");
+    Box propertiesbox = PropertiesBox.getPropertiesBox();
+    propertiesbox.setWidth("210px");
+    workColumns.add(propertiesbox);
 
-    box = PropertiesBox.getPropertiesBox();
-    box.setWidth("210px");
-    workColumns.add(box);
-    //workColumns.setCellWidth(box, "1%");
+    dVertPanel.add(workColumns);
 
-    vertPanel.add(workColumns);
     designTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(vertPanel);
+    deckPanel.add(dVertPanel);
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
@@ -697,6 +700,24 @@ public class Ode implements EntryPoint {
    */
   public ProjectToolbar getProjectToolbar() {
     return projectToolbar;
+  }
+
+  /**
+   * Returns the structureAndAssets panel.
+   *
+   * @return  {@link VerticalPanel}
+   */
+  public VerticalPanel getStructureAndAssets() {
+    return structureAndAssets;
+  }
+
+  /**
+   * Returns the workColumns panel.
+   *
+   * @return  {@link HorizontalPanel}
+   */
+  public HorizontalPanel getWorkColumns() {
+    return workColumns;
   }
 
   /**

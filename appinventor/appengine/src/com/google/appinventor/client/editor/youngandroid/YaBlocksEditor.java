@@ -211,7 +211,6 @@ public final class YaBlocksEditor extends FileEditor
       PaletteBox paletteBox = PaletteBox.getPaletteBox();
       paletteBox.setContent(palettePanel);
     }
-    
     PaletteBox.getPaletteBox().setVisible(false);
     
     // Update the source structure explorer with the tree of this form's components.
@@ -221,15 +220,17 @@ public final class YaBlocksEditor extends FileEditor
       // don't want a component drawer open in the blocks editor when we
       // come back to it.
       updateBlocksTree(form, null);
+
+      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
+          .getWidget(2));
+      Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
+      Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
+      AssetListBox.getAssetListBox().setVisible(true);
       hideComponentBlocks();
     } else {
       OdeLog.wlog("Can't get form editor for blocks: " + getFileId());
     }
-
-    // Show the assets box.
-    AssetListBox assetListBox = AssetListBox.getAssetListBox();
-    assetListBox.setVisible(true);
   }
 
   @Override
@@ -271,14 +272,14 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.clear();
     paletteBox.setVisible(true);
 
+    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
+    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
+    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    BlockSelectorBox.getBlockSelectorBox().setVisible(false);
+    AssetListBox.getAssetListBox().setVisible(true);
+
     // Clear and hide the blocks selector tree
     sourceStructureExplorer.clearTree();
-    BlockSelectorBox.getBlockSelectorBox().setVisible(false);
-
-    // Hide the assets box.
-    AssetListBox assetListBox = AssetListBox.getAssetListBox();
-    assetListBox.setVisible(false);
-
     hideComponentBlocks();
   }
 
