@@ -368,7 +368,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			 * */
 			
 			// Showing received message
-			EventDispatcher.dispatchEvent(this, "OnPush", newMessage)
+			EventDispatcher.dispatchEvent(this, "OnPush", newMessage);
 			//lblMessage.append(newMessage + "\n");			
 			///Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
 			
