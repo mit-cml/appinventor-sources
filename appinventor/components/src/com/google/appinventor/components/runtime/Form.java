@@ -1432,8 +1432,8 @@ public class Form extends Activity
 		  }
 		});
 		
-		m1.setIcon(getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", getPackageName()));
-		m2.setIcon(getResources().getIdentifier("ic_menu_help", "drawable", getPackageName()));
+		m1.setIcon(this.getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", this.getPackageName()));
+		m2.setIcon(this.getResources().getIdentifier("ic_menu_help", "drawable", this.getPackageName()));
   
   
   /*
