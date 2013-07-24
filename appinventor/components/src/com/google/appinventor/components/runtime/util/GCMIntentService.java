@@ -15,6 +15,10 @@ import android.R;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 
+import com.google.appinventor.components.common.ComponentConstants;
+import com.google.appinventor.components.runtime.GoogleCloudMessaging;
+import com.google.appinventor.components.runtime.ReplForm;
+
 import com.google.android.gcm.GCMBaseIntentService;
 
 public class GCMIntentService extends GCMBaseIntentService {
@@ -138,6 +142,11 @@ public class GCMIntentService extends GCMBaseIntentService {
         long when = System.currentTimeMillis();
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
+		
+			
+			GoogleCloudMessaging.handledReceivedMessage(context, message);
+			
+			
 			if (prefs.getBoolean(PREF_NENABLED, false)) {
 				try {
 		
