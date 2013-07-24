@@ -82,7 +82,7 @@ import android.view.GestureDetector.SimpleOnGestureListener;
     showOnPalette = false)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
-public class Form extends Activity
+public abstract class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching, OnClickListener {
   private static final String LOG_TAG = "Form";
   
