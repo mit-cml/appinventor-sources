@@ -14,6 +14,7 @@ import android.util.Log;
 import android.R;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.widget.Toast;
 
 import com.google.appinventor.components.common.ComponentConstants;
 import com.google.appinventor.components.runtime.GoogleCloudMessaging;
@@ -143,7 +144,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
 		
-			Toast.makeText(getApplicationContext(), "0tosend "+message, Toast.LENGTH_LONG).show();
+			Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
 			GoogleCloudMessaging.handledReceivedMessage(context, message);
 			
 			

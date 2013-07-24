@@ -570,11 +570,11 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public static void handledReceivedMessage(Context context, String push) {
     if (isRunning()) {
 		//String[] line = SeparateMessage(push);
-		Toast.makeText(getApplicationContext(), "2toshow "+push, Toast.LENGTH_LONG).show();
+		Toast.makeText(context, "2toshow "+push, Toast.LENGTH_LONG).show();
 		//OnPush(push);
     } else {
       synchronized (cacheLock) {
-		Toast.makeText(getApplicationContext(), "2tocache "+push, Toast.LENGTH_LONG).show();
+		Toast.makeText(context, "2tocache "+push, Toast.LENGTH_LONG).show();
         //addMessageToCache(context, push);
       }
     }
