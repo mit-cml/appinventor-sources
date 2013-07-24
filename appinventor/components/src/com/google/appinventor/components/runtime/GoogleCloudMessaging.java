@@ -130,6 +130,10 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     handler = new Handler();
 	
 	this.container = container;
+	
+	isInitialized = false; // Set true when the form is initialized and can dispatch
+    isRunning = false;     // This will be set true in onResume and false in onPause
+	
 	GoogleCloudMessaging.component = (GoogleCloudMessaging)this;
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {
@@ -564,13 +568,14 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
    * @param msg
    */
   public static void handledReceivedMessage(Context context, String push) {
-    if (isRunning) {
+    if (isRunning()) {
 		//String[] line = SeparateMessage(push);
-		
-		OnPush(push);
+		Toast.makeText(getApplicationContext(), "2toshow "+push, Toast.LENGTH_LONG).show();
+		//OnPush(push);
     } else {
       synchronized (cacheLock) {
-        addMessageToCache(context, push);
+		Toast.makeText(getApplicationContext(), "2tocache "+push, Toast.LENGTH_LONG).show();
+        //addMessageToCache(context, push);
       }
     }
   }
