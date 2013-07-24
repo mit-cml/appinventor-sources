@@ -217,15 +217,15 @@ public class Form extends Activity
     Initialize();
 	
 	// Gesture detection
-        /*gestureDetector = new GestureDetector(this, new MyGestureDetector());
+        gestureDetector = new GestureDetector(this, new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 return gestureDetector.onTouchEvent(event);
             }
-        };*/
+        };
   }
   
-  @Override
+		@Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
@@ -243,7 +243,7 @@ public class Form extends Activity
         }
 		
 		@Override
-        public boolean onLongPress(MotionEvent e) {
+        public void onLongPress(MotionEvent e) {
             return false;
         }
 		
@@ -258,7 +258,7 @@ public class Form extends Activity
         }
 		
 		@Override
-        public boolean onShowPress(MotionEvent e) {
+        public void onShowPress(MotionEvent e) {
             return false;
         }
 		
@@ -267,7 +267,7 @@ public class Form extends Activity
             return false;
         }
   
-  /*
+  
   public class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
@@ -287,7 +287,7 @@ public class Form extends Activity
         }
 
     }
-*/
+
   private void defaultPropertyValues() {
     Scrollable(true); // frameLayout is created in Scrollable()
     BackgroundImage("");
