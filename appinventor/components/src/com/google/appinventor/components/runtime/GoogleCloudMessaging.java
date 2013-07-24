@@ -443,9 +443,10 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
 			
 			String[] messagelist = cachedMessages.split(MESSAGE_DELIMITER);
 			
-			Collections.reverse(messagelist);
+			//Collections.reverse(messagelist);
 			
-			for (int k = 0; k < messagelist.length; k++) {
+			//for (int k = 0; k < messagelist.length; k++) {
+			for (int k = messagelist.length; k > 0; k--) {
 				String phoneAndMessage = messagelist[k];
 				Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
 				
