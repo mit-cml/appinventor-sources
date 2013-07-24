@@ -473,7 +473,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
       } else {
         Log.i(TAG, "Dispatch failed, caching");
         synchronized (cacheLock) {
-          addMessageToCache(activity, push);
+          addMessageToCache(activity, pushTitle + "\\|\\|" + pushMessage);
         }
 	  }
         
