@@ -1438,17 +1438,19 @@ public class Form extends Activity
     menu.clear();
 	
 	if (menuOptions=="" || menuOptions==null) { return; }
-	String[] menuItems = menuOptions.split("\u007c"); // character |
+	final String[] menuItems = menuOptions.split("\\|"); // character |
 	for (int i = 0; i < menuItems.length; i++) {
-		final String[] menuSet = menuItems[i].split("\u003a"); // character :
+		//final String[] menuSet = menuItems[i].split("\u003a"); // character :
 		
-		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuSet[0])
+		int delim = menuItems[i].indexOf(":");
+		
+		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuItems[i].substring(0,delim))
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
-			OnMenuItem(menuSet[0]);
+			OnMenuItem(menuItems[i].substring(0,delim));
 			return true;
 		  }
-		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", "android"));
+		}).setIcon(getResources().getIdentifier(menuItems[i].substring(delim+1), "drawable", "android"));
 	}
 	
 	
