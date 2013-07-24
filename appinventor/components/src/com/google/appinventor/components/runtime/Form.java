@@ -65,7 +65,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.GestureDetector;
 import java.lang.Math;
-
+import android.view.GestureDetector.SimpleOnGestureListener;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
