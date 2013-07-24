@@ -500,7 +500,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 			//if (prefs.getBoolean(PREF_NENABLED, false)) {
 				OnPush(phoneAndMessage);
 			//}
-		}
+		
 		
     }
   }
