@@ -1430,11 +1430,10 @@ public class Form extends Activity
 			OnMenuItem("About");
 			return true;
 		  }
-		});
+		}).setIcon(this.getResources().getIdentifier("ic_menu_help", "drawable", "android"));
 		
-		m1.setIcon(this.getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", this.getPackageName()));
-		m2.setIcon(this.getResources().getIdentifier("ic_menu_help", "drawable", this.getPackageName()));
-  
+		m1.setIcon(this.getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", "android"));
+
   
   /*
 	if (menuOptions=="" || menuOptions==null) { return; }
