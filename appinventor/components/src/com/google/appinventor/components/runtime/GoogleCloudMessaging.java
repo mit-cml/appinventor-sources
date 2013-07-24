@@ -90,7 +90,7 @@ import android.util.Log;
 @UsesLibraries(libraries = "gcm.jar")
 public final class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
-  private final Activity activity;
+  private static Activity activity;
   private final Handler handler;
   
   public static final String TAG = "GCM Component";
@@ -114,6 +114,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   private static Object cacheLock = new Object();
   
   private ComponentContainer container; // Need this for error reporting
+  private static Component component;
   
   // Asyntask
 	AsyncTask<Void, Void, Void> mRegisterTask;
@@ -129,7 +130,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     handler = new Handler();
 	
 	this.container = container;
-	
+	GoogleCloudMessaging.component = (GoogleCloudMessaging)this;
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {
 		notificationsEnabled = prefs.getBoolean(PREF_NENABLED, false);
@@ -449,7 +450,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public static void OnPush(String push) {
   
 					String[] lines = new String[3];
-					SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+					SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {			
 					
 		if (push.contains("\\|\\|") || push.contains("||")) {
@@ -469,7 +470,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
       } else {
         Log.i(TAG, "Dispatch failed, caching");
         synchronized (cacheLock) {
-          addMessageToCache(activity, lines[0], lines[1]);
+          addMessageToCache(activity, push);
         }
 	  }
     }    
