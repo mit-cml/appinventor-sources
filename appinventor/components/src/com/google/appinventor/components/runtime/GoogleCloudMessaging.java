@@ -437,7 +437,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
 
   public static String[] SeparateMessage(String push) {
-  	String[] lines = new String[2];
+  	String[] lines = new String[5];
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {			
 					
