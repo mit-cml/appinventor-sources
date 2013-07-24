@@ -436,21 +436,9 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   
   
 
-
-
-
- /**
-   * Event that's raised when a text message is received by the phone.
-   * 
-   * 
-   * @param pushTitle the tile of message.
-   * @param pushMsg the text of the message.
-   */
-  @SimpleEvent
-  public static void OnPush(String push) {
-  
-					String[] lines = new String[3];
-					SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+  public static String[] SeparateMessage(String push) {
+  	String[] lines = new String[2];
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {			
 					
 		if (push.contains("\\|\\|") || push.contains("||")) {
@@ -464,8 +452,23 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 						lines[1] = push;
 						lines[0] = prefs.getString(PREF_DEFTITLE, "");
 		}
-		
-      if (EventDispatcher.dispatchEvent(component, "OnPush", lines[0], lines[1])) {
+	}
+	return lines;
+  }
+
+
+ /**
+   * Event that's raised when a text message is received by the phone.
+   * 
+   * 
+   * @param pushTitle the tile of message.
+   * @param pushMsg the text of the message.
+   */
+  @SimpleEvent
+  public static void OnPush(String pushTitle, String pushMessage) {
+  
+      
+      if (EventDispatcher.dispatchEvent(component, "OnPush", pushTitle, pushMessage)) {
         Log.i(TAG, "Dispatch successful");
       } else {
         Log.i(TAG, "Dispatch failed, caching");
@@ -473,7 +476,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
           addMessageToCache(activity, push);
         }
 	  }
-    }    
+        
   }
 
 
@@ -496,10 +499,10 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
       String phoneAndMessage = messagelist[k];
       Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
 		///@@@esta logica no va asi
-		
+	String[] line = SeparateMessage(phoneAndMessage);
 		    //lo recibimos siempre mejor
 			//if (prefs.getBoolean(PREF_NENABLED, false)) {
-				OnPush(phoneAndMessage);
+				OnPush(line[0],line[1]);
 			//}
 		
 		
@@ -563,7 +566,8 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
    */
   public static void handledReceivedMessage(Context context, String push) {
     if (isRunning) {
-		OnPush(push);
+		String[] line = SeparateMessage(push);
+		OnPush(line[0],line[1]);
     } else {
       synchronized (cacheLock) {
         addMessageToCache(context, push);
