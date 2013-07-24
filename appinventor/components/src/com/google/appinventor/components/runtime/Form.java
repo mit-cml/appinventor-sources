@@ -1416,7 +1416,7 @@ public class Form extends Activity
 	if (menuOptions=="") { return; }
 	String[] menuItems = menuOptions.split("\\|");
 	for (int i = 0; i < menuItems.length; i++) {
-		String[] menuSet = menuItems[i].split("\\:");
+		final String[] menuSet = menuItems[i].split("\\:");
 		
 		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuSet[0])
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
