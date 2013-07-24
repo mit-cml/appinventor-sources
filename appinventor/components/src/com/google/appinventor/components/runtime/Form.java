@@ -60,6 +60,9 @@ import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
+import android.view.MotionEvent;
+import android.support.v4.view.MotionEventCompat;
+
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
@@ -206,6 +209,39 @@ public class Form extends Activity
     BackgroundColor(Component.COLOR_WHITE);
     Title("");
   }
+  
+  
+  
+  
+  	
+    @Override
+	public boolean onTouchEvent(MotionEvent event){ 
+			
+		int action = MotionEventCompat.getActionMasked(event);
+			
+		switch(action) {
+			case (MotionEvent.ACTION_DOWN) :
+				Log.d("FormGestureDetector","Action was DOWN");
+				return true;
+			case (MotionEvent.ACTION_MOVE) :
+				Log.d("FormGestureDetector","Action was MOVE");
+				return true;
+			case (MotionEvent.ACTION_UP) :
+				Log.d("FormGestureDetector","Action was UP");
+				return true;
+			case (MotionEvent.ACTION_CANCEL) :
+				Log.d("FormGestureDetector","Action was CANCEL");
+				return true;
+			case (MotionEvent.ACTION_OUTSIDE) :
+				Log.d("FormGestureDetector","Movement occurred outside bounds " +
+						"of current screen element");
+				return true;      
+			default : 
+				return super.onTouchEvent(event);
+		}      
+  
+    }
+  
 
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
