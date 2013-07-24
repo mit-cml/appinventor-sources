@@ -1442,7 +1442,7 @@ public class Form extends Activity
 	for (int i = 0; i < menuItems.length; i++) {
 		//final String[] menuSet = menuItems[i].split("\u003a"); // character :
 		final String MenuSet = menuItems[i];
-		int delim = MenuSet.indexOf(":");
+		final int delim = MenuSet.indexOf(":");
 		
 		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, MenuSet.substring(0,delim))
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
