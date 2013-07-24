@@ -61,7 +61,11 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
 import android.view.MotionEvent;
-import android.support.v4.view.MotionEventCompat;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.GestureDetector;
+import java.lang.Math;
+
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -79,7 +83,7 @@ import android.support.v4.view.MotionEventCompat;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching {
+    implements Component, ComponentContainer, HandlesEventDispatching, OnClickListener {
   private static final String LOG_TAG = "Form";
   
   private String menuOptions = "Close:ic_menu_close_clear_cancel|About:ic_menu_help";
@@ -162,6 +166,15 @@ public class Form extends Activity
   private FullScreenVideoUtil fullScreenVideoUtil;
   
   private static Component component;
+  
+  
+  
+  private static final int SWIPE_MIN_DISTANCE = 120;
+  private static final int SWIPE_MAX_OFF_PATH = 250;
+  private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+  private GestureDetector gestureDetector;
+  View.OnTouchListener gestureListener;
+  
 
   @Override
   public void onCreate(Bundle icicle) {
@@ -201,7 +214,36 @@ public class Form extends Activity
     // before initialization finishes. Instead the compiler suppresses the invocation of the
     // event and leaves it up to the library implementation.
     Initialize();
+	
+	// Gesture detection
+        gestureDetector = new GestureDetector(this, new MyGestureDetector());
+        gestureListener = new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                return gestureDetector.onTouchEvent(event);
+            }
+        };
   }
+  
+  
+  class MyGestureDetector extends SimpleOnGestureListener {
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            try {
+                if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
+                    return false;
+                // right to left swipe
+                if(e1.getX() - e2.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    Log.d("FormGestureDetector","LEFT SWIPE");
+                }  else if (e2.getX() - e1.getX() > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                    Log.d("FormGestureDetector","RIGHT SWIPE");
+                }
+            } catch (Exception e) {
+                // nothing
+            }
+            return false;
+        }
+
+    }
 
   private void defaultPropertyValues() {
     Scrollable(true); // frameLayout is created in Scrollable()
@@ -213,7 +255,7 @@ public class Form extends Activity
   
   
   
-  	
+  	/*
     @Override
 	public boolean onTouchEvent(MotionEvent event){ 
 			
@@ -242,7 +284,7 @@ public class Form extends Activity
   
     }
   
-
+*/
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
