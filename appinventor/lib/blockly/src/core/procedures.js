@@ -97,6 +97,7 @@ Blockly.Procedures.findLegalName = function(name, block) {
   if (!block.workspace.editable) {
     return name;
   }
+  name = name.replace(/\s+/g, '');
   while (!Blockly.Procedures.isLegalName(name, block.workspace, block)) {
     // Collision with another procedure.
     var r = name.match(/^(.*?)(\d+)$/);

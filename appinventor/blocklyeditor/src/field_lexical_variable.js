@@ -354,6 +354,7 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
   if(newName.trim() == "") {
     return null;
   }
+  newName = newName.replace(/\s+/g, '');
   // this is bound to field_textinput object 
   var oldName = this.text_;
   // [lyn, 11/18/12] Strip leading and trailing whitespace, and ensure that 
@@ -389,6 +390,7 @@ Blockly.LexicalVariable.renameParam = function (newName) {
   if(newName.trim() == "") {
     return null;
   }
+  newName = newName.replace(/\s+/g, '');
   var htmlInput = Blockly.FieldTextInput.htmlInput_;
   if(htmlInput && htmlInput.defaultValue == newName){
     return newName;
