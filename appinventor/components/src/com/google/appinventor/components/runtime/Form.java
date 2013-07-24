@@ -244,7 +244,7 @@ public class Form extends Activity
 		
 		@Override
         public void onLongPress(MotionEvent e) {
-            return false;
+            return;
         }
 		
 		@Override
@@ -259,7 +259,7 @@ public class Form extends Activity
 		
 		@Override
         public void onShowPress(MotionEvent e) {
-            return false;
+            return;
         }
 		
 		@Override
