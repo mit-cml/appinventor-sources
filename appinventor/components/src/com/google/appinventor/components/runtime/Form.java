@@ -1417,20 +1417,23 @@ public class Form extends Activity
   
   public void addExitButtonToMenu(Menu menu) {
   
-  menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "Close")
+  MenuItem m1 = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "Close")
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
 			OnMenuItem("Close");
 			return true;
 		  }
-		}).setIcon(getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", getPackageName()));
-  menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "About")
+		});
+  MenuItem m2 = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "About")
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
 			OnMenuItem("About");
 			return true;
 		  }
-		}).setIcon(getResources().getIdentifier("ic_menu_help", "drawable", getPackageName()));
+		});
+		
+		m1.setIcon(getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", getPackageName()));
+		m2.setIcon(getResources().getIdentifier("ic_menu_help", "drawable", getPackageName()));
   
   
   /*
