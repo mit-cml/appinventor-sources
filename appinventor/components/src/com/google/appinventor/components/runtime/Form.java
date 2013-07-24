@@ -1417,6 +1417,23 @@ public class Form extends Activity
   
   public void addExitButtonToMenu(Menu menu) {
   
+  menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "Close")
+		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		  public boolean onMenuItemClick(MenuItem item) {
+			OnMenuItem("Close");
+			return true;
+		  }
+		}).setIcon(getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", getPackageName()));
+  menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "About")
+		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		  public boolean onMenuItemClick(MenuItem item) {
+			OnMenuItem("About");
+			return true;
+		  }
+		}).setIcon(getResources().getIdentifier("ic_menu_help", "drawable", getPackageName()));
+  
+  
+  /*
 	if (menuOptions=="" || menuOptions==null) { return; }
 	String[] menuItems = menuOptions.split("\\|");
 	for (int i = 0; i < menuItems.length; i++) {
@@ -1430,6 +1447,8 @@ public class Form extends Activity
 		  }
 		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", getPackageName()));
 	}
+	
+	*/
 	/*
     MenuItem CompartirApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
     "Compartir")
