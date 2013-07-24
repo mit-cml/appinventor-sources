@@ -36,7 +36,7 @@ import android.content.Context;
  * @author markf@google.com (Your Name Here)
  */
 
-public class ReplForm extends Form {
+public abstract class ReplForm extends Form {
 
   // Controller for the ReplCommController associated with this form
   private ReplCommController formReplCommController = null;
