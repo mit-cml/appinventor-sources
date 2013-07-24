@@ -226,7 +226,7 @@ public class Form extends Activity
   }
   
   
-  class MyGestureDetector extends SimpleOnGestureListener {
+  public abstract class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
             try {
