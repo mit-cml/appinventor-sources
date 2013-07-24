@@ -1413,7 +1413,7 @@ public class Form extends Activity
   
   public void addExitButtonToMenu(Menu menu) {
   
-  
+	if (menuOptions=="") { return; }
 	String[] menuItems = menuOptions.split("\\|");
 	for (int i = 0; i < menuItems.length; i++) {
 		String[] menuSet = menuItems[i].split("\\:");
