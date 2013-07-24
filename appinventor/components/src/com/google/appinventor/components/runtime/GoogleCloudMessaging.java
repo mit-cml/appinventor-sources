@@ -435,9 +435,9 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   */
   
   
-
+/*
   public static String[] SeparateMessage(String push) {
-  	String[] lines = new String[5];
+  	String[] lines = new String[3];
 	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 	if (prefs != null) {			
 					
@@ -455,7 +455,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
 	}
 	return lines;
   }
-
+*/
 
  /**
    * Event that's raised when a text message is received by the phone.
@@ -499,10 +499,27 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
       String phoneAndMessage = messagelist[k];
       Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
 		///@@@esta logica no va asi
-	String[] line = SeparateMessage(phoneAndMessage);
+	//String[] line = SeparateMessage(phoneAndMessage);
+	
+	String[] lines = new String[3];
+	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+	if (prefs != null) {			
+					
+		if (phoneAndMessage.contains("\\|\\|") || phoneAndMessage.contains("||")) {
+					
+						String[] lin = phoneAndMessage.split("\\|\\|");
+						lines[0] = lin[0];
+						lines[1] = lin[1];
+						
+		} else {
+					
+						lines[1] = phoneAndMessage;
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
+		}
+	}
 		    //lo recibimos siempre mejor
 			//if (prefs.getBoolean(PREF_NENABLED, false)) {
-				OnPush(line[0],line[1]);
+				OnPush(lines[0],lines[1]);
 			//}
 		
 		
@@ -566,8 +583,24 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
    */
   public static void handledReceivedMessage(Context context, String push) {
     if (isRunning) {
-		String[] line = SeparateMessage(push);
-		OnPush(line[0],line[1]);
+		//String[] line = SeparateMessage(push);
+		String[] lines = new String[3];
+	SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+	if (prefs != null) {			
+					
+		if (push.contains("\\|\\|") || push.contains("||")) {
+					
+						String[] lin = push.split("\\|\\|");
+						lines[0] = lin[0];
+						lines[1] = lin[1];
+						
+		} else {
+					
+						lines[1] = push;
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
+		}
+	}
+		OnPush(lines[0],lines[1]);
     } else {
       synchronized (cacheLock) {
         addMessageToCache(context, push);
