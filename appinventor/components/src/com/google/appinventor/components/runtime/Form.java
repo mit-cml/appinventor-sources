@@ -66,6 +66,7 @@ import android.view.View.OnClickListener;
 import android.view.GestureDetector;
 import java.lang.Math;
 import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.GestureDetector.OnGestureListener;
 
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
@@ -83,7 +84,7 @@ import android.view.GestureDetector.SimpleOnGestureListener;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching {
+    implements Component, ComponentContainer, HandlesEventDispatching, OnGestureListener {
   private static final String LOG_TAG = "Form";
   
   private String menuOptions = "Close:ic_menu_close_clear_cancel|About:ic_menu_help";
