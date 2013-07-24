@@ -78,6 +78,8 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
 public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
+  
+  private String menuOptions;
 
   // *** set this back to false after review
   private static final boolean DEBUG = true;
@@ -1333,22 +1335,42 @@ public class Form extends Activity
 
   // Configure the system menu to include a button to kill the application
   // Add control menu actions by xcitizen.team@gmail.com
+  
+  /*
+  
+  PABLO: CREO QUE DEBERIAMOS QUITAR ESTE METODO Y USAR 
+  @OVERRIDE
+  onPrepareOptionsMenu (Menu menu)
+  QUE SE EJECUTA JUSTO ANTES DE GENERAR EL MENU, ONCREATEMENUOPTIONS SOLO SE EJECUTA LA PRIMERA VEZ
+  
+  LUEGO CREARIA UNA PROPIEDAD STRING QUE SE VEA EN EL EDITOR DEL ROLLO MENUOPTIONS Y QUE SIGA ESTE FORMATO
+  
+  "ENVIAR:ic_menu_send|SALIR:ic_menu_close_clear_cancel" CON EL SEPARADOR | PARA CADA OPCION Y LUEGO EL SEPARADOR : ENTRE TITULO:ICONO
+  
+  USARIAMOS MI SCRIPT PARA RESOLVER ICONOS Y PODRIAMOS UTILZAR ESTOS: http://www.darshancomputing.com/android/1.5-drawables.html
+  
+  MEDIANTE UNA SERIE DE SPLITS Y BUCLES FOR SE PUEDEN REGISTRAR LOS BOTONES CON SU TITULO Y SU ICONO
+  
+  LUEGO SOLAMENTE PONEMOS UN EVENTO DEL ROLLO ONMENUOPTION CON EL ARGUMENTO DEL TITULO DEL BOTON Y POR SUPUESTO ONMENUKEY
+  
+  */
+  
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    // This procedure is called only once.  To change the items dynamically
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    // onCreateOptionsMenu This procedure is called only once.  To change the items dynamically
     // we would use onPrepareOptionsMenu.
-    super.onCreateOptionsMenu(menu);
+    super.onPrepareOptionsMenu(menu);
     // add the menu items
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
     return true;
   }
 
-   @SimpleEvent(description = "Create function on menu item 2")
-  public void FunctionMenuItem2() {
-    EventDispatcher.dispatchEvent(this, "FunctionMenuItem2");
+   @SimpleEvent(description = "Create function on menu item")
+  public void OnMenuItem(String item) {
+    //EventDispatcher.dispatchEvent(this, "FunctionMenuItem2", item);
   }
-
+/*
    @SimpleEvent(description = "Create function on menu item 3")
   public void FunctionMenuItem3() {
     EventDispatcher.dispatchEvent(this, "FunctionMenuItem3");
@@ -1369,16 +1391,42 @@ public class Form extends Activity
   public void FunctionMenuItem6() {
     EventDispatcher.dispatchEvent(this, "FunctionMenuItem6");
   }
+  */
+  
+  
+  
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "Close:ic_menu_close_clear_cancel|About:ic_menu_help")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "")
+  public void MenuOptions(String options) {
+    this.menuOptions = options;
+  }
+  
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR,
+      description =  "")
+  public String MenuOptions() {
+    return menuOptions;
+  }
+  
+  
+  
   
   public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
-    "Salir")
-    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
-      public boolean onMenuItemClick(MenuItem item) {
-        showExitApplicationNotification();
-        return true;
-      }
-    });
+  
+  
+	String[] menuItems = menuOptions.split("\\|");
+	for (int i = 0; i < menuItems.length; i++) {
+		String[] menuSet = menuItems[i].split("\\:");
+		
+		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuSet[0])
+		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+		  public boolean onMenuItemClick(MenuItem item) {
+				EventDispatcher.dispatchEvent(this, "OnMenuItem", menuSet[0]);
+			return true;
+		  }
+		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", getPackageName()));
+	}
+	/*
     MenuItem CompartirApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
     "Compartir")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -1427,7 +1475,7 @@ public class Form extends Activity
     MapaApplicationItem.setIcon(android.R.drawable.ic_menu_compass);
     OpcionesApplicationItem.setIcon(android.R.drawable.ic_menu_manage);
     CamaraApplicationItem.setIcon(android.R.drawable.ic_menu_camera);
-    EnviarApplicationItem.setIcon(android.R.drawable.ic_menu_send);
+    EnviarApplicationItem.setIcon(android.R.drawable.ic_menu_send);*/
    }
 
 
