@@ -157,12 +157,16 @@ public class Form extends Activity
   private String nextFormName;
 
   private FullScreenVideoUtil fullScreenVideoUtil;
+  
+  private static Component component;
 
   @Override
   public void onCreate(Bundle icicle) {
     // Called when the activity is first created
     super.onCreate(icicle);
-
+	
+	Form.component = (Form)this;
+	
     // Figure out the name of this form.
     String className = getClass().getName();
     int lastDot = className.lastIndexOf('.');
@@ -1368,7 +1372,7 @@ public class Form extends Activity
 
    @SimpleEvent(description = "Create function on menu item")
   public static void OnMenuItem(String item) {
-    EventDispatcher.dispatchEvent(this, "OnMenuItem", item);
+    EventDispatcher.dispatchEvent(component, "OnMenuItem", item);
   }
 /*
    @SimpleEvent(description = "Create function on menu item 3")
