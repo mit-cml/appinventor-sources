@@ -144,7 +144,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
 		
-			Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
+			//Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
 			GoogleCloudMessaging.handledReceivedMessage(context, message);
 			
 			

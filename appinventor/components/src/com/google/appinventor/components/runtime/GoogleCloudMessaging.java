@@ -88,7 +88,7 @@ import android.util.Log;
 @UsesPermissions(permissionNames = "android.permission.INTERNET, android.permission.GET_ACCOUNTS, " +
 					"android.permission.WAKE_LOCK, com.google.android.c2dm.permission.RECEIVE, android.permission.VIBRATE, android.permission.READ_PHONE_STATE")
 @UsesLibraries(libraries = "gcm.jar")
-public final class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
+public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
   private static Activity activity;
   private final Handler handler;
@@ -570,12 +570,12 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   public static void handledReceivedMessage(Context context, String push) {
     if (isRunning()) {
 		//String[] line = SeparateMessage(push);
-		Toast.makeText(context, "2toshow "+push, Toast.LENGTH_LONG).show();
-		//OnPush(push);
+		//Toast.makeText(context, "2toshow "+push, Toast.LENGTH_LONG).show();
+		OnPush(push);
     } else {
       synchronized (cacheLock) {
-		Toast.makeText(context, "2tocache "+push, Toast.LENGTH_LONG).show();
-        //addMessageToCache(context, push);
+		//Toast.makeText(context, "2tocache "+push, Toast.LENGTH_LONG).show();
+        addMessageToCache(context, push);
       }
     }
   }
