@@ -1367,8 +1367,8 @@ public class Form extends Activity
   }
 
    @SimpleEvent(description = "Create function on menu item")
-  public void OnMenuItem(String item) {
-    //EventDispatcher.dispatchEvent(this, "FunctionMenuItem2", item);
+  public static void OnMenuItem(String item) {
+    EventDispatcher.dispatchEvent(this, "OnMenuItem", item);
   }
 /*
    @SimpleEvent(description = "Create function on menu item 3")
@@ -1421,7 +1421,7 @@ public class Form extends Activity
 		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuSet[0])
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
-				EventDispatcher.dispatchEvent(this, "OnMenuItem", menuSet[0]);
+			OnMenuItem(menuSet[0]);
 			return true;
 		  }
 		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", getPackageName()));
