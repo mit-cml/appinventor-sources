@@ -1441,16 +1441,16 @@ public class Form extends Activity
 	final String[] menuItems = menuOptions.split("\\|"); // character |
 	for (int i = 0; i < menuItems.length; i++) {
 		//final String[] menuSet = menuItems[i].split("\u003a"); // character :
+		final String MenuSet = menuItems[i];
+		int delim = MenuSet.indexOf(":");
 		
-		int delim = menuItems[i].indexOf(":");
-		
-		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuItems[i].substring(0,delim))
+		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, MenuSet.substring(0,delim))
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
-			OnMenuItem(menuItems[i].substring(0,delim));
+			OnMenuItem(MenuSet.substring(0,delim));
 			return true;
 		  }
-		}).setIcon(getResources().getIdentifier(menuItems[i].substring(delim+1), "drawable", "android"));
+		}).setIcon(getResources().getIdentifier(MenuSet.substring(delim+1), "drawable", "android"));
 	}
 	
 	
