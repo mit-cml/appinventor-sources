@@ -109,6 +109,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
   private static final String PREF_DEFTITLE = "deftitle";
   private static final String PREF_DEFSCREEN = "defscreen";
   private static final String CACHE_FILE = "gcmcachedmsg";
+  private static final String MESSAGE_DELIMITER = "\u0001";
   private static int messagesCached;
   private static Object cacheLock = new Object();
   
@@ -152,7 +153,7 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     Log.i(TAG, "onInitialize()");
     isInitialized = true;
     isRunning = true;    // Added b/c REPL does not call onResume when starting Texting component
-    //processCachedMessages();
+    processCachedMessages();
     //NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
     //nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
   }
@@ -168,11 +169,11 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
     Log.i(TAG, "onResume()");
     isRunning = true;
 	
-	String packageName = activity.getPackageName();
+	//String packageName = activity.getPackageName();
 	/////////////////activity.registerReceiver(mHandleMessageReceiver, new IntentFilter(packageName + ".DISPLAY_MESSAGE"));
 	
     if (isInitialized) {
-      //processCachedMessages();
+      processCachedMessages();
       //NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
       //nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
     }
@@ -418,5 +419,191 @@ public final class GoogleCloudMessaging extends AndroidNonvisibleComponent imple
           }
           return false;
     }
+  
+  
+  
+  
+  
+  /* HUEHUEHEUEHEUEJHEHEU
+  THIS CODE IS BORROWED FROM TEXTING, NOT STOLEN PLS DONT BLAME ON ME
+  
+  ALL HAIL TO:
+   * @author markf@google.com (Mark Friedman)
+   * @author ram8647@gmail.com (Ralph Morelli)
+  
+  */
+  
+  
+
+
+
+
+ /**
+   * Event that's raised when a text message is received by the phone.
+   * 
+   * 
+   * @param pushTitle the tile of message.
+   * @param pushMsg the text of the message.
+   */
+  @SimpleEvent
+  public static void OnPush(String push) {
+  
+					String[] lines = new String[3];
+					SharedPreferences prefs = context.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+	if (prefs != null) {			
+					
+		if (push.contains("\\|\\|") || push.contains("||")) {
+					
+						String[] lin = push.split("\\|\\|");
+						lines[0] = lin[0];
+						lines[1] = lin[1];
+						
+		} else {
+					
+						lines[1] = push;
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
+		}
+		
+      if (EventDispatcher.dispatchEvent(component, "OnPush", lines[0], lines[1])) {
+        Log.i(TAG, "Dispatch successful");
+      } else {
+        Log.i(TAG, "Dispatch failed, caching");
+        synchronized (cacheLock) {
+          addMessageToCache(activity, lines[0], lines[1]);
+        }
+	  }
+    }    
+  }
+
+
+
+
+  /**
+   * Sends all the messages in the cache through MessageReceived and
+   * clears the cache.
+   */
+  private void processCachedMessages() {
+    String[] messagelist = null;
+    synchronized (cacheLock) {
+      messagelist =  retrieveCachedMessages();
+    }
+    if (messagelist == null) 
+      return;
+    Log.i(TAG, "processing " +  messagelist.length + " cached messages ");
+
+    for (int k = 0; k < messagelist.length; k++) {
+      String phoneAndMessage = messagelist[k];
+      Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
+		///@@@esta logica no va asi
+		
+		    //lo recibimos siempre mejor
+			//if (prefs.getBoolean(PREF_NENABLED, false)) {
+				OnPush(phoneAndMessage);
+			//}
+		}
+		
+    }
+  }
+
+  /**
+   * Retrieves cached messages from the cache file
+   * and deletes the file. 
+   * @return
+   */
+  private String[] retrieveCachedMessages() {
+    Log.i(TAG, "Retrieving cached messages");
+    String cache = "";
+    try {
+      FileInputStream fis = activity.openFileInput(CACHE_FILE);
+      byte[] bytes = new byte[8192];
+      if (fis == null) {
+        Log.e(TAG, "Null file stream returned from openFileInput");
+        return null;
+      }
+      int n = fis.read(bytes);
+      Log.i(TAG, "Read " + n + " bytes from " + CACHE_FILE);
+      cache = new String(bytes, 0, n);
+      fis.close();
+      activity.deleteFile(CACHE_FILE);
+      messagesCached = 0;
+      Log.i(TAG, "Retrieved cache " + cache);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "No Cache file found -- this is not (usually) an error");
+      return null;
+    } catch (IOException e) {
+      Log.e(TAG, "I/O Error reading from cache file");
+      e.printStackTrace();
+      return null;
+    } 
+    String messagelist[] = cache.split(MESSAGE_DELIMITER);
+    return messagelist;
+  }
+
+  /**
+   * Called by SmsBroadcastReceiver
+   * @return isRunning if the app is running in the foreground.
+   */
+  public static boolean isRunning() {
+    return isRunning;
+  }
+
+  /**
+   * Used to keep count in Notifications.
+   * @return message count
+   */
+  public static int getCachedMsgCount() {
+    return messagesCached;
+  }
+  
+  /**
+   * This method is called by SmsBroadcastReceiver when a message is received.
+   * @param phone
+   * @param msg
+   */
+  public static void handledReceivedMessage(Context context, String push) {
+    if (isRunning) {
+		OnPush(push);
+    } else {
+      synchronized (cacheLock) {
+        addMessageToCache(context, push);
+      }
+    }
+  }
+  
+  
+  
+  /**
+   * Messages a cached in a private file
+   * @param context
+   * @param phone
+   * @param msg
+   */
+  private static void addMessageToCache(Context context, String push) {
+    try {
+      String cachedMsg = push + MESSAGE_DELIMITER;
+      Log.i(TAG, "Caching " + cachedMsg);
+      FileOutputStream fos = context.openFileOutput(CACHE_FILE, Context.MODE_APPEND);
+      fos.write(cachedMsg.getBytes());
+      fos.close();      
+      ++messagesCached;
+      Log.i(TAG, "Cached " + cachedMsg);
+    } catch (FileNotFoundException e) {
+      Log.e(TAG, "File not found error writing to cache file");
+      e.printStackTrace();
+    } catch (IOException e) {
+      Log.e(TAG, "I/O Error writing to cache file");
+      e.printStackTrace();
+    }
+  }
+
+  /* THANKYOU GUYS! */
+  
+  
+  
+  
+  
+  
+  
+  
   
 }
