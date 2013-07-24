@@ -71,6 +71,7 @@ import android.os.Handler;
 import android.app.Activity;
 
 import java.lang.Runnable;
+import java.util.Collections;
 
 import android.content.SharedPreferences;
 
@@ -375,34 +376,6 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
   
   
   
-
-  
-  /*
-  private final BroadcastReceiver mHandleMessageReceiver = new BroadcastReceiver() {
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			String newMessage = intent.getExtras().getString("message");
-			// Waking up mobile if it is sleeping
-			WakeLocker.acquire(activity);
-			
-			
-			// Showing received message
-			EventDispatcher.dispatchEvent(GoogleCloudMessaging.this, "OnPush", newMessage);
-			//lblMessage.append(newMessage + "\n");			
-			///Toast.makeText(getApplicationContext(), "New Message: " + newMessage, Toast.LENGTH_LONG).show();
-			
-			// Releasing wake lock
-			WakeLocker.release();
-		}
-	};
-  
-  */
-  /*
-  @SimpleEvent(description = "Fires when push message is recieved")
-  public void OnPush(String PushMessage) {
-    
-  }
-  */
   
   
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
@@ -444,83 +417,24 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
     }
   
   
-  
-  
-  
-  /* HUEHUEHEUEHEUEJHEHEU
-  THIS CODE IS BORROWED FROM TEXTING, NOT STOLEN PLS DONT BLAME ON ME
-  
-  ALL HAIL TO:
-   * @author markf@google.com (Mark Friedman)
-   * @author ram8647@gmail.com (Ralph Morelli)
-  
-  */
-  
-  
-/*
-  public static String[] SeparateMessage(String push) {
-  	String[] lines = new String[3];
-	SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
-	if (prefs != null) {			
-					
-		if (push.contains("\\|\\|") || push.contains("||")) {
-					
-						String[] lin = push.split("\\|\\|");
-						lines[0] = lin[0];
-						lines[1] = lin[1];
-						
-		} else {
-					
-						lines[1] = push;
-						lines[0] = prefs.getString(PREF_DEFTITLE, "");
-		}
-	}
-	return lines;
-  }
-*/
 
 
+	//La proxima vez que hagas una jilipollez asi, recuerda, te buscare, y como soy yo, me encontrare y me dare una paliza.
+	//PRIMER AVISO
 
-
-
-
-
- /**
-   * Event that's raised when a text message is received by the phone.
-   * 
-   * 
-   * @param pushTitle the tile of message.
-   * @param pushMsg the text of the message.
-   */
   @SimpleEvent
-  public static void OnPush(String push) {
-	EventDispatcher.dispatchEvent(component, "OnPush", push);
-      /*
-      if (EventDispatcher.dispatchEvent(component, "OnPush", push)) {
-        Log.i(TAG, "Dispatch successful");
-      } else {
-        Log.i(TAG, "Dispatch failed, caching");
-        synchronized (cacheLock) {
-          addMessageToCache(activity, push);
-        }
-	  }
-        */
+  public static void OnPush(String pushTitle, String PushMessage) {
+	EventDispatcher.dispatchEvent(component, "OnPush", pushTitle, PushMessage);
   }
 
 
 
 
-  /**
-   * Sends all the messages in the cache through MessageReceived and
-   * clears the cache.
-   */
   public static void processCachedMessages() {
   
-    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+        SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
 		if (prefs != null) {
 		
-			//Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
-			//GoogleCloudMessaging.handledReceivedMessage(context, message);
 			
 			String cachedMessages = prefs.getString(CACHE_FILE, "");
 			
@@ -529,146 +443,40 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
 			
 			String[] messagelist = cachedMessages.split(MESSAGE_DELIMITER);
 			
+			Collections.reverse(messagelist);
+			
 			for (int k = 0; k < messagelist.length; k++) {
 				String phoneAndMessage = messagelist[k];
 				Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
-				OnPush(phoneAndMessage);
+				
+				
+				String[] lines = new String[3];
+					
+					if (phoneAndMessage.contains("\\|\\|") || phoneAndMessage.contains("||")) {
+					
+						String[] lin = phoneAndMessage.split("\\|\\|");
+						lines[0] = lin[0];
+						lines[1] = lin[1];
+						
+					} else {
+					
+						lines[1] = phoneAndMessage;
+						lines[0] = prefs.getString(PREF_DEFTITLE, "");
+					}
+				
+				
+				OnPush(lines[0], lines[1]);
 			}
 			
 			
 			SharedPreferences.Editor editor = prefs.edit();
 			editor.putString(CACHE_FILE, "");
 			editor.commit();
-			/*
-			SharedPreferences.Editor editor = prefs.edit();
-			if (cachedMessages=="") {
-				editor.putString(CACHE_FILE, message);
-			} else {
-				editor.putString(CACHE_FILE, message + MESSAGE_DELIMITER + cachedMessages);
-			}
-			editor.commit();*/
 			
-			
-    /*String[] messagelist = null;
-    synchronized (cacheLock) {
-      messagelist =  retrieveCachedMessages();
-    }
-    if (messagelist == null) 
-      return;
-    Log.i(TAG, "processing " +  messagelist.length + " cached messages ");
-
-    for (int k = 0; k < messagelist.length; k++) {
-      String phoneAndMessage = messagelist[k];
-      Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
-	
-		    //lo recibimos siempre mejor
-			//if (prefs.getBoolean(PREF_NENABLED, false)) {
-				OnPush(phoneAndMessage);
-			//}
-		
-		*/
     }
   }
 
-  /**
-   * Retrieves cached messages from the cache file
-   * and deletes the file. 
-   * @return
-   */
-   /*
-  private String[] retrieveCachedMessages() {
-    Log.i(TAG, "Retrieving cached messages");
-    String cache = "";
-    try {
-      FileInputStream fis = activity.openFileInput(CACHE_FILE);
-      byte[] bytes = new byte[8192];
-      if (fis == null) {
-        Log.e(TAG, "Null file stream returned from openFileInput");
-        return null;
-      }
-      int n = fis.read(bytes);
-      Log.i(TAG, "Read " + n + " bytes from " + CACHE_FILE);
-      cache = new String(bytes, 0, n);
-      fis.close();
-      activity.deleteFile(CACHE_FILE);
-      messagesCached = 0;
-      Log.i(TAG, "Retrieved cache " + cache);
-    } catch (FileNotFoundException e) {
-      Log.e(TAG, "No Cache file found -- this is not (usually) an error");
-      return null;
-    } catch (IOException e) {
-      Log.e(TAG, "I/O Error reading from cache file");
-      e.printStackTrace();
-      return null;
-    } 
-    String messagelist[] = cache.split(MESSAGE_DELIMITER);
-    return messagelist;
-  }
-*/
-  /**
-   * Called by SmsBroadcastReceiver
-   * @return isRunning if the app is running in the foreground.
-   */
-  public static boolean isRunning() {
-    return isRunning;
-  }
-
-  /**
-   * Used to keep count in Notifications.
-   * @return message count
-   */
-  public static int getCachedMsgCount() {
-    return messagesCached;
-  }
-  
-  /**
-   * This method is called by SmsBroadcastReceiver when a message is received.
-   * @param phone
-   * @param msg
-   */
-   
-   /*
-  public static void handledReceivedMessage(Context context, String push) {
-    if (isRunning()) {
-		//String[] line = SeparateMessage(push);
-		//Toast.makeText(context, "2toshow "+push, Toast.LENGTH_LONG).show();
-		OnPush(push);
-    } else {
-      synchronized (cacheLock) {
-		//Toast.makeText(context, "2tocache "+push, Toast.LENGTH_LONG).show();
-        addMessageToCache(context, push);
-      }
-    }
-  }
-  */
-  
-  
-  /**
-   * Messages a cached in a private file
-   * @param context
-   * @param phone
-   * @param msg
-   */
-   /*
-  private static void addMessageToCache(Context context, String push) {
-    try {
-      String cachedMsg = push + MESSAGE_DELIMITER;
-      Log.i(TAG, "Caching " + cachedMsg);
-      FileOutputStream fos = context.openFileOutput(CACHE_FILE, Context.MODE_APPEND);
-      fos.write(cachedMsg.getBytes());
-      fos.close();      
-      ++messagesCached;
-      Log.i(TAG, "Cached " + cachedMsg);
-    } catch (FileNotFoundException e) {
-      Log.e(TAG, "File not found error writing to cache file");
-      e.printStackTrace();
-    } catch (IOException e) {
-      Log.e(TAG, "I/O Error writing to cache file");
-      e.printStackTrace();
-    }
-  }
-*/
-  /* THANKYOU GUYS! */
+  /* ALL HAIL TO HYPNOTOAD! */
   
   
   
