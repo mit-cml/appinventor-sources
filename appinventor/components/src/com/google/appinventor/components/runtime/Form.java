@@ -79,7 +79,7 @@ public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
   
-  private String menuOptions;
+  private String menuOptions = "";
 
   // *** set this back to false after review
   private static final boolean DEBUG = true;
@@ -1417,7 +1417,7 @@ public class Form extends Activity
   
   public void addExitButtonToMenu(Menu menu) {
   
-	if (menuOptions=="") { return; }
+	if (menuOptions=="" || menuOptions==null) { return; }
 	String[] menuItems = menuOptions.split("\\|");
 	for (int i = 0; i < menuItems.length; i++) {
 		final String[] menuSet = menuItems[i].split("\\:");
