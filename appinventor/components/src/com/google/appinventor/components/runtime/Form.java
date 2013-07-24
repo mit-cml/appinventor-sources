@@ -82,8 +82,8 @@ import android.view.GestureDetector.SimpleOnGestureListener;
     showOnPalette = false)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
-public abstract class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching, OnClickListener {
+public class Form extends Activity
+    implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
   
   private String menuOptions = "Close:ic_menu_close_clear_cancel|About:ic_menu_help";
