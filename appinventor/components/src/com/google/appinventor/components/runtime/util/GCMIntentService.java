@@ -31,6 +31,9 @@ public class GCMIntentService extends GCMBaseIntentService {
 	private static final String PREF_DEFTITLE = "deftitle";
     private static final String PREF_DEFSCREEN = "defscreen";
 	
+	private static final String CACHE_FILE = "gcmcachedmsg";
+    private static final String MESSAGE_DELIMITER = "\u0001";
+	
 	/*
     public GCMIntentService() {
         super("97180579230");
@@ -145,7 +148,18 @@ public class GCMIntentService extends GCMBaseIntentService {
 		if (prefs != null) {
 		
 			//Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
-			GoogleCloudMessaging.handledReceivedMessage(context, message);
+			//GoogleCloudMessaging.handledReceivedMessage(context, message);
+			
+			String cachedMessages = prefs.getString(CACHE_FILE, "");
+			
+			SharedPreferences.Editor editor = prefs.edit();
+			if (cachedMessages=="") {
+				editor.putString(CACHE_FILE, message);
+			} else {
+				editor.putString(CACHE_FILE, message + MESSAGE_DELIMITER + cachedMessages);
+			}
+			editor.commit();
+			
 			
 			
 			if (prefs.getBoolean(PREF_NENABLED, false)) {

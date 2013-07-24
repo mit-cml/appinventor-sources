@@ -70,6 +70,8 @@ import android.widget.Toast;
 import android.os.Handler;
 import android.app.Activity;
 
+import java.lang.Runnable;
+
 import android.content.SharedPreferences;
 
 import android.net.ConnectivityManager;
@@ -91,7 +93,7 @@ import android.util.Log;
 public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements Component, OnResumeListener, OnPauseListener, OnInitializeListener, OnStopListener {
 
   private static Activity activity;
-  private final Handler handler;
+  //private final Handler handler;
   
   public static final String TAG = "GCM Component";
  
@@ -127,7 +129,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
     super(container.$form());
 	Log.d(TAG, "GCM constructor");
     activity = container.$context();
-    handler = new Handler();
+    //handler = new Handler();
 	
 	this.container = container;
 	
@@ -148,6 +150,19 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
     container.$form().registerForOnStop(this);
   }
   
+  
+  
+    private Handler handler = new Handler();
+	private Runnable runnable = new Runnable() 
+	{
+
+		public void run() 
+		{
+			 processCachedMessages();
+			 handler.postDelayed(this, 500);
+		}
+	};
+  
   /**
    * Callback from Form. No incoming messages can be processed through
    * MessageReceived until the Form is initialized. Messages are cached
@@ -159,6 +174,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
     isInitialized = true;
     isRunning = true;    // Added b/c REPL does not call onResume when starting Texting component
     processCachedMessages();
+	runnable.run();
     //NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
     //nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
   }
@@ -179,6 +195,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
 	
     if (isInitialized) {
       processCachedMessages();
+	  runnable.run();
       //NotificationManager nm = (NotificationManager) activity.getSystemService(Context.NOTIFICATION_SERVICE);
       //nm.cancel(SmsBroadcastReceiver.NOTIFICATION_ID);
     }
@@ -190,6 +207,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
   @Override
   public void onPause() {
     Log.i(TAG, "onPause()");
+	handler.removeCallbacks(runnable);
     isRunning = false;
   }
   
@@ -461,6 +479,12 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
   }
 */
 
+
+
+
+
+
+
  /**
    * Event that's raised when a text message is received by the phone.
    * 
@@ -470,8 +494,8 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
    */
   @SimpleEvent
   public static void OnPush(String push) {
-  
-      
+	EventDispatcher.dispatchEvent(component, "OnPush", push);
+      /*
       if (EventDispatcher.dispatchEvent(component, "OnPush", push)) {
         Log.i(TAG, "Dispatch successful");
       } else {
@@ -480,7 +504,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
           addMessageToCache(activity, push);
         }
 	  }
-        
+        */
   }
 
 
@@ -490,8 +514,42 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
    * Sends all the messages in the cache through MessageReceived and
    * clears the cache.
    */
-  private void processCachedMessages() {
-    String[] messagelist = null;
+  public static void processCachedMessages() {
+  
+    SharedPreferences prefs = activity.getSharedPreferences(PREF_FILE, Activity.MODE_PRIVATE);
+		if (prefs != null) {
+		
+			//Toast.makeText(context, "0tosend "+message, Toast.LENGTH_LONG).show();
+			//GoogleCloudMessaging.handledReceivedMessage(context, message);
+			
+			String cachedMessages = prefs.getString(CACHE_FILE, "");
+			
+			if (cachedMessages == null || cachedMessages == "") 
+			return;
+			
+			String[] messagelist = cachedMessages.split(MESSAGE_DELIMITER);
+			
+			for (int k = 0; k < messagelist.length; k++) {
+				String phoneAndMessage = messagelist[k];
+				Log.i(TAG, "Message + " + k + " " + phoneAndMessage);
+				OnPush(phoneAndMessage);
+			}
+			
+			
+			SharedPreferences.Editor editor = prefs.edit();
+			editor.putString(CACHE_FILE, "");
+			editor.commit();
+			/*
+			SharedPreferences.Editor editor = prefs.edit();
+			if (cachedMessages=="") {
+				editor.putString(CACHE_FILE, message);
+			} else {
+				editor.putString(CACHE_FILE, message + MESSAGE_DELIMITER + cachedMessages);
+			}
+			editor.commit();*/
+			
+			
+    /*String[] messagelist = null;
     synchronized (cacheLock) {
       messagelist =  retrieveCachedMessages();
     }
@@ -508,7 +566,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
 				OnPush(phoneAndMessage);
 			//}
 		
-		
+		*/
     }
   }
 
@@ -517,6 +575,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
    * and deletes the file. 
    * @return
    */
+   /*
   private String[] retrieveCachedMessages() {
     Log.i(TAG, "Retrieving cached messages");
     String cache = "";
@@ -545,7 +604,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
     String messagelist[] = cache.split(MESSAGE_DELIMITER);
     return messagelist;
   }
-
+*/
   /**
    * Called by SmsBroadcastReceiver
    * @return isRunning if the app is running in the foreground.
@@ -567,6 +626,8 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
    * @param phone
    * @param msg
    */
+   
+   /*
   public static void handledReceivedMessage(Context context, String push) {
     if (isRunning()) {
 		//String[] line = SeparateMessage(push);
@@ -579,7 +640,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
       }
     }
   }
-  
+  */
   
   
   /**
@@ -588,6 +649,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
    * @param phone
    * @param msg
    */
+   /*
   private static void addMessageToCache(Context context, String push) {
     try {
       String cachedMsg = push + MESSAGE_DELIMITER;
@@ -605,7 +667,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
       e.printStackTrace();
     }
   }
-
+*/
   /* THANKYOU GUYS! */
   
   
