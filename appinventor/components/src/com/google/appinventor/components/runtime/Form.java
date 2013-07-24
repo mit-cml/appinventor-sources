@@ -220,6 +220,7 @@ public class Form extends Activity
         gestureDetector = new GestureDetector(this, new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
+				Log.d("FormGestureDetector","ontouch");
                 return gestureDetector.onTouchEvent(event);
             }
         };
@@ -227,6 +228,7 @@ public class Form extends Activity
   
 		@Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		Log.d("FormGestureDetector","ofling");
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                     return false;
@@ -244,26 +246,31 @@ public class Form extends Activity
 		
 		@Override
         public void onLongPress(MotionEvent e) {
+		Log.d("FormGestureDetector","longpress");
             return;
         }
 		
 		@Override
         public boolean onDown(MotionEvent e) {
+		Log.d("FormGestureDetector","ondown");
             return false;
         }
 		
 		@Override
         public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+		Log.d("FormGestureDetector","hscroll");
             return false;
         }
 		
 		@Override
         public void onShowPress(MotionEvent e) {
+		Log.d("FormGestureDetector","showpress");
             return;
         }
 		
 		@Override
         public boolean onSingleTapUp(MotionEvent e) {
+		Log.d("FormGestureDetector","singletap");
             return false;
         }
   
@@ -271,6 +278,7 @@ public class Form extends Activity
   public class MyGestureDetector extends SimpleOnGestureListener {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+		Log.d("FormGestureDetector","ifling");
             try {
                 if (Math.abs(e1.getY() - e2.getY()) > SWIPE_MAX_OFF_PATH)
                     return false;
