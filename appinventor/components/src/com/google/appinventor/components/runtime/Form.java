@@ -79,7 +79,7 @@ public class Form extends Activity
     implements Component, ComponentContainer, HandlesEventDispatching {
   private static final String LOG_TAG = "Form";
   
-  private String menuOptions = "";
+  private String menuOptions = "Close:ic_menu_close_clear_cancel|About:ic_menu_help";
 
   // *** set this back to false after review
   private static final boolean DEBUG = true;
@@ -1416,7 +1416,7 @@ public class Form extends Activity
   
   
   public void addExitButtonToMenu(Menu menu) {
-  
+  /*
   MenuItem m1 = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, "Close")
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 		  public boolean onMenuItemClick(MenuItem item) {
@@ -1433,13 +1433,14 @@ public class Form extends Activity
 		}).setIcon(this.getResources().getIdentifier("ic_menu_help", "drawable", "android"));
 		
 		m1.setIcon(this.getResources().getIdentifier("ic_menu_close_clear_cancel", "drawable", "android"));
-
+*/
   
-  /*
+    menu.clear();
+	
 	if (menuOptions=="" || menuOptions==null) { return; }
-	String[] menuItems = menuOptions.split("\\|");
+	String[] menuItems = menuOptions.split("\u007c"); // character |
 	for (int i = 0; i < menuItems.length; i++) {
-		final String[] menuSet = menuItems[i].split("\\:");
+		final String[] menuSet = menuItems[i].split("\u003a"); // character :
 		
 		menu.add(Menu.NONE, Menu.NONE, Menu.FIRST, menuSet[0])
 		.setOnMenuItemClickListener(new OnMenuItemClickListener() {
@@ -1447,10 +1448,10 @@ public class Form extends Activity
 			OnMenuItem(menuSet[0]);
 			return true;
 		  }
-		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", getPackageName()));
+		}).setIcon(getResources().getIdentifier(menuSet[1], "drawable", "android"));
 	}
 	
-	*/
+	
 	/*
     MenuItem CompartirApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
     "Compartir")
