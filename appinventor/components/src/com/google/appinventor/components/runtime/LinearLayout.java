@@ -11,8 +11,6 @@ import com.google.appinventor.components.common.ComponentConstants;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 
 /**
@@ -55,8 +53,8 @@ public final class LinearLayout implements Layout {
     }
 
     
-	ScrollView sv = new ScrollView(this);
-    sv.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT));
+	ScrollView sv = new ScrollView(context);
+    sv.setLayoutParams(new LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.MATCH_PARENT));
 	
 	// Create an Android LinearLayout, but override onMeasure so that we can use our preferred
     // empty width/height.
