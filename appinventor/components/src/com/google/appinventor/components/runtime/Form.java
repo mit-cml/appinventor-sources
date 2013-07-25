@@ -59,7 +59,7 @@ import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ViewUtil;
-
+/*
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -67,7 +67,7 @@ import android.view.GestureDetector;
 import java.lang.Math;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.GestureDetector.OnGestureListener;
-
+*/
 /**
  * Component underlying activities and UI apps, not directly accessible to Simple programmers.
  *
@@ -84,7 +84,7 @@ import android.view.GestureDetector.OnGestureListener;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,android.permission.ACCESS_WIFI_STATE,android.permission.ACCESS_NETWORK_STATE")
 public class Form extends Activity
-    implements Component, ComponentContainer, HandlesEventDispatching, OnGestureListener {
+    implements Component, ComponentContainer, HandlesEventDispatching/*, OnGestureListener*/ {
   private static final String LOG_TAG = "Form";
   
   private String menuOptions = "Close:ic_menu_close_clear_cancel|About:ic_menu_help";
@@ -216,16 +216,16 @@ public class Form extends Activity
     // event and leaves it up to the library implementation.
     Initialize();
 	
-	// Gesture detection
+	/*// Gesture detection
         gestureDetector = new GestureDetector(this, new MyGestureDetector());
         gestureListener = new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
 				Log.d("FormGestureDetector","ontouch");
                 return gestureDetector.onTouchEvent(event);
             }
-        };
+        };*/
   }
-  
+  /*
 		@Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 		Log.d("FormGestureDetector","ofling");
@@ -295,7 +295,7 @@ public class Form extends Activity
         }
 
     }
-
+*/
   private void defaultPropertyValues() {
     Scrollable(true); // frameLayout is created in Scrollable()
     BackgroundImage("");
