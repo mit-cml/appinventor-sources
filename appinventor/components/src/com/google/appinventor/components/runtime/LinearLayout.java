@@ -54,7 +54,7 @@ public final class LinearLayout implements Layout {
 
     
 	ScrollView sv = new ScrollView(context);
-    sv.setLayoutParams(new LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.MATCH_PARENT));
+    sv.setLayoutParams(new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.MATCH_PARENT));
 	
 	// Create an Android LinearLayout, but override onMeasure so that we can use our preferred
     // empty width/height.
