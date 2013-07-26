@@ -34,6 +34,7 @@ import com.google.appinventor.client.editor.simple.components.MockVideoPlayer;
 import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
 import com.google.appinventor.client.editor.simple.components.MockScrollArrangement;
+import com.google.appinventor.client.editor.simple.components.MockHorizontalScroll;
 
 
 import com.google.common.collect.Maps;
