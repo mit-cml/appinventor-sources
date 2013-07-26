@@ -100,6 +100,27 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
+	Object layoutParams = component.getLayoutParams();
+    if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
+      android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
+      switch (width) {
+        case Component.LENGTH_PREFERRED:
+          linearLayoutParams.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+          linearLayoutParams.weight = 0;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          linearLayoutParams.width = 0;
+          linearLayoutParams.weight = 1;
+          break;
+        default:
+          linearLayoutParams.width = width;
+          linearLayoutParams.weight = 0;
+          break;
+      }
+      component.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have linear layout parameters");
+    }
     /*if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildWidthForHorizontalLayout(component.getView(), width);
     } else {
@@ -109,6 +130,25 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
+  
+  Object layoutParams = component.getLayoutParams();
+    if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
+      android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
+      switch (height) {
+        case Component.LENGTH_PREFERRED:
+          linearLayoutParams.height = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+          break;
+        case Component.LENGTH_FILL_PARENT:
+          linearLayoutParams.height = android.widget.LinearLayout.LayoutParams.FILL_PARENT;
+          break;
+        default:
+          linearLayoutParams.height = height;
+          break;
+      }
+      component.requestLayout();
+    } else {
+      Log.e("ViewUtil", "The view does not have linear layout parameters");
+    }
     /*if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildHeightForHorizontalLayout(component.getView(), height);
     } else {
