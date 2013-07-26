@@ -50,14 +50,11 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   private int verticalAlignment;
 
   /**
-   * Creates a new HVArrangement component.
+   * Creates a new ScrollArrangement component.
    *
    * @param container  container, component will be placed in
-   * @param orientation one of
-   *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
-   *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
   */
-  public HVArrangement(ComponentContainer container) {
+  public ScrollArrangement(ComponentContainer container) {
     super(container);
     context = container.$context();
 	
@@ -120,7 +117,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 
   @Override
   public View getView() {
-    return viewLayout.getLayoutManager();
+    return viewLayout;
   }
 
  // These property definitions are duplicated in Form.java
