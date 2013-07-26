@@ -101,7 +101,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
   
-    android.widget.View view = component;
+    android.view.View view = component;
 	Object layoutParams = view.getLayoutParams();
     if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
       android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
@@ -133,7 +133,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
   
-  android.widget.View view = component;
+  android.view.View view = component;
   Object layoutParams = view.getLayoutParams();
     if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
       android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
