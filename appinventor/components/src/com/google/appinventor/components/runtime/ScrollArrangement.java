@@ -46,11 +46,11 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   //private final ScrollView sv;
 
   // translates App Inventor alignment codes to Android gravity
-  private final AlignmentUtil alignmentSetter;
+  //private final AlignmentUtil alignmentSetter;
 
   // the alignment for this component's LinearLayout
-  private int horizontalAlignment;
-  private int verticalAlignment;
+  //private int horizontalAlignment;
+  //private int verticalAlignment;
 
   /**
    * Creates a new ScrollArrangement component.
