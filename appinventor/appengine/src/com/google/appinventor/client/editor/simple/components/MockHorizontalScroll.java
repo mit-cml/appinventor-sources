@@ -29,7 +29,7 @@ import com.google.gwt.user.client.ui.AbsolutePanel;
  *
  * @author sharon@google.com (Sharon Perl)
  */
-public final class MockScrollArrangement extends MockContainer {
+public final class MockHorizontalScroll extends MockContainer {
 
   /**
    * Component type name.
@@ -55,7 +55,7 @@ public final class MockScrollArrangement extends MockContainer {
    *
    * @param editor  editor of source file the component belongs to
    */
-  public MockScrollArrangement(SimpleEditor editor) {
+  public MockHorizontalScroll(SimpleEditor editor) {
   
     super(editor, TYPE, images.horizontal(), MockHVArrangementHelper.makeLayout(0));
     // Note(hal): There better not be any calls to MockHVArrangementHelper before the
