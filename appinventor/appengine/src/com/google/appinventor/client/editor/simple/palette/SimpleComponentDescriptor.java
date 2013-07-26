@@ -35,6 +35,7 @@ import com.google.appinventor.client.editor.simple.components.MockWebViewer;
 
 import com.google.appinventor.client.editor.simple.components.MockScrollArrangement;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalScroll;
+import com.google.appinventor.client.editor.simple.components.MockAdMob;
 
 
 import com.google.common.collect.Maps;
@@ -300,6 +301,9 @@ public final class SimpleComponentDescriptor {
       return new MockScrollArrangement(editor);
 	} else if (name.equals(MockHorizontalScroll.TYPE)) {
       return new MockHorizontalScroll(editor);
+	  
+	} else if (name.equals(MockAdMob.TYPE)) {
+      return new MockAdMob(editor);
 	  
 	  
     } else {
