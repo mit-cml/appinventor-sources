@@ -35,6 +35,9 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
+import android.view.WindowManager;
+import android.view.Window;
+
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -854,6 +857,18 @@ public class Form extends Activity
       ViewUtil.setBackgroundImage(frameLayout, backgroundDrawable);
     }
 
+	
+	
+	// hide titlebar of application
+    // must be before setting the layout
+    requestWindowFeature(Window.FEATURE_NO_TITLE);
+    // hide statusbar of Android
+    // could also be done later
+    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	
+	
+	
     setContentView(frameLayout);
     frameLayout.requestLayout();
   }
