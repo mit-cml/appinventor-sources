@@ -843,7 +843,19 @@ public class Form extends Activity
     // Remove our view from the current frameLayout.
     if (frameLayout != null) {
       frameLayout.removeAllViews();
-    }
+    } else {
+	
+		// hide titlebar of application
+		// must be before setting the layout
+		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		// hide statusbar of Android
+		// could also be done later
+		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+		WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		
+	}
+	
+	
 
     this.scrollable = scrollable;
 
@@ -859,13 +871,7 @@ public class Form extends Activity
 
 	
 	
-	// hide titlebar of application
-    // must be before setting the layout
-    requestWindowFeature(Window.FEATURE_NO_TITLE);
-    // hide statusbar of Android
-    // could also be done later
-    getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	
 	
 	
 	
