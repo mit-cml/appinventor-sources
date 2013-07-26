@@ -73,8 +73,8 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 	
     //alignmentSetter = new AlignmentUtil(viewLayout);
 
-    horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
-    verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
+    //horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
+    //verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
     //alignmentSetter.setHorizontalAlignment(horizontalAlignment);
     //alignmentSetter.setVerticalAlignment(verticalAlignment);
 
