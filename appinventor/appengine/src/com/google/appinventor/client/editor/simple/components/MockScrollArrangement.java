@@ -57,17 +57,17 @@ public final class MockScrollArrangement extends MockContainer {
    */
   public MockScrollArrangement(SimpleEditor editor) {
   
-    super(editor, TYPE, images.horizontal(), 1);
+    super(editor, TYPE, images.horizontal(), 0);
     // Note(hal): There better not be any calls to MockHVArrangementHelper before the
     // next instruction.  Note that the Helper methods are synchronized to avoid possible
     // future problems if we ever have threads creating arrangements in parallel.
     myLayout = MockHVArrangementHelper.getLayout();
         
-    if (orientation != ComponentConstants.LAYOUT_ORIENTATION_VERTICAL &&
+    /*if (orientation != ComponentConstants.LAYOUT_ORIENTATION_VERTICAL &&
         orientation != ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       throw new IllegalArgumentException("Illegal orientation: " + orientation);
     }
-
+*/
     rootPanel.setHeight("100%");
 
     layoutWidget = new AbsolutePanel();
