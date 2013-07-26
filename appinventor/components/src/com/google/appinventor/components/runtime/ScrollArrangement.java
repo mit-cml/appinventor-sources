@@ -103,20 +103,20 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   
     android.view.View view = component.getView();
 	Object layoutParams = view.getLayoutParams();
-    if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
-      android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
+    if (layoutParams instanceof android.view.ViewGroup.LayoutParams) {
+      android.view.ViewGroup.LayoutParams linearLayoutParams = (android.view.ViewGroup.LayoutParams) layoutParams;
       switch (width) {
         case Component.LENGTH_PREFERRED:
-          linearLayoutParams.width = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
-          linearLayoutParams.weight = 0;
+          linearLayoutParams.width = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
+          //linearLayoutParams.weight = 0;
           break;
         case Component.LENGTH_FILL_PARENT:
-          linearLayoutParams.width = 0;
-          linearLayoutParams.weight = 1;
+          linearLayoutParams.width = android.view.ViewGroup.LayoutParams.FILL_PARENT;
+          //linearLayoutParams.weight = 1;
           break;
         default:
           linearLayoutParams.width = width;
-          linearLayoutParams.weight = 0;
+          //linearLayoutParams.weight = 0;
           break;
       }
       view.requestLayout();
@@ -135,14 +135,14 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   
   android.view.View view = component.getView();
   Object layoutParams = view.getLayoutParams();
-    if (layoutParams instanceof android.widget.LinearLayout.LayoutParams) {
-      android.widget.LinearLayout.LayoutParams linearLayoutParams = (android.widget.LinearLayout.LayoutParams) layoutParams;
+    if (layoutParams instanceof android.view.ViewGroup.LayoutParams) {
+      android.view.ViewGroup.LayoutParams linearLayoutParams = (android.view.ViewGroup.LayoutParams) layoutParams;
       switch (height) {
         case Component.LENGTH_PREFERRED:
-          linearLayoutParams.height = android.widget.LinearLayout.LayoutParams.WRAP_CONTENT;
+          linearLayoutParams.height = android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
           break;
         case Component.LENGTH_FILL_PARENT:
-          linearLayoutParams.height = android.widget.LinearLayout.LayoutParams.FILL_PARENT;
+          linearLayoutParams.height = android.view.ViewGroup.LayoutParams.FILL_PARENT;
           break;
         default:
           linearLayoutParams.height = height;
