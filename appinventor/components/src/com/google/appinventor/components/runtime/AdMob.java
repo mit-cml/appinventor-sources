@@ -55,7 +55,7 @@ public final class AdMob extends AndroidViewComponent {
 	
     // Adds the component to its designated container
     container.$add(this);
-	adView.loadAd(new AdRequest());
+	view.loadAd(new AdRequest());
   }
 
   @Override
