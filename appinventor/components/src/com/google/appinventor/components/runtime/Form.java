@@ -848,11 +848,15 @@ public class Form extends Activity
 	//Whatever, do it always! @@PABLOKO
 	// hide titlebar of application
 	// must be before setting the layout
-	///requestWindowFeature(Window.FEATURE_NO_TITLE);
+	if (scrollable==true) {
+	requestWindowFeature(Window.FEATURE_LEFT_ICON);
+	}
 	// hide statusbar of Android
 	// could also be done later
+	if (scrollable==false) {
 	getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 	WindowManager.LayoutParams.FLAG_FULLSCREEN);
+	}
 
     this.scrollable = scrollable;
 
