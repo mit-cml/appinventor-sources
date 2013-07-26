@@ -297,6 +297,8 @@ public final class SimpleComponentDescriptor {
 	  
 	} else if (name.equals(MockScrollArrangement.TYPE)) {
       return new MockScrollArrangement(editor);
+	} else if (name.equals(MockHorizontalScroll.TYPE)) {
+      return new MockHorizontalScroll(editor);
 	  
 	  
     } else {
