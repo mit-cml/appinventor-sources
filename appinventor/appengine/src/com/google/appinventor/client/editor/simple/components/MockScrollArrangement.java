@@ -5,8 +5,24 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
+import com.google.appinventor.client.editor.simple.components.utils.PropertiesUtil;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidHorizontalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidLengthPropertyEditor;
+import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.properties.BadPropertyEditorException;
+import com.google.appinventor.client.properties.Property;
+import com.google.appinventor.client.widgets.properties.EditableProperty;
+import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.components.common.ComponentConstants;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.AbsolutePanel;
+
+
 
 /**
  * Mock HorizontalArrangement component.
@@ -39,8 +55,9 @@ public final class MockScrollArrangement extends MockContainer {
    *
    * @param editor  editor of source file the component belongs to
    */
-  public MockScrollArrangement(SimpleEditor editor, String type, ImageResource icon, int orientation = 1) {
-    super(editor, type, icon, MockHVArrangementHelper.makeLayout(orientation));
+  public MockScrollArrangement(SimpleEditor editor) {
+  
+    super(editor, TYPE, images.horizontal(), 1);
     // Note(hal): There better not be any calls to MockHVArrangementHelper before the
     // next instruction.  Note that the Helper methods are synchronized to avoid possible
     // future problems if we ever have threads creating arrangements in parallel.
