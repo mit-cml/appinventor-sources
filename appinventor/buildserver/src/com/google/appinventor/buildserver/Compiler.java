@@ -353,6 +353,10 @@ public final class Compiler {
 	  } else  {
 		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
+	  
+	  if (componentTypes.contains("AdMob")) {
+		out.write("<uses-sdk android:targetSdkVersion=\"15\" />\n");
+	  }
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
       // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
