@@ -112,7 +112,7 @@ public final class MockScrollArrangement extends MockContainer {
   // If the width is automatic, the selector for horizontal alignment should be disabled.  
   // If the length is automatic, the selector for vertical alignment should be disabled.
   private void enableAndDisableDropdowns() {
-    String width = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_WIDTH).getValue();
+    /*String width = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_WIDTH).getValue();
     if (width.equals(YoungAndroidLengthPropertyEditor.CONST_AUTOMATIC)) {
       myHAlignmentPropertyEditor.disable();
     } else myHAlignmentPropertyEditor.enable();
@@ -120,7 +120,7 @@ public final class MockScrollArrangement extends MockContainer {
     String height = properties.getProperty(MockVisibleComponent.PROPERTY_NAME_HEIGHT).getValue();
     if (height.equals(YoungAndroidLengthPropertyEditor.CONST_AUTOMATIC)) {
       myVAlignmentPropertyEditor.disable();
-    } else myVAlignmentPropertyEditor.enable();
+    } else myVAlignmentPropertyEditor.enable();*/
   }
 
 
