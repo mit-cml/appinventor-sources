@@ -455,9 +455,14 @@ public final class Compiler {
         "<service android:name=\"com.google.appinventor.components.runtime.util.GCMIntentService\" /> \n");
       }
 	  
+	  if (componentTypes.contains("AdMob")) {
+        //System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
+        out.write(
+            "<activity android:name=\"com.google.ads.AdActivity\" \n" +
+            "android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\"/> \n");
+      }
 	  
 	  
-
       out.write("  </application>\n");
       out.write("</manifest>\n");
       out.close();
