@@ -461,7 +461,7 @@ public final class Compiler {
 	  if (componentTypes.contains("AdMob")) {
         //System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
         out.write(
-            "<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\" /> \n");
+            "<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation\" /> \n");
       }
 	  
 	  
