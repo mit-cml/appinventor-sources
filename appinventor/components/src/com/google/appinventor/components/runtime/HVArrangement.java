@@ -8,6 +8,8 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.view.View;
 
+import android.widget.ScrollView;
+
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -32,6 +34,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   // Layout
   private final int orientation;
   private final LinearLayout viewLayout;
+  private final ScrollView sv;
 
   // translates App Inventor alignment codes to Android gravity
   private final AlignmentUtil alignmentSetter;
@@ -51,11 +54,17 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
   public HVArrangement(ComponentContainer container, int orientation) {
     super(container);
     context = container.$context();
+	
+	sv = new ScrollView(context);
+    sv.setLayoutParams(new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.MATCH_PARENT));
 
     this.orientation = orientation;
     viewLayout = new LinearLayout(context, orientation,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
+		
+	sv.addView(layoutManager);
+	
     alignmentSetter = new AlignmentUtil(viewLayout);
 
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
