@@ -8,7 +8,7 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.view.View;
 
-//import android.widget.ScrollView;
+import android.widget.ScrollView;
 
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -27,13 +27,19 @@ import com.google.appinventor.components.runtime.util.ViewUtil;
  * @author sharon@google.com (Sharon Perl)
  */
 
+@DesignerComponent(version = YaVersion.HORIZONTALARRANGEMENT_COMPONENT_VERSION,
+    description = "<p>A formatting element in which to place components " +
+    "that should be displayed from left to right.  If you wish to have " +
+    "components displayed one over another, use " +
+    "<code>VerticalArrangement</code> instead.</p>",
+    category = ComponentCategory.ARRANGEMENTS)
 @SimpleObject
-public class HVArrangement extends AndroidViewComponent implements Component, ComponentContainer {
+public class ScrollArrangement extends AndroidViewComponent implements Component, ComponentContainer {
   private final Activity context;
 
   // Layout
   private final int orientation;
-  private final LinearLayout viewLayout;
+  private final ScrollView viewLayout;
   //private final ScrollView sv;
 
   // translates App Inventor alignment codes to Android gravity
@@ -51,15 +57,15 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
   */
-  public HVArrangement(ComponentContainer container, int orientation) {
+  public HVArrangement(ComponentContainer container) {
     super(container);
     context = container.$context();
 	
 	//sv = new ScrollView(context);
     //sv.setLayoutParams(new android.widget.LinearLayout.LayoutParams(android.widget.LinearLayout.LayoutParams.MATCH_PARENT, android.widget.LinearLayout.LayoutParams.MATCH_PARENT));
 
-    this.orientation = orientation;
-    viewLayout = new LinearLayout(context, orientation,
+    //this.orientation = orientation;
+    viewLayout = new ScrollView(context,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
 		
