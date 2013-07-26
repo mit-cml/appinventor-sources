@@ -57,7 +57,7 @@ public final class MockScrollArrangement extends MockContainer {
    */
   public MockScrollArrangement(SimpleEditor editor) {
   
-    super(editor, TYPE, images.horizontal(), 0);
+    super(editor, TYPE, images.horizontal(), MockHVArrangementHelper.makeLayout(0));
     // Note(hal): There better not be any calls to MockHVArrangementHelper before the
     // next instruction.  Note that the Helper methods are synchronized to avoid possible
     // future problems if we ever have threads creating arrangements in parallel.
