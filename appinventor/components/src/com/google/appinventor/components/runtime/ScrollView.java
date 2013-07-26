@@ -28,7 +28,7 @@ public final class ScrollView implements Layout {
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_HORIZONTAL}.
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
    */
-  ScrollView(Context context, int orientation) {
+  ScrollView(Context context) {
     this(context, null, null);
   }
 

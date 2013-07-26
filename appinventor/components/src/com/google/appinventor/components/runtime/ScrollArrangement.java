@@ -41,7 +41,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   private final Activity context;
 
   // Layout
-  private final int orientation;
+  //private final int orientation;
   private final ScrollView viewLayout;
   //private final ScrollView sv;
 
