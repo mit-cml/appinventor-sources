@@ -63,7 +63,7 @@ public class HVArrangement extends AndroidViewComponent implements Component, Co
         ComponentConstants.EMPTY_HV_ARRANGEMENT_WIDTH,
         ComponentConstants.EMPTY_HV_ARRANGEMENT_HEIGHT);
 		
-	sv.addView(viewLayout);
+	sv.addView((android.widget.LinearLayout)viewLayout);
 	
     alignmentSetter = new AlignmentUtil(viewLayout);
 
