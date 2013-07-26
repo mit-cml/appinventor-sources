@@ -8,8 +8,8 @@ package com.google.appinventor.components.runtime;
 import android.app.Activity;
 import android.view.View;
 
-import android.widget.ScrollView;
 
+import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleObject;
@@ -68,12 +68,12 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 		
 	//sv.addView((android.widget.LinearLayout)viewLayout);
 	
-    alignmentSetter = new AlignmentUtil(viewLayout);
+    //alignmentSetter = new AlignmentUtil(viewLayout);
 
     horizontalAlignment = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT;
     verticalAlignment = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT;
-    alignmentSetter.setHorizontalAlignment(horizontalAlignment);
-    alignmentSetter.setVerticalAlignment(verticalAlignment);
+    //alignmentSetter.setHorizontalAlignment(horizontalAlignment);
+    //alignmentSetter.setVerticalAlignment(verticalAlignment);
 
     container.$add(this);
   }
@@ -97,20 +97,20 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 
   @Override
   public void setChildWidth(AndroidViewComponent component, int width) {
-    if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+    /*if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildWidthForHorizontalLayout(component.getView(), width);
     } else {
       ViewUtil.setChildWidthForVerticalLayout(component.getView(), width);
-    }
+    }*/
   }
 
   @Override
   public void setChildHeight(AndroidViewComponent component, int height) {
-    if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
+    /*if (orientation == ComponentConstants.LAYOUT_ORIENTATION_HORIZONTAL) {
       ViewUtil.setChildHeightForHorizontalLayout(component.getView(), height);
     } else {
       ViewUtil.setChildHeightForVerticalLayout(component.getView(), height);
-    }
+    }*/
   }
 
   // AndroidViewComponent implementation
@@ -128,6 +128,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
    * Returns a number that encodes how contents of the arrangement are aligned horizontally.
    * The choices are: 1 = left aligned, 2 = horizontally centered, 3 = right aligned
    */
+   /*
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how contents of the arrangement are aligned " +
@@ -137,12 +138,13 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   public int AlignHorizontal() {
     return horizontalAlignment;
   }
-
+*/
   /**
    * Sets the horizontal alignment for contents of the arrangement
    *
    * @param alignment
    */
+   /*
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_HORIZONTAL_ALIGNMENT,
       defaultValue = ComponentConstants.HORIZONTAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
@@ -157,12 +159,13 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
           ErrorMessages.ERROR_BAD_VALUE_FOR_HORIZONTAL_ALIGNMENT, alignment);
     }
   }
-
+*/
   /**
    * Returns a number that encodes how contents of the arrangement are aligned vertically.
    * The choices are: 1 = top, 2 = vertically centered, 3 = aligned at the bottom.
    * Alignment has no effect if the arrangement's height is automatic.
    */
+   /*
    @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
       description = "A number that encodes how the contents of the arrangement are aligned " +
@@ -172,12 +175,13 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
   public int AlignVertical() {
     return verticalAlignment;
   }
-
+*/
   /**
    * Sets the vertical alignment for contents of the arrangement
    *
    * @param alignment
    */
+   /*
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_VERTICAL_ALIGNMENT,
       defaultValue = ComponentConstants.VERTICAL_ALIGNMENT_DEFAULT + "")
   @SimpleProperty
@@ -192,5 +196,5 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
           ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
     }
   }
-
+*/
 }
