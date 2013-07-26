@@ -29,7 +29,7 @@ public final class ScrollView implements Layout {
    *     {@link ComponentConstants#LAYOUT_ORIENTATION_VERTICAL}
    */
   ScrollView(Context context, int orientation) {
-    this(context, orientation, null, null);
+    this(context, null, null);
   }
 
   /**

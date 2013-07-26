@@ -20,6 +20,9 @@ import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.ViewUtil;
 
+import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.YaVersion;
+
 /**
  * A container for components that arranges them linearly, either
  * horizontally or vertically.
@@ -117,7 +120,7 @@ public class ScrollArrangement extends AndroidViewComponent implements Component
 
   @Override
   public View getView() {
-    return viewLayout;
+    return viewLayout.getLayoutManager();
   }
 
  // These property definitions are duplicated in Form.java
