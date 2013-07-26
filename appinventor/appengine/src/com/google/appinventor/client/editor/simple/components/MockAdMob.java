@@ -21,7 +21,7 @@ public final class MockAdMob extends MockVisibleComponent {
   public static final String TYPE = "AdMob";
 
   private static final int DEFAULT_WIDTH = 320;
-  private static final int DEFAULT_height = 40;
+  private static final int DEFAULT_HEIGHT = 40;
 
   // Widget for showing the mock slider
   private final SimplePanel sliderWidget;
