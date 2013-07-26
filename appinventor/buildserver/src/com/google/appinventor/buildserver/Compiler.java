@@ -350,9 +350,6 @@ public final class Compiler {
 		out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" /> \n" +
 				  "<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" /> \n" +
 		"<uses-sdk android:minSdkVersion=\"8\" />\n");
-		
-	  } else if (componentTypes.contains("AdMob")) {
-	    out.write("  <uses-sdk android:minSdkVersion=\"13\" />\n");
 	  } else  {
 		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
