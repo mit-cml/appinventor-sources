@@ -350,7 +350,10 @@ public final class Compiler {
 		out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" /> \n" +
 				  "<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" /> \n" +
 		"<uses-sdk android:minSdkVersion=\"8\" />\n");
-	  } else {
+		
+	  } else if (componentTypes.contains("AdMob")) {
+	    out.write("  <uses-sdk android:minSdkVersion=\"13\" />\n");
+	  } else  {
 		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
@@ -458,7 +461,7 @@ public final class Compiler {
 	  if (componentTypes.contains("AdMob")) {
         //System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
         out.write(
-            "<activity android:name=\"com.google.ads.AdActivity\" /> \n");
+            "<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\" /> \n");
       }
 	  
 	  

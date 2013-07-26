@@ -52,9 +52,10 @@ public final class AdMob extends AndroidViewComponent {
   public AdMob(ComponentContainer container) {
     super(container);
     view = new AdView(container.$context(), AdSize.BANNER, "a14db01ee16f245");
-
+	
     // Adds the component to its designated container
     container.$add(this);
+	adView.loadAd(new AdRequest());
   }
 
   @Override
