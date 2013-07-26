@@ -844,7 +844,7 @@ public class Form extends Activity
     if (frameLayout != null) {
       frameLayout.removeAllViews();
     }
-	
+	/*
 	//Whatever, do it always! @@PABLOKO
 	// hide titlebar of application
 	// must be before setting the layout
@@ -857,7 +857,7 @@ public class Form extends Activity
 	getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 	WindowManager.LayoutParams.FLAG_FULLSCREEN);
 	}
-
+*/
     this.scrollable = scrollable;
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
