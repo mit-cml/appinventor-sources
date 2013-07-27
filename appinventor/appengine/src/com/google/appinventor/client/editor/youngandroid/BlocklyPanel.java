@@ -7,13 +7,13 @@ package com.google.appinventor.client.editor.youngandroid;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +32,9 @@ import java.util.Map;
  */
 public class BlocklyPanel extends HTMLPanel {
   public static enum OpType {ADD, REMOVE, RENAME}
+
+  // The currently displayed form (project/screen)
+  private static String currentForm;
 
   private static class ComponentOp {
     public OpType op;
@@ -93,10 +96,6 @@ public class BlocklyPanel extends HTMLPanel {
   // My form name
   private String formName;
 
-  // The Yail and Asset Polling timer used to communicate with the Companion App
-  private static Timer timer;
-  private static String timerForm;
-
   public static Boolean isWarningVisible = false;
 
   public BlocklyPanel(String formName) {
@@ -127,11 +126,6 @@ public class BlocklyPanel extends HTMLPanel {
    * exportInitComponentsMethod().
    */
   private static void initBlocksArea(String formName) {
-    if (timer != null) {
-      timer.cancel();
-      timer = null;
-      OdeLog.log("initBlocksArea: killed running timer.");
-    }
 
     OdeLog.log("BlocklyPanel: Got initBlocksArea call for " + formName);
 
@@ -506,28 +500,17 @@ public class BlocklyPanel extends HTMLPanel {
    * Send component data (json and form name) to Blockly for building
    * yail for the REPL.
    *
-   * We also start the pollYail timer (every two seconds) to see if updated
-   * yail needs to be sent to the phone.
-   *
    * @throws YailGenerationException if there was a problem generating the Yail
    */
   public void sendComponentData(String formJson, String packageName) throws YailGenerationException {
+    if (!currentForm.equals(formName)) { // Not working on the current form...
+      OdeLog.log("Not working on " + currentForm + " (while sending for " + formName + ")");
+      return;
+    }
     if (!blocksInited(formName)) {
       throw new YailGenerationException("Blocks area is not initialized yet", formName);
     }
     try {
-      if (timer == null) {      // If we don't have the timer running, start it now
-        final String sendYailFormName = formName;
-        timer = new Timer() {
-            public void run() {
-              doPollYail(sendYailFormName);
-            }
-          };
-        timer.scheduleRepeating(2000); // Run every two seconds
-        timerForm = formName;
-        OdeLog.log("Starting timer for " + formName);
-      }
-
       doSendJson(formName, formJson, packageName);
     } catch (JavaScriptException e) {
       throw new YailGenerationException(e.getDescription(), formName);
@@ -536,30 +519,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public void showDifferentForm(String newFormName) {
     OdeLog.log("showDifferentForm changing from " + formName + " to " + newFormName);
-    // Stop any running timer
-    if (!formName.equals(timerForm)) {
-      if (timer != null) {
-        timer.cancel();
-        timer = null;
-        OdeLog.log("timerForm changed, killing running timer.");
-      }
-      timerForm = formName;
-    }
     // Nuke Yail for form we are leaving so it will reload when we return
     if (!formName.equals(newFormName))
       doResetYail(formName);
     formName = newFormName;
-    if (timer == null) {      // If we don't have the timer running, start it now
-      final String sendYailFormName = formName;
-      timer = new Timer() {
-          public void run() {
-            doPollYail(sendYailFormName);
-          }
-        };
-      timer.scheduleRepeating(2000); // Run every two seconds
-      timerForm = formName;
-      OdeLog.log("Starting timer for " + formName);
-    }
     blocklyWorkspaceChanged(formName);
   }
 
@@ -569,6 +532,19 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static boolean checkIsAdmin() {
     return Ode.getInstance().getUser().getIsAdmin();
+  }
+
+  // Set currentScreen
+  // We use this to determine if we should send Yail to a
+  // a connected device.
+  public static void setCurrentForm(String formName) {
+    currentForm = formName;
+    if (blocksInited(formName))
+      blocklyWorkspaceChanged(formName); // Update the device now if the blocks are ready.
+  }
+
+  public static void indicateDisconnect() {
+    DesignToolbar.indicateDisconnect();
   }
 
   // ------------ Native methods ------------
@@ -584,6 +560,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::callToggleWarning());
     $wnd.BlocklyPanel_checkIsAdmin =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkIsAdmin());
+    $wnd.BlocklyPanel_indicateDisconnect =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::indicateDisconnect());
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
   }-*/;
 

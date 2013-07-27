@@ -9,6 +9,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
@@ -44,6 +45,9 @@ import java.util.Map;
  */
 public class DesignToolbar extends Toolbar {
 
+  public static DesignToolbar instance; // Static pointer to instance so we can
+                                        // call it from Javascript
+
   /*
    * A Screen groups together the form editor and blocks editor for an
    * application screen. Name is the name of the screen (form) displayed
@@ -71,11 +75,13 @@ public class DesignToolbar extends Toolbar {
     private final Map<String, Screen> screens; // screen name -> Screen
     private String currentScreen; // name of currently displayed screen
 
-    public DesignProject(String name) {
+    public DesignProject(String name, long projectId) {
       this.name = name;
       screens = Maps.newHashMap();
       // Screen1 is initial screen by default
       currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
+      // Let BlocklyPanel know which screen to send Yail for
+      BlocklyPanel.setCurrentForm(projectId + "_" + currentScreen);
     }
 
     // Returns true if we added the screen (it didn't previously exist), false otherwise.
@@ -138,6 +144,7 @@ public class DesignToolbar extends Toolbar {
   public DesignToolbar() {
     super();
 
+    instance = this;            // So we can find ourselves from Javascript
     projectNameLabel = new Label();
     projectNameLabel.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
@@ -309,6 +316,8 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
     }
+    // Inform the Blockly Panel which project/screen (aka form) we are working on
+    BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
     updateButtons();
   }
 
@@ -447,7 +456,7 @@ public class DesignToolbar extends Toolbar {
 
   public void addProject(long projectId, String projectName) {
     if (!projectMap.containsKey(projectId)) {
-      projectMap.put(projectId, new DesignProject(projectName));
+      projectMap.put(projectId, new DesignProject(projectName, projectId));
       OdeLog.log("DesignToolbar added project " + projectName + " with id " + projectId);
     } else {
       OdeLog.wlog("DesignToolbar ignoring addProject for existing project " + projectName
@@ -592,6 +601,16 @@ public class DesignToolbar extends Toolbar {
       replStarted = false;
       updateConnectToDropDownButton(false, false);
     }
+  }
+
+  /**
+   * Indicate that we are no longer connected to the Companion, adjust
+   * buttons accordingly. Called from BlocklyPanel
+   */
+  public static void indicateDisconnect() {
+    instance.updateConnectToDropDownButton(false, false);
+    instance.replStarted = false; // This is ugly, I should really define a method to do this
+                                  // but that would just take space and time...
   }
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning){

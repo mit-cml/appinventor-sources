@@ -53,10 +53,10 @@ Blockly.ReplMgr.buildYail = function() {
     var code = [];
     var blocks;
     var block;
-    if (!this.ReplState.phoneState) { // If there is no phone state, make some!
-        this.ReplState.phoneState = {};
+    if (!window.parent.ReplState.phoneState) { // If there is no phone state, make some!
+        window.parent.ReplState.phoneState = {};
     }
-    phoneState = this.ReplState.phoneState;
+    phoneState = window.parent.ReplState.phoneState;
     if (!phoneState.formJson || !phoneState.packageName)
         return;                 // Nothing we can do without these
     if (!phoneState.initialized) {
@@ -107,6 +107,16 @@ Blockly.ReplMgr.buildYail = function() {
     }
 
     blocks = Blockly.mainWorkspace.getTopBlocks(true);
+    var success = function() {
+        if (this.block.replError)
+            this.block.replError = null;
+        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+    };
+    var failure = function(message) {
+        this.block.replError = message;
+        Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+    };
+
     for (var x = 0; (block = blocks[x]); x++) {
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
             continue;           // Errors, unless they were errors signaled by the repl
@@ -118,23 +128,25 @@ Blockly.ReplMgr.buildYail = function() {
             continue;
         var tempyail = Blockly.Yail.blockToCode(block);
         if (phoneState.blockYail[block.id] != tempyail) { // Only send changed yail
-            this.putYail(tempyail, block, function() {
-                if (this.block.replError)
-                    this.block.replError = null;
-                Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
-            }, function(message) {
-                this.block.replError = message;
-                Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
-            });
+            this.putYail(tempyail, block, success, failure);
             phoneState.blockYail[block.id] = tempyail;
         }
     }
-}
+};
 
 Blockly.ReplMgr.sendFormData = function(formJson, packageName) {
-    this.ReplState.phoneState.formJson = formJson;
-    this.ReplState.phoneState.packageName = packageName;
-}
+    window.parent.ReplState.phoneState.formJson = formJson;
+    window.parent.ReplState.phoneState.packageName = packageName;
+    var context = this;
+    var poller = function() {   // Keep track of "this"
+        context.polltimer = null;
+        return context.pollYail.call(context);
+    };
+    if (this.polltimer) {       // We have one running, punt it.
+        clearTimeout(this.polltimer);
+    }
+    this.polltimer = setTimeout(poller, 500);
+};
 
 Blockly.ReplMgr.RefreshAssets = null;
 
@@ -145,10 +157,9 @@ Blockly.ReplMgr.pollYail = function() {
     } catch (err) {                  // We get an error on FireFox when window is gone.
         return;
     }
-    if (this.ReplState.state == this.rsState.CONNECTED) {
+    if (window.parent.ReplState.state == this.rsState.CONNECTED) {
         this.buildYail();
     }
-    this.rendPoll();            // Poll the rendezvous mechanism
     if (this.RefreshAssets === null) {
         try {
             this.RefreshAssets = window.parent.AssetManager_refreshAssets;
@@ -156,28 +167,34 @@ Blockly.ReplMgr.pollYail = function() {
         }
     }
     this.RefreshAssets(this.formName);
-}
+};
 
 Blockly.ReplMgr.resetYail = function(code) {
-    this.ReplState.phoneState = {};
-}
+    window.parent.ReplState.phoneState = {};
+};
 
-Blockly.ReplMgr.showDialog = function(message, oncancel) {
+Blockly.ReplMgr.showDialog = function(title, message, ok, oncancel) {
     var dialog1 = new goog.ui.Dialog(null, true);
     dialog1.setContent(message);
-    dialog1.setTitle("Message");
-    dialog1.setButtonSet(new goog.ui.Dialog.ButtonSet().
-                         addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CANCEL,
-                                   false, true));
+    dialog1.setTitle(title);
+    if (ok) {
+        dialog1.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+                                       false, true));
+    } else {
+        dialog1.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CANCEL,
+                                       false, true));
+    }
     goog.events.listen(dialog1, goog.ui.Dialog.EventType.SELECT, oncancel);
     dialog1.setVisible(true);
     return dialog1;
-}
+};
 
 // Theory of Operation
 //
 // This blocks of code implements communication to the phone. Yail Forms
-// are queued on ReplMgr.ReplState.phoneState.phoneQueue. Each entry in the
+// are queued on ReplState.phoneState.phoneQueue. Each entry in the
 // queue is an object that contains the yail to run and two callbacks, one
 // for success and one for failure.
 //
@@ -188,10 +205,12 @@ Blockly.ReplMgr.showDialog = function(message, oncancel) {
 
 Blockly.ReplMgr.putYail = (function() {
     var rs;
+    var context;
     var engine = {
         // Enqueue form for the phone
         'putYail' : function(code, block, success, failure) {
-            rs = this.ReplState;
+            rs = window.parent.ReplState;
+            context = this;
             if (rs === undefined || rs === null) {
                 console.log('putYail: replState not set yet.');
                 return;
@@ -215,7 +234,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
         },
         'pollphone' : function() {
-            var work = rs.phoneState.phoneQueue.pop()
+            var work = rs.phoneState.phoneQueue.pop();
             if (!work) {
                 rs.phoneState.ioRunning = false;
                 return;
@@ -241,7 +260,11 @@ Blockly.ReplMgr.putYail = (function() {
                         console.log("putYail(poller): status = " + this.status);
                         if (work.failure)
                             work.failure("Network Connection Error");
-                        engine.pollphone(); // And on to the next!
+                        context.showDialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and re-connecting", true, function() {});
+                        rs.state = Blockly.ReplMgr.rsState.IDLE;
+                        rs.connection = null;
+                        context.resetYail();
+                        window.parent.BlocklyPanel_indicateDisconnect();
                     }
                 }
 
@@ -327,7 +350,7 @@ Blockly.ReplMgr.startEmulator = function(rs) {
             counter -= 1;
             if (counter <= 0) {
                 progdialog.setContent("Starting the Companion App in the emulator.");
-                pc = 2
+                pc = 2;
                 counter = 5;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/", false); // Don't look at response
@@ -346,16 +369,16 @@ Blockly.ReplMgr.startEmulator = function(rs) {
             }
         }
     }, 1000);                   // We poll once per second
-}
+};
 
 Blockly.ReplMgr.startRepl = function(already, emulator) {
     var refreshAssets = window.parent.AssetManager_refreshAssets;
-    var rs = this.ReplState;
+    var rs = window.parent.ReplState;
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
     if (already.toString() == "false") {        // Have to test this way because already is a Java Boolean false
-        if (this.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
+        if (window.parent.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
         if (emulator.toString() != "false") {         // If we are talking to the emulator, don't use rendezvou server
             this.startEmulator(rs);
@@ -365,33 +388,33 @@ Blockly.ReplMgr.startRepl = function(already, emulator) {
             rs.asseturl = 'http://127.0.0.1:8001/';
             rs.seq_count = 1;
             rs.count = 0;
-            this.pollYail();
+            this.rendPoll();
             refreshAssets(this.formName);
             return;             // All done
         }
-        var rs = this.ReplState;
+        rs = window.parent.ReplState;
         rs.state = this.rsState.RENDEZVOUS; // We are now rendezvousing
         rs.replcode = this.genCode();
         rs.rendezvouscode = this.sha1(rs.replcode);
         rs.seq_count = 1;          // used for the creating the hmac mac
         rs.count = 0;
-        rs.dialog = this.showDialog(this.makeDialogMessage(rs.replcode), function(e) {
+        rs.dialog = this.showDialog("Connect to Companion", this.makeDialogMessage(rs.replcode), false, function(e) {
             rs.state = Blockly.ReplMgr.rsState.IDLE; // We're punting
             rs.connection = null;
-            alert('Punting');
+            window.parent.BlocklyPanel_indicateDisconnect();
         });
         this.getFromRendezvous();
     } else {
-        if (this.ReplState.state == this.rsState.RENDEZVOUS) {
-            this.ReplState.dialog.setVisible(false);
+        if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
+            window.parent.ReplState.dialog.setVisible(false);
         }
         this.resetYail();
-        this.ReplState.state = this.rsState.IDLE;
+        window.parent.ReplState.state = this.rsState.IDLE;
     }
-}
+};
 
 Blockly.ReplMgr.genCode = function() {
-    var retval = ''
+    var retval = '';
     for (var i = 0; i < 6; i++) {
         retval = retval + String.fromCharCode(Math.floor(Math.random()*26) + 97);
     }
@@ -401,13 +424,16 @@ Blockly.ReplMgr.genCode = function() {
 // Request ipAddress information from the Rendezvous Server
 Blockly.ReplMgr.getFromRendezvous = function() {
     var xmlhttp = goog.net.XmlHttp();
-    if (this.ReplState === undefined || this.ReplState === null) {
-        console.log('getFromRendezvous: replState not set yet.')
+    if (window.parent.ReplState === undefined || window.parent.ReplState === null) {
+        console.log('getFromRendezvous: replState not set yet.');
         return;
     }
-    var rs = this.ReplState;
+    var rs = window.parent.ReplState;
     var context = this;
     var refreshAssets = window.parent.AssetManager_refreshAssets; // This is where GWT puts this
+    var poller = function() {                                     // So "this" is correct when called
+        context.rendPoll.call(context);                           // from setTimeout
+    };
     xmlhttp.open('GET', 'http://rendezvous.appinventor.mit.edu/rendezvous/' + rs.rendezvouscode, true);
     xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && this.status == 200) {
@@ -421,26 +447,28 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                   // Start the connection with the Repl itself
                 refreshAssets(context.formName);    // Start assets loading
             } catch (err) {
+                console.log("getFromRendezvous(): Error: " + err);
+                setTimeout(poller, 2000); // Queue next attempt
             }
         }
-    }
+    };
     xmlhttp.send();
-}
+};
 
 // Called by the main poller function. Manages the state transitions for polling
 // The rendezvous server
 Blockly.ReplMgr.rendPoll = function() {
-    if (this.ReplState.state == this.rsState.RENDEZVOUS) {
-        this.ReplState.count = this.ReplState.count + 1;
-        if (this.ReplState.count > 40) {
-            this.ReplState.state = this.rsState.IDLE;
-            this.ReplState.dialog.setVisible(false); // Punt the dialog
+    if (window.parent.ReplState.state == this.rsState.RENDEZVOUS) {
+        window.parent.ReplState.count = window.parent.ReplState.count + 1;
+        if (window.parent.ReplState.count > 40) {
+            window.parent.ReplState.state = this.rsState.IDLE;
+            window.parent.ReplState.dialog.setVisible(false); // Punt the dialog
             alert('Failed to Connect to the MIT AICompanion, try again.');
-            this.ReplState.url = null;
+            window.parent.ReplState.url = null;
         }
         this.getFromRendezvous();
     }
-}
+};
 
 Blockly.ReplMgr.makeDialogMessage = function(code) {
     var qr = this.qrcode(1, 'L');
@@ -449,40 +477,40 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
     var img = qr.createImgTag(6);
     retval = '<table><tr><td>' + img + '</td><td>Your code is:<br /><br /><b>' + code + '</b></td></tr></table>';
     return retval;
-}
+};
 
 Blockly.ReplMgr.hmac = function(input) {
-    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(this.ReplState.replcode), 64);
+    var googhash = new goog.crypt.Hmac(new goog.crypt.Sha1(), this.string_to_bytes(window.parent.ReplState.replcode), 64);
     return(this.bytes_to_hexstring(googhash.getHmac(this.string_to_bytes(input))));
-}
+};
 
 Blockly.ReplMgr.sha1 = function(input) {
     var hasher = new goog.crypt.Sha1();
     hasher.update(this.string_to_bytes(input));
     return(this.bytes_to_hexstring(hasher.digest()));
-}
+};
 
 Blockly.ReplMgr.string_to_bytes = function(input) {
     var z = [];
     for (var i = 0; i < input.length; i++ )
         z.push(input.charCodeAt(i));
     return z;
-}
+};
 
 Blockly.ReplMgr.bytes_to_hexstring = function(input) {
     var z = [];
     for (var i = 0; i < input.length; i++ )
-        z.push(Number(256 + input[i]).toString(16).substring(1, 3))
+        z.push(Number(256 + input[i]).toString(16).substring(1, 3));
     return z.join("");
-}
+};
 
 Blockly.ReplMgr.putAsset = function(filename, blob) {
-    if (this['ReplState'] == undefined || this['ReplState'] == null)
+    if (window.parent.ReplState === undefined)
         return false;
-    if (this.ReplState.state != this.rsState.CONNECTED)
+    if (window.parent.ReplState.state != this.rsState.CONNECTED)
         return false;           // We didn't really do anything
     var conn = goog.net.XmlHttp();
-    var rs = this.ReplState;
+    var rs = window.parent.ReplState;
     var encoder = new goog.Uri.QueryData();
     var z = filename.split('/'); // Remove any directory components
     encoder.add('filename', z[z.length-1]);
@@ -494,7 +522,7 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     }
     conn.send(arraybuf);
     return true;
-}
+};
 
 //---------------------------------------------------------------------
 //
@@ -534,7 +562,7 @@ Blockly.ReplMgr.qrcode = function() {
         var _modules = null;
         var _moduleCount = 0;
         var _dataCache = null;
-        var _dataList = new Array();
+        var _dataList = [];
 
         var _this = {};
 
@@ -563,7 +591,7 @@ Blockly.ReplMgr.qrcode = function() {
                 setupTypeNumber(test);
             }
 
-            if (_dataCache == null) {
+            if (_dataCache === null) {
                 _dataCache = createData(_typeNumber, _errorCorrectLevel, _dataList);
             }
 
@@ -580,9 +608,9 @@ Blockly.ReplMgr.qrcode = function() {
 
                     if (col + c <= -1 || _moduleCount <= col + c) continue;
 
-                    if ( (0 <= r && r <= 6 && (c == 0 || c == 6) )
-                         || (0 <= c && c <= 6 && (r == 0 || r == 6) )
-                         || (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
+                    if ( (0 <= r && r <= 6 && (c === 0 || c == 6) ) ||
+                         (0 <= c && c <= 6 && (r === 0 || r == 6) ) ||
+                         (2 <= r && r <= 4 && 2 <= c && c <= 4) ) {
                         _modules[row + r][col + c] = true;
                     } else {
                         _modules[row + r][col + c] = false;
@@ -602,7 +630,7 @@ Blockly.ReplMgr.qrcode = function() {
 
                 var lostPoint = QRUtil.getLostPoint(_this);
 
-                if (i == 0 || minLostPoint > lostPoint) {
+                if (i === 0 || minLostPoint > lostPoint) {
                     minLostPoint = lostPoint;
                     pattern = i;
                 }
@@ -614,17 +642,17 @@ Blockly.ReplMgr.qrcode = function() {
         var setupTimingPattern = function() {
 
             for (var r = 8; r < _moduleCount - 8; r += 1) {
-                if (_modules[r][6] != null) {
+                if (_modules[r][6] !== null) {
                     continue;
                 }
-                _modules[r][6] = (r % 2 == 0);
+                _modules[r][6] = (r % 2 === 0);
             }
 
             for (var c = 8; c < _moduleCount - 8; c += 1) {
-                if (_modules[6][c] != null) {
+                if (_modules[6][c] !== null) {
                     continue;
                 }
-                _modules[6][c] = (c % 2 == 0);
+                _modules[6][c] = (c % 2 === 0);
             }
         };
 
@@ -639,7 +667,7 @@ Blockly.ReplMgr.qrcode = function() {
                     var row = pos[i];
                     var col = pos[j];
 
-                    if (_modules[row][col] != null) {
+                    if (_modules[row][col] !== null) {
                         continue;
                     }
 
@@ -647,8 +675,8 @@ Blockly.ReplMgr.qrcode = function() {
 
                         for (var c = -2; c <= 2; c += 1) {
 
-                            if (r == -2 || r == 2 || c == -2 || c == 2
-                                || (r == 0 && c == 0) ) {
+                            if (r == -2 || r == 2 || c == -2 || c == 2 ||
+                               (r === 0 && c === 0) ) {
                                 _modules[row + r][col + c] = true;
                             } else {
                                 _modules[row + r][col + c] = false;
@@ -662,14 +690,16 @@ Blockly.ReplMgr.qrcode = function() {
         var setupTypeNumber = function(test) {
 
             var bits = QRUtil.getBCHTypeNumber(_typeNumber);
+            var i;
+            var mod;
 
-            for (var i = 0; i < 18; i += 1) {
-                var mod = (!test && ( (bits >> i) & 1) == 1);
+            for (i = 0; i < 18; i += 1) {
+                mod = (!test && ( (bits >> i) & 1) == 1);
                 _modules[Math.floor(i / 3)][i % 3 + _moduleCount - 8 - 3] = mod;
             }
 
-            for (var i = 0; i < 18; i += 1) {
-                var mod = (!test && ( (bits >> i) & 1) == 1);
+            for (i = 0; i < 18; i += 1) {
+                mod = (!test && ( (bits >> i) & 1) == 1);
                 _modules[i % 3 + _moduleCount - 8 - 3][Math.floor(i / 3)] = mod;
             }
         };
@@ -678,11 +708,13 @@ Blockly.ReplMgr.qrcode = function() {
 
             var data = (_errorCorrectLevel << 3) | maskPattern;
             var bits = QRUtil.getBCHTypeInfo(data);
+            var i;
+            var mod;
 
             // vertical
-            for (var i = 0; i < 15; i += 1) {
+            for (i = 0; i < 15; i += 1) {
 
-                var mod = (!test && ( (bits >> i) & 1) == 1);
+                mod = (!test && ( (bits >> i) & 1) == 1);
 
                 if (i < 6) {
                     _modules[i][8] = mod;
@@ -694,9 +726,9 @@ Blockly.ReplMgr.qrcode = function() {
             }
 
             // horizontal
-            for (var i = 0; i < 15; i += 1) {
+            for (i = 0; i < 15; i += 1) {
 
-                var mod = (!test && ( (bits >> i) & 1) == 1);
+                mod = (!test && ( (bits >> i) & 1) == 1);
 
                 if (i < 8) {
                     _modules[8][_moduleCount - i - 1] = mod;
@@ -727,7 +759,7 @@ Blockly.ReplMgr.qrcode = function() {
 
                     for (var c = 0; c < 2; c += 1) {
 
-                        if (_modules[row][col - c] == null) {
+                        if (_modules[row][col - c] === null) {
 
                             var dark = false;
 
@@ -768,11 +800,12 @@ Blockly.ReplMgr.qrcode = function() {
 
             var maxDcCount = 0;
             var maxEcCount = 0;
+            var i,r;
 
             var dcdata = new Array(rsBlocks.length);
             var ecdata = new Array(rsBlocks.length);
 
-            for (var r = 0; r < rsBlocks.length; r += 1) {
+            for (r = 0; r < rsBlocks.length; r += 1) {
 
                 var dcCount = rsBlocks[r].dataCount;
                 var ecCount = rsBlocks[r].totalCount - dcCount;
@@ -782,7 +815,7 @@ Blockly.ReplMgr.qrcode = function() {
 
                 dcdata[r] = new Array(dcCount);
 
-                for (var i = 0; i < dcdata[r].length; i += 1) {
+                for (i = 0; i < dcdata[r].length; i += 1) {
                     dcdata[r][i] = 0xff & buffer.getBuffer()[i + offset];
                 }
                 offset += dcCount;
@@ -792,22 +825,22 @@ Blockly.ReplMgr.qrcode = function() {
 
                 var modPoly = rawPoly.mod(rsPoly);
                 ecdata[r] = new Array(rsPoly.getLength() - 1);
-                for (var i = 0; i < ecdata[r].length; i += 1) {
+                for (i = 0; i < ecdata[r].length; i += 1) {
                     var modIndex = i + modPoly.getLength() - ecdata[r].length;
                     ecdata[r][i] = (modIndex >= 0)? modPoly.get(modIndex) : 0;
                 }
             }
 
             var totalCodeCount = 0;
-            for (var i = 0; i < rsBlocks.length; i += 1) {
+            for (i = 0; i < rsBlocks.length; i += 1) {
                 totalCodeCount += rsBlocks[i].totalCount;
             }
 
             var data = new Array(totalCodeCount);
             var index = 0;
 
-            for (var i = 0; i < maxDcCount; i += 1) {
-                for (var r = 0; r < rsBlocks.length; r += 1) {
+            for (i = 0; i < maxDcCount; i += 1) {
+                for (r = 0; r < rsBlocks.length; r += 1) {
                     if (i < dcdata[r].length) {
                         data[index] = dcdata[r][i];
                         index += 1;
@@ -815,8 +848,8 @@ Blockly.ReplMgr.qrcode = function() {
                 }
             }
 
-            for (var i = 0; i < maxEcCount; i += 1) {
-                for (var r = 0; r < rsBlocks.length; r += 1) {
+            for (i = 0; i < maxEcCount; i += 1) {
+                for (r = 0; r < rsBlocks.length; r += 1) {
                     if (i < ecdata[r].length) {
                         data[index] = ecdata[r][i];
                         index += 1;
@@ -830,10 +863,11 @@ Blockly.ReplMgr.qrcode = function() {
         var createData = function(typeNumber, errorCorrectLevel, dataList) {
 
             var rsBlocks = QRRSBlock.getRSBlocks(typeNumber, errorCorrectLevel);
+            var i;
 
             var buffer = qrBitBuffer();
 
-            for (var i = 0; i < dataList.length; i += 1) {
+            for (i = 0; i < dataList.length; i += 1) {
                 var data = dataList[i];
                 buffer.put(data.getMode(), 4);
                 buffer.put(data.getLength(), QRUtil.getLengthInBits(data.getMode(), typeNumber) );
@@ -842,16 +876,16 @@ Blockly.ReplMgr.qrcode = function() {
 
             // calc num max data.
             var totalDataCount = 0;
-            for (var i = 0; i < rsBlocks.length; i += 1) {
+            for (i = 0; i < rsBlocks.length; i += 1) {
                 totalDataCount += rsBlocks[i].dataCount;
             }
 
             if (buffer.getLengthInBits() > totalDataCount * 8) {
-                throw new Error('code length overflow. ('
-                                + buffer.getLengthInBits()
-                                + '>'
-                                + totalDataCount * 8
-                                + ')');
+                throw new Error('code length overflow. (' +
+                                buffer.getLengthInBits() +
+                                '>' +
+                                totalDataCount * 8 +
+                                ')');
             }
 
             // end code
@@ -860,7 +894,7 @@ Blockly.ReplMgr.qrcode = function() {
             }
 
             // padding
-            while (buffer.getLengthInBits() % 8 != 0) {
+            while (buffer.getLengthInBits() % 8 !== 0) {
                 buffer.putBit(false);
             }
 
@@ -970,7 +1004,7 @@ Blockly.ReplMgr.qrcode = function() {
     //---------------------------------------------------------------------
 
     qrcode.stringToBytes = function(s) {
-        var bytes = new Array();
+        var bytes = [];
         for (var i = 0; i < s.length; i += 1) {
             var c = s.charCodeAt(i);
             bytes.push(c & 0xff);
@@ -1023,7 +1057,7 @@ Blockly.ReplMgr.qrcode = function() {
         var unknownChar = '?'.charCodeAt(0);
 
         return function(s) {
-            var bytes = new Array();
+            var bytes = [];
             for (var i = 0; i < s.length; i += 1) {
                 var c = s.charCodeAt(i);
                 if (c < 128) {
@@ -1141,7 +1175,7 @@ Blockly.ReplMgr.qrcode = function() {
 
         var getBCHDigit = function(data) {
             var digit = 0;
-            while (data != 0) {
+            while (data !== 0) {
                 digit += 1;
                 data >>>= 1;
             }
@@ -1173,21 +1207,21 @@ Blockly.ReplMgr.qrcode = function() {
             switch (maskPattern) {
 
             case QRMaskPattern.PATTERN000 :
-                return function(i, j) { return (i + j) % 2 == 0; };
+                return function(i, j) { return (i + j) % 2 === 0; };
             case QRMaskPattern.PATTERN001 :
-                return function(i, j) { return i % 2 == 0; };
+                return function(i, j) { return i % 2 === 0; };
             case QRMaskPattern.PATTERN010 :
-                return function(i, j) { return j % 3 == 0; };
+                return function(i, j) { return j % 3 === 0; };
             case QRMaskPattern.PATTERN011 :
-                return function(i, j) { return (i + j) % 3 == 0; };
+                return function(i, j) { return (i + j) % 3 === 0; };
             case QRMaskPattern.PATTERN100 :
-                return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 == 0; };
+                return function(i, j) { return (Math.floor(i / 2) + Math.floor(j / 3) ) % 2 === 0; };
             case QRMaskPattern.PATTERN101 :
-                return function(i, j) { return (i * j) % 2 + (i * j) % 3 == 0; };
+                return function(i, j) { return (i * j) % 2 + (i * j) % 3 === 0; };
             case QRMaskPattern.PATTERN110 :
-                return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 == 0; };
+                return function(i, j) { return ( (i * j) % 2 + (i * j) % 3) % 2 === 0; };
             case QRMaskPattern.PATTERN111 :
-                return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 == 0; };
+                return function(i, j) { return ( (i * j) % 3 + (i + j) % 2) % 2 === 0; };
 
             default :
                 throw new Error('bad maskPattern:' + maskPattern);
@@ -1251,13 +1285,14 @@ Blockly.ReplMgr.qrcode = function() {
         _this.getLostPoint = function(qrcode) {
 
             var moduleCount = qrcode.getModuleCount();
+            var row, col;
 
             var lostPoint = 0;
 
             // LEVEL1
 
-            for (var row = 0; row < moduleCount; row += 1) {
-                for (var col = 0; col < moduleCount; col += 1) {
+            for (row = 0; row < moduleCount; row += 1) {
+                for (col = 0; col < moduleCount; col += 1) {
 
                     var sameCount = 0;
                     var dark = qrcode.isDark(row, col);
@@ -1274,7 +1309,7 @@ Blockly.ReplMgr.qrcode = function() {
                                 continue;
                             }
 
-                            if (r == 0 && c == 0) {
+                            if (r === 0 && c === 0) {
                                 continue;
                             }
 
@@ -1288,18 +1323,18 @@ Blockly.ReplMgr.qrcode = function() {
                         lostPoint += (3 + sameCount - 5);
                     }
                 }
-            };
+            }
 
             // LEVEL2
 
-            for (var row = 0; row < moduleCount - 1; row += 1) {
-                for (var col = 0; col < moduleCount - 1; col += 1) {
+            for (row = 0; row < moduleCount - 1; row += 1) {
+                for (col = 0; col < moduleCount - 1; col += 1) {
                     var count = 0;
                     if (qrcode.isDark(row, col) ) count += 1;
                     if (qrcode.isDark(row + 1, col) ) count += 1;
                     if (qrcode.isDark(row, col + 1) ) count += 1;
                     if (qrcode.isDark(row + 1, col + 1) ) count += 1;
-                    if (count == 0 || count == 4) {
+                    if (count === 0 || count == 4) {
                         lostPoint += 3;
                     }
                 }
@@ -1307,29 +1342,29 @@ Blockly.ReplMgr.qrcode = function() {
 
             // LEVEL3
 
-            for (var row = 0; row < moduleCount; row += 1) {
-                for (var col = 0; col < moduleCount - 6; col += 1) {
-                    if (qrcode.isDark(row, col)
-                        && !qrcode.isDark(row, col + 1)
-                        &&  qrcode.isDark(row, col + 2)
-                        &&  qrcode.isDark(row, col + 3)
-                        &&  qrcode.isDark(row, col + 4)
-                        && !qrcode.isDark(row, col + 5)
-                        &&  qrcode.isDark(row, col + 6) ) {
+            for (row = 0; row < moduleCount; row += 1) {
+                for (col = 0; col < moduleCount - 6; col += 1) {
+                    if (qrcode.isDark(row, col) &&
+                        !qrcode.isDark(row, col + 1) &&
+                        qrcode.isDark(row, col + 2) &&
+                        qrcode.isDark(row, col + 3) &&
+                        qrcode.isDark(row, col + 4) &&
+                        !qrcode.isDark(row, col + 5) &&
+                        qrcode.isDark(row, col + 6) ) {
                         lostPoint += 40;
                     }
                 }
             }
 
-            for (var col = 0; col < moduleCount; col += 1) {
-                for (var row = 0; row < moduleCount - 6; row += 1) {
-                    if (qrcode.isDark(row, col)
-                        && !qrcode.isDark(row + 1, col)
-                        &&  qrcode.isDark(row + 2, col)
-                        &&  qrcode.isDark(row + 3, col)
-                        &&  qrcode.isDark(row + 4, col)
-                        && !qrcode.isDark(row + 5, col)
-                        &&  qrcode.isDark(row + 6, col) ) {
+            for (col = 0; col < moduleCount; col += 1) {
+                for (row = 0; row < moduleCount - 6; row += 1) {
+                    if (qrcode.isDark(row, col) &&
+                        !qrcode.isDark(row + 1, col) &&
+                        qrcode.isDark(row + 2, col) &&
+                        qrcode.isDark(row + 3, col) &&
+                        qrcode.isDark(row + 4, col) &&
+                        !qrcode.isDark(row + 5, col) &&
+                        qrcode.isDark(row + 6, col) ) {
                         lostPoint += 40;
                     }
                 }
@@ -1339,8 +1374,8 @@ Blockly.ReplMgr.qrcode = function() {
 
             var darkCount = 0;
 
-            for (var col = 0; col < moduleCount; col += 1) {
-                for (var row = 0; row < moduleCount; row += 1) {
+            for (col = 0; col < moduleCount; col += 1) {
+                for (row = 0; row < moduleCount; row += 1) {
                     if (qrcode.isDark(row, col) ) {
                         darkCount += 1;
                     }
@@ -1364,18 +1399,19 @@ Blockly.ReplMgr.qrcode = function() {
 
         var EXP_TABLE = new Array(256);
         var LOG_TABLE = new Array(256);
+        var i;
 
         // initialize tables
-        for (var i = 0; i < 8; i += 1) {
+        for (i = 0; i < 8; i += 1) {
             EXP_TABLE[i] = 1 << i;
         }
-        for (var i = 8; i < 256; i += 1) {
+        for (i = 8; i < 256; i += 1) {
             EXP_TABLE[i] = EXP_TABLE[i - 4]
                 ^ EXP_TABLE[i - 5]
                 ^ EXP_TABLE[i - 6]
                 ^ EXP_TABLE[i - 8];
         }
-        for (var i = 0; i < 255; i += 1) {
+        for (i = 0; i < 255; i += 1) {
             LOG_TABLE[EXP_TABLE[i] ] = i;
         }
 
@@ -1418,7 +1454,7 @@ Blockly.ReplMgr.qrcode = function() {
 
         var _num = function() {
             var offset = 0;
-            while (offset < num.length && num[offset] == 0) {
+            while (offset < num.length && num[offset] === 0) {
                 offset += 1;
             }
             var _num = new Array(num.length - offset + shift);
@@ -1452,6 +1488,7 @@ Blockly.ReplMgr.qrcode = function() {
         };
 
         _this.mod = function(e) {
+            var i;
 
             if (_this.getLength() - e.getLength() < 0) {
                 return _this;
@@ -1460,11 +1497,11 @@ Blockly.ReplMgr.qrcode = function() {
             var ratio = QRMath.glog(_this.get(0) ) - QRMath.glog(e.get(0) );
 
             var num = new Array(_this.getLength() );
-            for (var i = 0; i < _this.getLength(); i += 1) {
+            for (i = 0; i < _this.getLength(); i += 1) {
                 num[i] = _this.get(i);
             }
 
-            for (var i = 0; i < e.getLength(); i += 1) {
+            for (i = 0; i < e.getLength(); i += 1) {
                 num[i] ^= QRMath.gexp(QRMath.glog(e.get(i) ) + ratio);
             }
 
@@ -1473,7 +1510,7 @@ Blockly.ReplMgr.qrcode = function() {
         };
 
         return _this;
-    };
+    }
 
     //---------------------------------------------------------------------
     // QRRSBlock
@@ -1585,7 +1622,7 @@ Blockly.ReplMgr.qrcode = function() {
 
             var length = rsBlock.length / 3;
 
-            var list = new Array();
+            var list = [];
 
             for (var i = 0; i < length; i += 1) {
 
@@ -1610,7 +1647,7 @@ Blockly.ReplMgr.qrcode = function() {
 
     var qrBitBuffer = function() {
 
-        var _buffer = new Array();
+        var _buffer = [];
         var _length = 0;
 
         var _this = {};
@@ -1690,7 +1727,7 @@ Blockly.ReplMgr.qrcode = function() {
 
     var byteArrayOutputStream = function() {
 
-        var _bytes = new Array();
+        var _bytes = [];
 
         var _this = {};
 
@@ -1791,7 +1828,7 @@ Blockly.ReplMgr.qrcode = function() {
                 _buflen = 0;
             }
 
-            if (_length % 3 != 0) {
+            if (_length % 3 !== 0) {
                 // padding
                 var padlen = 3 - _length % 3;
                 for (var i = 0; i < padlen; i += 1) {
@@ -1825,7 +1862,7 @@ Blockly.ReplMgr.qrcode = function() {
             while (_buflen < 8) {
 
                 if (_pos >= _str.length) {
-                    if (_buflen == 0) {
+                    if (_buflen === 0) {
                         return -1;
                     }
                     throw new Error('unexpected end of file./' + _buflen);
@@ -1964,7 +2001,7 @@ Blockly.ReplMgr.qrcode = function() {
 
             _this.write = function(data, length) {
 
-                if ( (data >>> length) != 0) {
+                if ( (data >>> length) !== 0) {
                     throw new Error('length over');
                 }
 
