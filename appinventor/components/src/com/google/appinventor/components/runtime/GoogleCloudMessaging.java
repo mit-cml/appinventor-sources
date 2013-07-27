@@ -245,7 +245,7 @@ public class GoogleCloudMessaging extends AndroidNonvisibleComponent implements 
   
   
   
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "1")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "Screen1")
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
       description =  "MUST BE NUMBER!")
   public void DefaultNotificationScreen(String screen) {

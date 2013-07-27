@@ -392,7 +392,7 @@ public class Form extends Activity
   }
 
   @SimpleEvent(description = "Fires when back button is pressed")
-  public void OnBackKey() {
+  public void BackPressed() {
     
   }
 
@@ -466,7 +466,8 @@ public class Form extends Activity
 			return super.onKeyDown(keyCode, event);
 		}
 	} else if(keyCode == KeyEvent.KEYCODE_BACK) {
-		if (EventDispatcher.dispatchEvent(this, "OnBackKey")) {			
+		//if (EventDispatcher.dispatchEvent(this, "OnBackKey")) {
+		if (EventDispatcher.dispatchEvent(this, "BackPressed")) {
                        return true;
 		} else {
 			return super.onKeyDown(keyCode, event);

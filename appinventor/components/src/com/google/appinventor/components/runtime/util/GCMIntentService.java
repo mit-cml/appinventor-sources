@@ -185,7 +185,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 						lines[0] = prefs.getString(PREF_DEFTITLE, "");
 					}
 					
-					nscreen = ".Screen" + prefs.getString(PREF_DEFSCREEN, "1");
+					nscreen = "." + prefs.getString(PREF_DEFSCREEN, "Screen1");
 					
 					
 					String classname = packageName + nscreen;

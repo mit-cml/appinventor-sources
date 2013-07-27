@@ -353,10 +353,11 @@ public final class Compiler {
 	  } else  {
 		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
 	  }
-	  
-	  if (componentTypes.contains("AdMob")) {
-		out.write("<uses-sdk android:targetSdkVersion=\"15\" />\n");
-	  }
+	  /*
+	  if (componentTypes.contains("AdMob")) {*/
+		out.write("<uses-sdk android:targetSdkVersion=\"17\" />\n");
+	 /*}
+	  */
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
       // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
       // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
@@ -458,13 +459,13 @@ public final class Compiler {
         "</receiver>\n" +
         "<service android:name=\"com.google.appinventor.components.runtime.util.GCMIntentService\" /> \n");
       }
-	  
+	  /*
 	  if (componentTypes.contains("AdMob")) {
         //System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
         out.write(
             "<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode\" /> \n");
       }
-	  
+	  */
 	  
       out.write("  </application>\n");
       out.write("</manifest>\n");
