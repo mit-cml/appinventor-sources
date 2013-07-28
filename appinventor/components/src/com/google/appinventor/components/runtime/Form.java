@@ -1174,7 +1174,6 @@ public class Form extends Activity
    * @param animType the type of animation to use for the transition
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
-      defaultValue = "default")
   defaultValue = "default")
   @SimpleProperty
    public void OpenScreenAnimation(String animType) {
