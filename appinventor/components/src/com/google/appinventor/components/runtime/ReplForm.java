@@ -45,6 +45,7 @@ public class ReplForm extends Form {
   public static ReplForm topform;
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
   private boolean IsUSBRepl = false;
+  private boolean assetsLoaded = false;
 
   public ReplForm() {
     super();
@@ -155,6 +156,19 @@ public class ReplForm extends Form {
     File f = new File(REPL_ASSET_DIR);
     if (!f.exists())
         f.mkdirs();             // Create the directory and all parents
+  }
+
+  // We return true if the assets for the Companion have been loaded and
+  // displayed so we should look for all future assets in the sdcard which
+  // is where assets are placed for the companion.
+  // We return false until setAssetsLoaded is called which is done
+  // by the phone status block
+  public boolean isAssetsLoaded() {
+    return assetsLoaded;
+  }
+
+  public void setAssetsLoaded() {
+    assetsLoaded = true;
   }
 
 }

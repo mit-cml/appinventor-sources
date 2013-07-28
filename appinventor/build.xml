@@ -66,8 +66,10 @@
         <pathelement location="components/src" />
       </sourcepath>
       <classpath>
-        <pathelement location="lib/android/2.2/android.jar" />
+        <pathelement location="lib/android/4.2.2/android.jar" />
         <pathelement location="lib/android/tools/ddmlib.jar"/>
+		<pathelement location="lib/bouncycastle/bcprov-jdk15on-149.jar"/>
+        <pathelement location="lib/bouncycastle/bcpkix-jdk15on-149.jar"/>
         <pathelement location="lib/android/tools/sdklib.jar"/>
         <pathelement location="lib/args4j/args4j-2.0.18.jar" />
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
@@ -82,6 +84,7 @@
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
         <pathelement location="lib/twitter/twitter4j-core-3.0.3.jar" />
+		<pathelement location="lib/twitter/twitter4j-media-support-3.0.3.jar" />
 		<pathelement location="lib/gcm/gcm.jar" />
 		<pathelement location="lib/admob/admob.jar" />
         <pathelement location="lib/QRGenerator/core.jar" />

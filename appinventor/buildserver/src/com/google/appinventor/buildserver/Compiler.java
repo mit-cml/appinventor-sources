@@ -355,7 +355,10 @@ public final class Compiler {
 	  }
 	  /*
 	  if (componentTypes.contains("AdMob")) {*/
-		out.write("<uses-sdk android:targetSdkVersion=\"17\" />\n");
+	  
+	//@pabloko: we should talk about this, and holo! so we have to schoose light or black theme  
+	//out.write("<uses-sdk android:targetSdkVersion=\"17\" />\n");
+	
 	 /*}
 	  */
       // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
@@ -396,6 +399,15 @@ public final class Compiler {
           // A secondary activity of the application.
           out.write("    <activity android:name=\"" + formClassName + "\" ");
         }
+		
+		// This line is here for NearField and NFC.   It keeps the activity from
+        // restarting every time NDEF_DISCOVERED is signaled.
+        // TODO:  Check that this doesn't screw up other components.  Also, it might be
+        // better to do this programmatically when the NearField component is created, rather
+        // than here in the manifest.
+        out.write("android:launchMode=\"singleTask\" ");
+
+
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
         out.write("android:configChanges=\"orientation|keyboardHidden\">\n");
 
@@ -423,6 +435,19 @@ public final class Compiler {
       out.write("      <intent-filter>\n");
       out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
       out.write("      </intent-filter>\n");
+	  
+	  if (componentTypes.contains("NearField") && !isForWireless) {
+          //  make the form respond to NDEF_DISCOVERED
+          //  this will trigger the form's onResume method
+          //  For now, we're handling text/plain only,but we can add more and make the Nearfield
+          // component check the type.
+          out.write("      <intent-filter>\n");
+          out.write("        <action android:name=\"android.nfc.action.NDEF_DISCOVERED\" />\n");
+          out.write("        <category android:name=\"android.intent.category.DEFAULT\" />\n");
+          out.write("        <data android:mimeType=\"text/plain\" />\n");
+          out.write("      </intent-filter>\n");
+        }
+	  
       out.write("    </activity>\n");
 
       // BroadcastReceiver for Texting Component

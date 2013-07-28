@@ -4,35 +4,15 @@ $Source $Yail
 
 (define-repl-form edu.mit.appinventor.aicompanion2.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
-(def (Setup)
-(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
- '())
-)
+(def (badversion)
+(set-var! expired  #t)
 
-(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
- 'text)
-
-(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
-
-(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
+(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
 
 (set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
 
-(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
- '())
-)
- '( boolean)
- "not")
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
-
-)
- (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
-
-)
-)
-
  )
-(def expired #f)
+(def ipaddress "IPADDRESS")
 
 (def (PostData)
 (set-and-coerce-property! 'Web1 'Url (call-yail-primitive string-append (*list-for-runtime* "http://" (call-yail-primitive string-append (*list-for-runtime* "rendezvous.appinventor.mit.edu" "/rendezvous/")
@@ -68,14 +48,34 @@ $Source $Yail
  '())
 
  )
-(def ipaddress "IPADDRESS")
+(def expired #f)
 
-(def (badversion)
-(set-var! expired  #t)
+(def (Setup)
+(set-var! ipaddress  (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*)
+ '())
+)
 
-(set-and-coerce-property! 'Expireblock 'Visible #t 'boolean)
+(set-and-coerce-property! 'iplabel 'Text (get-var ipaddress)
+ 'text)
+
+(set-and-coerce-property! 'Button1 'Enabled #t 'boolean)
+
+(set-and-coerce-property! 'ScanButton 'Enabled #t 'boolean)
 
 (set-and-coerce-property! 'RetryButton 'Visible #f 'boolean)
+
+(if (call-yail-primitive yail-not (*list-for-runtime* (call-component-method 'PhoneStatus1 'isConnected (*list-for-runtime*)
+ '())
+)
+ '( boolean)
+ "not")
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #t 'boolean)
+
+)
+ (begin (set-and-coerce-property! 'ConnectFailLabel 'Visible #f 'boolean)
+
+)
+)
 
  )
 ;;; Screen1
@@ -84,11 +84,6 @@ $Source $Yail
 (set-and-coerce-property! 'Screen1 'Title "MIT AICompanion" 'text)
 (set-and-coerce-property! 'Screen1 'VersionCode 207 'number)
 (set-and-coerce-property! 'Screen1 'VersionName "2.07" 'text)
-)
-(define-event Screen1 Initialize()
- (set-this-form)
- ((get-var Setup))
-
 )
 (define-event Screen1 ErrorOccurred( component  functionName  errorNumber  message )
  (set-this-form)
@@ -107,6 +102,14 @@ $Source $Yail
 )
 
 ((get-var Setup))
+
+)
+(define-event Screen1 Initialize()
+ (set-this-form)
+ ((get-var Setup))
+
+(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*)
+ '())
 
 )
 ;;; HorizontalArrangement2

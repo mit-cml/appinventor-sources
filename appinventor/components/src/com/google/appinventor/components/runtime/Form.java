@@ -151,6 +151,7 @@ public class Form extends Activity
   private final Set<OnResumeListener> onResumeListeners = Sets.newHashSet();
   private final Set<OnPauseListener> onPauseListeners = Sets.newHashSet();
   private final Set<OnDestroyListener> onDestroyListeners = Sets.newHashSet();
+  private final Set<OnNewIntentListener> onNewIntentListeners = Sets.newHashSet();
   
   // AppInventor lifecycle: listeners for the Initialize Event
   private final Set<OnInitializeListener> onInitializeListeners = Sets.newHashSet();
@@ -641,6 +642,19 @@ public class Form extends Activity
    */
   public void registerForOnInitialize(OnInitializeListener component) {
     onInitializeListeners.add(component);
+  }
+  
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    Log.d(LOG_TAG, "Form " + formName + " got onNewIntent " + intent);
+    for (OnNewIntentListener onNewIntentListener : onNewIntentListeners) {
+      onNewIntentListener.onNewIntent(intent);
+    }
+  }
+
+  public void registerForOnNewIntent(OnNewIntentListener component) {
+    onNewIntentListeners.add(component);
   }
 
   @Override
@@ -1139,6 +1153,20 @@ public class Form extends Activity
          ErrorMessages.ERROR_BAD_VALUE_FOR_VERTICAL_ALIGNMENT, alignment);
    }
  }
+ 
+ 
+  /**
+  * Returns the type of open screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The animation for switching to another screen. Valid" +
+    " options are default, fade, zoom, slidehorizontal, slidevertical, and none"    )
+  public String OpenScreenAnimation() {
+    return openAnimType;
+  }
 
   /**
    * Sets the animation type for the transition to another screen.
@@ -1147,10 +1175,32 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
       defaultValue = "default")
-  @SimpleFunction(description = "Sets the animation for switching to another screen. Valid" +
- 		" options are default, fade, zoom, slidehorizontal, slidevertical, and none")
-  public void OpenScreenAnimation(String animType) {
-    openAnimType = animType;
+  defaultValue = "default")
+  @SimpleProperty
+   public void OpenScreenAnimation(String animType) {
+    if ((animType != "default") &&
+      (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
+      (animType != "slidevertical") && (animType != "none")) {
+      this.dispatchErrorOccurredEvent(this, "Screen",
+        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+      return;
+    }
+     openAnimType = animType;
+   }
+   
+   
+   /**
+  * Returns the type of close screen animation (default, fade, zoom, slidehorizontal,
+  * slidevertical and none).
+  *
+  * @return open screen animation
+  */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "The animation for closing current screen and returning " +
+    " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
+    "slidevertical, and none")
+  public String CloseScreenAnimation() {
+    return closeAnimType;
   }
 
   /**
@@ -1161,12 +1211,17 @@ public class Form extends Activity
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SCREEN_ANIMATION,
       defaultValue = "default")
-  @SimpleFunction(description = "Sets the animation for closing current screen and returning " +
-     " to the previous screen. Valid options are default, fade, zoom, slidehorizontal, " +
-     "slidevertical, and none")
-  public void CloseScreenAnimation(String animType) {
-    closeAnimType = animType;
-  }
+  @SimpleProperty
+   public void CloseScreenAnimation(String animType) {
+    if ((animType != "default") &&
+      (animType != "fade") && (animType != "zoom") && (animType != "slidehorizontal") &&
+      (animType != "slidevertical") && (animType != "none")) {
+      this.dispatchErrorOccurredEvent(this, "Screen",
+        ErrorMessages.ERROR_SCREEN_INVALID_ANIMATION, animType);
+      return;
+    }
+	closeAnimType = animType;
+   }
 
   /*
    * Used by ListPicker, and ActivityStarter to get this Form's current opening transition

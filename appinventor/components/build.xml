@@ -117,12 +117,13 @@
         <pathelement location="${local.build.dir}/HtmlEntities.jar" />
         <pathelement location="${public.build.dir}/CommonConstants.jar" />
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/android/2.2/android.jar" />
+        <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
         <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
         <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
         <!-- Conditionally included libraries -->
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
+		<pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.3.jar" />
 		<pathelement location="${lib.dir}/gcm/gcm.jar" />
 		<pathelement location="${lib.dir}/admob/admob.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
@@ -162,7 +163,7 @@
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <!-- android.jar must go last on the classpath list
          so that its junit (or other) stubs don't override the real ones -->
-    <pathelement location="${lib.dir}/android/2.2/android.jar" />
+    <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
   </path>
 
   <path id="AndroidRuntimeTests.path">
@@ -216,11 +217,12 @@
           <pathelement location="${public.build.dir}/AndroidRuntime.jar" />
           <pathelement location="${local.build.dir}/HtmlEntities.jar" />
           <pathelement location="${public.build.dir}/CommonConstants.jar" />
-          <pathelement location="${lib.dir}/android/2.2/android.jar" />
+		  <pathelement location="${lib.dir}/android/4.2.2/android.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <pathelement location="${lib.dir}/kawa/kawa-1.11-modified.jar" />
           <pathelement location="${lib.dir}/acra/acra-4.4.0.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
+		  <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.3.jar" />
 		  <pathelement location="${lib.dir}/gcm/gcm.jar" />
 		  <pathelement location="${lib.dir}/admob/admob.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />

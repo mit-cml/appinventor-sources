@@ -223,7 +223,13 @@ public class YaVersion {
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 3
   // For YOUNG_ANDROID_VERSION 76:
   // - PLAYER_COMPONENT_VERSION was incremented to 5
-  public static final int YOUNG_ANDROID_VERSION = 76;
+  // For YOUNG_ANDROID_VERSION 77:
+  // - TWITTER_COMPONENT_VERSION was incremented to 3
+  // For YOUNG_ANDROID_VERSION 78:
+  // - NEARFIELD_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 79:
+  // - FORM_COMPONENT_VERSION was incremented to 11.
+  public static final int YOUNG_ANDROID_VERSION = 79;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -412,7 +418,9 @@ public class YaVersion {
   // - The CloseScreenAnimation property was added
   // For FORM_COMPONENT_VERSION 10:
   // - The BackPressed event was added.
-  public static final int FORM_COMPONENT_VERSION = 10;
+  // For FORM_COMPONENT_VERSION 11:
+  // - OpenScreenAnimation and CloseScreenAnimation are now properties.
+  public static final int FORM_COMPONENT_VERSION = 11;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -486,6 +494,9 @@ public class YaVersion {
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
   public static final int LOCATIONSENSOR_COMPONENT_VERSION = 2;
+
+  // For NEARFIELD_COMPONENT_VERSION 1:
+  public static final int NEARFIELD_COMPONENT_VERSION = 1;
 
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
@@ -586,7 +597,12 @@ public class YaVersion {
   // - The friend timeline was changed to be a list of tuples (lists), where
   //   each sub-list is (username message). The old format was just a list
   //   of messages and didn't include the username associated with each message.
-  public static final int TWITTER_COMPONENT_VERSION = 2;
+  // For TWITTER_COMPONENT_VERSION 3:
+  // - The 'SetStatus' procedure has been changed to 'Tweet' to be more intuitive.
+  // - Added 'TweetWithImage' which uploads an image to TwitPic and adds it to
+  //   a tweet to allow a user to tweet with a picture. This requires a TwitPic_API_Key
+  //   property.
+  public static final int TWITTER_COMPONENT_VERSION = 3;
 
   // For VERTICALARRANGEMENT_COMPONENT_VERSION 2:
   // - The AlignHorizontal property was added

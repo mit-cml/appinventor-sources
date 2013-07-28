@@ -816,6 +816,22 @@ public class BlockSaveFile {
       // The BackPressed event was added. No blocks need to be modified to upgrade to version 10.
       blkCompVersion = 10;
     }
+	
+	if (blkCompVersion < 11) {
+      final String CHANGED_SCREENANIMATIONS_WARNING =
+        "The %s block has been changed to a property. Please change your program " +
+        "by deleting this old version of the block and pick a new Property Changing block.";
+      for (Element block : getAllMatchingGenusBlocks("Screen-OpenScreenAnimation")) {
+        changeBlockGenusName(block, "FusiontablesControl-DoQuery"); // HACK!!!! We need a block that is "like" we once were
+        markBlockBad(block, String.format(CHANGED_SCREENANIMATIONS_WARNING, "OpenScreenAnimation"));
+      }
+      for (Element block : getAllMatchingGenusBlocks("Screen-CloseScreenAnimation")) {
+        changeBlockGenusName(block, "FusiontablesControl-DoQuery"); // HACK!!!
+        markBlockBad(block, String.format(CHANGED_SCREENANIMATIONS_WARNING, "CloseScreenAnimation"));
+      }
+      blkCompVersion = 11;
+    }
+
     return blkCompVersion;
   }
 
@@ -1170,6 +1186,18 @@ public class BlockSaveFile {
       }
       // Blocks related to this component have now been upgraded to version 2.
       blkCompVersion = 2;
+    }
+	
+	 if (blkCompVersion < 3) {
+      // SetStatus has been changed to Tweet because it's more intuitive.
+      for (Element block : getAllMatchingMethodOrEventBlocks(componentName,
+          "Twitter", "SetStatus")) {
+        changeBlockGenusName(block, "Twitter-Tweet");
+        Node labelChild = getBlockLabelChild(block);
+        String newLabel = componentName + ".Tweet";
+        labelChild.setNodeValue(newLabel);
+      }
+      blkCompVersion = 3;
     }
     return blkCompVersion;
   }
