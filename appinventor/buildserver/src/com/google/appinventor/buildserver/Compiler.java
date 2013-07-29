@@ -346,18 +346,35 @@ public final class Compiler {
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
+	  
+	  /*@ Pabloko + Jose María Martin*/
+	  
+	  String FeaturedMinSdk = "3";
+	  String FeaturedTargetSdk = "";
+	  
       if (componentTypes.contains("GoogleCloudMessaging")) {
+	    FeaturedMinSdk = "8";
 		out.write("<permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" android:protectionLevel=\"signature\" /> \n" +
-				  "<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" /> \n" +
-		"<uses-sdk android:minSdkVersion=\"8\" />\n");
-	  } else  {
-		out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
+				  "<uses-permission android:name=\"" + packageName + ".permission.C2D_MESSAGE\" /> \n");
+	  } 
+	  
+	  if (componentTypes.contains("AdMob")) {
+	    FeaturedMinSdk = "8";
+		FeaturedTargetSdk = "17";
+	  } 
+	  
+	  
+	  out.write("  <uses-sdk android:minSdkVersion=\"" + FeaturedMinSdk + "\" />\n");
+	  if (FeaturedTargetSdk!="") {
+		out.write("<uses-sdk android:targetSdkVersion=\"" + FeaturedTargetSdk + "\" />\n");
 	  }
+	  
+	  /* end @ */
 	  /*
 	  if (componentTypes.contains("AdMob")) {*/
 	  
 	//@pabloko: we should talk about this, and holo! so we have to schoose light or black theme  
-	//out.write("<uses-sdk android:targetSdkVersion=\"17\" />\n");
+	//
 	
 	 /*}
 	  */
@@ -484,13 +501,12 @@ public final class Compiler {
         "</receiver>\n" +
         "<service android:name=\"com.google.appinventor.components.runtime.util.GCMIntentService\" /> \n");
       }
-	  /*
+	  
+	  /*@ Jose María Martin*/
 	  if (componentTypes.contains("AdMob")) {
-        //System.out.println("Android Manifest: including GCM <receiver>&<service> tag");
-        out.write(
-            "<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode\" /> \n");
+        out.write("<activity android:name=\"com.google.ads.AdActivity\" android:configChanges=\"keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize\" /> \n");
       }
-	  */
+	  /* end @*/
 	  
       out.write("  </application>\n");
       out.write("</manifest>\n");

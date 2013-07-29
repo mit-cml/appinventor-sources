@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.simple.components;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.gwt.user.client.ui.SimplePanel;
 
+import com.google.gwt.user.client.ui.Image;
+
 /**
  * Mock Slider component.
  *
@@ -24,7 +26,10 @@ public final class MockAdMob extends MockVisibleComponent {
   private static final int DEFAULT_HEIGHT = 40;
 
   // Widget for showing the mock slider
-  private final SimplePanel sliderWidget;
+  private final SimplePanel admobWidget;
+
+  // Large icon image for use in designer.  Smaller version is in the palette.
+  private final Image largeImage = new Image(images.admobbaner());
 
   /**
    * Creates a new MockSlider component.
@@ -32,15 +37,15 @@ public final class MockAdMob extends MockVisibleComponent {
    * @param editor editor of source file the component belongs to
    */
   public MockAdMob(SimpleEditor editor) {
-    super(editor, TYPE, images.slider());
+    super(editor, TYPE, images.admob());
 
     // Initialize mock slider UI
-    sliderWidget = new SimplePanel();
-    sliderWidget.setStylePrimaryName("ode-SimpleMockComponent");
+    admobWidget = new SimplePanel();
+    admobWidget.setStylePrimaryName("ode-SimpleMockComponent");
 
-    sliderWidget.setWidget(getIconImage());
+    admobWidget.setWidget(largeImage);
 
-    initComponent(sliderWidget);
+    initComponent(admobWidget);
   }
 
 

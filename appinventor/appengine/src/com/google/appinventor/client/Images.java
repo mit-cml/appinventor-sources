@@ -389,6 +389,12 @@ public interface Images extends Resources {
   
   @Source("com/google/appinventor/images/GoogleCloudMessaging.png")
   ImageResource GoogleCloudMessaging();
+  
+  @Source("com/google/appinventor/images/admob.png")
+  ImageResource admob();
+
+  @Source("com/google/appinventor/images/admobbaner.png")
+  ImageResource admobbaner();
 
   /**
    * Designer palette item: Web component
