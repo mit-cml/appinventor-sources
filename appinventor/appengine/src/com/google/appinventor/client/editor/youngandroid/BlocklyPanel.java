@@ -400,6 +400,7 @@ public class BlocklyPanel extends HTMLPanel {
     if(BlocklyPanel.isWarningVisible){
       toggleWarning(formName);
     }
+    doCheckWarnings(formName);
   }
 
   public static void callToggleWarning() {
@@ -657,6 +658,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doToggleWarning(String formName) /*-{
     $wnd.Blocklies[formName].WarningHandler.warningToggle();
+  }-*/;
+
+  public static native void doCheckWarnings(String formName) /*-{
+    $wnd.Blocklies[formName].WarningHandler.checkAllBlocksForWarningsAndErrors();
   }-*/;
 
 }
