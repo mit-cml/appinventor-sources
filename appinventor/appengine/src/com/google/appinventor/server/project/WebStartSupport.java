@@ -95,7 +95,10 @@ public abstract class WebStartSupport {
     String baseUrl = JavaWebStart.getWebStartBaseUrl(req);
     // for the jnlp file, the web start path doesn't need a valid project id
     String projectPath = JavaWebStart.getWebStartProjectPath(userProvider, 0);
-    String codebase = baseUrl + projectPath;
+//    String codebase = baseUrl + projectPath;
+    String codebase = baseUrl;  // Don't include the projectPath, it is too long.
+                                // We have modified the server to not require it
+                                // for downloading the BlocksEditor jar file.
 
     List<String> args = Lists.newArrayList();
     args.add(baseUrl);     // base URL for the WebStartFileServlet
