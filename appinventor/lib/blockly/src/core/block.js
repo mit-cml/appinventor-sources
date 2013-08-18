@@ -249,8 +249,10 @@ Blockly.Block.prototype.dispose = function(healStack, animate) {
 
   //This block is now at the top of the workspace.
   // Remove this block from the workspace's list of top-most blocks.
-  this.workspace.removeTopBlock(this);
-  this.workspace = null;
+  if (this.workspace) {
+    this.workspace.removeTopBlock(this);
+    this.workspace = null;
+  }
 
   // Just deleting this block from the DOM would result in a memory leak as
   // well as corruption of the connection database.  Therefore we must
