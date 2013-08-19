@@ -226,7 +226,8 @@ Blockly.Yail.getComponentInitializationString = function(formName, componentName
   var code = Blockly.Yail.YAIL_INITIALIZE_COMPONENTS;
   code += " " + Blockly.Yail.YAIL_QUOTE + formName;
   for (var i = 0, cName; cName = componentNames[i]; i++) {  // TODO: will we get non-component fields this way?
-    code = code + " " + Blockly.Yail.YAIL_QUOTE + cName;
+    if (cName != formName)                                  // Avoid duplicate initialization of the form
+      code = code + " " + Blockly.Yail.YAIL_QUOTE + cName;
   }
   code = code + ")";
   return code;
