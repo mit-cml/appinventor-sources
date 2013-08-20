@@ -234,7 +234,7 @@ Blockly.ReplMgr.putYail = (function() {
             }
         },
         'pollphone' : function() {
-            var work = rs.phoneState.phoneQueue.pop();
+            var work = rs.phoneState.phoneQueue.shift();
             if (!work) {
                 rs.phoneState.ioRunning = false;
                 return;
