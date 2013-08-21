@@ -53,6 +53,7 @@ Blockly.ReplMgr.buildYail = function() {
     var code = [];
     var blocks;
     var block;
+    var needinitialize = false;
     if (!window.parent.ReplState.phoneState) { // If there is no phone state, make some!
         window.parent.ReplState.phoneState = {};
     }
@@ -93,11 +94,11 @@ Blockly.ReplMgr.buildYail = function() {
             return componentNames.indexOf(elem) == pos;});
         componentNames = uniqueNames;
 
-        code.push(Blockly.Yail.getComponentInitializationString(formName, componentNames));
         code = code.join('\n');
 
         if (phoneState.componentYail != code) {
             // We need to send all of the comonent cruft (sorry)
+            needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
             this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
             this.putYail(code);
@@ -131,6 +132,11 @@ Blockly.ReplMgr.buildYail = function() {
             this.putYail(tempyail, block, success, failure);
             phoneState.blockYail[block.id] = tempyail;
         }
+    }
+
+    // need to do this after the blocks have been defined
+    if (needinitialize) {
+        this.putYail(Blockly.Yail.getComponentInitializationString(formName, componentNames));
     }
 };
 
