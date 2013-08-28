@@ -139,13 +139,15 @@ Blockly.BlocklyEditor.render = function() {
 }
 
 /**
- * Add a "Generate Yail" option to the context menu for every block. The generated yail will go in
+ * Add a "Do It" option to the context menu for every block. If the user is an admin also
+ * add a "Generate Yail" option to the context menu for every block. The generated yail will go in
  * the block's comment (if it has one) for now.
  * TODO: eventually create a separate kind of bubble for the generated yail, which can morph into
  * the bubble for "do it" output once we hook up to the REPL.
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
+  var doitOption = { enabled: true};
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
     var yailOption = {enabled: true};
     yailOption.text = "Generate Yail";
@@ -163,6 +165,31 @@ Blockly.Block.prototype.customContextMenu = function(options) {
     };
     options.push(yailOption);
   }
+  doitOption.text = "Do It";
+  doitOption.callback = function() {
+    var yailText;
+    //Blockly.Yail.blockToCode1 returns a string if the block is a statement
+    //and an array if the block is a value
+    var yailTextOrArray = Blockly.Yail.blockToCode1(myBlock);
+    var dialog;
+    if (window.parent.ReplState.state != Blockly.ReplMgr.rsState.CONNECTED) {
+      dialog = new goog.ui.Dialog(null, true);
+      dialog.setTitle("Cannot Do it");
+      dialog.setContent('You must be connected to the companion or emulator to use "Do It"');
+      dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+        addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+          false, true));
+      dialog.setVisible(true);
+    } else {
+      if(yailTextOrArray instanceof Array){
+        yailText = yailTextOrArray[0];
+      } else {
+        yailText = yailTextOrArray;
+      }
+      Blockly.ReplMgr.putYail(yailText, myBlock);
+    }
+  };
+  options.push(doitOption);
   if(myBlock.procCustomContextMenu){
     myBlock.procCustomContextMenu(options);
   }

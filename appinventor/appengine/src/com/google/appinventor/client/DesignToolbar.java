@@ -36,6 +36,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
 import java.util.List;
+import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -44,9 +45,6 @@ import java.util.Map;
  *
  */
 public class DesignToolbar extends Toolbar {
-
-  public static DesignToolbar instance; // Static pointer to instance so we can
-                                        // call it from Javascript
 
   /*
    * A Screen groups together the form editor and blocks editor for an
@@ -138,13 +136,21 @@ public class DesignToolbar extends Toolbar {
   // Whether or not the we are talking to the repl
   private boolean replStarted = false;
 
+  // Stack of screens switched to from the Companion
+  // We implement screen switching in the Companion by having it tell us
+  // to switch screens. We then load into the companion the new Screen
+  // We save where we were because the companion can have us return from
+  // a screen. If we switch projects in the browser UI, we clear this
+  // list of screens as we are effectively running a different application
+  // on the device.
+  private static LinkedList<String> pushedScreens = Lists.newLinkedList();
+
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
   public DesignToolbar() {
     super();
 
-    instance = this;            // So we can find ourselves from Javascript
     projectNameLabel = new Label();
     projectNameLabel.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
@@ -474,6 +480,7 @@ public class DesignToolbar extends Toolbar {
         OdeLog.wlog("DesignToolbar: ignoring call to switchToProject for current project");
         return true;
       }
+      pushedScreens.clear();    // Effectively switching applications clear stack of screens
       clearDropDownMenu(WIDGET_NAME_SCREENS_DROPDOWN);
       OdeLog.log("DesignToolbar: switching to existing project " + projectName + " with id "
           + projectId);
@@ -513,6 +520,39 @@ public class DesignToolbar extends Toolbar {
             name, new SwitchScreenAction(projectId, name)));
       }
     }
+  }
+
+/*
+ * PushScreen -- Static method called by Blockly when the Companion requests
+ * That we switch to a new screen. We keep track of the Screen we were on
+ * and push that onto a stack of Screens which we pop when requested by the
+ * Companion.
+ */
+  public static boolean pushScreen(String screenName) {
+    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    String currentScreen = designToolbar.currentProject.currentScreen;
+    if (!designToolbar.currentProject.screens.containsKey(screenName)) // No such screen -- can happen
+      return false;                                                    // because screen is user entered here.
+    pushedScreens.addFirst(currentScreen);
+    designToolbar.doSwitchScreen(projectId, screenName, View.BLOCKS);
+    return true;
+  }
+
+  public static void popScreen() {
+    DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
+    long projectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    String newScreen;
+    if (pushedScreens.isEmpty()) {
+      return;                   // Nothing to do really
+    }
+    newScreen = pushedScreens.removeFirst();
+    designToolbar.doSwitchScreen(projectId, newScreen, View.BLOCKS);
+  }
+
+  // Called from Javascript when Companion is disconnected
+  public static void clearScreens() {
+    pushedScreens.clear();
   }
 
   /*
@@ -608,6 +648,7 @@ public class DesignToolbar extends Toolbar {
    * buttons accordingly. Called from BlocklyPanel
    */
   public static void indicateDisconnect() {
+    DesignToolbar instance = Ode.getInstance().getDesignToolbar();
     instance.updateConnectToDropDownButton(false, false);
     instance.replStarted = false; // This is ugly, I should really define a method to do this
                                   // but that would just take space and time...

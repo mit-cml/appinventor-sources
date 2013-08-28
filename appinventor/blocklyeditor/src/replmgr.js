@@ -1,3 +1,4 @@
+// -*- mode: Javascript; js-indent-level: 4; -*-
 // Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
 
 /**
@@ -41,9 +42,8 @@ Blockly.ReplStateObj.prototype = {
     'rendezvouscode' : null,            // Code used for Rendezvous (hash of replcode)
     'dialog' : null,                    // The Dialog Box with the code and QR Code
     'count' : 0,                        // Count of number of reads from rendezvous server
-    'yailqueue' : [],                   // Queue of pending forms to send to the phone
-    'phoneState' : {}                   // State of blocks on the phone. Used to figure
-                                        // what has changed.
+    'didversioncheck' : false,
+    'oldcompanion' : false
 };
 
 // Blockly.mainWorkSpace --- hold the main workspace
@@ -176,7 +176,9 @@ Blockly.ReplMgr.pollYail = function() {
 };
 
 Blockly.ReplMgr.resetYail = function(code) {
-    window.parent.ReplState.phoneState = {};
+    window.parent.ReplState.phoneState.initialized = false; // so running io stops
+    this.putYail.reset();
+    window.parent.ReplState.phoneState = { "phoneQueue" : []};
 };
 
 Blockly.ReplMgr.showDialog = function(title, message, ok, oncancel) {
@@ -212,6 +214,9 @@ Blockly.ReplMgr.showDialog = function(title, message, ok, oncancel) {
 Blockly.ReplMgr.putYail = (function() {
     var rs;
     var context;
+    var conn;                   // XMLHttpRequest Object sending to Phone
+    var rxhr;                   // XMLHttpRequest Object listening for returns
+    var phonereceiving = false;
     var engine = {
         // Enqueue form for the phone
         'putYail' : function(code, block, success, failure) {
@@ -240,50 +245,213 @@ Blockly.ReplMgr.putYail = (function() {
             }
         },
         'pollphone' : function() {
+            if (!rs.didversioncheck) {
+                engine.doversioncheck();
+                return;
+            }
+            if (!phonereceiving && !rs.oldcompanion)
+                engine.receivefromphone();
             var work = rs.phoneState.phoneQueue.shift();
             if (!work) {
                 rs.phoneState.ioRunning = false;
                 return;
             }
             var encoder = new goog.Uri.QueryData();
-            var conn = goog.net.XmlHttp();
+            conn = goog.net.XmlHttp();
+            var blockid;
+            if (work.block) {
+                blockid = work.block.id;
+            } else {
+                blockid = "-1";
+            }
 
             conn.open('POST', rs.url, true);
             conn.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log("putYail(poller): " + this.responseText);
-                    if (this.responseText != 'OK') {
-                        if (work.failure)
-                            work.failure("Error from Companion");
-                    } else {
-                        if (work.success)
-                            work.success();
+//                    console.log("putYail(poller): " + this.responseText);
+                    if (rs.oldcompanion) { // Very old companion
+                        if (this.responseText != "OK") {
+                            if (work.failure)
+                                work.failure("Error from Companion");
+                        } else {
+                            if (work.success)
+                                work.success();
+                        }
+                    } else {   // Modern Companion (returns are json objects)
+                        var json = goog.json.parse(this.response);
+                        if (json.status != 'OK') {
+                            if (work.failure)
+                                work.failure("Error from Companion " + json.message);
+                        } else {
+                            if (work.success)
+                                work.success();
+                        }
+                        context.processRetvals(json.values);
                     }
                     rs.seq_count += 1;
-                    engine.pollphone(); // And on to the next!
+                    if (rs.phoneState.initialized) // Only continue if we are still initialized
+                        engine.pollphone(); // And on to the next!
                 } else {
                     if (this.readyState == 4) {
                         console.log("putYail(poller): status = " + this.status);
                         if (work.failure)
                             work.failure("Network Connection Error");
                         context.showDialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and re-connecting", true, function() {});
-                        rs.state = Blockly.ReplMgr.rsState.IDLE;
-                        rs.connection = null;
-                        context.resetYail();
-                        window.parent.BlocklyPanel_indicateDisconnect();
+                        engine.resetcompanion();
                     }
                 }
 
             };
-            encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count));
+            if (rs.oldcompanion) {
+                encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count));
+            } else {
+                encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
+            }
             encoder.add('seq', rs.seq_count);
             encoder.add('code', work.code);
+            encoder.add('blockid', blockid);
             var stuff = encoder.toString();
             conn.send(stuff);
+        },
+        'doversioncheck' : function() {
+            var conn = goog.net.XmlHttp();
+            conn.open('GET', rs.versionurl, true);
+            conn.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    rs.didversioncheck = true;
+                    if (this.response[0] != "{") {
+                        rs.oldcompanion = true;
+                        engine.showversioncompmessage();
+                    } else {
+                        var json = goog.json.parse(this.response);
+                        if (json.version.substr(0,7) != "2.07nb5") {
+                            engine.showversioncompmessage(true);
+                            engine.resetcompanion();
+                            return;
+                        }
+                    }
+                    engine.pollphone();
+                    return;
+                }
+                if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
+                    rs.didversioncheck = true;
+                    engine.showversioncompmessage();
+                    rs.oldcompanion = true;
+                    engine.pollphone();
+                    return;
+                }
+            };
+            conn.send();
+        },
+        "receivefromphone" : function() {
+            phonereceiving = true;
+            if (rs.oldcompanion) // old companion, doesn't support this. punt
+                return;
+            console.log("receivefromphone called.");
+            rxhr = goog.net.XmlHttp();
+            rxhr.open('POST', rs.rurl, true); // We post to avoid caching issues
+            rxhr.onreadystatechange = function() {
+                if (this.readyState != 4) return;
+                console.log("receivefromphone returned.");
+                if (this.status == 200) {
+                    var json = goog.json.parse(this.response);
+                    if (json.status == 'OK') {
+                        context.processRetvals(json.values);
+                    }
+                    engine.receivefromphone(); // Continue...
+                }
+            };
+            rxhr.send("IGNORED=STUFF");
+        },
+        "reset" : function() {
+            if (rxhr)
+                rxhr.abort();
+            rxhr = null;
+//            if (conn)  // This seems to cause disconnects on project switch
+//                conn.abort();
+//            conn = null;
+            phonereceiving = false;
+        },
+        "resetcompanion" : function() {
+            console.log("reseting companion");
+            rs.state = Blockly.ReplMgr.rsState.IDLE;
+            rs.connection = null;
+            context.resetYail();
+            rs.didversioncheck = false;
+            window.parent.BlocklyPanel_indicateDisconnect();
+        },
+        "showversioncompmessage" : function(fatal) {
+            var dialog = new goog.ui.Dialog(null, true);
+            dialog.setTitle("Companion Version Check");
+            if (fatal) {
+                dialog.setContent("The Companion you are using is not compatible with this version of AI2.");
+                dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                                    addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.OK,
+                                              false, true));
+            } else {
+                dialog.setModal(false);
+                dialog.setContent("You are using an out-of-date Companion, you should consider updating to the latest version.");
+                dialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                                    addButton({caption:"Dismiss"}, false, true));
+            }
+            dialog.setVisible(true);
         }
     };
+    engine.putYail.reset = engine.reset;
     return engine.putYail;
 })();
+
+Blockly.ReplMgr.processRetvals = function(responses) {
+    var block;
+    for (var i = 0; i < responses.length; i++) {
+        var r = responses[i];
+        console.log("processRetVals: " + JSON.stringify(r));
+        switch(r.type) {
+        case "return":
+            if (r.blockid != "-1") {
+                block = Blockly.mainWorkspace.getBlockById(r.blockid);
+                if (r.status == "OK") {
+                    block.replError = null;
+                    if (r.value && (r.value != '*nothing*')) {
+                        this.setDoitResult(block, r.value);
+                    }
+                } else {
+                    block.replError = "Error process in Companion";
+                }
+            }
+            break;
+        case "pushScreen":
+            var success = window.parent.BlocklyPanel_pushScreen(r.screen);
+            if (!success) {
+                console.log("processRetVals: Invalid Screen: " + r.screen);
+            }
+            break;
+        case "popScreen":
+            window.parent.BlocklyPanel_popScreen();
+        }
+    }
+    Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+};
+
+Blockly.ReplMgr.setDoitResult = function(block, value) {
+    var patt = /Do It Result:.*?\n---\n/m;
+    var comment = "";
+    var result = 'Do It Result: ' + value + '\n---\n';
+    if (block.comment) {
+        comment = block.comment.getText();
+    }
+    if (!comment) {
+        comment = result;
+    } else {
+        if (patt.test(comment)) { // Already a doit there!
+            comment = comment.replace(patt, result);
+        } else {
+            comment = result + comment;
+        }
+    }
+    block.setCommentText(comment);
+    block.comment.setVisible(true);
+};
 
 Blockly.ReplMgr.startEmulator = function(rs) {
     var first = true;
@@ -357,7 +525,7 @@ Blockly.ReplMgr.startEmulator = function(rs) {
             if (counter <= 0) {
                 progdialog.setContent("Starting the Companion App in the emulator.");
                 pc = 2;
-                counter = 5;
+                counter = 10;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/", false); // Don't look at response
                 xhr.send();
@@ -380,6 +548,8 @@ Blockly.ReplMgr.startEmulator = function(rs) {
 Blockly.ReplMgr.startRepl = function(already, emulator) {
     var refreshAssets = window.parent.AssetManager_refreshAssets;
     var rs = window.parent.ReplState;
+    rs.oldcompanion = false;    // Don't know
+    rs.didversioncheck = false; // Re-check
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
@@ -391,6 +561,8 @@ Blockly.ReplMgr.startRepl = function(already, emulator) {
             rs.state = this.rsState.WAITING; // Wait for the emulator to start
             rs.replcode = "emulator";          // Must match code in Companion Source
             rs.url = 'http://127.0.0.1:8001/_newblocks';
+            rs.rurl = 'http://127.0.0.1:8001/_values';
+            rs.versionurl = 'http://127.0.0.1:8001/_getversion';
             rs.asseturl = 'http://127.0.0.1:8001/';
             rs.seq_count = 1;
             rs.count = 0;
@@ -446,6 +618,8 @@ Blockly.ReplMgr.getFromRendezvous = function() {
             try {
                 var json = goog.json.parse(xmlhttp.response);
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
+                rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
+                rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
                 rs.asseturl = 'http://' + json.ipaddr + ':8001/';
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                 rs.dialog.setVisible(false);

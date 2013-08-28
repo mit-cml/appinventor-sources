@@ -17,6 +17,10 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URLEncoder;
+import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
@@ -35,6 +39,8 @@ import java.io.FileOutputStream;
  * <p> NanoHTTPD version 1.25,
  * Copyright &copy; 2001,2005-2012 Jarno Elonen (elonen@iki.fi, http://iki.fi/elonen/)
  * and Copyright &copy; 2010 Konstantinos Togias (info@ktogias.gr, http://ktogias.gr)
+ *
+ * Improvements in Thread Handling (pooling) by Jeffrey I. Schiller (jis@mit.edu)
  *
  * <p><b>Features + limitations: </b><ul>
  *
@@ -230,7 +236,7 @@ public class NanoHTTPD
                 myTcpPort = port;
                 this.myRootDir = wwwroot;
                 myServerSocket = new ServerSocket( myTcpPort );
-                myThread = new Thread( new ThreadGroup("biggerstack"), new Runnable()
+                myThread = new Thread(new Runnable()
                         {
                                 public void run()
                                 {
@@ -242,7 +248,7 @@ public class NanoHTTPD
                                         catch ( IOException ioe )
                                         {}
                                 }
-                  }, "NanoHTTPD");
+                  });
                 myThread.setDaemon( true );
                 myThread.start();
         }
@@ -302,6 +308,25 @@ public class NanoHTTPD
                 try { System.in.read(); } catch( Throwable t ) {}
         }
 
+        private class myThreadFactory implements ThreadFactory {
+
+          public Thread newThread(Runnable r) {
+            Thread retval = new Thread(new ThreadGroup("biggerstack"), r, "HTTPD Session", REPL_STACK_SIZE);
+            retval.setDaemon(true);
+            return retval;
+          }
+        }
+
+        /**
+         * Our Thread Pool Executor which manages a pool of threads for handling requests.
+         * We start with 2 threads (one for handling _newblocks calls and one for the long
+         * running _values call. Max of 10 (in case of a spike of some kind, should really never
+         * have more then 2 or 3). Shutdown any execess idle threads (above 2) after 5 seconds.
+         */
+
+        private ThreadPoolExecutor myExecutor = new ThreadPoolExecutor(2, 10, 5,
+          TimeUnit.SECONDS, new SynchronousQueue<Runnable>(), new myThreadFactory());
+
         /**
          * Handles one session, i.e. parses the HTTP request
          * and returns the response.
@@ -311,9 +336,8 @@ public class NanoHTTPD
                 public HTTPSession( Socket s )
                 {
                         mySocket = s;
-                        Thread t = new Thread( new ThreadGroup("biggerstack"), this, "HTTPD Session", REPL_STACK_SIZE);
-                        t.setDaemon( true );
-                        t.start();
+                        System.err.println("NanoHTTPD: getPoolSize() = " + myExecutor.getPoolSize());
+                        myExecutor.execute(this);
                 }
 
                 public void run()

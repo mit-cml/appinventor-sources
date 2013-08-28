@@ -40,8 +40,7 @@ public class AppInvHTTPD extends NanoHTTPD {
   private static final String LOG_TAG = "AppInvHTTPD";
   private static byte[] hmacKey;
   private static int seq;
-
-  private boolean first = true;
+  private static final String MIME_JSON = "application/json"; // Other mime types defined in NanoHTTPD
 
   public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
   {
@@ -50,11 +49,6 @@ public class AppInvHTTPD extends NanoHTTPD {
     this.scheme = Scheme.getInstance("scheme");
     this.form = form;
     gnu.expr.ModuleExp.mustNeverCompile();
-    try {
-      scheme.eval("(begin (require com.google.youngandroid.runtime)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
-    } catch (Throwable e) {
-      Log.e(LOG_TAG, "Scheme Failure", e);
-    }
   }
 
   /**
@@ -102,38 +96,20 @@ public class AppInvHTTPD extends NanoHTTPD {
     }
 
 
-    if (uri.equals("/_version")) { // handle special uri's here
-      Response res;
-      try {
-        String strversion = parms.getProperty("version", "0");
-        int version = (new Integer(strversion)).intValue();
-        if ((version > (YaVersion.YOUNG_ANDROID_VERSION + YAV_SKEW_FORWARD)) ||
-            (version < (YaVersion.YOUNG_ANDROID_VERSION - YAV_SKEW_BACKWARD))) {
-          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var badversion)) \"foo\"))");
-        } else {
-          // If we have a good version, start the repl
-          // We use Scheme here so we can use process-repl-input which will arrange for
-          // the correct thread to be used to start the repl (by going through the android os handler
-          scheme.eval("(begin (require com.google.youngandroid.runtime) (process-repl-input ((get-var *start-repl*)) \"foo\"))");
-        }
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
-      } catch (Throwable e) {
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, e.toString());
-        e.printStackTrace();
-      }
-      return (res);
-    } else if (uri.equals("/_newblocks")) { // Handle AJAX calls from the newblocks code
+    if (uri.equals("/_newblocks")) { // Handle AJAX calls from the newblocks code
       String inSeq = parms.getProperty("seq", "0");
       int iseq = Integer.parseInt(inSeq);
+      String blockid = parms.getProperty("blockid");
       String code = parms.getProperty("code");
       String inMac = parms.getProperty("mac", "no key provided");
       String compMac = "";
+      String input_code = code;
       if (hmacKey != null) {
         try {
           Mac hmacSha1 = Mac.getInstance("HmacSHA1");
           SecretKeySpec key = new SecretKeySpec(hmacKey, "RAW");
           hmacSha1.init(key);
-          byte [] tmpMac = hmacSha1.doFinal((code + inSeq).getBytes());
+          byte [] tmpMac = hmacSha1.doFinal((code + inSeq + blockid).getBytes());
           StringBuffer sb = new StringBuffer(tmpMac.length * 2);
           Formatter formatter = new Formatter(sb);
           for (byte b : tmpMac)
@@ -150,31 +126,35 @@ public class AppInvHTTPD extends NanoHTTPD {
         Log.d(LOG_TAG, "Computed Mac = " + compMac);
         Log.d(LOG_TAG, "Incoming seq = " + inSeq);
         Log.d(LOG_TAG, "Computed seq = " + seq);
-        if ((seq != iseq) || (!inMac.equals(compMac))) {
-          Log.e(LOG_TAG, "Hmac or Seq do not match");
+        Log.d(LOG_TAG, "blockid = " + blockid);
+        if (!inMac.equals(compMac)) {
+          Log.e(LOG_TAG, "Hmac does not match");
           form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
             ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Invalid HMAC");
-          Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT");
+          Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: Invalid MAC\"}");
           return(res);
         }
-        seq += 1;
+        if ((seq != iseq) && (seq != (iseq+1))) {
+          Log.e(LOG_TAG, "Seq does not match");
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Invalid Seq");
+          Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: Invalid Seq\"}");
+          return(res);
+        }
+        // Seq Fixup: Sometimes the Companion doesn't increment it's seq if it is in the middle of a project switch
+        // so we tolerate an off-by-one here.
+        if (seq == (iseq+1))
+          Log.e(LOG_TAG, "Seq Fixup Invoked");
+        seq = iseq + 1;
       } else {                  // No hmacKey
         Log.e(LOG_TAG, "No HMAC Key");
         form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
           ErrorMessages.ERROR_REPL_SECURITY_ERROR, "No HMAC Key");
-        Response res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOT");
+        Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: No HMAC Key\"}");
         return(res);
       }
-      if (first) {
-        try {
-          scheme.eval("(begin (require <com.google.youngandroid.runtime>)  (setup-repl-environment \"<<\" \":\" \"@@\" \"Success\" \"Failure\" \"==\" \">>\" '((\">>\" \"&2\")(\"<<\" \"&1\")(\"&\" \"&0\"))))");
-        } catch (Throwable e) {
-          Log.e(LOG_TAG, "Scheme Failure(first)", e);
-        }
-        first = false;
-      }
 
-      code = "(begin (require <com.google.youngandroid.runtime>) (process-newblocks-input (begin " +
+      code = "(begin (require <com.google.youngandroid.runtime>) (process-repl-input " + blockid + " (begin " +
         code + " )))";
 
       Log.d(LOG_TAG, "To Eval: " + code);
@@ -182,13 +162,25 @@ public class AppInvHTTPD extends NanoHTTPD {
       Response res;
 
       try {
-        scheme.eval(code);
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, "OK");
+        // Don't evaluate a simple "#f" which is used by the poller
+        if (input_code.equals("#f")) {
+          Log.e(LOG_TAG, "Skipping evaluation of #f");
+        } else {
+          scheme.eval(code);
+        }
+        res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(false));
       } catch (Throwable ex) {
         Log.e(LOG_TAG, "newblocks: Scheme Failure", ex);
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, "NOK");
+        RetValManager.appendReturnValue(blockid, "BAD", "");
+        res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(false));
       }
-
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+      return(res);
+    } else if (uri.equals("/_values")) {
+      Response res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(true)); // Blocking Fetch
       res.addHeader("Access-Control-Allow-Origin", "*");
       res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
@@ -199,11 +191,15 @@ public class AppInvHTTPD extends NanoHTTPD {
       try {
         PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
         String versionName = pInfo.versionName;
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, versionName + "\n" + Build.FINGERPRINT + "\n\n");
+        res = new Response(HTTP_OK, MIME_JSON, "{\"version\" : \"" + versionName + "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"}");
       } catch (NameNotFoundException n) {
         n.printStackTrace();
-        res = new Response(HTTP_OK, MIME_PLAINTEXT, "Unknown");
+        res = new Response(HTTP_OK, MIME_JSON, "{\"verison\" : \"Unknown\"");
       }
+      res.addHeader("Access-Control-Allow-Origin", "*");
+      res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+      res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+      res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return (res);
     } else if (uri.equals("/_package")) { // Handle installing a package
       Response res;

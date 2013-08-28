@@ -383,10 +383,14 @@ Blockly.Bubble.prototype.layoutBubble_ = function() {
   // Compute the preferred bubble location.
   var relativeLeft = -this.width_ / 4;
   var relativeTop = -this.height_ - Blockly.BlockSvg.MIN_BLOCK_Y;
-  // Prevent the bubble from being offscreen.
+  var metrics;
   if (this.workspace_.scrollbar) {
     // Fetch the workspace's metrics, if they exist.
-    var metrics = this.workspace_.scrollbar.getMetrics_();
+    metrics = this.workspace_.scrollbar.getMetrics_();
+  }
+  // Prevent the bubble from being offscreen.
+  if (this.workspace_.scrollbar && metrics) {
+
     if (this.anchorX_ + relativeLeft <
         Blockly.BlockSvg.SEP_SPACE_X + metrics.viewLeft) {
       // Slide the bubble right until it is onscreen.

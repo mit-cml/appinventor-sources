@@ -12,6 +12,7 @@ import java.io.IOException;
 
 import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 
@@ -97,24 +98,12 @@ public class ReplForm extends Form {
 
   @Override
   protected void startNewForm(String nextFormName, Object startupValue) {
-    // Switching forms is not allowed in REPL (yet?).
-    runOnUiThread(new Runnable() {
-      public void run() {
-        String message = "Switching forms is not currently supported during development.";
-        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
-      }
-    });
+    RetValManager.pushScreen(nextFormName, startupValue);
   }
 
   @Override
   protected void closeForm(Intent resultIntent) {
-    // Switching forms is not allowed in REPL (yet?).
-    runOnUiThread(new Runnable() {
-      public void run() {
-        String message = "Closing forms is not currently supported during development.";
-        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
-      }
-    });
+    RetValManager.popScreen("Not Yet");
   }
 
   @Override

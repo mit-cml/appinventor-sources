@@ -419,6 +419,10 @@ public class BlocklyPanel extends HTMLPanel {
     // indication that we are going to reinit the blocks editor the next
     // time it is shown.
     OdeLog.log("BlocklyEditor: prepared for reinit for form " + formName);
+    // Call doResetYail which will stop the timer that is polling the phone. It is important
+    // that it be stopped to avoid a race condition where the last timer on this form fires
+    // while the new form is loading.
+    doResetYail(formName);
     // Get blocks content before putting anything in the componentOps map since an entry in
     // the componentOps map is taken as an indication that the blocks area has not initialized yet.
     pendingBlocksContentMap.put(formName, getBlocksContent());
@@ -546,6 +550,15 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static void indicateDisconnect() {
     DesignToolbar.indicateDisconnect();
+    DesignToolbar.clearScreens();
+  }
+
+  public static boolean pushScreen(String newScreen) {
+    return DesignToolbar.pushScreen(newScreen);
+  }
+
+  public static void popScreen() {
+    DesignToolbar.popScreen();
   }
 
   // ------------ Native methods ------------
@@ -564,6 +577,10 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.BlocklyPanel_indicateDisconnect =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::indicateDisconnect());
     // Note: above lines are longer than 100 chars but I'm not sure whether they can be split
+    $wnd.BlocklyPanel_pushScreen =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::pushScreen(Ljava/lang/String;));
+    $wnd.BlocklyPanel_popScreen =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
   }-*/;
 
   private native void initJS() /*-{

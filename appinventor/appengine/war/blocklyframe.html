@@ -55,8 +55,10 @@
         }
         window.parent.Blocklies[formName] = Blockly;
         Blockly.ReplMgr.formName = formName; <!-- So we can tell the AssetManager which form we are on. -->
-        if (window.parent.ReplState === undefined)
+        if (window.parent.ReplState === undefined) {
           window.parent.ReplState = new Blockly.ReplStateObj(); // There should be one of these for the whole system
+        }
+        window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
         Blockly.BlocklyEditor.startup(document.body, formName);
         window.parent.BlocklyPanel_initBlocksArea(formName);
         window.parent.BlocklyPanel_checkWarningState(formName);
