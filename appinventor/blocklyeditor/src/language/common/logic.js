@@ -41,7 +41,7 @@ Blockly.Language.logic_boolean = {
     this.appendCollapsedInput().appendTitle(Blockly.LANG_LOGIC_BOOLEAN_TRUE, 'COLLAPSED_TEXT');
   },
   helpUrl : function() {
-    var op = thisBlock.getTitleValue('BOOL');
+    var op = this.getTitleValue('BOOL');
     return Blockly.Language.logic_boolean.HELPURLS[op];},
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
@@ -184,7 +184,7 @@ Blockly.Language.logic_operation = {
     this.appendCollapsedInput().appendTitle('and', 'COLLAPSED_TEXT');
   },
   helpUrl: function() {
-      var op = thisBlock.getTitleValue('OP');
+      var op = this.getTitleValue('OP');
       return Blockly.Language.logic_operation.HELPURLS[op];
     },
   onchange: Blockly.WarningHandler.checkErrors,
@@ -240,7 +240,7 @@ Blockly.Language.logic_or = {
     this.appendCollapsedInput().appendTitle('or', 'COLLAPSED_TEXT');
   },
   helpUrl: function() {
-      var op = thisBlock.getTitleValue('OP');
+      var op = this.getTitleValue('OP');
       return Blockly.Language.logic_operation.HELPURLS[op];
     },
   onchange: Blockly.WarningHandler.checkErrors,
