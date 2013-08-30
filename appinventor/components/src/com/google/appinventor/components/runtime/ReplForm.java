@@ -65,6 +65,7 @@ public class ReplForm extends Form {
         PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
       formReplCommController = new ReplCommController(this);
       formReplCommController.startListening(true /*showAlert*/);
+      assetsLoaded = true;                       // we don't have any for the usb repl...
     }
   }
 
