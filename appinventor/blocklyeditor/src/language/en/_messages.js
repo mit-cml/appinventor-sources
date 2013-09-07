@@ -707,6 +707,13 @@ Blockly.LANG_LISTS_TITLE_IS_EMPTY = 'is empty';
 Blockly.LANG_LISTS_INPUT_LIST = 'list';
 Blockly.LANG_LISTS_IS_EMPTY_TOOLTIP = 'Returns true if the list is empty.';
 
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#lookuppairs';
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS = 'look up in pairs';
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_KEY = 'key';
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_PAIRS = 'pairs';
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_INPUT_NOT_FOUND = 'notFound';
+Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP = 'Returns the value associated with the key in the list of pairs';
+
 /*Blockly.LANG_LISTS_INDEX_OF_HELPURL = 'http://publib.boulder.ibm.com/infocenter/lnxpcomp/v8v101/index.jsp?topic=%2Fcom.ibm.xlcpp8l.doc%2Flanguage%2Fref%2Farsubex.htm';
 Blockly.LANG_LISTS_INDEX_OF_TITLE_FIND = 'find';
 Blockly.LANG_LISTS_INDEX_OF_INPUT_OCCURRENCE = 'occurrence of item';

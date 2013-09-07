@@ -239,7 +239,7 @@ Blockly.Language.lists_insert_item = {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('insert list item').appendTitle('list');
     this.appendValueInput('INDEX').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('index').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('ITEM').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('ITEM').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('item').setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_INSERT_TOOLTIP);
@@ -390,4 +390,21 @@ Blockly.Language.lists_from_csv_table = {
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV }]
+};
+
+Blockly.Language.lists_lookup_in_pairs = {
+  // Look up in a list of pairs (key, value).
+  category : Blockly.LANG_CATEGORY_LISTS,
+  helpUrl : Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_HELPURL,
+  init : function() {
+    this.setColour(Blockly.LIST_CATEGORY_HUE);
+    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.OUTPUT));
+    this.appendValueInput('KEY').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('lookup in pairs').appendTitle('key');
+    this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('pairs').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('NOTFOUND').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('notFound').setAlign(Blockly.ALIGN_RIGHT);
+    Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP);
+    this.appendCollapsedInput().appendTitle('lookup', 'COLLAPSED_TEXT');
+  },
+  onchange: Blockly.WarningHandler.checkErrors,
+  typeblock: [{ translatedName: Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS }]
 };
