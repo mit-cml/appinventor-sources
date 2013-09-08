@@ -251,7 +251,7 @@
        ===================================================================== -->
   <target name="CheckPlayApp"
           depends="GenPlayAppSrcZip,BuildServer">
-    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/AppInventorCompanion.apk">
+    <uptodate property="PlayApp.uptodate" targetfile="${public.build.dir}/MIT AI2 Companion.apk">
       <srcfiles file="${local.build.dir}/aiplayapp.zip"/>
       <srcfiles dir="${run.lib.dir}" includes="*.jar"/>
     </uptodate>
@@ -276,6 +276,20 @@
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
     </java>
+  </target>
+
+  <!-- =====================================================================
+       Install the Companion on a connected phone.
+       ===================================================================== -->
+
+  <target name="installplay"
+          depends="PlayApp">
+    <exec executable="adb" failonerror="false">
+      <arg line="uninstall edu.mit.appinventor.aicompanion3" />
+    </exec>
+    <exec executable="adb" failonerror="true">
+      <arg line='install "${public.build.dir}/MIT AI2 Companion.apk"' />
+    </exec>
   </target>
 
   <!-- =====================================================================

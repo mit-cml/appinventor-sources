@@ -10,6 +10,9 @@
   <set-property name="user.agent" value="safari,gecko1_8,ie6,ie8,ie9" />
   -->
 
+  <inherits name='com.google.gwt.user.UserAgent'/>
+  <set-property name="user.agent" value="safari,gecko1_8,ie9" />
+
   <!-- inherits -->
   <inherits name="com.google.gwt.user.User" />
   <inherits name="com.google.gwt.json.JSON" />
