@@ -100,7 +100,7 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
   if (!blockSet) {
     throw "no such drawer: " + drawerName;
   }
-  var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet);
+  var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet,null);
   Blockly.Drawer.flyout_.show(xmlList);
 };
 
@@ -112,8 +112,9 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
 Blockly.Drawer.showComponent = function(instanceName) {
   if (Blockly.ComponentInstances[instanceName]) {
     Blockly.Drawer.flyout_.hide();
-    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentInstances[instanceName].blocks);
+    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentInstances[instanceName].blocks,Blockly.ComponentInstances[instanceName].typeName);
     Blockly.Drawer.flyout_.show(xmlList);
+    console.log("in show component---" + Blockly.ComponentInstances[instanceName].typeName);
   } else {
     console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName + 
                 ") - unknown component name");
@@ -130,7 +131,7 @@ Blockly.Drawer.showComponent = function(instanceName) {
 Blockly.Drawer.showGeneric = function(typeName) {
   if (Blockly.ComponentTypes[typeName] && Blockly.ComponentTypes[typeName].blocks) {
     Blockly.Drawer.flyout_.hide();
-    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentTypes[typeName].blocks);
+    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentTypes[typeName].blocks,null);
     Blockly.Drawer.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showGeneric(" +  typeName + 
@@ -152,10 +153,14 @@ Blockly.Drawer.isShowing = function() {
   return Blockly.Drawer.flyout_.isVisible();
 };
 
-Blockly.Drawer.blockListToXMLArray = function(blockList) {
+Blockly.Drawer.blockListToXMLArray = function(blockList,componentType) {
   var xmlArray = [];
   for(var i=0;i<blockList.length;i++) {
-    var blockXMLString = Blockly.Drawer.defaultBlocksXML[blockList[i]];
+    var blockXMLString=null;
+    if (componentType!=null)
+      blockXMLString = Blockly.Drawer.defaultComponentBlocksXML(componentType, blockList[i]);
+    else
+      blockXMLString = Blockly.Drawer.defaultBlocksXML[blockList[i]];
     if(!blockXMLString){
       blockXMLString = '<xml><block type="' + blockList[i] + '"></block></xml>';
     }
@@ -164,6 +169,20 @@ Blockly.Drawer.blockListToXMLArray = function(blockList) {
   }
   return xmlArray;
 };
+
+Blockly.Drawer.defaultComponentBlocksXML = function(type,block) {
+  if (type='TinyDB') {
+    if (block.indexOf("GetValue") != -1) {
+      var xmlString='<xml>' +
+    '<block type="'+block+'">' +
+    '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+    '</block>' +
+  '</xml>';
+      return xmlString;
+    }
+  }
+  return null;
+}
 
 Blockly.Drawer.defaultBlocksXML = {
   controls_forRange :
