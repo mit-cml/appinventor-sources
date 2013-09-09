@@ -129,7 +129,7 @@ public abstract class FileEditor extends Composite {
    * but the YaBlocksEditor overrides this version with one that start the
    * Repl going.
    */
-  public void startRepl(Boolean alreadyRunning, Boolean forEmulator) {
+  public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) {
   }
 
   /**

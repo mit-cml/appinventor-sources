@@ -147,9 +147,9 @@ Blockly.BlocklyEditor.render = function() {
  */
 Blockly.Block.prototype.customContextMenu = function(options) {
   var myBlock = this;
-  var doitOption = { enabled: true};
+  var doitOption = { enabled: this.disabled?false : true};
   if (window.parent.BlocklyPanel_checkIsAdmin()) {
-    var yailOption = {enabled: true};
+    var yailOption = {enabled: this.disabled?false : true};
     yailOption.text = "Generate Yail";
     yailOption.callback = function() {
       var yailText;

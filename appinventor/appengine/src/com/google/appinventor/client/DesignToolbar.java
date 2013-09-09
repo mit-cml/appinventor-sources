@@ -116,6 +116,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
+  private static final String WIDGET_NAME_USB_BUTTON = "Usb";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -173,7 +174,7 @@ public class DesignToolbar extends Toolbar {
 
     List<ToolbarItem> connectToItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectToButton(), connectToItems, true);
-    updateConnectToDropDownButton(false, false);
+    updateConnectToDropDownButton(false, false, false);
 
     List<ToolbarItem> screenItems = Lists.newArrayList();
     addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems, true);
@@ -340,7 +341,7 @@ public class DesignToolbar extends Toolbar {
           + "Ignoring WirelessAction.execute().");
         return;
       }
-      startRepl(currentProject.currentScreen, false); // false means we are *not* the emulator
+      startRepl(currentProject.currentScreen, false, false);
     }
   }
 
@@ -352,10 +353,21 @@ public class DesignToolbar extends Toolbar {
           + "Ignoring WirelessAction.execute().");
         return;
       }
-      startRepl(currentProject.currentScreen, true); // true means we are the emulator
+      startRepl(currentProject.currentScreen, true, false);
     }
   }
 
+  private class UsbAction implements Command {
+    @Override
+    public void execute() {
+      if (currentProject == null) {
+        OdeLog.wlog("DesignToolbar.currentProject is null. "
+          + "Ignoring WirelessAction.execute().");
+        return;
+      }
+      startRepl(currentProject.currentScreen, false, true);
+    }
+  }
 
   private class BarcodeAction implements Command {
     @Override
@@ -627,19 +639,21 @@ public class DesignToolbar extends Toolbar {
         isBuilding ? MESSAGES.isBuildingButton() : MESSAGES.buildButton());
   }
 
-  private void startRepl(String screenName, boolean forEmulator) {
+  private void startRepl(String screenName, boolean forEmulator, boolean forUsb) {
     Screen screen = currentProject.screens.get(screenName);
-    screen.blocksEditor.startRepl(replStarted, forEmulator);
+    screen.blocksEditor.startRepl(replStarted, forEmulator, forUsb);
     if (!replStarted) {
       replStarted = true;
       if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false);
-      } else {
-        updateConnectToDropDownButton(false, true);
+        updateConnectToDropDownButton(true, false, false);
+      } else if (forUsb) {      // We are starting the usb connection
+        updateConnectToDropDownButton(false, false, true);
+      } else {                  // We are connecting via wifi to a Companion
+        updateConnectToDropDownButton(false, true, false);
       }
     } else {
       replStarted = false;
-      updateConnectToDropDownButton(false, false);
+      updateConnectToDropDownButton(false, false, false);
     }
   }
 
@@ -649,24 +663,29 @@ public class DesignToolbar extends Toolbar {
    */
   public static void indicateDisconnect() {
     DesignToolbar instance = Ode.getInstance().getDesignToolbar();
-    instance.updateConnectToDropDownButton(false, false);
+    instance.updateConnectToDropDownButton(false, false, false);
     instance.replStarted = false; // This is ugly, I should really define a method to do this
                                   // but that would just take space and time...
   }
 
-  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning){
+  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
     clearDropDownMenu(WIDGET_NAME_CONNECT_TO);
-    if (!isEmulatorRunning && !isCompanionRunning) {
+    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
       addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
           MESSAGES.wirelessButton(), new WirelessAction()));
       addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
           MESSAGES.emulatorButton(), new EmulatorAction()));
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_USB_BUTTON,
+          MESSAGES.usbButton(), new UsbAction()));
     } else if (isEmulatorRunning) {
       addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
           MESSAGES.emulatorButtonConnected(), new EmulatorAction()));
-    } else {
+    } else if (isCompanionRunning) {
       addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
           MESSAGES.wirelessButtonConnected(), new WirelessAction()));
+    } else {
+      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_USB_BUTTON,
+          MESSAGES.usbButtonConnected(), new UsbAction()));
     }
   }
 

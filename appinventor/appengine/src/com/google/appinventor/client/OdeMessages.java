@@ -1172,7 +1172,7 @@ public interface OdeMessages extends Messages {
   String wirelessButton();
 
   @DefaultMessage("Disconnect Companion")
-  @Description("Message providing details about starting the wireless connection.")
+  @Description("Message providing details about disconnecting a wireless connection.")
   String wirelessButtonConnected();
 
   @DefaultMessage("Connect Emulator")
@@ -1180,7 +1180,14 @@ public interface OdeMessages extends Messages {
   String emulatorButton();
 
   @DefaultMessage("Disconnect Emulator")
-  @Description("Message providing details about starting the emulator connection.")
+  @Description("Message providing details about disconnecting an emulator connection.")
   String emulatorButtonConnected();
 
+  @DefaultMessage("Connect via USB")
+  @Description("Message providing details about starting a USB connection.")
+  String usbButton();
+
+  @DefaultMessage("Disconnect USB")
+  @Description("Message providing details about disconnecting a USB connection.")
+  String usbButtonConnected();
 }

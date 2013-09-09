@@ -96,7 +96,7 @@ public class BlocklyPanel extends HTMLPanel {
   // My form name
   private String formName;
 
-  public static Boolean isWarningVisible = false;
+  public static boolean isWarningVisible = false;
 
   public BlocklyPanel(String formName) {
     super(EDITOR_HTML.replace("FORM_NAME", formName));
@@ -531,8 +531,8 @@ public class BlocklyPanel extends HTMLPanel {
     blocklyWorkspaceChanged(formName);
   }
 
-  public void startRepl(Boolean alreadyRunning, Boolean forEmulator) { // Start the Repl
-    doStartRepl(formName, alreadyRunning, forEmulator);
+  public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) { // Start the Repl
+    doStartRepl(formName, alreadyRunning, forEmulator, forUsb);
   }
 
   public static boolean checkIsAdmin() {
@@ -665,8 +665,8 @@ public class BlocklyPanel extends HTMLPanel {
     }
   }-*/;
 
-  public static native void doStartRepl(String formName, Boolean alreadyRunning, Boolean forEmulator) /*-{
-    $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator);
+  public static native void doStartRepl(String formName, boolean alreadyRunning, boolean forEmulator, boolean forUsb) /*-{
+    $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator, forUsb);
   }-*/;
 
   public static native void doRenderBlockly(String formName) /*-{

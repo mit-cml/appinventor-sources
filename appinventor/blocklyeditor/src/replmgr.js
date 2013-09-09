@@ -324,7 +324,7 @@ Blockly.ReplMgr.putYail = (function() {
                         engine.showversioncompmessage();
                     } else {
                         var json = goog.json.parse(this.response);
-                        if (json.version.substr(0,7) != "2.07nb5") {
+                        if (json.version.substr(0,7) != "2.07nb6") {
                             engine.showversioncompmessage(true);
                             engine.resetcompanion();
                             return;
@@ -449,21 +449,32 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
             comment = result + comment;
         }
     }
+    // If we don't set visible to false, the comment
+    // doesn't always change when it should...
+    if (block.comment) {
+        block.comment.setVisible(false);
+    }
     block.setCommentText(comment);
     block.comment.setVisible(true);
 };
 
-Blockly.ReplMgr.startEmulator = function(rs) {
+Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     var first = true;
     var blockly = this;
     var counter = 0;            // Used to for counting down
     var pc = 0;                 // Use to keep track of state
     var dialog = null;          // We have one dialog for the block
                                 // so we don't create multiple ones
+    var udialog = null;         // Dialog to tell the user to plug phone in
     var progdialog = null;      // Tell the end-user about our progress
     var interval;               // Our interval id, used to stop the train
+    var device;
     progdialog = new goog.ui.Dialog(null, true);
-    progdialog.setContent('Starting the Android Emulator');
+    if (usb) {
+        progdialog.setContent('Connecting via USB Cable');
+    } else {
+        progdialog.setContent('Starting the Android Emulator');
+    }
     progdialog.setTitle('Connecting...');
     progdialog.setButtonSet(new goog.ui.Dialog.ButtonSet().
                             addButton(goog.ui.Dialog.ButtonSet.DefaultButtons.CANCEL,
@@ -488,15 +499,39 @@ Blockly.ReplMgr.startEmulator = function(rs) {
             xhr = goog.net.XmlHttp();
             xhr.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    if (this.response == '"OK"') { // We're running!
+                    var result = goog.json.parse(this.response);
+                    if (result.status == "OK") { // We're running!
+                        device = result.device;    // the device we are going to talk to
+                        console.log("ReplMgr: set device = " + device);
                         pc = 1;                    // Next State
-                        counter = 5;               // Wait five seconds
+                        if (usb) {
+                            counter = 5;               // Wait five seconds for emulator
+                        } else {
+                            counter = 1;
+                        }
+                        if (udialog) {             // Get rid of dialog he/she plugged in the cable!
+                            udialog.setVisible(false);
+                            udialog = null;
+                        }
                     } else {
-                        if (first) { // Need to actually start the thing!
+                        if (first && !usb) { // Need to actually start the thing!
                             var xhr = goog.net.XmlHttp();
                             xhr.open("GET", "http://localhost:8004/start/", false); // We don't look at the response
                             xhr.send();
                             first = false;
+                        } else if (first) { // USB
+                            if (!udialog) {
+                                udialog = new goog.ui.Dialog(null, true);
+                                udialog.setContent("AI2 does not see your device, make sure the cable is plugged in and drivers are correct.");
+                                udialog.setTitle("Plugged In?");
+                                udialog.setButtonSet(new goog.ui.Dialog.ButtonSet.createOk());
+                                udialog.setVisible(true);
+                                goog.events.listen(udialog, goog.ui.Dialog.EventType.SELECT, function() {
+                                    udialog.setVisible(false);
+                                    udialog = null;
+                                });
+                                first = false;
+                            }
                         }
                     }
                 } else if (this.readyState == 4) {
@@ -516,18 +551,30 @@ Blockly.ReplMgr.startEmulator = function(rs) {
                     }
                 }
             };
-            xhr.open("GET", "http://localhost:8004/check/", false);
+            if (usb) {
+                xhr.open("GET", "http://localhost:8004/ucheck/", false);
+            } else {
+                xhr.open("GET", "http://localhost:8004/echeck/", false);
+            }
             xhr.send();
             break;
         case 1:
-            progdialog.setContent("Emulator started, waiting " + counter + " seconds to ensure all is running.");
+            if (usb) {
+                // progdialog.setContent("USB Connected, waiting " + counter + " seconds to ensure all is running.");
+            } else {
+                progdialog.setContent("Emulator started, waiting " + counter + " seconds to ensure all is running.");
+            }
             counter -= 1;
             if (counter <= 0) {
-                progdialog.setContent("Starting the Companion App in the emulator.");
+                if (usb) {
+                    progdialog.setContent("Starting the Companion App on the connected phone.");
+                } else {
+                    progdialog.setContent("Starting the Companion App in the emulator.");
+                }
                 pc = 2;
                 counter = 10;
                 xhr = goog.net.XmlHttp();
-                xhr.open("GET", "http://localhost:8004/replstart/", false); // Don't look at response
+                xhr.open("GET", "http://localhost:8004/replstart/" + device, false); // Don't look at response
                 xhr.send();
             }
             break;
@@ -545,7 +592,7 @@ Blockly.ReplMgr.startEmulator = function(rs) {
     }, 1000);                   // We poll once per second
 };
 
-Blockly.ReplMgr.startRepl = function(already, emulator) {
+Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
     var refreshAssets = window.parent.AssetManager_refreshAssets;
     var rs = window.parent.ReplState;
     rs.oldcompanion = false;    // Don't know
@@ -553,11 +600,11 @@ Blockly.ReplMgr.startRepl = function(already, emulator) {
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion
     }
-    if (already.toString() == "false") {        // Have to test this way because already is a Java Boolean false
+    if (!already) {
         if (window.parent.ReplState.state != this.rsState.IDLE) // If we are not idle, we don't do anything!
             return;
-        if (emulator.toString() != "false") {         // If we are talking to the emulator, don't use rendezvou server
-            this.startEmulator(rs);
+        if (emulator || usb) {         // If we are talking to the emulator, don't use rendezvou server
+            this.startAdbDevice(rs, usb);
             rs.state = this.rsState.WAITING; // Wait for the emulator to start
             rs.replcode = "emulator";          // Must match code in Companion Source
             rs.url = 'http://127.0.0.1:8001/_newblocks';

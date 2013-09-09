@@ -95,7 +95,7 @@ public class NanoHTTPD
          * @param header        Header entries, percent decoded
          * @return HTTP response, see class Response for details
          */
-        public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
+        public Response serve( String uri, String method, Properties header, Properties parms, Properties files, Socket mySocket )
         {
                 myOut.println( method + " '" + uri + "' " );
 
@@ -467,7 +467,7 @@ public class NanoHTTPD
                                         files.put("content", saveTmpFile( fbuf, 0, f.size()));
 
                                 // Ok, now do the serve()
-                                Response r = serve( uri, method, header, parms, files );
+                                Response r = serve( uri, method, header, parms, files, mySocket );
                                 if ( r == null )
                                         sendError( HTTP_INTERNALERROR, "SERVER INTERNAL ERROR: Serve() returned a null response." );
                                 else

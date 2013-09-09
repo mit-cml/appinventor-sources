@@ -13,6 +13,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -35,6 +37,8 @@ public class AppInvHTTPD extends NanoHTTPD {
   private File rootDir;
   private Language scheme;
   private ReplForm form;
+  private boolean secure;       // Should we only accept from 127.0.0.1?
+
   private static final int YAV_SKEW_FORWARD = 1;
   private static final int YAV_SKEW_BACKWARD = 4;
   private static final String LOG_TAG = "AppInvHTTPD";
@@ -42,12 +46,13 @@ public class AppInvHTTPD extends NanoHTTPD {
   private static int seq;
   private static final String MIME_JSON = "application/json"; // Other mime types defined in NanoHTTPD
 
-  public AppInvHTTPD( int port, File wwwroot, ReplForm form) throws IOException
+  public AppInvHTTPD( int port, File wwwroot, boolean secure, ReplForm form) throws IOException
   {
     super(port, wwwroot);
     this.rootDir = wwwroot;
     this.scheme = Scheme.getInstance("scheme");
     this.form = form;
+    this.secure = secure;
     gnu.expr.ModuleExp.mustNeverCompile();
   }
 
@@ -59,22 +64,31 @@ public class AppInvHTTPD extends NanoHTTPD {
    * @param header      Header entries, percent decoded
    * @return HTTP response, see class Response for details
    */
-  public Response serve( String uri, String method, Properties header, Properties parms, Properties files )
+  public Response serve( String uri, String method, Properties header, Properties parms, Properties files, Socket mySocket )
   {
     Log.d(LOG_TAG,  method + " '" + uri + "' " );
 
-    // Special case for _version: This uri has a parameter of
-    // "version" which is the blocks editor idea of what
-    // YaVersion.YOUNG_ANDROID_VERSION should be. If this is not in
-    // the range of our YOUNG_ANDROID_VERSION - YAV_SKEW to
-    // YOUNG_ANDROID_VERSION, we call "badversion" which is defined in
-    // the Yail code for the Wireless Debug Repl. It arranges to do
-    // the right thing vis. a vis. the REPL UI
-    //
-    // We support a range on the theory that people cannot upgrade the
-    // REPL exactly when we upgrade the App Engine server. So we
-    // permit some version skew. Exactly how much is defined by
-    // YAV_SKEW (defined above)
+    // Check to see where the connection is from. If we are in "secure" mode (aka running
+    // in the emulator or via the USB Cable, then we should only accept connections from 127.0.0.1
+    // which is the address that "adb" uses when forwarding the connection from the blocks
+    // editor to the Companion.
+
+    if (secure) {
+      InetAddress myAddress = mySocket.getInetAddress();
+      String hostAddress = myAddress.getHostAddress();
+      if (!hostAddress.equals("127.0.0.1")) {
+        Log.d(LOG_TAG, "Debug: hostAddress = " + hostAddress + " while in secure mode, closing connection.");
+        Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: Invalid Source Location " +  hostAddress + "\"}");
+        // Even though we are blowing this guy off, we return the headers below so the browser
+        // will deliver the status message above. Otherwise it won't due to browser security
+        // restrictions
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+        res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+        res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+        return (res);
+      }
+    }
 
     if (method.equals("OPTIONS")) { // This is a complete hack. OPTIONS requests are used
                                     // by Cross Origin Resource Sharing. We give a response

@@ -102,16 +102,18 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
     return sb.toString();
   }
 
-  @SimpleFunction(description = "Returns true if we are running in the emulator")
-  public boolean isEmulator() {
-    if (Build.FINGERPRINT.startsWith("generic"))
-      return true;
-    return false;
+  @SimpleFunction(description = "Returns true if we are running in the emulator or USB Connection")
+  public boolean isDirect() {
+    if (form instanceof ReplForm) {
+      return ((ReplForm)form).isDirect();
+    } else {
+      return false;
+    }
   }
 
   @SimpleFunction(description = "Start the internal AppInvHTTPD to listen for incoming forms. FOR REPL USE ONLY!")
-  public void startHTTPD() {
-    ReplForm.topform.startHTTPD();
+  public void startHTTPD(boolean secure) {
+    ReplForm.topform.startHTTPD(secure);
   }
 
   @SimpleFunction(description = "Declare that we have loaded our initial assets and other assets should come from the sdcard")

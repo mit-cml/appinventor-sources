@@ -22,9 +22,9 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="1120" y="4">
+  <block type="procedures_defnoreturn" x="690" y="4">
     <mutation></mutation>
-    <title name="NAME">startemulator</title>
+    <title name="NAME">startdirectconnect</title>
     <statement name="STACK">
       <block type="local_declaration_statement" inline="false">
         <mutation>
@@ -52,14 +52,35 @@
           </block>
         </statement>
         <next>
-          <block type="PhoneStatus1_startHTTPD">
+          <block type="PhoneStatus1_startHTTPD" inline="false">
             <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+            <value name="ARG0">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
           </block>
         </next>
       </block>
     </statement>
   </block>
-  <block type="ScanButton_Click" x="1890" y="4">
+  <block type="procedures_defnoreturn" x="1806" y="4">
+    <mutation></mutation>
+    <title name="NAME">badversion</title>
+    <statement name="STACK">
+      <block type="ErrorLabel_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">ErrorLabel</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="text">
+            <title name="TEXT">The version of App Inventor you are using is not compatible with this Companion app. </title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="ScanButton_Click" x="4" y="145">
     <title name="COMPONENT_SELECTOR">ScanButton</title>
     <statement name="DO">
       <block type="BarcodeScanner1_DoScan">
@@ -67,7 +88,41 @@
       </block>
     </statement>
   </block>
-  <block type="BarcodeScanner1_AfterScan" x="4" y="145">
+  <block type="procedures_defnoreturn" x="690" y="210">
+    <mutation>
+      <arg name="x"></arg>
+    </mutation>
+    <title name="NAME">doconnect</title>
+    <statement name="STACK">
+      <block type="procedures_callnoreturn" inline="false">
+        <mutation name="callrendezvous">
+          <arg name="code"></arg>
+        </mutation>
+        <title name="PROCNAME">callrendezvous</title>
+        <value name="ARG0">
+          <block type="PhoneStatus1_setHmacSeedReturnCode" inline="false">
+            <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+            <value name="ARG0">
+              <block type="lexical_variable_get">
+                <title name="VAR">x</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="PhoneStatus1_startHTTPD" inline="false">
+            <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+            <value name="ARG0">
+              <block type="logic_false">
+                <title name="BOOL">FALSE</title>
+              </block>
+            </value>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="BarcodeScanner1_AfterScan" x="4" y="235">
     <title name="COMPONENT_SELECTOR">BarcodeScanner1</title>
     <statement name="DO">
       <block type="CodeBox_setproperty" inline="false">
@@ -95,102 +150,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="1120" y="184">
-    <mutation>
-      <arg name="x"></arg>
-    </mutation>
-    <title name="NAME">doconnect</title>
-    <statement name="STACK">
-      <block type="procedures_callnoreturn" inline="false">
-        <mutation name="callrendezvous">
-          <arg name="code"></arg>
-        </mutation>
-        <title name="PROCNAME">callrendezvous</title>
-        <value name="ARG0">
-          <block type="PhoneStatus1_setHmacSeedReturnCode" inline="false">
-            <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
-            <value name="ARG0">
-              <block type="lexical_variable_get">
-                <title name="VAR">x</title>
-              </block>
-            </value>
-          </block>
-        </value>
-        <next>
-          <block type="PhoneStatus1_startHTTPD">
-            <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
-          </block>
-        </next>
-      </block>
-    </statement>
-  </block>
-  <block type="procedures_defnoreturn" x="4" y="311">
-    <mutation>
-      <arg name="code"></arg>
-    </mutation>
-    <title name="NAME">callrendezvous</title>
-    <statement name="STACK">
-      <block type="Web1_PostText" inline="false">
-        <title name="COMPONENT_SELECTOR">Web1</title>
-        <value name="ARG0">
-          <block type="Web1_BuildRequestData" inline="false">
-            <title name="COMPONENT_SELECTOR">Web1</title>
-            <value name="ARG0">
-              <block type="lists_create_with" inline="false">
-                <mutation items="3"></mutation>
-                <value name="ADD0">
-                  <block type="lists_create_with" inline="false">
-                    <mutation items="2"></mutation>
-                    <value name="ADD0">
-                      <block type="text">
-                        <title name="TEXT">key</title>
-                      </block>
-                    </value>
-                    <value name="ADD1">
-                      <block type="lexical_variable_get">
-                        <title name="VAR">code</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <value name="ADD1">
-                  <block type="lists_create_with" inline="false">
-                    <mutation items="2"></mutation>
-                    <value name="ADD0">
-                      <block type="text">
-                        <title name="TEXT">ipaddr</title>
-                      </block>
-                    </value>
-                    <value name="ADD1">
-                      <block type="PhoneStatus1_GetWifiIpAddress">
-                        <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-                <value name="ADD2">
-                  <block type="lists_create_with" inline="false">
-                    <mutation items="2"></mutation>
-                    <value name="ADD0">
-                      <block type="text">
-                        <title name="TEXT">port</title>
-                      </block>
-                    </value>
-                    <value name="ADD1">
-                      <block type="text">
-                        <title name="TEXT">9987</title>
-                      </block>
-                    </value>
-                  </block>
-                </value>
-              </block>
-            </value>
-          </block>
-        </value>
-      </block>
-    </statement>
-  </block>
-  <block type="Screen1_Initialize" x="1348" y="338">
+  <block type="Screen1_Initialize" x="4" y="401">
     <title name="COMPONENT_SELECTOR">Screen1</title>
     <statement name="DO">
       <block type="ScanButton_setproperty" inline="false">
@@ -216,7 +176,7 @@
               <block type="controls_if" inline="false">
                 <mutation else="1"></mutation>
                 <value name="IF0">
-                  <block type="PhoneStatus1_isEmulator">
+                  <block type="PhoneStatus1_isDirect">
                     <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
                   </block>
                 </value>
@@ -252,8 +212,8 @@
                             </value>
                             <next>
                               <block type="procedures_callnoreturn">
-                                <mutation name="startemulator"></mutation>
-                                <title name="PROCNAME">startemulator</title>
+                                <mutation name="startdirectconnect"></mutation>
+                                <title name="PROCNAME">startdirectconnect</title>
                               </block>
                             </next>
                           </block>
@@ -334,17 +294,67 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="4" y="576">
-    <mutation></mutation>
-    <title name="NAME">badversion</title>
+  <block type="procedures_defnoreturn" x="690" y="401">
+    <mutation>
+      <arg name="code"></arg>
+    </mutation>
+    <title name="NAME">callrendezvous</title>
     <statement name="STACK">
-      <block type="ErrorLabel_setproperty" inline="false">
-        <mutation yailtype="text"></mutation>
-        <title name="COMPONENT_SELECTOR">ErrorLabel</title>
-        <title name="PROP">Text</title>
-        <value name="VALUE">
-          <block type="text">
-            <title name="TEXT">The version of App Inventor you are using is not compatible with this Companion app. </title>
+      <block type="Web1_PostText" inline="false">
+        <title name="COMPONENT_SELECTOR">Web1</title>
+        <value name="ARG0">
+          <block type="Web1_BuildRequestData" inline="false">
+            <title name="COMPONENT_SELECTOR">Web1</title>
+            <value name="ARG0">
+              <block type="lists_create_with" inline="false">
+                <mutation items="3"></mutation>
+                <value name="ADD0">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">key</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="lexical_variable_get">
+                        <title name="VAR">code</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ADD1">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">ipaddr</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="PhoneStatus1_GetWifiIpAddress">
+                        <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+                <value name="ADD2">
+                  <block type="lists_create_with" inline="false">
+                    <mutation items="2"></mutation>
+                    <value name="ADD0">
+                      <block type="text">
+                        <title name="TEXT">port</title>
+                      </block>
+                    </value>
+                    <value name="ADD1">
+                      <block type="text">
+                        <title name="TEXT">9987</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
           </block>
         </value>
       </block>
