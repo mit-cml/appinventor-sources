@@ -1,0 +1,212 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Blockly Generator Test</title>
+<script type="text/javascript" src="../../../closure-library-read-only/closure/goog/base.js"></script>
+<script type="text/javascript" src="../../core/blockly.js"></script>
+<script type="text/javascript" src="../../core/block.js"></script>
+<script type="text/javascript" src="../../core/block_svg.js"></script>
+<script type="text/javascript" src="../../core/bubble.js"></script>
+<script type="text/javascript" src="../../core/comment.js"></script>
+<script type="text/javascript" src="../../core/connection.js"></script>
+<script type="text/javascript" src="../../core/contextmenu.js"></script>
+<script type="text/javascript" src="../../core/field.js"></script>
+<script type="text/javascript" src="../../core/field_dropdown.js"></script>
+<script type="text/javascript" src="../../core/field_checkbox.js"></script>
+<script type="text/javascript" src="../../core/field_image.js"></script>
+<script type="text/javascript" src="../../core/field_label.js"></script>
+<script type="text/javascript" src="../../core/field_textinput.js"></script>
+<script type="text/javascript" src="../../core/field_variable.js"></script>
+<script type="text/javascript" src="../../core/flyout.js"></script>
+<script type="text/javascript" src="../../core/generator.js"></script>
+<script type="text/javascript" src="../../core/inject.js"></script>
+<script type="text/javascript" src="../../core/input.js"></script>
+<script type="text/javascript" src="../../core/mutator.js"></script>
+<script type="text/javascript" src="../../core/names.js"></script>
+<script type="text/javascript" src="../../core/procedures.js"></script>
+<script type="text/javascript" src="../../core/scrollbar.js"></script>
+<script type="text/javascript" src="../../core/toolbox.js"></script>
+<script type="text/javascript" src="../../core/tooltip.js"></script>
+<script type="text/javascript" src="../../core/trashcan.js"></script>
+<script type="text/javascript" src="../../core/utils.js"></script>
+<script type="text/javascript" src="../../core/variables.js"></script>
+<script type="text/javascript" src="../../core/warning.js"></script>
+<script type="text/javascript" src="../../core/workspace.js"></script>
+<script type="text/javascript" src="../../core/xml.js"></script>
+<script type="text/javascript" src="../../generators/dart.js"></script>
+<script type="text/javascript" src="unittest_dart.js"></script>
+<script type="text/javascript" src="../../generators/dart/control.js"></script>
+<script type="text/javascript" src="../../generators/dart/text.js"></script>
+<script type="text/javascript" src="../../generators/dart/math.js"></script>
+<script type="text/javascript" src="../../generators/dart/logic.js"></script>
+<script type="text/javascript" src="../../generators/dart/lists.js"></script>
+<script type="text/javascript" src="../../generators/dart/variables.js"></script>
+<script type="text/javascript" src="../../generators/dart/procedures.js"></script>
+<script type="text/javascript" src="../../generators/javascript.js"></script>
+<script type="text/javascript" src="unittest_javascript.js"></script>
+<script type="text/javascript" src="../../generators/javascript/control.js"></script>
+<script type="text/javascript" src="../../generators/javascript/text.js"></script>
+<script type="text/javascript" src="../../generators/javascript/math.js"></script>
+<script type="text/javascript" src="../../generators/javascript/logic.js"></script>
+<script type="text/javascript" src="../../generators/javascript/lists.js"></script>
+<script type="text/javascript" src="../../generators/javascript/variables.js"></script>
+<script type="text/javascript" src="../../generators/javascript/procedures.js"></script>
+<script type="text/javascript" src="../../generators/python.js"></script>
+<script type="text/javascript" src="unittest_python.js"></script>
+<script type="text/javascript" src="../../generators/python/control.js"></script>
+<script type="text/javascript" src="../../generators/python/text.js"></script>
+<script type="text/javascript" src="../../generators/python/math.js"></script>
+<script type="text/javascript" src="../../generators/python/logic.js"></script>
+<script type="text/javascript" src="../../generators/python/lists.js"></script>
+<script type="text/javascript" src="../../generators/python/variables.js"></script>
+<script type="text/javascript" src="../../generators/python/procedures.js"></script>
+<script type="text/javascript" src="unittest.js"></script>
+<script type="text/javascript" src="../../language/en/_messages.js"></script>
+<script type="text/javascript" src="../../language/common/control.js"></script>
+<script type="text/javascript" src="../../language/common/logic.js"></script>
+<script type="text/javascript" src="../../language/common/math.js"></script>
+<script type="text/javascript" src="../../language/common/text.js"></script>
+<script type="text/javascript" src="../../language/common/lists.js"></script>
+<script type="text/javascript" src="../../language/common/variables.js"></script>
+<script type="text/javascript" src="../../language/common/procedures.js"></script>
+<script type="text/javascript">
+'use strict';
+
+function start() {
+  Blockly.inject(document.getElementById('svg'), {path: '../../'});
+}
+
+function loadXml() {
+  var dropdown = document.getElementById('testUrl');
+  var url = dropdown.options[dropdown.selectedIndex].value;
+  if (!url) {
+    url = window.prompt('Enter URL of test file.');
+    if (!url) {
+      return;
+    }
+  }
+  var xmlText = fetchFile(url);
+  if (xmlText !== null) {
+    fromXml(xmlText);
+  }
+}
+
+function fetchFile(xmlUrl) {
+  try {
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open('GET', xmlUrl, false);
+    xmlHttp.setRequestHeader('Content-Type', 'text/xml');
+    xmlHttp.send('');
+  } catch (e) {
+    // Attempt to diagnose the problem.
+    var msg = 'Error: Unable to load XML data.\n';
+    if (window.location.protocol == 'file:') {
+      msg += 'This may be due to a security restriction preventing\n' +
+          'access when using the file:// protocol.\n' +
+          'Use an http webserver, or a less paranoid browser.\n';
+    }
+    alert(msg + '\n' + e);
+    return null;
+  }
+  return xmlHttp.responseText;
+}
+
+function fromXml(xmlText) {
+  var output = document.getElementById('importExport');
+  output.value = xmlText;
+  Blockly.mainWorkspace.clear();
+  try {
+    var xmlDoc = Blockly.Xml.textToDom(xmlText);
+  } catch (e) {
+    alert('Error parsing XML:\n' + e);
+    return;
+  }
+  Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xmlDoc);
+}
+
+function setOutput(text) {
+  var output = document.getElementById('importExport');
+  output.value = text;
+  output.focus();
+  output.select();
+}
+
+function toXml() {
+  var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+  setOutput(xmlText);
+}
+
+function toJavaScript() {
+  var code = '\'use strict\';\n\n'
+  code += Blockly.Generator.workspaceToCode('JavaScript');
+  setOutput(code);
+}
+
+function toDart() {
+  var code = Blockly.Generator.workspaceToCode('Dart');
+  setOutput(code);
+}
+
+function toPython() {
+  var code = Blockly.Generator.workspaceToCode('Python');
+  setOutput(code);
+}
+</script>
+
+<style>
+body {
+  background-color: white;
+  font-family: sans-serif;
+}
+h1 {
+  font-weight: normal;
+  font-size: 140%;
+}
+#svg {
+  float: right;
+  height: 95%;
+  width: 70%;
+}
+.blocklySvg {
+  border: 1px solid black;
+}
+#importExport {
+  height: 100%;
+  width: 100%;
+}
+</style>
+</head>
+<body onload="start()">
+
+<div id="svg"></div>
+
+<table height="95%" width="30%"><tr><td valign="top">
+  <h1>Blockly Generator Test</h1>
+
+  <p>
+    <select id="testUrl">
+      <option value="control.xml">Control</option>
+      <option value="logic.xml">Logic</option>
+      <option value="math.xml">Math</option>
+      <option value="text.xml">Text</option>
+      <option value="lists.xml">Lists</option>
+      <option value="variables.xml">Variables</option>
+      <option value="procedures.xml">Procedures</option>
+      <option value="">Other...</option>
+    </select>
+    <input type="button" value="Load" onclick="loadXml()">
+  </p>
+
+  <p>
+    Generate:
+    <input type="button" value="XML" onclick="toXml()">
+    <input type="button" value="JavaScript" onclick="toJavaScript()">
+    <input type="button" value="Dart" onclick="toDart()">
+    <input type="button" value="Python" onclick="toPython()">
+  </p>
+</td></tr><tr><td height="99%">
+  <textarea id="importExport" readonly="readonly" wrap="off"></textarea>
+</td></tr></table>
+</body>
+</html>

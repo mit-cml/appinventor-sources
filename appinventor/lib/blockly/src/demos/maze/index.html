@@ -1,0 +1,80 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Blockly Demo: Maze</title>
+  <script type="text/javascript" src="maze.js"></script>
+  <style>
+    body {
+      background-color: white;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+
+    /* Buttons */
+    button {
+      margin: 5px;
+      margin-right: 12px;
+      margin-left: 0;
+      padding: 10px;
+      font-size: large;
+      border-radius: 5px;
+      border: 1px solid #ddd;
+      background-color: #eee;
+      color: black;
+    }
+    button.launch {
+      border: 1px solid #d43;
+      background-color: #d43;
+      color: white;
+    }
+    button:active {
+      border: 1px solid blue !important;
+    }
+    button:hover {
+      box-shadow: 2px 2px 5px #888;
+    }
+    #buttonDiv, #randomizeDiv {
+      text-align: center;
+      padding-top: 2em;
+    }
+    iframe {
+      height: 100%;
+      width: 100%;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <table width="100%" height="100%">
+    <tr>
+      <td width="410" valign="top">
+        <h1><a href="http://code.google.com/p/blockly/">Blockly</a> &gt; <a href="../index.html">Demos</a> &gt; Maze</h1>
+
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" version="1.1" id="svgMaze" width="400px" height="400px">
+        </div>
+
+        <div id="buttonDiv">
+          <button id="runButton" class="launch" onclick="Maze.runButtonClick();">Run Program</button>
+          <button id="resetButton" class="launch" onclick="Maze.resetButtonClick();" style="display: none">&nbsp; Reset &nbsp;</button>
+        </div>
+
+        <div id="randomizeDiv">
+          <button onclick="Maze.randomize();">Randomize Maze</button>
+        </div>
+      </td>
+      <td valign="top" rowspan=2>
+        <iframe src="frame.html"></iframe>
+      </td>
+    </tr>
+    <tr>
+      <td align="right" valign="bottom">
+        <small>[<a href="javascript:void(Maze.showCode())">See generated JavaScript code.</a>]</small>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

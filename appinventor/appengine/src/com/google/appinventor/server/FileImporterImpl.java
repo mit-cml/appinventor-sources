@@ -116,12 +116,6 @@ public final class FileImporterImpl implements FileImporter {
           } else {
 
             if (fileName.startsWith(YoungAndroidProjectService.SRC_FOLDER)) {
-              if (fileName.endsWith(".yail")) {
-                // If a yail file is present, we ignore it. We no longer store yail files. They are
-                // generated as part of the build process, but not stored.
-                continue;
-              }
-
               // For files within the src folder, we need to update the directory that we put files
               // in. Adjust the fileName so that it corresponds to this project's package.
               fileName = srcDirectory + '/' + StorageUtil.basename(fileName);

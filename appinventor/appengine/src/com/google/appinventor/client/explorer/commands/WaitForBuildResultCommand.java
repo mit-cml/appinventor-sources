@@ -14,20 +14,17 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.output.MessagesOutput;
 import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONParser;
 import com.google.gwt.json.client.JSONString;
 import com.google.gwt.json.client.JSONValue;
 import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
 
 import java.util.Date;
 
@@ -71,6 +68,8 @@ public class WaitForBuildResultCommand extends ChainableCommand {
     return true;
   }
 
+  // TODO(sharon): what happens if the user has already switched projects? Do
+  // we still switch back to the project to display build errors?
   @Override
   public void execute(final ProjectNode node) {
     final Ode ode = Ode.getInstance();
@@ -103,11 +102,12 @@ public class WaitForBuildResultCommand extends ChainableCommand {
           // Yail generation error
           String formName = extractFormName(result);
           ErrorReporter.reportError(MESSAGES.errorGeneratingYail(formName));
-          String formFileName = formName  + YoungAndroidSourceAnalyzer.FORM_PROPERTIES_EXTENSION;
-          YoungAndroidFormNode formNode =
-              findFormNode((YoungAndroidProjectNode) node, formFileName);
-          if (formNode != null) {
-            showProblemForm(formNode);
+          String blocksFileName = formName  + 
+              YoungAndroidSourceAnalyzer.CODEBLOCKS_SOURCE_EXTENSION;
+          YoungAndroidBlocksNode blocksNode =
+              findBlocksNode((YoungAndroidProjectNode) node, blocksFileName);
+          if (blocksNode != null) {
+            showProblemBlocks(blocksNode);
           }
           executionFailedOrCanceled();
         } else {
@@ -133,14 +133,14 @@ public class WaitForBuildResultCommand extends ChainableCommand {
     ode.getProjectService().getBuildResult(node.getProjectId(), target, callback);
   }
 
-  private static YoungAndroidFormNode findFormNode(YoungAndroidProjectNode projectRootNode,
-                                                   String formName) {
-    // Iterate over the YoungAndroidFormNodes in this project.
+  private static YoungAndroidBlocksNode findBlocksNode(YoungAndroidProjectNode projectRootNode,
+      String formName) {
+    // Iterate over the YoungAndroidBlocksNodes in this project.
     for (ProjectNode source : projectRootNode.getAllSourceNodes()) {
-      if (source instanceof YoungAndroidFormNode) {
-        YoungAndroidFormNode formNode = (YoungAndroidFormNode) source;
-        if (formName.equals(formNode.getName())) {
-          return formNode;
+      if (source instanceof YoungAndroidBlocksNode) {
+        YoungAndroidBlocksNode blocksNode = (YoungAndroidBlocksNode) source;
+        if (formName.equals(blocksNode.getFormName())) {
+          return blocksNode;
         }
       }
     }
@@ -166,40 +166,11 @@ public class WaitForBuildResultCommand extends ChainableCommand {
   }
 
   /**
-   * Shows the given form in the designer and codeblocks so the user can take
+   * Shows the given blocks file in the blocks editor so the user can take
    * care of any problems.
    */
-  private static void showProblemForm(final YoungAndroidFormNode formNode) {
-    ProjectEditor projectEditor = ViewerBox.getViewerBox().show(formNode.getProjectRoot());
-    String fileId = formNode.getFileId();
-    projectEditor.selectFileEditor(projectEditor.getFileEditor(fileId));
-
-    final CodeblocksManager codeblocksManager = CodeblocksManager.getCodeblocksManager();
-    if (codeblocksManager.isCodeblocksOpen()) {
-      // Codeblocks is open.
-
-      // Tell codeblocks to generate YAIL so the user can see any complaints in the blocks editor.
-      // Schedule a ScheduledCommand and make sure that codeblocks has already loaded the form.
-      Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
-        @Override
-        public void execute() {
-          // Check that codeblocks is open and responsive. We don't want to keep repeating this
-          // deferred command if codeblocks has been closed.
-          if (codeblocksManager.isCodeblocksOpenAndResponsive()) {
-            if (codeblocksManager.getCurrentFormNode() == formNode) {
-              codeblocksManager.generateYail();
-            } else {
-              // Codeblocks hasn't finished loading the form.
-              Scheduler.get().scheduleDeferred(this);
-            }
-          }
-        }
-      });
-
-    } else {
-      // Codeblocks is not open.
-      // Tell the user to open the blocks editor.
-      Window.alert(MESSAGES.errorGeneratingYailPleaseOpenCodeblocks());
-    }
+  private static void showProblemBlocks(final YoungAndroidBlocksNode blocksNode) {
+    ProjectEditor projectEditor = ViewerBox.getViewerBox().show(blocksNode.getProjectRoot());
+    // TODO(sharon): cause the blocks editor to highlight the problem blocks=
   }
 }

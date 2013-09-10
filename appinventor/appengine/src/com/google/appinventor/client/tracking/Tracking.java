@@ -30,8 +30,8 @@ public class Tracking {
       "BuildBarcode-YA";
   public static final String PROJECT_ACTION_BUILD_DOWNLOAD_YA = PROJECT_ACTION_PREFIX +
       "BuildDownload-YA";
-  public static final String PROJECT_ACTION_BUILD_DOWNLOAD_TO_PHONE_YA = PROJECT_ACTION_PREFIX +
-      "BuildDownloadToPhone-YA";
+  public static final String PROJECT_ACTION_BUILD_YAIL_YA = PROJECT_ACTION_PREFIX +
+      "BuildYail-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA = PROJECT_ACTION_PREFIX +
       "DownloadProjectSource-YA";
   public static final String PROJECT_ACTION_DOWNLOAD_FILE_YA = PROJECT_ACTION_PREFIX +

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ======================================================================
+     Copyright 2012 Google Inc.  All Rights Reserved.
+     Author: sharon@google.com (Sharon Perl)
+
+     Blockly-based blocks editor
+     ====================================================================== -->
+
+<project name="blocklyeditor" default="all">
+	<description>
+    In-browser blocks editor for App Inventor based on Blockly
+  </description>
+
+	<target name="all" 
+		      depends="BlocklyCompile, BlocklyTestbed">
+	</target>
+
+	<target name="tests"
+		      depends="BlocklyeditorTests">
+	</target>
+
+	<!-- =====================================================================
+       Import common directory, task, and target definitions.
+       ===================================================================== -->
+
+	<import file="../build-common.xml" />
+
+	<!-- =====================================================================
+       Define base package path.
+       ===================================================================== -->
+	<property name="blocklyeditor.pkg" value="com/google/appinventor/blocklyeditor" />
+
+	<property name="local.lib.dir" location="lib" />
+	<property name="run.dir" location="${local.build.dir}/run" />
+	<property name="run.lib.dir" location="${run.dir}/lib" />
+
+	<property name="blockly.src.dir" location="${lib.dir}/blockly/src" />
+
+	<!-- =====================================================================
+       Targets
+       ===================================================================== -->
+
+	<target name="BlocklyCompile" 
+		      description="For now, compiling the Blockly editor means cat-ing its javascript together with the relevant javascript in the Blockly library" 
+		      depends="init">
+		<java failonerror="true" fork="true" jar="${lib.dir}/plovr/plovr-eba786b34df9.jar">
+			<arg line="build ploverConfig.js" />
+		</java>
+                <exec executable="python" failonerror="true">
+		  <arg line="../misc/utils/bomify.py"/>
+                  <arg value="../build/blocklyeditor/blockly-all.js" />
+                </exec>
+	</target>
+
+	<!--  property name="js.tests.dir" location="./tests" /-->
+	<!-- Change as needed -->
+
+	<!--target name="tests">
+    <exec executable="phantomjs" failonerror="true">
+      <arg path="${js.tests.dir}/buttonClickTest.js"/>
+    </exec>
+  </target-->
+
+	<!-- =====================================================================
+       BlocklyeditorTests: build and run the Blocklyeditor tests and 
+       generate the output results
+       ===================================================================== -->
+	
+	<target name="BlocklyTestbed" 
+		      description="Testbed for blockly code generation. To use this, open blocklyeditor/src/demos/yail/index.html (using a file:/// url) in a browser">
+		<mkdir dir="${run.lib.dir}" />
+
+		<echo message="var componentTypeJson = " file="${public.build.dir}/component-types.js" />
+		<concat destfile="${public.build.dir}/component-types.js" append="true">
+			<fileset file="${build.dir}/components/simple_components.json" />
+		</concat>
+		<mkdir dir="${public.build.dir}/media" />
+		<copy todir="${public.build.dir}/media">
+			<fileset dir="${blockly.src.dir}/media" />
+		</copy>
+	</target>
+
+	<path id="libsForBlocklyeditorTests.path">
+		<fileset dir="${run.lib.dir}" includes="*.jar" />
+		<pathelement location="${build.dir}/common/CommonTestUtils.jar" />
+		<pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+	</path>
+
+	<path id="BlocklyeditorTests.path">
+		<path refid="libsForBlocklyeditorTests.path" />
+		<pathelement location="${local.build.dir}/BlocklyeditorTests.jar" />
+	</path>
+
+	<target name="BlocklyeditorTests"
+		      description="Blocklyeditor: build and run the test suite"
+		      depends="BlocklyCompile, BlocklyTestbed" >
+		<ai.dojunit aij-testingtarget="BlocklyeditorTests" aij-dir="${blocklyeditor.pkg}">
+		</ai.dojunit>
+	</target>
+</project>

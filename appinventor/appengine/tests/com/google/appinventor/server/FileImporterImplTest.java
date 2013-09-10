@@ -72,8 +72,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/project1/Screen1.blk");
     ListAssert.assertContains(projectSourceFiles,
         "src/appinventor/ai_joeuser/project1/Screen1.scm");
-    assertFalse(projectSourceFiles.contains(
-        "src/appinventor/ai_joeuser/project1/Screen1.yail"));
+    ListAssert.assertContains(projectSourceFiles,
+        "src/appinventor/ai_joeuser/project1/Screen1.yail");
   }
 
   public void testImportProject_withAssets() throws Exception {
@@ -92,8 +92,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/project1/Screen1.blk");
     ListAssert.assertContains(projectSourceFiles,
         "src/appinventor/ai_joeuser/project1/Screen1.scm");
-    assertFalse(projectSourceFiles.contains(
-        "src/appinventor/ai_joeuser/project1/Screen1.yail"));
+    ListAssert.assertContains(projectSourceFiles,
+        "src/appinventor/ai_joeuser/project1/Screen1.yail");
     ListAssert.assertContains(projectSourceFiles,
         "assets/kitty.png");
     ListAssert.assertContains(projectSourceFiles,
@@ -116,8 +116,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/project2/Screen1.blk");
     ListAssert.assertContains(projectSourceFiles,
         "src/appinventor/ai_joeuser/project2/Screen1.scm");
-    assertFalse(projectSourceFiles.contains(
-        "src/appinventor/ai_joeuser/project2/Screen1.yail"));
+    ListAssert.assertContains(projectSourceFiles,
+        "src/appinventor/ai_joeuser/project2/Screen1.yail");
   }
 
   public void testImportProject_withoutProjectHistory() throws Exception {
@@ -140,8 +140,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/" + projectName + "/Screen1.blk");
     ListAssert.assertContains(projectSrcFiles,
         "src/appinventor/ai_joeuser/" + projectName + "/Screen1.scm");
-    assertFalse(projectSrcFiles.contains(
-        "src/appinventor/ai_joeuser/" + projectName + "/Screen1.yail"));
+    ListAssert.assertContains(projectSrcFiles,
+        "src/appinventor/ai_joeuser/" + projectName + "/Screen1.yail");
   }
 
   public void testImportProject_withProjectHistory() throws Exception {
@@ -165,8 +165,8 @@ public class FileImporterImplTest extends LocalDatastoreTestCase {
         "src/appinventor/ai_joeuser/" + projectName + "/Screen1.blk");
     ListAssert.assertContains(projectSrcFiles,
         "src/appinventor/ai_joeuser/" + projectName + "/Screen1.scm");
-    assertFalse(projectSrcFiles.contains(
-        "src/appinventor/ai_joeuser/" + projectName + "/Screen1.yail"));
+    ListAssert.assertContains(projectSrcFiles,
+        "src/appinventor/ai_joeuser/" + projectName + "/Screen1.yail");
   }
 
   public void testEmptyZip() throws Exception {

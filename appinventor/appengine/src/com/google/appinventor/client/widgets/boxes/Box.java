@@ -21,7 +21,6 @@ import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -40,7 +39,7 @@ import java.util.Map;
  * embedded widgets. Boxes can be resized, minimized and restored.
  *
  */
-public abstract class Box extends FocusPanel {
+public abstract class Box extends HandlerPanel {
 
   /**
    * Describes a box in the context of a layout.
@@ -203,7 +202,7 @@ public abstract class Box extends FocusPanel {
   // UI elements
   private final SimplePanel body;
   private final Label captionLabel;
-  private final FocusPanel header;
+  private final HandlerPanel header;
   private final DockPanel headerContainer;
   private final ScrollPanel scrollPanel;
   private final PushButton minimizeButton;
@@ -254,7 +253,7 @@ public abstract class Box extends FocusPanel {
     } else {
       captionLabel.setStylePrimaryName("ode-Box-header-caption");
     }
-    header = new FocusPanel();
+    header = new HandlerPanel();
     header.add(captionLabel);
     header.setWidth("100%");
 

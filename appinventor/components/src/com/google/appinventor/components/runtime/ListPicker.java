@@ -100,11 +100,11 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * Selection index property getter method.
    */
   @SimpleProperty(
-      description = "<p>The index of the currently selected item, starting at " +
+      description = "The index of the currently selected item, starting at " +
       "1.  If no item is selected, the value will be 0.  If an attempt is " +
       "made to set this to a number less than 1 or greater than the number " +
       "of items in the ListPicker, SelectionIndex will be set to 0, and " +
-      "Selection will be set to the empty text.</p>",
+      "Selection will be set to the empty text.",
       category = PropertyCategory.BEHAVIOR)
   public int SelectionIndex() {
     return selectionIndex;

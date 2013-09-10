@@ -7,6 +7,8 @@
      Contains definitions common to multiple App Inventor build.xml files.
      ====================================================================== -->
 <project name="CommonDefinitions">
+  <!-- Always build with debug set... (jis) -->
+  <property name="debug" value="true"/>
   <description>
     Definitions common to multiple App Inventor build.xml files."
   </description>
@@ -94,7 +96,7 @@
     <attribute name="nowarn" default="off"/>
     <attribute name="source" default="6"/>
     <attribute name="target" default="6"/>
-    <attribute name="deprecation" default="on"/>
+    <attribute name="deprecation" default="off"/>
     <attribute name="debug" default="${debug.compile}"/>
     <attribute name="debuglevel" default="lines,vars,source"/>
     <element name="implicit-elements" implicit="yes"/>
@@ -280,6 +282,16 @@
   <target name="blockslib_OpenBlocks">
     <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockslib"
          target="OpenBlocks"/>
+  </target>
+
+  <!-- ====================================================================
+       blocklyeditor_BlocklyCompile builds:
+       - build/blockly-all.js
+       ==================================================================== -->
+  
+  <target name="blocklyeditor_BlocklyCompile">
+    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blocklyeditor"
+         target="BlocklyCompile"/>
   </target>
 
   <!-- ====================================================================

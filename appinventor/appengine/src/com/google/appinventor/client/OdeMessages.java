@@ -42,6 +42,14 @@ public interface OdeMessages extends Messages {
   @Description("Text on 'Delete' button")
   String deleteButton();
 
+  @DefaultMessage("Show Warnings")
+  @Description("Text on Toggle Warning Button")
+  String showWarnings();
+
+  @DefaultMessage("Hide Warnings")
+  @Description("Text on Toggle Warning Button")
+  String hideWarnings();
+
   @DefaultMessage("Upload new...")
   @Description("Text on 'Add...' button")
   String addButton();
@@ -76,6 +84,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for removing a screen")
   String removeFormButton();
 
+  @DefaultMessage("Connect To")
+  @Description("Label of the button for selecting phone connection")
+  String connectToButton();
+
   @DefaultMessage("Deleting this screen will completely remove the screen from your project. " +
       "All components and blocks associated with this screen will be deleted.\n" +
       "There is no undo.\nAre you sure you want to delete {0}?")
@@ -86,6 +98,18 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor")
   String openBlocksEditorButton();
 
+  @DefaultMessage("Screens...")
+  @Description("Label of the button for switching screens")
+  String screensButton();
+
+  @DefaultMessage("Blocks")
+  @Description("Label of the button for switching to the blocks editor")
+  String switchToBlocksEditorButton();
+
+  @DefaultMessage("Designer")
+  @Description("Label of the button for switching to the form editor")
+  String switchToFormEditorButton();
+
   @DefaultMessage("Show Barcode")
   @Description("Label of the cascade item for building a project and showing barcode")
   String showBarcodeButton();
@@ -94,9 +118,9 @@ public interface OdeMessages extends Messages {
   @Description("Label of the cascade item for building a project and downloading")
   String downloadToComputerButton();
 
-  @DefaultMessage("Download to Connected Phone")
-  @Description("Label of the cascade item for building a project and downloading it to a phone")
-  String downloadToPhoneButton();
+  @DefaultMessage("Generate YAIL")
+  @Description("Label of the cascade item for generating YAIL for a project")
+  String generateYailButton();
 
   @DefaultMessage("Package for Phone")
   @Description("Label of the button leading to build related cascade items")
@@ -123,7 +147,7 @@ public interface OdeMessages extends Messages {
   // Used in Ode.java
 
   // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("App Inventor for Android - Beta")
+  @DefaultMessage("MIT App Inventor 2 (Alpha)")
   //  @DefaultMessage("App Inventor for Android")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
@@ -139,15 +163,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("An internal error has occurred. Go look in the Debugging view.")
   @Description("Alert after an internal error")
   String internalErrorSeeDebuggingView();
+  
+  @DefaultMessage("An internal error has occurred. Click 'ok' for more information.")
+  @Description("Confirm alert after an internal error")
+  String internalErrorClickOkDebuggingView();
 
   @DefaultMessage("The server is temporarily unavailable. Please try again later!")
   @Description("Error message if the server becomes completely unavailable.")
   String serverUnavailable();
-
-  @DefaultMessage("The Blocks Editor should close automatically.\n" +
-      "Please press OK when the Blocks Editor is closed.")
-  @Description("Closing messsage with codeblocks open")
-  String onClosingBrowserWithCodeblocksOpen();
 
   // Used in RpcStatusPopup.java
 
@@ -223,6 +246,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of Debugging tab")
   String tabNameDebugging();
 
+  @DefaultMessage("Please choose a project to open or create a new project.")
+  @Description("Message shown when there is no current file editor to switch to")
+  String chooseProject();
+
   // Used in boxes/AssetListBox.java
 
   @DefaultMessage("Media")
@@ -271,17 +298,36 @@ public interface OdeMessages extends Messages {
   @Description("Caption for source structure box.")
   String sourceStructureBoxCaption();
 
-  // Used in boxes/ViewerBox.java
+  // Used in boxes/BlockSelectorBox.java
 
+  @DefaultMessage("Blocks")
+  @Description("Caption for block selector box.")
+  String blockSelectorBoxCaption();
+
+  @DefaultMessage("Built-in")
+  @Description("Label on built-in-blocks branch of block selector tree")
+  String builtinBlocksLabel();
+
+  // Used in boxes/ViewerBox.java
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
+
+  // Used in SaveAllEditorsCommand.java
+
+  @DefaultMessage("Saved project at {0}")
+  @Description("Message reported when project was saved successfully.")
+  String savedProject(String saveTime);
 
   // Used in editor/EditorManager.java
 
   @DefaultMessage("Server error: could not save one or more files. Please try again later!")
   @Description("Error message reported when one or more file couldn't be saved to the server.")
   String saveErrorMultipleFiles();
+
+  @DefaultMessage("Error generating Yail for screen {0}: {1}. Please fix and try packaging again.")
+  @Description("Error message reported when yail generation fails for a screen")
+  String yailGenerationError(String formName, String description);
 
   // Used in editor/simple/SimpleNonVisibleComponentsPanel.java
 
@@ -361,7 +407,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link to a component's reference docs")
   String moreInformation();
 
-  // Used in editor/youngandroid/YaFormEditor.java
+  // Used in editor/youngandroid/YaFormEditor.java and YaBlocksEditor.java
 
   @DefaultMessage("Server error: could not load file. Please try again later!")
   @Description("Error message reported when a source file couldn't be loaded from the server.")
@@ -370,6 +416,21 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not save file. Please try again later!")
   @Description("Error message reported when a source file couldn't be saved to the server.")
   String saveError();
+
+  @DefaultMessage("{0} blocks")
+  @Description("Tab name for blocks editor")
+  String blocksEditorTabName(String formName);
+
+  // Used in editor/youngandroid/BlocklyPanel.java
+
+  @DefaultMessage("The blocks area did not load properly. Changes to the blocks for screen {0} will not be saved.")
+  @Description("Message indicating that blocks changes were not saved")
+  String blocksNotSaved(String formName);
+
+  @DefaultMessage("The blocks for screen {0} did not load properly. "
+      + "You will not be able to edit using the blocks editor until the problem is corrected.")
+  @Description("Message when blocks fail to load properly")
+  String blocksLoadFailure(String formName);
 
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
@@ -654,12 +715,6 @@ public interface OdeMessages extends Messages {
   @Description("Message displayed when an error occurs while generating YAIL for a form.")
   String errorGeneratingYail(String formName);
 
-  @DefaultMessage("There are errors in the blocks for this project. Click on the [Open the " +
-      "Blocks Editor] button. Then, retry packaging your project with the blocks editor open.")
-  @Description("Alert displayed when an error occurs while generating YAIL for a form and " +
-      "codeblocks is not open.")
-  String errorGeneratingYailPleaseOpenCodeblocks();
-
   // Used in explorer/commands/CommandRegistory.java
 
   @DefaultMessage("Delete...")
@@ -711,21 +766,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not delete the file. Please try again later!")
   @Description("Error message reported when deleting a file failed on the server.")
   String deleteFileError();
-
-  // Used in explorer/commands/DownloadToPhoneCommand.java
-
-  @DefaultMessage("Downloading application to the phone.")
-  @Description("Message displayed when downloading an Android application to the phone.")
-  String downloadingToPhoneMessage();
-
-  @DefaultMessage("Server error: download to phone failed. Please try again later!")
-  @Description("Message displayed when downloading an Android application to the phone fails.")
-  String downloadToPhoneFailedMessage();
-
-  @DefaultMessage("Application successfully downloaded to phone.")
-  @Description("Message displayed after a successful download of an Android application " +
-      "to the phone.")
-  String downloadToPhoneSucceededMessage();
 
   // Used in explorer/commands/EnsurePhoneConnectedCommand.java
 
@@ -800,6 +840,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Download User Source")
   @Description("Label of the button for admins to download a user's project source")
   String downloadUserSourceButton();
+
+  @DefaultMessage("Switch To Debug Panel")
+  @Description("Label of the button for admins to switch to the debug panel without an explicit error")
+  String switchToDebugButton();
 
   @DefaultMessage("Download User Source")
   @Description("Title of the dialog box for downloading a user's project source")
@@ -992,8 +1036,11 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when a file was not selected.")
   String noFileSelected();
 
-  @DefaultMessage("A file named {0} already exists in this project. Do you want to remove " +
-      "this old file? This will also remove any other files whose names conflict with {1}.")
+  @DefaultMessage("Request to save {1}" +
+      "\n\nA file named {0} already exists in this project." +
+      "\nDo you want to remove that old file?" +
+      "\nThis will also remove any other files whose " +
+      "names conflict with {1}.")
   @Description("Confirmation message shown when conflicting files are about to be deleted.")
   String confirmOverwrite(String newFile, String existingFile);
 
@@ -1028,7 +1075,7 @@ public interface OdeMessages extends Messages {
   String projectUploadError();
 
   @DefaultMessage("The selected project is not a project source file!\n" +
-      "Project source files are zip files.")
+      "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
@@ -1051,61 +1098,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Project name:")
   @Description("Label for the project name input text box")
   String projectNameLabel();
-
-  // Used in youngandroid/CodeblocksManager.java
-
-  @DefaultMessage("Unable to start the Blocks Editor.")
-  @Description("Error message displayed when Codeblocks fails to open.")
-  String startingCodeblocksFailed();
-
-  @DefaultMessage("Would you like to continue waiting for the Blocks Editor to start?")
-  @Description("Message displayed after waiting a long time for the Blocks Editor to start.")
-  String continueTryingToConnect();
-
-  @DefaultMessage("The Blocks Editor needs to be open. Click on the " +
-      "[Open the Blocks Editor] button.")
-  @Description("Error message displayed when an attempt is made to communicate with Codeblocks, " +
-      "but the connection is null.")
-  String noCodeblocksConnection();
-
-  @DefaultMessage("The Blocks Editor is not responding. Click on the " +
-      "[Open the Blocks Editor] button.")
-  @Description("Error message displayed when we need to communicate with Codeblocks, " +
-      "but it is not responding.")
-  String codeblocksConnectionUnresponsive();
-
-  @DefaultMessage("The Blocks Editor was not able to reload the designer properties.")
-  @Description("Error message displayed when Codeblocks fails to reload properties.")
-  String codeblocksFailedToReloadProperties();
-
-  @DefaultMessage("The Blocks Editor was not able to load the blocks for the screen.")
-  @Description("Error message displayed when Codeblocks fails to load a form.")
-  String codeblocksFailedToLoadPropertiesAndBlocks();
-
-  @DefaultMessage("The Blocks Editor was not able to package the blocks.")
-  @Description("Error message displayed when Codeblocks fails to save blocks.")
-  String codeblocksFailedToSaveBlocks();
-
-  @DefaultMessage("Blocks Editor failed to clear.  Please close and reopen Blocks Editor.")
-  @Description("Error message reported when attempting to clear codeblocks.")
-  String clearCodeblocksError();
-
-  @DefaultMessage("The Blocks Editor was not able to receive the property change.")
-  @Description("Error message displayed when Codeblocks fails to sync a property.")
-  String codeblocksFailedToSyncProperty();
-
-  @DefaultMessage("The Blocks Editor was not able to add the asset.")
-  @Description("Error message displayed when Codeblocks fails to add an asset.")
-  String codeblocksFailedToAddAsset();
-
-  @DefaultMessage("The Blocks Editor was not able to install the application.")
-  @Description("Error message displayed when Codeblocks fails to install an application.")
-  String codeblocksFailedToInstallApplication();
-
-  @DefaultMessage("Blocks Editor failed to determine whether a phone is connected.  Please close" +
-      " and reopen Blocks Editor.")
-  @Description("Error message reported when attempting to check if phone is connected.")
-  String codeblocksIsPhoneConnectedError();
 
   // Used in youngandroid/TextValidators.java
 
@@ -1153,9 +1145,9 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("No upgrade strategy exists for {0} from version {1} to {2}.")
   @Description("Exception message used when a component was not upgraded")
   String noUpgradeStrategyException(String componentType, int srcCompVersion, int sysCompVersion);
-  
+
   // Used in client/editor/simple/components/MockHVarrangement.java
-  
+
   @DefaultMessage("System error: bad alignment property editor for horizontal or vertical arrangement.")
   @Description("System error message for a bad alignment property editor")
   String badAlignmentPropertyEditorForArrangement();
@@ -1175,4 +1167,27 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
+  @DefaultMessage("Connect Companion")
+  @Description("Message providing details about starting the wireless connection.")
+  String wirelessButton();
+
+  @DefaultMessage("Disconnect Companion")
+  @Description("Message providing details about disconnecting a wireless connection.")
+  String wirelessButtonConnected();
+
+  @DefaultMessage("Connect Emulator")
+  @Description("Message providing details about starting the emulator connection.")
+  String emulatorButton();
+
+  @DefaultMessage("Disconnect Emulator")
+  @Description("Message providing details about disconnecting an emulator connection.")
+  String emulatorButtonConnected();
+
+  @DefaultMessage("Connect via USB")
+  @Description("Message providing details about starting a USB connection.")
+  String usbButton();
+
+  @DefaultMessage("Disconnect USB")
+  @Description("Message providing details about disconnecting a USB connection.")
+  String usbButtonConnected();
 }

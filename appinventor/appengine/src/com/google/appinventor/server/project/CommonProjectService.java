@@ -147,6 +147,19 @@ public abstract class CommonProjectService {
   }
 
   /**
+   * Loads the raw content of the associated file.
+   *
+   * @param userId the userid
+   * @param projectId the project root node ID
+   * @param fileId project node whose content is to be downloaded
+   * @return the file contents
+   */
+
+  public byte[] loadraw(String userId, long projectId, String fileId) {
+    return storageIo.downloadRawFile(userId, projectId, fileId);
+  }
+
+  /**
    * Saves the content of the file associated with a node in the project tree.
    *
    * @param userId the user id

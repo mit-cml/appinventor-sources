@@ -7,7 +7,6 @@ package com.google.appinventor.client.explorer.commands;
 
 import com.google.appinventor.client.ErrorReporter;
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -36,32 +35,7 @@ public class EnsurePhoneConnectedCommand extends ChainableCommand {
 
   @Override
   public void execute(final ProjectNode node) {
-    AsyncCallback<Boolean> callback = new AsyncCallback<Boolean>() {
-      @Override
-      public void onFailure(Throwable caught) {
-    	if (caught.getMessage().equals(MESSAGES.noCodeblocksConnection())) {
-          // This error is not an App Inventor bug; therefore, it 
-          // should be reported as an info message.
-          ErrorReporter.reportInfo(caught.getMessage());    		
-    	}else{
-    	  // The error is something else; therefore, report as 
-    	  // an error message.
-    	  ErrorReporter.reportError(caught.getMessage());
-    	}
-        executionFailedOrCanceled();
-      }
-
-      @Override
-      public void onSuccess(Boolean result) {
-        if (result) {
-          executeNextCommand(node);
-        } else {
-          ErrorReporter.reportInfo(MESSAGES.phoneNotConnected());
-          executionFailedOrCanceled();
-        }
-      }
-    };
-
-    CodeblocksManager.getCodeblocksManager().isPhoneConnected(callback);
+   ErrorReporter.reportError("Can't currently tell if phone is connected!");
+   executionFailedOrCanceled();
   }
 }

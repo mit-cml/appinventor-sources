@@ -199,6 +199,8 @@ public class Form extends Activity
     Scrollable(true); // frameLayout is created in Scrollable()
     BackgroundImage("");
     BackgroundColor(Component.COLOR_WHITE);
+    AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
+    AlignVertical(ComponentConstants.GRAVITY_TOP);
     Title("");
   }
 

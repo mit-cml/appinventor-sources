@@ -18,7 +18,7 @@ public class StorageUtil {
   private StorageUtil() {}
 
   // Default character encoding
-  public static final String DEFAULT_CHARSET = "Cp1252";
+  public static final String DEFAULT_CHARSET = "utf-8";
 
   // The initial Motd Id (which will contain a pointer to the last one).
   // Note that it is an error for there to be no record with this ID.  Use Odetool to
@@ -119,7 +119,7 @@ public class StorageUtil {
       return "application/vnd.android.package-archive; charset=utf-8";
     }
 
-    if (filePath.endsWith(".zip")) {
+    if (filePath.endsWith(".aia")) {
       return "application/zip; charset=utf-8";
     }
 

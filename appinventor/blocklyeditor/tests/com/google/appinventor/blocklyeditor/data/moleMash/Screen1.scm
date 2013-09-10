@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"76","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"10","Uuid":"0","Title":"Screen1","$Components":[{"$Name":"MyCanvas","$Type":"Canvas","$Version":"7","Uuid":"258594124","Width":"-2","Height":"300","$Components":[{"$Name":"Mole","$Type":"ImageSprite","$Version":"6","Uuid":"147618725","Interval":"600","Picture":"mole.png","X":"100","Y":"100"}]},{"$Name":"ScoreLabel","$Type":"Label","$Version":"2","Uuid":"-339481992","Text":"..."},{"$Name":"ResetButton","$Type":"Button","$Version":"5","Uuid":"-1175808680","Text":"Reset"},{"$Name":"Noise","$Type":"Sound","$Version":"3","Uuid":"861202228"},{"$Name":"MoleTimer","$Type":"Clock","$Version":"1","Uuid":"-1529566036","TimerInterval":"500"}]}}
+|#

@@ -1,0 +1,184 @@
+<html>
+<head>
+<meta charset="utf-8">
+<title>Blockly Playground</title>
+<script type="text/javascript" src="../../closure-library-read-only/closure/goog/base.js"></script>
+<script type="text/javascript" src="../core/blockly.js"></script>
+<script type="text/javascript" src="../core/block.js"></script>
+<script type="text/javascript" src="../core/block_svg.js"></script>
+<script type="text/javascript" src="../core/bubble.js"></script>
+<script type="text/javascript" src="../core/comment.js"></script>
+<script type="text/javascript" src="../core/connection.js"></script>
+<script type="text/javascript" src="../core/contextmenu.js"></script>
+<script type="text/javascript" src="../core/field.js"></script>
+<script type="text/javascript" src="../core/field_dropdown.js"></script>
+<script type="text/javascript" src="../core/field_checkbox.js"></script>
+<script type="text/javascript" src="../core/field_image.js"></script>
+<script type="text/javascript" src="../core/field_label.js"></script>
+<script type="text/javascript" src="../core/field_textinput.js"></script>
+<script type="text/javascript" src="../core/field_variable.js"></script>
+<script type="text/javascript" src="../core/flyout.js"></script>
+<script type="text/javascript" src="../core/generator.js"></script>
+<script type="text/javascript" src="../core/inject.js"></script>
+<script type="text/javascript" src="../core/input.js"></script>
+<script type="text/javascript" src="../core/mutator.js"></script>
+<script type="text/javascript" src="../core/names.js"></script>
+<script type="text/javascript" src="../core/procedures.js"></script>
+<script type="text/javascript" src="../core/scrollbar.js"></script>
+<script type="text/javascript" src="../core/toolbox.js"></script>
+<script type="text/javascript" src="../core/tooltip.js"></script>
+<script type="text/javascript" src="../core/trashcan.js"></script>
+<script type="text/javascript" src="../core/utils.js"></script>
+<script type="text/javascript" src="../core/variables.js"></script>
+<script type="text/javascript" src="../core/warning.js"></script>
+<script type="text/javascript" src="../core/workspace.js"></script>
+<script type="text/javascript" src="../core/xml.js"></script>
+<script type="text/javascript" src="../generators/dart.js"></script>
+<script type="text/javascript" src="../generators/dart/control.js"></script>
+<script type="text/javascript" src="../generators/dart/text.js"></script>
+<script type="text/javascript" src="../generators/dart/math.js"></script>
+<script type="text/javascript" src="../generators/dart/logic.js"></script>
+<script type="text/javascript" src="../generators/dart/lists.js"></script>
+<script type="text/javascript" src="../generators/dart/variables.js"></script>
+<script type="text/javascript" src="../generators/dart/procedures.js"></script>
+<script type="text/javascript" src="../generators/javascript.js"></script>
+<script type="text/javascript" src="../generators/javascript/control.js"></script>
+<script type="text/javascript" src="../generators/javascript/text.js"></script>
+<script type="text/javascript" src="../generators/javascript/math.js"></script>
+<script type="text/javascript" src="../generators/javascript/logic.js"></script>
+<script type="text/javascript" src="../generators/javascript/lists.js"></script>
+<script type="text/javascript" src="../generators/javascript/variables.js"></script>
+<script type="text/javascript" src="../generators/javascript/procedures.js"></script>
+<script type="text/javascript" src="../generators/python.js"></script>
+<script type="text/javascript" src="../generators/python/control.js"></script>
+<script type="text/javascript" src="../generators/python/text.js"></script>
+<script type="text/javascript" src="../generators/python/math.js"></script>
+<script type="text/javascript" src="../generators/python/logic.js"></script>
+<script type="text/javascript" src="../generators/python/lists.js"></script>
+<script type="text/javascript" src="../generators/python/variables.js"></script>
+<script type="text/javascript" src="../generators/python/procedures.js"></script>
+<script type="text/javascript" src="../language/en/_messages.js"></script>
+<script type="text/javascript" src="../language/common/control.js"></script>
+<script type="text/javascript" src="../language/common/logic.js"></script>
+<script type="text/javascript" src="../language/common/math.js"></script>
+<script type="text/javascript" src="../language/common/text.js"></script>
+<script type="text/javascript" src="../language/common/lists.js"></script>
+<script type="text/javascript" src="../language/common/variables.js"></script>
+<script type="text/javascript" src="../language/common/procedures.js"></script>
+<script type="text/javascript">
+'use strict';
+// Depending on the URL argument, render as LTR or RTL.
+var rtl = (document.location.search == '?rtl');
+var block = null;
+
+function start() {
+  Blockly.inject(document.getElementById('svg'), {'rtl': rtl, path: '../'});
+}
+
+function toXml() {
+  var output = document.getElementById('importExport');
+  var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+  output.value = Blockly.Xml.domToText(xml);
+  output.focus();
+  output.select();
+}
+
+function fromXml() {
+  var input = document.getElementById('importExport');
+  var xml = Blockly.Xml.textToDom(input.value);
+  Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+}
+
+function toJavaScript() {
+  var output = document.getElementById('importExport');
+  output.value = Blockly.Generator.workspaceToCode('JavaScript');
+}
+
+function toDart() {
+  var output = document.getElementById('importExport');
+  output.value = Blockly.Generator.workspaceToCode('Dart');
+}
+
+function toPython() {
+  var output = document.getElementById('importExport');
+  output.value = Blockly.Generator.workspaceToCode('Python');
+}
+
+function airstrike(n) {
+  var prototypes = [];
+  for (var prototype in Blockly.Language) {
+    if (Blockly.Language[prototype].category) {
+      prototypes.push(prototype);
+    }
+  }
+  for (var x = 0; x < n; x++) {
+    var prototype = prototypes[Math.floor(Math.random() * prototypes.length)];
+    var block = new Blockly.Block(Blockly.mainWorkspace, prototype);
+    block.initSvg();
+    block.getSvgRoot().setAttribute('transform', 'translate(' +
+        Math.round(Math.random() * 450 + 40) + ', ' +
+        Math.round(Math.random() * 600 + 40) + ')');
+    block.render();
+  }
+}
+</script>
+
+<style>
+body {
+  background-color: white;
+  font-family: sans-serif;
+}
+h1 {
+  font-weight: normal;
+  font-size: 140%;
+}
+#svg {
+  float: right;
+  height: 95%;
+  width: 70%;
+}
+.blocklySvg {
+  border: 1px solid black;
+}
+</style>
+</head>
+<body onload="start()">
+
+<div id="svg"></div>
+
+<h1>Blockly Playground</h1>
+
+<p><a href="javascript:void(document.getElementById('svg').style.display = 'block')">Show</a>
+ - <a href="javascript:void(document.getElementById('svg').style.display = 'none')">Hide</a></p>
+
+<script type="text/javascript">
+  if (rtl) {
+    document.write('[ &larr; RTL. Switch to <A HREF="?ltr">LTR</A>. ]');
+  } else {
+    document.write('[ &rarr; LTR. Switch to <A HREF="?rtl">RTL</A>. ]');
+  }
+</script>
+
+<p>
+  <input type="button" value="Export to XML" onclick="toXml()">
+  &nbsp;
+  <input type="button" value="Import from XML" onclick="fromXml()">
+  <br>
+  <input type="button" value="Generate JavaScript" onclick="toJavaScript()">
+  &nbsp;
+  <input type="button" value="Generate Dart" onclick="toDart()">
+  &nbsp;
+  <input type="button" value="Generate Python" onclick="toPython()">
+  <br>
+  <textarea id="importExport" style="width: 26%; height: 12em"></textarea>
+</p>
+<hr>
+
+<p>
+  Stress test with an <input type="button" value="Airstrike!" onclick="airstrike(100)">
+</p>
+
+</form>
+
+</body>
+</html>

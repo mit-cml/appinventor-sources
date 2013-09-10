@@ -151,9 +151,6 @@ public class RpcStatusPopup extends DecoratedPopupPanel implements RpcListener {
     // RPC methods that show a "Packaging..." message
     msgs.put("build", MESSAGES.packagingRpcMessage());
 
-    // Fake RPC methods that show a "Downloading to phone..." message
-    msgs.put("downloadToPhone", MESSAGES.downloadingRpcMessage());
-
     // All other RPC methods will show the default "Loading..." message.
 
     return msgs;

@@ -75,6 +75,11 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * @see ProjectService#loadraw(long, String)
+   */
+  void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+
+  /**
    * @see ProjectService#load(List)
    */
   void load(List<FileDescriptor> files, AsyncCallback<List<FileDescriptorWithContent>> callback);

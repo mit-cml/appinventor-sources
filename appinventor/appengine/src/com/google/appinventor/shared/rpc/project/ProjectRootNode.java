@@ -56,6 +56,19 @@ public abstract class ProjectRootNode extends ProjectNode {
     return sourceNodes;
   }
 
+  /**
+   * Returns the source node with the given fileId, or null if there is no source node with the
+   * given fileId.
+   */
+  public ProjectNode getSourceNode(String fileId) {
+    for (ProjectNode node : getAllSourceNodes()) {
+      if (node.getFileId().equals(fileId)) {
+        return node;
+      }
+    }
+    return null;
+  }
+
   @Override
   public ProjectRootNode getProjectRoot() {
     return this;

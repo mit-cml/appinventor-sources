@@ -1,0 +1,75 @@
+<!-- Copyright 2012 Massachusetts Institute of Technology. All Rights Reserved. -->
+
+<!-- The contents of a blocks editor iframe in App Inventor -->
+<html>
+  <head>
+    <script type="text/javascript" src="closure-library-20120710-r2029/closure/goog/base.js"></script>
+    <link type="text/css" rel="stylesheet" href="media/blockly.css">
+    <link type="text/css" rel="stylesheet" href="closure-library-20120710-r2029/closure/goog/css/dialog.css">
+    <script type="text/javascript" src="blockly-all.js"></script>
+    <style>
+      html, body {
+      background-color: #fff;
+      margin: 0;
+      padding:0;
+      overflow: hidden;
+    }
+    .blocklySvg {
+      height: 100%;
+      width: 100%;
+    }
+    .ac-renderer {
+      font: normal 13px Arial, sans-serif;
+      position: absolute;
+      background: #fff;
+	  border: 1px solid #666;
+	  -moz-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+	  -webkit-box-shadow: 2px 2px 2px rgba(102, 102, 102, .4);
+	  width: 300px;
+	}
+    .ac-row {
+      cursor: pointer;
+	  padding: .4em;
+	}
+    .ac-highlighted {
+	  font-weight: bold;
+	}
+    .ac-active {
+	  background-color: #b2b4bf;
+	}
+    #ai_type_block {
+	  position: absolute;
+	}
+    </style>
+
+    <script type="text/javascript">
+      function init() {
+        // We expect window.location.hash to have the form:
+        // projectId_formName, and to be unique among
+        // all the Blockly instances created in this App Inventor session.
+        var formName = window.location.hash.substr(1);
+        if (!window.parent.Blocklies) {
+          // We keep a set of Blockly objects indexed by name
+          // of the form for which they are the blocks editor
+          window.parent.Blocklies = {};
+        }
+        window.parent.Blocklies[formName] = Blockly;
+        Blockly.ReplMgr.formName = formName; <!-- So we can tell the AssetManager which form we are on. -->
+        if (window.parent.ReplState === undefined) {
+          window.parent.ReplState = new Blockly.ReplStateObj(); // There should be one of these for the whole system
+        }
+        window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
+        Blockly.BlocklyEditor.startup(document.body, formName);
+        window.parent.BlocklyPanel_initBlocksArea(formName);
+        window.parent.BlocklyPanel_checkWarningState(formName);
+      }
+    </script>
+  </head>
+  <body id="ai_frame" onload="init()">
+    <div id="ai_type_block" style="display:none">
+      <p>
+        <input id="ac_input_text" />
+	  </p>
+	</div>
+  </body>
+</html>

@@ -12,23 +12,13 @@ import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.gwt.event.logical.shared.AttachEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionEvent;
-import com.google.gwt.event.logical.shared.BeforeSelectionHandler;
-import com.google.gwt.event.logical.shared.ResizeEvent;
-import com.google.gwt.event.logical.shared.ResizeHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DeckPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.TabBar;
-import com.google.gwt.user.client.ui.UIObject;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,8 +26,10 @@ import java.util.Map;
 /**
  * Abstract superclass for all project editors.
  * Each ProjectEditor is associated with a single project and may have multiple
- * FileEditors open in a DeckPanel with a TabBar used to control which widget
- * in the DeckPanel is visible.
+ * FileEditors open in a DeckPanel.
+ * 
+ * TODO(sharon): consider merging this into YaProjectEditor, since we now
+ * only have one type of project editor. 
  *
  * @author lizlooney@google.com (Liz Looney)
  */
@@ -47,14 +39,14 @@ public abstract class ProjectEditor extends Composite {
   protected final long projectId;
   protected final Project project;
 
+  // Invariants: openFileEditors, fileIds, and deckPanel contain corresponding
+  // elements, i.e., if a FileEditor is in openFileEditors, its fileid should be
+  // in fileIds and the FileEditor should be in deckPanel. If selectedFileEditor
+  // is non-null, it is one of the file editors in openFileEditors and the 
+  // one currently showing in deckPanel. 
   private final Map<String, FileEditor> openFileEditors;
-  protected final List<String> tabNames;  // tab names in the same order as the TabBar.
-
+  protected final List<String> fileIds; 
   private final HashMap<String,String> locationHashMap = new HashMap<String,String>();
-
-  // UI elements
-  private final TabBar tabBar;
-  private final ScrollPanel tabBarScrollPanel;
   private final DeckPanel deckPanel;
   private FileEditor selectedFileEditor;
 
@@ -68,86 +60,17 @@ public abstract class ProjectEditor extends Composite {
     projectId = projectRootNode.getProjectId();
     project = Ode.getInstance().getProjectManager().getProject(projectId);
 
-    openFileEditors = new HashMap<String, FileEditor>();
-    tabNames = new ArrayList<String>();
+    openFileEditors = Maps.newHashMap();
+    fileIds = new ArrayList<String>();
 
-    tabBar = new TabBar();
     deckPanel = new DeckPanel();
 
-    // Make the TabBar have a horizontal scroll bar if there are too many tabs.
-    // This was much harder than I would have thought. If I set the ScrollPanel's width to 100% (or
-    // I don't set the width at all), the TabBar doesn't actually get a scroll bar. It just gets
-    // wider and wider in order to show all the tabs.
-    tabBarScrollPanel = new ScrollPanel(tabBar);
-    // Initially, set the ScrollPanel's width to 350 pixels, which is a reasonable minimum size.
-    tabBarScrollPanel.setWidth("350px");
-    final Timer timer = new Timer() {
-      @Override
-      public void run() {
-        int width = deckPanel.getOffsetWidth();
-        if (width > 0) {
-          // Set the tabBarScrollPanel's width to the same as the DeckPanel.
-          tabBarScrollPanel.setWidth(width + "px");
-        } else {
-          // If the DeckPanel's width is 0, try again in 100 millis.
-          schedule(100);
-        }
-      }
-    };
-    tabBarScrollPanel.addAttachHandler(new AttachEvent.Handler() {
-      @Override
-      public void onAttachOrDetach(AttachEvent event) {
-        if (event.isAttached()) {
-          // When the ScrollPanel is attached, call the timer's run method directly which will set
-          // the ScrollPanel's width to match the DeckPanel's width, deferring if necessary if the
-          // DeckPanel's width is still 0.
-          timer.run();
-        }
-      }
-    });
-    Window.addResizeHandler(new ResizeHandler() {
-      @Override
-      public void onResize(ResizeEvent event) {
-        // Cancel the previously scheduled timer. We only want the timer to go off after the user
-        // has finished resizing.
-        timer.cancel();
-
-        // While the user is resizing, set the ScrollPanel's width to a reasonable minimum size.
-        tabBarScrollPanel.setWidth("350px");
-
-        // Reset the timer.
-        timer.schedule(500);
-      }
-    });
-
-    tabBar.addBeforeSelectionHandler(new BeforeSelectionHandler<Integer>() {
-      @Override
-      public void onBeforeSelection(BeforeSelectionEvent<Integer> event) {
-        if (selectedFileEditor != null) {
-          selectedFileEditor.onHide();
-        }
-      }
-    });
-    tabBar.addSelectionHandler(new SelectionHandler<Integer>() {
-      @Override
-      public void onSelection(SelectionEvent<Integer> event) {
-        int selectedIndex = event.getSelectedItem();
-        if (selectedIndex >= 0 && selectedIndex < deckPanel.getWidgetCount()) {
-          deckPanel.showWidget(selectedIndex);
-          selectedFileEditor = (FileEditor) deckPanel.getWidget(selectedIndex);
-          selectedFileEditor.onShow();
-        } else {
-          selectedFileEditor = null;
-        }
-      }
-    });
-
     VerticalPanel panel = new VerticalPanel();
-    panel.add(tabBarScrollPanel);
     panel.add(deckPanel);
     deckPanel.setSize("100%", "100%");
     panel.setSize("100%", "100%");
     initWidget(panel);
+    // Note: I'm not sure that the setSize call below does anything useful.
     setSize("100%", "100%");
   }
 
@@ -156,24 +79,22 @@ public abstract class ProjectEditor extends Composite {
    * This may result in multiple FileEditors being added.
    */
   public abstract void loadProject();
-
+  
   /**
-   * Called when the ProjectEditor is about to be shown.
+   * Called when the ProjectEditor widget is loaded after having been hidden. 
+   * Subclasses must implement this method, taking responsiblity for causing 
+   * the onShow method of the selected file editor to be called and for updating 
+   * any other UI elements related to showing the project editor.
    */
-  protected void onShow() {
-    if (selectedFileEditor != null) {
-      selectedFileEditor.onShow();
-    }
-  }
-
+  protected abstract void onShow();
+  
   /**
-   * Called when the ProjectEditor is about to be hidden.
+   * Called when the ProjectEditor widget is about to be unloaded. Subclasses
+   * must implement this method, taking responsiblity for causing the onHide 
+   * method of the selected file editor to be called and for updating any 
+   * other UI elements related to hiding the project editor.
    */
-  protected void onHide() {
-    if (selectedFileEditor != null) {
-      selectedFileEditor.onHide();
-    }
-  }
+  protected abstract void onHide();
 
   /**
    * Adds a file editor to this project editor.
@@ -183,10 +104,8 @@ public abstract class ProjectEditor extends Composite {
   public final void addFileEditor(FileEditor fileEditor) {
     String fileId = fileEditor.getFileId();
     openFileEditors.put(fileId, fileEditor);
-
-    String tabText = fileEditor.getTabText();
-    tabNames.add(tabText);
-    tabBar.addTab(tabText);
+    fileIds.add(fileId);
+    
     deckPanel.add(fileEditor);
   }
 
@@ -199,27 +118,46 @@ public abstract class ProjectEditor extends Composite {
   public final void insertFileEditor(FileEditor fileEditor, int beforeIndex) {
     String fileId = fileEditor.getFileId();
     openFileEditors.put(fileId, fileEditor);
-
-    String tabText = fileEditor.getTabText();
-    tabNames.add(beforeIndex, tabText);
-    tabBar.insertTab(tabText, beforeIndex);
+    fileIds.add(beforeIndex, fileId);
     deckPanel.insert(fileEditor, beforeIndex);
+    OdeLog.log("Inserted file editor for " + fileEditor.getFileId() + " at pos " + beforeIndex);
+
   }
 
   /**
-   * Selects the given file editor.
+   * Selects the given file editor in the deck panel and calls its onShow()
+   * method. Calls onHide() for a previously selected file editor if there was 
+   * one (and it wasn't the same one).
+   * 
+   * Note: all actions that cause the selected file editor to change should
+   * be going through DesignToolbar.SwitchScreenAction.execute(), which calls
+   * this method. If you're thinking about calling this method directly from 
+   * somewhere else, please reconsider!
    *
    * @param fileEditor  file editor to select
    */
   public final void selectFileEditor(FileEditor fileEditor) {
-    if (fileEditor != selectedFileEditor) {
-      int index = deckPanel.getWidgetIndex(fileEditor);
-      tabBar.selectTab(index, true);
-      TabBar.Tab tab = tabBar.getTab(index);
-      if (tab instanceof UIObject) {
-        tabBarScrollPanel.ensureVisible((UIObject) tab);
+    int index = deckPanel.getWidgetIndex(fileEditor);
+    if (index == -1) {
+      if (fileEditor != null) {
+        OdeLog.wlog("Can't find widget for fileEditor " + fileEditor.getFileId());
+      } else {
+        OdeLog.wlog("Not expecting selectFileEditor(null)");
       }
     }
+    OdeLog.log("ProjectEditor: got selectFileEditor for " 
+        + ((fileEditor == null) ? null : fileEditor.getFileId())
+        +  " selectedFileEditor is " 
+        + ((selectedFileEditor == null) ? null : selectedFileEditor.getFileId()));
+    if (selectedFileEditor != null && selectedFileEditor != fileEditor) {
+      selectedFileEditor.onHide();
+    }
+    // Note that we still want to do the following statements even if 
+    // selectedFileEdtior == fileEditor already. This handles the case of switching back
+    // to a previously opened project from another project.
+    selectedFileEditor = fileEditor;
+    deckPanel.showWidget(index);
+    selectedFileEditor.onShow();
   }
 
   /**
@@ -230,29 +168,45 @@ public abstract class ProjectEditor extends Composite {
   public final FileEditor getFileEditor(String fileId) {
     return openFileEditors.get(fileId);
   }
-
+  
   /**
-   * Closes the file editor for the given file ID, without saving.
-   * This is used when the file is about to be deleted.
-   *
-   * @param fileId  file ID of the file to be closed
+   * Returns the set of open file editors
    */
-  public final void closeFileEditor(String fileId) {
-    FileEditor fileEditor = openFileEditors.remove(fileId);
-    if (fileEditor != null) {
-      int index = deckPanel.getWidgetIndex(fileEditor);
-      tabNames.remove(index);
-      tabBar.removeTab(index);
-      deckPanel.remove(fileEditor);
-
-      // Select the editor that is just before this one.
-      if (index > 0) {
-        index--;
-      }
-      tabBar.selectTab(index, true);
-    }
+  public final Iterable<FileEditor> getOpenFileEditors() {
+    return Collections.unmodifiableCollection(openFileEditors.values());
+  }
+  
+  /**
+   * Returns the currently selected file editor
+   */
+  protected final FileEditor getSelectedFileEditor() {
+    return selectedFileEditor;
   }
 
+  /**
+   * Closes the file editors for the given file IDs, without saving.
+   * This is used when the files are about to be deleted. If  
+   * selectedFileEditor is closed, sets selectedFileEditor to null.
+   *
+   * @param closeFileIds  file IDs of the files to be closed
+   */
+  public final void closeFileEditors(String[] closeFileIds) {
+    for (String fileId : closeFileIds) {
+      FileEditor fileEditor = openFileEditors.remove(fileId);
+      if (fileEditor == null) {
+        OdeLog.elog("File editor is unexpectedly null for " + fileId);
+        continue;
+      }
+      int index = deckPanel.getWidgetIndex(fileEditor);
+      fileIds.remove(index);
+      deckPanel.remove(fileEditor);
+      if (selectedFileEditor == fileEditor) {
+        selectedFileEditor = null;
+      }
+      fileEditor.onClose();
+    }
+  }
+  
   /**
    * Returns the value of a project settings property.
    *
@@ -349,13 +303,16 @@ public abstract class ProjectEditor extends Composite {
     // already-opened project is re-opened.
     // This is different from the ProjectEditor method loadProject, which is called to load the
     // project just after the editor is created.
+    OdeLog.log("ProjectEditor: got onLoad for project " + projectId);
     super.onLoad();
+
     onShow();
   }
 
   @Override
   protected void onUnload() {
     // onUnload is called immediately before a widget becomes detached from the browser's document.
+    OdeLog.log("ProjectEditor: got onUnload for project " + projectId);
     super.onUnload();
     onHide();
   }

@@ -1,0 +1,45 @@
+To create a phantomJS test you will need to generate a project first, so that
+you have access to an Screen1.scm and Screen1.bky files.
+
+You will also have to install phantomJS: http://phantomjs.org/download.html
+
+In MacOSX is as simple as: brew install phantomJS (if you are using homebew)
+In other platforms just download the package and put the bin folder in your PATH
+
+After that, create a new test following the template in this same folder called
+yailGeneratorTest.template
+The test will expect the two files mentioned above as test data, and also an
+expected yail file to test against, acquired from App Inventor Classic.
+
+*** Getting the .scm and .bky files:
+- Create a new project in newblocks
+- When the project is complete, go to 'My Projects', select your project,
+and click 'Download Source'
+- You will receive a .aia file. This behaves as a .zip file. When unzipped,
+navigate through the /src directory which will reveal the .scm and .bky files.
+- Put these into a folder in the 'data' directory for the tests.
+- If you are testing, for example, paintPot, name the folder 'paintPot', containing the .scm and .bky files.
+
+*** Getting the Classic .yail:
+- You will need to create the exact same project as in newblocks, but in App Inventor Classic.
+- Once complete, you will need to follow similar steps as above to download the
+source files, contained in a .zip folder.
+- Navigating through the /src directory will reveal a .scm and .blk file. These
+will be used to generate Yail.
+- Acquire the YailGenerator.jar file, located appinventor/buildserver/build/
+- Copy the YailGenerator.jar file to a directory that will be convenient,
+preferably containing the .scm and .blk file.
+- In Terminal, navigate to where you put your YailGenerator.jar file.
+- Use the command:
+    java -jar <PATH_TO_YailGenerator.jar> <PATH_TO_Screen1.scm> <PATH_TO_Screen1.blk> fakepackagename > <WHAT_YOU'RE_TESTING>Expected.yail
+
+- If all three files are in the same directory, the command can be as simple as:
+    java -jar YailGenerator.jar Screen1.scm Screen1.blk fakepackagename > paintPotExpected.yail
+- Copy the XXXXExpected.yail into the folder along with the original .scm and .bky files.
+
+*** Using the template:
+- Simply substitute the first three file paths to the corresponding .scm and .bky
+files, as well as the expected.yail file.
+
+For an Example, you can see the code in moleMashTest.js, and the accompanying
+files inside data/moleMash.

@@ -15,13 +15,12 @@ import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.storage.StorageUtil;
 
-import java.io.IOException;
-import java.util.NoSuchElementException;
-import java.util.logging.Logger;
-
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.NoSuchElementException;
+import java.util.logging.Logger;
 
 /**
  * Servlet for downloading project source and output files.
@@ -121,7 +120,7 @@ public class DownloadServlet extends OdeServlet {
             uriComponents[PROJECT_TITLE_INDEX] : null;
         final boolean includeProjectHistory = true;
         String zipName = (projectTitle == null) ? null :
-            StringUtils.normalizeForFilename(projectTitle) + ".zip";
+            StringUtils.normalizeForFilename(projectTitle) + ".aia";
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
             projectId, includeProjectHistory, false, zipName);
         downloadableFile = zipFile.getRawFile();
@@ -169,9 +168,9 @@ public class DownloadServlet extends OdeServlet {
         }
         String zipName;
         if (!projectName.isEmpty()) {
-          zipName = projectName + "_" + projectUserId + ".zip";
+          zipName = projectName + "_" + projectUserId + ".aia";
         } else {
-          zipName = "u" + projectUserId + "_p" + projectId + ".zip";
+          zipName = "u" + projectUserId + "_p" + projectId + ".aia";
         }
         ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(projectUserId,
             projectId, /* include history*/ true, /* include keystore */ true, zipName);

@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"76","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"10","Uuid":"0","AlignHorizontal":"3","Title":"CopyCat","$Components":[{"$Name":"Image1","$Type":"Image","$Version":"1","Uuid":"1756134927","Picture":"kitty.png"},{"$Name":"Label1","$Type":"Label","$Version":"2","Uuid":"444570315","Text":"Tell Me Something!"},{"$Name":"Button1","$Type":"Button","$Version":"5","Uuid":"455584194","FontSize":"20","Text":"Press Me"},{"$Name":"SpeechRecognizer1","$Type":"SpeechRecognizer","$Version":"1","Uuid":"1917832796"},{"$Name":"TextToSpeech1","$Type":"TextToSpeech","$Version":"1","Uuid":"196334963"}]}}
+|#

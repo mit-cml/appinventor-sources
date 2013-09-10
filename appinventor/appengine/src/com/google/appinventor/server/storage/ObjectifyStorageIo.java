@@ -1091,7 +1091,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   boolean useBlobstoreForFile(String fileName) {
     return fileName.contains("assets/")
            || fileName.endsWith(".apk")
-           || (fileName.contains("src/") && fileName.endsWith(".blk"));
+           || (fileName.contains("src/") && fileName.endsWith(".blk"))
+           || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
   }
 
   @Override
@@ -1333,7 +1334,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     out.close();
 
     if (zipName == null) {
-      zipName = projectName.t + ".zip";
+      zipName = projectName.t + ".aia";
     }
     ProjectSourceZip projectSourceZip =
         new ProjectSourceZip(zipName, zipFile.toByteArray(), fileCount.t);

@@ -72,6 +72,11 @@ public class PropertiesPanel extends Composite {
     properties.addToPropertiesPanel(this);
   }
 
+  /**
+   * Set the label at the top of the properties panel. Note that you have
+   * to do this after calling setProperties because it clears the label!
+   * @param name
+   */
   public void setPropertiesCaption(String name) {
     componentName.setText(name);
   }

@@ -5,9 +5,10 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
-import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -15,14 +16,11 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.widgets.Toolbar.ToolbarItem;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.shared.rpc.ServerLayout;
-import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
@@ -44,6 +42,7 @@ public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_UPLOAD_SOURCE = "UploadSource";
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
@@ -59,10 +58,6 @@ public class ProjectToolbar extends Toolbar {
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
         new DeleteAction()));
-
-    addButton(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
-        new DownloadAllAction()));
-
     List<ToolbarItem> otherItems = Lists.newArrayList();
     otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_SOURCE,
         MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
@@ -75,11 +70,19 @@ public class ProjectToolbar extends Toolbar {
         MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
     otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
         MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
+
+    otherItems.add(null);
+    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
+        new DownloadAllAction()));
+
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
+
     if (Ode.getInstance().getUser().getIsAdmin()) {
       List<ToolbarItem> adminItems = Lists.newArrayList();
       adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
           MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+      adminItems.add(new ToolbarItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
       addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
     }
     updateKeystoreButtons();
@@ -102,10 +105,11 @@ public class ProjectToolbar extends Toolbar {
           Tracking.PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA);
 
       // Is there a way to disable the Download All button until this completes?
-      Window.alert(MESSAGES.downloadAllAlert());
+      if (Window.confirm(MESSAGES.downloadAllAlert())) {
 
-      Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
-          ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+            ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+      }
     }
   }
 
@@ -120,7 +124,7 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() > 0) {
         // Show one confirmation window for selected projects.
         if (deleteConfirmation(selectedProjects)) {
@@ -130,8 +134,8 @@ public class ProjectToolbar extends Toolbar {
         }
 
       } else {
-      	// The user can select a project to resolve the 
-      	// error.
+        // The user can select a project to resolve the
+        // error.
         ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
       }
     }
@@ -163,33 +167,19 @@ public class ProjectToolbar extends Toolbar {
       boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
       ode.getEditorManager().closeProjectEditor(projectId);
       if (isCurrentProject) {
-        // If we're deleting the project that is currently open in the Designer and Codeblocks we
-        // need to clear the ViewerBox and tell Codeblocks to clear its workspace first.  However,
-        // even if that fails, we still want to complete the delete operation.
+        // If we're deleting the project that is currently open in the Designer we
+        // need to clear the ViewerBox first.
         ViewerBox.getViewerBox().clear();
-        CodeblocksManager.getCodeblocksManager().clearCodeblocks(new AsyncCallback<Void>() {
-          @Override
-          public void onFailure(Throwable caught) {
-            doDeleteProject(projectId);
-          }
-
-          @Override
-          public void onSuccess(Void result) {
-            doDeleteProject(projectId);
-          }
-        });
-
-      } else {
-        // Make sure that we delete projects even if they are not open.
-        doDeleteProject(projectId);
       }
+      // Make sure that we delete projects even if they are not open.
+      doDeleteProject(projectId);
     }
 
     private void doDeleteProject(final long projectId) {
       Ode.getInstance().getProjectService().deleteProject(projectId,
           new OdeAsyncCallback<Void>(
-            // failure message
-          MESSAGES.deleteProjectError()) {
+              // failure message
+              MESSAGES.deleteProjectError()) {
         @Override
         public void onSuccess(Void result) {
           Ode.getInstance().getProjectManager().removeProject(projectId);
@@ -208,11 +198,11 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
         downloadSource(selectedProjects.get(0));
       } else {
-      	// The user needs to select only one project.
+        // The user needs to select only one project.
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
       }
     }
@@ -230,6 +220,13 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       new DownloadUserSourceWizard().center();
+    }
+  }
+
+  private static class SwitchToDebugAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToDebuggingView();
     }
   }
 
@@ -287,11 +284,11 @@ public class ProjectToolbar extends Toolbar {
             Ode.getInstance().getUserInfoService().deleteUserFile(
                 StorageUtil.ANDROID_KEYSTORE_FILENAME,
                 new OdeAsyncCallback<Void>(errorMessage) {
-              @Override
-              public void onSuccess(Void result) {
-                updateKeystoreButtons();
-              }
-            });
+                  @Override
+                  public void onSuccess(Void result) {
+                    updateKeystoreButtons();
+                  }
+                });
           }
         }
       });
@@ -308,11 +305,12 @@ public class ProjectToolbar extends Toolbar {
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
 
-    setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
+    //    setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
 
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
 
-    setDropItemEnabled(WIDGET_NAME_DOWNLOAD_SOURCE, numSelectedProjects == 1);
+    setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_SOURCE, 
+        numSelectedProjects == 1);
   }
 
   /**
@@ -323,15 +321,17 @@ public class ProjectToolbar extends Toolbar {
         new AsyncCallback<Boolean>() {
       @Override
       public void onSuccess(Boolean keystoreFileExists) {
-        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, keystoreFileExists);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, 
+            keystoreFileExists);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, 
+            keystoreFileExists);
       }
 
       @Override
       public void onFailure(Throwable caught) {
         // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
-        setDropItemEnabled(WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
-        setDropItemEnabled(WIDGET_NAME_DELETE_KEYSTORE, true);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_KEYSTORE, true);
+        setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DELETE_KEYSTORE, true);
       }
     });
   }

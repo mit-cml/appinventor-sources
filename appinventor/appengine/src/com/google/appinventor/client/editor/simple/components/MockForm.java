@@ -490,7 +490,7 @@ public final class MockForm extends MockContainer {
   }
 
   /**
-   * Adds an {@link FormChangeListener} to the listener list.
+   * Adds an {@link FormChangeListener} to the listener set if it isn't already in there.
    *
    * @param listener  the {@code FormChangeListener} to be added
    */

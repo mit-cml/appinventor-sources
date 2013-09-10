@@ -8,16 +8,41 @@ they get cut off in Windows.
 @import url("http://fonts.googleapis.com/css?family=Droid+Sans:regular,bold");
 */
 
+@font-face {
+  font-family: Roboto;
+  src: url(/fonts/Roboto-Regular.ttf) format("truetype");
+}
+
 body, html {
   height: 100%;
 }
 
 body {
+  background-color: lightgrey;
+  /* TODO(opensource): Change to commented version below once we're ready */
+  background: url(images/squairy_light.png);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+
+table td,
+select {
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+}
+/* For the TOS Form*/
+.floatingBox {
+  width: 300px;
+  height: 250px;
   background-color: white;
-/* TODO(opensource): Change to commented version below once we're ready */
-  background-image: url(images/watermark.png);
-/*  background-image: url(images/background.gif); */
-  font-family: Helvetica, Arial, sans-serif;
+  position: absolute;
+  top:0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  padding: 16px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
+  text-align: center;
+  border: 1px #262626;
 }
 
 /*
@@ -25,8 +50,7 @@ body {
  */
 
 .ode-ContextMenu {
-  background-color:#f7f9f2;
-  border: 1px solid #a4c639;
+  background-color: white;
 }
 
 .ode-ContextMenuItem,
@@ -40,11 +64,17 @@ body {
 }
 
 .ode-ContextMenuItem {
-  padding-left: 8px;
+  padding: 6px 12px;
 }
 
 .ode-ContextMenuItemSeparator {
-  background-color: #d2d2d2;
+  *width: 100%;
+  height: 1px;
+  margin: 9px 1px;
+  *margin: -5px 0 5px;
+  overflow: hidden;
+  background-color: #e5e5e5;
+  border-bottom: 1px solid #ffffff;
 }
 
 .ode-CurrentColor {
@@ -52,7 +82,16 @@ body {
 }
 
 .ode-ContextMenuItem-selected {
- background-color: #DDDDDD;
+  color: #ffffff;
+  text-decoration: none;
+  background-color: #99CC00;
+  background-image: -moz-linear-gradient(top, #99CC00, #8fc202);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#99CC00), to(#8fc202));
+  background-image: -webkit-linear-gradient(top, #99CC00, #8fc202);
+  background-image: -o-linear-gradient(top, #99CC00, #8fc202);
+  background-image: linear-gradient(to bottom, #99CC00, #8fc202);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8fc202', endColorstr='#ff8fc202', GradientType=0);
 }
 
 .ode-ContextMenuItem-disabled {
@@ -68,10 +107,12 @@ body {
   border-left: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
   border-right: 1px solid #d2d2d2;
+  margin: 4px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 
 .ode-Box-header {
-  background: #d2e0a6;
+  background: rgba(102, 153, 0, 0.3);
   height: 31px;
   border: 1px solid;
   border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
@@ -79,7 +120,6 @@ body {
 
 .ode-Box-header-caption,
 .ode-Box-header-caption-highlighted {
-  font-family: 'Droid Sans', arial, sans-serif;
   font-size: 13px;
   font-weight: bold;
   padding-top: 7px;
@@ -98,7 +138,7 @@ body {
 }
 
 .ode-Box-body-padding {
-  padding: 5px;
+  padding: 6px;
 }
 
 .ode-BoxResizeControl {
@@ -147,7 +187,6 @@ body {
 
 .ode-ProjectTable td {
   border-collapse: collapse;
-  font-family: Arial, sans-serif;
   font-size: small;
   color: #555;
   text-align: left;
@@ -174,7 +213,6 @@ body {
 .ode-ProjectHeaderLabel {
   color: #112abb;
   font-size: 11px;
-  font-family: Arial, sans-serif;
   cursor: pointer;
 }
 
@@ -188,42 +226,97 @@ body {
 
 
 .ode-TopPanel {
-  height: 60px;
+  min-height: 40px;
+  margin-bottom: 4px;
+  padding-right: 4px;
+  padding-left: 4px;
+  background-color: #f2f2f2;
+  background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+  background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+  background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+  background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+  background-repeat: repeat-x;
+  border: 1px solid #d4d4d4;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+  *zoom: 1;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+}
+
+.ode-Logo {
+  margin: 8px 4px 4px 4px;
+  -webkit-filter: drop-shadow(0px 0px 1px #222);
+  filter:         drop-shadow(0px 0px 1px #222);
+}
+
+.ode-Logo:hover {
+  -webkit-filter: drop-shadow(0px 0px 3px #222);
+  filter:         drop-shadow(0px 0px 3px #222);
+}
+
+.ode-LogoText {
+  font-size: 18px;
+  color: grey;
+  font-weight: 500;
+  text-shadow: 0px 0px 0px #404040;
+}
+
+.ode-LogoVersion {
+  font-size: 11px;
+  color: grey;
+  text-shadow: 0px 0px 0px #404040;
 }
 
 .ode-TopPanelAccount {
-  font-size: 12px;
-  color: #b5b5b5;
+  font-size: 15px;
+  color: grey;
   padding: 4px 8px 4px 0;
 }
 
 .ode-TopPanelAccount a {
-  color: #a4c639;
+  color: #669900;
 }
 
 .ode-TopPanelAccount .linkdivider {
   color: #dedede;
- }
+}
 
 .ode-TopPanelMiddleLinks .gwt-Label,
-.ode-TopPanelMiddleLinks .gwt-Anchor {
+.ode-TopPanelMiddleLinks .gwt-Anchor,
+.ode-TopPanelMiddleLinks .gwt-TitleLabel {
   cursor: pointer;
-  color: #888;
-  font-family: 'Droid Sans', arial, sans-serif;
-  font-size: 15px;
-  margin-right: 15px;
+  color: rgb(100, 100, 100);
+  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  margin-right: 16px;
   text-decoration: none;
+}
+
+.ode-TopPanelMiddleLinks .gwt-Label:hover,
+.ode-TopPanelMiddleLinks .gwt-Anchor:hover,
+.ode-TopPanelMiddleLinks .gwt-TitleLabel:hover {
+  text-shadow: 0px 0px 1px #BABABA;
 }
 
 .ode-TopPanelWarningLabel {
   color: #FF0000;
-  font-family: 'Droid Sans', arial, sans-serif;
 }
 
 .ode-TopPanelLabel {
   color: #888;
-  font-family: 'Droid Sans', arial, sans-serif;
+  font-family: Roboto, Helvetica, Arial, sans-serif;
   font-size: 15px;
+}
+
+/*
+ * Deck Panel
+ */
+
+.ode-DeckPanel {
+  margin: 4px 8px 8px;
 }
 
 
@@ -249,7 +342,6 @@ body {
   font-size: 13px;
   font-weight: bold;
   color: #555;
-  font-family: 'Droid Sans', arial, sans-serif;
   padding: 5px;
 }
 
@@ -270,7 +362,7 @@ body {
 
 .ode-Icon-selected {
   padding: 0 2px 0 2px;
-  border: 2px solid #a4c639;
+  border: 2px solid #8fc202;
 }
 
 .gwt-TabBar {
@@ -278,7 +370,7 @@ body {
 }
 
 .gwt-TabBar .gwt-TabBarFirst {
-   width: 0px;
+  width: 0px;
 }
 
 .gwt-TabBar .gwt-TabBarItem {
@@ -294,9 +386,9 @@ body {
 
 .gwt-TabBar .gwt-TabBarItem-selected {
   cursor: default;
-  background-color: #a4c639;
-  border: 2px solid #a4c639;
-} 
+  background-color: #8fc202;
+  border: 2px solid #8fc202;
+}
 
 .gwt-RadioButton {
   font-size: small;
@@ -317,7 +409,7 @@ body {
 }
 
 .gwt-Tree .gwt-TreeItem span {
-  padding: 6px 0px 2px 0px;
+  padding: 8px 4px 4px 4px;
 }
 
 .gwt-Tree .gwt-TreeItem-selected span {
@@ -327,58 +419,145 @@ body {
 /* Young Android Toolbar */
 
 .ya-Toolbar {
-  background-color: #a4c639;
+  background-color: #8fc202;
+  margin-bottom: 4px;
 }
 
 .ya-Toolbar .ya-ProjectName {
   color: white;
-  font-family: 'Droid Sans', arial, sans-serif;
   font-weight: bold;
-  font-size: 15px;
-  padding-top: 9px;
-  padding-left: 9px;
+  font-size: 18px;
+  padding-top: 8px;
+  padding-left: 8px;
+  pqeeint-bottom: 8px;
+  text-shadow: 0px 0px 1px #404040;
 }
 
-.ode-TextButton {
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: #eee;
-  color: #555;
-  border: 1px solid #999;
+.ode-TextButton,
+.gwt-Button {
+  display: inline-block;
+  *display: inline;
+  padding: 2px 6px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 14px;
+  line-height: 20px;
+  color: #333333;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background: transparent;
+  background-color: #f5f5f5;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.ode-TextButton[disabled] {
-  color: #999 !important;
-  border: 1px solid #999 !important;
+.ode-TextButton[disabled],
+.gwt-Button[disabled] {
+  color: #333333;
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+  cursor: default;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
-.ode-TextButton:hover {
-  color: black;
-  border: 1px solid black;
+.ode-TextButton:hover,
+.gwt-Button:hover {
+  color: #333333;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  background-color: #e6e6e6;
+  *background-color: #d9d9d9;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+
+.ode-TextButton:active,
+.gwt-Button:active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .ya-Toolbar .ode-TextButton {
-  font-size: 12.5px;
-  font-family: 'Droid Sans', arial, sans-serif;
+  font-size: 11px;
 }
 
 .ode-PanelButtons .ode-TextButton {
   font-size: 12px;
-  font-family: 'Droid Sans', arial, sans-serif;
+}
+
+.ode-BlocksDesignerButton {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #faa732;
+  *background-color: #f89406;
+  background-image: -moz-linear-gradient(top, #fbb450, #f89406);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#fbb450), to(#f89406));
+  background-image: -webkit-linear-gradient(top, #fbb450, #f89406);
+  background-image: -o-linear-gradient(top, #fbb450, #f89406);
+  background-image: linear-gradient(to bottom, #fbb450, #f89406);
+  background-repeat: repeat-x;
+  border-color: #f89406 #f89406 #ad6704;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffbb450', endColorstr='#fff89406', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+}
+
+.ode-BlocksDesignerButton:hover,
+.ode-BlocksDesignerButon:disabled {
+  color: #ffffff;
+  background-color: #f89406;
+  *background-color: #df8505;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
 }
 
 /* Palette */
 
 .gwt-StackPanelItem div {
-  border-top: 1px solid #d2d2d2;;
-  border-bottom: 1px solid #d2d2d2;;
+  border-top: 1px solid #d2d2d2;
+  border-bottom: 1px solid #d2d2d2;
   background-color: #eef2e0;
-  font-family: 'Droid Sans', arial, sans-serif;
   font-size: 13px;
   cursor: pointer;
   height: 14px;
   color: #555;
-  padding: 9px 10px;
+  padding: 8px 16px;
 }
 
 .gwt-StackPanelItem-selected div {
@@ -389,10 +568,21 @@ body {
   padding-left: 10px;
   padding-right: 10px;
   padding-top: 10px;
+  margin-top: 8px;
 }
 
+/* Overrides for gwt.css */
+.gwt-StackPanel .gwt-StackPanelContent {
+  padding: 8px 4px 8px 8px;
+}
+.gwt-StackPanel .gwt-StackPanelItem {
+  padding: 0px;
+  border: 0px;
+}
+
+
 .ode-SimplePaletteItem {
-  background-color: #f7f9f2; /* needed on Firefox */
+  background-color: white; /* needed on Firefox */
   height: 15px;
   cursor: pointer;
   padding-bottom: 10px;
@@ -465,7 +655,6 @@ body {
   background-color: #eef2e0;
   color: #555;
   font-size: 13px;
-  font-family: 'Droid Sans', arial, sans-serif;
   border-bottom: 1px solid #d2d2d2;
   padding: 9px 9px 8px 10px;
 }
@@ -480,7 +669,7 @@ body {
 }
 
 select.ode-PropertyEditor[disabled] {
-  background-color: #aaa;
+  background-color: #aaaaaa;
 }
 
 .ode-MultipleChoicePropertyEditor {
@@ -513,7 +702,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockForm-selected {
-  border: 2px solid #a4c639;
+  border: 2px solid #8fc202;
 }
 
 .ode-SimpleMockFormTitleBar {
@@ -522,12 +711,11 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockFormPhoneBar {
-  background-color: #E6E6E6;
+  background-color: #000000;
 }
 
 .ode-SimpleMockFormTitle {
   color: white;
-  font-family: sans-serif;
   font-size: 90%;
 }
 
@@ -537,11 +725,10 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockContainer-selected {
-  border: 2px solid #a4c639;
+  border: 2px solid #8fc202;
 }
 
 .ode-SimpleMockComponent {
-  font-family: sans-serif;
   font-weight: normal;
   font-size: 12px;
   border: 2px solid transparent;
@@ -552,11 +739,11 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-SimpleMockComponent-selected {
-  border: 2px solid #a4c639;
+  border: 2px solid #8fc202;
 }
 
 .ode-SimpleMockContainer-centerContents {
-    text-align: center;
+  text-align: center;
 }
 
 .ode-SimpleMockButton {
@@ -568,16 +755,16 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-ComponentHelpPopup {
   background-color: white;
-  border-left: 4px solid #A4C639;
-  border-right: 4px solid #A4C639;
-  border-bottom: 4px solid #A4C639;
-  width: 30%;
+  border-left: 4px solid #8fc202;
+  border-right: 4px solid #8fc202;
+  border-bottom: 4px solid #8fc202;
+  width: 20%;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 
 .ode-ComponentHelpPopup-TitleBar {
-  background-color: #a4c639;
+  background-color: #8fc202;
   color: white;
-  font-family: 'Droid Sans', arial, sans-serif;
   font-weight: bold;
   font-size: 13px;
   padding: 5px 10px;
@@ -595,7 +782,7 @@ select.ode-PropertyEditor[disabled] {
 
 }
 .ode-ComponentHelpPopup-Link a {
-  color: #a4c639;
+  color: #8fc202;
 }
 
 .compiler-ErrorMarker {
@@ -641,16 +828,17 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-ErrorMessage {
-  background-color: red;
+  color: #FF4444;
   font-weight: bold;
-  padding: 2px;
+  font-size: 13px;
+  margin: 8px 16px;
 }
 
 .ode-InfoMessage {
-  background-color: #FFF1A8;
   font-weight: bold;
   font-size: 13px;
-  padding: 2px;
+  margin: 8px 16px;
+  color: #2d2d2d;
 }
 
 .ode-GroupedList .Header {
@@ -683,22 +871,23 @@ select.ode-PropertyEditor[disabled] {
 
 .ode-DialogBox {
   background-color: white;
-  border-left: 4px solid #A4C639;
-  border-right: 4px solid #A4C639;
-  border-bottom: 4px solid #A4C639;
+  border-left: 4px solid #8fc202;
+  border-right: 4px solid #8fc202;
+  border-bottom: 4px solid #8fc202;
 }
 
 .ode-DialogBox .dialogTop {
-  background-color: #A4C639;
+  background-color: #8fc202;
 }
 
 .ode-DialogBox .Caption {
-  background-color: #A4C639;
+  background-color: #8fc202;
   color: white;
-  font-family: 'Droid Sans', arial, sans-serif;
   font-weight: bold;
   font-size: 13px;
   padding: 5px 10px;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
+
 }
 
 .ode-DialogBox .dialogContent {
@@ -735,7 +924,7 @@ select.ode-PropertyEditor[disabled] {
 }
 
 .ode-Android-caption {
-  background-color: #A4C639;
+  background-color: #8fc202;
   color: white;
   font-size: medium;
 }
@@ -762,7 +951,7 @@ select.ode-PropertyEditor[disabled] {
   width: 100%;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-bar {
-  background-color: #A4C639;
+  background-color: #8fc202;
 }
 .gwt-ProgressBar-shell .gwt-ProgressBar-text {
   position: absolute;
@@ -772,4 +961,244 @@ select.ode-PropertyEditor[disabled] {
   text-align: center;
   width: 100%;
   font-size:large;
+}
+
+/*
+ * PopupPanel
+ */
+
+.gwt-PopupPanel {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  *border-right-width: 2px;
+  *border-bottom-width: 2px;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  -webkit-background-clip: padding-box;
+  -moz-background-clip: padding;
+  background-clip: padding-box;
+}
+
+/*
+ * Bootstrap Inputs
+ */
+
+select,
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input {
+  display: inline-block;
+  height: 20px;
+  padding: 2px 6px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  line-height: 20px;
+  color: #555555;
+  vertical-align: middle;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+
+input,
+textarea,
+.uneditable-input {
+}
+
+textarea {
+  height: auto;
+}
+
+textarea,
+input[type="text"],
+input[type="password"],
+input[type="datetime"],
+input[type="datetime-local"],
+input[type="date"],
+input[type="month"],
+input[type="time"],
+input[type="week"],
+input[type="number"],
+input[type="email"],
+input[type="url"],
+input[type="search"],
+input[type="tel"],
+input[type="color"],
+.uneditable-input {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -webkit-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -moz-transition: border linear 0.2s, box-shadow linear 0.2s;
+  -o-transition: border linear 0.2s, box-shadow linear 0.2s;
+  transition: border linear 0.2s, box-shadow linear 0.2s;
+  font-size: 10px
+}
+
+textarea:focus,
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="datetime"]:focus,
+input[type="datetime-local"]:focus,
+input[type="date"]:focus,
+input[type="month"]:focus,
+input[type="time"]:focus,
+input[type="week"]:focus,
+input[type="number"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+input[type="color"]:focus,
+.uneditable-input:focus {
+  border-color: rgba(82, 168, 236, 0.8);
+  outline: 0;
+  outline: thin dotted \9;
+  /* IE6-9 */
+
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(82, 168, 236, 0.6);
+}
+
+input[type="radio"],
+input[type="checkbox"] {
+  margin: 4px 0 0;
+  margin-top: 1px \9;
+  *margin-top: 0;
+  line-height: normal;
+}
+
+input[type="file"],
+input[type="image"],
+input[type="submit"],
+input[type="reset"],
+input[type="button"],
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+}
+
+select,
+input[type="file"] {
+  height: 30px;
+  /* In IE7, the height of the select element cannot be changed by height, only font-size */
+
+  *margin-top: 4px;
+  /* For IE7, add top margin to align select with labels */
+
+  line-height: 30px;
+}
+
+select {
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+}
+
+select[multiple],
+select[size] {
+  height: auto;
+}
+
+select:focus,
+input[type="file"]:focus,
+input[type="radio"]:focus,
+input[type="checkbox"]:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.uneditable-input,
+.uneditable-textarea {
+  color: #999999;
+  cursor: not-allowed;
+  background-color: #fcfcfc;
+  border-color: #cccccc;
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.025);
+}
+
+.uneditable-input {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.uneditable-textarea {
+  width: auto;
+  height: auto;
+}
+
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+  color: #999999;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+  color: #999999;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+  color: #999999;
+}
+
+.radio,
+.checkbox {
+  min-height: 20px;
+  padding-left: 20px;
+}
+
+.radio input[type="radio"],
+.checkbox input[type="checkbox"] {
+  float: left;
+  margin-left: -20px;
+}
+
+.controls > .radio:first-child,
+.controls > .checkbox:first-child {
+  padding-top: 5px;
+}
+
+.radio.inline,
+.checkbox.inline {
+  display: inline-block;
+  padding-top: 5px;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+.radio.inline + .radio.inline,
+.checkbox.inline + .checkbox.inline {
+  margin-left: 10px;
 }

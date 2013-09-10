@@ -100,6 +100,15 @@ public abstract class MockContainer extends MockVisibleComponent implements Drop
     return itemNode;
   }
 
+  @Override
+  public void collectTypesAndIcons(Map<String, String> typesAndIcons) {
+    super.collectTypesAndIcons(typesAndIcons);
+    for (MockComponent child : children) {
+      child.collectTypesAndIcons(typesAndIcons);
+    }
+  }
+
+  
   /**
    * Adds a new component to the end of this container.
    *

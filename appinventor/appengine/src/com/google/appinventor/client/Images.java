@@ -386,4 +386,52 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/web.png")
   ImageResource web();
+
+  /**
+   * Built in drawer item: control
+   */
+  @Source("com/google/appinventor/images/control.png")
+  ImageResource control();
+
+  /**
+   * Built in drawer item: logic
+   */
+  @Source("com/google/appinventor/images/logic.png")
+  ImageResource logic();
+
+  /**
+   * Built in drawer item: math
+   */
+  @Source("com/google/appinventor/images/math.png")
+  ImageResource math();
+
+  /**
+   * Built in drawer item: text
+   */
+  @Source("com/google/appinventor/images/text.png")
+  ImageResource text();
+
+  /**
+   * Built in drawer item: lists
+   */
+  @Source("com/google/appinventor/images/lists.png")
+  ImageResource lists();
+
+  /**
+   * Built in drawer item: colors
+   */
+  @Source("com/google/appinventor/images/colors.png")
+  ImageResource colors();
+
+  /**
+   * Built in drawer item: variables
+   */
+  @Source("com/google/appinventor/images/variables.png")
+  ImageResource variables();
+
+  /**
+   * Built in drawer item: procedures
+   */
+  @Source("com/google/appinventor/images/procedures.png")
+  ImageResource procedures();
 }

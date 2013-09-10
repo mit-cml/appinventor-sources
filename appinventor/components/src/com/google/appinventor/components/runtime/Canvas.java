@@ -1222,7 +1222,9 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @SimpleFunction
+    @SimpleFunction(description = "Saves a picture of this Canvas to the " +
+       "device's external storage. If an error occurs, the Screen's ErrorOccurred " + 
+       "event will be called.")
   public String Save() {
     try {
       File file = FileUtil.getPictureFile("png");
@@ -1245,7 +1247,10 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @return the full path name of the saved file, or the empty string if the
    *         save failed
    */
-  @SimpleFunction
+  @SimpleFunction(description =  "Saves a picture of this Canvas to the device's " +
+   "external storage in the file " +
+   "named fileName. fileName must end with one of .jpg, .jpeg, or .png, " +
+   "which determines the file type.")
   public String SaveAs(String fileName) {
     // Figure out desired file format
     Bitmap.CompressFormat format;

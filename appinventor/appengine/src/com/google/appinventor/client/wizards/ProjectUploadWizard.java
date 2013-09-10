@@ -27,7 +27,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  */
 public class ProjectUploadWizard extends Wizard {
   // Project archive extension
-  private static final String PROJECT_ARCHIVE_EXTENSION = ".zip";
+  private static final String PROJECT_ARCHIVE_EXTENSION = ".aia";
 
   /**
    * Creates a new project upload wizard.

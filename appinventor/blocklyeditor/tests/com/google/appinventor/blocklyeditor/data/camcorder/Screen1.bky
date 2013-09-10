@@ -1,0 +1,72 @@
+<xml>
+  <block type="Camcorder1_AfterRecording" x="361" y="29">
+    <title name="COMPONENT_SELECTOR">Camcorder1</title>
+    <statement name="DO">
+      <block type="VideoPlayer1_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+        <title name="PROP">Source</title>
+        <value name="VALUE">
+          <block type="lexical_variable_get">
+            <title name="VAR">clip</title>
+          </block>
+        </value>
+        <next>
+          <block type="VideoPlayer1_setproperty" inline="false">
+            <mutation yailtype="boolean"></mutation>
+            <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+            <title name="PROP">Visible</title>
+            <value name="VALUE">
+              <block type="logic_boolean">
+                <title name="BOOL">TRUE</title>
+              </block>
+            </value>
+            <next>
+              <block type="VideoPlayer1_Start">
+                <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="Button1_Click" x="19" y="30">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="Camcorder1_RecordVideo">
+        <title name="COMPONENT_SELECTOR">Camcorder1</title>
+      </block>
+    </statement>
+  </block>
+  <block type="Screen1_Initialize" x="26" y="165">
+    <title name="COMPONENT_SELECTOR">Screen1</title>
+    <statement name="DO">
+      <block type="VideoPlayer1_setproperty" inline="false">
+        <mutation yailtype="boolean"></mutation>
+        <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+        <title name="PROP">Visible</title>
+        <value name="VALUE">
+          <block type="logic_boolean">
+            <title name="BOOL">FALSE</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="VideoPlayer1_Completed" x="21" y="295">
+    <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+    <statement name="DO">
+      <block type="VideoPlayer1_setproperty" inline="false">
+        <mutation yailtype="boolean"></mutation>
+        <title name="COMPONENT_SELECTOR">VideoPlayer1</title>
+        <title name="PROP">Visible</title>
+        <value name="VALUE">
+          <block type="logic_boolean">
+            <title name="BOOL">FALSE</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

@@ -13,9 +13,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -28,7 +26,6 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -102,8 +99,9 @@ public class FileUploadWizard extends Wizard {
             for (ProjectNode child : folderNode.getChildren()) {
               if (fileId.equalsIgnoreCase(child.getFileId()) && !fileId.equals(child.getFileId())) {
                 final ProjectNode node = child;
+                String filesToClose [] = { node.getFileId()};
                 Ode ode = Ode.getInstance();
-                ode.getEditorManager().closeFileEditor(node.getProjectId(), node.getFileId());
+                ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
                 ode.getProjectService().deleteFile(
                     node.getProjectId(), node.getFileId(),
                     new OdeAsyncCallback<Long>(
@@ -199,29 +197,7 @@ public class FileUploadWizard extends Wizard {
   private void onUploadSuccess(final FolderNode folderNode, final String filename,
       long modificationDate, final FileUploadedCallback fileUploadedCallback) {
     Ode.getInstance().updateModificationDate(folderNode.getProjectId(), modificationDate);
-    final String uploadedFileId = folderNode.getFileId() + "/" + filename;
-
-    // If the uploaded file is in the assets folder, tell codeblocks about it.
-    if (folderNode instanceof YoungAndroidAssetsFolder) {
-      AsyncCallback<Void> callback = new AsyncCallback<Void>() {
-        @Override
-        public void onFailure(Throwable caught) {
-          OdeLog.wlog(caught.getMessage());
-          finishUpload(folderNode, filename, fileUploadedCallback);
-        }
-
-        @Override
-        public void onSuccess(Void result) {
-          OdeLog.log("Either blocks editor is closed or blocks editor was "
-              + "successfully notified about asset " + uploadedFileId);
-          finishUpload(folderNode, filename, fileUploadedCallback);
-        }
-      };
-      OdeLog.log("Notifying blocks editor about asset with id: " + uploadedFileId);
-      CodeblocksManager.getCodeblocksManager().addAsset(uploadedFileId, callback);
-    } else {
-      finishUpload(folderNode, filename, fileUploadedCallback);
-    }
+    finishUpload(folderNode, filename, fileUploadedCallback);
   }
 
   private void finishUpload(FolderNode folderNode, String filename,

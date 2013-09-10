@@ -5,18 +5,22 @@
 
 package com.google.appinventor.client.editor;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
-import static com.google.appinventor.client.Ode.MESSAGES;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
+import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.common.collect.Maps;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +57,7 @@ public final class EditorManager {
    * Creates the editor manager.
    */
   public EditorManager() {
-    openProjectEditors = new HashMap<Long, ProjectEditor>();
+    openProjectEditors = Maps.newHashMap();
 
     dirtyProjectSettings = new HashSet<ProjectSettings>();
     dirtyFileEditors = new HashSet<FileEditor>();
@@ -88,12 +92,14 @@ public final class EditorManager {
 
         // Add the editor to the openProjectEditors map.
         openProjectEditors.put(projectId, projectEditor);
+        
+        // Tell the DesignToolbar about this project
+        Ode.getInstance().getDesignToolbar().addProject(projectId, projectRootNode.getName());
 
         // Load the project into the editor. The actual loading is asynchronous.
         projectEditor.loadProject();
       }
     }
-
     return projectEditor;
   }
 
@@ -108,22 +114,24 @@ public final class EditorManager {
   }
 
   /**
-   * Closes the file editor for a specific file, without saving.
-   * This is used when the file is about to be deleted.
+   * Closes the file editors for the specified files, without saving.
+   * This is used when the files are about to be deleted.
    *
    * @param projectId  project ID
-   * @param fileId  file ID of the file to be closed
+   * @param fileIds  file IDs of the file editors to be closed
    */
-  public void closeFileEditor(long projectId, String fileId) {
+  public void closeFileEditors(long projectId, String[] fileIds) {
     ProjectEditor projectEditor = openProjectEditors.get(projectId);
     if (projectEditor != null) {
-      FileEditor fileEditor = projectEditor.getFileEditor(fileId);
-      // The file may not be open in an editor. For example, an asset file can be deleted, but there
-      // won't be a file editor for it. So, check fileEditor for null.
-      if (fileEditor != null) {
-        dirtyFileEditors.remove(fileEditor);
-        projectEditor.closeFileEditor(fileId);
+      for (String fileId : fileIds) {
+        FileEditor fileEditor = projectEditor.getFileEditor(fileId);
+        // in case the file is not open in an editor (possible?) check 
+        // the FileEditors for null. 
+        if (fileEditor != null) {
+          dirtyFileEditors.remove(fileEditor);
+        }
       }
+      projectEditor.closeFileEditors(fileIds);
     }
   }
 
@@ -246,6 +254,62 @@ public final class EditorManager {
       projectSettings.saveSettings(callAfterSavingCommand);
     }
   }
+  
+  /**
+   * For each block editor (screen) in the current project, generate and save yail code for the 
+   * blocks.
+   *
+   * @param successCommand  optional command to be executed if yail generation and saving succeeds.
+   * @param failureCommand  optional command to be executed if yail generation and saving fails.
+   */
+  public void generateYailForBlocksEditors(final Command successCommand, 
+      final Command failureCommand) {
+    List<FileDescriptorWithContent> yailFiles =  new ArrayList<FileDescriptorWithContent>();
+    long currentProjectId = Ode.getInstance().getCurrentYoungAndroidProjectId();
+    for (long projectId : openProjectEditors.keySet()) {
+      if (projectId == currentProjectId) {
+        // Generate yail for each blocks editor in this project and add it to the list of 
+        // yail files. If an error occurs we stop the generation process, report the error, 
+        // and return without executing nextCommand.
+        ProjectEditor projectEditor = openProjectEditors.get(projectId);
+        for (FileEditor fileEditor : projectEditor.getOpenFileEditors()) {
+          if (fileEditor instanceof YaBlocksEditor) {
+            YaBlocksEditor yaBlocksEditor = (YaBlocksEditor) fileEditor;
+            try {
+              yailFiles.add(yaBlocksEditor.getYail());
+            } catch (YailGenerationException e) {
+              ErrorReporter.reportInfo(MESSAGES.yailGenerationError(e.getFormName(), 
+                  e.getMessage()));
+              if (failureCommand != null) {
+                failureCommand.execute();
+              }
+              return;
+            }
+          }
+        }
+        break;
+      }
+    }
+   
+    Ode.getInstance().getProjectService().save(yailFiles,
+        new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
+      @Override
+      public void onSuccess(Long date) {
+        if (successCommand != null) {
+          successCommand.execute();
+        }
+      }
+      
+      @Override
+      public void onFailure(Throwable caught) {
+        super.onFailure(caught);
+        if (failureCommand != null) {
+          failureCommand.execute();
+        }
+      }
+    });
+  }
+
 
   /**
    * Saves multiple files to the ODE server and calls the afterSavingFiles

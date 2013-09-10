@@ -53,6 +53,15 @@ public final class ContextMenu {
   }
 
   /**
+   * Removes a menu item from the context menu.
+   *
+   * @param item  menu item to be removed
+   */
+  public void removeItem(MenuItem item) {
+    menuBar.removeItem(item);
+  }
+
+  /**
    * Adds a separator to the context menu.
    */
   public void addSeparator() {

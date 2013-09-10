@@ -8,6 +8,7 @@ package com.google.appinventor.client;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.boxes.AssetListBox;
+import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
@@ -16,7 +17,8 @@ import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
-import com.google.appinventor.client.editor.youngandroid.YaFormEditor;
+import com.google.appinventor.client.editor.FileEditor;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
@@ -31,7 +33,6 @@ import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
-import com.google.appinventor.client.youngandroid.CodeblocksManager;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
@@ -40,15 +41,18 @@ import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
+import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
 import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
 import com.google.gwt.event.logical.shared.ResizeHandler;
@@ -57,7 +61,6 @@ import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Command;
-import com.google.gwt.user.client.Cookies;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.History;
@@ -65,10 +68,12 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.StatusCodeException;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -76,7 +81,9 @@ import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * Main entry point for Ode. Defines the startup UI elements in
@@ -118,8 +125,15 @@ public class Ode implements EntryPoint {
   // Collection of editors
   private EditorManager editorManager;
 
-  // Currently active form editor
-  private YaFormEditor currentYaFormEditor;
+  // Currently active file editor, could be a YaFormEditor or a YaBlocksEditor or null.
+  private FileEditor currentFileEditor;
+
+  private AssetManager assetManager;
+
+  // Remembers the current View
+  private static final int DESIGNER = 0;
+  private static final int PROJECTS = 1;
+  private static int currentView = DESIGNER;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -142,6 +156,8 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
+  private HorizontalPanel workColumns;
+  private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
@@ -211,6 +227,15 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Returns the asset manager.
+   *
+   * @return  asset manager
+   */
+  public AssetManager getAssetManager() {
+    return assetManager;
+  }
+
+  /**
    * Returns true if we have received the window closing event.
    */
   public static boolean isWindowClosing() {
@@ -221,17 +246,22 @@ public class Ode implements EntryPoint {
    * Switch to the Projects tab
    */
   public void switchToProjectsView() {
+    currentView = PROJECTS;
     deckPanel.showWidget(projectsTabIndex);
   }
 
   /**
-   * Switch to the Designer tab
+   * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
    */
   public void switchToDesignView() {
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
-    if (currentYaFormEditor != null) {
+    currentView = DESIGNER;
+    if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
+    } else {
+      OdeLog.wlog("No current file editor to show in designer");
+      ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
 
@@ -251,12 +281,14 @@ public class Ode implements EntryPoint {
       OdeLog.wlog("Ignoring openPreviousProject() since userSettings is null");
       return;
     }
+    OdeLog.log("Ode.openPreviousProject called");
     String value = userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-        getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
+    getPropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID);
     openProject(value);
   }
 
   private void openProject(String projectIdString) {
+    OdeLog.log("Ode.openProject called for " + projectIdString);
     if (projectIdString.equals("")) {
       openPreviousProject();
     } else if (!projectIdString.equals("0")) {
@@ -299,14 +331,22 @@ public class Ode implements EntryPoint {
       project.loadProjectNodes();
 
     } else {
-      // The project nodes have been loaded. We can open the editor.
+      // The project nodes have been loaded. Tell the viewer to open
+      // the project. This will cause the projects source files to be fetched
+      // asynchronously, and loaded into file editors.
       ViewerBox.getViewerBox().show(projectRootNode);
-      switchToDesignView();
+      // Note: we can't call switchToDesignView until the Screen1 file editor
+      // finishes loading. We leave that to setCurrentFileEditor(), which
+      // will get called at the appropriate time.
       String projectIdString = Long.toString(project.getProjectId());
       if (!History.getToken().equals(projectIdString)) {
         // insert token into history but do not trigger listener event
         History.newItem(projectIdString, false);
       }
+      if (assetManager == null) {
+        assetManager = AssetManager.getInstance();
+      }
+      assetManager.loadAssets(project.getProjectId());
     }
   }
 
@@ -345,8 +385,10 @@ public class Ode implements EntryPoint {
             Window.open(BugReport.getBugReportLink(e), "_blank", "");
           }
         } else {
-          Window.alert(AppInventorFeatures.hasDebuggingView() ?
-              MESSAGES.internalErrorSeeDebuggingView() : MESSAGES.internalError());
+          // Display a confirm dialog with error msg and if 'ok' open the debugging view	
+          if (Window.confirm(MESSAGES.internalErrorClickOkDebuggingView())) {
+            Ode.getInstance().switchToDebuggingView();
+          }
         }
       }
     });
@@ -354,7 +396,7 @@ public class Ode implements EntryPoint {
     // Define bridge methods to Javascript
     JsonpConnection.defineBridgeMethod();
 
-   // Initialize global Ode instance
+    // Initialize global Ode instance
     instance = this;
 
     // Get user information.
@@ -417,6 +459,7 @@ public class Ode implements EntryPoint {
     userInfoService.getUserInformation(callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
+      @Override
       public void onValueChange(ValueChangeEvent<String> event) {
         openProject(event.getValue());
       }
@@ -435,6 +478,8 @@ public class Ode implements EntryPoint {
    * Initializes all UI elements.
    */
   private void initializeUi() {
+    BlocklyPanel.initUi();
+
     rpcStatusPopup = new RpcStatusPopup();
 
     // Register services with RPC status popup
@@ -463,7 +508,7 @@ public class Ode implements EntryPoint {
       }
     };
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
-    deckPanel.setWidth("100%");
+    deckPanel.setStyleName("ode-DeckPanel");
 
     // Projects tab
     VerticalPanel pVertPanel = new VerticalPanel();
@@ -479,42 +524,64 @@ public class Ode implements EntryPoint {
     deckPanel.add(pVertPanel);
 
     // Design tab
-    VerticalPanel vertPanel = new VerticalPanel();
-    vertPanel.setWidth("100%");
-    designToolbar = new DesignToolbar();
-    vertPanel.add(designToolbar);
-    HorizontalPanel workColumns = new HorizontalPanel();
-    workColumns.setWidth("100%");
-    Box box = PaletteBox.getPaletteBox();
-    box.setWidth("225px");
-    workColumns.add(box);
-    workColumns.setCellWidth(box, "1%");
-    box = ViewerBox.getViewerBox();
-    workColumns.add(box);
-    workColumns.setCellWidth(box, "97%");
+    VerticalPanel dVertPanel = new VerticalPanel();
+    dVertPanel.setWidth("100%");
 
-    VerticalPanel structureAndAssets = new VerticalPanel();
+    designToolbar = new DesignToolbar();
+    dVertPanel.add(designToolbar);
+
+    workColumns = new HorizontalPanel();
+    workColumns.setWidth("100%");
+
+    Box palletebox = PaletteBox.getPaletteBox();
+    palletebox.setWidth("225px");
+    workColumns.add(palletebox);
+
+    Box viewerbox = ViewerBox.getViewerBox();
+    workColumns.add(viewerbox);
+    workColumns.setCellWidth(viewerbox, "97%");
+
+    structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
+    // Only one of the SourceStructureBox and the BlockSelectorBox is visible
+    // at any given time, according to whether we are showing the form editor
+    // or the blocks editor. They share the same screen real estate.
     structureAndAssets.add(SourceStructureBox.getSourceStructureBox());
+    structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
     structureAndAssets.add(AssetListBox.getAssetListBox());
     workColumns.add(structureAndAssets);
-    workColumns.setCellWidth(structureAndAssets, "1%");
 
-    box = PropertiesBox.getPropertiesBox();
-    box.setWidth("210px");
-    workColumns.add(box);
-    workColumns.setCellWidth(box, "1%");
-    vertPanel.add(workColumns);
+    Box propertiesbox = PropertiesBox.getPropertiesBox();
+    propertiesbox.setWidth("210px");
+    workColumns.add(propertiesbox);
+
+    dVertPanel.add(workColumns);
+
     designTabIndex = deckPanel.getWidgetCount();
-    deckPanel.add(vertPanel);
+    deckPanel.add(dVertPanel);
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
+
+      Button dismissButton = new Button(MESSAGES.dismissButton());
+      dismissButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          if (currentView == DESIGNER)
+            switchToDesignView();
+          else
+            switchToProjectsView();
+        }
+      });
+
       ColumnLayout defaultLayout = new ColumnLayout("Default");
       Column column = defaultLayout.addColumn(100);
       column.add(MessagesOutputBox.class, 300, false);
       column.add(OdeLogBox.class, 300, false);
       final WorkAreaPanel debuggingTab = new WorkAreaPanel(new OdeBoxRegistry(), defaultLayout);
+
+      debuggingTab.add(dismissButton);
+
       debuggingTabIndex = deckPanel.getWidgetCount();
       deckPanel.add(debuggingTab);
 
@@ -550,8 +617,9 @@ public class Ode implements EntryPoint {
     mainPanel.setCellHeight(deckPanel, "100%");
     mainPanel.setCellWidth(deckPanel, "100%");
 
-    mainPanel.add(statusPanel, DockPanel.SOUTH);
-    mainPanel.setSize("100%", "98%");
+    //Commenting out for now to gain more space for the blocks editor
+    //mainPanel.add(statusPanel, DockPanel.SOUTH);
+    mainPanel.setSize("100%", "100%");
     RootPanel.get().add(mainPanel);
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
@@ -565,21 +633,23 @@ public class Ode implements EntryPoint {
       }
     });
 
-    // Check if the user has any saved projects.
-    // If the user has no saved projects, then show the welcome dialog.
-    getProjectService().getProjects(new AsyncCallback<long[]>() {
-      @Override
-      public void onSuccess(long[] projectIds) {
-        if (projectIds.length == 0) {
-          createWelcomeDialog(true);
-        }
-      }
+    if (AppInventorFeatures.showSplashScreen()) {
+      createWelcomeDialog(true);
+    } else {
+      getProjectService().getProjects(new AsyncCallback<long[]>() {
+          @Override
+          public void onSuccess(long [] projectIds) {
+            if (projectIds.length == 0) {
+              createNoProjectsDialog(true);
+            }
+          }
 
-      @Override
-      public void onFailure(Throwable projectIds) {
-        OdeLog.elog("Could not get project list");
-      }
-    });
+          @Override
+          public void onFailure(Throwable projectIds) {
+            OdeLog.elog("Could not get project list");
+          }
+        });
+    }
 
     setupMotd();
   }
@@ -630,6 +700,24 @@ public class Ode implements EntryPoint {
    */
   public ProjectToolbar getProjectToolbar() {
     return projectToolbar;
+  }
+
+  /**
+   * Returns the structureAndAssets panel.
+   *
+   * @return  {@link VerticalPanel}
+   */
+  public VerticalPanel getStructureAndAssets() {
+    return structureAndAssets;
+  }
+
+  /**
+   * Returns the workColumns panel.
+   *
+   * @return  {@link HorizontalPanel}
+   */
+  public HorizontalPanel getWorkColumns() {
+    return workColumns;
   }
 
   /**
@@ -687,29 +775,32 @@ public class Ode implements EntryPoint {
   }
 
   /**
-   * Set the current young android form editor.
+   * Set the current file editor.
    *
-   * @param yaFormEditor  the form editor, can be null.
+   * @param fileEditor  the file editor, can be null.
    */
-  public void setCurrentYaFormEditor(YaFormEditor yaFormEditor) {
-    currentYaFormEditor = yaFormEditor;
-
-    switchToDesignView();
-
-    ProjectRootNode root = getCurrentYoungAndroidProjectRootNode();
-    String name = "";
-    if (root != null) {
-      name = root.getName();
+  public void setCurrentFileEditor(FileEditor fileEditor) {
+    currentFileEditor = fileEditor;
+    if (currentFileEditor == null) {
+      // nothing more we can do
+      OdeLog.log("Setting current file editor to null");
+      return;
     }
-    designToolbar.updateProjectName(name);
-    designToolbar.updateButtons();
-
+    OdeLog.log("Ode: Setting current file editor to " + currentFileEditor.getFileId());
+    switchToDesignView();
     if (!windowClosing) {
       userSettings.getSettings(SettingsConstants.USER_GENERAL_SETTINGS).
-          changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
+      changePropertyValue(SettingsConstants.GENERAL_SETTINGS_CURRENT_PROJECT_ID,
           "" + getCurrentYoungAndroidProjectId());
       userSettings.saveSettings(null);
     }
+  }
+
+  /**
+   * @return  currently open FileEditor, or null if none
+   */
+  public FileEditor getCurrentFileEditor() {
+    return currentFileEditor;
   }
 
   /**
@@ -718,8 +809,8 @@ public class Ode implements EntryPoint {
    * @return  project root node corresponding to current project
    */
   public ProjectRootNode getCurrentYoungAndroidProjectRootNode() {
-    if (currentYaFormEditor != null) {
-      return currentYaFormEditor.getFormNode().getProjectRoot();
+    if (currentFileEditor != null) {
+      return currentFileEditor.getProjectRootNode();
     }
     return null;
   }
@@ -742,19 +833,25 @@ public class Ode implements EntryPoint {
    * @return  the current project id
    */
   public long getCurrentYoungAndroidProjectId() {
-    if (currentYaFormEditor != null) {
-      return currentYaFormEditor.getProjectId();
+    if (currentFileEditor != null) {
+      return currentFileEditor.getProjectId();
     }
     return 0;
   }
 
   /**
-   * Returns the current form editor, or null if there is no current form editor.
+   * Returns the current source node, or null if there is no current source node.
    *
-   * @return  the current form editor
+   * @return  the current source node
    */
-  public YaFormEditor getCurrentYoungAndroidFormEditor() {
-    return currentYaFormEditor;
+  public YoungAndroidSourceNode getCurrentYoungAndroidSourceNode() {
+    if (currentFileEditor != null) {
+      FileNode fileNode = currentFileEditor.getFileNode();
+      if (fileNode instanceof YoungAndroidSourceNode) {
+        return (YoungAndroidSourceNode) fileNode;
+      }
+    }
+    return null;
   }
 
   /**
@@ -774,7 +871,7 @@ public class Ode implements EntryPoint {
    * @return  newly created push button
    */
   public static PushButton createPushButton(ImageResource img, String tip,
-      ClickHandler handler) {
+                                            ClickHandler handler) {
     PushButton pb = new PushButton(new Image(img));
     pb.addClickHandler(handler);
     pb.setTitle(tip);
@@ -805,23 +902,6 @@ public class Ode implements EntryPoint {
 
     // Save all unsaved editors.
     editorManager.saveDirtyEditors(null);
-
-    CodeblocksManager codeblocksManager = CodeblocksManager.getCodeblocksManager();
-    if (codeblocksManager.isCodeblocksOpen()) {
-      codeblocksManager.terminateCodeblocks();
-
-      // NOTE(lizlooney) - Terminating codeblocks involves an asynchronous JSONP call. This works
-      // fine on most browsers, but is not actually sent in Safari (and in some cases in Chrome).
-      // The only way I found to fix this is to put a Window.alert() at the end of this method.
-      // This gives the browser a chance to process the asynchronous call.
-      // However, the alert is quite annoying, so for now we don't show the alert and we might
-      // leave codeblocks running.
-      /*
-      if (!isBrowserSafari()) {
-        Window.alert(MESSAGES.onClosingBrowserWithCodeblocksOpen());
-      }
-      */
-    }
   }
 
   /**
@@ -831,7 +911,7 @@ public class Ode implements EntryPoint {
    * @param showDialog Convenience variable to show the created DialogBox.
    * @return The created and optionally displayed Dialog box.
    */
-  public DialogBox createWelcomeDialog(boolean showDialog) {
+  public DialogBox createNoProjectsDialog(boolean showDialog) {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
@@ -885,4 +965,53 @@ public class Ode implements EntryPoint {
     }
     return dialogBox;
   }
+
+  /**
+   * Creates, visually centers, and optionally displays the dialog box
+   * that informs the user how to start learning about using App Inventor
+   * or create a new project.
+   * @param showDialog Convenience variable to show the created DialogBox.
+   * @return The created and optionally displayed Dialog box.
+   */
+  public DialogBox createWelcomeDialog(boolean showDialog) {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setHeight("400px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>");
+    message.setStyleName("DialogBox-message");
+    SimplePanel holder = new SimplePanel();
+    Button ok = new Button("Continue");
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          getProjectService().getProjects(new AsyncCallback<long[]>() {
+              @Override
+              public void onSuccess(long [] projectIds) {
+                if (projectIds.length == 0) {
+                  createNoProjectsDialog(true);
+                }
+              }
+
+              @Override
+              public void onFailure(Throwable projectIds) {
+                OdeLog.elog("Could not get project list");
+              }
+            });
+        }
+      });
+    holder.add(ok);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+    return dialogBox;
+  }
+
 }

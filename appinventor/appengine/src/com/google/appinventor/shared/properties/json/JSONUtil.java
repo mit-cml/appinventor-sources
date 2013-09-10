@@ -5,6 +5,8 @@
 
 package com.google.appinventor.shared.properties.json;
 
+import com.google.appinventor.common.utils.StringUtils;
+
 /**
  * Helper methods used for JSON encoding and decoding.
  *
@@ -13,56 +15,13 @@ package com.google.appinventor.shared.properties.json;
 public class JSONUtil {
   private JSONUtil() {
   }
-
+  
   /**
    * Converts a String to a JSON String.
    * Returns null if the String is null.
    */
   public static String toJson(String s) {
-    if (s != null) {
-      StringBuilder sb = new StringBuilder();
-      sb.append('"');
-      int len = s.length();
-      for (int i = 0; i < len; i++) {
-        char c = s.charAt(i);
-        switch (c) {
-          case '\\':
-          case '"':
-          case '/':
-            sb.append('\\').append(c);
-            break;
-          case '\b':
-            sb.append("\\b");
-            break;
-          case '\f':
-            sb.append("\\f");
-            break;
-          case '\n':
-            sb.append("\\n");
-            break;
-          case '\r':
-            sb.append("\\r");
-            break;
-          case '\t':
-            sb.append("\\t");
-            break;
-          default:
-            if (c < ' ' || c > '~') {
-              // Replace any special chars with \u1234 unicode
-              String hex = "000" + Integer.toHexString(c);
-              hex = hex.substring(hex.length() - 4);
-              sb.append("\\u" + hex);
-            } else {
-              sb.append(c);
-            }
-            break;
-        }
-      }
-      sb.append('"');
-      return sb.toString();
-    } else {
-      return null;
-    }
+    return StringUtils.toJson(s);
   }
 
   /**
@@ -96,7 +55,7 @@ public class JSONUtil {
       sb.append("[");
       String separator = "";
       for (String s : array) {
-        sb.append(separator).append(JSONUtil.toJson(s));
+        sb.append(separator).append(StringUtils.toJson(s));
         separator = ",";
       }
       sb.append("]");

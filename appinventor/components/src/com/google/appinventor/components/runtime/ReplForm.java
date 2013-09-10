@@ -7,11 +7,13 @@ package com.google.appinventor.components.runtime;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.io.File;
 import java.io.IOException;
 
 import com.google.appinventor.components.runtime.util.ReplCommController;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.RetValManager;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.EclairUtil;
 
@@ -46,6 +48,7 @@ public class ReplForm extends Form {
   private static final String REPL_ASSET_DIR = "/sdcard/AppInventor/assets/";
   private boolean IsUSBRepl = false;
   private boolean assetsLoaded = false;
+  private boolean isDirect = false; // True for USB and emulator (AI2)
 
   public ReplForm() {
     super();
@@ -54,9 +57,11 @@ public class ReplForm extends Form {
 
   @Override
   public void onCreate(Bundle icicle) {
+    Intent intent = getIntent();
+    processExtras(intent, false);
     super.onCreate(icicle);
 
-    if (IsUSBRepl) {
+    if (IsUSBRepl) { // Note: Obsolete code for AI1
       PackageManager packageManager = this.$context().getPackageManager();
       // the following is intended to prevent the application from being restarted
       // once it has ever run (so it can be run only once after it is installed)
@@ -98,24 +103,12 @@ public class ReplForm extends Form {
 
   @Override
   protected void startNewForm(String nextFormName, Object startupValue) {
-    // Switching forms is not allowed in REPL (yet?).
-    runOnUiThread(new Runnable() {
-      public void run() {
-        String message = "Switching forms is not currently supported during development.";
-        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
-      }
-    });
+    RetValManager.pushScreen(nextFormName, startupValue);
   }
 
   @Override
   protected void closeForm(Intent resultIntent) {
-    // Switching forms is not allowed in REPL (yet?).
-    runOnUiThread(new Runnable() {
-      public void run() {
-        String message = "Closing forms is not currently supported during development.";
-        Toast.makeText(ReplForm.this, message, Toast.LENGTH_LONG).show();
-      }
-    });
+    RetValManager.popScreen("Not Yet");
   }
 
   @Override
@@ -129,16 +122,47 @@ public class ReplForm extends Form {
     });
   }
 
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    processExtras(intent, true);
+  }
+
+  protected void processExtras(Intent intent, boolean restart) {
+    Bundle extras = intent.getExtras();
+    if (extras != null) {
+      Log.d("ReplForm", "extras: " + extras);
+      Iterator<String> keys = extras.keySet().iterator();
+      while (keys.hasNext()) {
+        Log.d("ReplForm", "Extra Key: " + keys.next());
+      }
+    }
+    if ((extras != null) && extras.getBoolean("rundirect")) {
+      Log.d("ReplForm", "processExtras rundirect is true and restart is " + restart);
+      isDirect = true;
+      assetsLoaded = false;     // So we can reload them!
+      if (restart) {
+        this.clear();
+        this.$define();
+        this.Initialize();        // Restart UI
+      }
+    }
+  }
+
+  public boolean isDirect() {
+    return isDirect;
+  }
+
   public void setIsUSBrepl() {
     IsUSBRepl = true;
   }
 
-  // Called from Screen1.yail after Screen1 is setup
-  public void startHTTPD() {
+  // Called from the Phone Status Block to start the Repl HTTPD
+  public void startHTTPD(boolean secure) {
     try {
         if (assetServer == null) {
             checkAssetDir();
-            assetServer = new AppInvHTTPD(8000, new File(REPL_ASSET_DIR), this); // Probably should make the port variable
+            assetServer = new AppInvHTTPD(8001, new File(REPL_ASSET_DIR), secure, this); // Probably should make the port variable
             Log.i("ReplForm", "started AppInvHTTPD");
         }
     } catch (IOException ex) {
@@ -146,7 +170,7 @@ public class ReplForm extends Form {
     }
   }
 
-  public void startRepl() {
+  public void startRepl() {  // Obsolete code for AI1
     Log.i("ReplForm", "startRepl()");
     formReplCommController = new ReplCommController(this);
     formReplCommController.startListening(true /*showAlert*/);

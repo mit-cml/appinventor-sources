@@ -94,7 +94,7 @@ public final class YoungAndroidAssetSelectorPropertyEditor extends AdditionalCho
         FileUploadedCallback callback = new FileUploadedCallback() {
           @Override
           public void onFileUploaded(FolderNode folderNode, FileNode fileNode) {
-            // At this point, the asset has been uploaded to the server, sent to codeblocks, and
+            // At this point, the asset has been uploaded to the server, and
             // has even been added to the assetsFolder. We are all set!
             choices.selectValue(fileNode.getName());
             closeAdditionalChoiceDialog(true);

@@ -113,6 +113,17 @@ public interface ProjectService extends RemoteService {
   String load(long projectId, String fileId);
 
   /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value is the raw file contents.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  raw file content
+   */
+  byte[] loadraw(long projectId, String fileId);
+
+  /**
    * Loads the contents of multiple files.
    *
    * @param files  list containing file descriptor of files to be loaded

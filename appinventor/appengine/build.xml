@@ -43,7 +43,7 @@
        ===================================================================== -->
   <target name="CopyToBuildWar"
           description="Create and populate build/war directory structure"
-          depends="init">
+          depends="init,blocklyeditor_BlocklyCompile">
     <mkdir dir="${build.war.dir}" />
     <copy todir="${build.war.dir}/">
       <fileset dir="war"/>
@@ -51,10 +51,23 @@
         <!-- canvas is a special case (see MockCanvas.java) -->
         <include name="images/canvas.png" />
       </fileset>
-      <fileset dir="${docs.dir}" />
+      <fileset dir="${docs.dir}"/>
+      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
+      <fileset dir="${lib.dir}/blockly/src">
+        <include name="media/*"/>
+        <include name="**/*.css"/>
+        <include name="1x1.gif"/>
+      </fileset>
     </copy>
   </target>
 
+  <target name="CopyBlocklyToBuildWar"
+          description="Create blockly-all.js and add to war"
+          depends="init,blocklyeditor_BlocklyCompile">
+    <copy todir="${build.war.dir}/">
+      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
+    </copy>
+  </target>
   <!-- =====================================================================
        Create the keystore that is used by AiServerLib to encrypt user and
        project IDs.
@@ -128,7 +141,7 @@
        ===================================================================== -->
   <target name="AiServerLib"
           description="App Inventor Server library"
-          depends="init,WarLibs,AiSharedLib,blockseditor_BlocksEditor,buildserver_StarterApp">
+          depends="init,WarLibs,AiSharedLib">
     <property name="AiServerLib-class.dir" location="${class.dir}/AiServerLib" />
     <mkdir dir="${AiServerLib-class.dir}" />
 
@@ -141,12 +154,6 @@
         <pathelement location="${gwt.sdk}/gwt-user.jar"/>
       </classpath>
     </ai.javac>
-
-    <!-- copy resources that need to be packed into AiServerLib.jar -->
-    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
-          file="${build.dir}/blockseditor/BlocksEditor.jar"/>
-    <copy todir="${AiServerLib-class.dir}/com/google/appinventor/server/util"
-          file="${build.dir}/buildserver/AppInventorPhoneApp.apk"/>
 
     <jar basedir="${AiServerLib-class.dir}"
          destfile="${local.build.dir}/AiServerLib.jar" />
@@ -230,6 +237,7 @@
   <path id="libsForAiSharedLibTests.path">
     <pathelement location="${local.build.dir}/AiSharedLib.jar" />
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
+    <pathelement location="${build.dir}/common/CommonUtils.jar" />
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -242,7 +250,7 @@
   </path>
 
   <target name="AiSharedLibTests"
-          depends="AiSharedLib,AiServerLib"
+          depends="AiSharedLib,AiServerLib,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiSharedLibTests"
                 aij-dir="${appinventor.pkg}/shared" >
@@ -359,7 +367,7 @@
       <jvmarg line="${XstartOnFirstThread}"/>
       <arg line="-war"/>
       <arg value="${build.war.dir}"/>
-      <arg line="-style detailed -logLevel WARN"/>
+      <arg line="-logLevel INFO -style pretty"/>
       <arg value="com.google.appinventor.YaClient"/>
     </java>
   </target>
@@ -374,6 +382,7 @@
     <pathelement location="${local.build.dir}/AiServerLib.jar" />
     <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
+    <pathelement location="${build.dir}/common/CommonUtils.jar" />
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
@@ -387,7 +396,7 @@
   </path>
 
   <target name="AiClientLibTests"
-          depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants"
+          depends="AiClientLib,AiServerLib,common_CommonTestUtils,components_CommonConstants,common_CommonUtils"
           description="build and run the test suite" >
     <ai.dojunit aij-testingtarget="AiClientLibTests"
                 aij-dir="${appinventor.pkg}/client" >
