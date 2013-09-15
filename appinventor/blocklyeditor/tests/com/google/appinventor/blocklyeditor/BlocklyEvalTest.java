@@ -173,4 +173,19 @@ public class BlocklyEvalTest extends TestCase {
 
     assertEquals("true", result.toString());
   }
+
+  public void testGeneratorsListsTests() throws Exception {
+
+    String[] params = { "phantomjs",
+        testpath + "/tests/com/google/appinventor/generators_unit/generatorsListsTests.js" };
+    String result = "";
+
+    try {
+      result = CodeBlocksProcessHelper.exec(params, true).trim();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    assertEquals("true", result.toString());
+  }
 }
