@@ -1,7 +1,7 @@
 ;;; Redefine add-to-global-vars so it doesn't require any of the define-form stuff
 (define add-to-global-vars
   (lambda (name :: gnu.mapping.Symbol thunk)
-    (gnu.mapping.Environment:put *test-environment* name (thunk))))
+    (gnu.mapping.Environment:put *test-global-var-environment* name (thunk))))
 
 (define (stringTest1)
   (and
