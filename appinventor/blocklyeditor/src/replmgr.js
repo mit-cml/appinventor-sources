@@ -234,7 +234,7 @@ Blockly.ReplMgr.putYail = (function() {
                 rs.phoneState.phoneQueue = [];
             }
             rs.phoneState.phoneQueue.push({
-                'code' : code,
+                'code' : Blockly.ReplMgr.quoteUnicode(code), // Deal with unicode characters and kawa
                 'success' : success,
                 'failure' : failure,
                 'block' : block
@@ -590,6 +590,26 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             }
         }
     }, 1000);                   // We poll once per second
+};
+
+// Convert non-ASCII Characters to kawa unicode escape
+Blockly.ReplMgr.quoteUnicode = function(input) {
+    if (!input)
+        return null;
+    var sb = [];
+    var len = input.length;
+    for (var i = 0; i < len; i++) {
+        var u = input.charCodeAt(i); // Unicode of the character
+        if (u < ' '.charCodeAt(0) || u > '~'.charCodeAt(0)) {
+          // Replace any special chars with \u1234 unicode
+            var hex = "000" + u.toString(16);
+            hex = hex.substring(hex.length - 4);
+            sb.push("\\u" + hex);
+        } else {
+            sb.push(input.charAt(i));
+        }
+    }
+    return sb.join("");
 };
 
 Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
