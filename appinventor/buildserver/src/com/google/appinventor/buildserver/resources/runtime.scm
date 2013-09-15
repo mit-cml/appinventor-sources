@@ -1102,8 +1102,8 @@
         ((not (= (length arglist) (length typelist)))
          (signal-runtime-error
           (string-append "The arguments " (show-arglist-no-parens arglist)
-                         " are the wrong number of arguments for " procedure-name)
-          (string-append "Wrong number of arguments for" procedure-name)))
+                         " are the wrong number of arguments for " (get-display-representation procedure-name))
+          (string-append "Wrong number of arguments for" (get-display-representation procedure-name))))
         (else (map coerce-arg arglist typelist))))
 
 (define (coerce-arg arg type)
@@ -1195,6 +1195,8 @@
       (cond ((= arg +inf) "+infinity")
             ((= arg -inf) "-infinity")
             ((eq? arg *the-null-value*) *the-null-value-printed-rep*)
+            ((symbol? arg)
+             (symbol->string arg))
             ((string? arg)
              (if (string=? arg "")
                  *the-empty-string-printed-rep*
