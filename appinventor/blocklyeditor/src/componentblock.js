@@ -48,7 +48,6 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
   // This is called by the BlocklyBlock constructor where its type field is set to, e.g., 'Button1_Click'
   this.init = function() {
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
-
     this.componentDropDown = new Blockly.FieldDropdown([["",""]]);
     this.componentDropDown.block = this;
     this.componentDropDown.menuGenerator_ = function(){ return Blockly.Component.getComponentNamesByType(this.block.typeName);};
@@ -64,16 +63,12 @@ Blockly.ComponentBlock.event = function(eventType, instanceName, typeName) {
     .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
     .appendTitle('.' + this.eventType.name);
     this.componentDropDown.setValue(this.instanceName);
-    
-    if(eventType.params.length != 0){
-      var paramInput = this.appendDummyInput();
-    }
 
     // TODO: implement event callback parameters.  Need to figure out how to do procedures and 
     // make callback parameters consistent with that.
     var paramLength = eventType.params.length;
     for (var i = 0, param; param = eventType.params[i]; i++) {
-      paramInput.appendTitle(param.name + (i != paramLength -1 ? "," : ""));
+      this.appendDummyInput().appendTitle(param.name).setAlign(Blockly.ALIGN_RIGHT);
     }
     
     this.appendStatementInput("DO").appendTitle('do');

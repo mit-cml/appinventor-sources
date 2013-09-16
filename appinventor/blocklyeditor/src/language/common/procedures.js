@@ -72,9 +72,45 @@ Blockly.Language.procedures_defnoreturn = {
     } else {
       this.setWarningText(null);
     }
-    // Merge the arguments into a human-readable list.
-    var paramString = this.arguments_.join(', ');
-    this.setTitleValue(paramString, 'PARAMS');
+
+    //save the first two input lines and the last input line
+    //to be re added to the block later
+    var firstInput = this.inputList[0];
+    var secondToLastInput = this.inputList[this.inputList.length - 2];
+    var lastInput = this.inputList[this.inputList.length - 1];
+
+    //stop rendering until block is recreated
+    this.rendered = false;
+
+    //remove all old argument inputs
+    var oldArgCount = this.inputList.length - 3;
+    for (var i = 0; i < oldArgCount; i++)
+    {
+      try
+      {
+        this.removeInput("arg_"+this.id+"_"+i);
+      }
+      catch(err)
+      {
+        console.log(err);
+      }
+    }
+
+    //empty the inputList then recreate it
+    this.inputList = [];
+    this.inputList = this.inputList.concat(firstInput);
+
+    //add an input title for each argument
+    //name eath input after the block and where it appears in the block to reference it later
+    for (var i = 0; i < this.arguments_.length; i++) {
+      this.appendDummyInput("arg_"+this.id+"_"+i)
+      .appendTitle(this.arguments_[i])
+      .setAlign(Blockly.ALIGN_RIGHT);
+    }
+
+    //put the last two arguments back
+    this.inputList = this.inputList.concat(secondToLastInput,lastInput);
+    this.render();
   },
   mutationToDom: function() {
     var container = document.createElement('mutation');
@@ -505,9 +541,12 @@ Blockly.Language.procedures_callnoreturn = {
     //     Existing param IDs.
     // Note that quarkConnections_ may include IDs that no longer exist, but
     // which might reappear if a param is reattached in the mutator.
+
     var input;
     var connection;
     var x;
+
+    //fixed parameter alignment see ticket 465
     if (!paramIds) {
       // Reset the quarks (a mutator is about to open).
       this.quarkConnections_ = {};
