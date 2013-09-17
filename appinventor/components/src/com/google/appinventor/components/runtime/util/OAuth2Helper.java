@@ -29,8 +29,8 @@ import android.util.Log;
  * This follows examples in the Google API Client libraries, especially the 
  * tasks-android-sample and the fusiontables-commandline-sample.
  * 
- * Here's an even nicer example, much simpler than the Google examples:
- * http://emuneee.com/2010/11/android-development-how-to-get-a-user-authentication-token-on-an-android-device/
+ * Here's an good overview:
+ * https://developers.google.com/accounts/docs/OAuth2
  * 
  * Here's how it works.
  * 
