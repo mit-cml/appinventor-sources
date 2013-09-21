@@ -234,6 +234,10 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String tabNameProjects();
 
+  @DefaultMessage("Gallery")
+  @Description("Name of Gallery tab")
+  String tabNameGallery();
+  
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();

@@ -39,9 +39,7 @@ public class TopPanel extends Composite {
     "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
     "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
-  private static final String GALLERY_LINK_AND_TEXT =
-    "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
-    "Try the App Inventor Community Gallery (Beta)</a>";
+
 
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
 
@@ -52,8 +50,7 @@ public class TopPanel extends Composite {
     "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
     " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" +
-      GALLERY_LINK_AND_TEXT + "."
+  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" + "."
   );
 
   private HTML divider() {
@@ -120,6 +117,18 @@ public class TopPanel extends Composite {
     );
     myApps.setStyleName("gwt-TitleLabel");
     middleLinks.add(myApps);
+    
+    Label galleryLabel = new Label(MESSAGES.tabNameGallery());
+    galleryLabel.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        ode.switchToGalleryView();
+      }
+    }
+    );
+    galleryLabel.setStyleName("gwt-TitleLabel");
+    middleLinks.add(galleryLabel);
+    
 
     Label aboutButton = new Label(MESSAGES.aboutLink());
     aboutButton.addClickHandler(new ClickHandler() {
@@ -170,9 +179,6 @@ public class TopPanel extends Composite {
     learn.setStyleName("gwt-TitleLabel");
     middleLinks.add(learn);
 
-    Anchor gallery = new Anchor("Gallery", "http://gallery.appinventor.mit.edu", "_blank");
-    gallery.setStyleName("gwt-TitleLabel");
-    middleLinks.add(gallery);
 
     topPanel.add(middleLinks);
     topPanel.add(rightPanel);

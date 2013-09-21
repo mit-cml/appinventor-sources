@@ -133,6 +133,7 @@ public class Ode implements EntryPoint {
   // Remembers the current View
   private static final int DESIGNER = 0;
   private static final int PROJECTS = 1;
+  private static final int GALLERY = 2;
   private static int currentView = DESIGNER;
 
   /*
@@ -154,6 +155,7 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
+  private int galleryTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -248,6 +250,15 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     currentView = PROJECTS;
     deckPanel.showWidget(projectsTabIndex);
+  }
+  
+  /**
+   * Switch to the Projects tab
+   */
+  public void switchToGalleryView() {
+    currentView = GALLERY;
+    deckPanel.showWidget(galleryTabIndex);
+    
   }
 
   /**
@@ -560,6 +571,23 @@ public class Ode implements EntryPoint {
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
 
+    // Gallery tab
+    VerticalPanel gVertPanel = new VerticalPanel();
+    pVertPanel.setWidth("100%");
+    pVertPanel.setSpacing(0);
+    HorizontalPanel appListPanel = new HorizontalPanel();
+    appListPanel.setWidth("100%");
+    /*
+    appListPanel.add(ProjectListBox.getProjectListBox());
+    projectToolbar = new ProjectToolbar();
+    gVertPanel.add(projectToolbar);
+    */
+    gVertPanel.add(appListPanel);
+    galleryTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(gVertPanel);
+    
+    
+    
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
 
@@ -584,6 +612,8 @@ public class Ode implements EntryPoint {
 
       debuggingTabIndex = deckPanel.getWidgetCount();
       deckPanel.add(debuggingTab);
+      
+      
 
       // Hook the window resize event, so that we can adjust the UI.
       Window.addResizeHandler(new ResizeHandler() {
@@ -592,6 +622,8 @@ public class Ode implements EntryPoint {
           resizeWorkArea(debuggingTab);
         }
       });
+      
+      
 
       // Call the window resized handler to get the initial sizes setup. Doing this in a deferred
       // command causes it to occur after all widgets' sizes have been computed by the browser.
