@@ -977,7 +977,7 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("¡Bienvenido a AppInventor!");
+    dialogBox.setText("Â¡Bienvenido a AppInventor!");
     dialogBox.setHeight("400px");
     dialogBox.setWidth("400px");
     dialogBox.setGlassEnabled(true);
