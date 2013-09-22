@@ -27,7 +27,7 @@ public final class AppInventorFeatures {
 
   public static boolean sendBugReports() {
     // Set this to true if you want to prompt the user to report bugs.
-    return false;
+    return true;
   }
 
   public static boolean allowMultiScreenApplications() {
@@ -39,7 +39,7 @@ public final class AppInventorFeatures {
   public static boolean showInternalComponentsCategory() {
     // Set this to true if you want to show the "For internal use only" section of the components
     // palette in the designer.
-    return false;
+    return true;
   }
 
   public static boolean trackClientEvents() {
@@ -50,7 +50,7 @@ public final class AppInventorFeatures {
   public static boolean showSplashScreen() {
     // Set this to true to display a splash screen with an informative message
     // each time MIT App Inventor is started. See Ode.java
-    return false;
+    return true;
   }
 
 }
