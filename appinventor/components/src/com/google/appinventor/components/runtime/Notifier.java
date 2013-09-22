@@ -20,7 +20,6 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.util.Log;
-import android.view.Gravity;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -143,7 +142,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       //If cancelable is true, then a 3rd button, with text of Cancel will be added
       // and will raise AfterChoosing when pressed.
       if (cancelable)  {
-            final String cancelButtonText="Cancel";
+            final String cancelButtonText="Cancelar";
             alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
               new DialogInterface.OnClickListener() {
                   public void onClick(DialogInterface dialog, int which) {
@@ -179,10 +178,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Display an alert with a text entry. If cancelable is true, then also displays a "CANCEL"
+   * Display an alert with a text entry. If cancelable is true, then also displays a "Cancelar"
    * button, allowing user to cancel out of dialog.
    * Raises the AfterTextInput event when the text has been entered and the user presses "OK".
-   * Raises the AfterTextInput event when users presses "CANCEL", passing CANCEL to AfterTextInput
+   * Raises the AfterTextInput event when users presses "Cancelar", passing CANCEL to AfterTextInput
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
@@ -199,7 +198,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setView(input);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setButton("OK",
+    alertDialog.setButton("Aceptar",
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
         AfterTextInput(input.getText().toString());
@@ -208,7 +207,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
 
       //If cancelable, then add the CANCEL button
       if (cancelable)  {
-          final String cancelButtonText="CANCEL";
+          final String cancelButtonText="Cancelar";
           alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, cancelButtonText,
               new DialogInterface.OnClickListener() {
                   public void onClick(DialogInterface dialog, int which) {
@@ -254,14 +253,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
         ? 22 : 15;
     Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
-    toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
-    textView.setBackgroundColor(Color.DKGRAY);
     textView.setTextColor(Color.WHITE);
     textView.setTextSize(fontsize);
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
-    textView.setPadding(10, 10, 10, 10);
     textView.setText(message);
     toast.setView(textView);
     toast.show();
