@@ -107,6 +107,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int textAlignment;
 
   // Default values
+  private static final int MIN_WIDTH_HEIGHT = 1;
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
@@ -812,6 +813,37 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   // Properties
 
+ /**
+  * Set the canvas width
+  * The width cannot be set to less than 1
+  *
+  * @param width
+  */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the width is set to 0
+  public void Width(int width) {
+    if (width >= MIN_WIDTH_HEIGHT) {
+        super.Width(width);
+    }
+  }
+
+  /**
+   * Set the canvas height
+  *  The height cannot be set to less than 1
+   *
+   * @param height
+   */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the height is set to 0
+   public void Height(int height) {
+     if (height >= MIN_WIDTH_HEIGHT) {
+       super.Height(height);
+     }
+   }
+
+
   /**
    * Returns the button's background color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
@@ -1048,12 +1080,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
-   * @param heading  the heading of the fling 
+   * @param heading  the heading of the fling
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
    * @param flungSprite  {@code true} if a sprite was flung,
    *        {@code false} otherwise
-   * 
+   *
    */
   @SimpleEvent
   public void Flung(float x, float y, float speed, float heading,float xvel, float yvel,
@@ -1223,7 +1255,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *         save failed
    */
     @SimpleFunction(description = "Saves a picture of this Canvas to the " +
-       "device's external storage. If an error occurs, the Screen's ErrorOccurred " + 
+       "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
        "event will be called.")
   public String Save() {
     try {
@@ -1314,7 +1346,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         float velocityY) {
       float x = Math.max(0, (int) e1.getX()); // set to zero if negative
       float y = Math.max(0, (int) e1.getY()); // set to zero if negative
-      
+
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;
       float vy = velocityY / FLING_INTERVAL;
