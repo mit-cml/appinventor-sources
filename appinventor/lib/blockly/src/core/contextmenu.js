@@ -70,11 +70,10 @@ Blockly.ContextMenu.createDom = function() {
 
 /**
  * Construct the menu based on the list of options and show the menu.
- * @param {number} anchorX X-coordinate of anchor point.
- * @param {number} anchorY Y-coordinate of anchor point.
+ * @param {!Object} xy Coordinates of anchor point, contains x and y properties.
  * @param {!Array.<Object>} options Array of menu options.
  */
-Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
+Blockly.ContextMenu.show = function(xy, options) {
   if (!options.length) {
     Blockly.ContextMenu.hide();
     return;
@@ -137,9 +136,8 @@ Blockly.ContextMenu.show = function(anchorX, anchorY, options) {
       options.length * Blockly.ContextMenu.Y_HEIGHT + 10);
 
   // Convert the mouse coordinates into SVG coordinates.
-  var xy = Blockly.convertCoordinates(anchorX, anchorY, true);
-  anchorX = xy.x;
-  anchorY = xy.y;
+  var anchorX = xy.x;
+  var anchorY = xy.y;
 
   // Measure the menu's size and position it so that it does not go off-screen.
   var bBox = Blockly.ContextMenu.svgGroup.getBBox();
@@ -208,6 +206,7 @@ Blockly.ContextMenu.hide = function() {
  *   then places the new block next to the original.
  * @param {!Blockly.Block} block Original block.
  * @param {!Element} xml XML representation of new block.
+ * @return {!Function} Function that creates a block.
  */
 Blockly.ContextMenu.callbackFactory = function(block, xml) {
   return function() {

@@ -180,7 +180,6 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
 
   // Demote the inferior block so that one is a child of the superior one.
   childBlock.setParent(parentBlock);
-
   //When a connection happens, check for errors
   if(childBlock.onchange) {
     Blockly.WarningHandler.checkErrors.call(childBlock);
@@ -190,12 +189,24 @@ Blockly.Connection.prototype.connect = function(otherConnection) {
   }
   // Rendering the child node will trigger a rendering of its parent.
   // Rendering the parent node will move its connected children into position.
+
   if (parentBlock.rendered) {
     parentBlock.svg_.updateDisabled();
   }
   if (childBlock.rendered) {
     childBlock.svg_.updateDisabled();
-    childBlock.render();
+  }
+  if (parentBlock.rendered && childBlock.rendered) {
+    if (this.type == Blockly.NEXT_STATEMENT ||
+        this.type == Blockly.PREVIOUS_STATEMENT) {
+      // Child block may need to square off its corners if it is in a stack.
+      // Rendering a child will render its parent.
+      childBlock.render();
+    } else {
+      // Child block does not change shape.  Rendering the parent node will
+      // move its connected children into position.
+      parentBlock.render();
+    }
   }
 };
 
@@ -281,12 +292,16 @@ Blockly.Connection.prototype.bumpAwayFrom_ = function(staticConnection) {
   }
   // Move the root block.
   var rootBlock = this.sourceBlock_.getRootBlock();
+  if (rootBlock.isInFlyout) {
+    // Don't move blocks around in a flyout.
+    return;
+  }
   var reverse = false;
-  if (!rootBlock.editable) {
+  if (!rootBlock.isMovable()) {
     // Can't bump an uneditable block away.
-    // Check to see if the other block is editable.
+    // Check to see if the other block is movable.
     rootBlock = staticConnection.sourceBlock_.getRootBlock();
-    if (!rootBlock.editable) {
+    if (!rootBlock.isMovable()) {
       return;
     }
     // Swap the connections and move the 'static' connection instead.
@@ -636,14 +651,9 @@ Blockly.Connection.prototype.hideAll = function() {
         }
       }
       // Close all bubbles of all children.
-      if (block.mutator) {
-        block.mutator.setVisible(false);
-      }
-      if (block.comment) {
-        block.comment.setVisible(false);
-      }
-      if (block.warning) {
-        block.warning.setVisible(false);
+      var icons = block.getIcons();
+      for (var x = 0; x < icons.length; x++) {
+        icons[x].setVisible(false);
       }
       if (block.errorIcon) {
         block.errorIcon.setVisible(false);

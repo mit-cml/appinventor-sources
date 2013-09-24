@@ -196,9 +196,12 @@ Blockly.getRelativeXY_ = function(element) {
   }
   // Second, check for transform="translate(...)" attribute.
   var transform = element.getAttribute('transform');
-  // Note that Firefox returns 'translate(12)' instead of 'translate(12, 0)'.
+  // Note that Firefox and IE (9,10) return 'translate(12)' instead of
+  // 'translate(12, 0)'.
+  // Note that IE (9,10) returns 'translate(16 8)' instead of
+  // 'translate(16, 8)'.
   var r = transform &&
-          transform.match(/translate\(\s*([-\d.]+)(,\s*([-\d.]+)\s*\))?/);
+          transform.match(/translate\(\s*([-\d.]+)([ ,]\s*([-\d.]+)\s*\))?/);
   if (r) {
     xy.x += parseInt(r[1], 10);
     if (r[3]) {
@@ -253,6 +256,12 @@ Blockly.createSvgElement = function(name, attrs, opt_parent) {
   for (var key in attrs) {
     e.setAttribute(key, attrs[key]);
   }
+  // IE defines a unique attribute "runtimeStyle", it is NOT applied to
+  // elements created with createElementNS. However, Closure checks for IE
+  // and assumes the presence of the attribute and crashes.
+  if (document.body.runtimeStyle) {  // Indicates presence of IE-only attr.
+    e.runtimeStyle = e.currentStyle = e.style;
+  }
   if (opt_parent) {
     opt_parent.appendChild(e);
   }
@@ -270,7 +279,7 @@ Blockly.isRightButton = function(e) {
 };
 
 /**
- * Convert between mouse/HTML coordinates and SVG coordinates.
+ * Convert between HTML coordinates and SVG coordinates.
  * @param {number} x X input coordinate.
  * @param {number} y Y input coordinate.
  * @param {boolean} toSvg True to convert to SVG coordinates.
@@ -278,6 +287,10 @@ Blockly.isRightButton = function(e) {
  * @return {!Object} Object with x and y properties in output coordinates.
  */
 Blockly.convertCoordinates = function(x, y, toSvg) {
+  if (toSvg) {
+    x -= window.scrollX;
+    y -= window.scrollY;
+  }
   var svgPoint = Blockly.svg.createSVGPoint();
   svgPoint.x = x;
   svgPoint.y = y;
@@ -285,7 +298,23 @@ Blockly.convertCoordinates = function(x, y, toSvg) {
   if (toSvg) {
     matrix = matrix.inverse();
   }
-  return svgPoint.matrixTransform(matrix);
+  var xy = svgPoint.matrixTransform(matrix);
+  if (!toSvg) {
+    xy.x += window.scrollX;
+    xy.y += window.scrollY;
+  }
+  return xy;
+};
+
+/**
+ * Return the converted coordinates of the given mouse event.
+ * The origin (0,0) is the top-left corner of the Blockly svg.
+ * @param {!Event} e Mouse event.
+ * @return {!Object} Object with .x and .y properties.
+ */
+Blockly.mouseToSvg = function(e) {
+  return Blockly.convertCoordinates(e.clientX + window.scrollX,
+      e.clientY + window.scrollY, true);
 };
 
 /**
@@ -372,4 +401,13 @@ Blockly.commonWordSuffix = function(array, opt_shortest) {
     }
   }
   return max;
+};
+
+/**
+ * Is the given string a number (includes negative and decimals).
+ * @param {string} str Input string.
+ * @return {boolean} True if number, false otherwise.
+ */
+Blockly.isNumber = function(str) {
+  return !!str.match(/^\s*-?\d+(\.\d+)?\s*$/);
 };
