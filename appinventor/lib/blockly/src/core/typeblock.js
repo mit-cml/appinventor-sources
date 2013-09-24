@@ -153,6 +153,8 @@ Blockly.TypeBlock.currentListener_ = null;
  * Blockly.js
  */
 Blockly.TypeBlock.hide = function(){
+//  if (Blockly.TypeBlock.typeBlockDiv_ == null)
+//    return;
   goog.style.showElement(goog.dom.getElement(Blockly.TypeBlock.typeBlockDiv_), false);
   goog.events.unlisten(Blockly.TypeBlock.inputKh_, 'key', Blockly.TypeBlock.handleKey);
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
@@ -499,9 +501,9 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       }
       else {
         //calculate positions relative to the view and the latest click
-        var left = Blockly.getMainWorkspaceMetrics().viewLeft +
+        var left = Blockly.mainWorkspace.getMetrics().viewLeft +
             Blockly.latestClick.x;
-        var top = Blockly.getMainWorkspaceMetrics().viewTop +
+        var top = Blockly.mainWorkspace.getMetrics().viewTop +
             Blockly.latestClick.y;
         block.moveBy(left, top);
         block.select();
@@ -513,7 +515,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
 
 /**
  * Blocks connect in different ways; a block with an outputConnection such as
- * a number will connect in one of its parent's input connection (inputLis).
+ * a number will connect in one of its parent's input connection (inputLis).                          .
  * A block with no outputConnection could be connected to its parent's next
  * connection.
  */

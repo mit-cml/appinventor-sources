@@ -73,11 +73,13 @@ Blockly.Bubble = function(workspace, content, shape,
   this.renderArrow_();
   this.rendered_ = true;
 
-  Blockly.bindEvent_(this.bubbleBack_, 'mousedown', this,
-                     this.bubbleMouseDown_);
-  if (this.resizeGroup_) {
-    Blockly.bindEvent_(this.resizeGroup_, 'mousedown', this,
-                       this.resizeMouseDown_);
+  if (!Blockly.readOnly) {
+    Blockly.bindEvent_(this.bubbleBack_, 'mousedown', this,
+                       this.bubbleMouseDown_);
+    if (this.resizeGroup_) {
+      Blockly.bindEvent_(this.resizeGroup_, 'mousedown', this,
+                         this.resizeMouseDown_);
+    }
   }
 };
 
@@ -386,11 +388,7 @@ Blockly.Bubble.prototype.layoutBubble_ = function() {
   var metrics;
   if (this.workspace_.scrollbar) {
     // Fetch the workspace's metrics, if they exist.
-    metrics = this.workspace_.scrollbar.getMetrics_();
-  }
-  // Prevent the bubble from being offscreen.
-  if (this.workspace_.scrollbar && metrics) {
-
+    var metrics = this.workspace_.getMetrics();
     if (this.anchorX_ + relativeLeft <
         Blockly.BlockSvg.SEP_SPACE_X + metrics.viewLeft) {
       // Slide the bubble right until it is onscreen.
