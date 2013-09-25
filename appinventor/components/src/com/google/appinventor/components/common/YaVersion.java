@@ -229,7 +229,9 @@ public class YaVersion {
   // - NEARFIELD_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 79:
   // - FORM_COMPONENT_VERSION was incremented to 11.
-  public static final int YOUNG_ANDROID_VERSION = 79;
+  // For YOUNG_ANDROID_VERSION 80:
+  // - WEB_COMPONENT_VERSION was incremented to 4.
+  public static final int YOUNG_ANDROID_VERSION = 80;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -627,7 +629,9 @@ public class YaVersion {
   //   method was added.
   // For WEB_COMPONENT_VERSION 3:
   // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
-  public static final int WEB_COMPONENT_VERSION = 3;
+  // For WEB_COMPONENT_VERSION 4:
+  // - UriDecode block added
+  public static final int WEB_COMPONENT_VERSION = 4;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added

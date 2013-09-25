@@ -1282,6 +1282,11 @@ public class BlockSaveFile {
       // Blocks related to this component have now been upgraded to version 3.
       blkCompVersion = 3;
     }
+    if (blkCompVersion < 4) {
+      // The UriDecode method was added. No blocks need to be modified
+      // to upgrade to version 4.
+      blkCompVersion = 4;
+    }
     return blkCompVersion;
   }
 
