@@ -13,6 +13,7 @@ import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.GalleryListBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -573,15 +574,15 @@ public class Ode implements EntryPoint {
 
     // Gallery tab
     VerticalPanel gVertPanel = new VerticalPanel();
-    pVertPanel.setWidth("100%");
-    pVertPanel.setSpacing(0);
+    gVertPanel.setWidth("100%");
+    gVertPanel.setSpacing(0);
     HorizontalPanel appListPanel = new HorizontalPanel();
     appListPanel.setWidth("100%");
-    /*
-    appListPanel.add(ProjectListBox.getProjectListBox());
-    projectToolbar = new ProjectToolbar();
-    gVertPanel.add(projectToolbar);
-    */
+    
+    appListPanel.add(GalleryListBox.getGalleryListBox());
+    //projectToolbar = new ProjectToolbar();
+    //gVertPanel.add(projectToolbar);
+    
     gVertPanel.add(appListPanel);
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);

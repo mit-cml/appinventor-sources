@@ -108,4 +108,9 @@ public interface ProjectServiceAsync {
    * @see ProjectService#addFile(long, String)
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
+  
+  void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject>
+  callback);
+  
+  void getApps(AsyncCallback<String> callback);
 }

@@ -18,9 +18,31 @@ import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.collect.Lists;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.RequestException;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.server.Base64Utils;
 
 import java.util.List;
 import java.util.logging.Logger;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+
+//import org.omg.CORBA_2_3.portable.InputStream;
+
+
 
 /**
  * The implementation of the RPC service which runs on the server.
@@ -348,4 +370,63 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
+  
+  /**
+   * This service is passed a base64 encoded string representing the Zip file.
+   * It converts it to a byte array and imports the project using FileImporter.
+   *
+   * @see http://stackoverflow.com/questions/6409587/
+   *   generating-an-inline-image-with-java-gwt/6495356#6495356
+   */
+  @Override
+  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+
+    UserProject userProject = null;
+
+    // Convert base64 string to byte[]
+    // NOTE: GWT's Base64Utils uses a non-standard algorithm.
+    // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
+    byte[] binData = null;
+    binData = Base64Utils.fromBase64(zipData);  // from Ralph, was Base64Util.decode
+
+    // Import the project
+    ByteArrayInputStream bais = null;
+    FileImporter fileImporter = new FileImporterImpl();
+    try {
+      bais = new ByteArrayInputStream(binData);
+      userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+    } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+      e.printStackTrace();
+    } catch (IOException e) {
+      e.printStackTrace();
+    } catch (FileImporterException e) {
+      e.printStackTrace();
+    }
+    return userProject;
+  }
+  
+  public String getApps()
+  {
+	  
+	  
+	  final String galleryURL="http://gallery.appinventor.mit.edu/rpc?tag=featured";
+	  //final String arr[] = new String[1];
+	  //arr[0]="xyz";
+	  try {
+	    URLConnection connection = new URL(galleryURL).openConnection();
+	    //connection.setRequestProperty("Accept-Charset", charset);
+	    
+	    InputStream response = connection.getInputStream();
+	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
+	    return s.hasNext() ? s.next() : "";
+	    
+	  }
+	  catch (IOException e)
+	  {
+		  return "exception opening gallery";
+	  }
+  }
+  
+  
 }
