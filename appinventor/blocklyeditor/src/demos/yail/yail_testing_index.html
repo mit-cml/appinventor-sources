@@ -373,6 +373,14 @@ function doTheyMatch(expected, given) {
   return false;
 }
 
+//Contains function for JavaScript strings
+// Polyfill for https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/contains
+// Pass in the string to match, and if needed, the starting position (defaults to start of String)
+if(!('contains' in String.prototype))
+  String.prototype.contains = function(str, startIndex) {
+    return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+}
+
 </script>
 
 <style>
