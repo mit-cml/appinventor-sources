@@ -64,6 +64,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   // Maps component names to component descriptors
   private final Map<String, Component> components;
 
+  // Maps component names to component descriptors
+  private final String componentsJSONString;
+
+
   /**
    * Creates a new component database.
    *
@@ -74,6 +78,7 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     for (JSONValue component : array.getElements()) {
       initComponent(component.asObject());
     }
+    componentsJSONString = array.toJson();
   }
 
   @Override
@@ -177,6 +182,10 @@ class ComponentDatabase implements ComponentDatabaseInterface {
     }
 
     return component.typeDescription;
+  }
+
+  public String getComponentsJSONString() {
+    return componentsJSONString;
   }
 
   /*

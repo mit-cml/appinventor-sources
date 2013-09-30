@@ -372,7 +372,7 @@ Blockly.Yail.getPropertySetterString = function(componentName, componentType, pr
     componentName + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE + propertyName + 
     Blockly.Yail.YAIL_SPACER;
   var propType = Blockly.Yail.YAIL_QUOTE + 
-    Blockly.Component.getPropertyType(componentType, propertyName);
+    Blockly.ComponentTypes[componentType].properties[propertyName].type;
   var value = Blockly.Yail.getPropertyValueString(propertyValue, propType);
   code = code.concat(value + Blockly.Yail.YAIL_SPACER + propType + Blockly.Yail.YAIL_CLOSE_BLOCK);
   return code;

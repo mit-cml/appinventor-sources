@@ -98,7 +98,7 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
   if (!blockSet) {
     throw "no such drawer: " + drawerName;
   }
-  var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet,null);
+  var xmlList = Blockly.Drawer.blockListToXMLArray(blockSet);
   Blockly.Drawer.flyout_.show(xmlList);
 };
 
@@ -110,9 +110,9 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
 Blockly.Drawer.showComponent = function(instanceName) {
   if (Blockly.ComponentInstances[instanceName]) {
     Blockly.Drawer.flyout_.hide();
-    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentInstances[instanceName].blocks,Blockly.ComponentInstances[instanceName].typeName);
+
+    var xmlList = Blockly.Drawer.instanceNameToXMLArray(instanceName);
     Blockly.Drawer.flyout_.show(xmlList);
-    console.log("in show component---" + Blockly.ComponentInstances[instanceName].typeName);
   } else {
     console.log("Got call to Blockly.Drawer.showComponent(" +  instanceName + 
                 ") - unknown component name");
@@ -127,9 +127,10 @@ Blockly.Drawer.showComponent = function(instanceName) {
  * @param drawerName
  */
 Blockly.Drawer.showGeneric = function(typeName) {
-  if (Blockly.ComponentTypes[typeName] && Blockly.ComponentTypes[typeName].blocks) {
+  if (Blockly.ComponentTypes[typeName]) {
     Blockly.Drawer.flyout_.hide();
-    var xmlList = Blockly.Drawer.blockListToXMLArray(Blockly.ComponentTypes[typeName].blocks,null);
+
+    var xmlList = Blockly.Drawer.componentTypeToXMLArray(typeName);
     Blockly.Drawer.flyout_.show(xmlList);
   } else {
     console.log("Got call to Blockly.Drawer.showGeneric(" +  typeName + 
@@ -151,55 +152,171 @@ Blockly.Drawer.isShowing = function() {
   return Blockly.Drawer.flyout_.isVisible();
 };
 
-Blockly.Drawer.blockListToXMLArray = function(blockList,componentType) {
+Blockly.Drawer.blockListToXMLArray = function(blockList) {
   var xmlArray = [];
   for(var i=0;i<blockList.length;i++) {
-    var blockXMLString=null;
-    if (componentType!=null)
-      blockXMLString = Blockly.Drawer.defaultComponentBlocksXML(componentType, blockList[i]);
-    else
-      blockXMLString = Blockly.Drawer.defaultBlocksXML[blockList[i]];
-    if(!blockXMLString){
-      blockXMLString = '<xml><block type="' + blockList[i] + '"></block></xml>';
-    }
-    var xmlBlock = Blockly.Xml.textToDom(blockXMLString).firstChild
-    xmlArray.push(xmlBlock);
+    xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray(blockList[i],null));
   }
   return xmlArray;
 };
 
-Blockly.Drawer.defaultComponentBlocksXML = function(type,block) {
-  if (type='TinyDB') {
-    if (block.indexOf("GetValue") != -1) {
-      var xmlString='<xml>' +
-    '<block type="'+block+'">' +
-    '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
-    '</block>' +
-  '</xml>';
-      return xmlString;
+Blockly.Drawer.instanceNameToXMLArray = function(instanceName) {
+  var xmlArray = [];
+  var typeName = Blockly.Component.instanceNameToTypeName(instanceName);
+  var mutatorAttributes;
+
+  //create event blocks
+  var eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
+  for(var i=0;i<eventObjects.length;i++) {
+    mutatorAttributes = {component_type: typeName, instance_name: instanceName, event_name : eventObjects[i].name};
+    xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_event",mutatorAttributes));
+  }
+  //create non-generic method blocks
+  var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
+  for(var i=0;i<methodObjects.length;i++) {
+    mutatorAttributes = {component_type: typeName, instance_name: instanceName, method_name: methodObjects[i].name, is_generic:"false"};
+    xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
+  }
+
+  //for each property
+  var propertyObjects = Blockly.ComponentTypes[typeName].componentInfo.blockProperties;
+  for(var i=0;i<propertyObjects.length;i++) {
+    //create non-generic get block
+    if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "read-only") {
+      mutatorAttributes = {set_or_get:"get", component_type: typeName, instance_name: instanceName, property_name: propertyObjects[i].name, is_generic: "false"};
+      xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
+    }
+    //create non-generic set block
+    if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "write-only") {
+      mutatorAttributes = {set_or_get:"set", component_type: typeName, instance_name: instanceName, property_name: propertyObjects[i].name, is_generic: "false"};
+      xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
     }
   }
-  return null;
+
+  //create component literal block
+  mutatorAttributes = {component_type: typeName, instance_name: instanceName};
+  xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_component_block",mutatorAttributes));
+
+  return xmlArray;
+};
+
+Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
+  var xmlArray = [];
+  var mutatorAttributes;
+
+  //create generic method blocks
+  var methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
+  for(var i=0;i<methodObjects.length;i++) {
+    mutatorAttributes = {component_type: typeName, method_name: methodObjects[i].name, is_generic:"true"};
+    xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_method",mutatorAttributes));
+  }
+
+  //for each property
+  var propertyObjects = Blockly.ComponentTypes[typeName].componentInfo.blockProperties;
+  for(var i=0;i<propertyObjects.length;i++) {
+    //create generic get block
+    if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "read-only") {
+      mutatorAttributes = {set_or_get: "get", component_type: typeName, property_name: propertyObjects[i].name, is_generic: "true"};
+      xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
+    }
+    //create generic set block
+    if(propertyObjects[i].rw == "read-write" || propertyObjects[i].rw == "write-only") {
+      mutatorAttributes = {set_or_get: "set", component_type: typeName, property_name: propertyObjects[i].name, is_generic: "true"};
+      xmlArray = xmlArray.concat(Blockly.Drawer.blockTypeToXMLArray("component_set_get",mutatorAttributes));
+    }
+  }
+  return xmlArray;
+};
+
+Blockly.Drawer.blockTypeToXMLArray = function(blockType,mutatorAttributes) {
+  var xmlString = Blockly.Drawer.getDefaultXMLString(blockType,mutatorAttributes);
+  if(xmlString == null) {
+    xmlString = '<xml><block type="' + blockType + '">';
+    if(mutatorAttributes) {
+      xmlString += Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes);
+    }
+    xmlString += '</block></xml>';
+  }
+  var xmlBlockArray = [];
+  var xmlFromString = Blockly.Xml.textToDom(xmlString);
+  for(var i=0;i<xmlFromString.children.length;i++) {
+    xmlBlockArray.push(xmlFromString.children[i]);
+  }
+  return xmlBlockArray;
 }
 
-Blockly.Drawer.defaultBlocksXML = {
-  controls_forRange :
+Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
+  var xmlString = '<mutation ';
+  for(var attributeName in mutatorAttributes) {
+    xmlString += attributeName + '="' + mutatorAttributes[attributeName] + '" ';
+  }
+  xmlString += '></mutation>';
+  return xmlString;
+}
+
+/**
+ * Given the blockType and a dictionary of the mutator attributes
+ * either return the xml string associated with the default block
+ * or return null, since there are no default blocks associated with the blockType.
+ */
+Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
+  //return null if the
+  if(Blockly.Drawer.defaultBlockXMLStrings[blockType] == null) {
+    return null;
+  }
+
+  if(Blockly.Drawer.defaultBlockXMLStrings[blockType].xmlString != null) {
+    //return xml string associated with block type
+    return Blockly.Drawer.defaultBlockXMLStrings[blockType].xmlString;
+  } else if(Blockly.Drawer.defaultBlockXMLStrings[blockType].length != null){
+    var possibleMutatorDefaults = Blockly.Drawer.defaultBlockXMLStrings[blockType];
+    var matchingAttributes;
+    var allMatch;
+    //go through each of the possible matching cases
+    for(var i=0;i<possibleMutatorDefaults.length;i++) {
+      matchingAttributes = possibleMutatorDefaults[i].matchingMutatorAttributes;
+      //if the object doesn't have a matchingAttributes object, then skip it
+      if(!matchingAttributes) {
+        continue;
+      }
+      //go through each of the mutator attributes.
+      //if one attribute does not match then move to the next possibility
+      allMatch = true;
+      for(var mutatorAttribute in matchingAttributes) {
+        if(mutatorAttributes[mutatorAttribute] != matchingAttributes[mutatorAttribute]){
+          allMatch = false
+          break;
+        }
+      }
+      //if all of the attributes matched, return the xml string given the appropriate mutator
+      if(allMatch) {
+        return possibleMutatorDefaults[i].mutatorXMLStringFunction(mutatorAttributes);
+      }
+    }
+    //if the mutator attributes did not match for all of the possibilities, return null
+    return null;
+  }
+
+}
+
+Blockly.Drawer.defaultBlockXMLStrings = {
+  controls_forRange : {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
       '<value name="START"><block type="math_number"><title name="NUM">1</title></block></value>' +
       '<value name="END"><block type="math_number"><title name="NUM">5</title></block></value>' +
       '<value name="STEP"><block type="math_number"><title name="NUM">1</title></block></value>' +
     '</block>' +
-  '</xml>',
+  '</xml>' },
 
-   math_random_int :
+   math_random_int : {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
     '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
     '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
     '</block>' +
-  '</xml>',
-  color_make_color:
+  '</xml>'},
+  color_make_color: {xmlString:
   '<xml>' +
     '<block type="color_make_color">' +
       '<value name="COLORLIST">' +
@@ -211,5 +328,23 @@ Blockly.Drawer.defaultBlocksXML = {
         '</block>' +
       '</value>' +
     '</block>' +
-  '</xml>'
+  '</xml>'},
+  lists_create_with:{xmlString:
+  '<xml>' +
+    '<block type="lists_create_with">' +
+      '<mutation items="0"></mutation>' +
+    '</block>' +
+    '<block type="lists_create_with">' +
+      '<mutation items="2"></mutation>' +
+    '</block>' +
+  '</xml>'},
+  component_method: [{matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
+    mutatorXMLStringFunction: function(mutatorAttributes) { return '' +
+    '<xml>' +
+      '<block type="component_method">' +
+      //mutator generator
+      Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+      '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+    '</block>' +
+  '</xml>';}}]
 };
