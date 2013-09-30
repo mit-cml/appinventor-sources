@@ -26,6 +26,15 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.server.Base64Utils;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+
+
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -415,12 +424,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  //arr[0]="xyz";
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
+	    
 	    //connection.setRequestProperty("Accept-Charset", charset);
 	    
 	    InputStream response = connection.getInputStream();
 	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
-	    return s.hasNext() ? s.next() : "";
-	    
+	    //return s.hasNext() ? s.next() : "";
+	    ArrayList<GalleryApp> list= parseAppList(s.next());
+	    return list.get(0).getTitle();
 	  }
 	  catch (IOException e)
 	  {
@@ -428,5 +439,39 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  }
   }
   
+  public ArrayList<GalleryApp> parseAppList(String jsonStr)
+  {
+    ArrayList<GalleryApp> appList = new ArrayList<GalleryApp>();
+    if (jsonStr == null || jsonStr.length() == 0)
+      return appList;
+    try {  
+      JSONObject o = new JSONObject(jsonStr);
+	  JSONArray results = (JSONArray) o.get("result");  
+	  for (int i = 0; i < results.length(); i++) {
+        JSONObject singleApp = results.getJSONObject(i);
+	    GalleryApp galleryApp = parseApp(singleApp);
+	    if (galleryApp != null)
+		  appList.add(galleryApp);	
+      } 
+    } catch (JSONException e) {
+			return appList;  //need to do something here
+	}
+	return appList;
+			
+  }
   
+  public GalleryApp parseApp(JSONObject appJson)
+  {
+    try { 
+  	  String title = appJson.get("title").toString();
+	  String description = appJson.get("description").toString();
+	  String image1= appJson.get("image1").toString();
+	  String sourceFileName=appJson.get("sourceFileName").toString();
+	    
+	  GalleryApp galleryApp = new GalleryApp(title, "Joe Smith", description,"1/1/13","2/1/13",image1,"http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5);
+      return galleryApp;
+      } catch (JSONException e) {
+			return null;  //need to do something here
+      }
+  }
 }

@@ -17,6 +17,8 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+
 import java.io.IOException;
 
 

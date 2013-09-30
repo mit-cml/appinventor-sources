@@ -823,7 +823,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
-    if (width >= MIN_WIDTH_HEIGHT) {
+    //if (width >= MIN_WIDTH_HEIGHT) {
+    if (width != 0) {
         super.Width(width);
     }
   }
@@ -838,7 +839,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the height is set to 0
    public void Height(int height) {
-     if (height >= MIN_WIDTH_HEIGHT) {
+     //if (height >= MIN_WIDTH_HEIGHT) {
+     if (height != 0) {
        super.Height(height);
      }
    }

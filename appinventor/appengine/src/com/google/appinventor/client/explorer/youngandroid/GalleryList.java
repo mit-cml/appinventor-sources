@@ -13,7 +13,7 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
 import com.google.appinventor.client.output.OdeLog;
-import com.google.appinventor.client.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.OdeAsyncCallback;
 

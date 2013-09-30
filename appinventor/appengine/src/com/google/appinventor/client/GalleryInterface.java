@@ -1,4 +1,5 @@
 package com.google.appinventor.client;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 
 import java.util.List;
 

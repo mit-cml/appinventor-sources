@@ -1,4 +1,4 @@
-package com.google.appinventor.client;
+package com.google.appinventor.shared.rpc.project;
 
 public class GalleryApp {
 	
