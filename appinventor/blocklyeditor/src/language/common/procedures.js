@@ -397,7 +397,7 @@ Blockly.Language.procedure_lexical_variable_get = {
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
     this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
@@ -416,7 +416,7 @@ Blockly.Language.procedure_lexical_variable_get = {
        //   Only changed to ??? if tether an untethered block.
        if (currentParent != cachedParent) {
          this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent != null) {
+         if  (currentParent !== null) {
            for (var i = 0; i < nameList.length; i++ ) {
              if (nameList[i] === currentName) {
                return; // no change
@@ -476,7 +476,7 @@ Blockly.Language.procedures_callnoreturn = {
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
     //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn(false)[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
     this.appendCollapsedInput().appendTitle(this.getTitleValue('PROCNAME'), 'COLLAPSED_TEXT');
@@ -505,6 +505,9 @@ Blockly.Language.procedures_callnoreturn = {
     //     Existing param IDs.
     // Note that quarkConnections_ may include IDs that no longer exist, but
     // which might reappear if a param is reattached in the mutator.
+    var input;
+    var connection;
+    var x;
     if (!paramIds) {
       // Reset the quarks (a mutator is about to open).
       this.quarkConnections_ = {};
@@ -537,10 +540,10 @@ Blockly.Language.procedures_callnoreturn = {
     var savedRendered = this.rendered;
     this.rendered = false;
     // Update the quarkConnections_ with existing connections.
-    for (var x = 0;this.getInput('ARG' + x); x++) {
-      var input = this.getInput('ARG' + x);
+    for (x = 0;this.getInput('ARG' + x); x++) {
+      input = this.getInput('ARG' + x);
       if (input) {
-        var connection = input.connection.targetConnection;
+        connection = input.connection.targetConnection;
         this.quarkConnections_[this.quarkArguments_[x]] = connection;
         // Disconnect all argument blocks and remove all inputs.
         this.removeInput('ARG' + x);
@@ -549,15 +552,15 @@ Blockly.Language.procedures_callnoreturn = {
     // Rebuild the block's arguments.
     this.arguments_ = [].concat(paramNames);
     this.quarkArguments_ = paramIds;
-    for (var x = 0; x < this.arguments_.length; x++) {
-      var input = this.appendValueInput('ARG' + x)
+    for (x = 0; x < this.arguments_.length; x++) {
+      input = this.appendValueInput('ARG' + x)
           .setAlign(Blockly.ALIGN_RIGHT)
           .appendTitle(this.arguments_[x]);
       if (this.quarkArguments_) {
         // Reconnect any child blocks.
         var quarkName = this.quarkArguments_[x];
         if (quarkName in this.quarkConnections_) {
-          var connection = this.quarkConnections_[quarkName];
+          connection = this.quarkConnections_[quarkName];
           if (!connection || connection.targetConnection ||
               connection.sourceBlock_.workspace != this.workspace) {
             // Block no longer exists or has been attached elsewhere.
@@ -566,7 +569,7 @@ Blockly.Language.procedures_callnoreturn = {
             input.connection.connect(connection);
           }
         } else if(paramIdToParamName[quarkName]){
-          var connection = this.quarkConnections_[paramIdToParamName[quarkName]];
+          connection = this.quarkConnections_[paramIdToParamName[quarkName]];
           if (connection){
             input.connection.connect(connection);
           }
@@ -634,7 +637,7 @@ Blockly.Language.procedures_callnoreturn = {
   },
   removeProcedureValue: function() {
     this.setTitleValue("none", 'PROCNAME');
-    for(var i=0;this.getInput('ARG' + i) != null;i++) {
+    for(var i=0;this.getInput('ARG' + i) !== null;i++) {
       this.removeInput('ARG' + i);
     }
   },

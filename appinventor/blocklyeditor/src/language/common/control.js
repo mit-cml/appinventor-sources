@@ -25,10 +25,10 @@
  */
 
 /*
- Lyn's History: 
-   [lyn, 11/29-30/12] 
-   * Change forEach and forRange loops to take name as input text rather than via plug. 
-   * For these blocks, add extra methods to support renaming. 
+ Lyn's History:
+   [lyn, 11/29-30/12]
+   * Change forEach and forRange loops to take name as input text rather than via plug.
+   * For these blocks, add extra methods to support renaming.
 */
 
 
@@ -83,12 +83,12 @@ Blockly.Language.controls_if = {
     return container;
   },
   domToMutation: function(xmlElement) {
-    if(xmlElement.getAttribute('elseif') == null){
+    if(xmlElement.getAttribute('elseif') === null){
       this.elseifCount_ = 0;
     } else {
       this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
     }
-    
+
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
@@ -168,13 +168,14 @@ Blockly.Language.controls_if = {
   },
   saveConnections: function(containerBlock) {
     // Store a pointer to any connected child blocks.
+    var inputDo;
     var clauseBlock = containerBlock.getInputTargetBlock('STACK');
     var x = 1;
     while (clauseBlock) {
       switch (clauseBlock.type) {
         case 'controls_if_elseif':
           var inputIf = this.getInput('IF' + x);
-          var inputDo = this.getInput('DO' + x);
+          inputDo = this.getInput('DO' + x);
           clauseBlock.valueConnection_ =
               inputIf && inputIf.connection.targetConnection;
           clauseBlock.statementConnection_ =
@@ -182,7 +183,7 @@ Blockly.Language.controls_if = {
           x++;
           break;
         case 'controls_if_else':
-          var inputDo = this.getInput('ELSE');
+          inputDo = this.getInput('ELSE');
           clauseBlock.statementConnection_ =
               inputDo && inputDo.connection.targetConnection;
           break;
@@ -290,7 +291,7 @@ Blockly.Language.controls_forEach = {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
     // [lyn, 11/29/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
-    // Old code: 
+    // Old code:
     // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('LIST')
@@ -343,7 +344,7 @@ Blockly.Language.for_lexical_variable_get = {
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
     this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
@@ -362,7 +363,7 @@ Blockly.Language.for_lexical_variable_get = {
        //   Only changed to ??? if tether an untethered block.
        if (currentParent != cachedParent) {
          this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent != null) {
+         if  (currentParent !== null) {
            for (var i = 0; i < nameList.length; i++ ) {
              if (nameList[i] === currentName) {
                return; // no change
