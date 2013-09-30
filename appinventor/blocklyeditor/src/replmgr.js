@@ -43,7 +43,6 @@ Blockly.ReplStateObj.prototype = {
     'dialog' : null,                    // The Dialog Box with the code and QR Code
     'count' : 0,                        // Count of number of reads from rendezvous server
     'didversioncheck' : false,
-    'oldcompanion' : false
 };
 
 // Blockly.mainWorkSpace --- hold the main workspace
@@ -249,8 +248,9 @@ Blockly.ReplMgr.putYail = (function() {
                 engine.doversioncheck();
                 return;
             }
-            if (!phonereceiving && !rs.oldcompanion)
+            if (!phonereceiving) {
                 engine.receivefromphone();
+            }
             var work = rs.phoneState.phoneQueue.shift();
             if (!work) {
                 rs.phoneState.ioRunning = false;
@@ -268,26 +268,15 @@ Blockly.ReplMgr.putYail = (function() {
             conn.open('POST', rs.url, true);
             conn.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-//                    console.log("putYail(poller): " + this.responseText);
-                    if (rs.oldcompanion) { // Very old companion
-                        if (this.responseText != "OK") {
-                            if (work.failure)
-                                work.failure("Error from Companion");
-                        } else {
-                            if (work.success)
-                                work.success();
-                        }
-                    } else {   // Modern Companion (returns are json objects)
-                        var json = goog.json.parse(this.response);
-                        if (json.status != 'OK') {
-                            if (work.failure)
-                                work.failure("Error from Companion " + json.message);
-                        } else {
-                            if (work.success)
-                                work.success();
-                        }
-                        context.processRetvals(json.values);
+                    var json = goog.json.parse(this.response);
+                    if (json.status != 'OK') {
+                        if (work.failure)
+                            work.failure("Error from Companion");
+                    } else {
+                        if (work.success)
+                            work.success();
                     }
+                    context.processRetvals(json.values);
                     rs.seq_count += 1;
                     if (rs.phoneState.initialized) // Only continue if we are still initialized
                         engine.pollphone(); // And on to the next!
@@ -302,11 +291,7 @@ Blockly.ReplMgr.putYail = (function() {
                 }
 
             };
-            if (rs.oldcompanion) {
-                encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count));
-            } else {
-                encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
-            }
+            encoder.add('mac', Blockly.ReplMgr.hmac(work.code + rs.seq_count + blockid));
             encoder.add('seq', rs.seq_count);
             encoder.add('code', work.code);
             encoder.add('blockid', blockid);
@@ -320,11 +305,14 @@ Blockly.ReplMgr.putYail = (function() {
                 if (this.readyState == 4 && this.status == 200) {
                     rs.didversioncheck = true;
                     if (this.response[0] != "{") {
-                        rs.oldcompanion = true;
-                        engine.showversioncompmessage();
+                        engine.showversioncompmessage(true); // Old Companion
+                        engine.resetcompanion();
+                        return;
                     } else {
                         var json = goog.json.parse(this.response);
-                        if (json.version.substr(0,7) != "2.07nb6") {
+                        var version = json.version.substr(0,7);
+                        if (version != "2.07nb6" &&
+                            version != "2.07nb7") {
                             engine.showversioncompmessage(true);
                             engine.resetcompanion();
                             return;
@@ -335,9 +323,8 @@ Blockly.ReplMgr.putYail = (function() {
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
                     rs.didversioncheck = true;
-                    engine.showversioncompmessage();
-                    rs.oldcompanion = true;
-                    engine.pollphone();
+                    engine.showversioncompmessage(true);
+                    engine.resetcompanion();
                     return;
                 }
             };
@@ -345,8 +332,6 @@ Blockly.ReplMgr.putYail = (function() {
         },
         "receivefromphone" : function() {
             phonereceiving = true;
-            if (rs.oldcompanion) // old companion, doesn't support this. punt
-                return;
             console.log("receivefromphone called.");
             rxhr = goog.net.XmlHttp();
             rxhr.open('POST', rs.rurl, true); // We post to avoid caching issues
@@ -416,7 +401,11 @@ Blockly.ReplMgr.processRetvals = function(responses) {
                         this.setDoitResult(block, r.value);
                     }
                 } else {
-                    block.replError = "Error process in Companion";
+                    if (r.value) {
+                        block.replError = "Error from Companion: " + r.value;
+                    } else {
+                        block.replError = "Error from Companion";
+                    }
                 }
             }
             break;
@@ -428,6 +417,19 @@ Blockly.ReplMgr.processRetvals = function(responses) {
             break;
         case "popScreen":
             window.parent.BlocklyPanel_popScreen();
+            break;
+        case "error":
+            if (!this.runtimeError) {
+                this.runtimeError = new goog.ui.Dialog(null, true);
+            }
+            if (this.runtimeError.isVisible()) {
+                this.runtimeError.setVisible(false);
+            }
+            this.runtimeError.setTitle("Runtime Error");
+            this.runtimeError.setButtonSet(new goog.ui.Dialog.ButtonSet().
+                                           addButton({caption:"Dismiss"}, false, true));
+            this.runtimeError.setContent(r.value + "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.");
+            this.runtimeError.setVisible(true);
         }
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
@@ -615,7 +617,6 @@ Blockly.ReplMgr.quoteUnicode = function(input) {
 Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
     var refreshAssets = window.parent.AssetManager_refreshAssets;
     var rs = window.parent.ReplState;
-    rs.oldcompanion = false;    // Don't know
     rs.didversioncheck = false; // Re-check
     if (rs.phoneState) {
         rs.phoneState.initialized = false; // Make sure we re-send the yail to the Companion

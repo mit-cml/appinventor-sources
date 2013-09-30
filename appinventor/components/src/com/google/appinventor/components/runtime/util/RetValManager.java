@@ -63,6 +63,25 @@ public class RetValManager {
     }
   }
 
+  public static void sendError(String error) {
+    synchronized (semaphore) {
+      JSONObject retval = new JSONObject();
+      try {
+        retval.put("status", "OK");
+        retval.put("type", "error");
+        retval.put("value", error);
+      } catch (JSONException e) {
+        Log.e(LOG_TAG, "Error building retval", e);
+        return;
+      }
+      boolean sendNotify = currentArray.isEmpty();
+      currentArray.add(retval);
+      if (sendNotify) {
+        semaphore.notifyAll();
+      }
+    }
+  }
+
   /*
    * pushScreen -- Push to a new Screen
    *
