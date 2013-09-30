@@ -374,13 +374,17 @@
                (cons thunk
                      form-do-after-creation)))
 
+       (define (send-error error)
+         (com.google.appinventor.components.runtime.util.RetValManager:sendError error))
+
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
          ;; The call below is a no-op unless we are in the wireless repl
          (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
              (when ((this):toastAllowed)
-                   ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show))
+                   (begin (send-error (ex:getMessage))
+                          ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)))
 
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
