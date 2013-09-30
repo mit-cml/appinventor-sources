@@ -173,9 +173,9 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
             for (var i = 0; i < params.length; i++) {
               rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix); 
             }
-          } else if (parent.category === "Component" && parent.eventType && parent.eventType.params) {
+          } else if (parent.category === "Component" && parent.getEventTypeObject && parent.getEventTypeObject().params) {
             // Parameter names in event handlers
-            var params = parent.eventType.params;
+            var params = parent.getEventTypeObject().params;
             for (var j = 0; j < params.length; j++) {
               rememberName(params[j].name, handlerParamNames, Blockly.handlerParameterPrefix); 
             }

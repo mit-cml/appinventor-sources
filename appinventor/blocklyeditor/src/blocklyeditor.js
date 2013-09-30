@@ -35,7 +35,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   if (!Blockly.readOnly)
     Blockly.TypeBlock(Blockly.configForTypeBlock);
 
-  Blockly.BlocklyEditor.formName_ = formName;
+  Blockly.BlocklyEditor.formName = formName;
 
   /* [Added by paulmw in patch 15]
   There are three ways that you can change how lexical variables
@@ -130,7 +130,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
       function() {
         if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
-          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_);
+          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
         }
   });
 };

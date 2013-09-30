@@ -221,10 +221,15 @@ Blockly.TypeBlock.generateOptions = function() {
 
   var buildListOfOptions = function() {
     var listOfOptions = {};
+    var typeblockArray;
     for (var name in Blockly.Language) {
       var block = Blockly.Language[name];
       if(block.typeblock){
-        createOption(block.typeblock, name);
+        typeblockArray = block.typeblock;
+        if(typeof block.typeblock == "function") {
+          typeblockArray = block.typeblock();
+        }
+        createOption(typeblockArray, name);
       }
     }
 
@@ -232,7 +237,7 @@ Blockly.TypeBlock.generateOptions = function() {
       if (tb){
         goog.array.forEach(tb, function(dd){
           var dropDownValues = {};
-
+          var mutatorAttributes = {};
           if (dd.dropDown){
             if (dd.dropDown.titleName && dd.dropDown.value){
               dropDownValues.titleName = dd.dropDown.titleName;
@@ -242,19 +247,14 @@ Blockly.TypeBlock.generateOptions = function() {
               throw new Error('TypeBlock not correctly set up for ' + canonicName);
             }
           }
-
-          if (dropDownValues.length === 0){ //only one name to associate
-            listOfOptions[dd.translatedName] = {
-              canonicName: canonicName,
-              dropDown: dropDownValues // this is {}
-            };
+          if(dd.mutatorAttributes) {
+            mutatorAttributes = dd.mutatorAttributes;
           }
-          else {
-            listOfOptions[dd.translatedName] = {
-              canonicName: canonicName,
-              dropDown: dropDownValues
-            };
-          }
+          listOfOptions[dd.translatedName] = {
+            canonicName: canonicName,
+            dropDown: dropDownValues,
+            mutatorAttributes: mutatorAttributes
+          };
         });
       }
     }
@@ -447,22 +447,23 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       var block;
       if (blockToCreate.dropDown){ //All blocks should have a dropDown property, even if empty
         blockToCreateName = blockToCreate.canonicName;
-        if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
+        if(blockToCreate.mutatorAttributes) {
+          //construct xml
+          var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
+          for(var attributeName in blockToCreate.mutatorAttributes) {
+            xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
+          }
+          xmlString += '></mutation></block></xml>';
+          var xml = Blockly.Xml.textToDom(xmlString);
+          block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
+
+        } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
+        }
+
+        if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
-          //If we are changing a property in a component, we need to change the connection Check
-          var typeForDropDown;
-          if (block.blockType === 'setter' || block.blockType === 'genericsetter'){
-            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.INPUT);
-            block.getInput('VALUE').connection.setCheck(typeForDropDown);
-          }
-          else if (block.blockType === 'getter' || block.blockType === 'genericgetter'){
-            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.OUTPUT);
-            block.outputConnection.setCheck(typeForDropDown);
-          }
           // change type checking for split blocks
           if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
             block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
@@ -470,12 +471,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
             block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
           }
         }
-        else {
-          block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
-          block.initSvg();
-        }
-      }
-      else {
+      } else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
 

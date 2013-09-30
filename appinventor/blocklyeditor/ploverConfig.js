@@ -56,7 +56,7 @@
     "./src/component.js",
     "./src/drawer.js",
     "./src/savefile.js",
-    "./src/componentblock.js",
+    './src/language/common/components.js',
     "./src/mutators.js",
     "./src/field_lexical_variable.js",
     "./src/errorIcon.js",

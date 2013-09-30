@@ -635,6 +635,18 @@ public class BlocklyPanel extends HTMLPanel {
     html.setHTML(mess);
   }
 
+  public static String getComponentInfo(String typeName) {
+    return YaBlocksEditor.getComponentInfo(typeName);
+  }
+
+  public static String getComponentsJSONString() {
+    return YaBlocksEditor.getComponentsJSONString();
+  }
+
+  public static String getComponentInstanceTypeName(String formName,String instanceName) {
+    return YaBlocksEditor.getComponentInstanceTypeName(formName,instanceName);
+  }
+
   // ------------ Native methods ------------
 
   /**
@@ -670,6 +682,13 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
     $wnd.BlocklyPanel_setDialogContent =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
+    $wnd.BlocklyPanel_getComponentInstanceTypeName =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInstanceTypeName(Ljava/lang/String;Ljava/lang/String;));
+    $wnd.BlocklyPanel_getComponentInfo =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInfo(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getComponentsJSONString =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentsJSONString());
+
   }-*/;
 
   private native void initJS() /*-{
@@ -680,7 +699,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   private static native void doAddComponent(String formName, String typeDescription,
       String instanceName, String uid) /*-{
-    $wnd.Blocklies[formName].Component.add(typeDescription, instanceName, uid);
+    $wnd.Blocklies[formName].Component.add(instanceName, uid);
   }-*/;
 
   private static native void doRemoveComponent(String formName, String typeName,
