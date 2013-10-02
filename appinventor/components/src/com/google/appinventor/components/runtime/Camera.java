@@ -50,6 +50,8 @@ public class Camera extends AndroidNonvisibleComponent
   /* Used to identify the call to startActivityForResult. Will be passed back
   into the resultReturned() callback method. */
   private int requestCode;
+  private boolean lightOn;
+  private android.hardware.Camera cam;
 
     /**
    * Creates a Camera component.
@@ -59,6 +61,28 @@ public class Camera extends AndroidNonvisibleComponent
   public Camera(ComponentContainer container) {
     super(container.$form());
     this.container = container;
+    this.lightOn = false;
+  }
+
+  /**
+  *Turn the camer's light off and on
+  */
+  @SimpleFunction
+  public void ToggleLight(){
+    if (this.lightOn){
+      if (cam != null){
+        cam.release();
+      }
+      this.lightOn = false;
+    }
+    else {
+      cam = android.hardware.Camera.open();
+      android.hardware.Camera.Parameters p = cam.getParameters();
+      p.setFlashMode(android.hardware.Camera.Parameters.FLASH_MODE_TORCH);
+      cam.setParameters(p);
+      cam.startPreview();
+      this.lightOn = true;
+    }
   }
 
   /**

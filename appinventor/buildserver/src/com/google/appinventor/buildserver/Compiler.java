@@ -340,6 +340,9 @@ public final class Compiler {
 
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
+        out.write("  <uses-permission android:name=\"android.permission.CAMERA\"  />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.camera\"  />\n");
+        out.write("  <uses-feature android:name=\"android.hardware.camera.flash\"  />\n");
       }
       // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
       // The market will use the following to filter apps shown to devices that don't support
