@@ -1,10 +1,19 @@
-To create a phantomJS test you will need to generate a project first, so that
-you have access to an Screen1.scm and Screen1.bky files.
+# Introduction
+We are testing YAIL at two levels, a full project or a single generator function. Both tests are
+not at a unit level, but generator function tests are close to that.
 
+# Dependencies
 You will also have to install phantomJS: http://phantomjs.org/download.html
 
 In MacOSX is as simple as: brew install phantomJS (if you are using homebew)
 In other platforms just download the package and put the bin folder in your PATH
+
+
+# Full project tests
+These tests can be found at blocklyeditor/tests/com/google/appinventor/blocklyeditor
+
+To create a phantomJS test you will need to generate a project first, so that
+you have access to an Screen1.scm and Screen1.bky files.
 
 After that, create a new test following the template in this same folder called
 yailGeneratorTest.template
@@ -43,3 +52,11 @@ files, as well as the expected.yail file.
 
 For an Example, you can see the code in moleMashTest.js, and the accompanying
 files inside data/moleMash.
+
+# Generator function tests
+These tests can be found at blocklyeditor/tests/com/google/appinventor/generators_unit
+
+You can create a new test following the template in this same folder called
+yailGeneratorUnitTest.template
+
+Remember to add the new test file to BlocklyEvalTest.java. You can add more than one test per file.

@@ -209,4 +209,16 @@ class ComponentDatabase implements ComponentDatabaseInterface {
           properties.get("editorType").asString().getString()));
     }
   }
+
+  @Override
+  public boolean isComponent(String componentTypeName) {
+    Component component = components.get(componentTypeName);
+    if (component == null) {
+      return false;
+    }
+
+    return true;
+  }
+
+
 }

@@ -357,6 +357,10 @@ public interface OdeMessages extends Messages {
   @Description("Error shown when a new component name would be the same as an existing one")
   String duplicateComponentNameError();
 
+  @DefaultMessage("Component instance names cannot be the same as a component type")
+  @Description("Error shown when a new component name would be the same as a component type name")
+  String sameAsComponentTypeNameError();
+
   @DefaultMessage("Component name cannot be any of the following: CsvUtil, Double, Float, " +
       "Integer, JavaCollection, JavaIterator, KawaEnvironment, Long, Short, SimpleForm, String, " +
       "Pattern, YailList, YailNumberToString, YailRuntimeError")

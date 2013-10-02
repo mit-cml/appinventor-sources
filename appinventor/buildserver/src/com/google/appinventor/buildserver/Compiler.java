@@ -395,7 +395,9 @@ public final class Compiler {
         // TODO:  Check that this doesn't screw up other components.  Also, it might be
         // better to do this programmatically when the NearField component is created, rather
         // than here in the manifest.
-        out.write("android:launchMode=\"singleTask\" ");
+        if (componentTypes.contains("NearField") && !isForWireless && isMain) {
+          out.write("android:launchMode=\"singleTask\" ");
+        }
 
         out.write("android:windowSoftInputMode=\"stateHidden\" ");
         out.write("android:configChanges=\"orientation|keyboardHidden\">\n");
@@ -410,7 +412,7 @@ public final class Compiler {
         }
         out.write("      </intent-filter>\n");
 
-        if (componentTypes.contains("NearField") && !isForWireless) {
+        if (componentTypes.contains("NearField") && !isForWireless && isMain) {
           //  make the form respond to NDEF_DISCOVERED
           //  this will trigger the form's onResume method
           //  For now, we're handling text/plain only,but we can add more and make the Nearfield

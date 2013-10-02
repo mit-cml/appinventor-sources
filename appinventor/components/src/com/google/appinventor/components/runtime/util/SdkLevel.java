@@ -28,6 +28,7 @@ public class SdkLevel {
   public static final int LEVEL_ICE_CREAM_SANDWICH = 14;  // a.k.a. 4.0
   public static final int LEVEL_JELLYBEAN = 16;           // a.k.a. 4.1
   public static final int LEVEL_JELLYBEAN_MR1 = 17;       // a.k.a. 4.2
+  public static final int LEVEL_JELLYBEAN_MR2 = 18;       // a.k.a. 4.3 
 
   private SdkLevel() {
   }
