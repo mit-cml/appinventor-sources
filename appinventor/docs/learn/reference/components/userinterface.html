@@ -5,7 +5,7 @@
   <meta content="App Inventor for Android" name="description" />
   <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
   <title>
-   Basic Components - App Inventor for Android
+   User Interface Components - App Inventor for Android
   </title>
   <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
   <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
@@ -25,7 +25,7 @@
   </style>
  </head>
  <body>
-  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Basic             &gt; ');</script><br>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; User Interface             &gt; ');</script><br>
   <div id="aiac">
    <div class="main-container">
     <div class="customhr customhr-gray">
@@ -34,7 +34,7 @@
      <div class="content-body">
       <div class="learn-page">
        <h1>
-        Basic Components
+        User Interface Components
        </h1>
        <h2>
         Table of Contents
@@ -43,11 +43,6 @@
         <li>
          <a href="#Button">
           Button
-         </a>
-        </li>
-        <li>
-         <a href="#Canvas">
-          Canvas
          </a>
         </li>
         <li>
@@ -240,247 +235,6 @@
         </dt>
         <dd>
          Button stopped being the focused component.
-        </dd>
-       </dl>
-       <h2 id="Canvas">
-        Canvas
-       </h2>
-       <img alt="" src="images/canvas.png" />
-       <p>
-        A two-dimensional touch-sensitive rectangular panel on which drawing can be done
-                and sprites can be moved.
-       </p>
-       <p>
-        The
-        <code>
-         BackgroundColor
-        </code>
-        ,
-        <code>
-         PaintColor
-        </code>
-        ,
-        <code>
-         BackgroundImage
-        </code>
-        ,
-        <code>
-         Width
-        </code>
-        , and
-        <code>
-         Height
-        </code>
-        of the
-                Canvas can be set in either the Designer or in the Blocks Editor. The
-        <code>
-         Width
-        </code>
-        and
-        <code>
-         Height
-        </code>
-        are measured in pixels and must be
-                positive.
-       </p>
-       <p>
-        Any location on the Canvas can be specified as a pair of (X, Y) values, where
-       </p>
-       <ul>
-        <li>
-         X is the number of pixels away from the left edge of the Canvas
-        </li>
-        <li>
-         Y is the number of pixels away from the top edge of the Canvas
-        </li>
-       </ul>
-       <p>
-        There are events to tell when and where a Canvas has been touched or a
-        <code>
-         Sprite
-        </code>
-        (
-        <code>
-         ImageSprite
-        </code>
-        or
-        <code>
-         Ball
-        </code>
-        ) has been
-                dragged. There are also methods for drawing points, lines, and circles.
-       </p>
-       <h3>
-        Properties
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          BackgroundColor
-         </code>
-        </dt>
-        <dd>
-         The color of the canvas background.
-        </dd>
-        <dt>
-         <code>
-          BackgroundImage
-         </code>
-        </dt>
-        <dd>
-         The name of a file containing the background image for the canvas
-        </dd>
-        <dt>
-         <code>
-          Height
-         </code>
-        </dt>
-        <dt>
-         <code>
-          LineWidth
-         </code>
-        </dt>
-        <dd>
-         The width of lines drawn on the canvas.
-        </dd>
-        <dt>
-         <code>
-          PaintColor
-         </code>
-        </dt>
-        <dd>
-         The color in which lines are drawn
-        </dd>
-        <dt>
-         <code>
-          Visible
-         </code>
-        </dt>
-        <dd>
-         Whether the component is visible
-        </dd>
-        <dt>
-         <code>
-          Width
-         </code>
-        </dt>
-       </dl>
-       <h3>
-        Events
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          Dragged(number startX, number startY, number prevX, number prevY, number
-                  currentX, number currentY, boolean draggedSprite)
-         </code>
-        </dt>
-        <dd>
-         When the user does a drag from one point (prevX, prevY) to another (x, y). The
-                  pair (startX, startY) indicates where the user first touched the screen, and
-                  "draggedSprite" indicates whether a sprite is being dragged.
-        </dd>
-        <dt>
-         <code>
-          Flung(number startX, number startY, number xSpeed, number ySpeed)
-         </code>
-        </dt>
-        <dd>
-         When the user performs a fling (quick swipe) on the screen. Provides the (x, y)
-                 position of the start of the fling, relative to the upper left of the
-                 canvas. Also provides the x velocity and y velocity of the fling.
-        </dd>
-        <dt>
-         <code>
-          TouchDown(number x, number y)
-         </code>
-        </dt>
-        <dd>
-         When the user starts touching the canvas (putting finger down for the first time).
-                Provides the (x,y) position of the touch relative to the upper-left
-                corner of the canvas.
-        </dd>
-        <dt>
-         <code>
-          Touched(number x, number y, boolean touchedSprite)
-         </code>
-        </dt>
-        <dd>
-         When the user touches a canvas, providing the (x, y) position of the touch
-                  relative to the upper left corner of the canvas. The value "touchedSprite" is
-                  true if a sprite was also in this position.
-        </dd>
-        <dt>
-         <code>
-          TouchUp(number x, number y)
-         </code>
-        </dt>
-        <dd>
-         When the user stops touching the canvas (lifting his/her finger up). Provides
-                  the (x, y) position of the touch relative to the upper left corner
-                  of the canvas.
-        </dd>
-       </dl>
-       <h3>
-        Methods
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          Clear()
-         </code>
-        </dt>
-        <dd>
-         Clears the canvas, without removing the background image, if one was provided.
-        </dd>
-        <dt>
-         <code>
-          DrawCircle(number x, number y, number r)
-         </code>
-        </dt>
-        <dd>
-         Draws a circle (filled in) at the given coordinates on the canvas, with the given
-                  radius.
-        </dd>
-        <dt>
-         <code>
-          DrawLine(number x1, number y1, number x2, number y2)
-         </code>
-        </dt>
-        <dd>
-         Draws a line between the given coordinates on the canvas.
-        </dd>
-        <dt>
-         <code>
-          DrawPoint(number x, number y)
-         </code>
-        </dt>
-        <dd>
-         Draws a point at the given coordinates on the canvas.
-        </dd>
-        <dt>
-         <code>
-          Save()
-         </code>
-        </dt>
-        <dd>
-         Saves a picture of this Canvas to the device's external storage and returns the
-                  full path name of the saved file. If an error occurs the Screen's
-         <code>
-          ErrorOccurred
-         </code>
-         event will be called.
-        </dd>
-        <dt>
-         <code>
-          SaveAs(text filename)
-         </code>
-        </dt>
-        <dd>
-         Saves a picture of this Canvas to the device's external storage in the file named
-                  fileName. fileName must end with one of ".jpg", ".jpeg", or ".png" (which
-                  determines the file type: JPEG, or PNG). Returns the full path name of the saved
-                  file.
         </dd>
        </dl>
        <h2 id="CheckBox">

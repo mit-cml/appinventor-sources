@@ -76,7 +76,7 @@ import java.util.List;
  */
 @DesignerComponent(version = YaVersion.GAMECLIENT_COMPONENT_VERSION,
     description = "Provides a way for applications to communicate with online game servers",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.INTERNAL, // moved to internal until fully tested
     nonVisible = true,
     iconName = "images/gameClient.png")
 @SimpleObject

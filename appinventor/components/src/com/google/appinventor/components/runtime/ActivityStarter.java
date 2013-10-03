@@ -90,7 +90,7 @@ import android.util.Log;
     "     DataUri: http://www.facebook.com </code> </blockquote> </li> " +
     "</ul>" +
     "</p>",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
     iconName = "images/activityStarter.png")
 @SimpleObject
