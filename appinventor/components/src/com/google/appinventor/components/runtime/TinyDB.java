@@ -35,7 +35,7 @@ import org.json.JSONException;
  */
 @DesignerComponent(version = YaVersion.TINYDB_COMPONENT_VERSION,
     description = "Non-visible component that persistently stores values on the phone.",
-    category = ComponentCategory.BASIC,
+    category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/tinyDB.png")
 

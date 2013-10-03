@@ -50,7 +50,7 @@ import android.widget.Toast;
 //TODO(halabelson): Figure out how/if these dialogs should deal with onPause.
 
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.USERINTERFACE,
     description = "Component that creates alert messages, popup dialogs, and log entries.",
     nonVisible = true,
     iconName = "images/notifier.png")

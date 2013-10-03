@@ -26,7 +26,7 @@ import android.content.Intent;
  * @author M. Hossein Amerkashi (kkashi01@gmail.com)
  */
 @DesignerComponent(version = YaVersion.LISTPICKER_COMPONENT_VERSION,
-    category = ComponentCategory.BASIC,
+    category = ComponentCategory.USERINTERFACE,
     description = "<p>A button that, when clicked on, displays a list of " +
     "texts for the user to choose among. The texts can be specified through " +
     "the Designer or Blocks Editor by setting the " +

@@ -33,7 +33,7 @@ import java.util.UUID;
  */
 @DesignerComponent(version = YaVersion.BLUETOOTHCLIENT_COMPONENT_VERSION,
     description = "Bluetooth client component",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject
