@@ -194,13 +194,13 @@ public interface ProjectService extends RemoteService {
    *
    * @return a {@link String} or the template data
    */
-  
-  String getApps();
+ 
+  List<GalleryApp> getApps();
   
   /**
    * gets apps from the gallery
 
    *
-   * @return a {@link String} or the template data
+   * @return a {@link List} 
    */
 }

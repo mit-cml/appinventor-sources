@@ -91,7 +91,7 @@ public class GalleryList extends Composite {
   public GalleryList() {
     //apps = new ArrayList<GalleryApp>();
 	GalleryClient gallery = new GalleryClient();
-	apps = gallery.generateFakeApps();
+	//apps = gallery.generateFakeApps();
     selectedApps = new ArrayList<GalleryApp>();
     projectWidgets = new HashMap<GalleryApp, ProjectWidgets>();
     /*
@@ -121,11 +121,9 @@ public class GalleryList extends Composite {
     
     getApps("http://gallery.appinventor.mit.edu/rpc?tag=featured");
     
-    GalleryClient client = new GalleryClient();
-	apps = client.generateFakeApps();
-	projectWidgets.put(apps.get(0), new ProjectWidgets(apps.get(0)));
-	projectWidgets.put(apps.get(1), new ProjectWidgets(apps.get(1)));
-	refreshTable(false);
+    //GalleryClient client = new GalleryClient();
+	//apps = client.generateFakeApps();
+	
 
     // It is important to listen to project manager events as soon as possible.
     //Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
@@ -254,7 +252,7 @@ public class GalleryList extends Composite {
     }
   }
 
-  private void refreshTable(boolean needToSort) {
+  private void refreshTable(List<GalleryApp> apps, boolean needToSort) {
     /*if (needToSort) {
       // Sort the projects.
       Comparator<GalleryApp> comparator;
@@ -273,9 +271,10 @@ public class GalleryList extends Composite {
       }
       Collections.sort(apps, comparator);
     }*/
-
+    projectWidgets.put(apps.get(0), new ProjectWidgets(apps.get(0)));
+	projectWidgets.put(apps.get(1), new ProjectWidgets(apps.get(1)));
     refreshSortIndicators();
-
+    
     // Refill the table.
     table.resize(1 + apps.size(), 4);
     int row = 1;
@@ -329,24 +328,28 @@ public class GalleryList extends Composite {
   public void getApps(String url)
   {
 	  
-	// Callback for updating the project explorer after the project is created on the back-end
+	// Callback for when the server returns us the apps
 	    final Ode ode = Ode.getInstance();
-	    final OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(
+	    // was string
+	    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
 			      // failure message
 	      MESSAGES.galleryError()) {
 	        @Override
-	        public void onSuccess(String data) {
-	        // Update project explorer -- i.e., display in project view
-	        if (data== null) {
+	        public void onSuccess(List<GalleryApp> list) {
+	        // the server has returned us something
+	        if (list== null) {
 
 	          Window.alert("api call: no data returned from service");
 	       
 			  return;
 		    }
-	        Window.alert("api call: got some data:"+data);
+		    // things are good so lets refresh the list
+		   
+			refreshTable(list,false);
+	        //Window.alert("api call: got some data:"+list.get(0).getTitle());
 	      }
 	    };
-	    
+	   // ok, this is below the call back, but of course it is done first 
 	   ode.getProjectService().getApps(callback);
 	  
 	/* we were trying to directly call api

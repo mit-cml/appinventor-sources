@@ -1,7 +1,15 @@
 package com.google.appinventor.shared.rpc.project;
 
-public class GalleryApp {
+import com.google.gwt.user.client.rpc.IsSerializable;
+
+public class GalleryApp implements IsSerializable{
 	
+	/**
+   * Default constructor. This constructor is required by GWT.
+   */
+  @SuppressWarnings("unused")
+  private GalleryApp() {
+  }
 	
 	public GalleryApp(String title, String developerName, String description,
 			String creationDate, String updateDate, String imageURL, String zipURL,
@@ -88,5 +96,7 @@ public class GalleryApp {
 	{
 		return title+description+imageURL; 
 	}
+	
+ 
 
 }

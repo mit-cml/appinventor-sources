@@ -415,13 +415,17 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return userProject;
   }
   
-  public String getApps()
+  @Override
+  public List<GalleryApp> getApps()
   {
+	  /*
+	  List<GalleryApp> list = Lists.newArrayListWithExpectedSize(10);
 	  
-	  
+	  GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5);
+	  list.add(app1);
+	  return list;
+	  */
 	  final String galleryURL="http://gallery.appinventor.mit.edu/rpc?tag=featured";
-	  //final String arr[] = new String[1];
-	  //arr[0]="xyz";
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
 	    
@@ -431,12 +435,15 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
 	    //return s.hasNext() ? s.next() : "";
 	    ArrayList<GalleryApp> list= parseAppList(s.next());
-	    return list.get(0).getTitle();
+	    //return list.get(0).getTitle();
+	    return list;
 	  }
 	  catch (IOException e)
 	  {
-		  return "exception opening gallery";
+		  //return "exception opening gallery";
+          return new ArrayList<GalleryApp>();
 	  }
+	  
   }
   
   public ArrayList<GalleryApp> parseAppList(String jsonStr)
