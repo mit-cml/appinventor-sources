@@ -19,9 +19,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.ArrayList;
 
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -889,7 +889,11 @@ public class Texting extends AndroidNonvisibleComponent
   private void sendViaSms() {
     Log.i(TAG, "Sending via built-in Sms");
 
-    PendingIntent pendingIntent = PendingIntent.getBroadcast(activity, 0, new Intent(SENT), 0);
+    ArrayList<String> parts = smsManager.divideMessage(message);
+    int numParts = parts.size();
+    ArrayList<PendingIntent> pendingIntents = new ArrayList<PendingIntent>();
+    for (int i = 0; i < numParts; i++)
+      pendingIntents.add(PendingIntent.getBroadcast(activity, 0, new Intent(SENT), 0));
 
     // Receiver for when the SMS is sent
     BroadcastReceiver sendReceiver = new BroadcastReceiver() {
@@ -908,7 +912,7 @@ public class Texting extends AndroidNonvisibleComponent
     };
     // This may result in an error -- a "sent" or "error" message will be displayed
     activity.registerReceiver(sendReceiver, new IntentFilter(SENT));
-    smsManager.sendTextMessage(phoneNumber, null, message, pendingIntent, null);
+    smsManager.sendMultipartTextMessage(phoneNumber, null, parts, pendingIntents, null);
   }
 
   /**
