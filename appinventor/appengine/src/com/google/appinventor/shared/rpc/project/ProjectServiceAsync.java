@@ -112,5 +112,5 @@ public interface ProjectServiceAsync {
   void newProjectFromExternalTemplate(String projectName, String zipData, AsyncCallback<UserProject>
   callback);
   
-  void getApps(AsyncCallback<List<GalleryApp>> callback);
+  void getApps(String url,AsyncCallback<List<GalleryApp>> callback);
 }

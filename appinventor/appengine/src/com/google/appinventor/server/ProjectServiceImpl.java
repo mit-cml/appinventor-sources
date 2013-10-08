@@ -416,7 +416,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
   
   @Override
-  public List<GalleryApp> getApps()
+  public List<GalleryApp> getApps(String url)
   {
 	  /*
 	  List<GalleryApp> list = Lists.newArrayListWithExpectedSize(10);
@@ -425,7 +425,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  list.add(app1);
 	  return list;
 	  */
-	  final String galleryURL="http://gallery.appinventor.mit.edu/rpc?tag=featured";
+	  final String galleryURL=url;
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
 	    

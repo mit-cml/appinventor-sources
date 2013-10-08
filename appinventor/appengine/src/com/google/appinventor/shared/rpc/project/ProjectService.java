@@ -195,7 +195,7 @@ public interface ProjectService extends RemoteService {
    * @return a {@link String} or the template data
    */
  
-  List<GalleryApp> getApps();
+  List<GalleryApp> getApps(String url);
   
   /**
    * gets apps from the gallery

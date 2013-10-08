@@ -15,6 +15,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -65,7 +66,7 @@ import com.google.gwt.user.client.Window;
  *
  * @author wolberd@google.com (Dave Wolber)
  */
-public class GalleryList extends Composite {
+public class GalleryList extends Composite implements GalleryRequestListener {
   private enum SortField {
     NAME,
     DATE,
@@ -91,15 +92,10 @@ public class GalleryList extends Composite {
   public GalleryList() {
     //apps = new ArrayList<GalleryApp>();
 	GalleryClient gallery = new GalleryClient();
+    gallery.Subscribe(this);
 	//apps = gallery.generateFakeApps();
     selectedApps = new ArrayList<GalleryApp>();
     projectWidgets = new HashMap<GalleryApp, ProjectWidgets>();
-    /*
-    for (GalleryApp app : apps) {
-    	projectWidgets.put(app, new ProjectWidgets(app));
-    }
-    */
-    
     sortField = SortField.NAME;
     sortOrder = SortOrder.ASCENDING;
 
@@ -118,15 +114,8 @@ public class GalleryList extends Composite {
 
     panel.add(table);
     initWidget(panel);
-    
-    getApps("http://gallery.appinventor.mit.edu/rpc?tag=featured");
-    
-    //GalleryClient client = new GalleryClient();
-	//apps = client.generateFakeApps();
-	
-
-    // It is important to listen to project manager events as soon as possible.
-    //Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+    //gallery.GetMostRecent(0,5);  // this will trigger the callback
+    gallery.FindApps("baseball",0,5,1);
   }
 
   /**
@@ -159,9 +148,6 @@ public class GalleryList extends Composite {
     dateSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     dateHeader.add(dateSortIndicator);
     table.setWidget(0, 3, dateHeader);
-    
-    
-   
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
      // @Override
@@ -271,8 +257,9 @@ public class GalleryList extends Composite {
       }
       Collections.sort(apps, comparator);
     }*/
-    projectWidgets.put(apps.get(0), new ProjectWidgets(apps.get(0)));
-	projectWidgets.put(apps.get(1), new ProjectWidgets(apps.get(1)));
+    for (GalleryApp app: apps) {
+      projectWidgets.put(app, new ProjectWidgets(app));
+    }
     refreshSortIndicators();
     
     // Refill the table.
@@ -325,62 +312,6 @@ public class GalleryList extends Composite {
     return selectedApps;
   }
   
-  public void getApps(String url)
-  {
-	  
-	// Callback for when the server returns us the apps
-	    final Ode ode = Ode.getInstance();
-	    // was string
-	    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
-			      // failure message
-	      MESSAGES.galleryError()) {
-	        @Override
-	        public void onSuccess(List<GalleryApp> list) {
-	        // the server has returned us something
-	        if (list== null) {
-
-	          Window.alert("api call: no data returned from service");
-	       
-			  return;
-		    }
-		    // things are good so lets refresh the list
-		   
-			refreshTable(list,false);
-	        //Window.alert("api call: got some data:"+list.get(0).getTitle());
-	      }
-	    };
-	   // ok, this is below the call back, but of course it is done first 
-	   ode.getProjectService().getApps(callback);
-	  
-	/* we were trying to directly call api
-    RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
-   
-    Request response=null;
-	try {
-	     response = builder.sendRequest(null, new RequestCallback() {
-        public void onError(Request request, Throwable exception) {
-        // Code omitted for clarity
-      	  
-        }
-
-        public void onResponseReceived(Request request, Response response) {
-        // Code omitted for clarity
-        	int status=response.getStatusCode();
-        	
-        	OdeLog.log("gallery: got a response " + String.valueOf(status));
-        	//refreshTable(false);
-        
-        }
-  
-        });
-    } catch (RequestException e) {
-    	// Code omitted for clarity
-    	
-    }
-    */
-  
-  }
-  
   public void loadGalleryZip(final String projectName, String zipURL) {
 	final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
        @Override
@@ -430,6 +361,14 @@ public class GalleryList extends Composite {
         Window.alert("Error fetching project zip file template.");
     } 
   } 
+
+  public void onGalleryRequestCompleted(List<GalleryApp> apps)
+  {
+    if (apps != null)
+      refreshTable(apps,false);
+    else
+      Window.alert("apps was null");
+  }
 }	  
   
   

@@ -17,6 +17,9 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
+import com.google.appinventor.client.Ode;
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 
 import java.io.IOException;
@@ -26,54 +29,75 @@ import java.io.IOException;
 public class GalleryClient implements GalleryInterface {
 
 	private final String USER_AGENT = "Mozilla/5.0";
+    List<GalleryRequestListener> listeners = new ArrayList<GalleryRequestListener>();
 
-	public List<GalleryApp> FindApps(String keywords, int start, int count,
+    public void Subscribe(GalleryRequestListener listener)
+    {
+       listeners.add(listener);
+    }
+
+	public void FindApps(String keywords, int start, int count,
 			int sortOrder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<GalleryApp> FindByTag(String tag, int start, int count,
-			int sortOrder) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public List<GalleryApp> GetApps(int start, int count, int sortOrder,
-			String sortField) {
+        // we need to deal with URL encoding!!
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=search:"+keywords);
 		
-		return this.generateFakeApps();
 	}
 
-	public List<GalleryApp> GetAppsByDeveloper(int start, int count,
-			String userId) {
-		// TODO Auto-generated method stub
-		return null;
+	public void FindByTag(String tag, int start, int count,
+			int sortOrder) {
+		// need to deal with URL encoding
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=tag:"+tag+":0:5");
 	}
 
-	public List<String> GetCategories() {
-		// TODO Auto-generated method stub
-		return null;
+	public void GetApps(int start, int count, int sortOrder,
+			String sortField) {
+		// currently returns five apps sorted by uid (app id)
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all:0:5:asc:uid");
 	}
 
-	public List<GalleryApp> GetFeatured(int start, int count, int sortOrder) {
-		// TODO Auto-generated method stub
-		return null;
+	public void GetAppsByDeveloper(int start, int count,
+			String uid) {
+      // need to fix this one, i think it takes display name as the param but...
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=by_developer:");
 	}
 
-	public List<GalleryApp> GetMostDownloaded(int start, int count) {
-		// TODO Auto-generated method stub
-		return null;
+	public void GetCategories() {
+     // we need another way to deal with non-list things
+     //"http://gallery.appinventor.mit.edu/rpc?tag=get_categories"
+     
 	}
 
-	public List<GalleryApp> GetMostViewed(int start, int count) {
-		// TODO Auto-generated method stub
-		return null;
+	public void GetFeatured(int start, int count, int sortOrder) {
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=featured");
 	}
 
-	public GalleryApp GetProject(String id) {
-		// TODO Auto-generated method stub
-		return null;
+    public void GetMostRecent(int start, int count) {
+      requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all:0:5:desc:uploadTime");
+    }
+
+	public void GetMostDownloaded(int start, int count) {
+      //doesn't work, need Vince to add index
+      requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all:0:5:desc:numDownloads");
+	}
+
+	public void GetMostViewed(int start, int count) {
+      //doesn't work, need Vince to add index
+      requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all:0:5:desc:numViewed");
+	}
+	public void GetMostLiked(int start, int count) {
+	
+		requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all:0:5:desc:numLikes");
+	}
+	
+	public void GetProject(String id) {
+		// we need another way to deal with non-list things
+     
+		//"http://gallery.appinventor.mit.edu/rpc?tag=getinfo:"+id);
+	}
+	// http://gallery.appinventor.mit.edu/rpc?tag=comments:id
+	public void GetComments(String id,int start,int count)
+	{
+	// need a different callback function
 	}
 
 	public void Publish(GalleryApp app) {
@@ -89,60 +113,36 @@ public class GalleryClient implements GalleryInterface {
 	public String status="xyz";
 	
 	
-	private String requestApps(String url)  {
+	private void requestApps(String url)  {
 		int STATUS_CODE_OK = 200;
   
   		
-    	RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, url);
-	    Request response=null;
-    	try {
-      	     response = builder.sendRequest(null, new RequestCallback() {
-              public void onError(Request request, Throwable exception) {
-              // Code omitted for clarity
-            	  status="error";
-              }
-
-              public void onResponseReceived(Request request, Response response) {
-              // Code omitted for clarity
-              	status=response.getStatusText();
-              	
-              
-              }
-        
-              });
-        } catch (RequestException e) {
-      // Code omitted for clarity
-        	status = "exception";
-       }
-       return status;
-  
-       
-     }
-		
-		
-		/* HttpClientExample http = new HttpClientExample();
-		HttpClient client = new DefaultHttpClient();
-		HttpGet request = new HttpGet(url);
- 
-		// add request header
-		request.addHeader("User-Agent", USER_AGENT);
- 
-		HttpResponse response = client.execute(request);
- 
-		
-        return response.getStatusLine().getStatusCode();
- 		
-		BufferedReader rd = new BufferedReader(
-                       new InputStreamReader(response.getEntity().getContent()));
- 
-		StringBuffer result = new StringBuffer();
-		String line = "";
-		while ((line = rd.readLine()) != null) {
-			result.append(line);
-		}
-		*/
+        // Callback for when the server returns us the apps
+	    final Ode ode = Ode.getInstance();
+	    // was string
+	    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+			      // failure message
+	      MESSAGES.galleryError()) {
+	        @Override
+	        public void onSuccess(List<GalleryApp> list) {
+	        // the server has returned us something
+	        if (list== null) {
+			  return;
+		    }
+		    // things are good so lets refresh the list
+		   
+			//refreshTable(list,false);
+	        //Window.alert("api call: got some data:"+list.get(0).getTitle());
+            for (GalleryRequestListener listener : listeners)
+            {
+               listener.onGalleryRequestCompleted(list);   
+            }
+	      }
+	    };
+	   // ok, this is below the call back, but of course it is done first 
+	   ode.getProjectService().getApps(url, callback);
 	
-	
+	}
 	public List<GalleryApp> generateFakeApps()  {
 		GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5);
 		GalleryApp app2 = new GalleryApp("Basketball Quiz", "Bill Jones", "sports quiz","2/3/13","2/5/13", "http://lh5.ggpht.com/21QTcnF3vENnlyKiYbtxrcU0VlxNlJp1Ht79pZ_GU5z3gWPxdefa79DIqjI2FvDLNz4zieFeE15y00r4DJjHMix6DVQeu-X5o_xG1g=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",7,3);
