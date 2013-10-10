@@ -90,7 +90,7 @@ Blockly.Block = function(workspace, prototypeName) {
     this.init();
   }
   // Bind an onchange function, if it exists.
-  if (goog.isFunction(this.onchange)) {
+  if ((!this.isInFlyout) && goog.isFunction(this.onchange)) {
     Blockly.bindEvent_(workspace.getCanvas(), 'blocklyWorkspaceChange', this,
                        this.onchange);
   }
