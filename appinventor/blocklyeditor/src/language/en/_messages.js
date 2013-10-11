@@ -75,7 +75,7 @@ Blockly.LANG_CONTROLS_IF_TOOLTIP_4 = 'If the first value is true, then do the fi
 Blockly.LANG_CONTROLS_IF_MSG_IF = 'if';
 Blockly.LANG_CONTROLS_IF_MSG_ELSEIF = 'else if';
 Blockly.LANG_CONTROLS_IF_MSG_ELSE = 'else';
-Blockly.LANG_CONTROLS_IF_MSG_THEN = 'do';
+Blockly.LANG_CONTROLS_IF_MSG_THEN = 'then';
 
 Blockly.LANG_CONTROLS_IF_IF_TITLE_IF = 'if';
 Blockly.LANG_CONTROLS_IF_IF_TOOLTIP = 'Add, remove, or reorder sections\n' +
@@ -163,8 +163,9 @@ Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
 
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#doreturn';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
-Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_THEN_RETURN = 'then-return';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'return';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do then return';
 
 
 Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate';
@@ -777,14 +778,15 @@ Blockly.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
 Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure with no return value.';
 
 Blockly.LANG_PROCEDURES_DOTHENRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#doreturn';
-Blockly.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'then-return';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_DO = 'do';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'return';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do';
 
 Blockly.LANG_PROCEDURES_DEFRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#return';
 Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE;
 Blockly.LANG_PROCEDURES_DEFRETURN_DO = Blockly.LANG_PROCEDURES_DEFNORETURN_DO;
-Blockly.LANG_PROCEDURES_DEFRETURN_RETURN = 'return';
+Blockly.LANG_PROCEDURES_DEFRETURN_RETURN = 'result';
 Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure with a return value.';
 
 Blockly.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +

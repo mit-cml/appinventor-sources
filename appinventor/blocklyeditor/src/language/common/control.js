@@ -437,13 +437,13 @@ Blockly.Language.controls_do_then_return = {
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendStatementInput('STM')
-        .appendTitle("do");
+        .appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO);
     this.appendValueInput('VALUE')
-        .appendTitle("then-return")
+        .appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO }]

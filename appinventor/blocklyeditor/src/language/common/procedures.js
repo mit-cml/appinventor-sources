@@ -481,13 +481,13 @@ Blockly.Language.procedures_do_then_return = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendStatementInput('STM')
-        .appendTitle("do");
+        .appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_DO);
     this.appendValueInput('VALUE')
-        .appendTitle("then-return")
+        .appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
