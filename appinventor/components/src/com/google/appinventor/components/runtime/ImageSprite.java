@@ -183,15 +183,20 @@ public class ImageSprite extends Sprite {
     registerChange();
   }
 
-  // The actual width/height of an ImageSprite whose Width/Height property is set to Automatic or
-  // Fill Parent will be the width/height of the image.
+  // Enhancement 2(Bug fix) - ImageSprite Fill Canvas 
+  // The actual width/height of an ImageSprite whose Width/Height property is
+  // set to Automatic or Fill Parent.
 
   @Override
   @SimpleProperty
   public int Height() {
-    if (heightHint == LENGTH_PREFERRED || heightHint == LENGTH_FILL_PARENT) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
+    if (heightHint == LENGTH_PREFERRED) {
+      //set to -1 imagesprite height to size of original image size 
       return drawable == null ? 0 : drawable.getBitmap().getHeight();
+    }
+    if (heightHint == LENGTH_FILL_PARENT) {
+      //set to -2 imagesprite height to fill canvas height
+      return drawable == null ? 0 : canvas.Height();
     }
     return heightHint;
   }
@@ -206,9 +211,13 @@ public class ImageSprite extends Sprite {
   @Override
   @SimpleProperty
   public int Width() {
-    if (widthHint == LENGTH_PREFERRED || widthHint == LENGTH_FILL_PARENT) {
-      // Drawable.getIntrinsicWidth/Height gives weird values, but Bitmap.getWidth/Height works.
+    if (widthHint == LENGTH_PREFERRED) {
+      //set to -1 imagesprite height to size of original image size 
       return drawable == null ? 0 : drawable.getBitmap().getWidth();
+    }
+    if (widthHint == LENGTH_FILL_PARENT) {
+      //set to -2 imagesprite height to fill canvas height
+      return drawable == null ? 0 : canvas.Width();
     }
     return widthHint;
   }
