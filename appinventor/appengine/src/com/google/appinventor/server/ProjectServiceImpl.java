@@ -24,7 +24,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.server.Base64Utils;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -388,31 +388,47 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    *   generating-an-inline-image-with-java-gwt/6495356#6495356
    */
   @Override
-  public UserProject newProjectFromExternalTemplate(String projectName, String zipData) {
+  public UserProject newProjectFromExternalTemplate(String sourceURL) {
 
     UserProject userProject = null;
+    
+	try {
+	    URLConnection connection = new URL(sourceURL).openConnection();
+	    // get the text from the uploaded zip file
+	   InputStream response = connection.getInputStream();
+	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
+	    String zipData = s.next();
+	    
+	    // Convert base64 string to byte[]
+        // NOTE: GWT's Base64Utils uses a non-standard algorithm.
+        // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
+        byte[] binData = null;
+        binData = Base64Util.decode(zipData);
 
-    // Convert base64 string to byte[]
-    // NOTE: GWT's Base64Utils uses a non-standard algorithm.
-    // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
-    byte[] binData = null;
-    binData = Base64Utils.fromBase64(zipData);  // from Ralph, was Base64Util.decode
-
-    // Import the project
-    ByteArrayInputStream bais = null;
-    FileImporter fileImporter = new FileImporterImpl();
-    try {
-      bais = new ByteArrayInputStream(binData);
-      userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-        projectName, bais);
-    } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    } catch (FileImporterException e) {
-      e.printStackTrace();
-    }
-    return userProject;
+        // Import the project
+        ByteArrayInputStream bais = null;
+        FileImporter fileImporter = new FileImporterImpl();
+        try {
+          bais = new ByteArrayInputStream(binData);
+          userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+          "PaintPot", bais);
+        } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+          e.printStackTrace();
+        } catch (IOException e) {
+          e.printStackTrace();
+        } catch (FileImporterException e) {
+          e.printStackTrace();
+        }
+        return userProject; 
+	    
+	  }
+	  catch (IOException e)
+	  {
+		
+          return null;
+	  }
+	  
+    
   }
   
   @Override
@@ -428,7 +444,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  final String galleryURL=url;
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
-	    
 	    //connection.setRequestProperty("Accept-Charset", charset);
 	    
 	    InputStream response = connection.getInputStream();

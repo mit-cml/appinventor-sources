@@ -224,7 +224,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       //  @Override
         public void onClick(ClickEvent event) {
           //Ode.getInstance().openYoungAndroidProjectInDesigner(app);
-          loadGalleryZip(app.getTitle(),app.getZipURL());
+          loadGalleryZip(app.getTitle(),"http://www.appinventor.org/apps2/paintpot3/paintpot3.aia");
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -312,7 +312,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     return selectedApps;
   }
   
-  public void loadGalleryZip(final String projectName, String zipURL) {
+  public void loadGalleryZip(final String projectName, String sourceURL) {
 	final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
        @Override
        public void execute(Project project) {
@@ -343,24 +343,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       }
     }
    };
-   RequestBuilder builder = new RequestBuilder(RequestBuilder.GET, zipURL);
-   try {
-      Request response = builder.sendRequest(null, new RequestCallback() {
-      @Override
-      public void onError(Request request, Throwable exception) {
-         Window.alert("Unable to load Gallery zip file");
-      }
-      @Override
-      public void onResponseReceived(Request request, Response response) {
-          Window.alert("response:"+String.valueOf(response.getStatusCode()));
-    	  ode.getProjectService().newProjectFromExternalTemplate(projectName,response.getText(),callback);
-      }
 
-      });
-    } catch (RequestException e) {
-        Window.alert("Error fetching project zip file template.");
-    } 
-  } 
+    ode.getProjectService().newProjectFromExternalTemplate(sourceURL,callback);
+  }
 
   public void onGalleryRequestCompleted(List<GalleryApp> apps)
   {
