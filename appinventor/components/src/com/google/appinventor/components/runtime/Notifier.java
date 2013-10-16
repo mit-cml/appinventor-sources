@@ -6,10 +6,14 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -43,6 +47,8 @@ import android.widget.Toast;
  *
  * @author halabelson@google.com (Hal Abelson)
  */
+ 
+
 
 //TODO(halabelson): Change the dialog methods to be synchronous and return values rather
 // than signaling events; or at least to use one-shot events, when we implement those.
@@ -62,6 +68,14 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Activity activity;
   private final Handler handler;
 
+  //Length of Notifier message display
+  private int notifierLength;
+  
+  // Backing for background color
+  private int backgroundColor;
+  
+  // Backing for text color
+  private int textColor;
   /**
    * Creates a new Notifier component.
    *
@@ -243,6 +257,59 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
+    /**
+   * Sets the volume property to a number between 0 and 100.
+   *
+   * @param vol  the desired volume level
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = "50")
+  @SimpleProperty(
+      description = "Sets the length of the Notifier Display")
+  public void NotifierLength(int length){
+  		notifierLength = length;
+  }
+  
+  /**
+   * Specifies the label's background color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
+  @SimpleProperty
+  public void BackgroundColor(int argb) {
+    backgroundColor = argb;
+  }
+  
+  
+  /**
+   * Returns the label's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return  text RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public int TextColor() {
+    return textColor;
+  }
+
+  /**
+   * Specifies the label's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  text RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void TextColor(int argb) {
+    textColor = argb;
+  }
+  
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
@@ -256,8 +323,8 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
-    textView.setBackgroundColor(Color.DKGRAY);
-    textView.setTextColor(Color.WHITE);
+    textView.setBackgroundColor(backgroundColor);
+    textView.setTextColor(textColor);
     textView.setTextSize(fontsize);
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
