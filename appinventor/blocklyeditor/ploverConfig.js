@@ -49,14 +49,13 @@
     '../lib/blockly/src/core/xml.js',
     '../lib/blockly/src/core/typeblock.js',
 
-
     //finally, include any of our own .js file in any order
     "./src/blocklyeditor.js",
     "./src/blockColors.js",
     "./src/component.js",
     "./src/drawer.js",
     "./src/savefile.js",
-    './src/language/common/components.js',
+    "./src/versioning.js",
     "./src/mutators.js",
     "./src/field_lexical_variable.js",
     "./src/errorIcon.js",
@@ -75,6 +74,7 @@
     './src/language/common/procedures.js',
     './src/language/common/lexical-variables.js',
     './src/language/common/colors.js',
+    './src/language/common/components.js',
 
     //generator files
     "./src/generators/yail.js",
@@ -87,6 +87,9 @@
     "./src/generators/yail/colors.js",
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
+
+    //versioning files
+    "./src/versioning/017_blocksOverhaul.js",
 
     // Repl
     "./src/replmgr.js"

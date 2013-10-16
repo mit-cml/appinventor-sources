@@ -23,6 +23,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.google.appinventor.components.common.YaVersion;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -647,6 +649,13 @@ public class BlocklyPanel extends HTMLPanel {
     return YaBlocksEditor.getComponentInstanceTypeName(formName,instanceName);
   }
 
+  public static int getYaVersion() {
+    return YaVersion.YOUNG_ANDROID_VERSION;
+  }
+  public static int getBlocksLanguageVersion() {
+    return YaVersion.BLOCKS_LANGUAGE_VERSION;
+  }
+
   // ------------ Native methods ------------
 
   /**
@@ -688,6 +697,10 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentInfo(Ljava/lang/String;));
     $wnd.BlocklyPanel_getComponentsJSONString =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentsJSONString());
+    $wnd.BlocklyPanel_getYaVersion=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getYaVersion());
+    $wnd.BlocklyPanel_getBlocksLanguageVersion=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBlocksLanguageVersion());
 
   }-*/;
 
