@@ -706,6 +706,16 @@ public interface OdeMessages extends Messages {
   @Description("Text for screen orientation choice 'User '")
   String userScreenOrientation();
 
+  // Used in editor/youngandroid/properties/YoungAndroidToastLengthChoicePropertyEditor.java
+
+  @DefaultMessage("Short")
+  @Description("Show toast for a Toast_Short of time")
+  String shortToastLength();
+
+  @DefaultMessage("Long")
+  @Description("Show toast for a Toast_Long of time")
+  String longToastLength();
+
   // Used in explorer/SourceStructureExplorer.java
 
   @DefaultMessage("Rename")
