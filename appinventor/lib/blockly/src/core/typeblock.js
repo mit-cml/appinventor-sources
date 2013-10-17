@@ -448,8 +448,10 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
+          if (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn") { //Need to make sure Procedure Block inputs are updated
+            Blockly.FieldProcedure.onChange.call(block.getTitle_("PROCNAME"), blockToCreate.dropDown.value);
+          }
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
-          //If we are changing a property in a component, we need to change the connection Check
           var typeForDropDown;
           if (block.blockType === 'setter' || block.blockType === 'genericsetter'){
             typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
