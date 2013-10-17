@@ -467,6 +467,10 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
+          if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
+            //Need to make sure Procedure Block inputs are updated
+            Blockly.FieldProcedure.onChange.call(block.getTitle_("PROCNAME"), blockToCreate.dropDown.value);
+          }
         }
 
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
