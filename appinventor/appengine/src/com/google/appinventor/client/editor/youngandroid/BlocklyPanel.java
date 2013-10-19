@@ -13,7 +13,15 @@ import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
+import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -561,7 +569,82 @@ public class BlocklyPanel extends HTMLPanel {
     DesignToolbar.popScreen();
   }
 
+  // The code below (4 methods worth) is for creating a GWT dialog box
+  // from the blockly code. See the comment in replmgr.js for more
+  // information.
+
+  /**
+   * Create a Dialog Box. We call this from Javascript (blockly) to
+   * display a dialog box.  We do this here because we can get calls
+   * from the blocklyframe when it is not visible.  Because we are in
+   * the parent window, we can display dialogs that will be visible
+   * even when the blocklyframe is not visible.
+   * @param title Title for the Dialog Box
+   * @param mess The message to display
+   * @param buttonName The string to display in the "OK" button.
+   * @param size 0 or 1. 0 makes a smaller box 1 makes a larger box.
+   * @param callback an opague JavaScriptObject that contains the
+   *        callback function provided by the Javascript code.
+   * @return The created dialog box.
+   */
+
+  public static DialogBox createDialog(String title, String mess, String buttonName, int size, final JavaScriptObject callback) {
+    final DialogBox dialogBox = new DialogBox();
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText(title);
+    if (size == 0) {
+      dialogBox.setHeight("150px");
+    } else {
+      dialogBox.setHeight("400px");
+    }
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML(mess);
+    message.setStyleName("DialogBox-message");
+    SimplePanel holder = new SimplePanel();
+    Button ok = new Button(buttonName);
+    ok.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          doCallBack(callback);
+        }
+      });
+    holder.add(ok);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+    return dialogBox;
+  }
+
+  /**
+   * Hide a dialog box. This function is here so it can be called from
+   * the blockly code. We cannot call "hide" directly from the blockly
+   * code because when this code is compiled, the "hide" method disappears!
+   * @param dialog The dialogbox to hide.
+   */
+
+  public static void HideDialog(DialogBox dialog) {
+    dialog.hide();
+  }
+
+  public static void SetDialogContent(DialogBox dialog, String mess) {
+    HTML html = (HTML) ((VerticalPanel)dialog.getWidget()).getWidget(0);
+    html.setHTML(mess);
+  }
+
   // ------------ Native methods ------------
+
+  /**
+   * Take a Javascript function, embedded in an opague JavaScriptObject,
+   * and call it.
+   * @param callback the Javascript callback.
+   */
+  private static native void doCallBack(JavaScriptObject callback) /*-{
+    callback.call();
+  }-*/;
 
   private static native void exportMethodsToJavascript() /*-{
     $wnd.BlocklyPanel_initBlocksArea =
@@ -581,6 +664,12 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::pushScreen(Ljava/lang/String;));
     $wnd.BlocklyPanel_popScreen =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::popScreen());
+    $wnd.BlocklyPanel_createDialog =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::createDialog(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILcom/google/gwt/core/client/JavaScriptObject;));
+    $wnd.BlocklyPanel_hideDialog =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::HideDialog(Lcom/google/gwt/user/client/ui/DialogBox;));
+    $wnd.BlocklyPanel_setDialogContent =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::SetDialogContent(Lcom/google/gwt/user/client/ui/DialogBox;Ljava/lang/String;));
   }-*/;
 
   private native void initJS() /*-{
