@@ -748,6 +748,7 @@ Blockly.setCursorHand_ = function(closed) {
  */
 Blockly.getMainWorkspaceMetrics_ = function() {
   var svgSize = Blockly.svgSize();
+  //We don't use Blockly.Toolbox in our version of Blockly instead we use drawer.js
   //svgSize.width -= Blockly.Toolbox.width;  // Zero if no Toolbox.
   svgSize.width -= 0;  // Zero if no Toolbox.
   var viewWidth = svgSize.width - Blockly.Scrollbar.scrollbarThickness;
@@ -766,14 +767,14 @@ Blockly.getMainWorkspaceMetrics_ = function() {
                              blockBox.x + viewWidth);
     var topEdge = Math.min(blockBox.y - viewHeight / 2,
                            blockBox.y + blockBox.height - viewHeight);
-    var bottomEdge = Math.max(blockBox.y + blockBox.height + viewHeight / 2,
-                              blockBox.y + viewHeight);
+    var bottomEdge = Math.max(blockBox.y + blockBox.height + viewHeight / 2, blockBox.y + viewHeight);
   } else {
     var leftEdge = blockBox.x;
     var rightEdge = leftEdge + blockBox.width;
     var topEdge = blockBox.y;
     var bottomEdge = topEdge + blockBox.height;
   }
+  //We don't use Blockly.Toolbox in our version of Blockly instead we use drawer.js
   //var absoluteLeft = Blockly.RTL ? 0 : Blockly.Toolbox.width;
   var absoluteLeft = Blockly.RTL ? 0 : 0;
   return {
