@@ -196,31 +196,5 @@ public class BlocklyEvalTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
-    // The following tests are unit tests for the Yail generation of individual blocks.
-    //  See the comments in
-    // /tests/com/google/appinventor/generators_unit/listsCreateWithTest.js
-    // for an explanation of how to create these tests
-
-  public void testListsCreateList() throws Exception {
-    String result = BlocklyTestUtils.generatorTest(
-        testpath + "/tests/com/google/appinventor/generators_unit/listsCreateWithTest.js");
-    assertEquals("true", result.toString());
-  }
-
-  public void testListsAddItems() throws Exception {
-    String result = BlocklyTestUtils.generatorTest(
-        testpath + "/tests/com/google/appinventor/generators_unit/listsAddItemsTest.js");
-    assertEquals("true", result.toString());
-  }
-
-  public void testListsSelectItem() throws Exception {
-    String result = BlocklyTestUtils.generatorTest(
-        testpath + "/tests/com/google/appinventor/generators_unit/listsSelectItemTest.js");
-    assertEquals("true", result.toString());
-  }
-
-    // add more unit tests here
-
-
 }
 

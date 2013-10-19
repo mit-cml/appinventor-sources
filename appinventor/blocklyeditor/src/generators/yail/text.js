@@ -198,12 +198,13 @@ Blockly.Yail.text_contains = function() {
 
 Blockly.Yail.text_split = function() {
   // String split operations.
-  // TODO: (Hal) handle the required arg type change.
+  // Note that the type of arg2 might be text or list, depending on the dropdown selection
   var mode = this.getTitleValue('OP');
   var tuple = Blockly.Yail.text_split.OPERATORS[mode];
   var operator1 = tuple[0];
   var operator2 = tuple[1];
   var order = tuple[2];
+  var arg2Type = tuple[3];
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'AT', Blockly.Yail.ORDER_NONE) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + operator1
@@ -213,20 +214,20 @@ Blockly.Yail.text_split = function() {
       + argument0 + Blockly.Yail.YAIL_SPACER + argument1
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
-      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text text"
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + "text" +  Blockly.Yail.YAIL_SPACER + arg2Type
       + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + operator2
       + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+  return [ code, order ];
 };
 
 Blockly.Yail.text_split.OPERATORS = {
   SPLITATFIRST : [ 'string-split-at-first', 'split at first',
-      Blockly.Yail.ORDER_NONE ],
+      Blockly.Yail.ORDER_ATOMIC, 'text' ],
   SPLITATFIRSTOFANY : [ 'string-split-at-first-of-any',
-      'split at first of any', Blockly.Yail.ORDER_NONE ],
-  SPLIT : [ 'string-split', 'split', Blockly.Yail.ORDER_NONE ],
-  SPLITATANY : [ 'string-split-at-any', 'split at any', Blockly.Yail.ORDER_NONE ]
+      'split at first of any', Blockly.Yail.ORDER_ATOMIC, 'list' ],
+  SPLIT : [ 'string-split', 'split', Blockly.Yail.ORDER_ATOMIC, 'text' ],
+  SPLITATANY : [ 'string-split-at-any', 'split at any', Blockly.Yail.ORDER_ATOMIC, 'list' ]
 };
 
 Blockly.Yail.text_split_at_spaces = function() {

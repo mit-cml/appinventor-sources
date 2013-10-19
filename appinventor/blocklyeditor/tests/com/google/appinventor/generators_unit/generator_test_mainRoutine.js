@@ -28,27 +28,34 @@ exports.execute =  function (){
           var generator = arguments[1]();
           var blockName = arguments[2];
           var doesReturn = arguments[3];
+          // if dropdownOp is false, we test the simple block
+          // otherwise set the block dropdown for the code generator to use
+          var dropdownOp = arguments[4];
 
           var generatedYail = "";
-          var yailForBlock = generator.call(new Blockly.Block(Blockly.mainWorkspace, blockName));
-            if (doesReturn) {
-               if ((yailForBlock.length !== 2) || (yailForBlock[1] !== Blockly.Yail.ORDER_ATOMIC) ) {
-                 return false;
-                } else {
-                generatedYail = yailForBlock[0];
-               }
+          var yailForBlock;
+          var testBlock = new Blockly.Block(Blockly.mainWorkspace, blockName);
+          if (dropdownOp) {testBlock.setTitleValue(dropdownOp, 'OP');}
+          yailForBlock = generator.call(testBlock);
+          if (doesReturn) {
+            if ((yailForBlock.length !== 2) || (yailForBlock[1] !== Blockly.Yail.ORDER_ATOMIC) ) {
+              return false;
             } else {
-              generatedYail = yailForBlock;
+              generatedYail = yailForBlock[0];
             }
+          } else {
+            generatedYail = yailForBlock;
+          }
           // Uncomment these for debugging "expected" in making new tests
           // console.log(generatedYail);
-          // console.log(expected);
+          //  console.log(expected);
           return doesContain(generatedYail, expected);
           },
         expected,
         delayedGenerator,
         blockName,
-        doesReturn);
+        doesReturn,
+        dropdownOp);
 
     //This is the actual result of the test
     console.log(passed);

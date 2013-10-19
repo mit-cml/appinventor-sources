@@ -30,6 +30,8 @@ var blockName = 'lists_add_items' ;
 
 var doesReturn = false ;
 
+var dropdownOp = false ;
+
 ////////////////////////////////////////
 // The rest of this page is common to all tests.
 ////////////////////////////////////////
