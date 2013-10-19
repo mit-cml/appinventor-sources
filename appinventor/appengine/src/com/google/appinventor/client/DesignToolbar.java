@@ -692,6 +692,5 @@ public class DesignToolbar extends Toolbar {
   private void toggleEditor(boolean blocks) {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
-    setDropDownButtonVisible(WIDGET_NAME_CONNECT_TO, blocks);
   }
 }
