@@ -36,7 +36,7 @@ Blockly.Drawer.createDom = function() {
  * language tree. Call after calling createDom.
  */
 Blockly.Drawer.init = function() {
-  Blockly.Drawer.flyout_.init(Blockly.mainWorkspace, Blockly.mainWorkspace.getMetrics());
+  Blockly.Drawer.flyout_.init(Blockly.mainWorkspace, true);
   for (var name in Blockly.DrawerInit) {
     Blockly.DrawerInit[name]();
   }
