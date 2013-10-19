@@ -1,6 +1,7 @@
 package com.google.appinventor.shared.rpc.project;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import java.util.logging.Logger;
 
 public class GalleryApp implements IsSerializable{
 	
@@ -11,9 +12,12 @@ public class GalleryApp implements IsSerializable{
   private GalleryApp() {
   }
 	
+	public static final String GALLERYURL="http://gallery.appinventor.mit.edu/rpc?";
+    private static final Logger LOG = Logger.getLogger(GalleryApp.class.getName());
+	
 	public GalleryApp(String title, String developerName, String description,
-			String creationDate, String updateDate, String imageURL, String zipURL,
-			int downloads, int views) {
+			String creationDate, String updateDate, String imageURL, String sourceFileName,
+			int downloads, int views, String imageBlobId, String sourceBlobId, String galleryAppId ) {
 		super();
 		this.title = title;
 		this.developerName = developerName;
@@ -21,9 +25,21 @@ public class GalleryApp implements IsSerializable{
 		this.creationDate = creationDate;
 		this.updateDate = updateDate;
 		this.imageURL = imageURL;
-		this.zipURL = zipURL;
+        // the name we get from gallery can have some bad characters in it...
+        //   e.g., name  (2).zip. We need to cleanse this and probably deal with url as
+        //   well.
+        LOG.info("HERE:"+sourceFileName);
+        if (sourceFileName.contains(".")) {
+          String[] splitName= sourceFileName.split("\\.");
+          projectName=splitName[0];
+        } else {
+          projectName=sourceFileName;
+        }
 		this.downloads = downloads;
 		this.views = views;
+		this.imageBlobId= imageBlobId;
+		this.sourceBlobId= sourceBlobId;
+		this.galleryAppId= galleryAppId;
 	}
 	private String title;
 	private String developerName;
@@ -33,10 +49,13 @@ public class GalleryApp implements IsSerializable{
 	// creation date and update date?
 	
 	// an image, icon, zip file 
-	private String zipURL;
+	private String projectName;
 	private String imageURL;
 	private int downloads;
 	private int views;
+    private String imageBlobId;
+    private String sourceBlobId;
+    private String galleryAppId;
 	public String getTitle() {
 		return title;
 	}
@@ -73,11 +92,11 @@ public class GalleryApp implements IsSerializable{
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
 	}
-	public String getZipURL() {
-		return zipURL;
+	public String getProjectName() {
+		return projectName;
 	}
-	public void setZipURL(String zipURL) {
-		this.zipURL = zipURL;
+	public void setProjectName(String projectName) {
+		this.projectName = projectName;
 	}
 	public int getDownloads() {
 		return downloads;
@@ -91,6 +110,33 @@ public class GalleryApp implements IsSerializable{
 	public void setViews(int views) {
 		this.views = views;
 	}
+	
+	public void setImageBlobId(String imageBlobId) {
+		this.imageBlobId = imageBlobId;
+	}
+	public String getImageBlobId() {
+      return this.imageBlobId;
+    }
+	public void setSourceBlobId(String sourceBlobId) {
+		this.sourceBlobId = sourceBlobId;
+	}
+    public String getSourceBlobId() {
+      return this.sourceBlobId;
+    }
+	public void setGalleryAppId(String galleryAppId) {
+		this.galleryAppId = galleryAppId;
+	}
+    public String getGalleryAppId() {
+      return this.galleryAppId;
+    }
+    // url is of form:
+    //   gallery.appinventor.mit.edu/rpc?getblob=<sourceBlob>:<appid>
+    // http://usf-appinventor-gallery.appspot.com/rpc?getblob=AMIfv96uvxoFUHj_Tsv671z66_Iu9HCsUgGad4_py4oWu2INlFgtvW6M5lUPKZwjBAT6Pi_-31MYIGF2aNji_qGZFxTwHH5ryPToMPumbajW0_I4Pf9XY2INsR-o7h_1z8jou1Ey9dS2ES1KjicqOebmCLMYKRrU5tAANrjTj1Bn3n0uipbWvsQ:48002
+    public String getSourceURL() {
+       return GALLERYURL+"getblob="+getSourceBlobId()+":"+getGalleryAppId();
+    }
+	
+	
 	@Override
 	public String toString()
 	{

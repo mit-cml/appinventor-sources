@@ -381,37 +381,26 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
   
   /**
-   * This service is passed a base64 encoded string representing the Zip file.
-   * It converts it to a byte array and imports the project using FileImporter.
+   * This service is passed the URL for a source file in the gallery
+   * It opens it and returns a userProject
    *
-   * @see http://stackoverflow.com/questions/6409587/
-   *   generating-an-inline-image-with-java-gwt/6495356#6495356
    */
   @Override
-  public UserProject newProjectFromExternalTemplate(String sourceURL) {
+  public UserProject newProjectFromExternalTemplate(String appName,String sourceURL) {
 
     UserProject userProject = null;
     
 	try {
 	    URLConnection connection = new URL(sourceURL).openConnection();
-	    // get the text from the uploaded zip file
+	    // get the text from the uploaded source file
 	   InputStream response = connection.getInputStream();
-	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
-	    String zipData = s.next();
-	    
-	    // Convert base64 string to byte[]
-        // NOTE: GWT's Base64Utils uses a non-standard algorithm.
-        // @see:  https://code.google.com/p/google-web-toolkit/issues/detail?id=3880
-        byte[] binData = null;
-        binData = Base64Util.decode(zipData);
-
-        // Import the project
+	   
         ByteArrayInputStream bais = null;
         FileImporter fileImporter = new FileImporterImpl();
         try {
-          bais = new ByteArrayInputStream(binData);
+          bais = (ByteArrayInputStream) response;
           userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-          "PaintPot", bais);
+          appName, bais);
         } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
           e.printStackTrace();
         } catch (IOException e) {
@@ -423,12 +412,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	    
 	  }
 	  catch (IOException e)
-	  {
-		
+	  {	
           return null;
 	  }
-	  
-    
   }
   
   @Override
@@ -489,8 +475,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  String description = appJson.get("description").toString();
 	  String image1= appJson.get("image1").toString();
 	  String sourceFileName=appJson.get("sourceFileName").toString();
+      // for some reason source is a list of one item
+      JSONArray sourceArray = (JSONArray) appJson.get("source");
+      String sourceBlobId=sourceArray.get(0).toString();
+      String imageBlobId=appJson.get("image1blob").toString();
+      String galleryAppId=appJson.get("uid").toString();
+      String displayName=appJson.get("displayName").toString();
 	    
-	  GalleryApp galleryApp = new GalleryApp(title, "Joe Smith", description,"1/1/13","2/1/13",image1,"http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5);
+	  GalleryApp galleryApp = new GalleryApp(title, displayName, description,"1/1/13","2/1/13",image1,sourceFileName,2,5,imageBlobId,sourceBlobId,galleryAppId);
       return galleryApp;
       } catch (JSONException e) {
 			return null;  //need to do something here

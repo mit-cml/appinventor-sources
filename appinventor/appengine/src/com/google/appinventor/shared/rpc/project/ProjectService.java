@@ -184,7 +184,7 @@ public interface ProjectService extends RemoteService {
    */
   long addFile(long projectId, String fileId);
   
-  UserProject newProjectFromExternalTemplate(String sourceURL);
+  UserProject newProjectFromExternalTemplate(String appName, String sourceURL);
   
   /**
    * Reads the template data from a JSON File

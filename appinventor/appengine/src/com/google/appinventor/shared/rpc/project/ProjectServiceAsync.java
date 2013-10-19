@@ -109,7 +109,7 @@ public interface ProjectServiceAsync {
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
   
-  void newProjectFromExternalTemplate(String sourceURL, AsyncCallback<UserProject>
+  void newProjectFromExternalTemplate(String appName, String sourceURL, AsyncCallback<UserProject>
   callback);
   
   void getApps(String url,AsyncCallback<List<GalleryApp>> callback);

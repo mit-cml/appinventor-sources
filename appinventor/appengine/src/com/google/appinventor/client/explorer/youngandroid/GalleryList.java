@@ -85,15 +85,16 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final Grid table;
   private final Label nameSortIndicator;
   private final Label dateSortIndicator;
+  
+  GalleryClient gallery=null;
 
   /**
    * Creates a new GalleryList
    */
   public GalleryList() {
     //apps = new ArrayList<GalleryApp>();
-	GalleryClient gallery = new GalleryClient();
-    gallery.Subscribe(this);
-	//apps = gallery.generateFakeApps();
+	gallery = new GalleryClient(this);
+
     selectedApps = new ArrayList<GalleryApp>();
     projectWidgets = new HashMap<GalleryApp, ProjectWidgets>();
     sortField = SortField.NAME;
@@ -114,8 +115,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
     panel.add(table);
     initWidget(panel);
-    //gallery.GetMostRecent(0,5);  // this will trigger the callback
-    gallery.FindApps("baseball",0,5,1);
+    // calls to gallery get methods will eventually trigger call back to methods
+    // at bottom of this file
+    gallery.GetMostRecent(0,2);
+    //gallery.GetAppsByDeveloper(0,5,"o21b3f");
+    //gallery.FindApps("baseball",0,5,1);
   }
 
   /**
@@ -224,7 +228,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       //  @Override
         public void onClick(ClickEvent event) {
           //Ode.getInstance().openYoungAndroidProjectInDesigner(app);
-          loadGalleryZip(app.getTitle(),"http://www.appinventor.org/apps2/paintpot3/paintpot3.aia");
+          //loadGalleryZip(app.getTitle(),"http://usf-appinventor-gallery.appspot.com/rpc?getblob=AMIfv96uvxoFUHj_Tsv671z66_Iu9HCsUgGad4_py4oWu2INlFgtvW6M5lUPKZwjBAT6Pi_-31MYIGF2aNji_qGZFxTwHH5ryPToMPumbajW0_I4Pf9XY2INsR-o7h_1z8jou1Ey9dS2ES1KjicqOebmCLMYKRrU5tAANrjTj1Bn3n0uipbWvsQ:48002");
+          gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
@@ -311,7 +316,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public List<GalleryApp> getSelectedApps() {
     return selectedApps;
   }
-  
+  /*
   public void loadGalleryZip(final String projectName, String sourceURL) {
 	final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
        @Override
@@ -344,8 +349,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     }
    };
 
-    ode.getProjectService().newProjectFromExternalTemplate(sourceURL,callback);
+    ode.getProjectService().newProjectFromExternalTemplate(projectName, sourceURL,callback);
   }
+  */
 
   public void onGalleryRequestCompleted(List<GalleryApp> apps)
   {
@@ -353,6 +359,26 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       refreshTable(apps,false);
     else
       Window.alert("apps was null");
+  }
+  
+  public void onSourceLoadCompleted(UserProject projectInfo) {
+    final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
+       @Override
+       public void execute(Project project) {
+            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+       }
+    };
+    // Update project explorer -- i.e., display in project view
+    final Ode ode = Ode.getInstance();
+    if (projectInfo == null) {
+      Window.alert("Unable to create project from Gallery source"); 
+    }
+    else {
+      Project project = ode.getProjectManager().addProject(projectInfo);
+      if (onSuccessCommand != null) {
+        onSuccessCommand.execute(project);
+      }
+    }
   }
 }	  
   
