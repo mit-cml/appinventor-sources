@@ -14,7 +14,7 @@
 // comments), as a template for creating other generator unit tests.
 
 // You can insert the test into
-// blocklyeditor/tests/com/google/appinventor/blocklyeditor/BlocklyEvalTest.java
+// blocklyeditor/tests/com/google/appinventor/blocklyeditor/BlocklyCodeGeneratorTest.java
 // to include it in the suite of unit tests.
 
 // You can also run this single test from the command line in the
@@ -23,12 +23,12 @@
 
 // To create a generator test, you need to define four values:
 
-// expected: the correct yail string for the block with all slots empty
+// (1) expected: the correct yail string for the block with all slots empty
 // delayedGenerator: The block Yail generation function (delayed)
 // blockName: name of the block
 // doesReturn: true if the block returns a value, false otherwise
 
-// We pass the generator function delayed, because the symbol Blockly
+// (2) We pass the generator function delayed, because the symbol Blockly
 // is not defined when the required page is loaded, but it _will_ be defined after
 // load, which is why we can force the value inside page.evaluate
 // evaluation function.  See the definition of generator_test_main_routine.js
@@ -39,6 +39,18 @@
 // bs = Blocklies['5629499534213120_Screen1'];      // or whatever the right index is
 // bs.Yail.lists_create_with.call(bs.selected);
 
+// Alternatively, you can get the array of blocks on the screen with
+// Blocklies["5066549580791808_Screen1"].mainWorkspace.getTopBlocks();
+
+// Get the appropraite block, and then run
+// Blockly.Yail.BlocktoCode1(block)
+
+
+// (3) Whether or not the block returns a value
+
+// (4) If the block uses a dropdown to specify the operator,
+// pass in the tag for that operator (as defined by the generator).
+// If no dropdown, pass in false
 
 ////////////////////////////////////////
 // These four variables are all you need to define to create a test
@@ -52,6 +64,11 @@ var delayedGenerator = function () { return Blockly.Yail.lists_create_with ; } ;
 var blockName = 'lists_create_with';
 
 var doesReturn = true;
+
+var dropdownOp = false;
+
+
+
 
 ////////////////////////////////////////
 // The rest of this page is common to all tests.

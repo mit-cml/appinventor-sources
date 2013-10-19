@@ -48,7 +48,7 @@ appinventor/blocklyeditor/tests/com/google/appinventor/generators_unit/test_list
 
 and use that as a template.  All you need need to do is
 define four appropriate values (see test_lists_create_with.js).  Then
-install the test in BlocklyEvalTest.java
+install the test in BlocklyCodeGeneratorTest.java
 
 
 
