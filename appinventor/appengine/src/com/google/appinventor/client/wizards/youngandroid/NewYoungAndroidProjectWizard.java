@@ -16,8 +16,8 @@ import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.event.dom.client.KeyCodes;
-import com.google.gwt.event.dom.client.KeyUpEvent;
-import com.google.gwt.event.dom.client.KeyUpHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DeferredCommand;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -42,9 +42,9 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
     setStylePrimaryName("ode-DialogBox");
 
     projectNameTextBox = new LabeledTextBox(MESSAGES.projectNameLabel());
-    projectNameTextBox.getTextBox().addKeyUpHandler(new KeyUpHandler() {
+    projectNameTextBox.getTextBox().addKeyDownHandler(new KeyDownHandler() {
       @Override
-      public void onKeyUp(KeyUpEvent event) {
+      public void onKeyDown(KeyDownEvent event) {
         int keyCode = event.getNativeKeyCode();
         if (keyCode == KeyCodes.KEY_ENTER) {
           handleOkClick();
@@ -80,7 +80,8 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
               parameters, callbackCommand);
           Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);
         } else {
-          new NewYoungAndroidProjectWizard().center();
+          show();
+          center();
           return;
         }
       }
