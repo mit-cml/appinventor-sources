@@ -27,7 +27,7 @@ public final class AppInventorFeatures {
 
   public static boolean sendBugReports() {
     // Set this to true if you want to prompt the user to report bugs.
-    return false;
+    return true;
   }
 
   public static boolean allowMultiScreenApplications() {
