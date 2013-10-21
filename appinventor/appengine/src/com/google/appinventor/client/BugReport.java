@@ -23,8 +23,7 @@ public final class BugReport {
   // TODO(halabelson): Decide what to do when we release.
   // TODO(user): Decide what to do.
   private static final String BUG_REPORT_FORM_LINK =
-      "http://code.google.com/p/app-inventor-for-android/wiki/ReportingBugs";
-
+    "/ode/feedback";
 
   public static String getBugReportLink() {
     return getBugReportLink("");
@@ -50,14 +49,16 @@ public final class BugReport {
    */
   private static String getBugReportLink(String additionalInformation) {
     // TODO(user): additionalInformation, notes and foundIn all appear to be ignored.
-    String notes = Urls.escapeQueryParameter("Browser: " + getUserAgent() + "\n\n" +
-        "Please attach a screenshot to help us fix the problem!\n\n" +
-    "Steps to reproduce:\n");
+    String notes = Urls.escapeQueryParameter("Browser: " + getUserAgent());
     String foundIn = Urls.escapeQueryParameter(GitBuildId.getVersion());
-    return BUG_REPORT_FORM_LINK;
-
+    long projectId = -1;        // Default value if the attempt to get the value fails...
+    try {
+      projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
+    } catch (Exception e) {
+      // Not sure there is much we can do here!
+    }
+    return BUG_REPORT_FORM_LINK + "?notes=" + notes + "&foundIn=" + foundIn + "&projectId=" + projectId + "&faultData=" + additionalInformation;
   }
-  
 
   /**
    * Returns information regarding the user agent (aka browser).
