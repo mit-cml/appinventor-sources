@@ -35,18 +35,16 @@ Blockly.Language.InstantInTime = function () { return 'InstantInTime'; };
 // and by the string "COMPONENT"
 // The Yail type 'any' is repsented by Javascript null, to match
 // Blockly's convention
-Blockly.Language.YailTypeToBlocklyTypeMap =
-    {
-        'number':{input:"Number",output:["Number","String"]},
-        'text':{input:"String",output:["Number","String"]},
-        'boolean':{input:"Boolean",output:["Boolean","String"]},
-        'list':{input:"Array",output:["Array","String"]},
-        'component':{input:"COMPONENT",output:"COMPONENT"},
-        'InstantInTime':{input:Blockly.Language.InstantInTime,output:Blockly.Language.InstantInTime},
-        'any':{input:null,output:null}
-
-        //add  more types here
-    }
+Blockly.Language.YailTypeToBlocklyTypeMap = {
+  'number':{input:"Number",output:["Number","String"]},
+  'text':{input:"String",output:["Number","String"]},
+  'boolean':{input:"Boolean",output:["Boolean","String"]},
+  'list':{input:"Array",output:["Array","String"]},
+  'component':{input:"COMPONENT",output:"COMPONENT"},
+  'InstantInTime':{input:Blockly.Language.InstantInTime,output:Blockly.Language.InstantInTime},
+  'any':{input:null,output:null}
+  //add  more types here
+};
 
 Blockly.Language.OUTPUT = 1;
 Blockly.Language.INPUT = 0;
@@ -56,12 +54,12 @@ Blockly.Language.YailTypeToBlocklyType = function(yail,inputOrOutput) {
     var inputOrOutputName = (inputOrOutput == Blockly.Language.OUTPUT ? "output" : "input");
     var bType = Blockly.Language.YailTypeToBlocklyTypeMap[yail][inputOrOutputName];
 
-    if (bType != null || yail == 'any') {
+    if (bType !== null || yail == 'any') {
         return bType;
     } else {
         throw new Error("Unknown Yail type: " + yail + " -- YailTypeToBlocklyType");
     }
-}
+};
 
 
 // Blockly doesn't wrap tooltips, so these can get too wide.  We'll create our own tooltip setter
@@ -69,7 +67,7 @@ Blockly.Language.YailTypeToBlocklyType = function(yail,inputOrOutput) {
 
 Blockly.Language.setTooltip = function(block, tooltip) {
     block.setTooltip(Blockly.Language.wrapSentence(tooltip, 60));
-}
+};
 
 // Wrap a string by splitting at spaces. Permit long chunks if there
 // are no spaces.
@@ -81,10 +79,10 @@ Blockly.Language.wrapSentence = function(str, len) {
   if (place == -1) {
     return str.substring(0, len).trim() + Blockly.Language.wrapSentence(str.substring(len), len);
   } else {
-    return str.substring(0, place).trim() + "\n" + 
+    return str.substring(0, place).trim() + "\n" +
            Blockly.Language.wrapSentence(str.substring(place), len);
   }
-}
+};
 
 
 

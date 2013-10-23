@@ -29,7 +29,7 @@ import android.widget.EditText;
     "<p>Text boxes are usually used with the <code>Button</code> " +
     "component, with the user clicking on the button when text entry is " +
     "complete.</p>",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class PasswordTextBox extends TextBoxBase {
   /**

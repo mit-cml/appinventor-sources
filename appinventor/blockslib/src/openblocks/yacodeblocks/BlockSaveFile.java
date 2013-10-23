@@ -948,6 +948,10 @@ public class BlockSaveFile {
       // animation type. No blocks need to be modified to upgrade to version 6.
       blkCompVersion = 6;
     }
+    if (blkCompVersion < 7) {
+      // Added ShowFilterBar property
+      blkCompVersion = 7;
+    }
     return blkCompVersion;
   }
 

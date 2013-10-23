@@ -35,12 +35,13 @@ goog.provide('Blockly.Xml');
  * @return {!Element} XML document.
  */
 Blockly.Xml.workspaceToDom = function(workspace) {
+  var width = Blockly.svgSize().width;
   var xml = goog.dom.createDom('xml');
   var blocks = workspace.getTopBlocks(true);
   for (var i = 0, block; block = blocks[i]; i++) {
     var element = Blockly.Xml.blockToDom_(block);
     var xy = block.getRelativeToSurfaceXY();
-    element.setAttribute('x', Blockly.RTL ? -xy.x : xy.x);
+    element.setAttribute('x', Blockly.RTL ? width - xy.x : xy.x);
     element.setAttribute('y', xy.y);
     xml.appendChild(element);
   }
@@ -118,6 +119,15 @@ Blockly.Xml.blockToDom_ = function(block) {
   }
   if (block.disabled) {
     element.setAttribute('disabled', true);
+  }
+  if (!block.isDeletable()) {
+    element.setAttribute('deletable', false);
+  }
+  if (!block.isMovable()) {
+    element.setAttribute('movable', false);
+  }
+  if (!block.isEditable()) {
+    element.setAttribute('editable', false);
   }
 
   if (block.nextConnection) {
@@ -199,13 +209,14 @@ Blockly.Xml.textToDom = function(text) {
  * @param {!Element} xml XML DOM.
  */
 Blockly.Xml.domToWorkspace = function(workspace, xml) {
+  var width = Blockly.svgSize().width;
   for (var x = 0, xmlChild; xmlChild = xml.childNodes[x]; x++) {
     if (xmlChild.nodeName.toLowerCase() == 'block') {
       var block = Blockly.Xml.domToBlock_(workspace, xmlChild);
       var blockX = parseInt(xmlChild.getAttribute('x'), 10);
       var blockY = parseInt(xmlChild.getAttribute('y'), 10);
       if (!isNaN(blockX) && !isNaN(blockY)) {
-        block.moveBy(Blockly.RTL ? -blockX : blockX, blockY);
+        block.moveBy(Blockly.RTL ? width - blockX : blockX, blockY);
       }
     }
   }
@@ -223,6 +234,31 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
   var prototypeName = xmlBlock.getAttribute('type');
   var block = new Blockly.Block(workspace, prototypeName);
   block.initSvg();
+
+  var inline = xmlBlock.getAttribute('inline');
+  if (inline) {
+    block.setInputsInline(inline == 'true');
+  }
+  var collapsed = xmlBlock.getAttribute('collapsed');
+  if (collapsed) {
+    block.setCollapsed(collapsed == 'true');
+  }
+  var disabled = xmlBlock.getAttribute('disabled');
+  if (disabled) {
+    block.setDisabled(disabled == 'true');
+  }
+  var deletable = xmlBlock.getAttribute('deletable');
+  if (deletable) {
+    block.setDeletable(deletable == 'true');
+  }
+  var movable = xmlBlock.getAttribute('movable');
+  if (movable) {
+    block.setMovable(movable == 'true');
+  }
+  var editable = xmlBlock.getAttribute('editable');
+  if (editable) {
+    block.setEditable(editable == 'true');
+  }
 
   var blockChild = null;
   for (var x = 0, xmlChild; xmlChild = xmlBlock.childNodes[x]; x++) {
@@ -303,24 +339,12 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
     }
   }
 
-  var inline = xmlBlock.getAttribute('inline');
-  if (inline) {
-    block.setInputsInline(inline == 'true');
-  }
-
-  var collapsed = xmlBlock.getAttribute('collapsed');
-  if (collapsed) {
-    block.setCollapsed(collapsed == 'true');
-  }
-
-  var disabled = xmlBlock.getAttribute('disabled');
-  if (disabled) {
-    block.setDisabled(disabled == 'true');
-  }
-
-  if (!blockChild) {
-    // Rendering a block renders all those above it.
-    // Therefore one only needs to render the leaf blocks.
+  var next = block.nextConnection && block.nextConnection.targetBlock();
+  if (next) {
+    // Next block in a stack needs to square off its corners.
+    // Rendering a child will render its parent.
+    next.render();
+  } else {
     block.render();
   }
   return block;

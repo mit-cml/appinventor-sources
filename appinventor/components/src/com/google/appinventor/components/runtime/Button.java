@@ -18,7 +18,7 @@ import com.google.appinventor.components.common.YaVersion;
  *
  */
 @DesignerComponent(version = YaVersion.BUTTON_COMPONENT_VERSION,
-    category = ComponentCategory.BASIC,
+    category = ComponentCategory.USERINTERFACE,
     description = "Button with the ability to detect clicks.  Many aspects " +
     "of its appearance can be changed, as well as whether it is clickable " +
     "(<code>Enabled</code>), can be changed in the Designer or in the Blocks " +

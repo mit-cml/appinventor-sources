@@ -1,5 +1,5 @@
 /**
- * Visual Blocks Language
+ * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
  * http://blockly.googlecode.com/
@@ -94,7 +94,8 @@ Blockly.Procedures.procTupleComparator_ = function(ta, tb) {
  * @return {string} Non-colliding name.
  */
 Blockly.Procedures.findLegalName = function(name, block) {
-  if (!block.workspace.editable) {
+  if (block.isInFlyout) {
+    // Flyouts can have multiple procedures called 'procedure'.
     return name;
   }
   name = name.replace(/\s+/g, '');
@@ -144,9 +145,6 @@ Blockly.Procedures.isLegalName = function(name, workspace, opt_exclude) {
  * @this {!Blockly.FieldVariable}
  */
 Blockly.Procedures.rename = function(text) {
-  if (!this.sourceBlock_.editable) {
-    return text;
-  }
   // Strip leading and trailing whitespace.  Beyond this, all names are legal.
   text = text.replace(/^[\s\xa0]+|[\s\xa0]+$/g, '');
 
@@ -188,6 +186,10 @@ Blockly.Procedures.flyoutCategory = function(blocks, gaps, margin, workspace) {
     block.initSvg();
     blocks.push(block);
     gaps.push(margin * 2);
+  }
+  if (gaps.length) {
+    // Add slightly larger gap between system blocks and user calls.
+    gaps[gaps.length - 1] = margin * 3;
   }
 
   function populateProcedures(procedureList, templateName) {

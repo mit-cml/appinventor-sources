@@ -327,6 +327,10 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     return form;
   }
 
+  public String getComponentInstanceTypeName(String instanceName) {
+    return getComponents().get(instanceName).getType();
+  }
+
   // private methods
 
   /*

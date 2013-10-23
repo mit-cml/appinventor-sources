@@ -342,8 +342,8 @@ Blockly.Yail.math_tan = function() {
 
 Blockly.Yail.math_atan2 = function() {
   // atan2 operators.
-  var argument0 = Blockly.Yail.valueToCode(this, 'X', Blockly.Yail.ORDER_NONE) || 1;
-  var argument1 = Blockly.Yail.valueToCode(this, 'Y', Blockly.Yail.ORDER_NONE) || 1;
+  var argument0 = Blockly.Yail.valueToCode(this, 'Y', Blockly.Yail.ORDER_NONE) || 1;
+  var argument1 = Blockly.Yail.valueToCode(this, 'X', Blockly.Yail.ORDER_NONE) || 1;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "atan2-degrees"
       + Blockly.Yail.YAIL_SPACER;
   code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
