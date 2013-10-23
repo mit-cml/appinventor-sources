@@ -75,7 +75,7 @@ Blockly.LANG_CONTROLS_IF_TOOLTIP_4 = 'If the first value is true, then do the fi
 Blockly.LANG_CONTROLS_IF_MSG_IF = 'if';
 Blockly.LANG_CONTROLS_IF_MSG_ELSEIF = 'else if';
 Blockly.LANG_CONTROLS_IF_MSG_ELSE = 'else';
-Blockly.LANG_CONTROLS_IF_MSG_THEN = 'do';
+Blockly.LANG_CONTROLS_IF_MSG_THEN = 'then';
 
 Blockly.LANG_CONTROLS_IF_IF_TITLE_IF = 'if';
 Blockly.LANG_CONTROLS_IF_IF_TOOLTIP = 'Add, remove, or reorder sections\n' +
@@ -163,8 +163,9 @@ Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
 
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#doreturn';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
-Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_THEN_RETURN = 'then-return';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'return';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do then return';
 
 
 Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate';
@@ -782,14 +783,15 @@ Blockly.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
 Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure with no return value.';
 
 Blockly.LANG_PROCEDURES_DOTHENRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#doreturn';
-Blockly.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'then-return';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_DO = 'do';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'return';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do';
 
 Blockly.LANG_PROCEDURES_DEFRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#return';
 Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE;
 Blockly.LANG_PROCEDURES_DEFRETURN_DO = Blockly.LANG_PROCEDURES_DEFNORETURN_DO;
-Blockly.LANG_PROCEDURES_DEFRETURN_RETURN = 'return';
+Blockly.LANG_PROCEDURES_DEFRETURN_RETURN = 'result';
 Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure with a return value.';
 
 Blockly.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +
@@ -846,105 +848,156 @@ Blockly.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = 'of component';
 ///////////////////
 /* HelpURLs for Component Blocks */
 
-//Basic Components
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_HELPURL = 'http://appinventor.mit.edu/explore/content/basic#Button';
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic#buttonproperties';
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic#buttonevents';
+//User Interface Components
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface#Button';
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface#buttonproperties';
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface#buttonevents';
 
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Canvas';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#canvasproperties';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#canvasevents';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#canvasmethods';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#CheckBox';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#checkboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#checkboxevents';
 
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#CheckBox';
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#checkboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#checkboxevents';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#Clock';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#clockproperties';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#clockevents';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#clockmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Clock';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#clockproperties';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#clockevents';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#clockmethods';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#Image';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#imageproperties';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#imageevents';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#imagemethods';
 
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Image';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imageproperties';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imageevents';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imagemethods';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#Label';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#labelproperties';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#labelevents';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#labelmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Label';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#labelproperties';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#labelevents';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#labelmethods';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#ListPicker';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#listpickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#listpickerevents';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#listpickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#ListPicker';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#listpickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#listpickerevents';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#listpickermethods';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL = "http://appinventor.mit.edu/explore/content/userinterface.html#Notifier";
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#notifierproperties';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#notifierevents';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#notifiermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#PasswordTextBox';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#pwdboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#pwdboxevents';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#pwdboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#PasswordTextBox';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#pwdboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#pwdboxevents';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#pwdboxmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Screen';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#screenproperties';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#screenevents';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#screenmethods';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#Screen';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#screenproperties';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#screenevents';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#screenmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Slider';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#sliderproperties';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#sliderevents';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#slidermethods';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#Slider';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#sliderproperties';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#sliderevents';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#slidermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#TextBox';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#textboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#textboxevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#textboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#TextBox';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#textboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#textboxevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#textboxmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#TinyDB';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#tinydbproperties';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#tinydbevents';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#tinydbmethods';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL = "http://appinventor.mit.edu/explore/content/userinterface.html#WebViewer";
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#webviewerproperties';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#webviewerevents';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/userinterface.html#webviewermethods';
+
+//Layout components
+Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/layout.html#HorizontalArrangement";
+Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/layout.html#horizarrangeproperties';
+
+Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/layout.html#VerticalArrangement";
+Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/layout.html#vertarrangeproperties';
+
+Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/layout.html#TableArrangement";
+Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/layout.html#tablearrangeproperties';
 
 //Media components
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Camcorder';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#camcorderproperties';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#camcorderevents';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#camcordermethods';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#Camcorder';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#camcorderproperties';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#camcorderevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#camcordermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Camera';
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#cameraproperties';
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#cameraevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#Camera';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#cameraproperties';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#cameraevents';
 
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#ImagePicker';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imagepickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imagepickerevents';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#imagepickermethods';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#ImagePicker';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#imagepickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#imagepickerevents';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#imagepickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Player';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#playerproperties';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#playerevents';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#playermethods';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#Player';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#playerproperties';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#playerevents';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#playermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SOUND_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#Sound';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#soundproperties';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#soundevents';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#soundmethods';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#Sound';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundproperties';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundevents';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#VideoPlayer';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#videoplayerproperties';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#videoplayerevents';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/basic.html#videoplayermethods';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL = "http://appinventor.mit.edu/explore/content/media.html#SoundRecorder";
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundrecorderproperties';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundrecorderevents';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#soundrecordermethods';
 
-//Animation components
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL = "http://appinventor.mit.edu/explore/content/media.html#SpeechRecognizer";
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#speechrecognizerproperties';
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#speechrecognizerevents';
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#speechrecognizermethods';
+
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "http://appinventor.mit.edu/explore/content/media.html#TextToSpeech";
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#texttospeechproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#texttospeechevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#texttospeechmethods';
+
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#VideoPlayer';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#videoplayerproperties';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#videoplayerevents';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/media.html#videoplayermethods';
+
+// Drawing and Animation components
 Blockly.LANG_COMPONENT_BLOCK_BALL_HELPURL = "http://appinventor.mit.edu/explore/content/animation.html#Ball";
 Blockly.LANG_COMPONENT_BLOCK_BALL_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#ballproperties';
 Blockly.LANG_COMPONENT_BLOCK_BALL_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#ballevents';
 Blockly.LANG_COMPONENT_BLOCK_BALL_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#ballmethods';
 
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#Canvas';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#canvasproperties';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#canvasevents';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#canvasmethods';
+
 Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_HELPURL = "http://appinventor.mit.edu/explore/content/animation.html#ImageSprite";
 Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#imagespriteproperties';
 Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#imagespriteevents';
 Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/animation.html#imagespritemethods';
+
+//Sensor components
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#AccelerometerSensor";
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensormethods';
+
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#BarcodeScanner";
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#barcodescannerproperties';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#barcodescannerevents';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#barcodescannermethods';
+
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#LocationSensor";
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensormethods';
+
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#OrientationSensor";
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensormethods';
 
 //Social components
 Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "http://appinventor.mit.edu/explore/content/social.html#ContactPicker";
@@ -977,32 +1030,42 @@ Blockly.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL = 'http://appinventor.mi
 Blockly.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/social.html#twitterevents';
 Blockly.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/social.html#twittermethods';
 
-//Sensor components
+//Storage Components
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL = "http://appinventor.mit.edu/explore/content/storage.html#FusiontablesControl";
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#fusiontablescontrolproperties';
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#fusiontablescontrolevents';
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#fusiontablescontrolmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#AccelerometerSensor";
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#accelerometersensormethods';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#TinyDB';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinydbproperties';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinydbevents';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinydbmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#LocationSensor";
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#locationsensormethods';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL = "http://appinventor.mit.edu/explore/content/storage.html#TinyWebDB";
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinywebdbproperties';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinywebdbevents';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/storage.html#tinywebdbmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "http://appinventor.mit.edu/explore/content/sensor.html#OrientationSensor";
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/sensor.html#orientationsensormethods';
+//Connectivity components
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "http://appinventor.mit.edu/explore/content/connectivity.html#ActivityStarter";
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#activitystarterproperties';
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#activitystarterevents';
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#activitystartermethods';
 
-//Arrangement components
-Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/screenarrangement.html#HorizontalArrangement";
-Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/screenarrangement.html#horizarrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL = "http://appinventor.mit.edu/explore/content/connectivity.html#BluetoothClient";
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothclientproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothclientevents';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothclientmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/screenarrangement.html#VerticalArrangement";
-Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/screenarrangement.html#vertarrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL = "http://appinventor.mit.edu/explore/content/connectivity.html#BluetoothServer";
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothserverproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothserverevents';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#bluetoothservermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL = "http://appinventor.mit.edu/explore/content/screenarrangement.html#TableArrangement";
-Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/screenarrangement.html#tablearrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL = "http://appinventor.mit.edu/explore/content/connectivity.html#Web";
+Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#webproperties';
+Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#webevents';
+Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/connectivity.html#webmethods';
 
 //Lego mindstorms components
 Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_HELPURL = "http://appinventor.mit.edu/explore/content/legomindstorms.html#NxtDirectCommands";
@@ -1038,76 +1101,14 @@ Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_HELPURL = "http://appinventor.mit.edu/expl
 Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/legomindstorms.html#nxtdriveproperties';
 Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/legomindstorms.html#nxtdrivemethods';
 
-//Other Components
+//Internal components
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "http://appinventor.mit.edu/explore/content/internal.html#GameClient";
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#gameclientproperties';
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#gameclientevents';
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#gameclientmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#ActivityStarter";
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#activitystarterproperties';
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#activitystarterevents';
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#activitystartermethods';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL = "http://appinventor.mit.edu/explore/content/internal.html#Voting";
+Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#votingproperties';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#votingevents';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/internal.html#votingmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#BarcodeScanner";
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#barcodescannerproperties';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#barcodescannerevents';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#barcodescannermethods';
-
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#BluetoothClient";
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothclientproperties';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothclientevents';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothclientmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#BluetoothServer";
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothserverproperties';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothserverevents';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#bluetoothservermethods';
-
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#Notifier";
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#notifierproperties';
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#notifierevents';
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#notifiermethods';
-
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#SpeechRecognizer";
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#speechrecognizerproperties';
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#speechrecognizerevents';
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#speechrecognizermethods';
-
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#TextToSpeech";
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#texttospeechproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#texttospeechevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#texttospeechmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#TinyWebDB";
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#tinywebdbproperties';
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#tinywebdbevents';
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#tinywebdbmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL = "http://appinventor.mit.edu/explore/content/other.html#Web";
-Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#webproperties';
-Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#webevents';
-Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/other.html#webmethods';
-
-//Not ready for prime time components
-
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL = "http://appinventor.mit.edu/explore/content/notready.html#FusiontablesControl";
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#fusiontablescontrolproperties';
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#fusiontablescontrolevents';
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#fusiontablescontrolmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "http://appinventor.mit.edu/explore/content/notready.html#GameClient";
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#gameclientproperties';
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#gameclientevents';
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#gameclientmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL = "http://appinventor.mit.edu/explore/content/notready.html#SoundRecorder";
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#soundrecorderproperties';
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#soundrecorderevents';
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#soundrecordermethods';
-
-Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL = "http://appinventor.mit.edu/explore/content/notready.html#Voting";
-Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#votingproperties';
-Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#votingevents';
-Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#votingmethods';
-
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL = "http://appinventor.mit.edu/explore/content/notready.html#WebViewer";
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#webviewerproperties';
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#webviewerevents';
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL = 'http://appinventor.mit.edu/explore/content/notready.html#webviewermethods';

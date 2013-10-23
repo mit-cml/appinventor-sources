@@ -59,13 +59,18 @@
         <include name="1x1.gif"/>
       </fileset>
     </copy>
+    <copy todir="${build.war.dir}/">
+      <fileset dir="${lib.dir}">
+        <include name="closure-library/**/*"/>
+      </fileset>
+    </copy>
   </target>
 
   <target name="CopyBlocklyToBuildWar"
           description="Create blockly-all.js and add to war"
           depends="init,blocklyeditor_BlocklyCompile">
     <copy todir="${build.war.dir}/">
-      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"/>
+      <fileset file="${build.dir}/blocklyeditor/blockly-all.js"></fileset>
     </copy>
   </target>
   <!-- =====================================================================

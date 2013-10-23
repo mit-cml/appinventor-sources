@@ -59,7 +59,7 @@ Blockly.Language.text.connectionCheck = function(myConnection,otherConnection) {
     }
   }
   return false;
-}
+};
 
 Blockly.Language.text_join = {
   // Create a string made up of any number of elements of any type.
@@ -92,7 +92,7 @@ Blockly.Language.text_join = {
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
-    if(inputNum == 0){
+    if(inputNum === 0){
       input.appendTitle('join');
     }
     return input;

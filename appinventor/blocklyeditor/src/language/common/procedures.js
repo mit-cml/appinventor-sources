@@ -72,9 +72,45 @@ Blockly.Language.procedures_defnoreturn = {
     } else {
       this.setWarningText(null);
     }
-    // Merge the arguments into a human-readable list.
-    var paramString = this.arguments_.join(', ');
-    this.setTitleValue(paramString, 'PARAMS');
+
+    //save the first two input lines and the last input line
+    //to be re added to the block later
+    var firstInput = this.inputList[0];
+    var secondToLastInput = this.inputList[this.inputList.length - 2];
+    var lastInput = this.inputList[this.inputList.length - 1];
+
+    //stop rendering until block is recreated
+    this.rendered = false;
+
+    //remove all old argument inputs
+    var oldArgCount = this.inputList.length - 3;
+    for (var i = 0; i < oldArgCount; i++)
+    {
+      try
+      {
+        this.removeInput("arg_"+this.id+"_"+i);
+      }
+      catch(err)
+      {
+        console.log(err);
+      }
+    }
+
+    //empty the inputList then recreate it
+    this.inputList = [];
+    this.inputList = this.inputList.concat(firstInput);
+
+    //add an input title for each argument
+    //name eath input after the block and where it appears in the block to reference it later
+    for (var i = 0; i < this.arguments_.length; i++) {
+      this.appendDummyInput("arg_"+this.id+"_"+i)
+      .appendTitle(this.arguments_[i])
+      .setAlign(Blockly.ALIGN_RIGHT);
+    }
+
+    //put the last two arguments back
+    this.inputList = this.inputList.concat(secondToLastInput,lastInput);
+    this.render();
   },
   mutationToDom: function() {
     var container = document.createElement('mutation');
@@ -397,7 +433,7 @@ Blockly.Language.procedure_lexical_variable_get = {
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
     this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
@@ -416,7 +452,7 @@ Blockly.Language.procedure_lexical_variable_get = {
        //   Only changed to ??? if tether an untethered block.
        if (currentParent != cachedParent) {
          this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent != null) {
+         if  (currentParent !== null) {
            for (var i = 0; i < nameList.length; i++ ) {
              if (nameList[i] === currentName) {
                return; // no change
@@ -445,13 +481,13 @@ Blockly.Language.procedures_do_then_return = {
   init: function() {
     this.setColour(Blockly.PROCEDURE_CATEGORY_HUE);
     this.appendStatementInput('STM')
-        .appendTitle("do");
+        .appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_DO);
     this.appendValueInput('VALUE')
-        .appendTitle("then-return")
+        .appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors
 };
@@ -476,7 +512,7 @@ Blockly.Language.procedures_callnoreturn = {
     this.arguments_ = [];
     this.quarkConnections_ = null;
     this.quarkArguments_ = null;
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["PROCNAME"]}];
     //Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.procNamesFxn(false)[0][0]);
     Blockly.FieldProcedure.onChange.call(this.getTitle_("PROCNAME"),this.getTitle_("PROCNAME").getValue());
     this.appendCollapsedInput().appendTitle(this.getTitleValue('PROCNAME'), 'COLLAPSED_TEXT');
@@ -505,6 +541,12 @@ Blockly.Language.procedures_callnoreturn = {
     //     Existing param IDs.
     // Note that quarkConnections_ may include IDs that no longer exist, but
     // which might reappear if a param is reattached in the mutator.
+
+    var input;
+    var connection;
+    var x;
+
+    //fixed parameter alignment see ticket 465
     if (!paramIds) {
       // Reset the quarks (a mutator is about to open).
       this.quarkConnections_ = {};
@@ -537,10 +579,10 @@ Blockly.Language.procedures_callnoreturn = {
     var savedRendered = this.rendered;
     this.rendered = false;
     // Update the quarkConnections_ with existing connections.
-    for (var x = 0;this.getInput('ARG' + x); x++) {
-      var input = this.getInput('ARG' + x);
+    for (x = 0;this.getInput('ARG' + x); x++) {
+      input = this.getInput('ARG' + x);
       if (input) {
-        var connection = input.connection.targetConnection;
+        connection = input.connection.targetConnection;
         this.quarkConnections_[this.quarkArguments_[x]] = connection;
         // Disconnect all argument blocks and remove all inputs.
         this.removeInput('ARG' + x);
@@ -549,15 +591,15 @@ Blockly.Language.procedures_callnoreturn = {
     // Rebuild the block's arguments.
     this.arguments_ = [].concat(paramNames);
     this.quarkArguments_ = paramIds;
-    for (var x = 0; x < this.arguments_.length; x++) {
-      var input = this.appendValueInput('ARG' + x)
+    for (x = 0; x < this.arguments_.length; x++) {
+      input = this.appendValueInput('ARG' + x)
           .setAlign(Blockly.ALIGN_RIGHT)
           .appendTitle(this.arguments_[x]);
       if (this.quarkArguments_) {
         // Reconnect any child blocks.
         var quarkName = this.quarkArguments_[x];
         if (quarkName in this.quarkConnections_) {
-          var connection = this.quarkConnections_[quarkName];
+          connection = this.quarkConnections_[quarkName];
           if (!connection || connection.targetConnection ||
               connection.sourceBlock_.workspace != this.workspace) {
             // Block no longer exists or has been attached elsewhere.
@@ -566,7 +608,7 @@ Blockly.Language.procedures_callnoreturn = {
             input.connection.connect(connection);
           }
         } else if(paramIdToParamName[quarkName]){
-          var connection = this.quarkConnections_[paramIdToParamName[quarkName]];
+          connection = this.quarkConnections_[paramIdToParamName[quarkName]];
           if (connection){
             input.connection.connect(connection);
           }
@@ -634,7 +676,7 @@ Blockly.Language.procedures_callnoreturn = {
   },
   removeProcedureValue: function() {
     this.setTitleValue("none", 'PROCNAME');
-    for(var i=0;this.getInput('ARG' + i) != null;i++) {
+    for(var i=0;this.getInput('ARG' + i) !== null;i++) {
       this.removeInput('ARG' + i);
     }
   },

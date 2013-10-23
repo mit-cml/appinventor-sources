@@ -27,7 +27,7 @@ import android.widget.TextView;
     "specified through the <code>Text</code> property.  Other properties, " +
     "all of which can be set in the Designer or Blocks Editor, control " +
     "the appearance and placement of the text.",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class Label extends AndroidViewComponent {
 

@@ -33,7 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @DesignerComponent(version = YaVersion.BLUETOOTHSERVER_COMPONENT_VERSION,
     description = "Bluetooth server component",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
     iconName = "images/bluetooth.png")
 @SimpleObject

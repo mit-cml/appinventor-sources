@@ -30,11 +30,11 @@ goog.require('goog.Timer');
 
 /**
  * Class for a trash can.
- * @param {!Function} getMetrics A function that returns workspace's metrics.
+ * @param {!Blockly.Workspace} workspace The workspace to sit in.
  * @constructor
  */
-Blockly.Trashcan = function(getMetrics) {
-  this.getMetrics_ = getMetrics;
+Blockly.Trashcan = function(workspace) {
+  this.workspace_ = workspace;
 };
 
 /**
@@ -189,7 +189,7 @@ Blockly.Trashcan.prototype.dispose = function() {
   }
   this.svgBody_ = null;
   this.svgLid_ = null;
-  this.getMetrics_ = null;
+  this.workspace_ = null;
   goog.Timer.clear(this.lidTask_);
 };
 
@@ -198,7 +198,7 @@ Blockly.Trashcan.prototype.dispose = function() {
  * @private
  */
 Blockly.Trashcan.prototype.position_ = function() {
-  var metrics = this.getMetrics_();
+  var metrics = this.workspace_.getMetrics();
   if (!metrics) {
     // There are no metrics available (workspace is probably not visible).
     return;
@@ -231,11 +231,12 @@ Blockly.Trashcan.prototype.onMouseMove = function(e) {
   if (!this.svgGroup_) {
     return;
   }
-  var xy = Blockly.getAbsoluteXY_(this.svgGroup_);
-  var over = (e.clientX > xy.x) &&
-             (e.clientX < xy.x + this.WIDTH_) &&
-             (e.clientY > xy.y) &&
-             (e.clientY < xy.y + this.BODY_HEIGHT_ + this.LID_HEIGHT_);
+  var mouseXY = Blockly.mouseToSvg(e);
+  var trashXY = Blockly.getSvgXY_(this.svgGroup_);
+  var over = (mouseXY.x > trashXY.x) &&
+             (mouseXY.x < trashXY.x + this.WIDTH_) &&
+             (mouseXY.y > trashXY.y) &&
+             (mouseXY.y < trashXY.y + this.BODY_HEIGHT_ + this.LID_HEIGHT_);
   // For bonus points we might want to match the trapezoidal outline.
   if (this.isOpen != over) {
     this.setOpen_(over);

@@ -16,24 +16,26 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
     inputText: 'ac_input_text'
   };
 
-  Blockly.inject(documentBody);
-
   //This is what Blockly's init function does when passing options.
   //We are overriding the init process so putting it here
   goog.mixin(Blockly, {
     collapse : true,
+    hasScrollbars: true,
+    hasTrashcan: true,
     configForTypeBlock: typeblock_config
   });
+
+  Blockly.inject(documentBody);
 
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
   //This would also be done in Blockly init, but we need to do it here cause of
   //the different init process in drawer (it'd be undefined at the time it hits
   //init in Blockly)
-  if (Blockly.editable)
+  if (!Blockly.readOnly)
     Blockly.TypeBlock(Blockly.configForTypeBlock);
 
-  Blockly.BlocklyEditor.formName_ = formName;
+  Blockly.BlocklyEditor.formName = formName;
 
   /* [Added by paulmw in patch 15]
   There are three ways that you can change how lexical variables
@@ -128,7 +130,7 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   Blockly.bindEvent_(Blockly.mainWorkspace.getCanvas(), 'blocklyWorkspaceChange', this,
       function() {
         if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
-          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName_);
+          window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
         }
   });
 };

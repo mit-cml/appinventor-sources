@@ -33,8 +33,8 @@ goog.require('goog.Timer');
  * @param {!Function} getMetrics A function that returns workspace's metrics.
  * @constructor
  */
-Blockly.WarningIndicator = function(getMetrics) {
-  this.getMetrics_ = getMetrics;
+Blockly.WarningIndicator = function(workspace) {
+  this.workspace_ = workspace;
 };
 
 /**
@@ -102,8 +102,8 @@ Blockly.WarningIndicator.prototype.createDom = function() {
       this.iconGroup_);
   this.iconMark_ = Blockly.createSvgElement('text',
       {'class': 'blocklyWarningIconMark',
-       'x': Blockly.Warning.ICON_RADIUS,
-       'y': 2 * Blockly.Warning.ICON_RADIUS - 3}, this.iconGroup_);
+       'x': Blockly.ErrorIcon.ICON_RADIUS,
+       'y': 2 * Blockly.ErrorIcon.ICON_RADIUS - 3}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('!'));
 
 
@@ -177,7 +177,7 @@ Blockly.WarningIndicator.prototype.dispose = function() {
  * @private
  */
 Blockly.WarningIndicator.prototype.position_ = function() {
-  var metrics = this.getMetrics_();
+  var metrics = this.workspace_.getMetrics();
   if (!metrics) {
     // There are no metrics available (workspace is probably not visible).
     return;

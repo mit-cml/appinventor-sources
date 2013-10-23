@@ -85,7 +85,7 @@ import java.util.List;
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
     "and circles.</p>",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.ANIMATION)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
                  "android.permission.WRITE_EXTERNAL_STORAGE")

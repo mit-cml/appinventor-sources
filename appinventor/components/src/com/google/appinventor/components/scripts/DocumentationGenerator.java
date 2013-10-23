@@ -7,12 +7,11 @@ package com.google.appinventor.components.scripts;
 
 import com.google.appinventor.components.common.ComponentCategory;
 
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
-
-import javax.tools.Diagnostic;
-import javax.tools.FileObject;
 
 /**
  * <p>Generates user-level HTML documentation for Young Android components into a
@@ -128,19 +127,19 @@ public class DocumentationGenerator extends ComponentProcessor {
     final ComponentCategory[][] categories = {
       // Column one categories
       {
-        ComponentCategory.BASIC,
+        ComponentCategory.USERINTERFACE,
+        ComponentCategory.LAYOUT,
         ComponentCategory.MEDIA,
         ComponentCategory.ANIMATION,
         ComponentCategory.SOCIAL
       },
       // Column two categories
       {
+        ComponentCategory.STORAGE,
+        ComponentCategory.CONNECTIVITY,
         ComponentCategory.SENSORS,
-        ComponentCategory.ARRANGEMENTS,
         ComponentCategory.LEGOMINDSTORMS,
-        ComponentCategory.MISC,
-        ComponentCategory.EXPERIMENTAL,
-        //ComponentCategory.OBSOLETE// removed to remove old stuff from  the menu
+        //ComponentCategory.EXPERIMENTAL
       }
     };
 

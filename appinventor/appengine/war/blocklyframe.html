@@ -3,9 +3,9 @@
 <!-- The contents of a blocks editor iframe in App Inventor -->
 <html>
   <head>
-    <script type="text/javascript" src="closure-library-20120710-r2029/closure/goog/base.js"></script>
+    <script type="text/javascript" src="closure-library/closure/goog/base.js"></script>
     <link type="text/css" rel="stylesheet" href="media/blockly.css">
-    <link type="text/css" rel="stylesheet" href="closure-library-20120710-r2029/closure/goog/css/dialog.css">
+    <link type="text/css" rel="stylesheet" href="closure-library/closure/goog/css/dialog.css">
     <script type="text/javascript" src="blockly-all.js"></script>
     <style>
       html, body {
@@ -60,6 +60,7 @@
         }
         window.parent.ReplState.phoneState = {}; <!-- Reset the phone state when we are reloaded -->
         Blockly.BlocklyEditor.startup(document.body, formName);
+        Blockly.ComponentTypes.populateTypes();
         window.parent.BlocklyPanel_initBlocksArea(formName);
         window.parent.BlocklyPanel_checkWarningState(formName);
       }
