@@ -14,6 +14,7 @@ import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
+import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -86,6 +87,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+
 /**
  * Main entry point for Ode. Defines the startup UI elements in
  * {@link #onModuleLoad()}.
@@ -135,6 +138,7 @@ public class Ode implements EntryPoint {
   private static final int DESIGNER = 0;
   private static final int PROJECTS = 1;
   private static final int GALLERY = 2;
+  private static final int GALLERYAPP = 3;
   private static int currentView = DESIGNER;
 
   /*
@@ -157,6 +161,7 @@ public class Ode implements EntryPoint {
   private int designTabIndex;
   private int debuggingTabIndex;
   private int galleryTabIndex;
+  private int galleryAppTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -254,11 +259,22 @@ public class Ode implements EntryPoint {
   }
   
   /**
-   * Switch to the Projects tab
+   * Switch to the Gallery tab
    */
   public void switchToGalleryView() {
     currentView = GALLERY;
     deckPanel.showWidget(galleryTabIndex);
+    
+  }
+
+  
+  /**
+   * Switch to the Gallery App 
+   */
+  public void switchToGalleryAppView(GalleryApp app) {
+    currentView = GALLERYAPP;
+    GalleryAppBox.setApp(app);
+    deckPanel.showWidget(galleryAppTabIndex);
     
   }
 
@@ -587,6 +603,19 @@ public class Ode implements EntryPoint {
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
     
+     // Gallery app
+    VerticalPanel aVertPanel = new VerticalPanel();
+    aVertPanel.setWidth("100%");
+    aVertPanel.setSpacing(0);
+    HorizontalPanel appPanel = new HorizontalPanel();
+    appPanel.setWidth("100%");
+    
+    appPanel.add(GalleryAppBox.getGalleryAppBox());
+  
+    
+    aVertPanel.add(appPanel);
+    galleryAppTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(aVertPanel);
     
     
     // Debugging tab

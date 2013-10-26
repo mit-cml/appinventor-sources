@@ -290,11 +290,17 @@ public interface OdeMessages extends Messages {
   @Description("Caption for project list box.")
   String projectListBoxCaption();
   
-  // Used in boxes/ProjectListBox.java
+  // Used in boxes/GalleryListBox.java
 
   @DefaultMessage("Gallery")
   @Description("Caption for gallery list box.")
   String galleryListBoxCaption();
+
+  // Used in boxes/GalleryAppBox.java
+
+  @DefaultMessage("Gallery App")
+  @Description("Caption for gallery app box.")
+  String galleryAppBoxCaption();
 
   // Used in boxes/PropertiesBox.java
 
