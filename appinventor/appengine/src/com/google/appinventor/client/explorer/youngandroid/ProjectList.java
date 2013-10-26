@@ -131,7 +131,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         if (e.getSource() == nameHeaderLabel || e.getSource() == nameSortIndicator) {
         	clickedSortField = SortField.NAME;
         } else if (e.getSource() == dateCreatedHeaderLabel || e.getSource() == dateCreatedSortIndicator) {
-        	clickedSortField = SortField.DATE_CREATED;
+            clickedSortField = SortField.DATE_CREATED;
         } else {
             clickedSortField = SortField.DATE_MODIFIED;
         }
@@ -172,6 +172,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         break;
       case DATE_CREATED:
         dateCreatedSortIndicator.setText(text);
+        dateModifiedSortIndicator.setText("");
         nameSortIndicator.setText("");
         break;
       case DATE_MODIFIED:
@@ -214,9 +215,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
+      
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
 
       Date dateCreated = new Date(project.getDateCreated());
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
       
       Date dateModified = new Date(project.getDateModified());
