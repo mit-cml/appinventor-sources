@@ -15,6 +15,7 @@ import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
@@ -113,6 +114,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(MotdData.class);
     ObjectifyService.register(RendezvousData.class);
     ObjectifyService.register(WhiteListData.class);
+    ObjectifyService.register(FeedbackData.class);
   }
 
   ObjectifyStorageIo() {
@@ -1422,6 +1424,31 @@ public class ObjectifyStorageIo implements  StorageIo {
     if (data == null)
       return false;
     return true;
+  }
+
+  @Override
+  public void storeFeedback(final String notes, final String foundIn, final String faultData,
+    final String comments, final String datestamp, final String email, final String projectId) {
+    Objectify datastore = ObjectifyService.begin();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            FeedbackData data = new FeedbackData();
+            data.id = null;
+            data.notes = notes;
+            data.foundIn = foundIn;
+            data.faultData = faultData;
+            data.comments = comments;
+            data.datestamp = datestamp;
+            data.email = email;
+            data.projectId = projectId;
+            datastore.put(data);
+          }
+        });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
   }
 
   private void initMotd() {

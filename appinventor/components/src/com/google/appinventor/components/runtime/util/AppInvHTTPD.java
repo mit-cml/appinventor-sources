@@ -185,7 +185,7 @@ public class AppInvHTTPD extends NanoHTTPD {
         res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(false));
       } catch (Throwable ex) {
         Log.e(LOG_TAG, "newblocks: Scheme Failure", ex);
-        RetValManager.appendReturnValue(blockid, "BAD", "");
+        RetValManager.appendReturnValue(blockid, "BAD", ex.toString());
         res = new Response(HTTP_OK, MIME_JSON, RetValManager.fetch(false));
       }
       res.addHeader("Access-Control-Allow-Origin", "*");

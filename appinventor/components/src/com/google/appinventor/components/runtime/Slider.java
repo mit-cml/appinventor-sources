@@ -40,7 +40,7 @@ import com.google.appinventor.components.common.YaVersion;
         "reporting the position of the Slider thumb. The reported position of the " +
         "Slider thumb can be used to dynamically update another component " +
         "attribute, such as the font size of a TextBox or the radius of a Ball.",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public class Slider extends AndroidViewComponent implements SeekBar.OnSeekBarChangeListener {
   private final static String LOG_TAG = "Slider";

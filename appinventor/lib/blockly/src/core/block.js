@@ -28,11 +28,11 @@ goog.provide('Blockly.Block');
 goog.require('Blockly.BlockSvg');
 goog.require('Blockly.Comment');
 goog.require('Blockly.Connection');
+goog.require('Blockly.ContextMenu');
 goog.require('Blockly.ErrorIcon');
 goog.require('Blockly.Input');
 goog.require('Blockly.Language');
 goog.require('Blockly.Mutator');
-goog.require('Blockly.ContextMenu');
 goog.require('Blockly.Warning');
 goog.require('Blockly.Workspace');
 goog.require('Blockly.Xml');
@@ -62,16 +62,17 @@ Blockly.Block = function(workspace, prototypeName) {
   this.rendered = false;
   this.collapsed = false;
   this.disabled = false;
-  this.editable = workspace.editable;
-  this.deletable = workspace.editable;
   this.tooltip = '';
   this.contextMenu = true;
 
   this.parentBlock_ = null;
   this.childBlocks_ = [];
+  this.deletable_ = true;
+  this.movable_ = true;
+  this.editable_ = true;
 
-  this.isInFlyout = false;
   this.workspace = workspace;
+  this.isInFlyout = workspace.isFlyout;
 
   workspace.addTopBlock(this);
 
@@ -89,7 +90,7 @@ Blockly.Block = function(workspace, prototypeName) {
     this.init();
   }
   // Bind an onchange function, if it exists.
-  if (this.editable && goog.isFunction(this.onchange)) {
+  if ((!this.isInFlyout) && goog.isFunction(this.onchange)) {
     Blockly.bindEvent_(workspace.getCanvas(), 'blocklyWorkspaceChange', this,
                        this.onchange);
   }
@@ -127,13 +128,36 @@ Blockly.Block.prototype.warning = null;
 Blockly.Block.prototype.errorIcon = null;
 
 /**
+ * Returns a list of mutator, comment, and warning icons.
+ * @return {!Array} List of icons.
+ */
+Blockly.Block.prototype.getIcons = function() {
+  var icons = [];
+  if (this.mutator) {
+    icons.push(this.mutator);
+  }
+  if (this.comment) {
+    icons.push(this.comment);
+  }
+  if (this.warning) {
+    icons.push(this.warning);
+  }
+  if (this.errorIcon) {
+    icons.push(this.errorIcon);
+  }
+  return icons;
+};
+
+/**
  * Create and initialize the SVG representation of the block.
  */
 Blockly.Block.prototype.initSvg = function() {
   this.svg_ = new Blockly.BlockSvg(this);
   this.svg_.init();
-  Blockly.bindEvent_(this.svg_.getRootElement(), 'mousedown', this,
-                     this.onMouseDown_);
+  if (!Blockly.readOnly) {
+    Blockly.bindEvent_(this.svg_.getRootElement(), 'mousedown', this,
+                       this.onMouseDown_);
+  }
   this.workspace.getCanvas().appendChild(this.svg_.getRootElement());
 };
 
@@ -210,7 +234,7 @@ Blockly.Block.terminateDrag_ = function() {
  */
 Blockly.Block.prototype.select = function() {
   if (!this.svg_) {
-    throw 'Block is not rendered.'
+    throw 'Block is not rendered.';
   }
   if (Blockly.selected) {
     // Unselect any previously selected block.
@@ -226,7 +250,7 @@ Blockly.Block.prototype.select = function() {
  */
 Blockly.Block.prototype.unselect = function() {
   if (!this.svg_) {
-    throw 'Block is not rendered.'
+    throw 'Block is not rendered.';
   }
   Blockly.selected = null;
   this.svg_.removeSelect();
@@ -241,6 +265,8 @@ Blockly.Block.prototype.unselect = function() {
  * @param {boolean} animate If true, show a disposal animation and sound.
  */
 Blockly.Block.prototype.dispose = function(healStack, animate) {
+  // Switch off rerendering.
+  this.rendered = false;
   this.unplug(healStack);
 
   if (animate && this.svg_) {
@@ -258,13 +284,10 @@ Blockly.Block.prototype.dispose = function(healStack, animate) {
   // well as corruption of the connection database.  Therefore we must
   // methodically step through the blocks and carefully disassemble them.
 
-  // Switch off rerendering.
-  this.rendered = false;
-
   if (Blockly.selected == this) {
     Blockly.selected = null;
     // If there's a drag in-progress, unlink the mouse events.
-    Blockly.Block.terminateDrag_();
+    Blockly.terminateDrag_();
   }
 
   // First, dispose of all my children.
@@ -272,14 +295,9 @@ Blockly.Block.prototype.dispose = function(healStack, animate) {
     this.childBlocks_[x].dispose(false);
   }
   // Then dispose of myself.
-  if (this.mutator) {
-    this.mutator.dispose();
-  }
-  if (this.comment) {
-    this.comment.dispose();
-  }
-  if (this.warning) {
-    this.warning.dispose();
+  var icons = this.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    icons[x].dispose();
   }
   if (this.errorIcon) {
     this.errorIcon.dispose();
@@ -332,7 +350,6 @@ Blockly.Block.prototype.unplug = function(healStack, bump) {
       // Disconnect the next statement.
       var nextTarget = this.nextConnection.targetConnection;
       var nextBlock = this.nextConnection.targetBlock();
-      this.nextConnection.disconnect();
       nextBlock.setParent(null);
       if (previousTarget) {
         // Attach the next statement to the previous statement.
@@ -363,7 +380,7 @@ Blockly.Block.prototype.getRelativeToSurfaceXY = function() {
       var xy = Blockly.getRelativeXY_(element);
       x += xy.x;
       y += xy.y;
-      element = element.parentElement;
+      element = element.parentNode;
     } while (element && element != this.workspace.getCanvas());
   }
   return {x: x, y: y};
@@ -382,6 +399,34 @@ Blockly.Block.prototype.moveBy = function(dx, dy) {
 };
 
 /**
+ * Returns a bounding box describing the dimensions of this block.
+ * @return {!Object} Object with height and width properties.
+ */
+Blockly.Block.prototype.getHeightWidth = function() {
+  try {
+    var bBox = this.getSvgRoot().getBBox();
+  } catch (e) {
+    // Firefox has trouble with hidden elements (Bug 528969).
+    return {height: 0, width: 0};
+  }
+  if (Blockly.BROKEN_CONTROL_POINTS) {
+    /* HACK:
+     WebKit bug 67298 causes control points to be included in the reported
+     bounding box.  The render functions (below) add two 5px spacer control
+     points that we need to subtract.
+    */
+    bBox.height -= 10;
+    if (this.nextConnection) {
+      // Bottom control point partially masked by lower tab.
+      bBox.height += 4;
+    }
+  }
+  // Subtract one from the height due to the shadow.
+  bBox.height -= 1;
+  return bBox;
+};
+
+/**
  * Handle a mouse-down on an SVG block.
  * @param {!Event} e Mouse down event.
  * @private
@@ -392,16 +437,16 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
   }
   // Update Blockly's knowledge of its own location.
   Blockly.svgResize();
-  Blockly.Block.terminateDrag_();
+  Blockly.terminateDrag_();
   this.select();
   Blockly.hideChaff();
   if (Blockly.isRightButton(e)) {
     // Right-click.
     if (Blockly.ContextMenu) {
-      this.showContextMenu_(e.clientX, e.clientY);
+      this.showContextMenu_(Blockly.mouseToSvg(e));
     }
-  } else if (!this.editable) {
-    // Allow uneditable blocks to be selected and context menued, but not
+  } else if (!this.isMovable()) {
+    // Allow unmovable blocks to be selected and context menued, but not
     // dragged.  Let this event bubble up to document, so the workspace may be
     // dragged instead.
     return;
@@ -421,23 +466,14 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
         'mouseup', this, this.onMouseUp_);
     Blockly.Block.onMouseMoveWrapper_ = Blockly.bindEvent_(document,
         'mousemove', this, this.onMouseMove_);
-    // Build a list of comments that need to be moved and where they started.
+    // Build a list of bubbles that need to be moved and where they started.
     this.draggedBubbles_ = [];
     var descendants = this.getDescendants();
     for (var x = 0, descendant; descendant = descendants[x]; x++) {
-      if (descendant.mutator) {
-        var data = descendant.mutator.getIconLocation();
-        data.bubble = descendant.mutator;
-        this.draggedBubbles_.push(data);
-      }
-      if (descendant.comment) {
-        var data = descendant.comment.getIconLocation();
-        data.bubble = descendant.comment;
-        this.draggedBubbles_.push(data);
-      }
-      if (descendant.warning) {
-        var data = descendant.warning.getIconLocation();
-        data.bubble = descendant.warning;
+      var icons = descendant.getIcons();
+      for (var y = 0; y < icons.length; y++) {
+        var data = icons[y].getIconLocation();
+        data.bubble = icons[y];
         this.draggedBubbles_.push(data);
       }
       if (descendant.errorIcon) {
@@ -460,7 +496,7 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
  */
 Blockly.Block.prototype.onMouseUp_ = function(e) {
   Blockly.resetWorkspaceArrangements();
-  Blockly.Block.terminateDrag_();
+  Blockly.terminateDrag_();
   if (Blockly.selected && Blockly.highlightedConnection_) {
     // Connect two blocks together.
     Blockly.localConnection_.connect(Blockly.highlightedConnection_);
@@ -530,19 +566,18 @@ Blockly.Block.prototype.duplicate_ = function() {
 
 /**
  * Show the context menu for this block.
- * @param {number} x X-coordinate of mouse click.
- * @param {number} y Y-coordinate of mouse click.
+ * @param {!Object} xy Coordinates of mouse click, contains x and y properties.
  * @private
  */
-Blockly.Block.prototype.showContextMenu_ = function(x, y) {
-  if (!this.contextMenu) {
+Blockly.Block.prototype.showContextMenu_ = function(xy) {
+  if (Blockly.readOnly || !this.contextMenu) {
     return;
   }
   // Save the current block in a variable for use in closures.
   var block = this;
   var options = [];
 
-  if (this.deletable) {
+  if (this.isDeletable() && !block.isInFlyout) {
     // Option to duplicate this block.
     var duplicateOption = {
       text: Blockly.MSG_DUPLICATE_BLOCK,
@@ -649,11 +684,11 @@ Blockly.Block.prototype.showContextMenu_ = function(x, y) {
   options.push(helpOption);
 
   // Allow the block to add or modify options.
-  if (this.customContextMenu) {
+  if (this.customContextMenu && !block.isInFlyout) {
     this.customContextMenu(options);
   }
 
-  Blockly.ContextMenu.show(x, y, options);
+  Blockly.ContextMenu.show(xy, options);
 };
 
 /**
@@ -703,14 +738,9 @@ Blockly.Block.prototype.moveConnections_ = function(dx, dy) {
   for (var x = 0; x < myConnections.length; x++) {
     myConnections[x].moveBy(dx, dy);
   }
-  if (this.mutator) {
-    this.mutator.computeIconLocation();
-  }
-  if (this.comment) {
-    this.comment.computeIconLocation();
-  }
-  if (this.warning) {
-    this.warning.computeIconLocation();
+  var icons = this.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    icons[x].computeIconLocation();
   }
   if (this.errorIcon) {
     this.errorIcon.computeIconLocation();
@@ -745,13 +775,13 @@ Blockly.Block.prototype.setDragging_ = function(adding) {
  * @private
  */
 Blockly.Block.prototype.onMouseMove_ = function(e) {
-  if (e.type == 'mousemove' && e.x == 1 && e.y == 0 && e.button == 0) {
+  if (e.type == 'mousemove' && e.clientX <= 1 && e.clientY == 0 &&
+      e.button == 0) {
     /* HACK:
-     The current versions of Chrome for Android (18.0) has a bug where finger-
-     swipes trigger a rogue 'mousemove' event with invalid x/y coordinates.
-     Ignore events with this signature.  This may result in a one-pixel blind
-     spot in other browsers, but this shouldn't be noticable.
-    */
+     Safari Mobile 6.0 and Chrome for Android 18.0 fire rogue mousemove events
+     on certain touch actions. Ignore events with these signatures.
+     This may result in a one-pixel blind spot in other browsers,
+     but this shouldn't be noticable. */
     e.stopPropagation();
     return;
   }
@@ -813,7 +843,7 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
       Blockly.localConnection_ = localConnection;
     }
     // Flip the trash can lid if needed.
-    if (this.workspace.trashcan && this.deletable) {
+    if (this.workspace.trashcan && this.isDeletable()) {
       this.workspace.trashcan.onMouseMove(e);
     }
   }
@@ -827,7 +857,15 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
  * @private
  */
 Blockly.Block.prototype.bumpNeighbours_ = function() {
+  if (Blockly.Block.dragMode_ != 0) {
+    // Don't bump blocks during a drag.
+    return;
+  }
   var rootBlock = this.getRootBlock();
+  if (rootBlock.isInFlyout) {
+    // Don't move blocks around in a flyout.
+    return;
+  }
   // Loop though every connection on this block.
   var myConnections = this.getConnections_(false);
   for (var x = 0; x < myConnections.length; x++) {
@@ -982,6 +1020,65 @@ Blockly.Block.prototype.getDescendants = function() {
 };
 
 /**
+ * Get whether this block is deletable or not.
+ * @return {boolean} True if deletable.
+ */
+Blockly.Block.prototype.isDeletable = function() {
+  return this.deletable_ && !Blockly.readOnly;
+};
+
+/**
+ * Set whether this block is deletable or not.
+ * @param {boolean} deletable True if deletable.
+ */
+Blockly.Block.prototype.setDeletable = function(deletable) {
+  this.deletable_ = deletable;
+  this.svg_ && this.svg_.updateMovable();
+};
+
+/**
+ * Get whether this block is movable or not.
+ * @return {boolean} True if movable.
+ */
+Blockly.Block.prototype.isMovable = function() {
+  return this.movable_ && !Blockly.readOnly;
+};
+
+/**
+ * Set whether this block is movable or not.
+ * @param {boolean} movable True if movable.
+ */
+Blockly.Block.prototype.setMovable = function(movable) {
+  this.movable_ = movable;
+};
+
+/**
+ * Get whether this block is editable or not.
+ * @return {boolean} True if editable.
+ */
+Blockly.Block.prototype.isEditable = function() {
+  return this.editable_ && !Blockly.readOnly;
+};
+
+/**
+ * Set whether this block is editable or not.
+ * @param {boolean} editable True if editable.
+ */
+Blockly.Block.prototype.setEditable = function(editable) {
+  this.editable_ = editable;
+  for (var x = 0, input; input = this.inputList[x]; x++) {
+    for (var y = 0, title; title = input.titleRow[y]; y++) {
+      title.updateEditable();
+    }
+  }
+  var icons = this.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    icons[x].updateEditable();
+  }
+};
+
+
+/**
  * Get the colour of a block.
  * @return {number|Array} HSV hue value or RGB Array.
  */
@@ -1011,14 +1108,9 @@ Blockly.Block.prototype.updateColour = function() {
   if (this.svg_) {
     this.svg_.updateColour();
   }
-  if (this.mutator) {
-    this.mutator.updateColour();
-  }
-  if (this.comment) {
-    this.comment.updateColour();
-  }
-  if (this.warning) {
-    this.warning.updateColour();
+  var icons = this.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    icons[x].updateColour();
   }
   if (this.errorIcon) {
     this.errorIcon.updateColour();
@@ -1267,14 +1359,9 @@ Blockly.Block.prototype.setCollapsed = function(collapsed) {
   }
 
   if (collapsed) {
-    if (this.mutator) {
-      this.mutator.setVisible(false);
-    }
-    if (this.comment) {
-      this.comment.setVisible(false);
-    }
-    if (this.warning) {
-      this.warning.setVisible(false);
+    var icons = this.getIcons();
+    for (var x = 0; x < icons.length; x++) {
+      icons[x].setVisible(false);
     }
     if (this.errorIcon) {
       this.errorIcon.setVisible(false);
@@ -1536,6 +1623,9 @@ Blockly.Block.prototype.setWarningText = function(text) {
   if (!Blockly.Warning) {
     throw 'Warnings not supported.';
   }
+  if (this.isInFlyout) {
+    text = null;
+  }
   var changedState = false;
   if (goog.isString(text)) {
     if (!this.warning) {
@@ -1549,12 +1639,10 @@ Blockly.Block.prototype.setWarningText = function(text) {
       changedState = true;
     }
   }
-  if (this.rendered) {
+  if (changedState && this.rendered) {
     this.render();
-    if (changedState) {
-      // Adding or removing a warning icon will cause the block to change shape.
-      this.bumpNeighbours_();
-    }
+    // Adding or removing a warning icon will cause the block to change shape.
+    this.bumpNeighbours_();
   }
 };
 

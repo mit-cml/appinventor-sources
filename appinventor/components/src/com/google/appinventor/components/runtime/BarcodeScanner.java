@@ -28,7 +28,7 @@ import android.util.Log;
  */
 @DesignerComponent(version = YaVersion.BARCODESCANNER_COMPONENT_VERSION,
     description = "Component for using the Barcode Scanner to read a barcode",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/barcodeScanner.png")
 @SimpleObject

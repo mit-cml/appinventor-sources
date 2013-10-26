@@ -419,4 +419,7 @@ public interface StorageIo {
 
   boolean checkWhiteList(String email);
 
+  void storeFeedback(final String notes, final String foundIn, final String faultData,
+    final String comments, final String datestamp, final String email, final String projectId);
+
 }

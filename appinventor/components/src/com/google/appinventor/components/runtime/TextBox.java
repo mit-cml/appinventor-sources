@@ -47,7 +47,7 @@ import android.widget.EditText;
     "complete.</p>" +
     "<p>If the text entered by the user should not be displayed, use " +
     "<code>PasswordTextBox</code> instead.</p>",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class TextBox extends TextBoxBase {
   /* TODO(user): this code requires Android SDK M5 or newer - we are currently on M3

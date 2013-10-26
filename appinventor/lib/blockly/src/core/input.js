@@ -66,8 +66,8 @@ Blockly.Input = function(type, name, block, connection) {
  * @return {!Blockly.Input} The input being append to (to allow chaining).
  */
 Blockly.Input.prototype.appendTitle = function(title, opt_name) {
-  // Null or undefined generates no title.
-  if (!goog.isDefAndNotNull(title)) {
+  // Empty string, Null or undefined generates no title, unless title is named.
+  if (!title && !opt_name) {
     return this;
   }
   // Generate a FieldLabel when given a plain text title.

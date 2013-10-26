@@ -30,7 +30,7 @@ import java.io.IOException;
  */
 @DesignerComponent(version = YaVersion.SOUND_RECORDER_COMPONENT_VERSION,
     description = "<p>Multimedia component that records audio.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/soundRecorder.png")
 @SimpleObject

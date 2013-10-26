@@ -7,6 +7,8 @@ package com.google.appinventor.client.editor.simple.components;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
+
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
@@ -156,6 +158,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
     }
 
     private boolean validate(String newName) {
+
       // Check that it meets the formatting requirements.
       if (!TextValidators.isValidIdentifier(newName)) {
         Window.alert(MESSAGES.malformedComponentNameError());
@@ -172,6 +175,13 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
       // Check that it is a variable name used in the Yail code
       if (YAIL_NAMES.contains(newName)) {
         Window.alert(MESSAGES.badComponentNameError());
+        return false;
+      }
+
+      //Check that it is not a Component type name, as this is bad for generics
+      SimpleComponentDatabase COMPONENT_DATABASE = SimpleComponentDatabase.getInstance();
+      if (COMPONENT_DATABASE.isComponent(newName)) {
+        Window.alert(MESSAGES.sameAsComponentTypeNameError());
         return false;
       }
 
@@ -280,7 +290,8 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
             getForm().select();
             // Pass true to indicate that the component is being permanently deleted.
             getContainer().removeComponent(MockComponent.this, true);
-
+            // tell the component its been removed, so it can remove children's blocks
+            MockComponent.this.onRemoved();
             properties.removePropertyChangeListener(MockComponent.this);
             properties.clear();
           }
@@ -904,6 +915,11 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
        */
       getForm().fireComponentPropertyChanged(this, propertyName, newValue);
     }
+  }
+
+  public void onRemoved()
+  {
+
   }
 
   // Layout
