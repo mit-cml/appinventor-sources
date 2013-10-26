@@ -14,6 +14,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -117,8 +118,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     initWidget(panel);
     // calls to gallery get methods will eventually trigger call back to methods
     // at bottom of this file
-    gallery.GetMostRecent(0,2);
-    //gallery.GetAppsByDeveloper(0,5,"o21b3f");
+    //gallery.GetMostRecent(0,2);
+    gallery.GetAppsByDeveloper(0,5,"David Wolber");  // this works
+    gallery.GetComments("111004",0,5);  //111004 is gagnam style
     //gallery.FindApps("baseball",0,5,1);
   }
 
@@ -355,12 +357,17 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   }
   */
 
-  public void onGalleryRequestCompleted(List<GalleryApp> apps)
+  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)
   {
     if (apps != null)
       refreshTable(apps,false);
     else
       Window.alert("apps was null");
+  }
+
+  public void onCommentsRequestCompleted(List<GalleryComment> comments)
+  {
+      Window.alert("comments returned:"+comments.size());
   }
   
   public void onSourceLoadCompleted(UserProject projectInfo) {

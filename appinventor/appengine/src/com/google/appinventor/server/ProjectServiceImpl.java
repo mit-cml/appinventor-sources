@@ -32,8 +32,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import com.google.appinventor.shared.rpc.project.GalleryApp;
 
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -420,13 +421,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public List<GalleryApp> getApps(String url)
   {
-	  /*
-	  List<GalleryApp> list = Lists.newArrayListWithExpectedSize(10);
-	  
-	  GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5);
-	  list.add(app1);
-	  return list;
-	  */
 	  final String galleryURL=url;
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
@@ -484,6 +478,68 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	    
 	  GalleryApp galleryApp = new GalleryApp(title, displayName, description,"1/1/13","2/1/13",image1,sourceFileName,2,5,imageBlobId,sourceBlobId,galleryAppId);
       return galleryApp;
+      } catch (JSONException e) {
+			return null;  //need to do something here
+      }
+  }
+
+   @Override
+  public List<GalleryComment> getComments(String url)
+  {
+	  final String galleryURL=url;
+	  try {
+	    URLConnection connection = new URL(galleryURL).openConnection();
+	    //connection.setRequestProperty("Accept-Charset", charset);
+	    
+	    InputStream response = connection.getInputStream();
+	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
+	    //return s.hasNext() ? s.next() : "";
+	    ArrayList<GalleryComment> list= parseCommentList(s.next());
+	    //return list.get(0).getTitle();
+	    return list;
+	  }
+	  catch (IOException e)
+	  {
+		  //return "exception opening gallery";
+          return new ArrayList<GalleryComment>();
+	  }
+	  
+  }
+  
+  public ArrayList<GalleryComment> parseCommentList(String jsonStr)
+  {
+    ArrayList<GalleryComment> commentList = new ArrayList<GalleryComment>();
+    if (jsonStr == null || jsonStr.length() == 0)
+      return commentList;
+    try {  
+      JSONObject o = new JSONObject(jsonStr);
+	  JSONArray results = (JSONArray) o.get("result");  
+	  for (int i = 0; i < results.length(); i++) {
+        JSONObject singleComment = results.getJSONObject(i);
+	    GalleryComment galleryComment = parseComment(singleComment);
+	    if (galleryComment != null)
+		  commentList.add(galleryComment);	
+      } 
+    } catch (JSONException e) {
+			return commentList;  //need to do something here
+	}
+	return commentList;
+			
+  }
+  
+  public GalleryComment parseComment(JSONObject appJson)
+  {
+    try { 
+  	  String appId = appJson.get("app").toString();
+	  String text = appJson.get("text").toString();
+	  String timeStamp= appJson.get("timestamp").toString();
+	  String treeId=appJson.get("treeId").toString();
+       int numCurFlags=appJson.getInt("numCurFlags");
+      int numChildren=appJson.getInt("numChildren");
+      String author=appJson.get("displayName").toString();
+	    
+	  GalleryComment galleryComment = new GalleryComment(appId, timeStamp, text,numCurFlags, author, treeId,numChildren);
+      return galleryComment;
       } catch (JSONException e) {
 			return null;  //need to do something here
       }

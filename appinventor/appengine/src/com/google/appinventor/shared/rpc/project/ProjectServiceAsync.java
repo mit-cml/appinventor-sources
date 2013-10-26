@@ -113,4 +113,6 @@ public interface ProjectServiceAsync {
   callback);
   
   void getApps(String url,AsyncCallback<List<GalleryApp>> callback);
+
+  void getComments(String url,AsyncCallback<List<GalleryComment>> callback);
 }

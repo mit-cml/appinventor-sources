@@ -17,13 +17,26 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.client.youngandroid.TextValidators;
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import java.io.IOException;
+
+//import java.net.URLEncoder;
+// import java.io.UnsupportedEncodingException;
 
 
 public class GalleryClient {
 
   private GalleryRequestListener listener;
+  public static final int REQUEST_FEATURED=1;
+  public static final int REQUEST_RECENT=2;
+  public static final int REQUEST_SEARCH=3;
+  public static final int REQUEST_MOSTLIKED=4;
+  public static final int REQUEST_MOSTDOWNLOADED=5;
+  public static final int REQUEST_MOSTVIEWED=6;
+  public static final int REQUEST_BYDEVELOPER=7;
+  public static final int REQUEST_BYTAG=7;
+  public static final int REQUEST_ALL=8;
 
   public GalleryClient(GalleryRequestListener listener) {
     this.listener=listener;
@@ -32,25 +45,31 @@ public class GalleryClient {
   public void FindApps(String keywords, int start, int count, int sortOrder) {
   // we need to deal with URL encoding of keywords
   requestApps("http://gallery.appinventor.mit.edu/rpc?tag=search:"+keywords+
-      getStartCountString(start,count));		
+      getStartCountString(start,count),REQUEST_SEARCH);		
   }
 
   public void FindByTag(String tag, int start, int count, int sortOrder) {
     // need to deal with URL encoding
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=tag:"+tag+ 
-       getStartCountString(start,count));
+       getStartCountString(start,count), REQUEST_BYTAG);
   }
   // must have start and count, with filter after
   public void GetApps(int start, int count, int sortOrder, String sortField) {
     // currently returns five apps sorted by uid (app id)
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+ 
-      getStartCountString(start,count)+":asc:uid");
+      getStartCountString(start,count)+":asc:uid",REQUEST_ALL);
   }
 
   public void GetAppsByDeveloper(int start, int count, String developerName) {
-    // need to fix this one, i think it takes display name as the param but...
+    // this works, sample is:http://gallery.appinventor.mit.edu/rpc?tag=by_developer:o21b3f
+    // NOTE: do need to worry about url encoding because displayName, which is the
+    //   field we stick in as a parameter, can have spaces. For instance, my displayName
+    //   is David Wolber
+    
+    // lets try a kludge that only handles spaces
+    String encodedDevName=developerName.replace(" ","%20");
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=by_developer:"+
-        developerName+getStartCountString(start,count));
+        encodedDevName+getStartCountString(start,count), REQUEST_BYDEVELOPER);
   }
 
   public void GetCategories() {
@@ -60,40 +79,42 @@ public class GalleryClient {
 
   public void GetFeatured(int start, int count, int sortOrder) {
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=featured"+
-       getStartCountString(start,count));
+       getStartCountString(start,count), REQUEST_FEATURED);
   }
   // uploadTime,desc gets most recent uploaded of source, 
   // creationTime would give time project was first added to gallery
   public void GetMostRecent(int start, int count) {
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
-       getStartCountString(start,count)+":desc:uploadTime");
+       getStartCountString(start,count)+":desc:uploadTime", REQUEST_RECENT);
   }
   
   public void GetMostDownloaded(int start, int count) {
     //doesn't work, need Vince to add index
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
-       getStartCountString(start,count)+":desc:numDownloads");
+       getStartCountString(start,count)+":desc:numDownloads",REQUEST_MOSTDOWNLOADED);
   }
 
   public void GetMostViewed(int start, int count) {
     //doesn't work, need Vince to add index
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
-       getStartCountString(start,count)+":desc:numViewed");
+       getStartCountString(start,count)+":desc:numViewed", REQUEST_MOSTVIEWED);
   }
 
   public void GetMostLiked(int start, int count) {
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
-       getStartCountString(start,count)+":desc:numLikes");
+       getStartCountString(start,count)+":desc:numLikes", REQUEST_MOSTLIKED);
   }
 	
   public void GetProject(String id) {
     // we need another way to deal with non-list things 
     //"http://gallery.appinventor.mit.edu/rpc?tag=getinfo:"+id);
   }
-  // http://gallery.appinventor.mit.edu/rpc?tag=comments:id
-  public void GetComments(String id,int start,int count)
+  // http://gallery.appinventor.mit.edu/rpc?tag=comments:uid
+  // sample: http://gallery.appinventor.mit.edu/rpc?tag=comments:111004
+  public void GetComments(String appId,int start,int count)
   {
-    // need a different callback function
+    requestComments("http://gallery.appinventor.mit.edu/rpc?tag=comments:"+appId+
+       getStartCountString(start,count));
   }
   public void Publish(GalleryApp app) {
     // TODO Auto-generated method stub
@@ -104,7 +125,8 @@ public class GalleryClient {
   }
 
 
-  private void requestApps(String url)  {
+
+  private void requestApps(String url, final int requestId)  {
     int STATUS_CODE_OK = 200;  
 
     // Callback for when the server returns us the apps
@@ -119,13 +141,34 @@ public class GalleryClient {
           return;
         }
         // things are good so tell the ui listener
-        listener.onGalleryRequestCompleted(list);   
+        listener.onAppListRequestCompleted(list, requestId);   
       }
     };
     // ok, this is below the call back, but of course it is done first 
     ode.getProjectService().getApps(url, callback);
   }
-	
+
+  private void requestComments(String url) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<List<GalleryComment>> callback = new OdeAsyncCallback<List<GalleryComment>>(
+      // failure message
+      MESSAGES.galleryError()) {
+      @Override
+      public void onSuccess(List<GalleryComment> list) {
+        // the server has returned us something
+        if (list== null) {
+          return;
+        }
+        // things are good so tell the ui listener
+        listener.onCommentsRequestCompleted(list);   
+      }
+    };
+    // ok, this is below the call back, but of course it is done first 
+    ode.getProjectService().getComments(url, callback);
+
+
+  }	
   public void loadSourceFile(final String projectName, String sourceURL) {
     // first check name to see if valid and unique...
     if (!TextValidators.checkNewProjectName(projectName))
@@ -157,5 +200,19 @@ public class GalleryClient {
 
   private String getStartCountString(int start, int count) {
     return ":"+String.valueOf(start)+":"+String.valueOf(count);  
-  }  
+  }
+/*    
+  private String getEncoded(String param)
+  {
+    try {
+	  String result = URLEncoder.encode(param, "UTF-8");
+      return result;
+	}
+	catch (UnsupportedEncodingException e)
+	{
+		// need to do something here
+        return param;
+	}
+  }
+*/
 }

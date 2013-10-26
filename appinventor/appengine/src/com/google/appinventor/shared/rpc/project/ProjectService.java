@@ -203,4 +203,5 @@ public interface ProjectService extends RemoteService {
    *
    * @return a {@link List} 
    */
+   List<GalleryComment> getComments(String url);
 }
