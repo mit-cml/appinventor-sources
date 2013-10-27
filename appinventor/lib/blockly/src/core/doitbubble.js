@@ -24,7 +24,7 @@
  */
 'use strict';
 
-goog.provide('Blockly.Comment');
+goog.provide('Blockly.DoItBubble');
 
 
 /**
