@@ -235,31 +235,6 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
   var block = new Blockly.Block(workspace, prototypeName);
   block.initSvg();
 
-  var inline = xmlBlock.getAttribute('inline');
-  if (inline) {
-    block.setInputsInline(inline == 'true');
-  }
-  var collapsed = xmlBlock.getAttribute('collapsed');
-  if (collapsed) {
-    block.setCollapsed(collapsed == 'true');
-  }
-  var disabled = xmlBlock.getAttribute('disabled');
-  if (disabled) {
-    block.setDisabled(disabled == 'true');
-  }
-  var deletable = xmlBlock.getAttribute('deletable');
-  if (deletable) {
-    block.setDeletable(deletable == 'true');
-  }
-  var movable = xmlBlock.getAttribute('movable');
-  if (movable) {
-    block.setMovable(movable == 'true');
-  }
-  var editable = xmlBlock.getAttribute('editable');
-  if (editable) {
-    block.setEditable(editable == 'true');
-  }
-
   var blockChild = null;
   for (var x = 0, xmlChild; xmlChild = xmlBlock.childNodes[x]; x++) {
     if (xmlChild.nodeType == 3 && xmlChild.data.match(/^\s*$/)) {
@@ -328,7 +303,7 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
             throw 'Next statement is already connected.';
           }
           blockChild = Blockly.Xml.domToBlock_(workspace, firstRealGrandchild);
-          if (!blockChild.previousConnection) {
+          if (!blockChild.previousConnection) {                                                                    d
             throw 'Next block does not have previous statement.';
           }
           block.nextConnection.connect(blockChild.previousConnection);
@@ -337,6 +312,33 @@ Blockly.Xml.domToBlock_ = function(workspace, xmlBlock) {
       default:
         // Unknown tag; ignore.  Same principle as HTML parsers.
     }
+  }
+
+  // [lyn, 10/25/13] collapsing and friends need to be done *after* connections are made to sublocks.
+  // Otherwise, the subblocks won't be properly processed by block.setCollapsed and friends.
+  var inline = xmlBlock.getAttribute('inline');
+  if (inline) {
+    block.setInputsInline(inline == 'true');
+  }
+  var collapsed = xmlBlock.getAttribute('collapsed');
+  if (collapsed) {
+    block.setCollapsed(collapsed == 'true');
+  }
+  var disabled = xmlBlock.getAttribute('disabled');
+  if (disabled) {
+    block.setDisabled(disabled == 'true');
+  }
+  var deletable = xmlBlock.getAttribute('deletable');
+  if (deletable) {
+    block.setDeletable(deletable == 'true');
+  }
+  var movable = xmlBlock.getAttribute('movable');
+  if (movable) {
+    block.setMovable(movable == 'true');
+  }
+  var editable = xmlBlock.getAttribute('editable');
+  if (editable) {
+    block.setEditable(editable == 'true');
   }
 
   var next = block.nextConnection && block.nextConnection.targetBlock();

@@ -93,6 +93,14 @@ Blockly.Flyout.prototype.autoClose = true;
 Blockly.Flyout.prototype.CORNER_RADIUS = 8;
 
 /**
+ * Factor by which margin is multiplied to vertically separate blocks in flyout
+ * [lyn, 10/06/13] introduced so can change in flydown subclass.)
+ * @type {number}
+ * @const
+ */
+Blockly.Flyout.prototype.VERTICAL_SEPARATION_FACTOR = 2;
+
+/**
  * Wrapper function called when a resize occurs.
  * @type {Array.<!Array>}
  * @private
@@ -338,7 +346,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
         var block = Blockly.Xml.domToBlock_(
             /** @type {!Blockly.Workspace} */ (this.workspace_), xml);
         blocks.push(block);
-        gaps.push(margin * 3);
+        gaps.push(margin * this.VERTICAL_SEPARATION_FACTOR); // [lyn, 10/06/13] introduced VERTICAL_SEPARATION_FACTOR
       }
     }
   }
