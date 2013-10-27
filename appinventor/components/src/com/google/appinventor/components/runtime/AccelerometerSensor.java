@@ -70,6 +70,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   // Shake threshold - derived by trial
   private static final double SHAKE_THRESHOLD = 8.0;
+  
+  private static final double weakShakeThreshold = 5.0;
+  private static final double moderateShakeThreshold = 13.0;
+  private static final double strongShakeThreshold = 20.0;
 
   // Cache for shake detection
   private static final int SENSOR_CACHE_SIZE = 10;
@@ -83,6 +87,8 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private float zAccel;
 
   private int accuracy;
+  
+  private int sensitivity;
 
   // Sensor manager
   private final SensorManager sensorManager;
@@ -113,6 +119,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
     MinimumInterval(400);
+    Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE); 
   }
   
   /**
@@ -143,6 +150,38 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     minimumInterval = interval;
   }
 
+  /**
+   * Returns the sensitivity of the accelerometer.
+   *
+   * @return  one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_STRONG} 
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int Sensitivity() {
+    return sensitivity;
+  }
+  
+  /**
+   * Specifies the sensitivity of the accelerometer.
+   *
+   * @param sensitivity one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_STRONG} 
+   *  
+   * @throws IllegalArgumentException if shape is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
+	      defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
+	  @SimpleProperty(description = "Specifies the accelerometer's sensitivity (weak, moderate or strong)", userVisible = false)
+	  public void Sensitivity(int sensitivity) {
+	    this.sensitivity = sensitivity;
+	   }
+
+  
+  
   /**
    * Indicates the acceleration changed in the X, Y, and/or Z dimensions.
    */
@@ -295,7 +334,14 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
     average /= cache.size();
 
-    return Math.abs(average - currentValue) > SHAKE_THRESHOLD;
+    if (Sensitivity() == 0) {
+    	return ((Math.abs(average - currentValue) > weakShakeThreshold) && (Math.abs(average - currentValue) < moderateShakeThreshold));
+    } else if (Sensitivity() == 1) {
+    	return ((Math.abs(average - currentValue) > moderateShakeThreshold) && (Math.abs(average - currentValue) < strongShakeThreshold));
+    } else {
+    	return Math.abs(average - currentValue) > strongShakeThreshold;
+    }
+    //return Math.abs(average - currentValue) > SHAKE_THRESHOLD;
   }
 
   // SensorListener implementation

@@ -33,6 +33,13 @@ public interface Component {
   static final int ALIGNMENT_OPPOSITE = 2;
 
   /*
+   * Accelerometer sensitivity.
+   */
+  static final int ACCELEROMETER_SENSITIVITY_WEAK = 0;
+  static final int ACCELEROMETER_SENSITIVITY_MODERATE = 1;
+  static final int ACCELEROMETER_SENSITIVITY_STRONG = 2;
+   
+  /*
    * Button Styles.
    */
   static final int BUTTON_SHAPE_DEFAULT = 0;

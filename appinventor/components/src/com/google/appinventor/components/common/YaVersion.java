@@ -231,8 +231,9 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 11.
   // For YOUNG_ANDROID_VERSION 80:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 7.
-
-    public static final int YOUNG_ANDROID_VERSION = 80;
+  // For YOUNG_ANDROID_VERSION 81:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3;
+    public static final int YOUNG_ANDROID_VERSION = 81;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -304,7 +305,10 @@ public class YaVersion {
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
   //   the minimum interval to elapse before calling a shaking event when necessary.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 2;
+  
+  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
+  // - Sensitivty property was added to accelerometer.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 3;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
