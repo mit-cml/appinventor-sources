@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -68,8 +69,10 @@ import java.util.Queue;
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
-  // Shake threshold - derived by trial
-  private static final double SHAKE_THRESHOLD = 8.0;
+  // Shake thresholds - derived by trial 
+  private static final double weakShakeThreshold = 5.0;
+  private static final double moderateShakeThreshold = 13.0;
+  private static final double strongShakeThreshold = 20.0;
 
   // Cache for shake detection
   private static final int SENSOR_CACHE_SIZE = 10;
@@ -83,6 +86,8 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   private float zAccel;
 
   private int accuracy;
+
+  private int sensitivity;
 
   // Sensor manager
   private final SensorManager sensorManager;
@@ -113,8 +118,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     startListening();
     MinimumInterval(400);
+    Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE);
   }
-  
+
+
   /**
    * Returns the minimum interval required between calls to Shaking(),
    * in milliseconds.
@@ -141,6 +148,44 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   @SimpleProperty
   public void MinimumInterval(int interval) {
     minimumInterval = interval;
+  }
+
+  /**
+   * Returns a number that encodes how sensitive the AccelerometerSensor is.
+   * The choices are: 1 = weak, 2 = moderate, 3 = strong.
+   *
+   * @return  one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_STRONG}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "A number that encodes how sensitive the accelerometer is. " +
+              "The choices are: 1 = weak, 2 = moderate, " +
+              " 3 = strong.")
+  public int Sensitivity() {
+    return sensitivity;
+  }
+
+  /**
+   * Specifies the sensitivity of the accelerometer
+   * and checks that the argument is a legal value.
+   *
+   * @param sensitivity one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
+   *          {@link Component#ACCELEROMETER_SENSITIVITY_STRONG}
+   *
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
+      defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
+  @SimpleProperty
+  public void Sensitivity(int sensitivity) {
+    if ((sensitivity == 1) || (sensitivity == 2) || (sensitivity == 3)) {
+      this.sensitivity = sensitivity;
+    } else {
+      form.dispatchErrorOccurredEvent(this, "Sensitivity",
+          ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY, sensitivity);
+    }
   }
 
   /**
@@ -295,7 +340,15 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
     average /= cache.size();
 
-    return Math.abs(average - currentValue) > SHAKE_THRESHOLD;
+    if (Sensitivity() == 1) { //sensitivity is weak
+      return Math.abs(average - currentValue) > strongShakeThreshold;
+    } else if (Sensitivity() == 2) { //sensitivity is moderate
+      return ((Math.abs(average - currentValue) > moderateShakeThreshold)
+        && (Math.abs(average - currentValue) < strongShakeThreshold));
+    } else { //sensitivity is strong
+      return ((Math.abs(average - currentValue) > weakShakeThreshold)
+        && (Math.abs(average - currentValue) < moderateShakeThreshold));
+    }
   }
 
   // SensorListener implementation
