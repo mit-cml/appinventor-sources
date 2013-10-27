@@ -44,6 +44,10 @@ Blockly.Language.component_event = {
     container.setAttribute('component_type', this.typeName);
     container.setAttribute('instance_name', this.instanceName);//instance name not needed
     container.setAttribute('event_name', this.eventName);
+    if (!this.horizontalParameters) {
+      container.setAttribute('vertical_parameters', "true"); // Only store an element for vertical
+                                                             // The absence of this attribute means horizontal.
+    }
     return container;
   },
 
@@ -52,29 +56,22 @@ Blockly.Language.component_event = {
     this.typeName = xmlElement.getAttribute('component_type');
     this.instanceName = xmlElement.getAttribute('instance_name');//instance name not needed
     this.eventName = xmlElement.getAttribute('event_name');
+    var horizParams = xmlElement.getAttribute('vertical_parameters') !== "true";
+
+     // Orient parameters horizontally by default
 
     this.setColour(Blockly.ComponentBlock.COLOUR_EVENT);
 
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput().appendTitle('when ')
-    .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
-    .appendTitle('.' + this.eventName);
+    this.appendDummyInput('WHENTITLE').appendTitle('when ')
+        .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
+        .appendTitle('.' + this.eventName);
     this.componentDropDown.setValue(this.instanceName);
-    var params = this.getEventTypeObject().params;
 
-    if(params.length != 0){
-      var paramInput = this.appendDummyInput();
-    }
+    this.setParameterOrientation(horizParams);
 
-    // TODO: implement event callback parameters.  Need to figure out how to do procedures and
-    // make callback parameters consistent with that.
-    var paramLength = params.length;
-    for (var i = 0, param; param = params[i]; i++) {
-      paramInput.appendTitle(param.name + (i != paramLength -1 ? "," : ""));
-    }
-    this.appendStatementInput("DO").appendTitle('do');
     Blockly.Language.setTooltip(this, this.getEventTypeObject().description);
 
     this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getEventTypeObject().name, 'COLLAPSED_TEXT');
@@ -86,7 +83,74 @@ Blockly.Language.component_event = {
     this.onchange = Blockly.WarningHandler.checkErrors;
 
   },
-   // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
+  // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
+  // Also must create flydown params and DO input if they don't exist.
+  setParameterOrientation: function(isHorizontal) {
+    var params = this.getParameters();
+    var oldDoInput = this.getInput("DO");
+    if (!oldDoInput || (isHorizontal !== this.horizontalParameters && params.length > 0)) {
+      this.horizontalParameters = isHorizontal;
+
+      var bodyConnection = null;
+      if (oldDoInput) {
+        var bodyConnection = oldDoInput.connection.targetConnection; // Remember any body connection
+      }
+      if (this.horizontalParameters) { // Replace vertical by horizontal parameters
+
+        if (oldDoInput) {
+          // Remove inputs after title ...
+          for (var i = 0; i < params.length; i++) {
+            this.removeInput(this.paramTitleName(i)); // vertical parameters
+          }
+          this.removeInput('DO');
+        }
+
+        // .. and insert new ones:
+        if (params.length > 0) {
+          var paramInput = this.appendDummyInput('PARAMETERS')
+                               .appendTitle(" ")
+                               .setAlign(Blockly.ALIGN_LEFT);
+          for (var i = 0, param; param = params[i]; i++) {
+            paramInput.appendTitle(new Blockly.FieldParameterFlydown(param.name, false), // false means not editable
+                                   this.paramTitleName(i))
+                      .appendTitle(" ");
+          }
+        }
+
+        var newDoInput = this.appendStatementInput("DO").appendTitle('do'); // Hey, I like your new do!
+        if (bodyConnection) {
+          newDoInput.connection.connect(bodyConnection);
+        }
+
+      } else { // Replace horizontal by vertical parameters
+
+        if (oldDoInput) {
+          // Remove inputs after title ...
+          this.removeInput('PARAMETERS'); // horizontal parameters
+          this.removeInput('DO');
+        }
+
+        // .. and insert new ones:
+
+        // Vertically aligned parameters
+        for (var i = 0, param; param = params[i]; i++) {
+          this.appendDummyInput(this.paramTitleName(i))
+              .appendTitle(new Blockly.FieldParameterFlydown(param.name, false),
+                           this.paramTitleName(i))
+              .setAlign(Blockly.ALIGN_RIGHT);
+        }
+        var newDoInput = this.appendStatementInput("DO").appendTitle('do');
+        if (bodyConnection) {
+          newDoInput.connection.connect(bodyConnection);
+        }
+      }
+    }
+  },
+  // Return a list of parameter names
+  getParameters: function () {
+    return this.getEventTypeObject().params;
+  },
+  // Renames the block's instanceName and type (set in BlocklyBlock constructor), and revises its title
   rename : function(oldname, newname) {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
@@ -94,20 +158,51 @@ Blockly.Language.component_event = {
       this.prepareCollapsedText();
     }
   },
+  renameVar: function(oldName, newName) {
+    for (var i = 0, param = this.paramTitleName(i), input
+        ; input = this.getTitleValue(param)
+        ; i++, param = this.paramTitleName(i)) {
+      if (Blockly.Names.equals(oldName, input)) {
+        this.setTitleValue(param, newName);
+      }
+    }
+  },
   helpUrl : function() {
     var mode = this.typeName;
     return Blockly.ComponentBlock.EVENTS_HELPURLS[mode];
   },
 
-  getVarString : function() {
+  getVars: function() {
+    var varList = [];
+    for (var i = 0, input; input = this.getTitleValue(this.paramTitleName(i)); i++) {
+      varList.push(input);
+    }
+    return varList;
+  },
+
+  getVarString: function() {
     var varString = "";
-    for (var i = 0, param; param = this.getEventTypeObject().params[i]; i++) {
+    for (var i = 0, param; param = this.getTitleValue(this.paramTitleName(i)); i++) {
+      // [lyn, 10/13/13] get current name from block, not from underlying event (may have changed)
       if(i != 0){
         varString += " ";
       }
-      varString += param.name;
+      varString += param;
     }
     return varString;
+  },
+
+  declaredNames: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
+    return this.getVars();
+  },
+
+  blocksInScope: function() { // [lyn, 10/13/13] Interface with Blockly.LexicalVariable.renameParam
+    var doBlock = this.getInputTargetBlock('DO');
+    if (doBlock) {
+      return [doBlock];
+    } else {
+      return [];
+    }
   },
 
   getEventTypeObject : function() {
@@ -138,8 +233,14 @@ Blockly.Language.component_event = {
 
     return tb;
   },
+  paramTitleName: function(i) {
+    return "VAR" + i;
+  },
   prepareCollapsedText : function(){
     this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.getEventTypeObject().name);
+  },
+  customContextMenu: function (options) {
+    Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   }
 };
 

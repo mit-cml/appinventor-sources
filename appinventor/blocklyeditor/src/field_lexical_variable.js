@@ -23,21 +23,22 @@
  */
 'use strict';
 
-/*
- Lyn's History: 
-   [lyn, 12/23-27/12] Updated to:
-      (1) handle renaming involving local declaration statements/expressions and 
-      (2) treat name prefixes correctly when they're used. 
-   [lyn, 11/29/12] handle control constructs in getNamesInScope and referenceResult
-   [lyn, 11/24/12] Sort and remove duplicates from namespaces
-   [lyn, 11/19/12] 
-   + renameGlobal renames global references and prevents duplicates in global names; 
-   + renameParam is similar for procedure and loop names.
-   + define referenceResult, which is renaming workhorse
-   [lyn, 11/18/12] nameNotIn function for renaming by adding number at end 
-   [lyn, 11/17/12] handle eventParams in getNamesInScope
-   [lyn, 11/10/12] getGlobalNames and getNamesInScope
-*/
+/**
+ * Lyn's History:
+ *  [lyn, 10/26/13] Fixed renaming of globals and lexical vars involving empty strings and names with internal spaces.
+ *  [lyn, 12/23-27/12] Updated to:
+ *     (1) handle renaming involving local declaration statements/expressions and
+ *     (2) treat name prefixes correctly when they're used.
+ *  [lyn, 11/29/12] handle control constructs in getNamesInScope and referenceResult
+ *  [lyn, 11/24/12] Sort and remove duplicates from namespaces
+ *  [lyn, 11/19/12]
+ *    + renameGlobal renames global references and prevents duplicates in global names;
+ *    + renameParam is similar for procedure and loop names.
+ *    + define referenceResult, which is renaming workhorse
+ *  [lyn, 11/18/12] nameNotIn function for renaming by adding number at end
+ *  [lyn, 11/17/12] handle eventParams in getNamesInScope
+ *  [lyn, 11/10/12] getGlobalNames and getNamesInScope
+ */
 
 // Get all global names 
 
@@ -154,6 +155,10 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
   var allLexicalNames = []; // all non-global names
   var innermostPrefix = {}; // paulmw's mechanism for keeping track of innermost prefix in case
                             // where prefix is an annotation rather than a separate namespace
+  var parent;
+  var child;
+  var params
+  var i;
 
   // [lyn, 12/24/2012] Abstract over name handling  
   function rememberName (name, list, prefix) {
@@ -163,21 +168,21 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
     }
   }
   
-  var child = this.block_;
+  child = this.block_;
   if (child) {
-    var parent = child.getParent();
+    parent = child.getParent();
     if (parent) {
       while (parent) {
           if ((parent.type === "procedures_defnoreturn") || (parent.type === "procedures_defreturn")) {
-            var params = parent.arguments_; 
-            for (var i = 0; i < params.length; i++) {
-              rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix); 
+            params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not arguments_ instance var
+            for (i = 0; i < params.length; i++) {
+              rememberName(params[i], procedureParamNames, Blockly.procedureParameterPrefix);
             }
-          } else if (parent.category === "Component" && parent.getEventTypeObject && parent.getEventTypeObject().params) {
+          } else if (parent.category === "Component" && parent.getEventTypeObject && parent.declaredNames) {
             // Parameter names in event handlers
-            var params = parent.getEventTypeObject().params;
+            params = parent.declaredNames();
             for (var j = 0; j < params.length; j++) {
-              rememberName(params[j].name, handlerParamNames, Blockly.handlerParameterPrefix); 
+              rememberName(params[j], handlerParamNames, Blockly.handlerParameterPrefix);
             }
           // [lyn, 11/29/12] Added parameters for control constructs.
           } else if ( (parent.type === "controls_forEach")
@@ -194,9 +199,9 @@ Blockly.FieldLexicalVariable.prototype.getNamesInScope = function () {
                       || ( parent.type === "local_declaration_statement"  
                            && parent.getInputTargetBlock('STACK') == child ) // only body is in scope of names
                            ) {
-            for (var i = 0; parent.getTitleValue("VAR" + i); i++) {
-              var localName = parent.getTitleValue("VAR" + i);
-              rememberName(localName, localNames, Blockly.localNamePrefix); 
+            params = parent.declaredNames(); // [lyn, 10/13/13] Names from block, not localNames_ instance var
+            for (i = 0; i < params.length; i++) {
+              rememberName(params[i], localNames, Blockly.localNamePrefix);
             }
           }
           child = parent;
@@ -349,17 +354,21 @@ Blockly.FieldLexicalVariable.prefixSuffix = function(name) {
 Blockly.LexicalVariable = {};
 
 // [lyn, 11/19/12] Rename global to a new name.
+//
+// [lyn, 10/26/13] Modified to replace sequences of internal spaces by underscores
+// (none were allowed before), and to replace empty string by '_'.
+// Without special handling of empty string, the connection between a declaration field and
+// its references is lots.
 Blockly.LexicalVariable.renameGlobal = function (newName) {
-  // require global variables to not be an empty string or only contain spaces
-  if(newName.trim() == "") {
-    return null;
-  }
-  newName = newName.replace(/\s+/g, '');
+
   // this is bound to field_textinput object 
   var oldName = this.text_;
-  // [lyn, 11/18/12] Strip leading and trailing whitespace, and ensure that 
-  // name is not another global.
-  newName = newName.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+  newName = newName.trim() // [lyn, 10/26/13] Remove leading and trailing whitespace
+      .replace(/[\s\xa0]+/g, '_'); // [lyn, 10/26/13] Replace sequences of internal spaces by _
+  if (!newName) { // If it's the empty string
+    // [lyn, 10/26/13] Prevent the field from disappearing if empty.
+    newName = '_';
+  }
   var globals = Blockly.FieldLexicalVariable.getGlobalNames(this.sourceBlock_); 
     // this.sourceBlock excludes block being renamed from consideration
   // Potentially rename declaration against other occurrences
@@ -380,34 +389,43 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
   return newName;
 };
 
-// [lyn, 11/19/12] Rename procedure parameter, local name, or loop index variable to a new name,
+// [lyn, 11/19/12 (revised 10/11/13)]
+// Rename procedure parameter, event parameter, local name, or loop index variable to a new name,
 // avoiding variable capture in the scope of the param. Consistently renames all 
 // references to the name in getter and setter blocks. The proposed new name 
 // may be changed (by adding numbers to the end) so that it does not conflict
 // with existing names. Returns the (possibly changed) new name.
+//
+// [lyn, 10/26/13] Modified to replace sequences of internal spaces by underscores
+// (none were allowed before), and to replace empty string by '_'.
+// Without special handling of empty string, the connection between a declaration field and
+// its references is lots.
 Blockly.LexicalVariable.renameParam = function (newName) {
-  // require local variables to not be an empty string or only contain spaces
-  if(newName.trim() == "") {
-    return null;
-  }
-  newName = newName.replace(/\s+/g, '');
+
   var htmlInput = Blockly.FieldTextInput.htmlInput_;
   if(htmlInput && htmlInput.defaultValue == newName){
     return newName;
   }
   // this is bound to field_textinput object 
   var oldName = this.text_; // name being changed to newName
-  // [lyn, 11/18/12] Strip leading and trailing whitespace, and ensure that 
-  // name is not another global.
-  newName = newName.replace(/[\s\xa0]+/g, ' ').replace(/^ | $/g, '');
+  newName = newName.trim() // [lyn, 10/26/13] Remove leading and trailing whitespace
+                   .replace(/[\s\xa0]+/g, '_'); // [lyn, 10/26/13] Replace sequences of internal spaces by _
+  if (!newName) { // If it's the empty string
+    // [lyn, 10/26/13] Prevent the field from disappearing if empty.
+    newName = '_';
+  }
   var sourceBlock = this.sourceBlock_; 
     // sourceBlock is block in which name is being changed. Can be one of:
-    // * For procedure param: procedures_mutatorarg
+    // * For procedure param: procedures_mutatorarg, procedures_defnoreturn, procedures_defreturn
+    //   (last two added by lyn on 10/11/13).
     // * For local name: local_mutatorarg, local_declaration_statement, local_declaration_expression
     // * For loop name: controls_forEach, controls_forRange
+    // * For event param, event handler block (new on 10/13/13)
   var sourcePrefix = "";
   if (Blockly.showPrefixToUser) {
-    if (sourceBlock.type == "procedures_mutatorarg") {
+    if (sourceBlock.type == "procedures_mutatorarg"
+        || sourceBlock.type == "procedures_defnoreturn"
+        || sourceBlock.type == "procedures_defreturn") {
       sourcePrefix = Blockly.procedureParameterPrefix;
     } else if (sourceBlock.type == "controls_forEach") {
       sourcePrefix = Blockly.loopParameterPrefix;

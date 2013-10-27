@@ -11,6 +11,8 @@ Blockly.MSG_REMOVE_COMMENT = 'Remove Comment';
 Blockly.MSG_ADD_COMMENT = 'Add Comment';
 Blockly.MSG_EXTERNAL_INPUTS = 'External Inputs';
 Blockly.MSG_INLINE_INPUTS = 'Inline Inputs';
+Blockly.MSG_HORIZONTAL_PARAMETERS = 'Arrange Parameters Horizontally';
+Blockly.MSG_VERTICAL_PARAMETERS = 'Arrange Parameters Vertically';
 Blockly.MSG_DELETE_BLOCK = 'Delete Block';
 Blockly.MSG_DELETE_X_BLOCKS = 'Delete %1 Blocks';
 Blockly.MSG_COLLAPSE_BLOCK = 'Collapse Block';
@@ -109,24 +111,27 @@ Blockly.LANG_CONTROLS_FOR_TOOLTIP = 'Count from a start number to an end number.
   'variable "%1", and then do some statements.';
 
 Blockly.LANG_CONTROLS_FORRANGE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#forrange';
-Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'for range';
-Blockly.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'i';
-Blockly.LANG_CONTROLS_FORRANGE_INPUT_START = 'start';
-Blockly.LANG_CONTROLS_FORRANGE_INPUT_END = 'end';
-Blockly.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'step';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM = 'for each';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_VAR = 'number';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_START = 'from';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_END = 'to';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_STEP = 'by';
 Blockly.LANG_CONTROLS_FORRANGE_INPUT_DO = 'do';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_TEXT = 'for number in range';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX = 'for ';
+Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX = ' in range';
 Blockly.LANG_CONTROLS_FORRANGE_TOOLTIP = 'Runs the blocks in the \'do\' section for each numeric '
   + 'value in the range from start to end, stepping the value each time.  Use the given '
   + 'variable name to refer to the current value.';
 
-
-
-
 Blockly.LANG_CONTROLS_FOREACH_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#foreach';
-Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'for each item';
-Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR = 'x';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM = 'for each';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR = 'item';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST = 'in list';
 Blockly.LANG_CONTROLS_FOREACH_INPUT_DO = 'do';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_TEXT = 'for item in list';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX = 'for ';
+Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX = ' in list';
 Blockly.LANG_CONTROLS_FOREACH_TOOLTIP = 'Runs the blocks in the \'do\'  section for each item in '
   + 'the list.  Use the given variable name to refer to the current list item.';
 
@@ -148,14 +153,16 @@ Blockly.LANG_CONTROLS_WHILE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/su
 Blockly.LANG_CONTROLS_WHILE_TITLE = 'while';
 Blockly.LANG_CONTROLS_WHILE_INPUT_TEST = 'test';
 Blockly.LANG_CONTROLS_WHILE_INPUT_DO = 'do';
+Blockly.LANG_CONTROLS_WHILE_COLLAPSED_TEXT = 'while';
 Blockly.LANG_CONTROLS_WHILE_TOOLTIP = 'Runs the blocks in the \'do\' section while the test is '
   + 'true.';
 
 Blockly.LANG_CONTROLS_CHOOSE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#choose';
-Blockly.LANG_CONTROLS_CHOOSE_TITLE = 'choose';
-Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST = 'test';
-Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then-return';
-Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else-return';
+Blockly.LANG_CONTROLS_CHOOSE_TITLE = 'if'
+Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST = '';
+Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then';
+Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else';
+Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'if'; 
 Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
   + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
   + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
@@ -163,29 +170,32 @@ Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
 
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#doreturn';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';
-Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'return';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN = 'result';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
-Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do then return';
+Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT = 'do/result';
 
-
-Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate';
+Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE = 'evaluate but ignore result'
 Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#evaluate';
+Blockly.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'
 Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = 'Runs the connected block of code and ignores the return value (if any). Useful if need to call a procedure with a return value but don\'t need the value.';
 
+/* [lyn, 10/14/13] Removed for now. May come back some day. 
 Blockly.LANG_CONTROLS_NOTHING_TITLE = 'nothing';
 Blockly.LANG_CONTROLS_NOTHING_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#nothing';
 Blockly.LANG_CONTROLS_NOTHING_TOOLTIP = 'Returns nothing. Used to initialize variables or can be plugged into a return socket if no value needed to return. this is equivalent to null or None.';
-
+*/
 
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#openscreen';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE = 'open another screen';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME = 'screenName';
+Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT = 'open screen';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP = 'Opens a new screen in a multiple screen app.';
 
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#openscreenwithvalue';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE = 'open another screen with start value';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME = 'screenName';
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE = 'startValue';
+Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT = 'open screen with value'
 Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP = 'Opens a new screen in a multiple screen app and passes the '
   + 'start value to that screen.';
 
@@ -193,33 +203,39 @@ Blockly.LANG_CONTROLS_GET_START_VALUE_HELPURL = 'http://appinventor.mit.edu/expl
 Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE = 'get start value';
 Blockly.LANG_CONTROLS_GET_START_VALUE_INPUT_SCREENNAME = 'screenName';
 Blockly.LANG_CONTROLS_GET_START_VALUE_INPUT_STARTVALUE = 'startValue';
+Blockly.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT = 'get start value';
 Blockly.LANG_CONTROLS_GET_START_VALUE_TOOLTIP = 'Returns the value that was passed to this screen when it '
   + 'was opened, typically by another screen in a multiple-screen app. If no value was '
   + 'passed, returns the empty text.';
 
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#closescreen';;
-Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE_CLOSE = 'close screen';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE = 'close screen';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_COLLAPSED_TEXT = 'close screen';
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP = 'Close the current screen';
 
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#closescreenwithvalue';;
-Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE_CLOSE = 'close screen with value';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE = 'close screen with value';
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT = 'result';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_COLLAPSED_TEXT = 'close screen with value';
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP = 'Closes the current screen and returns a result to the '
   + 'screen that opened this one.';
 
 Blockly.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#closeapp';;
-Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE_CLOSE = 'close application';
+Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE = 'close application';
+Blockly.LANG_CONTROLS_CLOSE_APPLICATION_COLLAPSED_TEXT = 'close application';
 Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP = 'Closes all screens in this app and stops the app.';
 
 Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#getplainstarttext';
-Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_INPUT_GET = 'get plain start text';
+Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE = 'get plain start text';
+Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_COLLAPSED_TEXT = 'get plain start text';
 Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP = 'Returns the plain text that was passed to this screen when '
   + 'it was started by another app. If no value was passed, returns the empty text. For '
   + 'multiple screen apps, use get start value rather than get plain start text.';
 
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#closescreenwithplaintext';
-Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE_CLOSE = 'close screen with plain text';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE = 'close screen with plain text';
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT = 'text';
+Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_COLLAPSED_TEXT = 'close screen with plain text';
 Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP = 'Closes the current screen and returns text to the app that '
   + 'opened this one. For multiple screen apps, use close screen with value rather than '
   + 'close screen with plain text.';
@@ -741,53 +757,68 @@ Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/
 Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT = 'initialize global';
 Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_NAME = 'name';
 Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TO = 'to';
+Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT = 'global';
 Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = 'Creates a global variable and gives it the value of the attached blocks.';
 
 Blockly.LANG_VARIABLES_GET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#get';
 Blockly.LANG_VARIABLES_GET_TITLE_GET = 'get';
-Blockly.LANG_VARIABLES_GET_INPUT_ITEM = 'item';
+/* Blockly.LANG_VARIABLES_GET_INPUT_ITEM = 'item'; */ // [lyn, 10/14/13] unused
+Blockly.LANG_VARIABLES_GET_COLLAPSED_TEXT = 'get';
 Blockly.LANG_VARIABLES_GET_TOOLTIP = 'Returns the value of this variable.';
 
 Blockly.LANG_VARIABLES_SET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#set';
 Blockly.LANG_VARIABLES_SET_TITLE_SET = 'set';
-Blockly.LANG_VARIABLES_SET_INPUT_ITEM = 'item';
+/* Blockly.LANG_VARIABLES_SET_INPUT_ITEM = 'item'; */ // [lyn, 10/14/13] unused
+Blockly.LANG_VARIABLES_SET_TITLE_TO = 'to';
+Blockly.LANG_VARIABLES_SET_COLLAPSED_TEXT = 'set';
 Blockly.LANG_VARIABLES_SET_TOOLTIP = 'Sets this variable to be equal to the input.';
 
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#do';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT = 'initialize local';
-Blockly.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_NAME = 'name';
+Blockly.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME = 'name';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO = 'to';
-Blockly.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO = 'in do';
-Blockly.LANG_VARIABLES_LOCAL_DECLARATION_IN_RETURN = 'in return';
+Blockly.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO = 'in';
+Blockly.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT = 'local';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP = 'Allows you to create variables that are only accessible in the do part of this block.';
 
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#return';
+/* // These don't differ between the statement and expression 
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TITLE_INIT = 'initialize local';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_INPUT_NAME = 'name';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_INPUT_TO = 'to';
-Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN = 'in return';
+*/
+Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN = 'in';
+Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT = 'local';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP = 'Allows you to create variables that are only accessible in the return part of this block.';
 
 Blockly.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES = 'local names';
 Blockly.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TOOLTIP = '';
 
+Blockly.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME = 'name';
+Blockly.LANG_VARIABLES_LOCAL_MUTATOR_ARG_DEFAULT_VARIABLE = 'x';
+
 // Procedures Blocks.
 Blockly.LANG_PROCEDURES_DEFNORETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#do';
+Blockly.LANG_PROCEDURES_DEFNORETURN_DEFINE = 'to';
 Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE = 'procedure';
 Blockly.LANG_PROCEDURES_DEFNORETURN_DO = 'do';
-Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure with no return value.';
+Blockly.LANG_PROCEDURES_DEFNORETURN_COLLAPSED_PREFIX = 'to ';
+Blockly.LANG_PROCEDURES_DEFNORETURN_TOOLTIP = 'A procedure that does not return a value.';
 
 Blockly.LANG_PROCEDURES_DOTHENRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#doreturn';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_THEN_RETURN = 'result';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_DO = 'do';
-Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'return';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_RETURN = 'result';
 Blockly.LANG_PROCEDURES_DOTHENRETURN_TOOLTIP = 'Runs the blocks in \'do\' and returns a statement. Useful if you need to run a procedure before returning a value to a variable.';
-Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do';
+Blockly.LANG_PROCEDURES_DOTHENRETURN_COLLAPSED_TEXT = 'do/result';
 
 Blockly.LANG_PROCEDURES_DEFRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#return';
+Blockly.LANG_PROCEDURES_DEFRETURN_DEFINE = 'to';
 Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE;
 Blockly.LANG_PROCEDURES_DEFRETURN_DO = Blockly.LANG_PROCEDURES_DEFNORETURN_DO;
 Blockly.LANG_PROCEDURES_DEFRETURN_RETURN = 'result';
-Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure with a return value.';
+Blockly.LANG_PROCEDURES_DEFRETURN_COLLAPSED_PREFIX = 'to ';
+Blockly.LANG_PROCEDURES_DEFRETURN_TOOLTIP = 'A procedure returning a result value.';
 
 Blockly.LANG_PROCEDURES_DEF_DUPLICATE_WARNING = 'Warning:\n' +
     'This procedure has\n' +
@@ -798,11 +829,13 @@ Blockly.LANG_PROCEDURES_GET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/su
 Blockly.LANG_PROCEDURES_CALLNORETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#do';
 Blockly.LANG_PROCEDURES_CALLNORETURN_CALL = 'call ';
 Blockly.LANG_PROCEDURES_CALLNORETURN_PROCEDURE = 'procedure';
+Blockly.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX = 'call ';
 Blockly.LANG_PROCEDURES_CALLNORETURN_TOOLTIP = 'Call a procedure with no return value.';
 
 Blockly.LANG_PROCEDURES_CALLRETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/procedures#return';
 Blockly.LANG_PROCEDURES_CALLRETURN_CALL = Blockly.LANG_PROCEDURES_CALLNORETURN_CALL;
 Blockly.LANG_PROCEDURES_CALLRETURN_PROCEDURE = Blockly.LANG_PROCEDURES_CALLNORETURN_PROCEDURE;
+Blockly.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX = 'call ';
 Blockly.LANG_PROCEDURES_CALLRETURN_TOOLTIP = 'Call a procedure with a return value.';
 
 Blockly.LANG_PROCEDURES_MUTATORCONTAINER_TITLE = 'inputs';
