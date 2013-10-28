@@ -163,7 +163,7 @@ Blockly.Block.prototype.customContextMenu = function(options) {
       } else {
         yailText = yailTextOrArray;
       }
-      myBlock.setCommentText(yailText);
+      myBlock.setDoItBubbleText(yailText);
     };
     options.push(yailOption);
   }
