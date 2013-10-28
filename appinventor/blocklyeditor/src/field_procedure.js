@@ -62,6 +62,20 @@ Blockly.AIProcedure.getProcedureDeclarationBlocks = function(returnValue) {
   return blockArray;
 }
 
+Blockly.AIProcedure.getAllProcedureDeclarationBlocks = function () {
+  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+  var blockArray = [];
+  for (var i=0;i<topBlocks.length;i++){
+    if(topBlocks[i].type == "procedures_defnoreturn" || "procedures_defreturn" && returnValue) {
+      blockArray.push(topBlocks[i]);
+  }
+  return blockArray;
+}
+
+Blockly.AIProcedure.getAllProcedureDeclarationNames = function () {
+  var procBlocks = Blockly.AIProcedure.getAllProcedureDeclarationBlocks();
+  return procBlocks.map(function (decl) { return decl.getInputValue(); });
+}
 
 Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
   var blockArray = Blockly.mainWorkspace.getAllBlocks();
@@ -74,3 +88,27 @@ Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
     }
   }
 }
+
+// [lyn, 10/27/13] Defined as a replacement for Blockly.Procedures.rename
+Blockly.AIProcedure.renameProcedure = function (newName) {
+  // this is bound to field_textinput object
+  var oldName = this.text_;
+  var procNames =
+       Blockly.AIProcedure.getAllProcedureDeclarationNames().filter(
+           function(procName) { return procName !== newName; }
+       );
+
+  // [lyn, 10/27/13] now check legality of identifiers
+  newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
+  newName = Blockly.FieldLexicalVariable.nameNotIn(newName, procNames);
+    // Rename any callers.
+    var blocks = this.sourceBlock_.workspace.getAllBlocks();
+    for (var x = 0; x < blocks.length; x++) {
+      var func = blocks[x].renameProcedure;
+      if (func) {
+        func.call(blocks[x], oldName, newName);
+      }
+    }
+    return newName;
+  };
+};

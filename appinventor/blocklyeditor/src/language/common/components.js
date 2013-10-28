@@ -100,7 +100,7 @@ Blockly.Language.component_event = {
         if (oldDoInput) {
           // Remove inputs after title ...
           for (var i = 0; i < params.length; i++) {
-            this.removeInput(this.paramTitleName(i)); // vertical parameters
+            this.removeInput('VAR' + i); // vertical parameters
           }
           this.removeInput('DO');
         }
@@ -112,7 +112,7 @@ Blockly.Language.component_event = {
                                .setAlign(Blockly.ALIGN_LEFT);
           for (var i = 0, param; param = params[i]; i++) {
             paramInput.appendTitle(new Blockly.FieldParameterFlydown(param.name, false), // false means not editable
-                                   this.paramTitleName(i))
+                                   'VAR' + i)
                       .appendTitle(" ");
           }
         }
@@ -134,9 +134,9 @@ Blockly.Language.component_event = {
 
         // Vertically aligned parameters
         for (var i = 0, param; param = params[i]; i++) {
-          this.appendDummyInput(this.paramTitleName(i))
+          this.appendDummyInput('VAR' + i)
               .appendTitle(new Blockly.FieldParameterFlydown(param.name, false),
-                           this.paramTitleName(i))
+                           'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
         var newDoInput = this.appendStatementInput("DO").appendTitle('do');
@@ -159,9 +159,9 @@ Blockly.Language.component_event = {
     }
   },
   renameVar: function(oldName, newName) {
-    for (var i = 0, param = this.paramTitleName(i), input
+    for (var i = 0, param = 'VAR' + i, input
         ; input = this.getTitleValue(param)
-        ; i++, param = this.paramTitleName(i)) {
+        ; i++, param = 'VAR' + i) {
       if (Blockly.Names.equals(oldName, input)) {
         this.setTitleValue(param, newName);
       }
@@ -174,7 +174,7 @@ Blockly.Language.component_event = {
 
   getVars: function() {
     var varList = [];
-    for (var i = 0, input; input = this.getTitleValue(this.paramTitleName(i)); i++) {
+    for (var i = 0, input; input = this.getTitleValue('VAR' + i); i++) {
       varList.push(input);
     }
     return varList;
@@ -182,7 +182,7 @@ Blockly.Language.component_event = {
 
   getVarString: function() {
     var varString = "";
-    for (var i = 0, param; param = this.getTitleValue(this.paramTitleName(i)); i++) {
+    for (var i = 0, param; param = this.getTitleValue('VAR' + i); i++) {
       // [lyn, 10/13/13] get current name from block, not from underlying event (may have changed)
       if(i != 0){
         varString += " ";
@@ -232,9 +232,6 @@ Blockly.Language.component_event = {
     }
 
     return tb;
-  },
-  paramTitleName: function(i) {
-    return "VAR" + i;
   },
   prepareCollapsedText : function(){
     this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.getEventTypeObject().name);
