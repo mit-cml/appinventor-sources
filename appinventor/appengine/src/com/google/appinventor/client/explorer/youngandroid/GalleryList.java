@@ -43,6 +43,7 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.user.client.ui.Image;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -91,6 +92,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final FlowPanel appNewest;
   private final FlowPanel appFeatured;
   private final FlowPanel appPopular;
+  private final FlowPanel searchApp;
   private final Grid table;
   private final Label nameSortIndicator;
   private final Label dateSortIndicator;
@@ -127,6 +129,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appPopular.addStyleName("gallery-app-collection");
     Label popular = new Label("Hi you are in the popular apps");
     appPopular.add(popular);
+    searchApp = new FlowPanel();
+    appPopular.addStyleName("gallery-app-collection");
+    
     
     // Initialize UI (Old stuff ready to delete)
     table = new Grid(1, 4); // The table initially contains just the header row.
@@ -141,6 +146,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appTabs.add(appNewest, "Recent");
     appTabs.add(appFeatured, "Featured");
     appTabs.add(appPopular, "Popular");
+    appTabs.add(searchApp, "Search");
     appTabs.selectTab(0);
     appTabs.addStyleName("gallery-app-tabs");
     galleryGUI.add(appTabs);
@@ -161,83 +167,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     // gallery.GetMostRecent(0,7); // BEFORE THE MERGE
   }
 
-  /**
-   * Adds the header row to the table.
-   *
-   */
-  private void setHeaderRow() {
-    table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
-
-    HorizontalPanel nameHeader = new HorizontalPanel();
-    final Label nameHeaderLabel = new Label(MESSAGES.projectNameHeader());
-    nameHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    nameHeader.add(nameHeaderLabel);
-    nameSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    nameHeader.add(nameSortIndicator);
-    table.setWidget(0, 1, nameHeader);
-    
-    HorizontalPanel imageHeader = new HorizontalPanel();
-    Label imageHeaderLabel = new Label("image");
-    imageHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    imageHeader.add(imageHeaderLabel);
-    //dateSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    //imageHeader.add(dateSortIndicator);
-    table.setWidget(0, 2, imageHeader);
-
-    HorizontalPanel dateHeader = new HorizontalPanel();
-    Label dateHeaderLabel = new Label(MESSAGES.projectDateHeader());
-    dateHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    dateHeader.add(dateHeaderLabel);
-    dateSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    dateHeader.add(dateSortIndicator);
-    table.setWidget(0, 3, dateHeader);
-
-    MouseDownHandler mouseDownHandler = new MouseDownHandler() {
-     // @Override
-      public void onMouseDown(MouseDownEvent e) {
-        SortField clickedSortField =
-            (e.getSource() == nameHeaderLabel || e.getSource() == nameSortIndicator)
-            ? SortField.NAME
-            : SortField.DATE;
-        changeSortOrder(clickedSortField);
-      }
-    };
-    nameHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    nameSortIndicator.addMouseDownHandler(mouseDownHandler);
-    dateHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    dateSortIndicator.addMouseDownHandler(mouseDownHandler);
-  }
-
-  private void changeSortOrder(SortField clickedSortField) {
-    if (sortField != clickedSortField) {
-      sortField = clickedSortField;
-      sortOrder = SortOrder.ASCENDING;
-    } else {
-      if (sortOrder == SortOrder.ASCENDING) {
-        sortOrder = SortOrder.DESCENDING;
-      } else {
-        sortOrder = SortOrder.ASCENDING;
-      }
-    }
-  //  refreshTable(true);
-  }
-
-  private void refreshSortIndicators() {
-    String text = (sortOrder == SortOrder.ASCENDING)
-        ? "\u25B2"      // up-pointing triangle
-        : "\u25BC";     // down-pointing triangle
-    switch (sortField) {
-      case NAME:
-        nameSortIndicator.setText(text);
-        dateSortIndicator.setText("");
-        break;
-      case DATE:
-        dateSortIndicator.setText(text);
-        nameSortIndicator.setText("");
-        break;
-    }
-  }
-
   private class GalleryAppWidget {
     final Label nameLabel;
     final Label authorLabel;
@@ -249,16 +178,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
     private GalleryAppWidget(final GalleryApp app) {
       nameLabel = new Label(app.getTitle());
-      nameLabel.addClickHandler(new ClickHandler() {
-      //  @Override
-        public void onClick(ClickEvent event) {
-          // this works...
-          // gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-          
-          // now try to open an app page
-          Ode.getInstance().switchToGalleryAppView(app); 
-        }
-      });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
       authorLabel = new Label(app.getDeveloperName());
@@ -269,10 +188,27 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       image = new Image();
       image.setUrl(app.getImageURL());
       
+      
+      image.addClickHandler(new ClickHandler() {
+      //  @Override
+        public void onClick(ClickEvent event) {
+          OdeLog.log("######## I clicked on Image, open app - ");
+          Ode.getInstance().switchToGalleryAppView(app); 
+        }
+      });
+
+      authorLabel.addClickHandler(new ClickHandler() {
+      //  @Override
+        public void onClick(ClickEvent event) {
+          OdeLog.log("######## I clicked on authorLabel - ");
+          gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+        }
+      });
+      
     }
   }
 
-  private void refreshTable(List<GalleryApp> apps, boolean needToSort) {
+  private void refreshTable(List<GalleryApp> apps) {
 	  
     for (GalleryApp app: apps) {
       projectWidgets.put(app, new GalleryAppWidget(app));
@@ -280,7 +216,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     // Add apps to the container
     for (GalleryApp app : apps) {
       GalleryAppWidget gaw = projectWidgets.get(app);
-      OdeLog.log("Reaching gallery app = " + app.toString());
+//      OdeLog.log("Reaching gallery app = " + app.toString());
       
       // Add GUI components
       FlowPanel appCard = new FlowPanel();
@@ -397,14 +333,14 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)
   {
     if (apps != null)
-      refreshTable(apps, false);
+      refreshTable(apps);
     else
       Window.alert("apps was null");
   }
 
   public void onCommentsRequestCompleted(List<GalleryComment> comments)
   {
-      Window.alert("comments returned:"+comments.size());
+      // Window.alert("comments returned:"+comments.size());
   }
   
   public void onSourceLoadCompleted(UserProject projectInfo) {
