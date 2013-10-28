@@ -1181,29 +1181,17 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Use AI Companion")
+  @DefaultMessage("AI Companion")
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButton();
 
-  @DefaultMessage("Disconnect Companion")
-  @Description("Message providing details about disconnecting a wireless connection.")
-  String wirelessButtonConnected();
-
-  @DefaultMessage("Use Emulator")
+  @DefaultMessage("Emulator")
   @Description("Message providing details about starting the emulator connection.")
   String emulatorButton();
 
-  @DefaultMessage("Disconnect Emulator")
-  @Description("Message providing details about disconnecting an emulator connection.")
-  String emulatorButtonConnected();
-
-  @DefaultMessage("Use USB")
+  @DefaultMessage("USB")
   @Description("Message providing details about starting a USB connection.")
   String usbButton();
-
-  @DefaultMessage("Disconnect USB")
-  @Description("Message providing details about disconnecting a USB connection.")
-  String usbButtonConnected();
 
   @DefaultMessage("Reset Connection")
   @Description("Reset all connections.")
