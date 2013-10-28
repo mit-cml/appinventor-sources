@@ -116,6 +116,12 @@ Blockly.Block.prototype.mutator = null;
 Blockly.Block.prototype.comment = null;
 
 /**
+ * Block's doitbubble icon (if any).
+ * @type {Blockly.Comment}
+ */
+Blockly.Block.prototype.doitbubble = null;
+
+/**
  * Block's warning icon (if any).
  * @type {Blockly.Warning}
  */
@@ -139,6 +145,10 @@ Blockly.Block.prototype.getIcons = function() {
   if (this.comment) {
     icons.push(this.comment);
   }
+  //keertan
+  if (this.doitbubble) {
+	    icons.push(this.doitbubble);
+	  }
   if (this.warning) {
     icons.push(this.warning);
   }
@@ -607,7 +617,7 @@ Blockly.Block.prototype.showContextMenu_ = function(xy) {
       }
       options.push(commentOption);
     }
-
+      
     // Option to make block inline.
     if (!this.collapsed) {
       for (var i = 0; i < this.inputList.length; i++) {
@@ -1571,7 +1581,7 @@ Blockly.Block.prototype.setMutator = function(mutator) {
     }
   }
 };
-
+//MAY NEED TO WRITE ANOTHER Keertan
 /**
  * Returns the comment on this block (or '' if none).
  * @return {string} Block's comment.
@@ -1615,6 +1625,32 @@ Blockly.Block.prototype.setCommentText = function(text) {
   }
 };
 
+//keertan
+Blockly.Block.prototype.setDoItBubbleText = function(text) {
+	  if (!Blockly.Comment) {
+	    throw 'DoitBubble not supported.';
+	  }
+	  var changedState = false;
+	  if (goog.isString(text)) {
+	    if (!this.doitbubble) {
+	      this.doitbubble = new Blockly.Comment(this);
+	      changedState = true;
+	    }
+	    this.doitbubble.setText(/** @type {string} */ (text));
+	  } else {
+	    if (this.doitbubble) {
+	      this.doitbubble.dispose();
+	      changedState = true;
+	    }
+	  }
+	  if (this.rendered) {
+	    this.render();
+	    if (changedState) {
+	      // Adding or removing a doitbubble icon will cause the block to change shape.
+	      this.bumpNeighbours_();
+	    }
+	  }
+	};
 /**
  * Set this block's warning text.
  * @param {?string} text The text, or null to delete.
