@@ -473,16 +473,27 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     try { 
   	  String title = appJson.get("title").toString();
 	  String description = appJson.get("description").toString();
-	  String image1= appJson.get("image1").toString();
-	  String sourceFileName=appJson.get("sourceFileName").toString();
+	  String image1 = appJson.get("image1").toString();
+	  String sourceFileName = appJson.get("sourceFileName").toString();
       // for some reason source is a list of one item
       JSONArray sourceArray = (JSONArray) appJson.get("source");
-      String sourceBlobId=sourceArray.get(0).toString();
-      String imageBlobId=appJson.get("image1blob").toString();
-      String galleryAppId=appJson.get("uid").toString();
-      String displayName=appJson.get("displayName").toString();
+      String sourceBlobId = sourceArray.get(0).toString();
+      String imageBlobId = appJson.get("image1blob").toString();
+      String galleryAppId = appJson.get("uid").toString();
+      String displayName = appJson.get("displayName").toString();
+      String creationTime = appJson.get("creationTime").toString();
+      String uploadTime = appJson.get("uploadTime").toString();
+      int numDownloads = Integer.parseInt(appJson.get("numDownloads").toString());
+      int numViewed = Integer.parseInt(appJson.get("numViewed").toString());
+      int numLikes = Integer.parseInt(appJson.get("numLikes").toString());
+      int numComments = Integer.parseInt(appJson.get("numComments").toString());
+      
 	    
-	  GalleryApp galleryApp = new GalleryApp(title, displayName, description,"1/1/13","2/1/13",image1,sourceFileName,2,5,imageBlobId,sourceBlobId,galleryAppId);
+	  GalleryApp galleryApp = new GalleryApp(title, displayName, description,
+			  creationTime, uploadTime, image1, sourceFileName,
+			  numDownloads, numViewed, numLikes, numComments, 
+			  imageBlobId, sourceBlobId, galleryAppId);
+	  
       return galleryApp;
       } catch (JSONException e) {
 			return null;  //need to do something here

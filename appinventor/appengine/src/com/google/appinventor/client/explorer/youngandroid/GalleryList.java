@@ -32,9 +32,12 @@ import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.user.client.ui.Image;
@@ -77,16 +80,21 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   }
   private  List<GalleryApp> apps;
   private final List<GalleryApp> selectedApps;
-  private final Map<GalleryApp, ProjectWidgets> projectWidgets;
+  private final Map<GalleryApp, GalleryAppWidget> projectWidgets;
   private SortField sortField;
   private SortOrder sortOrder;
 
   // UI elements
+  private final FlowPanel galleryGUI;
+  private final TabPanel appTabs;
+  private final FlowPanel appNewest;
+  private final FlowPanel appFeatured;
+  private final FlowPanel appPopular;
   private final Grid table;
   private final Label nameSortIndicator;
   private final Label dateSortIndicator;
   
-  GalleryClient gallery=null;
+  GalleryClient gallery = null;
 
   /**
    * Creates a new GalleryList
@@ -96,28 +104,56 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 	gallery = new GalleryClient(this);
 
     selectedApps = new ArrayList<GalleryApp>();
-    projectWidgets = new HashMap<GalleryApp, ProjectWidgets>();
+    projectWidgets = new HashMap<GalleryApp, GalleryAppWidget>();
     sortField = SortField.NAME;
     sortOrder = SortOrder.ASCENDING;
-
+    
     // Initialize UI
+    galleryGUI = new FlowPanel();
+    galleryGUI.addStyleName("gallery");
+    HTML headerExtra = new HTML(
+    		"<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
+    galleryGUI.add(headerExtra);
+    
+    appTabs = new TabPanel();
+    appNewest = new FlowPanel();
+    appNewest.addStyleName("gallery-app-collection");
+    appFeatured = new FlowPanel();
+    appFeatured.addStyleName("gallery-app-collection");
+    Label featured = new Label("Hi you are in featured apps");
+    appFeatured.add(featured);
+    appPopular = new FlowPanel();
+    appPopular.addStyleName("gallery-app-collection");
+    Label popular = new Label("Hi you are in the popular apps");
+    appPopular.add(popular);
+    
+    // Initialize UI (Old stuff ready to delete)
     table = new Grid(1, 4); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
     nameSortIndicator = new Label("");
     dateSortIndicator = new Label("");
-    refreshSortIndicators();
-    setHeaderRow();
+//    refreshSortIndicators();
+//    setHeaderRow();
 
+    appTabs.add(appNewest, "Recent");
+    appTabs.add(appFeatured, "Featured");
+    appTabs.add(appPopular, "Popular");
+    appTabs.selectTab(0);
+    appTabs.addStyleName("gallery-app-tabs");
+    galleryGUI.add(appTabs);
+    
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
-
-    panel.add(table);
+    panel.add(galleryGUI);
+//    panel.add(table);
+    
     initWidget(panel);
+    
     // calls to gallery get methods will eventually trigger call back to methods
     // at bottom of this file
-    gallery.GetMostRecent(0,2);
+    gallery.GetMostRecent(0,7);
     //gallery.GetAppsByDeveloper(0,5,"o21b3f");
     //gallery.FindApps("baseball",0,5,1);
   }
@@ -199,30 +235,16 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     }
   }
 
-  private class ProjectWidgets {
-    final CheckBox checkBox;
+  private class GalleryAppWidget {
     final Label nameLabel;
-    final Label dateLabel;
+    final Label authorLabel;
+    final Label numDownloadsLabel;
+    final Label numCommentsLabel;
+    final Label numViewsLabel;
+    final Label numLikesLabel;
     final Image image;
 
-    private ProjectWidgets(final GalleryApp app) {
-      checkBox = new CheckBox();
-      checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
-       // @Override
-        public void onValueChange(ValueChangeEvent<Boolean> event) {
-          boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
-          int row = 1 + apps.indexOf(app);
-          if (isChecked) {
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-            selectedApps.add(app);
-          } else {
-            table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-            selectedApps.remove(app);
-          }
-          Ode.getInstance().getProjectToolbar().updateButtons();
-        }
-      });
-
+    private GalleryAppWidget(final GalleryApp app) {
       nameLabel = new Label(app.getTitle());
       nameLabel.addClickHandler(new ClickHandler() {
       //  @Override
@@ -234,9 +256,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
-      //Date date = new Date(app.getDate());
-      //DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
-      dateLabel = new Label(app.getCreationDate());
+      authorLabel = new Label(app.getDeveloperName());
+      numDownloadsLabel = new Label(Integer.toString(app.getDownloads()));
+      numLikesLabel = new Label(Integer.toString(app.getLikes()));
+      numViewsLabel = new Label(Integer.toString(app.getViews()));
+      numCommentsLabel = new Label(Integer.toString(app.getComments()));
       image = new Image();
       image.setUrl(app.getImageURL());
       
@@ -244,50 +268,62 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   }
 
   private void refreshTable(List<GalleryApp> apps, boolean needToSort) {
-    /*if (needToSort) {
-      // Sort the projects.
-      Comparator<GalleryApp> comparator;
-      switch (sortField) {
-        default:
-        case NAME:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_NAME_ASCENDING
-              : ProjectComparators.COMPARE_BY_NAME_DESCENDING;
-          break;
-        case DATE:
-          comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_DESCENDING;
-          break;
-      }
-      Collections.sort(apps, comparator);
-    }*/
+	  
     for (GalleryApp app: apps) {
-      projectWidgets.put(app, new ProjectWidgets(app));
+      projectWidgets.put(app, new GalleryAppWidget(app));
     }
-    refreshSortIndicators();
-    
-    // Refill the table.
-    table.resize(1 + apps.size(), 4);
-    int row = 1;
+    // Add apps to the container
     for (GalleryApp app : apps) {
-      ProjectWidgets pw = projectWidgets.get(app);
-      if (selectedApps.contains(app)) {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        pw.checkBox.setValue(true);
-      } else {
-        table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        pw.checkBox.setValue(false);
-      }
-      table.setWidget(row, 0, pw.checkBox);
-      table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row,2,pw.image);
-      table.setWidget(row, 3, pw.dateLabel);
+      GalleryAppWidget gaw = projectWidgets.get(app);
+      OdeLog.log("Reaching gallery app = " + app.toString());
       
-      row++;
-    }
+      // Add GUI components
+      FlowPanel appCard = new FlowPanel();
+      FlowPanel appCardContent = new FlowPanel();
+      
+      appCard.add(gaw.image);
+      appCard.add(appCardContent);
+      
+      // Special processing for the app title
+      HTML appTitle = new HTML("" +
+    		"<div class='gallery-title'>" + gaw.nameLabel.getText() +
+    		"<span class='paragraph-end-block'></span></div>");
+      appCardContent.add(appTitle);
+      appCardContent.add(gaw.authorLabel);
 
-    //Ode.getInstance().getProjectToolbar().updateButtons();
+      Image numViews = new Image();
+      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+      Image numDownloads = new Image();
+      numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+      Image numLikes = new Image();
+      numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+//      Image numComments = new Image();
+//      numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+
+      appCardContent.add(numViews);
+      appCardContent.add(gaw.numViewsLabel);
+      appCardContent.add(numDownloads);
+      appCardContent.add(gaw.numDownloadsLabel);
+      appCardContent.add(numLikes);
+      appCardContent.add(gaw.numLikesLabel);
+//      appCardContent.add(numComments);
+//      appCardContent.add(gaw.numCommentsLabel);
+      
+      appNewest.add(appCard);
+
+      // Add styling
+      appCard.addStyleName("gallery-card");
+      gaw.image.addStyleName("gallery-card-cover");
+//      gaw.nameLabel.addStyleName("gallery-title");
+      gaw.authorLabel.addStyleName("gallery-subtitle");
+      appCardContent.addStyleName("gallery-card-content");
+      gaw.numViewsLabel.addStyleName("gallery-meta");
+      gaw.numDownloadsLabel.addStyleName("gallery-meta");
+      gaw.numLikesLabel.addStyleName("gallery-meta");
+//      gaw.numCommentsLabel.addStyleName("gallery-meta");
+    
+    
+    }
   }
 
   /**
@@ -356,7 +392,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public void onGalleryRequestCompleted(List<GalleryApp> apps)
   {
     if (apps != null)
-      refreshTable(apps,false);
+      refreshTable(apps, false);
     else
       Window.alert("apps was null");
   }
