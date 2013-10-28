@@ -31,13 +31,16 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
+
   var code = Blockly.Yail.YAIL_DEFINE_EVENT
     + this.getTitleValue("COMPONENT_SELECTOR")
     + Blockly.Yail.YAIL_SPACER
     + this.eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
-    + this.getVarString()
+    + this.declaredNames()
+          .map(function (name) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+name;})
+          .join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_SET_THIS_FORM
     + Blockly.Yail.YAIL_SPACER

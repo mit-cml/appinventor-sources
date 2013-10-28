@@ -30,6 +30,7 @@
  *     This should never look for associated declaration, but just take arguments from given xml.
  *   + Removed render() call from updateParams. Seems unnecessary.
  *   + Specify direction of flydowns
+ *   + Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure in proc decls
  * [lyn, 10/26/13] Modify procedure parameter changeHandler to propagate name changes to caller arg labels
  *     and open mutator labels
  * [lyn, 10/25/13]
@@ -69,7 +70,8 @@ Blockly.Language.procedures_defnoreturn = {
         Blockly.LANG_PROCEDURES_DEFNORETURN_PROCEDURE, this);
     this.appendDummyInput('HEADER')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFNORETURN_DEFINE)
-        .appendTitle(new Blockly.FieldTextInput(name, Blockly.Procedures.rename), 'NAME');
+        // [lyn, 10/27/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
+        .appendTitle(new Blockly.FieldTextInput(name, Blockly.AIProcedure.renameProcedure), 'NAME');
     this.horizontalParameters = true; // horizontal by default
     this.appendStatementInput('STACK')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFNORETURN_DO);
@@ -422,7 +424,8 @@ Blockly.Language.procedures_defreturn = {
         Blockly.LANG_PROCEDURES_DEFRETURN_PROCEDURE, this);
     this.appendDummyInput('HEADER')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFRETURN_DEFINE)
-        .appendTitle(new Blockly.FieldTextInput(name, Blockly.Procedures.rename), 'NAME');
+      // [lyn, 10/27/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
+        .appendTitle(new Blockly.FieldTextInput(name, Blockly.AIProcedure.renameProcedure), 'NAME');
     this.horizontalParameters = true; // horizontal by default
     this.appendIndentedValueInput('RETURN')
         .appendTitle(Blockly.LANG_PROCEDURES_DEFRETURN_RETURN);

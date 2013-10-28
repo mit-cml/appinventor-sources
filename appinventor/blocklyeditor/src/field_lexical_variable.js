@@ -25,6 +25,7 @@
 
 /**
  * Lyn's History:
+ *  [lyn, 10/27/13] Create legality filter & transformer for AI2 variable names
  *  [lyn, 10/26/13] Fixed renaming of globals and lexical vars involving empty strings and names with internal spaces.
  *  [lyn, 12/23-27/12] Updated to:
  *     (1) handle renaming involving local declaration statements/expressions and
@@ -363,12 +364,10 @@ Blockly.LexicalVariable.renameGlobal = function (newName) {
 
   // this is bound to field_textinput object 
   var oldName = this.text_;
-  newName = newName.trim() // [lyn, 10/26/13] Remove leading and trailing whitespace
-      .replace(/[\s\xa0]+/g, '_'); // [lyn, 10/26/13] Replace sequences of internal spaces by _
-  if (!newName) { // If it's the empty string
-    // [lyn, 10/26/13] Prevent the field from disappearing if empty.
-    newName = '_';
-  }
+
+  // [lyn, 10/27/13] now check legality of identifiers
+  newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
+
   var globals = Blockly.FieldLexicalVariable.getGlobalNames(this.sourceBlock_); 
     // this.sourceBlock excludes block being renamed from consideration
   // Potentially rename declaration against other occurrences
@@ -408,12 +407,10 @@ Blockly.LexicalVariable.renameParam = function (newName) {
   }
   // this is bound to field_textinput object 
   var oldName = this.text_; // name being changed to newName
-  newName = newName.trim() // [lyn, 10/26/13] Remove leading and trailing whitespace
-                   .replace(/[\s\xa0]+/g, '_'); // [lyn, 10/26/13] Replace sequences of internal spaces by _
-  if (!newName) { // If it's the empty string
-    // [lyn, 10/26/13] Prevent the field from disappearing if empty.
-    newName = '_';
-  }
+
+  // [lyn, 10/27/13] now check legality of identifiers
+  newName = Blockly.LexicalVariable.makeLegalIdentifier(newName);
+
   var sourceBlock = this.sourceBlock_; 
     // sourceBlock is block in which name is being changed. Can be one of:
     // * For procedure param: procedures_mutatorarg, procedures_defnoreturn, procedures_defreturn
@@ -509,6 +506,39 @@ Blockly.LexicalVariable.renameParam = function (newName) {
     }
   }
   return newName;
+}
+
+/**
+ * [lyn, 10/27/13]
+ * Checks an identifier for validity. Validity rules are a simplified version of Kawa identifier rules.
+ * They assume that the YAIL-generated version of the identifier will be preceded by a legal Kawa prefix:
+ *   <identifier> = <first><rest>*
+ *   <first> = letter U charsIn("_!$%&?^*~/+-.@>=<")
+ *   <rest> = <first> U digit
+ * First transforms the name by removing leading and trailing whitespace and
+ * converting nonempty sequences of internal whitespace to '_'.
+ * Returns a result object of the form {transformed: <string>, isLegal: <bool>}, where:
+ * result.transformed is the transformed name and result.isLegal is whether the transformed
+ * named satisfies the above rules.
+ */
+Blockly.LexicalVariable.checkIdentifier = function(ident) {
+  var transformed = ident.trim() // Remove leading and trailing whitespace
+                         .replace(/[\s\xa0]+/g, '_'); // Replace nonempty sequences of internal spaces by underscores
+  console.log(ident + " transformed to " + transformed);
+  var regexp = /^[a-zA-Z_\!\$%&\?\^\*~\/\+-.@>\=<][\w_\!\$%&\?\^\*~\/\+-.@>\=<]*$/;
+  var isLegal = transformed.search(regexp) == 0;
+  return {isLegal: isLegal, transformed: transformed};
+}
+
+Blockly.LexicalVariable.makeLegalIdentifier = function(ident) {
+  var check = Blockly.LexicalVariable.checkIdentifier(ident);
+  if (check.isLegal) {
+    return check.transformed;
+  } else if (check.transformed === '') {
+    return '_';
+  } else {
+    return 'name' // Use identifier 'name' to replace illegal name
+  }
 }
 
 // [lyn, 11/19/12] Given a block, return an Array of
