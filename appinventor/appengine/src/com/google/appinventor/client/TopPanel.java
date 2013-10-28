@@ -117,16 +117,19 @@ public class TopPanel extends Composite {
     links.add(guideLink);
 
     // Gallery Link
-    TextButton gallery = new TextButton("Gallery");
-    gallery.addClickHandler(new ClickHandler() {
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      TextButton gallery = new TextButton("Gallery");
+      gallery.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        Window.open("http://gallery.appinventor.mit.edu", "_blank", null);
-      }
+          Window.open("http://gallery.appinventor.mit.edu", "_blank", null);
+        }
     });
 
     gallery.setStyleName("ode-TopPanelButton");
     links.add(gallery);
+    }
+
 
     // Feedback Link
     TextButton feedbackLink = new TextButton(MESSAGES.feedbackLink());
