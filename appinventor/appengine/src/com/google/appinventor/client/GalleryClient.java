@@ -12,6 +12,7 @@ import com.google.gwt.http.client.Response;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.client.youngandroid.TextValidators;
@@ -137,6 +138,7 @@ public class GalleryClient {
       @Override
       public void onSuccess(List<GalleryApp> list) {
         // the server has returned us something
+    	  OdeLog.log("#############################");
         if (list== null) {
           return;
         }
@@ -189,13 +191,14 @@ public class GalleryClient {
   } 
     
   public List<GalleryApp> generateFakeApps()  {
-    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5,"","","");
-    GalleryApp app2 = new GalleryApp("Basketball Quiz", "Bill Jones", "sports quiz","2/3/13","2/5/13", "http://lh5.ggpht.com/21QTcnF3vENnlyKiYbtxrcU0VlxNlJp1Ht79pZ_GU5z3gWPxdefa79DIqjI2FvDLNz4zieFeE15y00r4DJjHMix6DVQeu-X5o_xG1g=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",7,3,"","","");
-    //app1.setName(requestApps( "http://app-inventor-gallery.appspot.com/rpc?tag=all:0:3:asc:uid" ));
-    ArrayList<GalleryApp> list = new ArrayList<GalleryApp>();
-    list.add(app1);
-    list.add(app2);
-    return list;
+//    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5,"","","");
+//    GalleryApp app2 = new GalleryApp("Basketball Quiz", "Bill Jones", "sports quiz","2/3/13","2/5/13", "http://lh5.ggpht.com/21QTcnF3vENnlyKiYbtxrcU0VlxNlJp1Ht79pZ_GU5z3gWPxdefa79DIqjI2FvDLNz4zieFeE15y00r4DJjHMix6DVQeu-X5o_xG1g=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",7,3,"","","");
+//    //app1.setName(requestApps( "http://app-inventor-gallery.appspot.com/rpc?tag=all:0:3:asc:uid" ));
+//    ArrayList<GalleryApp> list = new ArrayList<GalleryApp>();
+//    list.add(app1);
+//    list.add(app2);
+//    return list;
+	  return null;
   }
 
   private String getStartCountString(int start, int count) {

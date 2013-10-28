@@ -14,6 +14,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventListene
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -30,15 +31,19 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.user.client.ui.Image;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,24 +72,205 @@ import com.google.gwt.user.client.Window;
  *
  * @author wolberd@google.com (Dave Wolber)
  */
-public class GalleryPage extends Composite {
+public class GalleryPage extends Composite implements GalleryRequestListener {
   
 
+  GalleryClient gallery = new GalleryClient(this);
   GalleryApp app = null;
 
+  private final FlowPanel galleryGUI;
+  private final FlowPanel appSingle;
+  private final FlowPanel appSummary;
+  private final FlowPanel appDetails;
+  private final FlowPanel appHeader;
+  private final FlowPanel appAction;
+  private final FlowPanel appMeta;
+  private final FlowPanel appDescription;
+  private final FlowPanel appComments;
+  private final FlowPanel appCommentsList;
+  
   /**
    * Creates a new GalleryPage
    */
-  public GalleryPage(GalleryApp app) {
+  public GalleryPage(final GalleryApp app) {
 
-    this.app=app;
+    this.app = app;
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
-    Label nameLabel = new Label(app.getTitle());
-    panel.add(nameLabel);
+    
+    galleryGUI = new FlowPanel();
+    appSingle = new FlowPanel();
+    appSummary = new FlowPanel();
+    appDetails = new FlowPanel();
+    appHeader = new FlowPanel();
+    appAction = new FlowPanel();
+    appMeta = new FlowPanel();
+    appDescription = new FlowPanel();
+    appComments = new FlowPanel();
+    appCommentsList = new FlowPanel();
+
+    // App summary - header image
+    appSummary.add(appHeader);
+    appHeader.addStyleName("app-header");
+    Image image = new Image();
+    image.setUrl(app.getImageURL());
+    image.addStyleName("app-image");
+    appHeader.add(image);
+    
+    // App summary - action
+    appSummary.add(appAction);
+    Button actionButton = new Button("Try this app");
+    actionButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+        OdeLog.log("######## I clicked on actionButton - ");
+        gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+      }
+    });
+    actionButton.addStyleName("app-action");
+    appAction.add(actionButton);
+
+    // App details - header title
+    Label title = new Label(app.getTitle());
+    appDetails.add(title);
+    title.addStyleName("app-title");
+    
+    Label devName = new Label("By " + app.getDeveloperName());
+    appDetails.add(devName);
+    devName.addStyleName("app-subtitle");
+    
+    // App details - meta
+    appDetails.add(appMeta);
+    appMeta.addStyleName("app-meta");
+    
+    // Images for meta data
+    Image numViews = new Image();
+    numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+    Image numDownloads = new Image();
+    numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+    Image numLikes = new Image();
+    numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+    Image numComments = new Image();
+    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+    
+    // Add meta data
+    appMeta.add(numViews);
+    appMeta.add(new Label(Integer.toString(app.getViews())));
+    appMeta.add(numDownloads);
+    appMeta.add(new Label(Integer.toString(app.getDownloads())));
+    appMeta.add(numLikes);
+    appMeta.add(new Label(Integer.toString(app.getLikes())));
+    appMeta.add(numComments);
+    appMeta.add(new Label(Integer.toString(app.getComments())));
+    
+    /*
+    // CreationTime info
+    Label creationHeader = new Label("App created on");
+    creationHeader.addStyleName("note-header");
+    Date time = new java.util.Date((long)
+    		Integer.parseInt(app.getCreationDate())*1000);
+    SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy,HH:mm");
+    String s = f.format(time); 
+    Label creation = new Label(s);
+    creation.addStyleName("note-content");
+    appMeta.add(creationHeader);
+    appMeta.add(creation);
+    */
+    
+    
+    // App details - description
+    appDetails.add(appDescription);
+    Label description = new Label(app.getDescription());
+    appDescription.add(description);
+    appDescription.addStyleName("app-description");
+    
+    HTML divider = new HTML("<div class='section-divider'></div>");
+    appDetails.add(divider);
+    
+    // App details - comments
+    appDetails.add(appComments);
+    Label commentsHeader = new Label("Comments");
+    commentsHeader.addStyleName("app-comments-header");
+    appComments.add(commentsHeader);
+
+    // Add list of comments
+    gallery.GetComments(app.getGalleryAppId(), 0, 100);
+//    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+//    Label c1 = new Label("Woo! This is a cool app, I like it. :)");
+//    Label c1a = new Label("Vincent Zhang");
+//    Label c1t = new Label(sdf.toString());
+//    Label c2 = new Label("I think this needs some improvements");
+//    Label c2a = new Label("Johan Smith");
+//    Label c2t = new Label(sdf.toString());
+    appComments.add(appCommentsList);
+    appCommentsList.addStyleName("app-comments");
+    
+
+    appSingle.add(appSummary);
+    appSummary.addStyleName("gallery-app-summary");
+    appSingle.add(appDetails);
+    appDetails.addStyleName("gallery-app-details");
+    galleryGUI.add(appSingle);
+    appSingle.addStyleName("gallery-app-single");
+    panel.add(galleryGUI);
+    galleryGUI.addStyleName("gallery");
     initWidget(panel);
   }
+
+@Override
+public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID) {
+	// TODO Auto-generated method stub
+	
+}
+
+@Override
+public void onCommentsRequestCompleted(List<GalleryComment> comments) {
+	// TODO Auto-generated method stub
+    if (comments != null) {
+    	for ( GalleryComment c : comments) {
+    		OdeLog.log("##### COMMENT = " + c.toString());
+    	    FlowPanel commentItem = new FlowPanel();
+    	    FlowPanel commentMeta = new FlowPanel();
+    		Label ct = new Label(c.getText());
+    		ct.addStyleName("comment-text");
+    		Label ca = new Label("By " + c.getAuthor());
+    		Label cts = new Label(" - " + c.getTimeStamp());
+    		commentMeta.add(ca);
+    		commentMeta.add(cts);
+    		commentItem.add(ct);
+    		commentItem.add(commentMeta);
+    		commentMeta.addStyleName("comment-meta");
+    		commentItem.addStyleName("comment-item");
+    		appCommentsList.add(commentItem);
+    	}
+    } 
+    else {
+        Window.alert("comment list was null");    	
+    }
+}
+
+@Override
+public void onSourceLoadCompleted(UserProject projectInfo) {
+    final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
+        @Override
+        public void execute(Project project) {
+             Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+        }
+     };
+     // Update project explorer -- i.e., display in project view
+     final Ode ode = Ode.getInstance();
+     if (projectInfo == null) {
+       Window.alert("Unable to create project from Gallery source"); 
+     }
+     else {
+       Project project = ode.getProjectManager().addProject(projectInfo);
+       if (onSuccessCommand != null) {
+         onSuccessCommand.execute(project);
+       }
+     }
+	
+}
  
 }	  
   

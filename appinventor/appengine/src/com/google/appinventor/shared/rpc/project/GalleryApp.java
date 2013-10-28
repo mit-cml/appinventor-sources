@@ -3,8 +3,9 @@ package com.google.appinventor.shared.rpc.project;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.logging.Logger;
 
-public class GalleryApp implements IsSerializable{
+public class GalleryApp implements IsSerializable {
 	
+
 	/**
    * Default constructor. This constructor is required by GWT.
    */
@@ -12,12 +13,13 @@ public class GalleryApp implements IsSerializable{
   private GalleryApp() {
   }
 	
-	public static final String GALLERYURL="http://gallery.appinventor.mit.edu/rpc?";
-    private static final Logger LOG = Logger.getLogger(GalleryApp.class.getName());
+	public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
+//    private static final Logger LOG = Logger.getLogger(GalleryApp.class.getName());
 	
 	public GalleryApp(String title, String developerName, String description,
 			String creationDate, String updateDate, String imageURL, String sourceFileName,
-			int downloads, int views, String imageBlobId, String sourceBlobId, String galleryAppId ) {
+			int downloads, int views, int likes, int comments, 
+			String imageBlobId, String sourceBlobId, String galleryAppId ) {
 		super();
 		this.title = title;
 		this.developerName = developerName;
@@ -28,15 +30,17 @@ public class GalleryApp implements IsSerializable{
         // the name we get from gallery can have some bad characters in it...
         //   e.g., name  (2).zip. We need to cleanse this and probably deal with url as
         //   well.
-        LOG.info("HERE:"+sourceFileName);
+//        LOG.info("HERE:"+sourceFileName);
         if (sourceFileName.contains(".")) {
-          String[] splitName= sourceFileName.split("\\.");
-          projectName=splitName[0];
+          String[] splitName = sourceFileName.split("\\.");
+          projectName = splitName[0];
         } else {
-          projectName=sourceFileName;
+          projectName = sourceFileName;
         }
 		this.downloads = downloads;
 		this.views = views;
+		this.likes = likes;
+		this.comments = comments;
 		this.imageBlobId= imageBlobId;
 		this.sourceBlobId= sourceBlobId;
 		this.galleryAppId= galleryAppId;
@@ -53,9 +57,12 @@ public class GalleryApp implements IsSerializable{
 	private String imageURL;
 	private int downloads;
 	private int views;
+	private int likes;
+	private int comments;
     private String imageBlobId;
     private String sourceBlobId;
     private String galleryAppId;
+    
 	public String getTitle() {
 		return title;
 	}
@@ -110,7 +117,18 @@ public class GalleryApp implements IsSerializable{
 	public void setViews(int views) {
 		this.views = views;
 	}
-	
+	public int getLikes() {
+		return likes;
+	}
+	public void setLikes(int likes) {
+		this.likes = likes;
+	}
+	public int getComments() {
+		return comments;
+	}
+	public void setComments(int comments) {
+		this.comments = comments;
+	}
 	public void setImageBlobId(String imageBlobId) {
 		this.imageBlobId = imageBlobId;
 	}
@@ -136,11 +154,10 @@ public class GalleryApp implements IsSerializable{
        return GALLERYURL+"getblob="+getSourceBlobId()+":"+getGalleryAppId();
     }
 	
-	
 	@Override
 	public String toString()
 	{
-		return title+description+imageURL; 
+		return title + " ||| " + description + " ||| " +  imageURL; 
 	}
 	
  

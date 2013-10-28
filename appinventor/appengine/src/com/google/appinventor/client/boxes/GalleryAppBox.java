@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
 
 
@@ -36,6 +37,7 @@ public final class GalleryAppBox extends Box {
   
   public static void setApp(GalleryApp app)
   {
+//	OdeLog.log("######### I got in setApp");
     pPage = new GalleryPage(app);
     INSTANCE.setContent(pPage);
   }
