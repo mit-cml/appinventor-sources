@@ -47,8 +47,6 @@ import android.widget.Toast;
  *
  * @author halabelson@google.com (Hal Abelson)
  */
- 
-
 
 //TODO(halabelson): Change the dialog methods to be synchronous and return values rather
 // than signaling events; or at least to use one-shot events, when we implement those.
@@ -76,6 +74,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   
   // Notifier text color
   private int textColor = Color.WHITE;
+  
   /**
    * Creates a new Notifier component.
    *
@@ -330,7 +329,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
-    textView.setText(notifierLength);
+    textView.setText(message);
     toast.setView(textView);
     toast.show();
   }
