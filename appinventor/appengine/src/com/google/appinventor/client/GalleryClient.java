@@ -36,8 +36,8 @@ public class GalleryClient {
   public static final int REQUEST_MOSTDOWNLOADED=5;
   public static final int REQUEST_MOSTVIEWED=6;
   public static final int REQUEST_BYDEVELOPER=7;
-  public static final int REQUEST_BYTAG=7;
-  public static final int REQUEST_ALL=8;
+  public static final int REQUEST_BYTAG=8;
+  public static final int REQUEST_ALL=9;
 
   public GalleryClient(GalleryRequestListener listener) {
     this.listener=listener;

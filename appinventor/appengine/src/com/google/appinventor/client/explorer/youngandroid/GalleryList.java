@@ -188,7 +188,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       case 3: galleryGF.generateHorizontalCards(apps, searchResults, true); break;   
       case 5: galleryGF.generateHorizontalCards(apps, appPopular, false); break;
     }
-	  
   }
 
   /**

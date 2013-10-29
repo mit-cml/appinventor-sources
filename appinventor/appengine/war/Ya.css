@@ -1373,37 +1373,50 @@ textarea::-webkit-input-placeholder {
   display: block;
   margin: 20px 10px;
 }
-.gallery-app-single .gallery-app-showcase {
-  width: 200px;
-  padding: 15px;
+.gallery-container {
   float: left;
-  margin-right: 20px;
-  margin-bottom: 20px;
   position: relative;
-  text-decoration: none;
-  vertical-align: top;
+  margin: 0 15px 15px 0;
   background: #fff;
+  vertical-align: top;
+  text-decoration: none;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.gallery-app-single .gallery-app-showcase {
+  width: 160px;
 }
 .gallery-app-single .gallery-app-details {
   width: 650px;
   padding: 30px;
-  /* max-width: 90%; */
-  float: left;
-  margin-bottom: 20px;
-  background: #fff;
-  position: relative;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .app-header {
-  margin: 5px 0 15px;
+  margin: 0px 30px 0 0;
+  float: left;
+}
+.app-header .app-image {
+  width: 130px;
+  height: 130px;
+}
+.app-header .app-action {
   display: block;
+  color: #fff;
+  line-height: 36px;
+  width: 130px;
+  text-shadow: none;
+  border-radius: 0;
+  text-transform: uppercase;
+  background-color: #b3c833;
+  background-position: 0 0;
+  background-image: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  border: none;
+  border-color: none;
+  margin: 15px 0;
 }
 .app-title,
 .gallery-app-details .app-comments-header {
@@ -1435,29 +1448,6 @@ textarea::-webkit-input-placeholder {
 .app-meta .gwt-Label {
   display: inline;
   padding-right: 5px;
-}
-.gallery-app-showcase .app-image {
-  width: 200px;
-  height: 200px;
-  margin: 0 auto;
-} 
-.app-action {
-  display: block;
-  color: #fff;
-  line-height: 36px;
-  width: 200px;
-  text-shadow: none;
-  border-radius: 0;
-  text-transform: uppercase;
-  background-color: #b3c833;
-  background-position: 0 0;
-  background-image: none;
-  -webkit-box-shadow: none;
-  -moz-box-shadow: none;
-  box-shadow: none;
-  border: none;
-  border-color: none;
-  margin: 15px 0;
 }
 .app-dates {
   display: block;
