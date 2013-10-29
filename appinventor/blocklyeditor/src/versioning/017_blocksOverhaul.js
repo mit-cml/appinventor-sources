@@ -22,32 +22,48 @@ Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
     if (Blockly.Language[blockType] == null)
     {
       // if above is null we know we don't have a built-in block
-      // 1st check if type has 'any' in it, if so we have a generic method
-      var splitComponent=blockType.split('_');
-      // methods on any (generics) have a blocktype of _any_someComponent_method
-      if (splitComponent[1]=='any')  // we have a generic method call
-        Blockly.Versioning.translateAnyMethod(blockElem);
-      else {
-        // we have a set, get, component get, event, or method
-        // check if the first thing is a component type. If so, we have a (generic)
-        //   component set/get
-        if (Blockly.ComponentTypes[splitComponent[0]]!=null)  // we have a component
-          Blockly.Versioning.translateComponentSetGetProperty(blockElem);
-        else {
-          instance=splitComponent[0];
-          var componentType=Blockly.Component.instanceNameToTypeName(instance);
-          rightside=splitComponent[1];
-          if (rightside=='setproperty' || rightside=='getproperty')
-            Blockly.Versioning.translateSetGetProperty(blockElem);
-          else
-            if (rightside=='component')
-              Blockly.Versioning.translateComponentGet(blockElem)
-            else
-              if (Blockly.ComponentTypes[componentType].eventDictionary[rightside]!=null)
-                Blockly.Versioning.translateEvent(blockElem);
+      
+      // add some translations for language changes
+      if (blockType=='procedures_do_then_return')
+        blockElem.setAttribute('type',"controls_do_then_return");
+      else
+      if (blockType=='procedure_lexical_variable_get')
+        blockElem.setAttribute('type',"lexical_variable_get");
+      else
+      if (blockType=='for_lexical_variable_get')
+        blockElem.setAttribute('type',"lexical_variable_get");
+      else
+      {
+      
+        // 1st check if type has 'any' in it, if so we have a generic method
+        var splitComponent=blockType.split('_');
+        if (splitComponent[0]!='lexical') {
+          // methods on any (generics) have a blocktype of _any_someComponent_method
+          if (splitComponent[1]=='any')  // we have a generic method call
+            Blockly.Versioning.translateAnyMethod(blockElem);
+          else {
+            // we have a set, get, component get, event, or method
+            // check if the first thing is a component type. If so, we have a (generic)
+            //   component set/get
+            if (Blockly.ComponentTypes[splitComponent[0]]!=null)  // we have a component
+              Blockly.Versioning.translateComponentSetGetProperty(blockElem);
+            else {
+              instance=splitComponent[0];
+              var componentType=Blockly.Component.instanceNameToTypeName(instance);
+              rightside=splitComponent[1];
+              if (rightside=='setproperty' || rightside=='getproperty')
+                Blockly.Versioning.translateSetGetProperty(blockElem);
               else
-                if (Blockly.ComponentTypes[componentType].methodDictionary[rightside]!=null)
-                  Blockly.Versioning.translateMethod(blockElem);
+                if (rightside=='component')
+                  Blockly.Versioning.translateComponentGet(blockElem)
+                else
+                  if (Blockly.ComponentTypes[componentType].eventDictionary[rightside]!=null)
+                    Blockly.Versioning.translateEvent(blockElem);
+                  else
+                    if (Blockly.ComponentTypes[componentType].methodDictionary[rightside]!=null)
+                      Blockly.Versioning.translateMethod(blockElem);
+             }
+          }
         }
       }
     }
@@ -172,8 +188,10 @@ Blockly.Versioning.translateSetGetProperty = function(blockElem) {
   var propName='unknown';
   for (var i=0, len=titles.length; i<len; i++)
   {
-    if (titles[i].getAttribute('name')=='PROP')
-      propName=titles[i].text;
+    if (titles[i].getAttribute('name')=='PROP') {
+      propName=titles[i].textContent;
+      break;
+    }
   }
   // ok, we have all the info, now we can override the old event attribute with 'event'
   blockElem.setAttribute('type','component_set_get');
