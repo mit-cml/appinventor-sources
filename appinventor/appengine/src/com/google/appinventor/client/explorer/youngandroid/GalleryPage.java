@@ -45,6 +45,7 @@ import com.google.gwt.user.client.ui.Image;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -85,6 +86,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appHeader;
   private final FlowPanel appAction;
   private final FlowPanel appMeta;
+  private final FlowPanel appDates;
   private final FlowPanel appDescription;
   private final FlowPanel appComments;
   private final FlowPanel appCommentsList;
@@ -106,6 +108,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appHeader = new FlowPanel();
     appAction = new FlowPanel();
     appMeta = new FlowPanel();
+    appDates = new FlowPanel();
     appDescription = new FlowPanel();
     appComments = new FlowPanel();
     appCommentsList = new FlowPanel();
@@ -164,21 +167,17 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(numComments);
     appMeta.add(new Label(Integer.toString(app.getComments())));
     
-    /*
-    // CreationTime info
-    Label creationHeader = new Label("App created on");
-    creationHeader.addStyleName("note-header");
-    Date time = new java.util.Date((long)
-    		Integer.parseInt(app.getCreationDate())*1000);
-    SimpleDateFormat f = new SimpleDateFormat("dd.MM.yyyy,HH:mm");
-    String s = f.format(time); 
-    Label creation = new Label(s);
-    creation.addStyleName("note-content");
-    appMeta.add(creationHeader);
-    appMeta.add(creation);
-    */
-    
-    
+    // Add app dates
+    appDetails.add(appDates);
+    Date creationDate = new Date(Long.parseLong(app.getCreationDate()));
+    Date updateDate = new Date(Long.parseLong(app.getUpdateDate()));
+    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
+    Label creation = new Label("Created on " + dateFormat.format(creationDate));
+    Label update = new Label("Updated on " + dateFormat.format(creationDate));
+    appDates.add(creation);
+    appDates.add(update);
+    appDates.addStyleName("app-dates");
+
     // App details - description
     appDetails.add(appDescription);
     Label description = new Label(app.getDescription());
@@ -196,13 +195,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // Add list of comments
     gallery.GetComments(app.getGalleryAppId(), 0, 100);
-//    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-//    Label c1 = new Label("Woo! This is a cool app, I like it. :)");
-//    Label c1a = new Label("Vincent Zhang");
-//    Label c1t = new Label(sdf.toString());
-//    Label c2 = new Label("I think this needs some improvements");
-//    Label c2a = new Label("Johan Smith");
-//    Label c2t = new Label(sdf.toString());
     appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
     
@@ -229,18 +221,39 @@ public void onCommentsRequestCompleted(List<GalleryComment> comments) {
 	// TODO Auto-generated method stub
     if (comments != null) {
     	for ( GalleryComment c : comments) {
-    		OdeLog.log("##### COMMENT = " + c.toString());
-    	    FlowPanel commentItem = new FlowPanel();
-    	    FlowPanel commentMeta = new FlowPanel();
-    		Label ct = new Label(c.getText());
-    		ct.addStyleName("comment-text");
-    		Label ca = new Label("By " + c.getAuthor());
-    		Label cts = new Label(" - " + c.getTimeStamp());
-    		commentMeta.add(ca);
-    		commentMeta.add(cts);
-    		commentItem.add(ct);
-    		commentItem.add(commentMeta);
-    		commentMeta.addStyleName("comment-meta");
+    	  FlowPanel commentItem = new FlowPanel();
+        FlowPanel commentPerson = new FlowPanel();
+        FlowPanel commentMeta = new FlowPanel();
+        FlowPanel commentContent = new FlowPanel();
+        
+        // Add commentPerson, default avatar for now
+        Image cPerson = new Image();
+        cPerson.setUrl("http://i.imgur.com/1h7cUkM.png");
+    	  commentPerson.add(cPerson);
+    	  commentPerson.addStyleName("comment-person");
+    	  commentItem.add(commentPerson);
+    	  
+    	  // Add commentContent
+    		Label cAuthor = new Label(c.getAuthor());
+    		cAuthor.addStyleName("comment-author");
+        commentMeta.add(cAuthor);
+
+        Date commentDate = new Date(Long.parseLong(c.getTimeStamp()));
+        DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
+        Label cDate = new Label(" on " + dateFormat.format(commentDate));
+        cDate.addStyleName("comment-date");
+    		commentMeta.add(cDate);
+
+        commentMeta.addStyleName("comment-meta");
+        commentContent.add(commentMeta);
+
+        Label cText = new Label(c.getText());
+        cText.addStyleName("comment-text");
+        commentContent.add(cText);
+
+        commentContent.addStyleName("comment-content");
+        commentItem.add(commentContent);
+        
     		commentItem.addStyleName("comment-item");
     		appCommentsList.add(commentItem);
     	}
