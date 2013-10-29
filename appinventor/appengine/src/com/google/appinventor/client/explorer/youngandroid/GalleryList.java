@@ -110,10 +110,6 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     // Initialize UI
     galleryGUI = new FlowPanel();
     galleryGUI.addStyleName("gallery");
-    HTML headerExtra = new HTML(
-    		"<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
-    galleryGUI.add(headerExtra);
-    
     appTabs = new TabPanel();
     appNewest = new FlowPanel();
     appFeatured = new FlowPanel();
@@ -121,15 +117,42 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     searchApp = new FlowPanel();
     searchResults = new FlowPanel();
 
+    // HTML segment for gallery typeface
+    HTML headerExtra = new HTML(
+    		"<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
+    galleryGUI.add(headerExtra);
+
+    // Add panels to main tabPanel
     appTabs.add(appNewest, "Recent");
     appTabs.add(appFeatured, "Featured");
     appTabs.add(appPopular, "Popular");
     appTabs.add(searchApp, "Search");
+    addGallerySearchTab(searchApp);
     appTabs.selectTab(0);
     appTabs.addStyleName("gallery-app-tabs");
     galleryGUI.add(appTabs);
     
-    // Processing search stuff
+    VerticalPanel panel = new VerticalPanel();
+    panel.setWidth("100%");
+    panel.add(galleryGUI);
+    
+    initWidget(panel);
+    
+    // calls to gallery get methods will eventually trigger call back to methods
+    // at bottom of this file
+    gallery.GetMostRecent(0, 5);
+    gallery.GetFeatured(0, 5, 0);
+    gallery.GetMostDownloaded(0, 5);
+  }
+
+
+  /**
+   * Creates the GUI components for search tab.
+   *
+   * @param searchApp: the FlowPanel that search tab will reside.
+   */
+  private void addGallerySearchTab(FlowPanel searchApp) {
+    // Add search GUI
     FlowPanel searchPanel = new FlowPanel();
     final TextBox searchText = new TextBox();
     searchText.addStyleName("gallery-search-textarea");
@@ -147,22 +170,17 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       public void onClick(ClickEvent event) {
         gallery.FindApps(searchText.getText(), 0, 5, 0);
       }
-    });
-    
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");
-    panel.add(galleryGUI);
-    
-    initWidget(panel);
-    
-    // calls to gallery get methods will eventually trigger call back to methods
-    // at bottom of this file
-    gallery.GetMostRecent(0, 5);
-    gallery.GetFeatured(0, 5, 0);
-    gallery.GetMostDownloaded(0, 5);
+    });    
   }
 
 
+  /**
+   * Loads the proper tab GUI with gallery's app data.
+   *
+   * @param apps: list of returned gallery apps from callback.
+   * 
+   * @param requestId: determines the specific type of app data.
+   */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
       case 1: galleryGF.generateHorizontalCards(apps, appFeatured, false); break;   
@@ -199,43 +217,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   public List<GalleryApp> getSelectedApps() {
     return selectedApps;
   }
-  /*
-  public void loadGalleryZip(final String projectName, String sourceURL) {
-	final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
-       @Override
-       public void execute(Project project) {
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-       }
-    };
-
-    // Callback for updating the project explorer after the project is created on the back-end
-    final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(
-		      // failure message
-      MESSAGES.createProjectError()) {
-      @Override
-      public void onSuccess(UserProject projectInfo) {
-      // Update project explorer -- i.e., display in project view
-      if (projectInfo == null) {
-
-        Window.alert("This template has no zip file. Creating a new project with name = " + projectName);
-        ode.getProjectService().newProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
-		            projectName,
-		            new NewYoungAndroidProjectParameters(projectName),
-		            this);
-		return;
-	  }
-      Project project = ode.getProjectManager().addProject(projectInfo);
-      if (onSuccessCommand != null) {
-        onSuccessCommand.execute(project);
-      }
-    }
-   };
-
-    ode.getProjectService().newProjectFromExternalTemplate(projectName, sourceURL,callback);
-  }
-  */
-
+  
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)
   {
     if (apps != null)

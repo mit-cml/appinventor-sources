@@ -19,10 +19,16 @@ import com.google.gwt.user.client.ui.TextBox;
 public class GalleryGuiFactory implements GalleryRequestListener {
 	GalleryClient gallery = null;
 
+	/*
+	 * Generates a new GalleryGuiFactory instance.
+	 */
 	public GalleryGuiFactory() {
 		gallery = new GalleryClient(this);
 	}
 
+	/*
+	 * Class representing the GUI of a single gallery app.
+	 */
   private class GalleryAppWidget {
     final Label nameLabel;
     final Label authorLabel;
@@ -34,8 +40,6 @@ public class GalleryGuiFactory implements GalleryRequestListener {
   
     private GalleryAppWidget(final GalleryApp app) {
       nameLabel = new Label(app.getTitle());
-      nameLabel.addStyleName("ode-ProjectNameLabel");
-  
       authorLabel = new Label(app.getDeveloperName());
       numDownloadsLabel = new Label(Integer.toString(app.getDownloads()));
       numLikesLabel = new Label(Integer.toString(app.getLikes()));
@@ -46,18 +50,16 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       
     }
   }
-	
-  public Button generateSearchPanel(FlowPanel container) {
-    TextBox sta = new TextBox();
-    sta.addStyleName("gallery-search-textarea");
-    Button sb = new Button("Search for apps");
-    sb.addStyleName("app-action");
-    container.add(sta);
-    container.add(sb);
-    container.addStyleName("gallery-search");
-    return sb;
-  }
   
+  /**
+   * Loads the proper tab GUI with gallery's app data.
+   *
+   * @param apps: list of returned gallery apps from callback.
+   * 
+   * @param requestId: determines the specific type of app data.
+   * 
+   * @param refreshable: if true then the GUI can be reloaded later.
+   */
 	public void generateHorizontalCards(List<GalleryApp> apps, FlowPanel container, Boolean refreshable) {
     if (refreshable) {
       // Flood the panel's content if we knew new stuff is coming in!
