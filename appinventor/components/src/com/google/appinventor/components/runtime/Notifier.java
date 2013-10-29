@@ -72,10 +72,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private int notifierLength;
   
   // Backing for background color
-  private int backgroundColor;
+  private int backgroundColor = Color.DKGRAY;
   
   // Backing for text color
-  private int textColor;
+  private int textColor = Color.WHITE;
   /**
    * Creates a new Notifier component.
    *
