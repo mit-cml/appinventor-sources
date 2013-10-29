@@ -196,7 +196,7 @@ Blockly.Language.math_add = {
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT));
-    if(inputNum != 0){
+    if(inputNum !== 0){
       input.appendTitle("+");
     }
     return input;
@@ -282,7 +282,7 @@ Blockly.Language.math_multiply = {
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT));
-    if(inputNum != 0){
+    if(inputNum !== 0){
       input.appendTitle("*");
     }
     return input;
@@ -734,7 +734,7 @@ Blockly.Language.math_divide = {
   }
 };
 
-Blockly.Language.math_divide.OPERATORS = 
+Blockly.Language.math_divide.OPERATORS =
   [['modulo of', 'MODULO'],
    ['remainder of', 'REMAINDER'],
    [ 'quotient of', 'QUOTIENT' ]];
@@ -815,10 +815,10 @@ Blockly.Language.math_trig = {
 };
 
 Blockly.Language.math_trig.OPERATORS =
-  [[ 'sin', 'SIN' ], 
+  [[ 'sin', 'SIN' ],
    [ 'cos', 'COS' ],
-   [ 'tan', 'TAN' ], 
-   [ 'asin', 'ASIN' ], 
+   [ 'tan', 'TAN' ],
+   [ 'asin', 'ASIN' ],
    [ 'acos', 'ACOS' ],
    [ 'atan', 'ATAN' ]];
 
@@ -865,7 +865,7 @@ Blockly.Language.math_tan = {
   // Trigonometry operators.
   category : Blockly.LANG_CATEGORY_MATH,
   helpUrl: function() {
-      var mode = thisBlock.getTitleValue('OP');
+      var mode = this.getTitleValue('OP');
       return Blockly.Language.math_trig.HELPURLS[mode];
     },
   init : function() {
@@ -889,7 +889,7 @@ Blockly.Language.math_atan2 = {
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
-    this.appendDummyInput().appendTitle('atan2')
+    this.appendDummyInput().appendTitle('atan2');
     this.appendValueInput('Y').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('y').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('X').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('x').setAlign(Blockly.ALIGN_RIGHT);
     this.setInputsInline(false);

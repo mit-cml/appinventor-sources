@@ -24,11 +24,24 @@
  * to language files.
  */
 
-/*
- Lyn's History: 
-   [lyn, 11/29-30/12] 
-   * Change forEach and forRange loops to take name as input text rather than via plug. 
-   * For these blocks, add extra methods to support renaming. 
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Specify direction of flydowns
+ * [lyn, 10/25/13] Made collapsed block labels more sensible.
+ * [lyn, 10/10-14/13]
+ *   + Installed flydown index variable declarations in forRange and forEach loops
+ *   + Abstracted over string labels on all blocks using constants defined in en/_messages.js
+ *   + Renamed "for <i> start [] end [] step []" block to "for each <number> from [] to [] by []"
+ *   + Renamed "for each <i> in list []" block to "for each <item> in list []"
+ *   + Renamed "choose test [] then-return [] else-return []" to "if [] then [] else []"
+ *     (TODO: still needs to have a mutator like	the "if" statement blocks).
+ *   + Renamed "evaluate" block to "evaluate but ignore result"
+ *   + Renamed "do {} then-return []" block to "do {} result []" and re-added this block
+ *     to the Control drawer (who removed it?)
+ *   + Removed get block (still in Variable drawer; no longer needed with parameter flydowns)
+ * [lyn, 11/29-30/12]
+ *   + Change forEach and forRange loops to take name as input text rather than via plug.
+ *   + For these blocks, add extra methods to support renaming.
 */
 
 
@@ -83,12 +96,12 @@ Blockly.Language.controls_if = {
     return container;
   },
   domToMutation: function(xmlElement) {
-    if(xmlElement.getAttribute('elseif') == null){
+    if(xmlElement.getAttribute('elseif') === null){
       this.elseifCount_ = 0;
     } else {
       this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
     }
-    
+
     this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
@@ -168,13 +181,14 @@ Blockly.Language.controls_if = {
   },
   saveConnections: function(containerBlock) {
     // Store a pointer to any connected child blocks.
+    var inputDo;
     var clauseBlock = containerBlock.getInputTargetBlock('STACK');
     var x = 1;
     while (clauseBlock) {
       switch (clauseBlock.type) {
         case 'controls_if_elseif':
           var inputIf = this.getInput('IF' + x);
-          var inputDo = this.getInput('DO' + x);
+          inputDo = this.getInput('DO' + x);
           clauseBlock.valueConnection_ =
               inputIf && inputIf.connection.targetConnection;
           clauseBlock.statementConnection_ =
@@ -182,7 +196,7 @@ Blockly.Language.controls_if = {
           x++;
           break;
         case 'controls_if_else':
-          var inputDo = this.getInput('ELSE');
+          inputDo = this.getInput('ELSE');
           clauseBlock.statementConnection_ =
               inputDo && inputDo.connection.targetConnection;
           break;
@@ -247,17 +261,32 @@ Blockly.Language.controls_forRange = {
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('START')
         .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
-        .appendTitle("for range")
-        .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
-        .appendTitle('start')
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM)
+        .appendTitle(new Blockly.FieldParameterFlydown(Blockly.LANG_CONTROLS_FORRANGE_INPUT_VAR,
+                                                       true, // name is editable
+                                                       Blockly.FieldFlydown.DISPLAY_BELOW),
+                     'VAR')
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_START)
         .setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('END').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('end').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('STEP').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('step').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('END')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_END)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('STEP')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_STEP)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendStatementInput('DO')
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_DO)
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FORRANGE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('for range', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX
+            + ' '   + this.getTitleValue('VAR') + ' '
+            + Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX,
+            'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -279,7 +308,13 @@ Blockly.Language.controls_forRange = {
       this.setTitleValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM }]
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FORRANGE_INPUT_ITEM }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT')
+        .setText(Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_PREFIX
+            + ' '   + this.getTitleValue('VAR') + ' '
+            + Blockly.LANG_CONTROLS_FORRANGE_INPUT_COLLAPSED_SUFFIX);
+  }
 };
 
 Blockly.Language.controls_forEach = {
@@ -289,22 +324,30 @@ Blockly.Language.controls_forEach = {
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     //this.setOutput(true, null);
+    // [lyn, 10/07/13] Changed default name from "i" to "item"
     // [lyn, 11/29/12] Changed variable to be text input box that does renaming right (i.e., avoids variable capture)
-    // Old code: 
+    // Old code:
     // this.appendValueInput('VAR').appendTitle('for range').appendTitle('variable').setAlign(Blockly.ALIGN_RIGHT);
     // this.appendValueInput('START').setCheck(Number).appendTitle('start').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('LIST')
         .setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT))
-        .appendTitle("for each")
-        .appendTitle(new Blockly.FieldTextInput("i", Blockly.LexicalVariable.renameParam), 'VAR')
-        .appendTitle('in list')
+        .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM)
+        .appendTitle(new Blockly.FieldParameterFlydown(Blockly.LANG_CONTROLS_FOREACH_INPUT_VAR,
+                                                       true, // name is editable
+                                                       Blockly.FieldFlydown.DISPLAY_BELOW),
+                     'VAR')
+        .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_INLIST)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.appendStatementInput('DO')
-        .appendTitle('do');
+        .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_DO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_FOREACH_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('for each', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX
+                        + ' '   + this.getTitleValue('VAR') + ' '
+                        + Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX,
+                     'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
@@ -326,10 +369,17 @@ Blockly.Language.controls_forEach = {
       this.setTitleValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM }]
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_FOREACH_INPUT_ITEM }],
+  prepareCollapsedText: function(){
+    this.getTitle_('COLLAPSED_TEXT')
+        .setText(Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_PREFIX
+            + ' '   + this.getTitleValue('VAR') + ' '
+            + Blockly.LANG_CONTROLS_FOREACH_INPUT_COLLAPSED_SUFFIX);
+  }
 };
 
-
+/* [lyn 10/10/13] With parameter flydown changes,
+ * I don't think a special GET block in the Control drawer is necesssary
 Blockly.Language.for_lexical_variable_get = {
   // Variable getter.
   category: Blockly.LANG_CATEGORY_CONTROLS,
@@ -343,7 +393,7 @@ Blockly.Language.for_lexical_variable_get = {
         .appendTitle(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
     this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
-    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}]
+    this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
     this.appendCollapsedInput().appendTitle('get', 'COLLAPSED_TEXT');
   },
   getVars: function() {
@@ -362,7 +412,7 @@ Blockly.Language.for_lexical_variable_get = {
        //   Only changed to ??? if tether an untethered block.
        if (currentParent != cachedParent) {
          this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent != null) {
+         if  (currentParent !== null) {
            for (var i = 0; i < nameList.length; i++ ) {
              if (nameList[i] === currentName) {
                return; // no change
@@ -382,7 +432,7 @@ Blockly.Language.for_lexical_variable_get = {
     }
   }
 };
-
+*/
 
 Blockly.Language.controls_while = {
   // While condition.
@@ -390,17 +440,22 @@ Blockly.Language.controls_while = {
   helpUrl : Blockly.LANG_CONTROLS_WHILE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('TEST').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('while').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendStatementInput('DO').appendTitle('do').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEST')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_WHILE_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_WHILE_INPUT_TEST)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendStatementInput('DO')
+        .appendTitle(Blockly.LANG_CONTROLS_WHILE_INPUT_DO)
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_WHILE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('while', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_WHILE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_WHILE_TITLE }]
 };
-
 
 // [lyn, 01/15/2013] Remove DO C-sockets because now handled more modularly by DO-THEN-RETURN block.
 Blockly.Language.controls_choose = {
@@ -410,11 +465,19 @@ Blockly.Language.controls_choose = {
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
-    this.appendValueInput('TEST').setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT)).appendTitle('choose').appendTitle('test').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEST')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST)
+        .setAlign(Blockly.ALIGN_RIGHT);
     // this.appendStatementInput('DO0').appendTitle('then-do').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('THENRETURN').appendTitle('then-return').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('THENRETURN')
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN)
+        .setAlign(Blockly.ALIGN_RIGHT);
     // this.appendStatementInput('ELSE').appendTitle('else-do').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('ELSERETURN').appendTitle('else-return').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('ELSERETURN')
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN)
+        .setAlign(Blockly.ALIGN_RIGHT);
     /* Blockly.Language.setTooltip(this, 'If the condition being tested is true, the agent will '
        + 'run all the blocks attached to the \'then-do\' section and return the value attached '
        + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
@@ -422,30 +485,31 @@ Blockly.Language.controls_choose = {
        */
     // [lyn, 01/15/2013] Edit description to be consistent with changes to slots. 
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('choose', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE }]
 };
 
-// [lyn, 01/15/2013] Added
+// [lyn, 10/10/13] This used to be in the control drawer as well as the procedure drawer
+// but someone removed it from the control drawer. I think it still belongs here.
 Blockly.Language.controls_do_then_return = {
   // String length.
   category: Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl: Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL,
+  helpUrl: Blockly.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendStatementInput('STM')
-        .appendTitle("do");
+        .appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO);
     this.appendValueInput('VALUE')
-        .appendTitle("then-return")
+        .appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_RETURN)
         .setAlign(Blockly.ALIGN_RIGHT);
     this.setOutput(true, null);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_DO_THEN_RETURN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('do then-return', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_DO_THEN_RETURN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO }]
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 // [lyn, 01/15/2013] Added
@@ -455,16 +519,18 @@ Blockly.Language.controls_eval_but_ignore = {
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.appendValueInput('VALUE')
-        .appendTitle("evaluate");
+        .appendTitle(Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('evaluate', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TITLE }]
 };
 
+/* [lyn 10/10/13] Hal doesn't like NOTHING. Must rethink
 // [lyn, 01/15/2013] Added
 Blockly.Language.controls_nothing = {
   // Expression for the nothing value
@@ -481,6 +547,7 @@ Blockly.Language.controls_nothing = {
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_NOTHING_TITLE }]
 };
+*/
 
 
 Blockly.Language.controls_openAnotherScreen = {
@@ -489,10 +556,14 @@ Blockly.Language.controls_openAnotherScreen = {
   helpUrl : Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('SCREEN').appendTitle('open another screen').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT).setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
+    this.appendValueInput('SCREEN')
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_INPUT_SCREENNAME)
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('open screen', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_TITLE }]
@@ -504,11 +575,18 @@ Blockly.Language.controls_openAnotherScreenWithStartValue = {
   helpUrl : Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('SCREENNAME').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('open another screen with start value').appendTitle('screenName').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('STARTVALUE').appendTitle('startValue').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SCREENNAME')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_SCREENNAME)
+        .setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('STARTVALUE')
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_INPUT_STARTVALUE)
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('open screen with value', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_TITLE }]
@@ -521,9 +599,11 @@ Blockly.Language.controls_getStartValue = {
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null);
-    this.appendDummyInput().appendTitle('get start value');
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_START_VALUE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('get start value', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_GET_START_VALUE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_START_VALUE_TITLE }]
@@ -535,10 +615,12 @@ Blockly.Language.controls_closeScreen = {
   helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendDummyInput().appendTitle('close screen');
+    this.appendDummyInput()
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('close screen', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_TITLE_CLOSE }]
@@ -550,10 +632,14 @@ Blockly.Language.controls_closeScreenWithValue = {
   helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('SCREEN').appendTitle('close screen with value').appendTitle('result').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('SCREEN')
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_INPUT_RESULT)
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('close screen with value', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_TITLE_CLOSE }]
@@ -565,10 +651,11 @@ Blockly.Language.controls_closeApplication = {
   helpUrl : Blockly.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendDummyInput().appendTitle('close application');
+    this.appendDummyInput().appendTitle(Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('close application', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_APPLICATION_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_APPLICATION_TITLE_CLOSE }]
@@ -583,7 +670,8 @@ Blockly.Language.controls_getPlainStartText = {
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.OUTPUT));
     this.appendDummyInput().appendTitle('get plain start text');
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('get text', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_GET_PLAIN_START_TEXT_INPUT_GET }]
@@ -595,10 +683,15 @@ Blockly.Language.controls_closeScreenWithPlainText = {
   helpUrl : Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.appendValueInput('TEXT').setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT)).appendTitle('close screen with plain text').appendTitle('text').setAlign(Blockly.ALIGN_RIGHT);
+    this.appendValueInput('TEXT')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE)
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_INPUT_TEXT)
+        .setAlign(Blockly.ALIGN_RIGHT);
     this.setPreviousStatement(true);
     Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TOOLTIP);
-    this.appendCollapsedInput().appendTitle('close screen with text', 'COLLAPSED_TEXT');
+    this.appendCollapsedInput()
+        .appendTitle(Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_TITLE_CLOSE }]

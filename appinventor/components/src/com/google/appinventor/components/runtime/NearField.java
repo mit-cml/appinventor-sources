@@ -30,7 +30,7 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
     "(if supported by the device)</p>" +
     "<p>In order to read and write text tags, the component must have its " +
     "<code>ReadMode</code> property set to True or False respectively.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/nearfield.png")
 

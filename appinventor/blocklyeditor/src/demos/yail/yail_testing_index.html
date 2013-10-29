@@ -363,15 +363,31 @@ function compareElements(expected, given) {
   }
   return flag;
 }
-// Find out if the NB yail matchces Classic Yail
+
+// Find out if the NB yail matches Classic Yail
 function doTheyMatch(expected, given) {
+    if (compareElements(expected, given) && compareDefinitions(expected, given) && compareEvents(expected, given)) {
+    return true;
+    }
 
-  if (compareElements(expected, given) && compareDefinitions(expected, given) && compareEvents(expected, given)) {
-      return true;
-  }
-
-  return false;
+    return false;
 }
+
+// Check if a string contains a pattern, ignoring whitespace
+
+function doesContain(data, pattern) {
+  var dataNoWhitespace = data.replace(/\s/g, "");
+  var patternNoWhitespace = pattern.replace(/\s/g, "");
+  return dataNoWhitespace.indexOf(patternNoWhitespace) >= 0;
+}
+
+//Contains function for JavaScript strings
+// Polyfill for https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/contains
+// Pass in the string to match, and if needed, the starting position (defaults to start of String)
+if (!('contains' in String.prototype))
+  String.prototype.contains = function(str, startIndex) {
+    return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+  }
 
 </script>
 

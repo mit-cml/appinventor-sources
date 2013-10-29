@@ -12,6 +12,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.MenuItem;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,83 +42,6 @@ public class Toolbar extends Composite {
       this.command = command;
     }
   }
-  
-  /**
-   * Class representing a drop-down button with its associated menu. Note
-   * that all items in the menu should have unique captions for removeItem
-   * and setItemEnabled to work properly.
-   */
-  public static class DropDownButton extends TextButton {
-    private final ContextMenu menu;
-    private final List<MenuItem> items;
-    
-    // Create a new drop-down menu button, initially populated with items. Null
-    // items in the list cause a separator to be added at that position.
-    public DropDownButton(String widgetName, String caption, List<ToolbarItem> toolbarItems,
-        final boolean rightAlign) {
-      super(caption + " \u25BE");  // drop down triangle
-      this.menu = new ContextMenu();
-      this.items = new ArrayList<MenuItem>();
-      for (ToolbarItem item : toolbarItems) {
-        if (item != null) {
-          this.items.add(menu.addItem(item.caption, item.command));
-        } else {
-          menu.addSeparator();
-        }
-      }
-      addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          menu.setPopupPositionAndShow(new PopupPanel.PositionCallback() {
-            @Override
-            public void setPosition(int offsetWidth, int offsetHeight) {
-              int left = getAbsoluteLeft();
-              if (rightAlign) {
-                left += getOffsetWidth() - offsetWidth;
-              }
-              int top = getAbsoluteTop() + getOffsetHeight();
-              menu.setPopupPosition(left, top);
-            }
-          });
-        }
-      });
-    }
-    
-    public void clearAllItems() {
-      for (MenuItem item : items) {
-        menu.removeItem(item);
-      }
-      items.clear();
-    }
-    
-    public void addItem(ToolbarItem item) {
-      items.add(menu.addItem(item.caption, item.command));
-    }
-    
-    public void removeItem(String itemName) {
-      for (MenuItem item : items) {
-        if (item.getText().equals(itemName)) {
-          menu.removeItem(item);
-          items.remove(item);
-          break;
-        }
-      }
-    }
-    
-    public void setItemEnabled(String itemName, boolean enabled) {
-      for (MenuItem item : items) {
-        if (item.getText().equals(itemName)) {
-          item.setEnabled(enabled);
-          break;
-        }
-      }
-    }
-    
-    public ContextMenu getContextMenu() {
-      return menu;
-    }
-  }
-  
   private static final String DROP_DOWN_TRIANGLE = "\u25BE";
 
   // All mappings are widget name to widget.
@@ -126,6 +50,7 @@ public class Toolbar extends Composite {
   private final Map<String, TextButton> buttonMap;
   // Drop-down button widgets
   private final Map<String, DropDownButton> dropDownButtonMap;
+
 
   private final HorizontalPanel leftButtons;
   private final HorizontalPanel rightButtons;
@@ -232,6 +157,29 @@ public class Toolbar extends Composite {
   }
 
   /**
+   *
+   * @param item button to add
+   * @param rightAlign true if button is right-aligned, false if left
+   * @param top special styling if the button is on the top.
+   */
+  protected void addButton(final ToolbarItem item, boolean rightAlign, boolean top) {
+    TextButton button = new TextButton(item.caption);
+    button.setStyleName("ode-TopPanelDropDownButton");
+    button.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        item.command.execute();
+      }
+    });
+    if (rightAlign) {
+      rightButtons.add(button);
+    } else {
+      leftButtons.add(button);
+    }
+    buttonMap.put(item.widgetName, button);
+  }
+
+  /**
    * Adds a (left-aligned) button to the toolbar
    *
    * @param item the button to add
@@ -249,10 +197,31 @@ public class Toolbar extends Composite {
    *        addded
    * @param rightAlign button should be right aligned in toolbar
    */
-  protected void addDropDownButton(String dropDownName, String caption, List<ToolbarItem> items,
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
       final boolean rightAlign) {
     final DropDownButton button = new DropDownButton(dropDownName, caption,
         items, rightAlign);
+    if (rightAlign) {
+      rightButtons.add(button);
+    } else {
+      leftButtons.add(button);
+    }
+    dropDownButtonMap.put(dropDownName, button);
+  }
+
+  /**
+   *
+   * @param dropDownName name used for internal map
+   * @param caption name of button
+   * @param items list of items to add to the drop down; null items indicate a separator
+   * @param rightAlign button should be right aligned in toolbar
+   * @param top special style if button is added to the topPanel
+   */
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items,
+      final boolean rightAlign, final boolean top) {
+    final DropDownButton button = new DropDownButton(dropDownName, caption,
+        items, rightAlign);
+    button.setStyleName("ode-TopPanelDropDownButton");
     if (rightAlign) {
       rightButtons.add(button);
     } else {
@@ -267,7 +236,7 @@ public class Toolbar extends Composite {
    * @param dropDownName name used for internal map
    * @param item item to add to drop down
    */
-  protected void addDropDownButtonItem(String dropDownName, ToolbarItem item) {
+  protected void addDropDownButtonItem(String dropDownName, DropDownButton.DropDownItem item) {
     final DropDownButton button = dropDownButtonMap.get(dropDownName);
     if (button != null && item != null) {
       button.addItem(item);
@@ -304,7 +273,7 @@ public class Toolbar extends Composite {
    * @param caption name of button
    * @param items list of items to add to drop down
    */
-  protected void addDropDownButton(String dropDownName, String caption, List<ToolbarItem> items) {
+  protected void addDropDownButton(String dropDownName, String caption, List<DropDownButton.DropDownItem> items) {
     addDropDownButton(dropDownName, caption, items, false);
   }
 

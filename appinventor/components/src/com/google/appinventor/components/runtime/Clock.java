@@ -30,7 +30,7 @@ import java.util.Calendar;
 @DesignerComponent(version = YaVersion.CLOCK_COMPONENT_VERSION,
     description = "Non-visible component that provides the phone's clock, a timer, and " +
     "time calculations.",
-    category = ComponentCategory.BASIC,
+    category = ComponentCategory.USERINTERFACE,
     nonVisible = true,
     iconName = "images/clock.png")
 @SimpleObject

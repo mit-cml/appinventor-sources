@@ -29,18 +29,39 @@ goog.require('Blockly.FieldDropdown');
 goog.require('Blockly.Variables');
 
 
-
 /**
  * Class for a variable's dropdown field.
  * @param {!string} varname The default name for the variable.  If null,
  *     a unique variable name will be generated.
+ * @param {Function} opt_changeHandler A function that is executed when a new
+ *     option is selected.
  * @extends {Blockly.FieldDropdown}
  * @constructor
  */
-Blockly.FieldVariable = function(varname) {
+Blockly.FieldVariable = function(varname, opt_changeHandler) {
+  var changeHandler;
+  if (opt_changeHandler) {
+    // Wrap the user's change handler together with the variable rename handler.
+    var thisObj = this;
+    changeHandler = function(value) {
+      var retVal = Blockly.FieldVariable.dropdownChange.call(thisObj, value);
+      var newVal;
+      if (retVal === undefined) {
+        newVal = value;  // Existing variable selected.
+      } else if (retVal === null) {
+        newVal = thisObj.getValue();  // Abort, no change.
+      } else {
+        newVal = retVal;  // Variable name entered.
+      }
+      opt_changeHandler.call(thisObj, newVal);
+      return retVal;
+    };
+  } else {
+    changeHandler = Blockly.FieldVariable.dropdownChange;
+  }
+
   Blockly.FieldVariable.superClass_.constructor.call(this,
-      Blockly.FieldVariable.dropdownCreate,
-      Blockly.FieldVariable.dropdownChange);
+      Blockly.FieldVariable.dropdownCreate, changeHandler);
 
   if (varname) {
     this.setValue(varname);

@@ -5,28 +5,18 @@
 
 package com.google.appinventor.client;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.ProjectEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.AddFormCommand;
-import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
-import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
 import com.google.appinventor.client.explorer.commands.DeleteFileCommand;
-import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
-import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
-import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
-import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
-import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
-import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -35,9 +25,11 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 
-import java.util.List;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The design toolbar houses command buttons in the Young Android Design
@@ -51,10 +43,10 @@ public class DesignToolbar extends Toolbar {
    * application screen. Name is the name of the screen (form) displayed
    * in the screens pull-down.
    */
-  private static class Screen {
-    private final String screenName;
-    private final FileEditor formEditor;
-    private final FileEditor blocksEditor;
+  public static class Screen {
+    public final String screenName;
+    public final FileEditor formEditor;
+    public final FileEditor blocksEditor;
 
     public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
       this.screenName = name;
@@ -68,10 +60,10 @@ public class DesignToolbar extends Toolbar {
    * (as displayed in the DesignToolbar on the left), a set of named screens,
    * and an indication of which screen is currently being edited.
    */
-  private static class DesignProject {
-    private final String name;
-    private final Map<String, Screen> screens; // screen name -> Screen
-    private String currentScreen; // name of currently displayed screen
+  public static class DesignProject {
+    public final String name;
+    public final Map<String, Screen> screens; // screen name -> Screen
+    public String currentScreen; // name of currently displayed screen
 
     public DesignProject(String name, long projectId) {
       this.name = name;
@@ -101,41 +93,27 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
-  private static final String WIDGET_NAME_SAVE = "Save";
-  private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
-  private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
   private static final String WIDGET_NAME_ADDFORM = "AddForm";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
-  private static final String WIDGET_NAME_BUILD = "Build";
-  private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
-  private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
-  private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
-  private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
-  private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
-  private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
-  private static final String WIDGET_NAME_USB_BUTTON = "Usb";
 
   // Enum for type of view showing in the design tab
   public enum View {
     FORM,   // Form editor view
     BLOCKS  // Blocks editor view
   }
-  private View currentView = View.FORM;
+  public View currentView = View.FORM;
 
-  private Label projectNameLabel;
+  public Label projectNameLabel;
 
   // Project currently displayed in designer
   private DesignProject currentProject;
 
   // Map of project id to project info for all projects we've ever shown
   // in the Designer in this session.
-  private Map<Long, DesignProject> projectMap = Maps.newHashMap();
-
-  // Whether or not the we are talking to the repl
-  private boolean replStarted = false;
+  public Map<Long, DesignProject> projectMap = Maps.newHashMap();
 
   // Stack of screens switched to from the Companion
   // We implement screen switching in the Companion by having it tell us
@@ -144,7 +122,7 @@ public class DesignToolbar extends Toolbar {
   // a screen. If we switch projects in the browser UI, we clear this
   // list of screens as we are effectively running a different application
   // on the device.
-  private static LinkedList<String> pushedScreens = Lists.newLinkedList();
+  public static LinkedList<String> pushedScreens = Lists.newLinkedList();
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -156,15 +134,13 @@ public class DesignToolbar extends Toolbar {
     projectNameLabel.setStyleName("ya-ProjectName");
     HorizontalPanel toolbar = (HorizontalPanel) getWidget();
     toolbar.insert(projectNameLabel, 0);
-    toolbar.setCellWidth(projectNameLabel, "222px"); // width of palette minus
-                                                // cellspacing/border of buttons
 
-    addButton(new ToolbarItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
-        new SaveAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsButton(),
-        new SaveAsAction()));
-    addButton(new ToolbarItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
-        new CheckpointAction()));
+    // width of palette minus cellspacing/border of buttons
+    toolbar.setCellWidth(projectNameLabel, "222px");
+
+    List<DropDownItem> screenItems = Lists.newArrayList();
+    addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems);
+
     if (AppInventorFeatures.allowMultiScreenApplications()) {
       addButton(new ToolbarItem(WIDGET_NAME_ADDFORM, MESSAGES.addFormButton(),
           new AddFormAction()));
@@ -172,64 +148,14 @@ public class DesignToolbar extends Toolbar {
           new RemoveFormAction()));
     }
 
-    List<ToolbarItem> connectToItems = Lists.newArrayList();
-    addDropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectToButton(), connectToItems, true);
-    updateConnectToDropDownButton(false, false, false);
-
-    List<ToolbarItem> screenItems = Lists.newArrayList();
-    addDropDownButton(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton(), screenItems, true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
         MESSAGES.switchToBlocksEditorButton(), new SwitchToBlocksEditorAction()), true);
 
-    List<ToolbarItem> buildItems = Lists.newArrayList();
-    buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_BARCODE,
-        MESSAGES.showBarcodeButton(), new BarcodeAction()));
-    buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_DOWNLOAD,
-        MESSAGES.downloadToComputerButton(), new DownloadAction()));
-    if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
-      buildItems.add(new ToolbarItem(WIDGET_NAME_BUILD_YAIL,
-          MESSAGES.generateYailButton(), new GenerateYailAction()));
-    }
-    addDropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(), buildItems, true);
-    toggleEditor(false);      // Gray out the Designer button and enable the blocks button
+    // Gray out the Designer button and enable the blocks button
+    toggleEditor(false);
 
-  }
-
-  private class SaveAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        ChainableCommand cmd = new SaveAllEditorsCommand(null);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, projectRootNode);
-      }
-    }
-  }
-
-  private class SaveAsAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new CopyYoungAndroidProjectCommand(false));
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_AS_YA, projectRootNode);
-      }
-    }
-  }
-
-  private class CheckpointAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new CopyYoungAndroidProjectCommand(true));
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_CHECKPOINT_YA, projectRootNode);
-      }
-    }
   }
 
   private class AddFormAction implements Command {
@@ -293,7 +219,6 @@ public class DesignToolbar extends Toolbar {
       if (!switchToProject(projectId, project.name)) {
         return;
       }
-      // currentProject == project now
     }
     String newScreenName = screenName;
     if (!currentProject.screens.containsKey(newScreenName)) {
@@ -325,119 +250,7 @@ public class DesignToolbar extends Toolbar {
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
-    updateButtons();
-  }
-
-  /**
-   * Start wireless connection to the AI Companion
-   * @author logan
-   *
-   */
-  private class WirelessAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
-          + "Ignoring WirelessAction.execute().");
-        return;
-      }
-      startRepl(currentProject.currentScreen, false, false);
-    }
-  }
-
-  private class EmulatorAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
-          + "Ignoring WirelessAction.execute().");
-        return;
-      }
-      startRepl(currentProject.currentScreen, true, false);
-    }
-  }
-
-  private class UsbAction implements Command {
-    @Override
-    public void execute() {
-      if (currentProject == null) {
-        OdeLog.wlog("DesignToolbar.currentProject is null. "
-          + "Ignoring WirelessAction.execute().");
-        return;
-      }
-      startRepl(currentProject.currentScreen, false, true);
-    }
-  }
-
-  private class BarcodeAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new ShowBarcodeCommand(target)), "BarcodeAction"))));
-        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_BARCODE_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-                updateBuildButton(false);
-              }
-            });
-      }
-    }
-  }
-
-  private class DownloadAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(
-            new GenerateYailCommand(
-                new BuildCommand(target,
-                    new ShowProgressBarCommand(target,
-                        new WaitForBuildResultCommand(target,
-                            new DownloadProjectOutputCommand(target)), "DownloadAction"))));
-        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-                updateBuildButton(false);
-              }
-            });
-      }
-    }
-  }
- /**
-   * Implements the action to generate the ".yail" file for each screen in the current project.
-   * It does not build the entire project. The intention is that this will be helpful for
-   * debugging during development, and will most likely be disabled in the production system.
-   */
-  private class GenerateYailAction implements Command {
-    @Override
-    public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
-      if (projectRootNode != null) {
-        String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
-        ChainableCommand cmd = new SaveAllEditorsCommand(new GenerateYailCommand(null));
-        updateBuildButton(true);
-        cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_YAIL_YA, projectRootNode,
-            new Command() {
-              @Override
-              public void execute() {
-                updateBuildButton(false);
-              }
-            });
-      }
-    }
+    //updateButtons();
   }
 
   private class SwitchToBlocksEditorAction implements Command {
@@ -499,7 +312,7 @@ public class DesignToolbar extends Toolbar {
       currentProject = projectMap.get(projectId);
       // TODO(sharon): add screens to drop-down menu in the right order
       for (Screen screen : currentProject.screens.values()) {
-        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new ToolbarItem(screen.screenName,
+        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(screen.screenName,
             screen.screenName, new SwitchScreenAction(projectId, screen.screenName)));
       }
       projectNameLabel.setText(projectName);
@@ -528,7 +341,7 @@ public class DesignToolbar extends Toolbar {
     DesignProject project = projectMap.get(projectId);
     if (project.addScreen(name, formEditor, blocksEditor)) {
       if (currentProject == project) {
-        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new ToolbarItem(name,
+        addDropDownButtonItem(WIDGET_NAME_SCREENS_DROPDOWN, new DropDownItem(name,
             name, new SwitchScreenAction(projectId, name)));
       }
     }
@@ -603,95 +416,13 @@ public class DesignToolbar extends Toolbar {
     project.removeScreen(name);
   }
 
-  /**
-   * Enables and/or disables buttons based (mostly) on whether there is a
-   * current form.
-   */
-  private void updateButtons() {
-    String screenName = (currentProject == null) ? null : currentProject.currentScreen;
-    boolean enabled = (currentProject != null);
-    setButtonEnabled(WIDGET_NAME_SAVE, enabled);
-    setButtonEnabled(WIDGET_NAME_SAVE_AS, enabled);
-    setButtonEnabled(WIDGET_NAME_CHECKPOINT, enabled);
-    setDropItemEnabled(WIDGET_NAME_BUILD, WIDGET_NAME_BUILD_BARCODE, enabled);
-    setDropItemEnabled(WIDGET_NAME_BUILD, WIDGET_NAME_BUILD_DOWNLOAD, enabled);
-
-    if (AppInventorFeatures.allowMultiScreenApplications()) {
-      setButtonEnabled(WIDGET_NAME_ADDFORM, enabled);
-      enabled = (currentProject != null &&
-          !YoungAndroidSourceNode.SCREEN1_FORM_NAME.equals(screenName));
-      setButtonEnabled(WIDGET_NAME_REMOVEFORM, enabled);
-    }
-
-    if (currentProject != null) {
-      setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, screenName);
-    } else {
-      setDropDownButtonCaption(WIDGET_NAME_SCREENS_DROPDOWN, MESSAGES.screensButton());
-    }
-  }
-
-  /**
-   * Shows feedback on Package for Phone (Build) button while building.
-   */
-  private void updateBuildButton(boolean isBuilding) {
-    setDropDownButtonEnabled(WIDGET_NAME_BUILD, !isBuilding);
-    setDropDownButtonCaption(WIDGET_NAME_BUILD,
-        isBuilding ? MESSAGES.isBuildingButton() : MESSAGES.buildButton());
-  }
-
-  private void startRepl(String screenName, boolean forEmulator, boolean forUsb) {
-    Screen screen = currentProject.screens.get(screenName);
-    screen.blocksEditor.startRepl(replStarted, forEmulator, forUsb);
-    if (!replStarted) {
-      replStarted = true;
-      if (forEmulator) {        // We are starting the emulator...
-        updateConnectToDropDownButton(true, false, false);
-      } else if (forUsb) {      // We are starting the usb connection
-        updateConnectToDropDownButton(false, false, true);
-      } else {                  // We are connecting via wifi to a Companion
-        updateConnectToDropDownButton(false, true, false);
-      }
-    } else {
-      replStarted = false;
-      updateConnectToDropDownButton(false, false, false);
-    }
-  }
-
-  /**
-   * Indicate that we are no longer connected to the Companion, adjust
-   * buttons accordingly. Called from BlocklyPanel
-   */
-  public static void indicateDisconnect() {
-    DesignToolbar instance = Ode.getInstance().getDesignToolbar();
-    instance.updateConnectToDropDownButton(false, false, false);
-    instance.replStarted = false; // This is ugly, I should really define a method to do this
-                                  // but that would just take space and time...
-  }
-
-  private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
-    clearDropDownMenu(WIDGET_NAME_CONNECT_TO);
-    if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
-          MESSAGES.wirelessButton(), new WirelessAction()));
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
-          MESSAGES.emulatorButton(), new EmulatorAction()));
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_USB_BUTTON,
-          MESSAGES.usbButton(), new UsbAction()));
-    } else if (isEmulatorRunning) {
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_EMULATOR_BUTTON,
-          MESSAGES.emulatorButtonConnected(), new EmulatorAction()));
-    } else if (isCompanionRunning) {
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_WIRELESS_BUTTON,
-          MESSAGES.wirelessButtonConnected(), new WirelessAction()));
-    } else {
-      addDropDownButtonItem(WIDGET_NAME_CONNECT_TO, new ToolbarItem(WIDGET_NAME_USB_BUTTON,
-          MESSAGES.usbButtonConnected(), new UsbAction()));
-    }
-  }
-
   private void toggleEditor(boolean blocks) {
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR, !blocks);
     setButtonEnabled(WIDGET_NAME_SWITCH_TO_FORM_EDITOR, blocks);
-    setDropDownButtonVisible(WIDGET_NAME_CONNECT_TO, blocks);
   }
+
+  public DesignProject getCurrentProject() {
+    return currentProject;
+  }
+
 }
