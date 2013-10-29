@@ -8,6 +8,7 @@ package com.google.appinventor.client.editor.youngandroid;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.DesignToolbar;
+import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
@@ -559,7 +560,7 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static void indicateDisconnect() {
-    DesignToolbar.indicateDisconnect();
+    TopToolbar.indicateDisconnect();
     DesignToolbar.clearScreens();
   }
 

@@ -1,4 +1,4 @@
-1// -*- mode: Javascript; js-indent-level: 4; -*-
+// -*- mode: Javascript; js-indent-level: 4; -*-
 // Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
 
 /**

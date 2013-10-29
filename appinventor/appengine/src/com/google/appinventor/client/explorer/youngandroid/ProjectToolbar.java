@@ -15,6 +15,8 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
@@ -58,30 +60,30 @@ public class ProjectToolbar extends Toolbar {
 
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
         new DeleteAction()));
-    List<ToolbarItem> otherItems = Lists.newArrayList();
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_SOURCE,
+    List<DropDownItem> otherItems = Lists.newArrayList();
+    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_SOURCE,
         MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_SOURCE,
+    otherItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_SOURCE,
         MESSAGES.uploadSourceButton(), new UploadSourceAction()));
     otherItems.add(null);
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
+    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
         MESSAGES.downloadKeystoreButton(), new DownloadKeystoreAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_KEYSTORE,
+    otherItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE,
         MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
+    otherItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE,
         MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
 
     otherItems.add(null);
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
+    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
         new DownloadAllAction()));
 
     addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
 
     if (Ode.getInstance().getUser().getIsAdmin()) {
-      List<ToolbarItem> adminItems = Lists.newArrayList();
-      adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
+      List<DropDownItem> adminItems = Lists.newArrayList();
+      adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
           MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
-      adminItems.add(new ToolbarItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+      adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
           MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
       addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
     }
