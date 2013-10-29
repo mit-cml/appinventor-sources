@@ -16,6 +16,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 
@@ -75,13 +76,13 @@ import com.google.gwt.user.client.Window;
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
   
-
   GalleryClient gallery = new GalleryClient(this);
+  GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
 
   private final FlowPanel galleryGUI;
   private final FlowPanel appSingle;
-  private final FlowPanel appSummary;
+  private final FlowPanel appShowcase;
   private final FlowPanel appDetails;
   private final FlowPanel appHeader;
   private final FlowPanel appAction;
@@ -103,7 +104,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     galleryGUI = new FlowPanel();
     appSingle = new FlowPanel();
-    appSummary = new FlowPanel();
+    appShowcase = new FlowPanel();
     appDetails = new FlowPanel();
     appHeader = new FlowPanel();
     appAction = new FlowPanel();
@@ -112,27 +113,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appDescription = new FlowPanel();
     appComments = new FlowPanel();
     appCommentsList = new FlowPanel();
-
-    // App summary - header image
-    appSummary.add(appHeader);
-    appHeader.addStyleName("app-header");
-    Image image = new Image();
-    image.setUrl(app.getImageURL());
-    image.addStyleName("app-image");
-    appHeader.add(image);
-    
-    // App summary - action
-    appSummary.add(appAction);
-    Button actionButton = new Button("Try this app");
-    actionButton.addClickHandler(new ClickHandler() {
-      // Open up source file if clicked the action button
-      public void onClick(ClickEvent event) {
-        OdeLog.log("######## I clicked on actionButton - ");
-        gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-      }
-    });
-    actionButton.addStyleName("app-action");
-    appAction.add(actionButton);
 
     // App details - header title
     Label title = new Label(app.getTitle());
@@ -184,12 +164,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appDescription.add(description);
     appDescription.addStyleName("app-description");
     
+    // Add app tags
+    FlowPanel appTags = new FlowPanel();
+    appDetails.add(appTags);
+    for (String tag : app.getTags()) {
+      Label t = new Label(tag);
+      appTags.add(t);
+    }
+    appTags.addStyleName("app-tags");
+    
     HTML divider = new HTML("<div class='section-divider'></div>");
     appDetails.add(divider);
     
     // App details - comments
     appDetails.add(appComments);
-    Label commentsHeader = new Label("Comments");
+    Label commentsHeader = new Label("Comments and Reviews");
     commentsHeader.addStyleName("app-comments-header");
     appComments.add(commentsHeader);
 
@@ -197,10 +186,32 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     gallery.GetComments(app.getGalleryAppId(), 0, 100);
     appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
+
+
+    // App showcase - header image
+    appShowcase.add(appHeader);
+    appHeader.addStyleName("app-header");
+    Image image = new Image();
+    image.setUrl(app.getImageURL());
+    image.addStyleName("app-image");
+    appHeader.add(image);
+    
+    // App showcase - action
+    appShowcase.add(appAction);
+    Button actionButton = new Button("Try this app");
+    actionButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+        OdeLog.log("######## I clicked on actionButton - ");
+        gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+      }
+    });
+    actionButton.addStyleName("app-action");
+    appAction.add(actionButton);    
     
 
-    appSingle.add(appSummary);
-    appSummary.addStyleName("gallery-app-summary");
+    appSingle.add(appShowcase);
+    appShowcase.addStyleName("gallery-app-showcase");
     appSingle.add(appDetails);
     appDetails.addStyleName("gallery-app-details");
     galleryGUI.add(appSingle);
@@ -218,49 +229,10 @@ public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID) {
 
 @Override
 public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-	// TODO Auto-generated method stub
-    if (comments != null) {
-    	for ( GalleryComment c : comments) {
-    	  FlowPanel commentItem = new FlowPanel();
-        FlowPanel commentPerson = new FlowPanel();
-        FlowPanel commentMeta = new FlowPanel();
-        FlowPanel commentContent = new FlowPanel();
-        
-        // Add commentPerson, default avatar for now
-        Image cPerson = new Image();
-        cPerson.setUrl("http://i.imgur.com/1h7cUkM.png");
-    	  commentPerson.add(cPerson);
-    	  commentPerson.addStyleName("comment-person");
-    	  commentItem.add(commentPerson);
-    	  
-    	  // Add commentContent
-    		Label cAuthor = new Label(c.getAuthor());
-    		cAuthor.addStyleName("comment-author");
-        commentMeta.add(cAuthor);
-
-        Date commentDate = new Date(Long.parseLong(c.getTimeStamp()));
-        DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
-        Label cDate = new Label(" on " + dateFormat.format(commentDate));
-        cDate.addStyleName("comment-date");
-    		commentMeta.add(cDate);
-
-        commentMeta.addStyleName("comment-meta");
-        commentContent.add(commentMeta);
-
-        Label cText = new Label(c.getText());
-        cText.addStyleName("comment-text");
-        commentContent.add(cText);
-
-        commentContent.addStyleName("comment-content");
-        commentItem.add(commentContent);
-        
-    		commentItem.addStyleName("comment-item");
-    		appCommentsList.add(commentItem);
-    	}
-    } 
-    else {
+    if (comments != null) 
+      galleryGF.generateAppPageComments(comments, appCommentsList);
+    else 
         Window.alert("comment list was null");    	
-    }
 }
 
 @Override
@@ -285,8 +257,4 @@ public void onSourceLoadCompleted(UserProject projectInfo) {
 	
 }
  
-}	  
-  
-  
-
- 
+}	

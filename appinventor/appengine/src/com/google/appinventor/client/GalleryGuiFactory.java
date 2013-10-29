@@ -1,5 +1,6 @@
 package com.google.appinventor.client;
 
+import java.util.Date;
 import java.util.List;
 
 import com.google.appinventor.client.output.OdeLog;
@@ -8,6 +9,7 @@ import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
@@ -56,7 +58,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    *
    * @param apps: list of returned gallery apps from callback.
    * 
-   * @param requestId: determines the specific type of app data.
+   * @param container: the GUI panel where apps will reside.
    * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
@@ -137,6 +139,56 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 		container.addStyleName("gallery-app-collection");
 		
 	}
+  
+  /**
+   * Creates list of comments in the app page.
+   *
+   * @param comments: list of returned gallery comments from callback.
+   * 
+   * @param container: the GUI panel where comments will reside.
+   * 
+   */
+  public void generateAppPageComments(List<GalleryComment> comments, FlowPanel container) {
+
+    for ( GalleryComment c : comments) {
+      FlowPanel commentItem = new FlowPanel();
+      FlowPanel commentPerson = new FlowPanel();
+      FlowPanel commentMeta = new FlowPanel();
+      FlowPanel commentContent = new FlowPanel();
+      
+      // Add commentPerson, default avatar for now
+      Image cPerson = new Image();
+      cPerson.setUrl("http://i.imgur.com/1h7cUkM.png");
+      commentPerson.add(cPerson);
+      commentPerson.addStyleName("comment-person");
+      commentItem.add(commentPerson);
+      
+      // Add commentContent
+      Label cAuthor = new Label(c.getAuthor());
+      cAuthor.addStyleName("comment-author");
+      commentMeta.add(cAuthor);
+
+      Date commentDate = new Date(Long.parseLong(c.getTimeStamp()));
+      DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
+      Label cDate = new Label(" on " + dateFormat.format(commentDate));
+      cDate.addStyleName("comment-date");
+      commentMeta.add(cDate);
+
+      commentMeta.addStyleName("comment-meta");
+      commentContent.add(commentMeta);
+
+      Label cText = new Label(c.getText());
+      cText.addStyleName("comment-text");
+      commentContent.add(cText);
+
+      commentContent.addStyleName("comment-content");
+      commentItem.add(commentContent);
+
+      commentItem.addStyleName("comment-item");
+      commentItem.addStyleName("clearfix");
+      container.add(commentItem);
+    } 
+  }
 
   @Override
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID) {

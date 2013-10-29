@@ -1373,7 +1373,7 @@ textarea::-webkit-input-placeholder {
   display: block;
   margin: 20px 10px;
 }
-.gallery-app-single .gallery-app-summary {
+.gallery-app-single .gallery-app-showcase {
   width: 200px;
   padding: 15px;
   float: left;
@@ -1436,7 +1436,7 @@ textarea::-webkit-input-placeholder {
   display: inline;
   padding-right: 5px;
 }
-.gallery-app-summary .app-image {
+.gallery-app-showcase .app-image {
   width: 200px;
   height: 200px;
   margin: 0 auto;
@@ -1468,6 +1468,26 @@ textarea::-webkit-input-placeholder {
   margin: 0 15px 0 0;
   color: #999;
 }
+.gallery-app-details .app-tags {
+  max-width: 100%;
+  display: block;
+  margin: 10px 0 0; 
+}
+.gallery-app-details .app-tags .gwt-Label {
+  display: inline-block;
+  background-color: #EEE;
+  color: #999;
+  padding: 2px 10px;
+  margin: 5px 8px 5px 0;
+}
+.gallery-app-details .app-tags .gwt-Label:hover {
+  background-color: #999;
+  color: #FFF;
+  -webkit-transition: background-color 1s ease; 
+  -moz-transition: background-color 1s ease; 
+  -o-transition: background-color 1s ease;
+  transition: background-color 1s ease; 	
+}
 .app-meta .note-header {
   display: block;
   font-weight: 900;
@@ -1495,11 +1515,11 @@ textarea::-webkit-input-placeholder {
   margin: 10px 0;
 }
 .comment-item {
-  
+  padding: 10px 0 0;
 }
 .comment-person {
   float: left;
-  margin: 0 20px 20px 0;
+  margin: 0 20px 0 0;
   position: absolute;
   height: 100%;
 }
@@ -1516,7 +1536,7 @@ textarea::-webkit-input-placeholder {
 }
 .comment-meta .comment-author {
   display: inline-block;
-  
+  font-size: 14px;
 }
 .comment-meta .comment-date {
   display: inline-block;
@@ -1524,5 +1544,13 @@ textarea::-webkit-input-placeholder {
   color: #999;
 }
 .comment-item .comment-text {
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 300;
+}
+.clearfix:after { 
+   content: "."; 
+   visibility: hidden; 
+   display: block; 
+   height: 0; 
+   clear: both;
 }

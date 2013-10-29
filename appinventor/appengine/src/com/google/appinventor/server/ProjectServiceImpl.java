@@ -421,7 +421,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   @Override
   public List<GalleryApp> getApps(String url)
   {
-	  final String galleryURL=url;
+	  final String galleryURL = url;
 	  try {
 	    URLConnection connection = new URL(galleryURL).openConnection();
 	    //connection.setRequestProperty("Accept-Charset", charset);
@@ -466,9 +466,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   {
     try { 
   	  String title = appJson.get("title").toString();
-	  String description = appJson.get("description").toString();
-	  String image1 = appJson.get("image1").toString();
-	  String sourceFileName = appJson.get("sourceFileName").toString();
+      String description = appJson.get("description").toString();
+      String image1 = appJson.get("image1").toString();
+      String sourceFileName = appJson.get("sourceFileName").toString();
       // for some reason source is a list of one item
       JSONArray sourceArray = (JSONArray) appJson.get("source");
       String sourceBlobId = sourceArray.get(0).toString();
@@ -482,11 +482,16 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       int numLikes = Integer.parseInt(appJson.get("numLikes").toString());
       int numComments = Integer.parseInt(appJson.get("numComments").toString());
       
+      JSONArray tagArray = appJson.getJSONArray("tags");
+      ArrayList<String> tags = new ArrayList<String>();
+      for (int i = 0; i < tagArray.length(); i++) {
+        tags.add(tagArray.getString(i));
+      }  
 	    
-	  GalleryApp galleryApp = new GalleryApp(title, displayName, description,
+      GalleryApp galleryApp = new GalleryApp(title, displayName, description,
 			  creationTime, uploadTime, image1, sourceFileName,
 			  numDownloads, numViewed, numLikes, numComments, 
-			  imageBlobId, sourceBlobId, galleryAppId);
+			  imageBlobId, sourceBlobId, galleryAppId, tags);
 	  
       return galleryApp;
       } catch (JSONException e) {
@@ -494,7 +499,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       }
   }
 
-   @Override
+  @Override
   public List<GalleryComment> getComments(String url)
   {
 	  final String galleryURL=url;
