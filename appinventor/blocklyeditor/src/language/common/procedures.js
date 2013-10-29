@@ -25,10 +25,15 @@
 
 /**
  * Lyn's Change History:
+ * [lyn, 10/28/13]
+ *   + Fixed a missing change of Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
+ *   + I was wrong about re-rendering not being needed in updatedParams_!
+ *     Without it, changing horizontal -> vertical params doesn't handle body slot correctly.
+ *     So added it back.
  * [lyn, 10/27/13]
  *   + Fix bug in list of callers in flyout by simplifying domToMutation for procedure callers.
  *     This should never look for associated declaration, but just take arguments from given xml.
- *   + Removed render() call from updateParams. Seems unnecessary.
+ *   + Removed render() call from updateParams. Seems unnecessary. <== I WAS WRONG. SEE 10/28/13 NOTE
  *   + Specify direction of flydowns
  *   + Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure in proc decls
  * [lyn, 10/26/13] Modify procedure parameter changeHandler to propagate name changes to caller arg labels
@@ -117,9 +122,9 @@ Blockly.Language.procedures_defnoreturn = {
     var secondToLastInput = this.inputList[this.inputList.length - 2]; // Body of procedure
     var lastInput = this.inputList[this.inputList.length - 1]; // Collapsed input
 
-    //stop rendering until block is recreated
-    // var savedRendered = this.rendered;
-    // this.rendered = false;
+    // stop rendering until block is recreated
+    var savedRendered = this.rendered;
+    this.rendered = false;
 
     var oldArgCount = this.inputList.length - 3;
 
@@ -152,7 +157,8 @@ Blockly.Language.procedures_defnoreturn = {
     var headerInput =
         this.appendDummyInput('HEADER')
             .appendTitle(Blockly.LANG_PROCEDURES_DEFNORETURN_DEFINE)
-            .appendTitle(new Blockly.FieldTextInput(procName, Blockly.Procedures.rename), 'NAME');
+            // [lyn, 10/28/13] Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure
+            .appendTitle(new Blockly.FieldTextInput(procName, Blockly.AIProcedure.renameProcedure), 'NAME');
 
     //add an input title for each argument
     //name each input after the block and where it appears in the block to reference it later
@@ -171,10 +177,14 @@ Blockly.Language.procedures_defnoreturn = {
 
     //put the last two arguments back
     this.inputList = this.inputList.concat(secondToLastInput,lastInput);
-    // this.rendered = savedRendered;
-    // if (this.rendered) {
-    //   this.render();
-    // }
+
+    this.rendered = savedRendered;
+    // [lyn, 10/28/13] I thought this rerendering was unnecessary. But I was wrong!
+    // Without it, get bug noticed by Andrew in which toggling horizontal -> vertical params
+    // in procedure decl doesn't handle body tag appropriately!
+    if (this.rendered) {
+       this.render();
+    }
     // console.log("exit procedures_defnoreturn updateParams_()");
   },
   // [lyn, 10/26/13] Introduced this to correctly handle renaming of [(1) caller arg labels and

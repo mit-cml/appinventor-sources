@@ -25,6 +25,8 @@
 
 /**
  * Lyn's History:
+ *  [lyn, 10/28/13] Made identifier legality check more restrictive by removing arithmetic
+ *     and logical ops as possible identifier characters
  *  [lyn, 10/27/13] Create legality filter & transformer for AI2 variable names
  *  [lyn, 10/26/13] Fixed renaming of globals and lexical vars involving empty strings and names with internal spaces.
  *  [lyn, 12/23-27/12] Updated to:
@@ -512,9 +514,17 @@ Blockly.LexicalVariable.renameParam = function (newName) {
  * [lyn, 10/27/13]
  * Checks an identifier for validity. Validity rules are a simplified version of Kawa identifier rules.
  * They assume that the YAIL-generated version of the identifier will be preceded by a legal Kawa prefix:
+ *
  *   <identifier> = <first><rest>*
- *   <first> = letter U charsIn("_!$%&?^*~/+-.@>=<")
+ *   <first> = letter U charsIn("_$?~@")
  *   <rest> = <first> U digit
+ *
+ *   Note: an earlier verison also allowed characters in "!&%.^/+-*>=<",
+ *   but we decided to remove these because (1) they may be used for arithmetic,
+ *   logic, and selection infix operators in a future AI text language, and we don't want
+ *   things like a+b, !c, d.e to be ambiguous between variables and other expressions.
+ *   (2) using chars in "><&" causes HTML problems with getters/setters in flydown menu.
+ *
  * First transforms the name by removing leading and trailing whitespace and
  * converting nonempty sequences of internal whitespace to '_'.
  * Returns a result object of the form {transformed: <string>, isLegal: <bool>}, where:
@@ -524,8 +534,7 @@ Blockly.LexicalVariable.renameParam = function (newName) {
 Blockly.LexicalVariable.checkIdentifier = function(ident) {
   var transformed = ident.trim() // Remove leading and trailing whitespace
                          .replace(/[\s\xa0]+/g, '_'); // Replace nonempty sequences of internal spaces by underscores
-  console.log(ident + " transformed to " + transformed);
-  var regexp = /^[a-zA-Z_\!\$%&\?\^\*~\/\+-.@>\=<][\w_\!\$%&\?\^\*~\/\+-.@>\=<]*$/;
+  var regexp = /^[a-zA-Z_\$\?~@][\w_\$\?~@]*$/;
   var isLegal = transformed.search(regexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }
