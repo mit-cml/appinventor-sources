@@ -84,7 +84,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for removing a screen")
   String removeFormButton();
 
-  @DefaultMessage("Connect To")
+  @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
   String connectToButton();
 
@@ -122,7 +122,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the cascade item for generating YAIL for a project")
   String generateYailButton();
 
-  @DefaultMessage("Package for Phone")
+  @DefaultMessage("Download")
   @Description("Label of the button leading to build related cascade items")
   String buildButton();
 
@@ -146,9 +146,7 @@ public interface OdeMessages extends Messages {
 
   // Used in Ode.java
 
-  // TODO(user): Replace with commented version once we're ready
-  @DefaultMessage("MIT App Inventor 2 (Alpha)")
-  //  @DefaultMessage("App Inventor for Android")
+  @DefaultMessage("MIT App Inventor 2")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
 
@@ -204,6 +202,10 @@ public interface OdeMessages extends Messages {
   @Description("Label showing the ant build date and the git version")
   String gitBuildId(String date, String version);
 
+  @DefaultMessage("Help")
+  @Description("Label for the Help menu")
+  String helpLink();
+
   @DefaultMessage("About")
   @Description("Label of the link for About")
   String aboutLink();
@@ -234,13 +236,17 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String tabNameProjects();
 
+  @DefaultMessage("Report a Problem")
+  @Description("Link for Feedback form")
+  String feedbackLink();
+
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();
 
-  @DefaultMessage("Learn")
-  @Description("Name of Learn tab")
-  String tabNameLearn();
+  @DefaultMessage("Guide")
+  @Description("Name of Guide link")
+  String guideLink();
 
   @DefaultMessage("(Debugging)")
   @Description("Name of Debugging tab")
@@ -802,9 +808,13 @@ public interface OdeMessages extends Messages {
       "from the server.")
   String projectInformationRetrievalError();
 
-  // Used in explorer/youngandroid/ProjectToolbar.java
+  // Used in explorer/youngandroid/Toolbar.java
 
-  @DefaultMessage("New")
+  @DefaultMessage("File")
+  @Description("Label for the File Button")
+  String fileButton();
+
+  @DefaultMessage("New Project")
   @Description("Label of the button for creating a new project")
   String newButton();
 
@@ -1171,27 +1181,19 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("Connect Companion")
+  @DefaultMessage("AI Companion")
   @Description("Message providing details about starting the wireless connection.")
   String wirelessButton();
 
-  @DefaultMessage("Disconnect Companion")
-  @Description("Message providing details about disconnecting a wireless connection.")
-  String wirelessButtonConnected();
-
-  @DefaultMessage("Connect Emulator")
+  @DefaultMessage("Emulator")
   @Description("Message providing details about starting the emulator connection.")
   String emulatorButton();
 
-  @DefaultMessage("Disconnect Emulator")
-  @Description("Message providing details about disconnecting an emulator connection.")
-  String emulatorButtonConnected();
-
-  @DefaultMessage("Connect via USB")
+  @DefaultMessage("USB")
   @Description("Message providing details about starting a USB connection.")
   String usbButton();
 
-  @DefaultMessage("Disconnect USB")
-  @Description("Message providing details about disconnecting a USB connection.")
-  String usbButtonConnected();
+  @DefaultMessage("Reset Connection")
+  @Description("Reset all connections.")
+  String resetConnections();
 }

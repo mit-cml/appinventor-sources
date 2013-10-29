@@ -87,8 +87,13 @@ Blockly.Drawer.showBuiltin = function(drawerName) {
   if(drawerName == "cat_Procedures") {
     var newBlockSet = [];
     for(var i=0;i<blockSet.length;i++) {      
-      if(!(blockSet[i] == "procedures_callnoreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(false)) == JSON.stringify([Blockly.FieldProcedure.defaultValue])) &&
-        !(blockSet[i] == "procedures_callreturn" && JSON.stringify(Blockly.AIProcedure.getProcedureNames(true)) == JSON.stringify([Blockly.FieldProcedure.defaultValue]))){
+      if(!(blockSet[i] == "procedures_callnoreturn" // Include callnoreturn only if at least one defnoreturn declaration
+           && JSON.stringify(Blockly.AIProcedure.getProcedureNames(false))
+              == JSON.stringify([Blockly.FieldProcedure.defaultValue]))
+         &&
+         !(blockSet[i] == "procedures_callreturn" // Include callreturn only if at least one defreturn declaration
+           && JSON.stringify(Blockly.AIProcedure.getProcedureNames(true))
+              == JSON.stringify([Blockly.FieldProcedure.defaultValue]))){
         newBlockSet.push(blockSet[i]);
       }
     }
@@ -231,11 +236,16 @@ Blockly.Drawer.componentTypeToXMLArray = function(typeName) {
 Blockly.Drawer.blockTypeToXMLArray = function(blockType,mutatorAttributes) {
   var xmlString = Blockly.Drawer.getDefaultXMLString(blockType,mutatorAttributes);
   if(xmlString == null) {
-    xmlString = '<xml><block type="' + blockType + '">';
-    if(mutatorAttributes) {
-      xmlString += Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes);
+    // [lyn, 10/23/13] Handle procedure calls in drawers specially
+    if (blockType == 'procedures_callnoreturn' || blockType == 'procedures_callreturn') {
+      xmlString = Blockly.Drawer.procedureCallersXMLString(blockType == 'procedures_callreturn');
+    } else {
+      xmlString = '<xml><block type="' + blockType + '">';
+      if(mutatorAttributes) {
+        xmlString += Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes);
+      }
+      xmlString += '</block></xml>';
     }
-    xmlString += '</block></xml>';
   }
   var xmlBlockArray = [];
   var xmlFromString = Blockly.Xml.textToDom(xmlString);
@@ -252,6 +262,48 @@ Blockly.Drawer.mutatorAttributesToXMLString = function(mutatorAttributes){
   }
   xmlString += '></mutation>';
   return xmlString;
+}
+
+// [lyn, 10/22/13] return an XML string including one procedure caller for each procedure declaration
+// in main workspace.
+Blockly.Drawer.procedureCallersXMLString = function(returnsValue) {
+  var xmlString = '<xml>'  // Used to accumulate xml for each caller
+  var decls = Blockly.AIProcedure.getProcedureDeclarationBlocks(returnsValue);
+  decls.sort(Blockly.Drawer.compareDeclarationsByName); // sort decls lexicographically by procedure name
+  for (var i = 0; i < decls.length; i++) {
+    xmlString += Blockly.Drawer.procedureCallerBlockString(decls[i]);
+  }
+  xmlString += '</xml>';
+  return xmlString;
+}
+
+Blockly.Drawer.compareDeclarationsByName = function (decl1, decl2) {
+  var name1 = decl1.getTitleValue('NAME').toLocaleLowerCase();
+  var name2 = decl2.getTitleValue('NAME').toLocaleLowerCase();
+  return name1.localeCompare(name2);
+}
+
+// [lyn, 10/22/13] return an XML string for a caller block for the give procedure declaration block
+// Here's an example:
+//   <block type="procedures_callnoreturn" inline="false">
+//     <title name="PROCNAME">p2</title>
+//     <mutation name="p2">
+//       <arg name="b"></arg>
+//       <arg name="c"></arg>
+//    </mutation>
+//  </block>
+Blockly.Drawer.procedureCallerBlockString = function(procDeclBlock) {
+  var declType = procDeclBlock.type;
+  var callerType = (declType == 'procedures_defreturn') ? 'procedures_callreturn' : 'procedures_callnoreturn';
+  var blockString = '<block type="' + callerType + '" inline="false">'
+  var procName = procDeclBlock.getTitleValue('NAME');
+  blockString += '<title name="PROCNAME">' + procName + '</title>';
+  var mutationDom = procDeclBlock.mutationToDom();
+  mutationDom.setAttribute('name', procName); // Decl doesn't have name attribute, but caller does
+  var mutationXmlString = Blockly.Xml.domToText(mutationDom);
+  blockString += mutationXmlString;
+  blockString += '</block>';
+  return blockString;
 }
 
 /**

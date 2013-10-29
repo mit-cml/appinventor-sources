@@ -5,29 +5,16 @@
 
 package com.google.appinventor.client.explorer;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
-import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
-import com.google.gwt.event.logical.shared.OpenEvent;
-import com.google.gwt.event.logical.shared.OpenHandler;
-import com.google.gwt.event.logical.shared.SelectionEvent;
-import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.ScrollPanel;
-import com.google.gwt.user.client.ui.Tree;
-import com.google.gwt.user.client.ui.TreeItem;
-import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.event.logical.shared.*;
+import com.google.gwt.user.client.ui.*;
 
 import java.util.Iterator;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * This explorer is used to outline the structure of a source file. Note that
@@ -48,6 +35,7 @@ public class SourceStructureExplorer extends Composite {
   public SourceStructureExplorer() {
     // Initialize UI elements
     tree = new Tree(Ode.getImageBundle());
+    tree.setAnimationEnabled(true);
     tree.addCloseHandler(new CloseHandler<TreeItem>() {
       @Override
       public void onClose(CloseEvent<TreeItem> event) {
@@ -96,7 +84,7 @@ public class SourceStructureExplorer extends Composite {
     });
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
-    scrollPanel.setWidth("250px");  // wide enough to avoid a horizontal scrollbar most of the time
+    scrollPanel.setWidth("200px");  // wide enough to avoid a horizontal scrollbar most of the time
     scrollPanel.setHeight("480px"); // approximately the same height as the viewer
 
     HorizontalPanel buttonPanel = new HorizontalPanel();
@@ -119,8 +107,7 @@ public class SourceStructureExplorer extends Composite {
       }
     });
     buttonPanel.add(renameButton);
-    buttonPanel.setCellHorizontalAlignment(renameButton,
-                                           HorizontalPanel.ALIGN_RIGHT);
+    buttonPanel.setCellHorizontalAlignment(renameButton, HorizontalPanel.ALIGN_RIGHT);
 
     deleteButton = new TextButton(MESSAGES.deleteButton());
     deleteButton.setEnabled(false);
@@ -138,8 +125,7 @@ public class SourceStructureExplorer extends Composite {
       }
     });
     buttonPanel.add(deleteButton);
-    buttonPanel.setCellHorizontalAlignment(deleteButton,
-                                           HorizontalPanel.ALIGN_LEFT);
+    buttonPanel.setCellHorizontalAlignment(deleteButton, HorizontalPanel.ALIGN_LEFT);
 
     VerticalPanel panel = new VerticalPanel();
     panel.add(scrollPanel);

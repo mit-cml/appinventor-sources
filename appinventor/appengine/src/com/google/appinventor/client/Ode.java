@@ -160,6 +160,7 @@ public class Ode implements EntryPoint {
   private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
+  private TopToolbar topToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -507,6 +508,8 @@ public class Ode implements EntryPoint {
         }
       }
     };
+
+    deckPanel.setAnimationEnabled(true);
     deckPanel.sinkEvents(Event.ONCONTEXTMENU);
     deckPanel.setStyleName("ode-DeckPanel");
 
@@ -526,6 +529,25 @@ public class Ode implements EntryPoint {
     // Design tab
     VerticalPanel dVertPanel = new VerticalPanel();
     dVertPanel.setWidth("100%");
+    dVertPanel.setHeight("100%");
+
+    // Add the Code Navigation arrow
+//    switchToBlocksButton = new VerticalPanel();
+//    switchToBlocksButton.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+//    switchToBlocksButton.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+//    switchToBlocksButton.setStyleName("ode-NavArrow");
+//    switchToBlocksButton.add(new Image(RIGHT_ARROW_IMAGE_URL));
+//    switchToBlocksButton.setWidth("25px");
+//    switchToBlocksButton.setHeight("100%");
+
+    // Add the Code Navigation arrow
+//    switchToDesignerButton = new VerticalPanel();
+//    switchToDesignerButton.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
+//    switchToDesignerButton.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
+//    switchToDesignerButton.setStyleName("ode-NavArrow");
+//    switchToDesignerButton.add(new Image(LEFT_ARROW_IMAGE_URL));
+//    switchToDesignerButton.setWidth("25px");
+//    switchToDesignerButton.setHeight("100%");
 
     designToolbar = new DesignToolbar();
     dVertPanel.add(designToolbar);
@@ -533,13 +555,16 @@ public class Ode implements EntryPoint {
     workColumns = new HorizontalPanel();
     workColumns.setWidth("100%");
 
+    //workColumns.add(switchToDesignerButton);
+
     Box palletebox = PaletteBox.getPaletteBox();
-    palletebox.setWidth("225px");
+    palletebox.setWidth("222px");
     workColumns.add(palletebox);
 
     Box viewerbox = ViewerBox.getViewerBox();
     workColumns.add(viewerbox);
     workColumns.setCellWidth(viewerbox, "97%");
+    workColumns.setCellHeight(viewerbox, "97%");
 
     structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
@@ -552,11 +577,11 @@ public class Ode implements EntryPoint {
     workColumns.add(structureAndAssets);
 
     Box propertiesbox = PropertiesBox.getPropertiesBox();
-    propertiesbox.setWidth("210px");
+    propertiesbox.setWidth("222px");
     workColumns.add(propertiesbox);
-
+    //switchToBlocksButton.setHeight("650px");
+    //workColumns.add(switchToBlocksButton);
     dVertPanel.add(workColumns);
-
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
 
@@ -617,14 +642,17 @@ public class Ode implements EntryPoint {
     mainPanel.setCellHeight(deckPanel, "100%");
     mainPanel.setCellWidth(deckPanel, "100%");
 
+//    mainPanel.add(switchToDesignerButton, DockPanel.WEST);
+//    mainPanel.add(switchToBlocksButton, DockPanel.EAST);
+
     //Commenting out for now to gain more space for the blocks editor
-    //mainPanel.add(statusPanel, DockPanel.SOUTH);
+    mainPanel.add(statusPanel, DockPanel.SOUTH);
     mainPanel.setSize("100%", "100%");
     RootPanel.get().add(mainPanel);
 
     // There is no sure-fire way of preventing people from accidentally navigating away from ODE
     // (e.g. by hitting the Backspace key). What we do need though is to make sure that people will
-    // not lose any work because of this. We hook into the window closing event to detect the
+    // not lose any work because of this. We hook into the window closing  event to detect the
     // situation.
     Window.addWindowClosingHandler(new Window.ClosingHandler() {
       @Override
@@ -727,6 +755,26 @@ public class Ode implements EntryPoint {
    */
   public DesignToolbar getDesignToolbar() {
     return designToolbar;
+  }
+
+  /**
+   * Returns the design tool bar.
+   *
+   * @return  {@link DesignToolbar}
+   */
+  public TopToolbar getTopToolbar() {
+    return topToolbar;
+  }
+
+  /**
+   * Set the location of the topToolBar. Called from
+   * TopPanel(). We need a way to find it because the
+   * blockly code needs to interact with the Connect-To
+   * dropdown when a connection to a companion terminates.
+   */
+
+  public void setTopToolbar(TopToolbar toolbar) {
+    topToolbar = toolbar;
   }
 
   /**

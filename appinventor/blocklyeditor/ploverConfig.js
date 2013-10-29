@@ -63,6 +63,11 @@
     "./src/field_procedure.js",
     "./src/field_textblockinput.js",
     "./src/warningIndicator.js",
+    "./src/flydown.js",
+    "./src/field_flydown.js",
+    "./src/field_parameter_flydown.js",
+    "./src/field_global_flydown.js",
+    "./src/field_procedure_flydown.js",
 
     //language files
     './src/language/common/control.js',

@@ -229,6 +229,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
     Map<String, MockComponent> map = Maps.newHashMap();
     if (loadComplete) {
       populateComponentsMap(form, map);
+    } else {
+      OdeLog.log("YaFormEditor: about to return an empty map!!!!!");
     }
     return map;
   }
