@@ -99,12 +99,6 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor
    */
   public static final String PROPERTY_TYPE_NON_NEGATIVE_INTEGER = "non_negative_integer";
-  
-  /**
-   * Non-negative (positive or zero) integers.
-   * @see com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor
-   */
-  public static final String PROPERTY_TYPE_TOAST_LENGTH = "toast_length";
 
   /**
    * Choices of screen orientations offered by {@link
@@ -151,6 +145,12 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXTALIGNMENT = "textalignment";
 
+  /**
+   * Choices of toast display length (short, long) offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_TOAST_LENGTH = "toast_length";
+  
   /**
    * Choices of typefaces offered by {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor}.

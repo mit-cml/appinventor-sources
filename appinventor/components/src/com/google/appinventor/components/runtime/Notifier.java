@@ -69,12 +69,12 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private final Handler handler;
 
   //Length of Notifier message display
-  private int notifierLength;
+  private int notifierLength = Component.TOAST_LENGTH_LONG;
   
-  // Backing for background color
+  // Notifier background color
   private int backgroundColor = Color.DKGRAY;
   
-  // Backing for text color
+  // Notifier text color
   private int textColor = Color.WHITE;
   /**
    * Creates a new Notifier component.
@@ -257,10 +257,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
-    /**
-   * Sets the volume property to a number between 0 and 100.
+  
+  /**
+   * Sets the length of time that the Toast is shown -- either "short" or "long".
    *
-   * @param vol  the desired volume level
+   * @param length  Length of time that a toast is visible
    */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
@@ -272,7 +273,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
   
   /**
-   * Specifies the label's background color as an alpha-red-green-blue
+   * Specifies the Toast's background color as an alpha-red-green-blue
    * integer.
    *
    * @param argb  background RGB color with alpha
@@ -286,7 +287,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   
   
   /**
-   * Returns the label's text color as an alpha-red-green-blue
+   * Returns the Toast's text color as an alpha-red-green-blue
    * integer.
    *
    * @return  text RGB color with alpha
@@ -298,7 +299,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Specifies the label's text color as an alpha-red-green-blue
+   * Specifies the Toast's text color as an alpha-red-green-blue
    * integer.
    *
    * @param argb  text RGB color with alpha
@@ -320,7 +321,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // I (hal) can't figure it out.
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
         ? 22 : 15;
-    Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
+    Toast toast = Toast.makeText(activity, message, notifierLength);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
     textView.setBackgroundColor(backgroundColor);
@@ -329,7 +330,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);
     textView.setPadding(10, 10, 10, 10);
-    textView.setText(message);
+    textView.setText(notifierLength);
     toast.setView(textView);
     toast.show();
   }

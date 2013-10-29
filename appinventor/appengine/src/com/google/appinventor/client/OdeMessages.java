@@ -668,12 +668,12 @@ public interface OdeMessages extends Messages {
   
   // Used in editor/youngandroid/properties/YoungAndroidToastLengthChoicePropertyEditor.java
   
-  @DefaultMessage("Short Toast")
-  @Description("Show toast for a short amount of time")
+  @DefaultMessage("Short")
+  @Description("Show toast for a Toast_Short of time")
   String shortToastLength();
 
-  @DefaultMessage("Long Toast")
-  @Description("Show toast for a long amount of time")
+  @DefaultMessage("Long")
+  @Description("Show toast for a Toast_Long of time")
   String longToastLength();
 
   // Used in explorer/SourceStructureExplorer.java
