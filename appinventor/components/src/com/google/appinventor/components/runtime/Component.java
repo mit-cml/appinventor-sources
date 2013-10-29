@@ -102,6 +102,12 @@ public interface Component {
   static final int LENGTH_UNKNOWN = -3;
 
   /*
+   * Length constants for toast.
+   */
+  static final int TOAST_LENGTH_SHORT = 0;
+  static final int TOAST_LENGTH_LONG = 1;
+  
+  /*
    * Screen direction constants.
    * Observe that opposite directions have the same magnitude but opposite signs.
    */

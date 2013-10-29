@@ -263,10 +263,10 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    * @param vol  the desired volume level
    */
   @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
-      defaultValue = "50")
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
+      defaultValue = Component.TOAST_LENGTH_LONG + "")
   @SimpleProperty(
-      description = "Sets the length of the Notifier Display")
+      userVisible = false)
   public void NotifierLength(int length){
   		notifierLength = length;
   }

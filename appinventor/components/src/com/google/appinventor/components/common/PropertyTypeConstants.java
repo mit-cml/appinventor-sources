@@ -99,6 +99,12 @@ public class PropertyTypeConstants {
    * @see com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor
    */
   public static final String PROPERTY_TYPE_NON_NEGATIVE_INTEGER = "non_negative_integer";
+  
+  /**
+   * Non-negative (positive or zero) integers.
+   * @see com.google.appinventor.client.widgets.properties.NonNegativeIntegerPropertyEditor
+   */
+  public static final String PROPERTY_TYPE_TOAST_LENGTH = "toast_length";
 
   /**
    * Choices of screen orientations offered by {@link
