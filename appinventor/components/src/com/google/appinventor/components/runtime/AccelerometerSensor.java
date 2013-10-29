@@ -68,13 +68,11 @@ import java.util.Queue;
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
-  // Shake threshold - derived by trial
-  private static final double SHAKE_THRESHOLD = 8.0;
-  
+  // Shake thresholds - derived by trial 
   private static final double weakShakeThreshold = 5.0;
   private static final double moderateShakeThreshold = 13.0;
   private static final double strongShakeThreshold = 20.0;
-
+    
   // Cache for shake detection
   private static final int SENSOR_CACHE_SIZE = 10;
   private final Queue<Float> X_CACHE = new LinkedList<Float>();
@@ -334,14 +332,13 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
     average /= cache.size();
 
-    if (Sensitivity() == 0) {
-    	return ((Math.abs(average - currentValue) > weakShakeThreshold) && (Math.abs(average - currentValue) < moderateShakeThreshold));
-    } else if (Sensitivity() == 1) {
-    	return ((Math.abs(average - currentValue) > moderateShakeThreshold) && (Math.abs(average - currentValue) < strongShakeThreshold));
-    } else {
+    if (Sensitivity() == 0) { //sensitivity is weak
     	return Math.abs(average - currentValue) > strongShakeThreshold;
+    } else if (Sensitivity() == 1) { //sensitivity is moderate
+    	return ((Math.abs(average - currentValue) > moderateShakeThreshold) && (Math.abs(average - currentValue) < strongShakeThreshold));
+    } else { //sensitivity is strong
+    	return ((Math.abs(average - currentValue) > weakShakeThreshold) && (Math.abs(average - currentValue) < moderateShakeThreshold));
     }
-    //return Math.abs(average - currentValue) > SHAKE_THRESHOLD;
   }
 
   // SensorListener implementation
