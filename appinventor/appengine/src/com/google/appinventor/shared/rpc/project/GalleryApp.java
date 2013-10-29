@@ -1,6 +1,8 @@
 package com.google.appinventor.shared.rpc.project;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class GalleryApp implements IsSerializable {
@@ -19,7 +21,8 @@ public class GalleryApp implements IsSerializable {
 	public GalleryApp(String title, String developerName, String description,
 			String creationDate, String updateDate, String imageURL, String sourceFileName,
 			int downloads, int views, int likes, int comments, 
-			String imageBlobId, String sourceBlobId, String galleryAppId ) {
+			String imageBlobId, String sourceBlobId, String galleryAppId, 
+			ArrayList<String> tags ) {
 		super();
 		this.title = title;
 		this.developerName = developerName;
@@ -44,6 +47,7 @@ public class GalleryApp implements IsSerializable {
 		this.imageBlobId= imageBlobId;
 		this.sourceBlobId= sourceBlobId;
 		this.galleryAppId= galleryAppId;
+		this.tags = tags;
 	}
 	private String title;
 	private String developerName;
@@ -59,9 +63,10 @@ public class GalleryApp implements IsSerializable {
 	private int views;
 	private int likes;
 	private int comments;
-    private String imageBlobId;
-    private String sourceBlobId;
-    private String galleryAppId;
+  private String imageBlobId;
+  private String sourceBlobId;
+  private String galleryAppId;
+  private ArrayList<String> tags;
     
 	public String getTitle() {
 		return title;
@@ -138,28 +143,33 @@ public class GalleryApp implements IsSerializable {
 	public void setSourceBlobId(String sourceBlobId) {
 		this.sourceBlobId = sourceBlobId;
 	}
-    public String getSourceBlobId() {
-      return this.sourceBlobId;
-    }
+  public String getSourceBlobId() {
+    return this.sourceBlobId;
+  }
 	public void setGalleryAppId(String galleryAppId) {
 		this.galleryAppId = galleryAppId;
 	}
-    public String getGalleryAppId() {
-      return this.galleryAppId;
-    }
-    // url is of form:
-    //   gallery.appinventor.mit.edu/rpc?getblob=<sourceBlob>:<appid>
-    // http://usf-appinventor-gallery.appspot.com/rpc?getblob=AMIfv96uvxoFUHj_Tsv671z66_Iu9HCsUgGad4_py4oWu2INlFgtvW6M5lUPKZwjBAT6Pi_-31MYIGF2aNji_qGZFxTwHH5ryPToMPumbajW0_I4Pf9XY2INsR-o7h_1z8jou1Ey9dS2ES1KjicqOebmCLMYKRrU5tAANrjTj1Bn3n0uipbWvsQ:48002
-    public String getSourceURL() {
-       return GALLERYURL+"getblob="+getSourceBlobId()+":"+getGalleryAppId();
-    }
-	
+  public String getGalleryAppId() {
+    return this.galleryAppId;
+  }
+  
+  // url is of form:
+  //   gallery.appinventor.mit.edu/rpc?getblob=<sourceBlob>:<appid>
+  // http://usf-appinventor-gallery.appspot.com/rpc?getblob=AMIfv96uvxoFUHj_Tsv671z66_Iu9HCsUgGad4_py4oWu2INlFgtvW6M5lUPKZwjBAT6Pi_-31MYIGF2aNji_qGZFxTwHH5ryPToMPumbajW0_I4Pf9XY2INsR-o7h_1z8jou1Ey9dS2ES1KjicqOebmCLMYKRrU5tAANrjTj1Bn3n0uipbWvsQ:48002
+  public String getSourceURL() {
+     return GALLERYURL+"getblob="+getSourceBlobId()+":"+getGalleryAppId();
+  }
+
+  public ArrayList<String> getTags() {
+    return this.tags;
+  }
+  public void setTags(ArrayList<String> tags) {
+    this.tags = tags;
+  }
+  
 	@Override
-	public String toString()
-	{
+	public String toString() {
 		return title + " ||| " + description + " ||| " +  imageURL; 
 	}
-	
- 
 
 }
