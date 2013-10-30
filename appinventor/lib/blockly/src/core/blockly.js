@@ -296,17 +296,26 @@ Blockly.onMouseDown_ = function(e) {
   Blockly.latestClick = { x: e.clientX, y: e.clientY };
   Blockly.terminateDrag_(); // In case mouse-up event was lost.
   Blockly.hideChaff();
+  //if drawer exists and supposed to close
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
-    Blockly.Drawer.hide()
+    Blockly.Drawer.hide();
   }
+  
+  //Closes mutators
+  var blocks = Blockly.mainWorkspace.getAllBlocks();
+  var numBlocks = blocks.length;
+  for(var i =0; i<numBlocks; i++){
+  	if(blocks[i].mutator){
+  		blocks[i].mutator.setVisible(false);
+  	}
+  }
+  
   var isTargetSvg = e.target && e.target.nodeName &&
       e.target.nodeName.toLowerCase() == 'svg';
   if (!Blockly.readOnly && Blockly.selected && isTargetSvg) {
-    // Clicking on the document clears the selection.
     Blockly.selected.unselect();
   }
   if (Blockly.isRightButton(e)) {
-    // Right-click.
     if (Blockly.ContextMenu) {
       Blockly.showContextMenu_(Blockly.mouseToSvg(e));
     }
