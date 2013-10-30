@@ -16,6 +16,17 @@
  *         files.
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/29/13] Fixed bug in handling parameters of zero-arg procedures.
+ * [lyn, 10/27/13] Modified procedure names to begin with YAIL_PROC_TAG (currently 'p$')
+ *     and parameters to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules. And the procedure 'p$' tag is necessary to
+ *     distinguish procedures from globals (which use the 'g$' tag).
+ * [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
@@ -25,7 +36,7 @@ Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/varia
 Blockly.Yail.procedures_defreturn = function() {
   var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = argPrefix + this.arguments_.join(' ' + argPrefix);
+  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
   var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('NAME');
   var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
@@ -38,7 +49,7 @@ Blockly.Yail.procedures_defreturn = function() {
 Blockly.Yail.procedures_defnoreturn = function() {
   var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
                   + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = argPrefix + this.arguments_.join(' ' + argPrefix);
+  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
   var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('NAME');
   var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
