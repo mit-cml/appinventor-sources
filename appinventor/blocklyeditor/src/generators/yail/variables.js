@@ -16,17 +16,29 @@
  *         files.
  */
 
+
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified global variable names to begin with YAIL_GLOBAL_VAR_TAG (currently 'g$')
+ *     and local variables to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules. And the global 'g$' tag is necessary to
+ *     distinguish globals from procedures (which use the 'g$' tag).
+ * [lyn, 12/27/2012] Abstract over handling of param/local/index prefix
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 // Variable Blocks
-
-// The identifier rules specified in Blockly.LexicalVariable.checkIdentifier *REQUIRE*
-// a nonempty prefix (here, "tag") whose first character is a legal Kawa identifier character
-// in the character set [a-zA-Z_\!\$%&\?\^\*~\/>\=<]
-// Note this set does not include the characters [@.-\+], which are special in Kawa
-// and cannot begin identifiers.
-//
-// Why use '$'?  Because $ means money, which is "valuable", and "valuable" sounds like "variable"
+/**
+ * The identifier rules specified in Blockly.LexicalVariable.checkIdentifier *REQUIRE*
+ * a nonempty prefix (here, "tag") whose first character is a legal Kawa identifier character
+ * in the character set [a-zA-Z_\!\$%&\?\^\*~\/>\=<]
+ * Note this set does not include the characters [@.-\+], which are special in Kawa
+ *  and cannot begin identifiers.
+ *
+ * Why use '$'?  Because $ means money, which is "valuable", and "valuable" sounds like "variable"!
+ */
 Blockly.Yail.YAIL_GLOBAL_VAR_TAG = 'g$';
 Blockly.Yail.YAIL_LOCAL_VAR_TAG = '$';
 

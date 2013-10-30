@@ -8,7 +8,7 @@
 <head>
 <title> Yail Comparison Test </title>
 
-<script type="text/javascript" src="../../../../appengine/war/closure-library-20120710-r2029/closure/goog/base.js"></script>
+<script type="text/javascript" src="../../../../lib/closure-library/closure/goog/base.js"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/component-types.js"></script>
 
@@ -92,9 +92,39 @@ function start() {
 
   // ----- End the Blockly Initialization
 
+  // ----- Emulate GWT Provided functions
+  BlocklyPanel_getComponentsJSONString = function(type) {
+    return JSON.stringify(componentTypeJson);
+  };
+
+  BlocklyPanel_getComponentInstanceTypeName = function(formName,instanceName) {
+    var json = JSON.parse(formJson);
+    var components = json.Properties.$Components;
+    var findtype = function(components) {
+      for (var i = 0, comp; comp = components[i]; i++) {
+        if (components[i].$Name == instanceName) {
+          return (components[i].$Type)
+        } else {
+          if (comp.$Components) {
+            var retval = findtype(comp.$Components); // Recurse!
+            if (retval) {
+              return retval;
+            }
+          }
+        }
+      }
+    };
+    if (instanceName == json.Properties.$Name) {
+      return (json.Properties.$Type);
+    }
+    var retval = findtype(json.Properties.$Components);
+    return (retval);
+  };
+
     document.getElementById('formFile').addEventListener('change', handleLoadForm, false);
     document.getElementById('blocksFile').addEventListener('change', handleLoadBlocks, false);
     initComponentTypes();
+    Blockly.ComponentTypes.populateTypes();
 }
 
 function initComponentTypes() {
@@ -150,8 +180,9 @@ function getFormComponents(formJson) {
 }
 
 function defineComponents(componentJsonObj) {
-    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
-            componentJsonObj.$Name, componentJsonObj.Uuid);
+    Blockly.Component.add(componentJsonObj.$Name, componentJsonObj.Uuid);
+//    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
+//            componentJsonObj.$Name, componentJsonObj.Uuid);
     if (componentJsonObj.$Components) {
         for (var i = 0, comp; comp = componentJsonObj.$Components[i]; i++) {
             defineComponents(comp);

@@ -14,6 +14,13 @@
  * @author sharon@google.com (Sharon Perl)
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified event parameter names to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     All setters/getters assume such a tag. At least on Kawa-legal first character is necessary to
+ *     ensure AI identifiers satisfy Kawa's identifier rules.
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 /**

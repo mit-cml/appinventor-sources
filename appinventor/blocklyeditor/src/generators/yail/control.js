@@ -24,6 +24,15 @@
  * to language files.
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified for loop index variables to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules.
+ * [lyn, 01/15/2013] Added do_then_return, eval_but_ignore, and nothing.
+ * [lyn, 12/27/2012] Made code generation of forRange and forEach consistent with parameter change.
+ */
+
 if (!Blockly.Yail) Blockly.Yail = {};
 
 Blockly.Yail = Blockly.Generator.get('Yail');
