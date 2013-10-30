@@ -41,28 +41,25 @@ Blockly.Tooltip.visible = false;
  * @private
  */
 Blockly.Tooltip.mouseOutPid_ = 0;
+
 /**
  * PID of suspended thread to show the tooltip.
  * @private
  */
 Blockly.Tooltip.showPid_ = 0;
+
 /**
- * Last observed horizontal location of the mouse pointer
- * (freezes when tooltip appears).
+ * Last observed location of the mouse pointer (freezes when tooltip appears).
  * @private
  */
-Blockly.Tooltip.lastX_ = 0;
-/**
- * Last observed vertical location of the mouse pointer
- * (freezes when tooltip appears).
- * @private
- */
-Blockly.Tooltip.lastY_ = 0;
+Blockly.Tooltip.lastXY_ = {x: 0, y: 0};
+
 /**
  * Current element being pointed at.
  * @private
  */
 Blockly.Tooltip.element_ = null;
+
 /**
  * Once a tooltip has opened for an element, that element is 'poisoned' and
  * cannot respawn a tooltip until the pointer moves over a different element.
@@ -76,18 +73,21 @@ Blockly.Tooltip.poisonedElement_ = null;
  * @private
  */
 Blockly.Tooltip.svgGroup_ = null;
+
 /**
  * Tooltip's SVG text element.
  * @type {SVGTextElement}
  * @private
  */
 Blockly.Tooltip.svgText_ = null;
+
 /**
  * Tooltip's SVG background rectangle.
  * @type {Element}
  * @private
  */
 Blockly.Tooltip.svgBackground_ = null;
+
 /**
  * Tooltip's SVG shadow rectangle.
  * @type {Element}
@@ -99,18 +99,22 @@ Blockly.Tooltip.svgShadow_ = null;
  * Horizontal offset between mouse cursor and tooltip.
  */
 Blockly.Tooltip.OFFSET_X = 0;
+
 /**
  * Vertical offset between mouse cursor and tooltip.
  */
 Blockly.Tooltip.OFFSET_Y = 10;
+
 /**
  * Radius mouse can move before killing tooltip.
  */
 Blockly.Tooltip.RADIUS_OK = 10;
+
 /**
  * Delay before tooltip appears.
  */
 Blockly.Tooltip.HOVER_MS = 1000;
+
 /**
  * Horizontal padding between text and background.
  */
@@ -211,8 +215,9 @@ Blockly.Tooltip.onMouseMove_ = function(e) {
   if (Blockly.Tooltip.visible) {
     // Compute the distance between the mouse position when the tooltip was
     // shown and the current mouse position.  Pythagorean theorem.
-    var dx = Blockly.Tooltip.lastX_ - e.clientX;
-    var dy = Blockly.Tooltip.lastY_ - e.clientY;
+    var mouseXY = Blockly.mouseToSvg(e);
+    var dx = Blockly.Tooltip.lastXY_.x - mouseXY.x;
+    var dy = Blockly.Tooltip.lastXY_.y - mouseXY.y;
     var dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     if (dr > Blockly.Tooltip.RADIUS_OK) {
       Blockly.Tooltip.hide();
@@ -221,8 +226,7 @@ Blockly.Tooltip.onMouseMove_ = function(e) {
     // The mouse moved, clear any previously scheduled tooltip.
     window.clearTimeout(Blockly.Tooltip.showPid_);
     // Maybe this time the mouse will stay put.  Schedule showing of tooltip.
-    Blockly.Tooltip.lastX_ = e.clientX;
-    Blockly.Tooltip.lastY_ = e.clientY;
+    Blockly.Tooltip.lastXY_ = Blockly.mouseToSvg(e);
     Blockly.Tooltip.showPid_ =
         window.setTimeout(Blockly.Tooltip.show_, Blockly.Tooltip.HOVER_MS);
   }
@@ -287,18 +291,13 @@ Blockly.Tooltip.show_ = function() {
     }
   }
   // Move the tooltip to just below the cursor.
-  var anchorX = Blockly.Tooltip.lastX_;
+  var anchorX = Blockly.Tooltip.lastXY_.x;
   if (Blockly.RTL) {
     anchorX -= Blockly.Tooltip.OFFSET_X + width;
   } else {
     anchorX += Blockly.Tooltip.OFFSET_X;
   }
-  var anchorY = Blockly.Tooltip.lastY_ + Blockly.Tooltip.OFFSET_Y;
-
-  // Convert the mouse coordinates into SVG coordinates.
-  var xy = Blockly.convertCoordinates(anchorX, anchorY, true);
-  anchorX = xy.x;
-  anchorY = xy.y;
+  var anchorY = Blockly.Tooltip.lastXY_.y + Blockly.Tooltip.OFFSET_Y;
 
   var svgSize = Blockly.svgSize();
   if (anchorY + bBox.height > svgSize.height) {

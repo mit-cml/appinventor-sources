@@ -28,6 +28,7 @@ goog.provide('Blockly.FieldImage');
 goog.require('Blockly.Field');
 goog.require('goog.userAgent');
 
+
 /**
  * Class for an image.
  * @param {string} src The URL of the image.
@@ -44,11 +45,11 @@ Blockly.FieldImage = function(src, width, height) {
   this.size_ = {height: height + 10, width: width};
   // Build the DOM.
   var offsetY = 6 - Blockly.BlockSvg.TITLE_HEIGHT;
-  this.group_ = Blockly.createSvgElement('g', {}, null);
+  this.fieldGroup_ = Blockly.createSvgElement('g', {}, null);
   this.imageElement_ = Blockly.createSvgElement('image',
       {'height': height + 'px',
        'width': width + 'px',
-       'y': offsetY}, this.group_);
+       'y': offsetY}, this.fieldGroup_);
   this.setText(src);
   if (goog.userAgent.GECKO) {
     // Due to a Firefox bug which eats mouse events on image elements,
@@ -57,7 +58,7 @@ Blockly.FieldImage = function(src, width, height) {
         {'height': height + 'px',
          'width': width + 'px',
          'y': offsetY,
-         'fill-opacity': 0}, this.group_);
+         'fill-opacity': 0}, this.fieldGroup_);
   }
 };
 goog.inherits(Blockly.FieldImage, Blockly.Field);
@@ -83,7 +84,7 @@ Blockly.FieldImage.prototype.init = function(block) {
     throw 'Image has already been initialized once.';
   }
   this.sourceBlock_ = block;
-  block.getSvgRoot().appendChild(this.group_);
+  block.getSvgRoot().appendChild(this.fieldGroup_);
 
   // Configure the field to be transparent with respect to tooltips.
   var topElement = this.rectElement_ || this.imageElement_;
@@ -95,8 +96,8 @@ Blockly.FieldImage.prototype.init = function(block) {
  * Dispose of all DOM objects belonging to this text.
  */
 Blockly.FieldImage.prototype.dispose = function() {
-  goog.dom.removeNode(this.group_);
-  this.group_ = null;
+  goog.dom.removeNode(this.fieldGroup_);
+  this.fieldGroup_ = null;
   this.imageElement_ = null;
   this.rectElement_ = null;
 };

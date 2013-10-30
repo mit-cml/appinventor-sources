@@ -23,7 +23,7 @@ import com.google.appinventor.components.common.YaVersion;
     "is stored on top, the second beneath it, etc.)  If you wish to have " +
     "components displayed next to one another, use " +
     "<code>HorizontalArrangement</code> instead.</p>",
-    category = ComponentCategory.ARRANGEMENTS)
+    category = ComponentCategory.LAYOUT)
 @SimpleObject
 public class VerticalArrangement extends HVArrangement {
 

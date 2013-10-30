@@ -47,7 +47,6 @@ Blockly.WarningHandler.hideWarnings = function() {
   }
 }
 
-
 Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors = function() {
   var blockArray = Blockly.mainWorkspace.getAllBlocks();
   for(var i=0;i<blockArray.length;i++) {
@@ -63,7 +62,7 @@ Blockly.WarningHandler.checkErrors = function() {
     showWarnings = Blockly.WarningHandler.showWarningsToggle;
   }
 
-  if(!this.getSvgRoot() || !this.editable){
+  if(!this.getSvgRoot() || this.readOnly){
     //remove from error count
     if(this.hasWarning) {
       this.hasWarning = false;

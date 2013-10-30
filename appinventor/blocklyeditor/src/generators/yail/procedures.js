@@ -16,14 +16,28 @@
  *         files.
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/29/13] Fixed bug in handling parameters of zero-arg procedures.
+ * [lyn, 10/27/13] Modified procedure names to begin with YAIL_PROC_TAG (currently 'p$')
+ *     and parameters to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules. And the procedure 'p$' tag is necessary to
+ *     distinguish procedures from globals (which use the 'g$' tag).
+ * [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
+
+Blockly.Yail.YAIL_PROC_TAG = 'p$'; // See notes on this in generators/yail/variables.js
 
 // Generator code for procedure call with return
 // [lyn, 01/15/2013] Edited to remove STACK (no longer necessary with DO-THEN-RETURN)
 Blockly.Yail.procedures_defreturn = function() {
-  var argPrefix = (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = argPrefix + this.arguments_.join(' ' + argPrefix);
-  var procName = this.getTitleValue('NAME');
+  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('NAME');
   var returnVal = Blockly.Yail.valueToCode(this, 'RETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
       + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION 
@@ -33,9 +47,10 @@ Blockly.Yail.procedures_defreturn = function() {
 
 // Generator code for procedure call with return
 Blockly.Yail.procedures_defnoreturn = function() {
-  var argPrefix = (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
-  var args = argPrefix + this.arguments_.join(' ' + argPrefix);
-  var procName = this.getTitleValue('NAME');
+  var argPrefix = Blockly.Yail.YAIL_LOCAL_VAR_TAG
+                  + (Blockly.usePrefixInYail && this.arguments_.length != 0 ? "param_" : "");
+  var args = this.arguments_.map(function (arg) {return argPrefix + arg;}).join(' ');
+  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('NAME');
   var body = Blockly.Yail.statementToCode(this, 'STACK', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_DEFINE + Blockly.Yail.YAIL_OPEN_COMBINATION + procName
       + Blockly.Yail.YAIL_SPACER + args + Blockly.Yail.YAIL_CLOSE_COMBINATION + body
@@ -54,7 +69,7 @@ Blockly.Yail.procedures_do_then_return = function() {
 
 // Generator code for procedure call with return
 Blockly.Yail.procedures_callnoreturn = function() {
-  var procName = this.getTitleValue('PROCNAME');
+  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('PROCNAME');
   var argCode = [];
   for ( var x = 0;this.getInput("ARG" + x); x++) {
     argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
@@ -67,7 +82,7 @@ Blockly.Yail.procedures_callnoreturn = function() {
 
 // Generator code for procedure call with return
 Blockly.Yail.procedures_callreturn = function() {
-  var procName = this.getTitleValue('PROCNAME');
+  var procName = Blockly.Yail.YAIL_PROC_TAG + this.getTitleValue('PROCNAME');
   var argCode = [];
   for ( var x = 0; this.getInput("ARG" + x); x++) {
     argCode[x] = Blockly.Yail.valueToCode(this, 'ARG' + x, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;

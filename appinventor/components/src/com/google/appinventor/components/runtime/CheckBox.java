@@ -30,7 +30,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
     description = "Checkbox that raises an event when the user clicks on it. " +
     "There are many properties affecting its appearance that can be set in " +
     "the Designer or Blocks Editor.",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.USERINTERFACE)
 @SimpleObject
 public final class CheckBox extends AndroidViewComponent
     implements OnCheckedChangeListener, OnFocusChangeListener {

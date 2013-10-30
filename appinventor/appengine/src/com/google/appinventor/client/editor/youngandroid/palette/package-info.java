@@ -5,7 +5,7 @@
 /**
  * Implementation of
  * {@link com.google.appinventor.client.editor.simple.palette#SimplePalettePanel}
- * with additions enabling there to be different categories (such as "Basic" or
+ * with additions enabling there to be different categories (such as "User Interface" or
  * "Sensors") with separate panels.
  */
 package com.google.appinventor.client.editor.youngandroid.palette;
