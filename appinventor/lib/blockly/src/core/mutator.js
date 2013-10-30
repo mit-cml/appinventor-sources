@@ -109,6 +109,14 @@ Blockly.Mutator.prototype.createEditor_ = function() {
   this.flyout_.autoClose = false;
   this.svgDialog_.appendChild(this.flyout_.createDom());
   this.svgDialog_.appendChild(this.workspace_.createDom());
+
+  //when mutator bubble is clicked, do not close mutator
+  Blockly.bindEvent_(this.svgDialog_, 'mousedown', this.svgDialog_,
+      function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      });
+
   return this.svgDialog_;
 };
 
@@ -229,6 +237,9 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
  * @private
  */
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
+  if(this.workspace_==null) {
+    return null;
+  }
   if (Blockly.Block.dragMode_ == 0) {
     var blocks = this.workspace_.getTopBlocks(false);
     var MARGIN = 20;
