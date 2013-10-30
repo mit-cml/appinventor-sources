@@ -399,7 +399,7 @@ Blockly.Language.lists_lookup_in_pairs = {
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
     this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.OUTPUT));
-    this.appendValueInput('KEY').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('lookup in pairs').appendTitle('key');
+    this.appendValueInput('KEY').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('lookup pairs').appendTitle('key');
     this.appendValueInput('LIST').setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT)).appendTitle('pairs').setAlign(Blockly.ALIGN_RIGHT);
     this.appendValueInput('NOTFOUND').setCheck(Blockly.Language.YailTypeToBlocklyType("any",Blockly.Language.INPUT)).appendTitle('notFound').setAlign(Blockly.ALIGN_RIGHT);
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP);
