@@ -68,7 +68,7 @@ import java.io.IOException;
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
 public final class Player extends AndroidNonvisibleComponent
-    implements Component, OnCompletionListener, OnDestroyListener, Deleteable {
+    implements Component, OnCompletionListener, OnPauseListener, OnResumeListener, OnDestroyListener, OnStopListener, Deleteable {
 
   private static final boolean DEBUG = false;
   
@@ -86,11 +86,12 @@ public final class Player extends AndroidNonvisibleComponent
    * adequate, given this API:
    * 0: player initial state
    * 1: player prepared but not started
-   * 2: player started or paused
+   * 2: player is playing
+   * 3: player was playing and is now paused
    * The allowable transitions are:
-   * Start: must be called in state 1 or 2, results in state 2
-   * Pause: must be called in state 2, results in state 2
-   * Stop: must be called in state 1 or 2, results in state 1
+   * Start: must be called in state 1, 2, or 3, results in state 2
+   * Pause: must be called in state 2, results in state 3
+   * Stop: must be called in state 1, 2 or 3, results in state 1
    * We can simplify this to remove state 0 and use a simple boolean after we're
    * more confident that there are no start-up problems.
    */
@@ -105,6 +106,9 @@ public final class Player extends AndroidNonvisibleComponent
     sourcePath = "";
     vibe = (Vibrator) form.getSystemService(Context.VIBRATOR_SERVICE);
     form.registerForOnDestroy(this);
+    form.registerForOnResume(this);
+    form.registerForOnPause(this);
+    form.registerForOnStop(this);
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
@@ -134,10 +138,10 @@ public final class Player extends AndroidNonvisibleComponent
     sourcePath = (path == null) ? "" : path;
 
     // Clear the previous MediaPlayer.
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == 1 || playerState == 2 || playerState == 3) {
       mp.stop();
+      playerState = 0;
     }
-    playerState = 0;
     if (mp != null) {
       mp.release();
       mp = null;
@@ -209,7 +213,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty
   public void Loop(boolean shouldLoop) {
     // set the desired looping right now if the player is prepared.
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == 1 || playerState == 2 || playerState == 3) {
        mp.setLooping(shouldLoop);
     }
     // even if the player is not prepared, it will be set according to
@@ -228,7 +232,7 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleProperty(
       description = "Sets the volume to a number between 0 and 100")
   public void Volume(int vol) {
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == 1 || playerState == 2 || playerState == 3) {
       if (vol > 100 || vol < 0) {
         throw new IllegalArgumentError("Volume must be set to a number between 0 and 100");
       }
@@ -248,7 +252,7 @@ public final class Player extends AndroidNonvisibleComponent
     if (DEBUG) {
       Log.i("Player", "Calling Start -- State=" + playerState);
     }
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == 1 || playerState == 2 || playerState == 3) {
       mp.setLooping(loop);
       mp.start();
       playerState = 2;
@@ -264,10 +268,13 @@ public final class Player extends AndroidNonvisibleComponent
     if (DEBUG) {
       Log.i("Player", "Calling Pause -- State=" + playerState);
     }
+    boolean wasPlaying = mp.isPlaying();
     if (playerState == 2) {
       mp.pause();
-      playerState = 2;
-      // Player should now be in state 2.
+      if (wasPlaying) {
+        playerState = 3;
+        // Player should now be in state 3.
+      }
     }
   }
 
@@ -279,7 +286,7 @@ public final class Player extends AndroidNonvisibleComponent
     if (DEBUG) {
       Log.i("Player", "Calling Stop -- State=" + playerState);
     }
-    if (playerState == 1 || playerState == 2) {
+    if (playerState == 1 || playerState == 2 || playerState == 3) {
       mp.stop();
       prepare();
       mp.seekTo(0);
@@ -338,6 +345,31 @@ public final class Player extends AndroidNonvisibleComponent
     }
     EventDispatcher.dispatchEvent(this, "Completed");
   }
+
+  // OnResumeListener implementation
+
+  @Override
+  public void onResume() {
+    if (playerState == 3) {
+      Start();
+    }
+  }
+
+  // OnPauseListener implementation
+
+  @Override
+  public void onPause() {
+    if (mp.isPlaying()) {
+      Pause();
+    }
+  }
+
+  @Override
+  public void onStop() {
+    if (mp.isPlaying()) {
+      Pause();
+    }
+  }
   
   // OnDestroyListener implementation
 
@@ -355,7 +387,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
-    if (playerState == 1 || playerState == 2) {
+    if (playerState != 0) {
       mp.stop();
     }
     playerState = 0;
