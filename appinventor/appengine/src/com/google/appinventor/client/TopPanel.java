@@ -174,11 +174,8 @@ public class TopPanel extends Composite {
     rightPanel.setHeight("100%");
     rightPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
 
-<<<<<<< HEAD
     HorizontalPanel account = new HorizontalPanel();
     account.setStyleName("ode-TopPanelAccount");
-=======
->>>>>>> gallery2
 
     // Account Drop Down Button
     List<DropDownItem> userItems = Lists.newArrayList();
