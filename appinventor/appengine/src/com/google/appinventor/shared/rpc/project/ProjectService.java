@@ -183,4 +183,25 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
+  
+  UserProject newProjectFromExternalTemplate(String appName, String sourceURL);
+  
+  /**
+   * Reads the template data from a JSON File
+   * @param pathToTemplatesDir pathname of the templates directory which may contain
+   *  0 or more template instances, each of which consists of a JSON file describing
+   *  the template, plus a zip file and image files.
+   *
+   * @return a {@link String} or the template data
+   */
+ 
+  List<GalleryApp> getApps(String url);
+  
+  /**
+   * gets apps from the gallery
+
+   *
+   * @return a {@link List} 
+   */
+   List<GalleryComment> getComments(String url);
 }

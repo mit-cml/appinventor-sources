@@ -13,6 +13,8 @@ import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.GalleryListBox;
+import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -85,6 +87,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+
 /**
  * Main entry point for Ode. Defines the startup UI elements in
  * {@link #onModuleLoad()}.
@@ -133,6 +137,8 @@ public class Ode implements EntryPoint {
   // Remembers the current View
   private static final int DESIGNER = 0;
   private static final int PROJECTS = 1;
+  private static final int GALLERY = 2;
+  private static final int GALLERYAPP = 3;
   private static int currentView = DESIGNER;
 
   /*
@@ -154,6 +160,8 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
+  private int galleryTabIndex;
+  private int galleryAppTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -249,6 +257,27 @@ public class Ode implements EntryPoint {
   public void switchToProjectsView() {
     currentView = PROJECTS;
     deckPanel.showWidget(projectsTabIndex);
+  }
+  
+  /**
+   * Switch to the Gallery tab
+   */
+  public void switchToGalleryView() {
+    currentView = GALLERY;
+    deckPanel.showWidget(galleryTabIndex);
+    
+  }
+
+  
+  /**
+   * Switch to the Gallery App 
+   */
+  public void switchToGalleryAppView(GalleryApp app) {
+    currentView = GALLERYAPP;
+//    OdeLog.log("######### I got in switchToGalleryAppView");
+    GalleryAppBox.setApp(app);
+    deckPanel.showWidget(galleryAppTabIndex);
+    
   }
 
   /**
@@ -585,6 +614,36 @@ public class Ode implements EntryPoint {
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
 
+    // Gallery tab
+    VerticalPanel gVertPanel = new VerticalPanel();
+    gVertPanel.setWidth("100%");
+    gVertPanel.setSpacing(0);
+    HorizontalPanel appListPanel = new HorizontalPanel();
+    appListPanel.setWidth("100%");
+    
+    appListPanel.add(GalleryListBox.getGalleryListBox());
+    //projectToolbar = new ProjectToolbar();
+    //gVertPanel.add(projectToolbar);
+    
+    gVertPanel.add(appListPanel);
+    galleryTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(gVertPanel);
+    
+     // Gallery app
+    VerticalPanel aVertPanel = new VerticalPanel();
+    aVertPanel.setWidth("100%");
+    aVertPanel.setSpacing(0);
+    HorizontalPanel appPanel = new HorizontalPanel();
+    appPanel.setWidth("100%");
+    
+    appPanel.add(GalleryAppBox.getGalleryAppBox());
+  
+    
+    aVertPanel.add(appPanel);
+    galleryAppTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(aVertPanel);
+    
+    
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
 
@@ -609,6 +668,8 @@ public class Ode implements EntryPoint {
 
       debuggingTabIndex = deckPanel.getWidgetCount();
       deckPanel.add(debuggingTab);
+      
+      
 
       // Hook the window resize event, so that we can adjust the UI.
       Window.addResizeHandler(new ResizeHandler() {
@@ -617,6 +678,8 @@ public class Ode implements EntryPoint {
           resizeWorkArea(debuggingTab);
         }
       });
+      
+      
 
       // Call the window resized handler to get the initial sizes setup. Doing this in a deferred
       // command causes it to occur after all widgets' sizes have been computed by the browser.

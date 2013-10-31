@@ -33,7 +33,7 @@ public class TopPanel extends Composite {
   private static final String KNOWN_ISSUES_LINK_AND_TEXT =
     "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
-    "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
+    "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" 
   private static final String GALLERY_LINK_AND_TEXT =
     "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
     "Try the App Inventor Community Gallery (Beta)</a>";
@@ -48,8 +48,7 @@ public class TopPanel extends Composite {
     "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
     " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
-  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" +
-      GALLERY_LINK_AND_TEXT + "."
+  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" + "."
   );
 
   private HTML divider() {
@@ -116,6 +115,8 @@ public class TopPanel extends Composite {
     guideLink.setStyleName("ode-TopPanelButton");
     links.add(guideLink);
 
+	/*
+	// Code on master branch
     // Gallery Link
     if (Ode.getInstance().getUser().getIsAdmin()) {
       TextButton gallery = new TextButton("Gallery");
@@ -126,10 +127,33 @@ public class TopPanel extends Composite {
         }
     });
 
+    // Code on gallery2 branch
     gallery.setStyleName("ode-TopPanelButton");
     links.add(gallery);
     }
-
+	Label galleryLabel = new Label(MESSAGES.tabNameGallery());
+	galleryLabel.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        ode.switchToGalleryView();
+      }
+     });
+    galleryLabel.setStyleName("gwt-TitleLabel");
+    middleLinks.add(galleryLabel);		
+	*/
+		
+	// Gallery Link	
+	TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery.setStyleName("ode-TopPanelButton");
+    gallery.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToGalleryView();
+      }
+    });
+    links.add(gallery);
+	
+	
 
     // Feedback Link
     TextButton feedbackLink = new TextButton(MESSAGES.feedbackLink());
@@ -150,8 +174,11 @@ public class TopPanel extends Composite {
     rightPanel.setHeight("100%");
     rightPanel.setVerticalAlignment(VerticalPanel.ALIGN_MIDDLE);
 
+<<<<<<< HEAD
     HorizontalPanel account = new HorizontalPanel();
     account.setStyleName("ode-TopPanelAccount");
+=======
+>>>>>>> gallery2
 
     // Account Drop Down Button
     List<DropDownItem> userItems = Lists.newArrayList();
