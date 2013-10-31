@@ -96,6 +96,7 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_ADDFORM = "AddForm";
   private static final String WIDGET_NAME_REMOVEFORM = "RemoveForm";
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
+  private static final String WIDGET_NAME_MYPROJECTS = "MyProjects";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
 
@@ -148,6 +149,8 @@ public class DesignToolbar extends Toolbar {
           new RemoveFormAction()));
     }
 
+//    addButton(new ToolbarItem(WIDGET_NAME_MYPROJECTS,
+//        MESSAGES.tabNameProjects(), new SwitchToProjectAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_FORM_EDITOR,
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
@@ -155,6 +158,7 @@ public class DesignToolbar extends Toolbar {
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
+    //Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
 
   }
 
@@ -250,7 +254,14 @@ public class DesignToolbar extends Toolbar {
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
-    //updateButtons();
+    //Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
+  }
+
+  private static class SwitchToProjectAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToProjectsView();
+    }
   }
 
   private class SwitchToBlocksEditorAction implements Command {

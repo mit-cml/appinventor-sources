@@ -38,7 +38,7 @@ public interface OdeMessages extends Messages {
   @Description("Caption for None entry")
   String noneCaption();
 
-  @DefaultMessage("Delete")
+  @DefaultMessage("Delete Project")
   @Description("Text on 'Delete' button")
   String deleteButton();
 
@@ -86,7 +86,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("Connect")
   @Description("Label of the button for selecting phone connection")
-  String connectToButton();
+  String connectButton();
 
   @DefaultMessage("Deleting this screen will completely remove the screen from your project. " +
       "All components and blocks associated with this screen will be deleted.\n" +
@@ -110,19 +110,19 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
 
-  @DefaultMessage("Show Barcode")
-  @Description("Label of the cascade item for building a project and showing barcode")
+  @DefaultMessage("Application ( provide QR code )")
+  @Description("Label of item for building a project and show barcode")
   String showBarcodeButton();
 
-  @DefaultMessage("Download to this Computer")
-  @Description("Label of the cascade item for building a project and downloading")
+  @DefaultMessage("Application ( save to my computer )")
+  @Description("Label of item for building a project and downloading")
   String downloadToComputerButton();
 
   @DefaultMessage("Generate YAIL")
   @Description("Label of the cascade item for generating YAIL for a project")
   String generateYailButton();
 
-  @DefaultMessage("Download")
+  @DefaultMessage("Build")
   @Description("Label of the button leading to build related cascade items")
   String buildButton();
 
@@ -224,9 +224,17 @@ public interface OdeMessages extends Messages {
 
   // Used in TopPanel.java
 
-  @DefaultMessage("Report bug")
-  @Description("Label of the link for reporting a bug")
-  String reportBugLink();
+  @DefaultMessage("Import Project")
+  @Description("Name of Import Project menuitem")
+  String importProjectButton();
+
+  @DefaultMessage("Export Project")
+  @Description("Name of Export Project menuitem")
+  String exportProjectButton();
+
+  @DefaultMessage("Export all Projects")
+  @Description("Name of Export all Project menuitem")
+  String exportAllProjectsButton();
 
   @DefaultMessage("Sign out")
   @Description("Label of the link for signing out")
@@ -236,13 +244,37 @@ public interface OdeMessages extends Messages {
   @Description("Name of My Projects tab")
   String tabNameProjects();
 
-  @DefaultMessage("Report a Problem")
-  @Description("Link for Feedback form")
+  @DefaultMessage("Report an Issue")
+  @Description("Link for Report an Issue form")
   String feedbackLink();
+
+  @DefaultMessage("Gallery")
+  @Description("Link for Gallery")
+  String galleryLink();
 
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();
+
+  @DefaultMessage("Library")
+  @Description("Name of Library link")
+  String libraryLink();
+
+  @DefaultMessage("Get Started")
+  @Description("Name of Getting Started link")
+  String getStartedLink();
+
+  @DefaultMessage("Tutorials")
+  @Description("Name of Tutorials link")
+  String tutorialsLink();
+
+  @DefaultMessage("Troubleshooting")
+  @Description("Name of Troubleshooting link")
+  String troubleshootingLink();
+
+  @DefaultMessage("Forums")
+  @Description("Name of Forums link")
+  String forumsLink();
 
   @DefaultMessage("Guide")
   @Description("Name of Guide link")
@@ -830,12 +862,12 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button to download all projects' source code")
   String downloadAllButton();
 
-  @DefaultMessage("Download Keystore")
-  @Description("Label of the button for download keystore")
+  @DefaultMessage("Export Keystore")
+  @Description("Label of the button for export keystore")
   String downloadKeystoreButton();
 
-  @DefaultMessage("Upload Keystore")
-  @Description("Label of the button for upload keystore")
+  @DefaultMessage("Import Keystore")
+  @Description("Label of the button for import keystore")
   String uploadKeystoreButton();
 
   @DefaultMessage("Delete Keystore")
