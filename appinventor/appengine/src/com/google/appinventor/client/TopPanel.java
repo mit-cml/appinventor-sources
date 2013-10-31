@@ -33,7 +33,7 @@ public class TopPanel extends Composite {
   private static final String KNOWN_ISSUES_LINK_AND_TEXT =
     "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
-    "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" 
+    "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>"; 
   private static final String GALLERY_LINK_AND_TEXT =
     "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
     "Try the App Inventor Community Gallery (Beta)</a>";
