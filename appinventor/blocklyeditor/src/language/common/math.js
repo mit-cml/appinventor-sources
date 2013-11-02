@@ -41,7 +41,6 @@ Blockly.Language.math_number = {
     this.setTooltip(Blockly.LANG_MATH_NUMBER_TOOLTIP);
     this.appendCollapsedInput().appendTitle('0', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_MUTATOR_ITEM_INPUT_NUMBER }],
   prepareCollapsedText: function(){
     var textToDisplay = this.getTitleValue('NUM');
@@ -79,7 +78,6 @@ Blockly.Language.math_compare = {
     });
     this.appendCollapsedInput().appendTitle('=', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) compare has not been internationalized yet
   // Potential clash with logic equal, using '=' for now
   typeblock: [{
@@ -183,7 +181,6 @@ Blockly.Language.math_add = {
     this.itemCount_ = 2;
     this.appendCollapsedInput().appendTitle('+', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -220,8 +217,7 @@ Blockly.Language.math_mutator_item = {
     this.setNextStatement(true);
     //this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_ITEM_TOOLTIP_1);
     this.contextMenu = false;
-  },
-  onchange: Blockly.WarningHandler.checkErrors
+  }
 };
 
 
@@ -242,7 +238,6 @@ Blockly.Language.math_subtract = {
     });
     this.appendCollapsedInput().appendTitle('-', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) subtract has not been internationalized yet
   // Using '-' for now
   typeblock: [{ translatedName: '-' }]
@@ -269,7 +264,6 @@ Blockly.Language.math_multiply = {
     this.itemCount_ = 2;
     this.appendCollapsedInput().appendTitle('*', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -312,7 +306,6 @@ Blockly.Language.math_division = {
     });
     this.appendCollapsedInput().appendTitle('/', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) division has not been internationalized yet
   // Using '/' for now
   typeblock: [{ translatedName: '/' }]
@@ -336,7 +329,6 @@ Blockly.Language.math_power = {
     });
     this.appendCollapsedInput().appendTitle('^', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) power has not been internationalized yet
   // Using '^' for now
   typeblock: [{ translatedName: '^' }]
@@ -355,7 +347,6 @@ Blockly.Language.math_random_int = {
     this.setTooltip(Blockly.LANG_MATH_RANDOM_INT_TOOLTIP );
     this.appendCollapsedInput().appendTitle(Blockly.LANG_MATH_RANDOM_INT_TITLE_RANDOM, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_INT_TITLE_RANDOM }]
 };
 
@@ -370,7 +361,6 @@ Blockly.Language.math_random_float = {
     this.setTooltip(Blockly.LANG_MATH_RANDOM_FLOAT_TOOLTIP);
     this.appendCollapsedInput().appendTitle(Blockly.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_FLOAT_TITLE_RANDOM }]
 };
 
@@ -387,7 +377,6 @@ Blockly.Language.math_random_set_seed = {
     this.setTooltip(Blockly.LANG_MATH_RANDOM_SEED_TOOLTIP);
     this.appendCollapsedInput().appendTitle(Blockly.LANG_MATH_RANDOM_SEED_TITLE_RANDOM, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_RANDOM_SEED_TITLE_RANDOM }]
 };
 
@@ -416,7 +405,6 @@ Blockly.Language.math_on_list = {
     this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
 
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -493,7 +481,6 @@ Blockly.Language.math_single = {
     });
     this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
     translatedName: Blockly.LANG_MATH_SINGLE_OP_ROOT,
     dropDown: {
@@ -709,7 +696,6 @@ Blockly.Language.math_divide = {
     });
     this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
     translatedName: Blockly.LANG_MATH_DIVIDE_OPERATOR_MODULO,
     dropDown: {
@@ -769,7 +755,6 @@ Blockly.Language.math_trig = {
     });
     this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) sine has not been internationalized yet
   //Using 'sine' for now
   typeblock: [{
@@ -896,7 +881,6 @@ Blockly.Language.math_atan2 = {
     this.setTooltip(Blockly.LANG_MATH_TRIG_TOOLTIP_ATAN2);
     this.appendCollapsedInput().appendTitle('atan2', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   //TODO (user) atan2 has not been internationalized yet
   // Using 'atan2' for now
   typeblock: [{ translatedName: 'atan2' }]
@@ -921,7 +905,6 @@ Blockly.Language.math_convert_angles = {
     });
     this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{
     translatedName: Blockly.LANG_MATH_CONVERT_ANGLES_TITLE_CONVERT +
         ' ' + Blockly.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG,
@@ -970,7 +953,6 @@ Blockly.Language.math_format_as_decimal = {
     this.setTooltip(Blockly.LANG_MATH_FORMAT_AS_DECIMAL_TOOLTIP);
     this.appendCollapsedInput().appendTitle('format decimal', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_FORMAT_AS_DECIMAL_TITLE }]
 };
 
@@ -986,6 +968,5 @@ Blockly.Language.math_is_a_number = {
     });
     this.appendCollapsedInput().appendTitle('number?', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_MATH_IS_A_NUMBER_INPUT_NUM }]
 };
