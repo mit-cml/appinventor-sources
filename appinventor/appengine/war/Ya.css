@@ -1402,12 +1402,14 @@ textarea::-webkit-input-placeholder {
   width: 12px;
   height: 12px;
 }
+..gallery-app-details .gwt-HTML {
+padding: 30px 0;
+}
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
   max-width: 1360px;
   display: block;
-  margin-top: 30px;
-  margin-bottom: 30px;
+  margin: 30px 0 0;
 }
 
 /* Gallery search panel or search bar styles */
