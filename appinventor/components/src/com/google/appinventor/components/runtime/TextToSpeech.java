@@ -37,7 +37,7 @@ import java.util.MissingResourceException;
  */
 @DesignerComponent(version = YaVersion.TEXTTOSPEECH_COMPONENT_VERSION,
     description = "Component for using TextToSpeech to speak a message",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/textToSpeech.png")
 @SimpleObject

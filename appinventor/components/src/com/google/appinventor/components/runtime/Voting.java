@@ -72,7 +72,7 @@ import java.util.List;
     designerHelpDescription = "<p>The Voting component enables users to vote " +
     "on a question by communicating with a Web service to retrieve a ballot " +
     "and later sending back users' votes.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.INTERNAL, // moved to Internal until fully tested
     nonVisible = true,
     iconName = "images/voting.png")
 @SimpleObject

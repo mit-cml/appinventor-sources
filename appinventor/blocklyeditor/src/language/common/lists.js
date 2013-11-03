@@ -57,7 +57,7 @@ Blockly.Language.lists_create_with = {
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum);
-    if(inputNum == 0){
+    if(inputNum === 0){
       input.appendTitle("make a list");
     }
     return input;

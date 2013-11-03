@@ -24,6 +24,15 @@
  * to language files.
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified for loop index variables to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules.
+ * [lyn, 01/15/2013] Added do_then_return, eval_but_ignore, and nothing.
+ * [lyn, 12/27/2012] Made code generation of forRange and forEach consistent with parameter change.
+ */
+
 if (!Blockly.Yail) Blockly.Yail = {};
 
 Blockly.Yail = Blockly.Generator.get('Yail');
@@ -76,7 +85,7 @@ Blockly.Yail.controls_forEach = function() {
   emptyListCode += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_DOUBLE_QUOTE + "make a list" + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 
 
-  var loopIndexName = this.getTitleValue('VAR');
+  var loopIndexName = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getTitleValue('VAR');
   var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
   var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
   return Blockly.Yail.YAIL_FOREACH + loopIndexName + Blockly.Yail.YAIL_SPACER
@@ -87,7 +96,7 @@ Blockly.Yail.controls_forEach = function() {
 // [lyn, 12/27/2012]
 Blockly.Yail.controls_forRange = function() {
   // For range loop.
-  var loopIndexName = this.getTitleValue('VAR');
+  var loopIndexName = Blockly.Yail.YAIL_LOCAL_VAR_TAG + this.getTitleValue('VAR');
   var startCode = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || 0;
   var endCode = Blockly.Yail.valueToCode(this, 'END', Blockly.Yail.ORDER_NONE) || 0;
   var stepCode = Blockly.Yail.valueToCode(this, 'STEP', Blockly.Yail.ORDER_NONE) || 0;

@@ -85,7 +85,7 @@ import java.util.List;
     "a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) " +
     "has been dragged.  There are also methods for drawing points, lines, " +
     "and circles.</p>",
-    category = ComponentCategory.BASIC)
+    category = ComponentCategory.ANIMATION)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET," +
                  "android.permission.WRITE_EXTERNAL_STORAGE")
@@ -107,6 +107,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int textAlignment;
 
   // Default values
+  private static final int MIN_WIDTH_HEIGHT = 1;
   private static final float DEFAULT_LINE_WIDTH = 2;
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
@@ -812,6 +813,45 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
   // Properties
 
+ /**
+  * Set the canvas width
+  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent).
+  *
+  * @param width
+  */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the width is set to 0
+  public void Width(int width) {
+    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED)) {
+       super.Width(width);
+    }
+    else {
+       container.$form().dispatchErrorOccurredEvent(this, "Width",
+            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
+    }
+  }
+
+  /**
+   * Set the canvas height
+   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent)
+   *
+   * @param height
+   */
+  @Override
+  @SimpleProperty
+  // the bitmap routines will crash if the height is set to 0
+   public void Height(int height) {
+     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED)) {
+       super.Height(height);
+     }
+     else {
+       container.$form().dispatchErrorOccurredEvent(this, "Height",
+            ErrorMessages.ERROR_CANVAS_HEIGHT_ERROR);
+    }
+   }
+
+
   /**
    * Returns the button's background color as an alpha-red-green-blue
    * integer, i.e., {@code 0xAARRGGBB}.  An alpha of {@code 00}
@@ -1048,12 +1088,12 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
-   * @param heading  the heading of the fling 
+   * @param heading  the heading of the fling
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
    * @param flungSprite  {@code true} if a sprite was flung,
    *        {@code false} otherwise
-   * 
+   *
    */
   @SimpleEvent
   public void Flung(float x, float y, float speed, float heading,float xvel, float yvel,
@@ -1223,7 +1263,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    *         save failed
    */
     @SimpleFunction(description = "Saves a picture of this Canvas to the " +
-       "device's external storage. If an error occurs, the Screen's ErrorOccurred " + 
+       "device's external storage. If an error occurs, the Screen's ErrorOccurred " +
        "event will be called.")
   public String Save() {
     try {
@@ -1314,7 +1354,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         float velocityY) {
       float x = Math.max(0, (int) e1.getX()); // set to zero if negative
       float y = Math.max(0, (int) e1.getY()); // set to zero if negative
-      
+
       // Normalize the velocity: Change from pixels/sec to pixels/ms
       float vx = velocityX / FLING_INTERVAL;
       float vy = velocityY / FLING_INTERVAL;
@@ -1347,3 +1387,4 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
+

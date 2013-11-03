@@ -153,4 +153,11 @@ public interface ComponentDatabaseInterface {
    * @param componentTypeName  name of component to query
    */
   String getTypeDescription(String componentTypeName);
+
+   /*
+   * Returns true if componentTypeName matches some component
+   *
+   * @param componentTypeName  name of component to query
+   */
+  boolean isComponent(String componentTypeName);
 }

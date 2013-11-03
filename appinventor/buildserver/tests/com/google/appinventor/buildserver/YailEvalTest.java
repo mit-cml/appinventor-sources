@@ -50,17 +50,6 @@ public class YailEvalTest extends TestCase {
       scheme.eval("(load \"" + yailRuntimeLibrary + "\")");
       scheme.eval("(load \"" + yailSchemeTests + "\")");
       scheme.eval("(set! *testing* #t)");
-      scheme.eval("(setup-repl-environment \"" +
-                             OPEN + "\" \"" +
-                             ID + "\" \"" +
-                             TAG + "\" \"" +
-                             SUCCESS + "\" \"" +
-                             FAILURE + "\" \"" +
-                             RESULT + "\" \"" +
-                             CLOSE + "\"" +
-                             "'((\"" + CLOSE + "\" \"" + ENCODED_CLOSE + "\")(\"" +
-                                     OPEN + "\" \"" +  ENCODED_OPEN + "\")(\"" +
-                                     ESCAPE + "\" \"" + ENCODED_ESCAPE + "\")))");
     } catch (Exception e) {
       throw e;
     } catch (Throwable throwable) {
@@ -925,11 +914,19 @@ public class YailEvalTest extends TestCase {
     // Corner cases
     String schemeString = "(clarify (string-split \"&&ab&cd&ef&\" \"&\")) ";
 
-    assertEquals("(<empty> <empty> ab cd ef <empty>)", scheme.eval(schemeString).toString());
+    // There should not be a trailing <empty> here 
+    assertEquals("(<empty> <empty> ab cd ef)", scheme.eval(schemeString).toString());
+
+    //assertEquals("(<empty> <empty> ab cd ef <empty>)", scheme.eval(schemeString).toString());
 
     schemeString = "(clarify (string-split-at-any \"&ab&-cd-ef&\" (make-yail-list \"&\" \"-\" )))";
 
     assertEquals("(<empty> ab <empty> cd ef <empty>)", scheme.eval(schemeString).toString());
+
+    schemeString = "(clarify (string-split-at-any \"&ab&+cd+ef&\" (make-yail-list \"&\" \"+\" )))";
+
+    assertEquals("(<empty> ab <empty> cd ef <empty>)", scheme.eval(schemeString).toString());
+
 
     schemeString = "(clarify (string-split-at-spaces \" ab  cd ef  \" ))";
 
@@ -1012,43 +1009,6 @@ public class YailEvalTest extends TestCase {
     assertTrue((Boolean) scheme.eval("(string-empty? \"\")"));
     assertFalse((Boolean) scheme.eval("(string-empty? \" \")"));
     assertFalse((Boolean) scheme.eval("(string-empty? \"foo\")"));
-  }
-
-  //  Test Repl responses
-
-  public void testReplResponse() throws Throwable {
-    scheme.eval("(report \"Display It" + ID + "100\" 1)");
-    String sinput = scheme.eval("(last-response)").toString();
-    Assert.assertEquals(OPEN + "Display It" + ID + "100" +
-        TAG + SUCCESS  + RESULT + "1" + CLOSE, sinput);
-  }
-
-  public void testReplBreaksResponse() throws Throwable {
-    scheme.eval("(report \"Display It" + ID + "101\" \"x\ny\n\n\")");
-    String sinput = scheme.eval("(last-response)").toString();
-    Assert.assertEquals(OPEN + "Display It" + ID + "101" + TAG + "Success" +
-        RESULT + "x\ny\n\n" + CLOSE, sinput);
-  }
-
-  public void testCloseBracketInValueResponse() throws Throwable {
-    scheme.eval("(report \"Display It" + ID + "102\" \"" +  CLOSE + "\")");
-    String sinput = scheme.eval("(last-response)").toString();
-    Assert.assertEquals(OPEN + "Display It" + ID + "102" + TAG + "Success" +
-        RESULT + ENCODED_CLOSE + CLOSE, sinput);
-  }
-
-  public void testEscapeInValueResponse() throws Throwable {
-    scheme.eval("(report \"Display It" + ID + "103\" \"" + ESCAPE + "\")");
-    String sinput = scheme.eval("(last-response)").toString();
-    Assert.assertEquals(OPEN + "Display It" + ID + "103" + TAG + "Success" +
-        RESULT + ENCODED_ESCAPE + CLOSE, sinput);
-  }
-
-  public void testParseOpenAndCloseInValueResponse() throws Throwable {
-    scheme.eval("(report \"Display It" + ID + "103\"  \"" + OPEN + ">>\")");
-    String sinput = scheme.eval("(last-response)").toString();
-    Assert.assertEquals(OPEN + "Display It" + ID + "103" + TAG + "Success" +
-        RESULT + ENCODED_OPEN + ENCODED_CLOSE + CLOSE, sinput);
   }
 
   public void roundToIntegerGroup() throws Throwable {

@@ -1,1424 +1,1830 @@
-<!DOCTYPE html>
-<html lang="en">
- <head>
-  <meta charset="utf-8" />
-  <meta content="App Inventor for Android" name="description" />
-  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
-  <title>
-   Social Components - App Inventor for Android
-  </title>
-  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
-  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
-  <link href="/static/css/appinventor.css" rel="stylesheet" />
-  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
-  </script>
-  <script>
-   var tracker = new gweb.analytics.AutoTrack({
-        profile: 'UA-5856106-2'
-      });
-  </script>
-  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
-  <style>
-   img.c3 {border-width:0}
-    dt.c2 {font-style: italic}
-    div.c1 {clear:both;}
-  </style>
- </head>
- <body>
-  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Social             &gt; ');</script><br>
-  <div id="aiac">
-   <div class="main-container">
-    <div class="customhr customhr-gray">
-    </div>
-    <div class="content">
-     <div class="content-body">
-      <div class="learn-page">
-       <h1>
-        Social Components
-       </h1>
-       <ul>
-        <li>
-         <a href="#ContactPicker">
-          ContactPicker
-         </a>
-        </li>
-        <li>
-         <a href="#EmailPicker">
-          EmailPicker
-         </a>
-        </li>
-        <li>
-         <a href="#PhoneCall">
-          PhoneCall
-         </a>
-        </li>
-        <li>
-         <a href="#PhoneNumberPicker">
-          PhoneNumberPicker
-         </a>
-        </li>
-        <li>
-         <a href="#Texting">
-          Texting
-         </a>
-        </li>
-        <li>
-         <a href="#Twitter">
-          Twitter
-         </a>
-        </li>
-       </ul>
-       <h2 id="ContactPicker">
-        ContactPicker
-       </h2>
-       <img alt="" src="images/contactpicker.png" />
-       <p>
-        Use a contact picker component to let the user choose an entry from the Android
-                contact list.
-       </p>
-       <p>
-        A contact picker is a button that displays a list of contacts to choose from when
-                the user taps it. After the user has made a selection, the following properties are
-                set:
-       </p>
-       <ul>
-        <li>
-         <code>
-          ContactName
-         </code>
-         : contact's name.
-        </li>
-        <li>
-         <code>
-          EmailAddress
-         </code>
-         : contact's primary email address.
-        </li>
-        <li>
-         <code>
-          Picture
-         </code>
-         : name of the file containing the contact's image, which can
-                  be used as a
-         <code>
-          Picture
-         </code>
-         property value for the
-         <code>
-          Image
-         </code>
-         or
-         <code>
-          ImageSprite
-         </code>
-         component.
-        </li>
-       </ul>
-       <p>
-        Other properties affect the appearance of the button (including
-        <code>
-         TextAlignment
-        </code>
-        and
-        <code>
-         BackgroundColor
-        </code>
-        ) and whether it can be
-                tapped (
-        <code>
-         Enabled
-        </code>
-        ).
-       </p>
-       <h3>
-        Properties
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          Enabled
-         </code>
-        </dt>
-        <dd>
-         If set, user can tap contact picker to use it.
-        </dd>
-        <dt>
-         <code>
-          Image
-         </code>
-        </dt>
-        <dd>
-         Image to display on contact picker
-        </dd>
-        <dt>
-         <code>
-          BackgroundColor
-         </code>
-        </dt>
-        <dd>
-         Color for contact picker background.
-        </dd>
-        <dt class="c2">
-         <code>
-          ContactName
-         </code>
-        </dt>
-        <dd>
-         Name of selected contact.
-        </dd>
-        <dt class="c2">
-         <code>
-          EmailAddress
-         </code>
-        </dt>
-        <dd>
-         Primary email address of selected contact.
-        </dd>
-        <dt class="c2">
-         <code>
-          Picture
-         </code>
-        </dt>
-        <dd>
-         Picture of selected contact.
-        </dd>
-        <dt>
-         <code>
-          FontBold
-         </code>
-        </dt>
-        <dd>
-         If set, contact picker text is displayed in bold.
-        </dd>
-        <dt>
-         <code>
-          FontItalic
-         </code>
-        </dt>
-        <dd>
-         If set, contact picker text is displayed in italics.
-        </dd>
-        <dt>
-         <code>
-          FontSize
-         </code>
-        </dt>
-        <dd>
-         Point size for contact picker text.
-        </dd>
-        <dt>
-         <code>
-          FontTypeface
-         </code>
-        </dt>
-        <dd>
-         Font family for contact picker text.
-        </dd>
-        <dt>
-         <code>
-          Text
-         </code>
-        </dt>
-        <dd>
-         Text to display on contact picker.
-        </dd>
-        <dt>
-         <code>
-          TextAlignment
-         </code>
-        </dt>
-        <dd>
-         Left, center, or right.
-        </dd>
-        <dt>
-         <code>
-          TextColor
-         </code>
-        </dt>
-        <dd>
-         Color for contact picker text.
-        </dd>
-        <dt>
-         <code>
-          Visible
-         </code>
-        </dt>
-        <dd>
-         If set, contact picker is visible.
-        </dd>
-        <dt>
-         <code>
-          Width
-         </code>
-        </dt>
-        <dd>
-         Contact picker width (x-size).
-        </dd>
-        <dt>
-         <code>
-          Height
-         </code>
-        </dt>
-        <dd>
-         Contact picker height (y-size).
-        </dd>
-       </dl>
-       <h3>
-        Events
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          AfterPicking()
-         </code>
-        </dt>
-        <dd>
-         Called after user picks a contact.
-        </dd>
-        <dt>
-         <code>
-          BeforePicking()
-         </code>
-        </dt>
-        <dd>
-         Called after user taps contact picker but before contact list is displayed.
-        </dd>
-        <dt>
-         <code>
-          GotFocus()
-         </code>
-        </dt>
-        <dd>
-         Contact picker became the focused component.
-        </dd>
-        <dt>
-         <code>
-          LostFocus()
-         </code>
-        </dt>
-        <dd>
-         Contact picker stopped being the focused component.
-        </dd>
-       </dl>
-       <h2 id="EmailPicker">
-        EmailPicker
-       </h2>
-       <img alt="" src="images/emailpicker.png" />
-       <p>
-        Use an email picker component to let the user enter a user's email address from the
-                Android contact list.
-       </p>
-       <p>
-        An email picker is a text box in which a user can begin entering an email address
-                of a contact and be offered auto-completion. The initial value of the box and the
-                value after user entry is in the
-        <code>
-         Text
-        </code>
-        property. If the
-        <code>
-         Text
-        </code>
-        property is initially empty, the contents of the
-        <code>
-         Hint
-        </code>
-        property will be faintly shown in the text box as a hint to the
-                user.
-       </p>
-       <p>
-        Other properties affect the appearance of the email picker (including
-        <code>
-         TextAlignment
-        </code>
-        and
-        <code>
-         BackgroundColor
-        </code>
-        ) and whether it can be
-                used (
-        <code>
-         Enabled
-        </code>
-        ).
-       </p>
-       <p>
-        Email pickers are usually used with a button. The user taps the button when text
-                entry is complete.
-       </p>
-       <h3>
-        Properties
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          Enabled
-         </code>
-        </dt>
-        <dd>
-         If set, user can tap email picker to use it.
-        </dd>
-        <dt>
-         <code>
-          BackgroundColor
-         </code>
-        </dt>
-        <dd>
-         Color for email picker background.
-        </dd>
-        <dt>
-         <code>
-          FontBold
-         </code>
-        </dt>
-        <dd>
-         If set, email picker text is displayed in bold.
-        </dd>
-        <dt>
-         <code>
-          FontItalic
-         </code>
-        </dt>
-        <dd>
-         If set, email picker text is displayed in italics.
-        </dd>
-        <dt>
-         <code>
-          FontSize
-         </code>
-        </dt>
-        <dd>
-         Point size for email picker text.
-        </dd>
-        <dt>
-         <code>
-          FontTypeface
-         </code>
-        </dt>
-        <dd>
-         Font family for email picker text.
-        </dd>
-        <dt>
-         <code>
-          Text
-         </code>
-        </dt>
-        <dd>
-         Initial text to display in email picker.
-        </dd>
-        <dt>
-         <code>
-          TextAlignment
-         </code>
-        </dt>
-        <dd>
-         Left, center, or right.
-        </dd>
-        <dt>
-         <code>
-          TextColor
-         </code>
-        </dt>
-        <dd>
-         Color for email picker text.
-        </dd>
-        <dt>
-         <code>
-          Hint
-         </code>
-        </dt>
-        <dd>
-         If Text property is empty, Hint is shown in gray.
-        </dd>
-        <dt>
-         <code>
-          Visible
-         </code>
-        </dt>
-        <dd>
-         If set, email picker is visible.
-        </dd>
-        <dt>
-         <code>
-          Width
-         </code>
-        </dt>
-        <dd>
-         Email picker width (x-size).
-        </dd>
-        <dt>
-         <code>
-          Height
-         </code>
-        </dt>
-        <dd>
-         Email picker height (y-size).
-        </dd>
-       </dl>
-       <h3>
-        Events
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          GotFocus()
-         </code>
-        </dt>
-        <dd>
-         Email picker became the focused component.
-        </dd>
-        <dt>
-         <code>
-          LostFocus()
-         </code>
-        </dt>
-        <dd>
-         Email picker stopped being the focused component.
-        </dd>
-       </dl>
-       <h2 id="PhoneCall">
-        PhoneCall
-       </h2>
-       <img alt="" src="images/phonecall.png" />
-       <p>
-        Use this component to dial the phone and make a call.
-       </p>
-       <p>
-        <code>
-         PhoneCall
-        </code>
-        is a non-visible component that makes a phone call to the
-                number specified in the
-        <code>
-         PhoneNumber
-        </code>
-        property, which can be set either
-                in the Designer or Blocks Editor. You can use the
-        <code>
-         MakePhoneCall
-        </code>
-        method
-                to make a phone call programatically from your app.
-       </p>
-       <p>
-        This component is often used with the
-        <code>
-         ContactPicker
-        </code>
-        component, which
-                lets the user select from the contacts stored on the phone and sets the
-        <code>
-         PhoneNumber
-        </code>
-        property to the contact's phone number.
-       </p>
-       <p>
-        To directly specify the phone number, set the
-        <code>
-         PhoneNumber
-        </code>
-        property to
-                a
-        <code>
-         Text
-        </code>
-        with the specified digits (for example, "6505551212"). The
-                number can be formatted with hyphens, periods, and parentheses; they are ignored.
-                You can't include spaces in the number.
-       </p>
-       <h3>
-        Properties
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          PhoneNumber
-         </code>
-        </dt>
-        <dd>
-         Phone number to dial.
-        </dd>
-       </dl>
-       <h3>
-        Methods
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          MakePhoneCall()
-         </code>
-        </dt>
-        <dd>
-         Dials the number specified by the component's
-         <code>
-          PhoneNumber
-         </code>
-         property.
-        </dd>
-       </dl>
-       <h2 id="PhoneNumberPicker">
-        PhoneNumberPicker
-       </h2>
-       <img alt="" src="images/phonenumberpicker.png" />
-       <p>
-        Use this component to allow users to choose a phone number from a list of Android
-                contacts' phone numbers.
-       </p>
-       <p>
-        When the user taps a phone number picker button, it displays a list of the phone
-                numbers of contacts to choose from. After the user has made a selection, the
-                following properties will be set to information about the chosen contact:
-       </p>
-       <ul>
-        <li>
-         <code>
-          ContactName
-         </code>
-         : contact's name.
-        </li>
-        <li>
-         <code>
-          PhoneNumber
-         </code>
-         : contact's selected phone number.
-        </li>
-        <li>
-         <code>
-          EmailAddress
-         </code>
-         : contact's primary email address.
-        </li>
-        <li>
-         <code>
-          Picture
-         </code>
-         : name of the file containing the contact's image, which can
-                  be used as a
-         <code>
-          Picture
-         </code>
-         property value for the
-         <code>
-          Image
-         </code>
-         or
-         <code>
-          ImageSprite
-         </code>
-         component.
-        </li>
-       </ul>
-       <p>
-        Other properties affect the appearance of the button (including
-        <code>
-         TextAlignment
-        </code>
-        and
-        <code>
-         BackgroundColor
-        </code>
-        ) and whether it can be
-                tapped (
-        <code>
-         Enabled
-        </code>
-        ).
-       </p>
-       <h3>
-        Properties
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          Enabled
-         </code>
-        </dt>
-        <dd>
-         If set, user can tap phone number picker to use it.
-        </dd>
-        <dt>
-         <code>
-          Image
-         </code>
-        </dt>
-        <dd>
-         Image to display on phone number picker.
-        </dd>
-        <dt>
-         <code>
-          BackgroundColor
-         </code>
-        </dt>
-        <dd>
-         Color for phone number picker background.
-        </dd>
-        <dt class="c2">
-         <code>
-          ContactName
-         </code>
-        </dt>
-        <dd>
-         Name of selected contact.
-        </dd>
-        <dt class="c2">
-         <code>
-          EmailAddress
-         </code>
-        </dt>
-        <dd>
-         Primary email address of selected contact.
-        </dd>
-        <dt class="c2">
-         <code>
-          PhoneNumber
-         </code>
-        </dt>
-        <dd>
-         Selected phone number of selected contact.
-        </dd>
-        <dt class="c2">
-         <code>
-          Picture
-         </code>
-        </dt>
-        <dd>
-         Picture of selected contact.
-        </dd>
-        <dt>
-         <code>
-          FontBold
-         </code>
-        </dt>
-        <dd>
-         If set, phone number picker text is displayed in bold.
-        </dd>
-        <dt>
-         <code>
-          FontItalic
-         </code>
-        </dt>
-        <dd>
-         If set, phone number picker text is displayed in italics.
-        </dd>
-        <dt>
-         <code>
-          FontSize
-         </code>
-        </dt>
-        <dd>
-         Point size for phone number picker text.
-        </dd>
-        <dt>
-         <code>
-          FontTypeface
-         </code>
-        </dt>
-        <dd>
-         Font family for phone number picker text.
-        </dd>
-        <dt>
-         <code>
-          Text
-         </code>
-        </dt>
-        <dd>
-         Text to display on phone number picker.
-        </dd>
-        <dt>
-         <code>
-          TextAlignment
-         </code>
-        </dt>
-        <dd>
-         Left, center, or right.
-        </dd>
-        <dt>
-         <code>
-          TextColor
-         </code>
-        </dt>
-        <dd>
-         Color for phone number picker text.
-        </dd>
-        <dt>
-         <code>
-          Visible
-         </code>
-        </dt>
-        <dd>
-         If set, phone number picker is visible.
-        </dd>
-        <dt>
-         <code>
-          Width
-         </code>
-        </dt>
-        <dd>
-         Phone number picker width (x-size).
-        </dd>
-        <dt>
-         <code>
-          Height
-         </code>
-        </dt>
-        <dd>
-         Phone number picker height (y-size).
-        </dd>
-       </dl>
-       <h3>
-        Events
-       </h3>
-       <dl>
-        <dt>
-         <code>
-          AfterPicking()
-         </code>
-        </dt>
-        <dd>
-         Called after user picks a phone number.
-        </dd>
-        <dt>
-         <code>
-          BeforePicking()
-         </code>
-        </dt>
-        <dd>
-         Called after user taps phone number picker but before phone number list is
-                  displayed.
-        </dd>
-        <dt>
-         <code>
-          GotFocus()
-         </code>
-        </dt>
-        <dd>
-         Phone number picker became the focused component.
-        </dd>
-        <dt>
-         <code>
-          LostFocus()
-         </code>
-        </dt>
-        <dd>
-         Phone number picker stopped being the focused component.
-        </dd>
-       </dl>
-       <h2 id="Texting">
-        Texting
-       </h2>
-       <img alt="" src="images/texting.png" />
-       <p>
-         A component that will, when the
-         <code>SendMessage</code>
-         method is called, send the text message specified in the
-         <code>Message</code>
-         property to the phone number specified in the
-         <code>PhoneNumber</code>
-         property.
-       </p>
-       <p>
-         If the
-         <code>ReceivingEnabled</code>
-         property is set to 1 messages will <b>not</b> be received. If
-         <code>ReceivingEnabled</code>
-         is set to 2 messages will be received only when the application is running. Finally if
-         <code>ReceivingEnabled</code>
-         is set to 3, messages will be received when the application
-         is running <b>and</b> when the application is not running
-         they will be queued and a notification displayed to the user.
-       </p>
-       <p>
-         When a message arrives, the
-         <code>MessageReceived</code>
-         event is raised and provides the sending number and message.
-       </p>
-       <p>
-         An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
-       </p>
-       <p>
-         If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.
-       </p>
-       <p>
-         To specify the phone number (e.g., 650-555-1212), set the
-         <code>PhoneNumber</code>
-         property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
-       </p>
-       <p>
-         Another way for an app to specify a phone number would be to include a
-         <code>PhoneNumberPicker</code>
-         component, which lets the users select a phone numbers from the ones stored in the the phone's contacts.
-       </p>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <title>Social Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
 
-       <h3>Properties</h3>
-       <dl>
-         <dt><code>GoogleVoiceEnabled</code></dt>
-         <dd>
-           If true, then SendMessage will attempt to send messages
-           over Wifi using Google Voice.  This requires that the
-           Google Voice app must be installed and set up on the phone
-           or tablet, with a Google Voice account.  If
-           GoogleVoiceEnabled is false, the device must have phone and
-           texting service in order to send or receive messages with
-           this component.
-         </dd>
-         <dt><code>Message</code></dt>
-         <dd>The message that will be sent when the SendMessage method is called.</dd>
-         <dt><code>PhoneNumber</code></dt>
-         <dd>
-           The number that the message will be sent to when the
-           SendMessage method is called. The number is a text string
-           with the specified digits (e.g., 6505551212).  Dashes,
-           dots, and parentheses may be included (e.g.,
-           (650)-555-1212) but will be ignored; spaces should not be
-           included.
-         </dd>
-         <dt><code>ReceivingEnabled</code></dt>
-         <dd>
-           If set to 1 (OFF) no messages will be received.  If set to
-           2 (FOREGROUND) or3 (ALWAYS) the component will respond to
-           messages if it is running. If theapp is not running then
-           the message will be discarded if set to 2(FOREGROUND). If
-           set to 3 (ALWAYS) and the app is not running the phone
-           willshow a notification.  Selecting the notification will
-           bring up the appand signal the MessageReceived event.
-           Messages received when the appis dormant will be queued,
-           and so several MessageReceived events mightappear when the
-           app awakens.  As an app developer, it would be a good idea
-           to give your users control over this property, so they can
-           maketheir phones ignore text messages when your app is
-           installed.
-         </dd>
-       </dl>
-       <h3>Events</h3>
-       <dl>
-         <dt><code>MessageReceived(text number, text messageText)</code></dt>
-         <dd>Event that's raised when a text message is received by the phone.</dd>
-       </dl>
-       <h3>Methods</h3>
-       <dl>
-         <dt><code>SendMessage()</code></dt>
-         <dd>Send a text message</dd>
-       </dl>
-       <h2 id="Twitter">
-        Twitter
-       </h2>
-       <img alt="" src="images/twitter.png" />
-       <p>
-        This component allows users to interact with Twitter.
-       </p>
-       <p>
-        This non-visible component enables communication with Twitter. Once a user has logged in (
-        <code>
-         Authorize
-        </code>
-        ) and the login has been
-                confirmed successful by the
-        <code>
-         IsAuthorized
-        </code>
-        event, you can use the
-                following methods:
-       </p>
-       <ul>
-       <li>
-       Search Twitter for tweets or labels (
-         <code>
-           SearchTwitter
-         </code>
-         ).
-       </li>
-        <li>
-         Set the status of the logged-in user (
-         <code>
-          SetStatus
-         </code>
-         ).
-        </li>
-        <li>
-         Send a direct message to a specific user (
-         <code>
-          DirectMessage
-         </code>
-         ).
-        </li>
-        <li>
-         Receive the most recent direct messages (
-         <code>
-          RequestDirectMessages
-         </code>
-         ).
-        </li>
-        <li>
-         Follow a user (
-         <code>
-          Follow
-         </code>
-         ).
-        </li>
-        <li>
-         Unfollow a user (
-         <code>
-          StopFollowing
-         </code>
-         .)
-        </li>
-        <li>
-         Get the list of users who follow the logged-in user
-                (
-         <code>
-          RequestFollowers
-         </code>
-         ).
-        </li>
-        <li>
-         Get the most recent messages in the user's timeline.
-                (
-         <code>
-          RequestFriendTimeline
-         </code>
-         ).
-        </li>
-        <li>
-         Get the most recent mentions of the logged-in user
-                (
-         <code>
-          RequestMentions
-         </code>
-         ).
-        </li>
-       </ul>
-       <p>
-        In general, you invoke one of these methods and the result will become available
-                when the corresponding receipt event is signaled. For example, if you call
-        <code>
-         RequestFollowers
-        </code>
-        , then the
-        <code>
-         FollowersReceived
-        </code>
-        event will
-                be signaled when the list of followers is available. This might take time, because
-                the request is going over the web; the result might even never become available if,
-                for example, your device is not connected to the web or the Twitter web site is down.
-       </p>
-       <p>
-        Login is handled using the OAuth protocol, as required by the Twitter API (
-        <a href="http://dev.twitter.com/pages/auth">
-         dev.twitter.com/pages/auth
-        </a>
-        ). An App
-                Inventor app that needs to make Twitter API calls on behalf of an authenticated
-                user should first call
-        <code>
-         Authorize
-        </code>
-        . This loads a Twitter login page that will allow the user to login with their username and password, and then return appropriate credentials to the Twitter component in the
-                app. Once the Twitter component has the credentials the
-        <code>
-         IsAuthorized
-        </code>
-        event is raised to let the app know that it can proceed with Twitter API calls. An app retains Twitter credentials across invocations,
-                so it may not be necessary for the user to login each time he or she uses the app.
-                Reinstalling an app will clear the credentials, as will calling the
-        <code>
-         DeAuthorize
-        </code>
-        method. A user can revoke authorization for an app from
-                the Twitter web site via the
-        <i>
-         Settings
-        </i>
-        page as well. To check whether an app
-                already has valid credentials, use the
-        <code>
-         CheckAuthorized
-        </code>
-        method.
-       </p>
-       <p>
-        <b>
-         Important:
-        </b>
-        Most of the operation of the OAuth protocol is hidden inside the
-                Twitter component and you do not need to understand how it works to use
-                the component. However, it is necessary for anyone building an app with the Twitter
-                component to supply a
-        <i>
-         Consumer key
-        </i>
-        and a
-        <i>
-         Consumer secret
-        </i>
-        as
-                properties of the component. These are text strings specific to your app that you
-                can obtain by registering the app with Twitter at
-        <a href="http://twitter.com/oauth_clients/new">
-         twitter.com/oauth_clients/new
-        </a>
-        . On the
-                registration page you will need to supply the following information:
-       </p>
-       <dl>
-        <dt>
-         Application name
-        </dt>
-        <dd>
-         A unique name for your application. When you submit the form It will warn you if
-                  the name isn't unique. This name will be shown to the user of your app when they
-                  are asked to login to Twitter as a result of the app calling the
-         <code>
-          Authorize
-         </code>
-         method.
-        </dd>
-        <dt>
-         Description
-        </dt>
-        <dd>
-         A description of your app.
-        </dd>
-        <dt>
-         Application website
-        </dt>
-        <dd>
-         The website where a user can go to find out more about your app or download it,
-                  if there is one. Otherwise, you could give your home web site, or another web
-                  site. The field cannot be left blank.
-        </dd>
-        <dt>
-         Application type
-        </dt>
-        <dd>
-         This should be set to
-         <i>
-          Browser
-         </i>
-         .
-        </dd>
-        <dt>
-         Callback URL
-        </dt>
-        <dd>
-         A valid URL. The value doesn't matter since the Twitter component will set it to
-                  the proper value.
-        </dd>
-        <dt>
-         Default access type
-        </dt>
-        <dd>
-         Set this to
-         <i>
-          read/write
-         </i>
-        </dd>
-        <dt>
-         The other fields can be left blank if you like. When you have successfully
-                  registered your app you'll see a page that displays Consumer key and Consumer
-                  secret text strings that are specific to the registered app. You can copy these
-                  into the corresponding Twitter component properties in your App Inventor app. If
-                  you want to change the settings for your app at a later time, login to Twitter
-                  via a web browser and go to
-         <a href="http://twitter.com/apps">
-          twitter.com/apps
-         </a>
-         to see and modify your registered
-                  apps.
-        </dt>
-        <dd>
-         <h3>
-          Properties
-         </h3>
-         <dl>
-          <dt class="c2">
-           <code>
-            ConsumerKey
-           </code>
-          </dt>
-          <dd>
-           The consumer key identifying this app, obtained from
-           <a href="http://twitter.com/oauth_clients/new">
-            twitter.com/oauth_clients/new
-           </a>
-           as
-                      described above.
-          </dd>
-          <dt class="c2">
-           <code>
-            ConsumerSecret
-           </code>
-          </dt>
-          <dd>
-           The consumer secret identifying this app, obtained from
-           <a href="http://twitter.com/oauth_clients/new">
-            twitter.com/oauth_clients/new
-           </a>
-           as
-                      described above.
-          </dd>
-          <dt class="c2">
-           <code>
-            DirectMessages
-           </code>
-          </dt>
-          <dd>
-           User's direct messages on Twitter.
-          </dd>
-          <dt class="c2">
-           <code>
-            Followers
-           </code>
-          </dt>
-          <dd>
-           User's list of Twitter followers.
-          </dd>
-          <dt class="c2">
-           <code>
-            FriendTimeline
-           </code>
-          </dt>
-          <dd>
-           User's Twitter message timeline.
-          </dd>
-          <dt class="c2">
-           <code>
-            Mentions
-           </code>
-          </dt>
-          <dd>
-           List of messages that mention the user.
-          </dd>
-          <dt class="c2">
-           <code>
-            SearchResults
-           </code>
-          </dt>
-          <dd>
-           Results of Twitter search query.
-          </dd>
-          <dt class="c2">
-           <code>
-            Username
-           </code>
-          </dt>
-          <dd>
-           The user name of the authorized user. Empty if there is no authorized user.
-          </dd>
-         </dl>
-         <h3>
-          Events
-         </h3>
-         <dl>
-          <dt>
-           <code>
-            DirectMessagesReceived(list messages)
-           </code>
-          </dt>
-          <dd>
-           Called when all the direct messages requested with
-           <code>
-            RequestDirectMessages
-           </code>
-           have been retrieved.
-          </dd>
-          <dt>
-           <code>
-            FollowersReceived(list followers)
-           </code>
-          </dt>
-          <dd>
-           Called when all the followers requested with
-           <code>
-            RequestFollowers
-           </code>
-           have been retrieved.
-          </dd>
-          <dt>
-           <code>
-            FriendTimelineReceived(list user-messages-list)
-           </code>
-          </dt>
-          <dd>
-           Called when the timeline requested with
-           <code>
-            RequestFriendTimeline
-           </code>
-           has been retrieved. Each element is itself a list whose first element is a
-                      username and whose second element is a status tweeted by that user.
-          </dd>
-          <dt>
-           <code>
-            IsAuthorized()
-           </code>
-          </dt>
-          <dd>
-           Called after the program calls
-           <code>
-            Authorize
-           </code>
-           if the authorization
-                      was successful. It is also called after a call to
-           <code>
-            CheckAuthorized
-           </code>
-           if we already have a valid credentials. After
-                      this event has been raised, any other method for this component can be
-                      called.
-          </dd>
-          <dt>
-           <code>
-            MentionsReceived(list mentions)
-           </code>
-          </dt>
-          <dd>
-           Called when all the mentions requested with
-           <code>
-            RequestMentions
-           </code>
-           have
-                      been retrieved.
-          </dd>
-          <dt>
-           <code>
-            SearchSuccessful(list searchResults)
-           </code>
-          </dt>
-          <dd>
-           Called when the search requested with
-           <code>
-            SearchTwitter
-           </code>
-           has been
-                      completed.
-          </dd>
-         </dl>
-         <h3>
-          Methods
-         </h3>
-         <dl>
-          <dt>
-           <code>
-            Authorize
-           </code>
-          </dt>
-          <dd>
-           Presents a Twitter login page so that the user can authorize access.
-                      IsAuthorize will be called when the user successfully grants access to the
-                      app.
-          </dd>
-          <dt>
-           <code>
-            CheckAuthorized
-           </code>
-          </dt>
-          <dd>
-           Checks whether we already have access, and if so, causes IsAuthorized event
-                      handler to be called.
-          </dd>
-          <dt>
-           <code>
-            DeAuthorize
-           </code>
-          </dt>
-          <dd>
-           Removes authorization from this running app instance. A user will have to
-                      login again to use any Twitter method.
-          </dd>
-          <dt>
-           <code>
-            DirectMessage(text user, text message)
-           </code>
-          </dt>
-          <dd>
-           Sends the specified message to the given user.
-          </dd>
-          <dt>
-           <code>
-            Follow(text user)
-           </code>
-          </dt>
-          <dd>
-           Start following the given user.
-          </dd>
-          <dt>
-           <code>
-            RequestDirectMessages()
-           </code>
-          </dt>
-          <dd>
-           Retrieves the most recent direct messages.
-          </dd>
-          <dt>
-           <code>
-            RequestFollowers()
-           </code>
-          </dt>
-          <dd>
-           Retrieves the list of the user's followers.
-          </dd>
-          <dt>
-           <code>
-            RequestFriendTimeline()
-           </code>
-          </dt>
-          <dd>
-           Retrieves the 20 most recent messages in your timeline. Returns a list of
-                      tuples (sub-lists), where each tuple contains a username and status message.
-          </dd>
-          <dt>
-           <code>
-            RequestMentions()
-           </code>
-          </dt>
-          <dd>
-           Retrieves the most recent mentions of the user.
-          </dd>
-          <dt>
-           <code>
-            SearchTwitter(text query)
-           </code>
-          </dt>
-          <dd>
-           Searches Twitter for the given text.
-          </dd>
-          <dt>
-           <code>
-            SetStatus(text s)
-           </code>
-          </dt>
-          <dd>
-           Post the specified text as a status message.
-          </dd>
-          <dt>
-           <code>
-            StopFollowing(text user)
-           </code>
-          </dt>
-          <dd>
-           Stop following the given user.
-          </dd>
-         </dl>
-        </dd>
-       </dl>
-      </div>
-     </div>
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: inline-block;
+      }
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+      background:transparent !important;
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+
+
+  <body>
+
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="/static/images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+
+          <div id="menu-bar" class="nav clearfix">
+            <nav role="navigation">
+              <ul>
+                <li><a href="http://appinventor.mit.edu">Home</a></li>
+                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
+                <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support ▾</a></li></ul>
+            </nav>
+          </div>
+
+          <div class="create-button">
+
+            <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
+
+          </div>
+        </div>
+      </header>
+
+
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;"><div class="columns-inner clearfix">
+
+
+          <div id="content-column"><div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">  <div class="region region-content">
+                    <h1>Social Components - App Inventor for Android</h1>
+                    <ul>
+                      <li>
+                        <a href="#ContactPicker">
+                          ContactPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#EmailPicker">
+                          EmailPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#PhoneCall">
+                          PhoneCall
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#PhoneNumberPicker">
+                          PhoneNumberPicker
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Texting">
+                          Texting
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#Twitter">
+                          Twitter
+                        </a>
+                      </li>
+                    </ul>
+                    <h2 id="ContactPicker">
+                      ContactPicker
+                    </h2>
+                    <img alt="" src="images/contactpicker.png" />
+                    <p>
+                      Use a contact picker component to let the user choose an entry from the Android
+                      contact list.
+                    </p>
+                    <p>
+                      A contact picker is a button that displays a list of contacts to choose from when
+                      the user taps it. After the user has made a selection, the following properties are
+                      set:
+                    </p>
+                    <ul>
+                      <li>
+                        <code>
+                          ContactName
+                        </code>
+                        : contact's name.
+                      </li>
+                      <li>
+                        <code>
+                          EmailAddress
+                        </code>
+                        : contact's primary email address.
+                      </li>
+                      <li>
+                        <code>
+                          Picture
+                        </code>
+                        : name of the file containing the contact's image, which can
+                        be used as a
+                        <code>
+                          Picture
+                        </code>
+                        property value for the
+                        <code>
+                          Image
+                        </code>
+                        or
+                        <code>
+                          ImageSprite
+                        </code>
+                        component.
+                      </li>
+                    </ul>
+                    <p>
+                      Other properties affect the appearance of the button (including
+                      <code>
+                        TextAlignment
+                      </code>
+                      and
+                      <code>
+                        BackgroundColor
+                      </code>
+                      ) and whether it can be
+                      tapped (
+                      <code>
+                        Enabled
+                      </code>
+                      ).
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Enabled
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, user can tap contact picker to use it.
+                      </dd>
+                      <dt>
+                        <code>
+                          Image
+                        </code>
+                      </dt>
+                      <dd>
+                        Image to display on contact picker
+                      </dd>
+                      <dt>
+                        <code>
+                          BackgroundColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for contact picker background.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          ContactName
+                        </code>
+                      </dt>
+                      <dd>
+                        Name of selected contact.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          EmailAddress
+                        </code>
+                      </dt>
+                      <dd>
+                        Primary email address of selected contact.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          Picture
+                        </code>
+                      </dt>
+                      <dd>
+                        Picture of selected contact.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontBold
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, contact picker text is displayed in bold.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontItalic
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, contact picker text is displayed in italics.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontSize
+                        </code>
+                      </dt>
+                      <dd>
+                        Point size for contact picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontTypeface
+                        </code>
+                      </dt>
+                      <dd>
+                        Font family for contact picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Text
+                        </code>
+                      </dt>
+                      <dd>
+                        Text to display on contact picker.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextAlignment
+                        </code>
+                      </dt>
+                      <dd>
+                        Left, center, or right.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for contact picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, contact picker is visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Contact picker width (x-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Contact picker height (y-size).
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          AfterPicking()
+                        </code>
+                      </dt>
+                      <dd>
+                        Called after user picks a contact.
+                      </dd>
+                      <dt>
+                        <code>
+                          BeforePicking()
+                        </code>
+                      </dt>
+                      <dd>
+                        Called after user taps contact picker but before contact list is displayed.
+                      </dd>
+                      <dt>
+                        <code>
+                          GotFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Contact picker became the focused component.
+                      </dd>
+                      <dt>
+                        <code>
+                          LostFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Contact picker stopped being the focused component.
+                      </dd>
+                    </dl>
+                    <h2 id="EmailPicker">
+                      EmailPicker
+                    </h2>
+                    <img alt="" src="images/emailpicker.png" />
+                    <p>
+                      Use an email picker component to let the user enter a user's email address from the
+                      Android contact list.
+                    </p>
+                    <p>
+                      An email picker is a text box in which a user can begin entering an email address
+                      of a contact and be offered auto-completion. The initial value of the box and the
+                      value after user entry is in the
+                      <code>
+                        Text
+                      </code>
+                      property. If the
+                      <code>
+                        Text
+                      </code>
+                      property is initially empty, the contents of the
+                      <code>
+                        Hint
+                      </code>
+                      property will be faintly shown in the text box as a hint to the
+                      user.
+                    </p>
+                    <p>
+                      Other properties affect the appearance of the email picker (including
+                      <code>
+                        TextAlignment
+                      </code>
+                      and
+                      <code>
+                        BackgroundColor
+                      </code>
+                      ) and whether it can be
+                      used (
+                      <code>
+                        Enabled
+                      </code>
+                      ).
+                    </p>
+                    <p>
+                      Email pickers are usually used with a button. The user taps the button when text
+                      entry is complete.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Enabled
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, user can tap email picker to use it.
+                      </dd>
+                      <dt>
+                        <code>
+                          BackgroundColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for email picker background.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontBold
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, email picker text is displayed in bold.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontItalic
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, email picker text is displayed in italics.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontSize
+                        </code>
+                      </dt>
+                      <dd>
+                        Point size for email picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontTypeface
+                        </code>
+                      </dt>
+                      <dd>
+                        Font family for email picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Text
+                        </code>
+                      </dt>
+                      <dd>
+                        Initial text to display in email picker.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextAlignment
+                        </code>
+                      </dt>
+                      <dd>
+                        Left, center, or right.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for email picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Hint
+                        </code>
+                      </dt>
+                      <dd>
+                        If Text property is empty, Hint is shown in gray.
+                      </dd>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, email picker is visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Email picker width (x-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Email picker height (y-size).
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          GotFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Email picker became the focused component.
+                      </dd>
+                      <dt>
+                        <code>
+                          LostFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Email picker stopped being the focused component.
+                      </dd>
+                    </dl>
+                    <h2 id="PhoneCall">
+                      PhoneCall
+                    </h2>
+                    <img alt="" src="images/phonecall.png" />
+                    <p>
+                      Use this component to dial the phone and make a call.
+                    </p>
+                    <p>
+                      <code>
+                        PhoneCall
+                      </code>
+                      is a non-visible component that makes a phone call to the
+                      number specified in the
+                      <code>
+                        PhoneNumber
+                      </code>
+                      property, which can be set either
+                      in the Designer or Blocks Editor. You can use the
+                      <code>
+                        MakePhoneCall
+                      </code>
+                      method
+                      to make a phone call programatically from your app.
+                    </p>
+                    <p>
+                      This component is often used with the
+                      <code>
+                        ContactPicker
+                      </code>
+                      component, which
+                      lets the user select from the contacts stored on the phone and sets the
+                      <code>
+                        PhoneNumber
+                      </code>
+                      property to the contact's phone number.
+                    </p>
+                    <p>
+                      To directly specify the phone number, set the
+                      <code>
+                        PhoneNumber
+                      </code>
+                      property to
+                      a
+                      <code>
+                        Text
+                      </code>
+                      with the specified digits (for example, "6505551212"). The
+                      number can be formatted with hyphens, periods, and parentheses; they are ignored.
+                      You can't include spaces in the number.
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          PhoneNumber
+                        </code>
+                      </dt>
+                      <dd>
+                        Phone number to dial.
+                      </dd>
+                    </dl>
+                    <h3>
+                      Methods
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          MakePhoneCall()
+                        </code>
+                      </dt>
+                      <dd>
+                        Dials the number specified by the component's
+                        <code>
+                          PhoneNumber
+                        </code>
+                        property.
+                      </dd>
+                    </dl>
+                    <h2 id="PhoneNumberPicker">
+                      PhoneNumberPicker
+                    </h2>
+                    <img alt="" src="images/phonenumberpicker.png" />
+                    <p>
+                      Use this component to allow users to choose a phone number from a list of Android
+                      contacts' phone numbers.
+                    </p>
+                    <p>
+                      When the user taps a phone number picker button, it displays a list of the phone
+                      numbers of contacts to choose from. After the user has made a selection, the
+                      following properties will be set to information about the chosen contact:
+                    </p>
+                    <ul>
+                      <li>
+                        <code>
+                          ContactName
+                        </code>
+                        : contact's name.
+                      </li>
+                      <li>
+                        <code>
+                          PhoneNumber
+                        </code>
+                        : contact's selected phone number.
+                      </li>
+                      <li>
+                        <code>
+                          EmailAddress
+                        </code>
+                        : contact's primary email address.
+                      </li>
+                      <li>
+                        <code>
+                          Picture
+                        </code>
+                        : name of the file containing the contact's image, which can
+                        be used as a
+                        <code>
+                          Picture
+                        </code>
+                        property value for the
+                        <code>
+                          Image
+                        </code>
+                        or
+                        <code>
+                          ImageSprite
+                        </code>
+                        component.
+                      </li>
+                    </ul>
+                    <p>
+                      Other properties affect the appearance of the button (including
+                      <code>
+                        TextAlignment
+                      </code>
+                      and
+                      <code>
+                        BackgroundColor
+                      </code>
+                      ) and whether it can be
+                      tapped (
+                      <code>
+                        Enabled
+                      </code>
+                      ).
+                    </p>
+                    <h3>
+                      Properties
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          Enabled
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, user can tap phone number picker to use it.
+                      </dd>
+                      <dt>
+                        <code>
+                          Image
+                        </code>
+                      </dt>
+                      <dd>
+                        Image to display on phone number picker.
+                      </dd>
+                      <dt>
+                        <code>
+                          BackgroundColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for phone number picker background.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          ContactName
+                        </code>
+                      </dt>
+                      <dd>
+                        Name of selected contact.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          EmailAddress
+                        </code>
+                      </dt>
+                      <dd>
+                        Primary email address of selected contact.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          PhoneNumber
+                        </code>
+                      </dt>
+                      <dd>
+                        Selected phone number of selected contact.
+                      </dd>
+                      <dt class="c2">
+                        <code>
+                          Picture
+                        </code>
+                      </dt>
+                      <dd>
+                        Picture of selected contact.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontBold
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, phone number picker text is displayed in bold.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontItalic
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, phone number picker text is displayed in italics.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontSize
+                        </code>
+                      </dt>
+                      <dd>
+                        Point size for phone number picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          FontTypeface
+                        </code>
+                      </dt>
+                      <dd>
+                        Font family for phone number picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Text
+                        </code>
+                      </dt>
+                      <dd>
+                        Text to display on phone number picker.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextAlignment
+                        </code>
+                      </dt>
+                      <dd>
+                        Left, center, or right.
+                      </dd>
+                      <dt>
+                        <code>
+                          TextColor
+                        </code>
+                      </dt>
+                      <dd>
+                        Color for phone number picker text.
+                      </dd>
+                      <dt>
+                        <code>
+                          Visible
+                        </code>
+                      </dt>
+                      <dd>
+                        If set, phone number picker is visible.
+                      </dd>
+                      <dt>
+                        <code>
+                          Width
+                        </code>
+                      </dt>
+                      <dd>
+                        Phone number picker width (x-size).
+                      </dd>
+                      <dt>
+                        <code>
+                          Height
+                        </code>
+                      </dt>
+                      <dd>
+                        Phone number picker height (y-size).
+                      </dd>
+                    </dl>
+                    <h3>
+                      Events
+                    </h3>
+                    <dl>
+                      <dt>
+                        <code>
+                          AfterPicking()
+                        </code>
+                      </dt>
+                      <dd>
+                        Called after user picks a phone number.
+                      </dd>
+                      <dt>
+                        <code>
+                          BeforePicking()
+                        </code>
+                      </dt>
+                      <dd>
+                        Called after user taps phone number picker but before phone number list is
+                        displayed.
+                      </dd>
+                      <dt>
+                        <code>
+                          GotFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Phone number picker became the focused component.
+                      </dd>
+                      <dt>
+                        <code>
+                          LostFocus()
+                        </code>
+                      </dt>
+                      <dd>
+                        Phone number picker stopped being the focused component.
+                      </dd>
+                    </dl>
+                    <h2 id="Texting">
+                      Texting
+                    </h2>
+                    <img alt="" src="images/texting.png" />
+                    <p>
+                      A component that will, when the
+                      <code>SendMessage</code>
+                      method is called, send the text message specified in the
+                      <code>Message</code>
+                      property to the phone number specified in the
+                      <code>PhoneNumber</code>
+                      property.
+                    </p>
+                    <p>
+                      If the
+                      <code>ReceivingEnabled</code>
+                      property is set to 1 messages will <b>not</b> be received. If
+                      <code>ReceivingEnabled</code>
+                      is set to 2 messages will be received only when the application is running. Finally if
+                      <code>ReceivingEnabled</code>
+                      is set to 3, messages will be received when the application
+                      is running <b>and</b> when the application is not running
+                      they will be queued and a notification displayed to the user.
+                    </p>
+                    <p>
+                      When a message arrives, the
+                      <code>MessageReceived</code>
+                      event is raised and provides the sending number and message.
+                    </p>
+                    <p>
+                      An app that includes this component will receive messages even when it is in the background (i.e. when it's not visible on the screen) and, moreso, even if the app is not running, so long as it's installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you'll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.
+                    </p>
+                    <p>
+                      If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.
+                    </p>
+                    <p>
+                      To specify the phone number (e.g., 650-555-1212), set the
+                      <code>PhoneNumber</code>
+                      property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.
+                    </p>
+                    <p>
+                      Another way for an app to specify a phone number would be to include a
+                      <code>PhoneNumberPicker</code>
+                      component, which lets the users select a phone numbers from the ones stored in the the phone's contacts.
+                    </p>
+
+                    <h3>Properties</h3>
+                    <dl>
+                      <dt><code>GoogleVoiceEnabled</code></dt>
+                      <dd>
+                        If true, then SendMessage will attempt to send messages
+                        over Wifi using Google Voice.  This requires that the
+                        Google Voice app must be installed and set up on the phone
+                        or tablet, with a Google Voice account.  If
+                        GoogleVoiceEnabled is false, the device must have phone and
+                        texting service in order to send or receive messages with
+                        this component.
+                      </dd>
+                      <dt><code>Message</code></dt>
+                      <dd>The message that will be sent when the SendMessage method is called.</dd>
+                      <dt><code>PhoneNumber</code></dt>
+                      <dd>
+                        The number that the message will be sent to when the
+                        SendMessage method is called. The number is a text string
+                        with the specified digits (e.g., 6505551212).  Dashes,
+                        dots, and parentheses may be included (e.g.,
+                        (650)-555-1212) but will be ignored; spaces should not be
+                        included.
+                      </dd>
+                      <dt><code>ReceivingEnabled</code></dt>
+                      <dd>
+                        If set to 1 (OFF) no messages will be received.  If set to
+                        2 (FOREGROUND) or3 (ALWAYS) the component will respond to
+                        messages if it is running. If theapp is not running then
+                        the message will be discarded if set to 2(FOREGROUND). If
+                        set to 3 (ALWAYS) and the app is not running the phone
+                        willshow a notification.  Selecting the notification will
+                        bring up the appand signal the MessageReceived event.
+                        Messages received when the appis dormant will be queued,
+                        and so several MessageReceived events mightappear when the
+                        app awakens.  As an app developer, it would be a good idea
+                        to give your users control over this property, so they can
+                        maketheir phones ignore text messages when your app is
+                        installed.
+                      </dd>
+                    </dl>
+                    <h3>Events</h3>
+                    <dl>
+                      <dt><code>MessageReceived(text number, text messageText)</code></dt>
+                      <dd>Event that's raised when a text message is received by the phone.</dd>
+                    </dl>
+                    <h3>Methods</h3>
+                    <dl>
+                      <dt><code>SendMessage()</code></dt>
+                      <dd>Send a text message</dd>
+                    </dl>
+                    <h2 id="Twitter">
+                      Twitter
+                    </h2>
+                    <img alt="" src="images/twitter.png" />
+                    <p>
+                      This component allows users to interact with Twitter.
+                    </p>
+                    <p>
+                      This non-visible component enables communication with Twitter. Once a user has logged in (
+                      <code>
+                        Authorize
+                      </code>
+                      ) and the login has been
+                      confirmed successful by the
+                      <code>
+                        IsAuthorized
+                      </code>
+                      event, you can use the
+                      following methods:
+                    </p>
+                    <ul>
+                      <li>
+                        Search Twitter for tweets or labels (
+                        <code>
+                          SearchTwitter
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Set the status of the logged-in user (
+                        <code>
+                          SetStatus
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Send a direct message to a specific user (
+                        <code>
+                          DirectMessage
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Receive the most recent direct messages (
+                        <code>
+                          RequestDirectMessages
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Follow a user (
+                        <code>
+                          Follow
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Unfollow a user (
+                        <code>
+                          StopFollowing
+                        </code>
+                        .)
+                      </li>
+                      <li>
+                        Get the list of users who follow the logged-in user
+                        (
+                        <code>
+                          RequestFollowers
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Get the most recent messages in the user's timeline.
+                        (
+                        <code>
+                          RequestFriendTimeline
+                        </code>
+                        ).
+                      </li>
+                      <li>
+                        Get the most recent mentions of the logged-in user
+                        (
+                        <code>
+                          RequestMentions
+                        </code>
+                        ).
+                      </li>
+                    </ul>
+                    <p>
+                      In general, you invoke one of these methods and the result will become available
+                      when the corresponding receipt event is signaled. For example, if you call
+                      <code>
+                        RequestFollowers
+                      </code>
+                      , then the
+                      <code>
+                        FollowersReceived
+                      </code>
+                      event will
+                      be signaled when the list of followers is available. This might take time, because
+                      the request is going over the web; the result might even never become available if,
+                      for example, your device is not connected to the web or the Twitter web site is down.
+                    </p>
+                    <p>
+                      Login is handled using the OAuth protocol, as required by the Twitter API (
+                      <a href="http://dev.twitter.com/pages/auth">
+                        dev.twitter.com/pages/auth
+                      </a>
+                      ). An App
+                      Inventor app that needs to make Twitter API calls on behalf of an authenticated
+                      user should first call
+                      <code>
+                        Authorize
+                      </code>
+                      . This loads a Twitter login page that will allow the user to login with their username and password, and then return appropriate credentials to the Twitter component in the
+                      app. Once the Twitter component has the credentials the
+                      <code>
+                        IsAuthorized
+                      </code>
+                      event is raised to let the app know that it can proceed with Twitter API calls. An app retains Twitter credentials across invocations,
+                      so it may not be necessary for the user to login each time he or she uses the app.
+                      Reinstalling an app will clear the credentials, as will calling the
+                      <code>
+                        DeAuthorize
+                      </code>
+                      method. A user can revoke authorization for an app from
+                      the Twitter web site via the
+                      <i>
+                        Settings
+                      </i>
+                      page as well. To check whether an app
+                      already has valid credentials, use the
+                      <code>
+                        CheckAuthorized
+                      </code>
+                      method.
+                    </p>
+                    <p>
+                      <b>
+                        Important:
+                      </b>
+                      Most of the operation of the OAuth protocol is hidden inside the
+                      Twitter component and you do not need to understand how it works to use
+                      the component. However, it is necessary for anyone building an app with the Twitter
+                      component to supply a
+                      <i>
+                        Consumer key
+                      </i>
+                      and a
+                      <i>
+                        Consumer secret
+                      </i>
+                      as
+                      properties of the component. These are text strings specific to your app that you
+                      can obtain by registering the app with Twitter at
+                      <a href="http://twitter.com/oauth_clients/new">
+                        twitter.com/oauth_clients/new
+                      </a>
+                      . On the
+                      registration page you will need to supply the following information:
+                    </p>
+                    <dl>
+                      <dt>
+                        Application name
+                      </dt>
+                      <dd>
+                        A unique name for your application. When you submit the form It will warn you if
+                        the name isn't unique. This name will be shown to the user of your app when they
+                        are asked to login to Twitter as a result of the app calling the
+                        <code>
+                          Authorize
+                        </code>
+                        method.
+                      </dd>
+                      <dt>
+                        Description
+                      </dt>
+                      <dd>
+                        A description of your app.
+                      </dd>
+                      <dt>
+                        Application website
+                      </dt>
+                      <dd>
+                        The website where a user can go to find out more about your app or download it,
+                        if there is one. Otherwise, you could give your home web site, or another web
+                        site. The field cannot be left blank.
+                      </dd>
+                      <dt>
+                        Application type
+                      </dt>
+                      <dd>
+                        This should be set to
+                        <i>
+                          Browser
+                        </i>
+                        .
+                      </dd>
+                      <dt>
+                        Callback URL
+                      </dt>
+                      <dd>
+                        A valid URL. The value doesn't matter since the Twitter component will set it to
+                        the proper value.
+                      </dd>
+                      <dt>
+                        Default access type
+                      </dt>
+                      <dd>
+                        Set this to
+                        <i>
+                          read/write
+                        </i>
+                      </dd>
+                      <dt>
+                        The other fields can be left blank if you like. When you have successfully
+                        registered your app you'll see a page that displays Consumer key and Consumer
+                        secret text strings that are specific to the registered app. You can copy these
+                        into the corresponding Twitter component properties in your App Inventor app. If
+                        you want to change the settings for your app at a later time, login to Twitter
+                        via a web browser and go to
+                        <a href="http://twitter.com/apps">
+                          twitter.com/apps
+                        </a>
+                        to see and modify your registered
+                        apps.
+                      </dt>
+                      <dd>
+                        <h3>
+                          Properties
+                        </h3>
+                        <dl>
+                          <dt class="c2">
+                            <code>
+                              ConsumerKey
+                            </code>
+                          </dt>
+                          <dd>
+                            The consumer key identifying this app, obtained from
+                            <a href="http://twitter.com/oauth_clients/new">
+                              twitter.com/oauth_clients/new
+                            </a>
+                            as
+                            described above.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              ConsumerSecret
+                            </code>
+                          </dt>
+                          <dd>
+                            The consumer secret identifying this app, obtained from
+                            <a href="http://twitter.com/oauth_clients/new">
+                              twitter.com/oauth_clients/new
+                            </a>
+                            as
+                            described above.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              DirectMessages
+                            </code>
+                          </dt>
+                          <dd>
+                            User's direct messages on Twitter.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              Followers
+                            </code>
+                          </dt>
+                          <dd>
+                            User's list of Twitter followers.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              FriendTimeline
+                            </code>
+                          </dt>
+                          <dd>
+                            User's Twitter message timeline.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              Mentions
+                            </code>
+                          </dt>
+                          <dd>
+                            List of messages that mention the user.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              SearchResults
+                            </code>
+                          </dt>
+                          <dd>
+                            Results of Twitter search query.
+                          </dd>
+                          <dt class="c2">
+                            <code>
+                              Username
+                            </code>
+                          </dt>
+                          <dd>
+                            The user name of the authorized user. Empty if there is no authorized user.
+                          </dd>
+                        </dl>
+                        <h3>
+                          Events
+                        </h3>
+                        <dl>
+                          <dt>
+                            <code>
+                              DirectMessagesReceived(list messages)
+                            </code>
+                          </dt>
+                          <dd>
+                            Called when all the direct messages requested with
+                            <code>
+                              RequestDirectMessages
+                            </code>
+                            have been retrieved.
+                          </dd>
+                          <dt>
+                            <code>
+                              FollowersReceived(list followers)
+                            </code>
+                          </dt>
+                          <dd>
+                            Called when all the followers requested with
+                            <code>
+                              RequestFollowers
+                            </code>
+                            have been retrieved.
+                          </dd>
+                          <dt>
+                            <code>
+                              FriendTimelineReceived(list user-messages-list)
+                            </code>
+                          </dt>
+                          <dd>
+                            Called when the timeline requested with
+                            <code>
+                              RequestFriendTimeline
+                            </code>
+                            has been retrieved. Each element is itself a list whose first element is a
+                            username and whose second element is a status tweeted by that user.
+                          </dd>
+                          <dt>
+                            <code>
+                              IsAuthorized()
+                            </code>
+                          </dt>
+                          <dd>
+                            Called after the program calls
+                            <code>
+                              Authorize
+                            </code>
+                            if the authorization
+                            was successful. It is also called after a call to
+                            <code>
+                              CheckAuthorized
+                            </code>
+                            if we already have a valid credentials. After
+                            this event has been raised, any other method for this component can be
+                            called.
+                          </dd>
+                          <dt>
+                            <code>
+                              MentionsReceived(list mentions)
+                            </code>
+                          </dt>
+                          <dd>
+                            Called when all the mentions requested with
+                            <code>
+                              RequestMentions
+                            </code>
+                            have
+                            been retrieved.
+                          </dd>
+                          <dt>
+                            <code>
+                              SearchSuccessful(list searchResults)
+                            </code>
+                          </dt>
+                          <dd>
+                            Called when the search requested with
+                            <code>
+                              SearchTwitter
+                            </code>
+                            has been
+                            completed.
+                          </dd>
+                        </dl>
+                        <h3>
+                          Methods
+                        </h3>
+                        <dl>
+                          <dt>
+                            <code>
+                              Authorize
+                            </code>
+                          </dt>
+                          <dd>
+                            Presents a Twitter login page so that the user can authorize access.
+                            IsAuthorize will be called when the user successfully grants access to the
+                            app.
+                          </dd>
+                          <dt>
+                            <code>
+                              CheckAuthorized
+                            </code>
+                          </dt>
+                          <dd>
+                            Checks whether we already have access, and if so, causes IsAuthorized event
+                            handler to be called.
+                          </dd>
+                          <dt>
+                            <code>
+                              DeAuthorize
+                            </code>
+                          </dt>
+                          <dd>
+                            Removes authorization from this running app instance. A user will have to
+                            login again to use any Twitter method.
+                          </dd>
+                          <dt>
+                            <code>
+                              DirectMessage(text user, text message)
+                            </code>
+                          </dt>
+                          <dd>
+                            Sends the specified message to the given user.
+                          </dd>
+                          <dt>
+                            <code>
+                              Follow(text user)
+                            </code>
+                          </dt>
+                          <dd>
+                            Start following the given user.
+                          </dd>
+                          <dt>
+                            <code>
+                              RequestDirectMessages()
+                            </code>
+                          </dt>
+                          <dd>
+                            Retrieves the most recent direct messages.
+                          </dd>
+                          <dt>
+                            <code>
+                              RequestFollowers()
+                            </code>
+                          </dt>
+                          <dd>
+                            Retrieves the list of the user's followers.
+                          </dd>
+                          <dt>
+                            <code>
+                              RequestFriendTimeline()
+                            </code>
+                          </dt>
+                          <dd>
+                            Retrieves the 20 most recent messages in your timeline. Returns a list of
+                            tuples (sub-lists), where each tuple contains a username and status message.
+                          </dd>
+                          <dt>
+                            <code>
+                              RequestMentions()
+                            </code>
+                          </dt>
+                          <dd>
+                            Retrieves the most recent mentions of the user.
+                          </dd>
+                          <dt>
+                            <code>
+                              SearchTwitter(text query)
+                            </code>
+                          </dt>
+                          <dd>
+                            Searches Twitter for the given text.
+                          </dd>
+                          <dt>
+                            <code>
+                              SetStatus(text s)
+                            </code>
+                          </dt>
+                          <dd>
+                            Post the specified text as a status message.
+                          </dd>
+                          <dt>
+                            <code>
+                              StopFollowing(text user)
+                            </code>
+                          </dt>
+                          <dd>
+                            Stop following the given user.
+                          </dd>
+                        </dl>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </section>
+          </div></div>
+      </div></div>
+
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a> <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/" class="ext" target="_blank">Creative Commons Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts Institute of Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+
     </div>
-    <div class="footer">
-     <script language = "JavaScript">createFooter();</script><br>
-     <div class="footer-lastupdate">
-      <script>
-       if (document.lastModified != '') {
-                var m = "Page last updated: " + document.lastModified;
-                var p = m.length-8;
-                document.writeln("<center>");
-                document.write(m.substring(p, 0));
-                document.writeln("<\/center>");
-              }
-      </script>
-     </div>
-    </div>
-   </div>
-  </div>
- </body>
+
+    <table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c"
+           style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e"
+                                                                       style="width: 100%;"></td></tr></tbody></table></body>
 </html>

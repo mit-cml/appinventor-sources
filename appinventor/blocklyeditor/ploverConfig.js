@@ -14,13 +14,13 @@
     '../lib/blockly/src/core/block.js',
     '../lib/blockly/src/core/block_svg.js',
     //'../lib/blockly/src/core/blockly.js',
-    //'../lib/blockly/src/core/blockly_renaming_map.js',
     '../lib/blockly/src/core/bubble.js',
     '../lib/blockly/src/core/comment.js',
     '../lib/blockly/src/core/connection.js',
     '../lib/blockly/src/core/contextmenu.js',
     '../lib/blockly/src/core/css.js',
     '../lib/blockly/src/core/field.js',
+    '../lib/blockly/src/core/field_angle.js',
     '../lib/blockly/src/core/field_checkbox.js',
     '../lib/blockly/src/core/field_colour.js',
     '../lib/blockly/src/core/field_dropdown.js',
@@ -30,6 +30,7 @@
     '../lib/blockly/src/core/field_variable.js',
     '../lib/blockly/src/core/flyout.js',
     '../lib/blockly/src/core/generator.js',
+    '../lib/blockly/src/core/icon.js',
     '../lib/blockly/src/core/inject.js',
     '../lib/blockly/src/core/input.js',
     '../lib/blockly/src/core/language.js',
@@ -43,10 +44,10 @@
     '../lib/blockly/src/core/utils.js',
     '../lib/blockly/src/core/variables.js',
     '../lib/blockly/src/core/warning.js',
+    '../lib/blockly/src/core/widgetdiv.js',
     '../lib/blockly/src/core/workspace.js',
     '../lib/blockly/src/core/xml.js',
     '../lib/blockly/src/core/typeblock.js',
-
 
     //finally, include any of our own .js file in any order
     "./src/blocklyeditor.js",
@@ -54,7 +55,7 @@
     "./src/component.js",
     "./src/drawer.js",
     "./src/savefile.js",
-    "./src/componentblock.js",
+    "./src/versioning.js",
     "./src/mutators.js",
     "./src/field_lexical_variable.js",
     "./src/errorIcon.js",
@@ -62,6 +63,11 @@
     "./src/field_procedure.js",
     "./src/field_textblockinput.js",
     "./src/warningIndicator.js",
+    "./src/flydown.js",
+    "./src/field_flydown.js",
+    "./src/field_parameter_flydown.js",
+    "./src/field_global_flydown.js",
+    "./src/field_procedure_flydown.js",
 
     //language files
     './src/language/common/control.js',
@@ -73,6 +79,7 @@
     './src/language/common/procedures.js',
     './src/language/common/lexical-variables.js',
     './src/language/common/colors.js',
+    './src/language/common/components.js',
 
     //generator files
     "./src/generators/yail.js",
@@ -86,6 +93,9 @@
     "./src/generators/yail/variables.js",
     "./src/generators/yail/procedures.js",
 
+    //versioning files
+    "./src/versioning/017_blocksOverhaul.js",
+
     // Repl
     "./src/replmgr.js"
     ],
@@ -97,6 +107,6 @@
   "mode": "RAW",
 //  "mode": "SIMPLE_OPTIMIZATIONS",
 //  "mode" : "WHITESPACE_ONLY",
-  "closure-library" : "../appengine/war/closure-library-20120710-r2029/closure/goog",
+  "closure-library" : "../lib/closure-library/closure/goog",
   "output-file": "../build/blocklyeditor/blockly-all.js"
 }

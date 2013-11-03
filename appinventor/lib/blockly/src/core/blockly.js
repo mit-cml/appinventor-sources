@@ -23,8 +23,31 @@
  */
 'use strict';
 
+/**
+ * [lyn, 10/10/13] Modified Blockly.hideChaff() method to hide single instance of Blockly.FieldFlydown.
+ */
+
 // Top level object for Blockly.
 goog.provide('Blockly');
+
+// Blockly core dependencies.
+goog.require('Blockly.Block');
+goog.require('Blockly.Connection');
+goog.require('Blockly.FieldAngle');
+goog.require('Blockly.FieldCheckbox');
+goog.require('Blockly.FieldColour');
+goog.require('Blockly.FieldDropdown');
+goog.require('Blockly.FieldImage');
+goog.require('Blockly.FieldTextInput');
+goog.require('Blockly.FieldVariable');
+goog.require('Blockly.Generator');
+goog.require('Blockly.inject');
+goog.require('Blockly.Procedures');
+//goog.require('Blockly.Toolbox');
+goog.require('Blockly.TypeBlock');
+goog.require('Blockly.utils');
+goog.require('Blockly.WidgetDiv');
+goog.require('Blockly.Workspace');
 
 // Closure dependencies.
 goog.require('goog.dom');
@@ -34,23 +57,6 @@ goog.require('goog.string');
 goog.require('goog.ui.ColorPicker');
 goog.require('goog.ui.tree.TreeControl');
 goog.require('goog.userAgent');
-
-// Blockly core dependencies.
-goog.require('Blockly.Block');
-goog.require('Blockly.Connection');
-goog.require('Blockly.Generator');
-goog.require('Blockly.inject');
-goog.require('Blockly.FieldCheckbox');
-goog.require('Blockly.FieldColour');
-goog.require('Blockly.FieldDropdown');
-goog.require('Blockly.FieldImage');
-goog.require('Blockly.FieldTextInput');
-goog.require('Blockly.FieldVariable');
-goog.require('Blockly.Procedures');
-//goog.require('Blockly.Toolbox');
-goog.require('Blockly.utils');
-goog.require('Blockly.Workspace');
-goog.require('Blockly.TypeBlock');
 
 
 /**
@@ -191,12 +197,11 @@ Blockly.workspace_arranged_type = null;
 Blockly.selected = null;
 
 /**
- * In the future we might want to have display-only block views.
- * Until then, all blocks are considered editable.
+ * Is Blockly in a read-only, non-editable mode?
  * Note that this property may only be set before init is called.
  * It can't be used to dynamically toggle editability on and off.
  */
-Blockly.editable = true;
+Blockly.readOnly = false;
 
 /**
  * Currently highlighted connection (during a drag).
@@ -249,9 +254,7 @@ Blockly.clipboard_ = null;
  */
 Blockly.svgSize = function() {
   return {width: Blockly.svg.cachedWidth_,
-          height: Blockly.svg.cachedHeight_,
-          top: Blockly.svg.cachedTop_,
-          left: Blockly.svg.cachedLeft_};
+          height: Blockly.svg.cachedHeight_};
 };
 
 /**
@@ -271,14 +274,9 @@ Blockly.svgResize = function() {
     svg.setAttribute('height', height + 'px');
     svg.cachedHeight_ = height;
   }
-  // Can't use Blockly.svg.getBoundingClientRect() due to bugs in Firefox.
-  // Can't use Blockly.svg.offsetLeft due to bugs in Firefox.
-  svg.cachedLeft_ = 0;
-  svg.cachedTop_ = 0;
-  while (div) {
-    svg.cachedLeft_ += div.offsetLeft;
-    svg.cachedTop_ += div.offsetTop;
-    div = div.offsetParent;
+  // Update the scrollbars (if they exist).
+  if (Blockly.mainWorkspace.scrollbar) {
+    Blockly.mainWorkspace.scrollbar.resize();
   }
 };
 
@@ -296,23 +294,23 @@ Blockly.latestClick = { x: 0, y: 0 };
  */
 Blockly.onMouseDown_ = function(e) {
   Blockly.latestClick = { x: e.clientX, y: e.clientY };
-  Blockly.Block.terminateDrag_(); // In case mouse-up event was lost.
+  Blockly.terminateDrag_(); // In case mouse-up event was lost.
   Blockly.hideChaff();
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
     Blockly.Drawer.hide()
   }
   var isTargetSvg = e.target && e.target.nodeName &&
       e.target.nodeName.toLowerCase() == 'svg';
-  if (Blockly.selected && isTargetSvg) {
+  if (!Blockly.readOnly && Blockly.selected && isTargetSvg) {
     // Clicking on the document clears the selection.
     Blockly.selected.unselect();
   }
   if (Blockly.isRightButton(e)) {
     // Right-click.
     if (Blockly.ContextMenu) {
-      Blockly.showContextMenu_(e.clientX, e.clientY);
+      Blockly.showContextMenu_(Blockly.mouseToSvg(e));
     }
-  } else if ((!Blockly.editable || isTargetSvg) &&
+  } else if ((Blockly.readOnly || isTargetSvg) &&
              Blockly.mainWorkspace.scrollbar) {
     // If the workspace is editable, only allow dragging when gripping empty
     // space.  Otherwise, allow dragging when gripping anywhere.
@@ -320,8 +318,7 @@ Blockly.onMouseDown_ = function(e) {
     // Record the current mouse position.
     Blockly.mainWorkspace.startDragMouseX = e.clientX;
     Blockly.mainWorkspace.startDragMouseY = e.clientY;
-    Blockly.mainWorkspace.startDragMetrics =
-        Blockly.getMainWorkspaceMetrics();
+    Blockly.mainWorkspace.startDragMetrics = Blockly.mainWorkspace.getMetrics();
     Blockly.mainWorkspace.startScrollX = Blockly.mainWorkspace.scrollX;
     Blockly.mainWorkspace.startScrollY = Blockly.mainWorkspace.scrollY;
   }
@@ -379,14 +376,19 @@ Blockly.onKeyDown_ = function(e) {
     Blockly.hideChaff();
   } else if (e.keyCode == 8 || e.keyCode == 46) {
     // Delete or backspace.
-    if (Blockly.selected && Blockly.selected.deletable) {
-      Blockly.hideChaff();
-      Blockly.selected.dispose(true, true);
+    try {
+      if (Blockly.selected && Blockly.selected.isDeletable()) {
+        Blockly.hideChaff();
+        Blockly.selected.dispose(true, true);
+      }
+    } finally {
+      // Stop the browser from going back to the previous page.
+      // Use a finally so that any error in delete code above doesn't disappear
+      // from the console when the page rolls back.
+      e.preventDefault();
     }
-    // Stop the browser from going back to the previous page.
-    e.preventDefault();
   } else if (e.altKey || e.ctrlKey || e.metaKey) {
-    if (Blockly.selected && Blockly.selected.deletable &&
+    if (Blockly.selected && Blockly.selected.isDeletable() &&
         Blockly.selected.workspace == Blockly.mainWorkspace) {
       Blockly.hideChaff();
       if (e.keyCode == 67) {
@@ -408,6 +410,15 @@ Blockly.onKeyDown_ = function(e) {
 };
 
 /**
+ * Stop binding to the global mouseup and mousemove events.
+ * @private
+ */
+Blockly.terminateDrag_ = function() {
+  Blockly.Block.terminateDrag_();
+  Blockly.Flyout.terminateDrag_();
+};
+
+/**
  * Copy a block onto the local clipboard.
  * @param {!Blockly.Block} block Block to be copied.
  * @private
@@ -424,11 +435,13 @@ Blockly.copy_ = function(block) {
 
 /**
  * Show the context menu for the workspace.
- * @param {number} x X-coordinate of mouse click.
- * @param {number} y Y-coordinate of mouse click.
+ * @param {!Object} xy Coordinates of mouse click, contains x and y properties.
  * @private
  */
-Blockly.showContextMenu_ = function(x, y) {
+Blockly.showContextMenu_ = function(xy) {
+  if (Blockly.readOnly) {
+    return;
+  }
   var options = [];
 
   if (Blockly.collapse) {
@@ -489,20 +502,22 @@ Blockly.showContextMenu_ = function(x, y) {
   // Arranges block in layout (Horizontal or Vertical).
   function arrangeBlocks(layout) {
     var SPACER = 25;
-    var topblocks = Blockly.mainWorkspace.topBlocks_;
-    var viewLeft = Blockly.getMainWorkspaceMetrics().viewLeft + 5;
-    var viewTop = Blockly.getMainWorkspaceMetrics().viewTop + 5;
+    var topblocks = Blockly.mainWorkspace.getTopBlocks(false);
+    var metrics = Blockly.mainWorkspace.getMetrics();
+    var viewLeft = metrics.viewLeft + 5;
+    var viewTop = metrics.viewTop + 5;
     var x = viewLeft;
     var y = viewTop;
-    var wsRight = viewLeft + Blockly.getMainWorkspaceMetrics().viewWidth;
-    var wsBottom = viewTop + Blockly.getMainWorkspaceMetrics().viewHeight;
+    var wsRight = viewLeft + metrics.viewWidth;
+    var wsBottom = viewTop + metrics.viewHeight;
     var maxHgt = 0;
     var maxWidth = 0;
     for (var i = 0, len = topblocks.length; i < len; i++) {
       var blk = topblocks[i];
       var blkXY = blk.getRelativeToSurfaceXY();
-      var blkHgt = blk.svg_.svgGroup_.getBBox().height;
-      var blkWidth = blk.svg_.svgGroup_.getBBox().width;
+      var blockHW = blk.getHeightWidth();
+      var blkHgt = blockHW.height;
+      var blkWidth = blockHW.width;
       switch (layout) {
         case Blockly.BLKS_HORIZONTAL:
           if (x < wsRight) {
@@ -545,7 +560,7 @@ Blockly.showContextMenu_ = function(x, y) {
   sortOptionCat.text = Blockly.MSG_SORT_C;
   sortOptionCat.callback = function() {
     Blockly.workspace_arranged_type = Blockly.BLKS_CATEGORY;
-    var blocks = Blockly.mainWorkspace.topBlocks_;
+    var blocks = Blockly.mainWorkspace.getAllBlocks();
     blocks.sort(function compare(a,b) {
       if (a.category <  b.category) return -1;
       else if (a.category > b.category) return +1;
@@ -570,7 +585,7 @@ Blockly.showContextMenu_ = function(x, y) {
   helpOption.callback = function() {};
   options.push(helpOption);
 
-  Blockly.ContextMenu.show(x, y, options);
+  Blockly.ContextMenu.show(xy, options);
 };
 
 /**
@@ -603,11 +618,12 @@ Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.Tooltip && Blockly.Tooltip.hide();
   Blockly.ContextMenu && Blockly.ContextMenu.hide();
   Blockly.FieldDropdown && Blockly.FieldDropdown.hide();
-  Blockly.FieldColour && Blockly.FieldColour.hide();
-  if (Blockly.Toolbox && !opt_allowToolbox &&
-      Blockly.Toolbox.flyout_.autoClose) {
-    Blockly.Toolbox.clearSelection();
-  }
+  Blockly.FieldFlydown && Blockly.FieldFlydown.hide(); // [lyn, 10/06/13] for handling parameter & procedure flydowns
+  Blockly.WidgetDiv.hide();
+  //if (!opt_allowToolbox &&
+  //    Blockly.Toolbox.flyout_ && Blockly.Toolbox.flyout_.autoClose) {
+  //Blockly.Toolbox.clearSelection();
+  //}
   Blockly.TypeBlock && Blockly.TypeBlock.hide();
 };
 
@@ -640,16 +656,28 @@ Blockly.isTargetInput_ = function(e) {
 
 /**
  * Load an audio file.  Cache it, ready for instantaneous playing.
- * @param {string} filename Path and filename from Blockly's root.
+ * @param {!Array.<string>} filenames List of file types in decreasing order of
+ *   preference (i.e. increasing size).  E.g. ['media/go.mp3', 'media/go.wav']
+ *   Filenames include path from Blockly's root.  File extensions matter.
  * @param {string} name Name of sound.
  * @private
  */
-Blockly.loadAudio_ = function(filename, name) {
-  if (!window.Audio) {
+Blockly.loadAudio_ = function(filenames, name) {
+  if (!window.Audio || !filenames.length) {
     // No browser support for Audio.
     return;
   }
-  var sound = new window.Audio(Blockly.pathToBlockly + filename);
+  var sound;
+  var audioTest = new window.Audio();
+  for (var i = 0; i < filenames.length; i++) {
+    var filename = filenames[i];
+    var ext = filename.match(/\.(\w+)$/);
+    if (ext && audioTest.canPlayType('audio/' + ext[1])) {
+      // Found an audio format we can play.
+      sound = new window.Audio(Blockly.pathToBlockly + filename);
+      break;
+    }
+  }
   // To force the browser to load the sound, play it, but at nearly zero volume.
   if (sound && sound.play) {
     sound.play();
@@ -667,7 +695,17 @@ Blockly.loadAudio_ = function(filename, name) {
 Blockly.playAudio = function(name, opt_volume) {
   var sound = Blockly.SOUNDS_[name];
   if (sound) {
-    var mySound = sound.cloneNode();
+    var mySound;
+    var ie9 = goog.userAgent.DOCUMENT_MODE &&
+              goog.userAgent.DOCUMENT_MODE === 9;
+    if (ie9 || goog.userAgent.IPAD || goog.userAgent.ANDROID) {
+      // Creating a new audio node causes lag in IE9, Android and iPad. Android
+      // and IE9 refetch the file from the server, iPad uses a singleton audio
+      // node which must be deleted and recreated for each new audio tag.
+      mySound = sound;
+    } else {
+      mySound = sound.cloneNode();
+    }
     mySound.volume = (opt_volume === undefined ? 1 : opt_volume);
     mySound.play();
   }
@@ -679,7 +717,7 @@ Blockly.playAudio = function(name, opt_volume) {
  * @private
  */
 Blockly.setCursorHand_ = function(closed) {
-  if (!Blockly.editable) {
+  if (Blockly.readOnly) {
     return;
   }
   /* Hotspot coordinates are baked into the CUR file, but they are still
@@ -694,7 +732,7 @@ Blockly.setCursorHand_ = function(closed) {
   }
   // Set cursor on the SVG surface as well as block so that rapid movements
   // don't result in cursor changing to an arrow momentarily.
-  document.getElementsByTagName('svg')[0].style.cursor = cursor;
+  Blockly.svg.style.cursor = cursor;
 };
 
 /**
@@ -711,40 +749,42 @@ Blockly.setCursorHand_ = function(closed) {
  * .absoluteTop: Top-edge of view.
  * .absoluteLeft: Left-edge of view.
  * @return {Object} Contains size and position metrics of main workspace.
+ * @private
  */
-Blockly.getMainWorkspaceMetrics = function() {
-  var hwView = Blockly.svgSize();
-  if (Blockly.Toolbox) {
-    hwView.width -= Blockly.Toolbox.width;
-  }
-  var viewWidth = hwView.width - Blockly.Scrollbar.scrollbarThickness;
-  var viewHeight = hwView.height - Blockly.Scrollbar.scrollbarThickness;
+Blockly.getMainWorkspaceMetrics_ = function() {
+  var svgSize = Blockly.svgSize();
+  //We don't use Blockly.Toolbox in our version of Blockly instead we use drawer.js
+  //svgSize.width -= Blockly.Toolbox.width;  // Zero if no Toolbox.
+  svgSize.width -= 0;  // Zero if no Toolbox.
+  var viewWidth = svgSize.width - Blockly.Scrollbar.scrollbarThickness;
+  var viewHeight = svgSize.height - Blockly.Scrollbar.scrollbarThickness;
   try {
     var blockBox = Blockly.mainWorkspace.getCanvas().getBBox();
   } catch (e) {
     // Firefox has trouble with hidden elements (Bug 528969).
     return null;
   }
-  if (blockBox.width == -Infinity && blockBox.height == -Infinity) {
-    // Opera has trouble with bounding boxes around empty objects.
-    blockBox = {width: 0, height: 0, x: 0, y: 0};
+  if (Blockly.mainWorkspace.scrollbar) {
+    // Add a border around the content that is at least half a screenful wide.
+    var leftEdge = Math.min(blockBox.x - viewWidth / 2,
+                            blockBox.x + blockBox.width - viewWidth);
+    var rightEdge = Math.max(blockBox.x + blockBox.width + viewWidth / 2,
+                             blockBox.x + viewWidth);
+    var topEdge = Math.min(blockBox.y - viewHeight / 2,
+                           blockBox.y + blockBox.height - viewHeight);
+    var bottomEdge = Math.max(blockBox.y + blockBox.height + viewHeight / 2, blockBox.y + viewHeight);
+  } else {
+    var leftEdge = blockBox.x;
+    var rightEdge = leftEdge + blockBox.width;
+    var topEdge = blockBox.y;
+    var bottomEdge = topEdge + blockBox.height;
   }
-  // Add a border around the content that is at least half a screenful wide.
-  var leftEdge = Math.min(blockBox.x - viewWidth / 2,
-                          blockBox.x + blockBox.width - viewWidth);
-  var rightEdge = Math.max(blockBox.x + blockBox.width + viewWidth / 2,
-                           blockBox.x + viewWidth);
-  var topEdge = Math.min(blockBox.y - viewHeight / 2,
-                         blockBox.y + blockBox.height - viewHeight);
-  var bottomEdge = Math.max(blockBox.y + blockBox.height + viewHeight / 2,
-                            blockBox.y + viewHeight);
-  var absoluteLeft = 0;
-  if (Blockly.Toolbox && !Blockly.RTL) {
-    absoluteLeft = Blockly.Toolbox.width;
-  }
+  //We don't use Blockly.Toolbox in our version of Blockly instead we use drawer.js
+  //var absoluteLeft = Blockly.RTL ? 0 : Blockly.Toolbox.width;
+  var absoluteLeft = Blockly.RTL ? 0 : 0;
   return {
-    viewHeight: hwView.height,
-    viewWidth: hwView.width,
+    viewHeight: svgSize.height,
+    viewWidth: svgSize.width,
     contentHeight: bottomEdge - topEdge,
     contentWidth: rightEdge - leftEdge,
     viewTop: -Blockly.mainWorkspace.scrollY,
@@ -760,9 +800,13 @@ Blockly.getMainWorkspaceMetrics = function() {
  * Sets the X/Y translations of the main workspace to match the scrollbars.
  * @param {!Object} xyRatio Contains an x and/or y property which is a float
  *     between 0 and 1 specifying the degree of scrolling.
+ * @private
  */
-Blockly.setMainWorkspaceMetrics = function(xyRatio) {
-  var metrics = Blockly.getMainWorkspaceMetrics();
+Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
+  if (!Blockly.mainWorkspace.scrollbar) {
+    throw 'Attempt to set main workspace scroll without scrollbars.';
+  }
+  var metrics = Blockly.getMainWorkspaceMetrics_();
   if (goog.isNumber(xyRatio.x)) {
     Blockly.mainWorkspace.scrollX = -metrics.contentWidth * xyRatio.x -
         metrics.contentLeft;

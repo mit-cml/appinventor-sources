@@ -61,7 +61,7 @@ import org.json.JSONException;
 @DesignerComponent(version = YaVersion.TINYWEBDB_COMPONENT_VERSION,
     description = "Non-visible component that communicates with a Web service to store and " +
     "retrieve information.",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/tinyWebDB.png")
 @SimpleObject

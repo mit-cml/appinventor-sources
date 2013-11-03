@@ -106,7 +106,7 @@ import java.util.ArrayList;
     "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, " +
     "which means that things like capitalization for names of columns matters, and " +
     "that single quotes must be used around column names if there are spaces in them.</p>",
-    category = ComponentCategory.EXPERIMENTAL,
+    category = ComponentCategory.STORAGE,
     nonVisible = true,
     iconName = "images/fusiontables.png")
 @SimpleObject

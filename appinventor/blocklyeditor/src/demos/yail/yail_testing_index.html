@@ -8,7 +8,7 @@
 <head>
 <title> Yail Comparison Test </title>
 
-<script type="text/javascript" src="../../../../appengine/war/closure-library-20120710-r2029/closure/goog/base.js"></script>
+<script type="text/javascript" src="../../../../lib/closure-library/closure/goog/base.js"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js"></script>
 <script type="text/javascript" src="../../../../build/blocklyeditor/component-types.js"></script>
 
@@ -92,9 +92,39 @@ function start() {
 
   // ----- End the Blockly Initialization
 
+  // ----- Emulate GWT Provided functions
+  BlocklyPanel_getComponentsJSONString = function(type) {
+    return JSON.stringify(componentTypeJson);
+  };
+
+  BlocklyPanel_getComponentInstanceTypeName = function(formName,instanceName) {
+    var json = JSON.parse(formJson);
+    var components = json.Properties.$Components;
+    var findtype = function(components) {
+      for (var i = 0, comp; comp = components[i]; i++) {
+        if (components[i].$Name == instanceName) {
+          return (components[i].$Type)
+        } else {
+          if (comp.$Components) {
+            var retval = findtype(comp.$Components); // Recurse!
+            if (retval) {
+              return retval;
+            }
+          }
+        }
+      }
+    };
+    if (instanceName == json.Properties.$Name) {
+      return (json.Properties.$Type);
+    }
+    var retval = findtype(json.Properties.$Components);
+    return (retval);
+  };
+
     document.getElementById('formFile').addEventListener('change', handleLoadForm, false);
     document.getElementById('blocksFile').addEventListener('change', handleLoadBlocks, false);
     initComponentTypes();
+    Blockly.ComponentTypes.populateTypes();
 }
 
 function initComponentTypes() {
@@ -150,8 +180,9 @@ function getFormComponents(formJson) {
 }
 
 function defineComponents(componentJsonObj) {
-    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
-            componentJsonObj.$Name, componentJsonObj.Uuid);
+    Blockly.Component.add(componentJsonObj.$Name, componentJsonObj.Uuid);
+//    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
+//            componentJsonObj.$Name, componentJsonObj.Uuid);
     if (componentJsonObj.$Components) {
         for (var i = 0, comp; comp = componentJsonObj.$Components[i]; i++) {
             defineComponents(comp);
@@ -363,15 +394,31 @@ function compareElements(expected, given) {
   }
   return flag;
 }
-// Find out if the NB yail matchces Classic Yail
+
+// Find out if the NB yail matches Classic Yail
 function doTheyMatch(expected, given) {
+    if (compareElements(expected, given) && compareDefinitions(expected, given) && compareEvents(expected, given)) {
+    return true;
+    }
 
-  if (compareElements(expected, given) && compareDefinitions(expected, given) && compareEvents(expected, given)) {
-      return true;
-  }
-
-  return false;
+    return false;
 }
+
+// Check if a string contains a pattern, ignoring whitespace
+
+function doesContain(data, pattern) {
+  var dataNoWhitespace = data.replace(/\s/g, "");
+  var patternNoWhitespace = pattern.replace(/\s/g, "");
+  return dataNoWhitespace.indexOf(patternNoWhitespace) >= 0;
+}
+
+//Contains function for JavaScript strings
+// Polyfill for https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/contains
+// Pass in the string to match, and if needed, the starting position (defaults to start of String)
+if (!('contains' in String.prototype))
+  String.prototype.contains = function(str, startIndex) {
+    return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+  }
 
 </script>
 
