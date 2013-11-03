@@ -57,16 +57,23 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * Loads the proper tab GUI with gallery's app data.
    *
    * @param apps: list of returned gallery apps from callback.
+   *
+   * @param request: type of app request, for pagination.
    * 
    * @param container: the GUI panel where apps will reside.
    * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
-	public void generateHorizontalCards(List<GalleryApp> apps, FlowPanel container, Boolean refreshable) {
+	public void generateHorizontalAppList(List<GalleryApp> apps, 
+	    final int request, FlowPanel container, Boolean refreshable) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
     }
+    /*
+    Label pagePrev = new Label("Prev");
+    container.add(pagePrev);
+    */
 		for (final GalleryApp app : apps) {
 		  // Create the associated GUI object for app
 		  GalleryAppWidget gaw = new GalleryAppWidget(app);
@@ -76,7 +83,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       FlowPanel appCardContent = new FlowPanel();
       FlowPanel appCardMeta = new FlowPanel();
       
-      // Special processing for the app title, mainly for fade-out effect
+      // Special processing for app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
         "<span class='paragraph-end-block'></span></div>");
@@ -136,6 +143,27 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       
       container.add(appCard);
 		}
+
+		/*
+    Label pageNext = new Label("Next");
+    container.add(pageNext);
+    pageNext.addClickHandler(new ClickHandler() {
+      //  @Override
+      public void onClick(ClickEvent event) {
+        switch (request) {
+          case 1: 
+            break;   
+          case 2: 
+            break;  
+          case 3:
+            break;  
+          case 5:
+            break;  
+        }
+      }
+    });    
+    */
+    
 		container.addStyleName("gallery-app-collection");
 		
 	}

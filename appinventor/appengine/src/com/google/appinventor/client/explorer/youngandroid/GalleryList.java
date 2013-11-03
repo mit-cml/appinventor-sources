@@ -183,10 +183,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
-      case 1: galleryGF.generateHorizontalCards(apps, appFeatured, false); break;   
-      case 2: galleryGF.generateHorizontalCards(apps, appNewest, false); break;    
-      case 3: galleryGF.generateHorizontalCards(apps, searchResults, true); break;   
-      case 5: galleryGF.generateHorizontalCards(apps, appPopular, false); break;
+      case 1: galleryGF.generateHorizontalAppList(apps, 1, appFeatured, false); break;   
+      case 2: galleryGF.generateHorizontalAppList(apps, 2, appNewest, false); break;    
+      case 3: galleryGF.generateHorizontalAppList(apps, 3, searchResults, true); break;   
+      case 5: galleryGF.generateHorizontalAppList(apps, 5, appPopular, false); break;
     }
   }
 
