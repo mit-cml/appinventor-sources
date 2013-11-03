@@ -199,13 +199,20 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    * @param container: the GUI panel where the sidebar will reside.
    * 
+   * @param name: the name or title of this particular sidebar.
+   * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
-  public void generateSidebar(List<GalleryApp> apps, FlowPanel container, Boolean refreshable) {
+  public void generateSidebar(List<GalleryApp> apps, FlowPanel container, String name, Boolean refreshable) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
     }
+    
+    Label title = new Label(name);
+    title.addStyleName("gallery-showcase-title");
+    container.add(title);
+    
     for (final GalleryApp app : apps) {
       // Create the associated GUI object for app
       GalleryAppWidget gaw = new GalleryAppWidget(app);
@@ -264,6 +271,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       
       // Add associated styling
       appCard.addStyleName("gallery-card");
+      appCard.addStyleName("clearfix");
       gaw.image.addStyleName("gallery-card-cover");
 //      gaw.nameLabel.addStyleName("gallery-title");
       gaw.authorLabel.addStyleName("gallery-subtitle");

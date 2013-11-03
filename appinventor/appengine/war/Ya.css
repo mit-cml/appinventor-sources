@@ -1340,14 +1340,27 @@ textarea::-webkit-input-placeholder {
   -moz-transition: background-color 1s ease; 
   -o-transition: background-color 1s ease; 	
 }
+.gallery-app-showcase .gallery-card {
+  clear: both;
+}
 .gallery-card-cover {
   height: 130px;
   width: 130px;
   margin: 15px;
 }
+.gallery-app-showcase .gallery-card-cover {
+  float: left;
+  height: 75px;
+  width: 75px;
+}
 .gallery-card-content {
   padding: 0 15px 15px;	
   overflow: hidden;
+}
+.gallery-app-showcase .gallery-card-content {
+  overflow: hidden;
+  margin-left: 90px;
+  padding: 15px 15px 15px 0;
 }
 .gallery-card-content .gallery-title {
   color: #333;
@@ -1402,14 +1415,14 @@ textarea::-webkit-input-placeholder {
   width: 12px;
   height: 12px;
 }
-..gallery-app-details .gwt-HTML {
-padding: 30px 0;
+.gallery-app-details .gwt-HTML {
+  padding: 30px 0;
 }
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
   max-width: 1360px;
   display: block;
-  margin: 30px 0 0;
+  margin: 0;
 }
 
 /* Gallery search panel or search bar styles */
@@ -1462,10 +1475,15 @@ padding: 30px 0;
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .gallery-app-single .gallery-app-showcase {
-  width: 160px;
+  width: 260px;
+  padding: 15px 0;
+}
+.gallery-showcase-title {
+  margin: 0 15px;
+  font-size: 21px;
 }
 .gallery-app-single .gallery-app-details {
-  width: 650px;
+  width: 600px;
   padding: 30px;
 }
 .app-header {
