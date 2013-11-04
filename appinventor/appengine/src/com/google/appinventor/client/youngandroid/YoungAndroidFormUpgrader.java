@@ -887,6 +887,11 @@ public final class YoungAndroidFormUpgrader {
       // and ShowTextDialog
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // The BackgroundColor, NotifierLength, and TextColor options were added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

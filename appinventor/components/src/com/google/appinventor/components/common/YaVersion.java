@@ -231,8 +231,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 11.
   // For YOUNG_ANDROID_VERSION 80:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 7.
+  // For YOUNG_ANDROID_VERSION 81:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
 
-    public static final int YOUNG_ANDROID_VERSION = 80;
+    public static final int YOUNG_ANDROID_VERSION = 81;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -505,7 +507,9 @@ public class YaVersion {
 
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
-  public static final int NOTIFIER_COMPONENT_VERSION = 2;
+  // For NOTIFIER_COMPONENT_VERSION 3:
+  // - Added NotifierColor, TextColor and NotifierLength options
+  public static final int NOTIFIER_COMPONENT_VERSION = 3;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.
