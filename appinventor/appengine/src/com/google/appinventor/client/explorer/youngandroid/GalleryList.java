@@ -92,8 +92,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final FlowPanel appNewest;
   private final FlowPanel appFeatured;
   private final FlowPanel appPopular;
-  private final FlowPanel searchApp;
-  private final FlowPanel searchResults;
+  private final FlowPanel appSearch;
+  private final FlowPanel appRecentContent;
+  private final FlowPanel appFeaturedContent;
+  private final FlowPanel appPopularContent;
+  private final FlowPanel appSearchContent;
   
   GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = null;
@@ -114,8 +117,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     appNewest = new FlowPanel();
     appFeatured = new FlowPanel();
     appPopular = new FlowPanel();
-    searchApp = new FlowPanel();
-    searchResults = new FlowPanel();
+    appSearch = new FlowPanel();
+    appRecentContent = new FlowPanel();
+    appFeaturedContent = new FlowPanel();
+    appPopularContent = new FlowPanel();
+    appSearchContent = new FlowPanel();
 
     // HTML segment for gallery typeface
     HTML headerExtra = new HTML(
@@ -123,11 +129,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     galleryGUI.add(headerExtra);
 
     // Add panels to main tabPanel
-    appTabs.add(appNewest, "Recent");
-    appTabs.add(appFeatured, "Featured");
-    appTabs.add(appPopular, "Popular");
-    appTabs.add(searchApp, "Search");
-    addGallerySearchTab(searchApp);
+    appTabs.add(appRecentContent, "Recent");
+    appTabs.add(appFeaturedContent, "Featured");
+    appTabs.add(appPopularContent, "Popular");
+    appTabs.add(appSearch, "Search");
+    addGallerySearchTab(appSearch);
     appTabs.selectTab(0);
     appTabs.addStyleName("gallery-app-tabs");
     galleryGUI.add(appTabs);
@@ -161,8 +167,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     searchPanel.add(sb);
     searchPanel.addStyleName("gallery-search-panel");
     searchApp.add(searchPanel);
-    searchResults.addStyleName("gallery-search-results");
-    searchApp.add(searchResults);
+    appSearchContent.addStyleName("gallery-search-results");
+    searchApp.add(appSearchContent);
     searchApp.addStyleName("gallery-search");
     
     sb.addClickHandler(new ClickHandler() {
@@ -183,10 +189,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
-      case 1: galleryGF.generateHorizontalAppList(apps, 1, appFeatured, false); break;   
-      case 2: galleryGF.generateHorizontalAppList(apps, 2, appNewest, false); break;    
-      case 3: galleryGF.generateHorizontalAppList(apps, 3, searchResults, true); break;   
-      case 5: galleryGF.generateHorizontalAppList(apps, 5, appPopular, false); break;
+      case 1: galleryGF.generateHorizontalAppList(apps, 1, appFeaturedContent, false); break;   
+      case 2: galleryGF.generateHorizontalAppList(apps, 2, appRecentContent, false); break;    
+      case 3: galleryGF.generateHorizontalAppList(apps, 3, appSearchContent, true); break;   
+      case 5: galleryGF.generateHorizontalAppList(apps, 5, appPopularContent, false); break;
     }
   }
 
