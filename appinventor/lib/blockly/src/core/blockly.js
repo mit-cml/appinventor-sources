@@ -304,8 +304,14 @@ Blockly.onMouseDown_ = function(e) {
   //Closes mutators
   var blocks = Blockly.mainWorkspace.getAllBlocks();
   var numBlocks = blocks.length;
+  var temp_block = null;
   for(var i =0; i<numBlocks; i++){
-  	if(blocks[i].mutator){
+    temp_block = blocks[i];
+  	if(temp_block.mutator){
+      //deselect block in mutator workspace
+      if(Blockly.selected && Blockly.selected.workspace && Blockly.selected.workspace!=Blockly.mainWorkspace){
+        Blockly.selected.unselect();
+      }
   		blocks[i].mutator.setVisible(false);
   	}
   }
