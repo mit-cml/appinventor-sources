@@ -675,7 +675,12 @@ public class BlockSaveFile {
       // No properties need to be modified to upgrade to version 5.
       blkCompVersion = 5;
     }
-
+    if (blkCompVersion < 6) {
+      // - Added TouchUp and TouchDown events
+      // - FontSize, FontBold, FontItalic properties made visible in block editor
+      // No properties need to be modified to upgrade to version 6.
+      blkCompVersion = 6;
+    }
     return blkCompVersion;
   }
 
