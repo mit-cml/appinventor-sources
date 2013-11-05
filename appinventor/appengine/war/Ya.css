@@ -472,6 +472,11 @@ select {
   background: white;
 }
 
+.gwt-TextBox {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
 .gwt-Tree .gwt-TreeItem span * {
   margin: 0 2px;
 }
