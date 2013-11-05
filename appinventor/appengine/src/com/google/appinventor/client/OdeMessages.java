@@ -441,7 +441,21 @@ public interface OdeMessages extends Messages {
       + "You will not be able to edit using the blocks editor until the problem is corrected.")
   @Description("Message when blocks fail to load properly")
   String blocksLoadFailure(String formName);
-
+  
+  //Used in editor/youngandroid/properties/YoungAndroidAccelerometerSensitivityChoicePropertyEditor.java
+  
+  @DefaultMessage("weak")  
+  @Description("Text for accelerometer sensitivity choice 'weak'") 
+  String weakAccelerometerSensitivity();
+  
+  @DefaultMessage("moderate")  
+  @Description("Text for accelerometer sensitivity choice 'moderate'") 
+  String moderateAccelerometerSensitivity();
+  
+  @DefaultMessage("strong")  
+  @Description("Text for accelerometer sensitivity choice 'strong'") 
+  String strongAccelerometerSensitivity();
+  
   // Used in editor/youngandroid/properties/YoungAndroidAlignmentChoicePropertyEditor.java
 
   @DefaultMessage("left")
