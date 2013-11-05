@@ -158,7 +158,7 @@ public class DesignToolbar extends Toolbar {
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
-    //Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
 
   }
 
@@ -252,17 +252,17 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
     }
+    //Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
-    //Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
   }
 
-  private static class SwitchToProjectAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToProjectsView();
-    }
-  }
+//  private static class SwitchToProjectAction implements Command {
+//    @Override
+//    public void execute() {
+//      Ode.getInstance().switchToProjectsView();
+//    }
+//  }
 
   private class SwitchToBlocksEditorAction implements Command {
     @Override
@@ -276,6 +276,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
         toggleEditor(true);       // Gray out the blocks button and enable the designer button
+        Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
       }
     }
   }
@@ -292,6 +293,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
         toggleEditor(false);      // Gray out the Designer button and enable the blocks button
+        Ode.getInstance().getTopToolbar().updateFileMenuButtons(false);
       }
     }
   }
