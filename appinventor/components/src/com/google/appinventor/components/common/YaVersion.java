@@ -231,8 +231,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 11.
   // For YOUNG_ANDROID_VERSION 80:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 7.
+  //For YOUNG_ANDROID_VERSION 81:
+  // - BUTTON_COMPONENT_VERSION was incremented to 6.
 
-    public static final int YOUNG_ANDROID_VERSION = 80;
+    public static final int YOUNG_ANDROID_VERSION = 81;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -359,7 +361,10 @@ public class YaVersion {
   // - The Shape property was added.
   // For BUTTON_COMPONENT_VERSION 5:
   // - The ShowFeedback property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 5;
+  //For BUTTON_COMPONENT_VERSION 6:
+  // - Added TouchUp and TouchDown events
+  // - FontSize, FontBold, FontItalic properties made visible in block editor
+  public static final int BUTTON_COMPONENT_VERSION = 6;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
