@@ -1116,6 +1116,11 @@ public class BlockSaveFile {
 
       blkCompVersion = 2;
     }
+    if (blkCompVersion < 3) {
+      // The BackgroundColor, TextColor, and NotifierLength options were added.
+      // Defaults are set, so no blocks need to be modified to upgrade to version 3.
+      blkCompVersion = 3;
+    }
     return blkCompVersion;
   }
 
