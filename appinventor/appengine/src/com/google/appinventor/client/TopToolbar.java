@@ -534,6 +534,8 @@ public class TopToolbar extends Composite {
   public void updateFileMenuButtons(boolean enablemenuitem) {
     fileDropDown.setItemEnabled(MESSAGES.deleteButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.downloadAllButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.importProjectButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), enablemenuitem);
@@ -625,28 +627,28 @@ public class TopToolbar extends Composite {
   private static class LibraryAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/library", "_blank", "");
+      Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", "");
     }
   }
 
   private static class GetStartedAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/get-started", "_blank", "");
+      Window.open("http://dev-explore.appinventor.mit.edu/get-started", "_ai2", "");
     }
   }
 
   private static class TutorialsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/tutorials", "_blank", "");
+      Window.open("http://dev-explore.appinventor.mit.edu/ai2/tutorials", "_ai2", "");
     }
   }
 
   private static class TroubleShootingAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/support/troubleshooting", "_blank",
+      Window.open("http://dev-explore.appinventor.mit.edu/ai2/support/troubleshooting", "_ai2",
           "");
     }
   }
@@ -654,7 +656,7 @@ public class TopToolbar extends Composite {
   private static class ForumsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/forums", "_blank", "");
+      Window.open("http://dev-explore.appinventor.mit.edu/forums", "_ai2", "");
     }
   }
 
