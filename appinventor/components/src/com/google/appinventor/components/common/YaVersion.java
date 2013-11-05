@@ -305,9 +305,8 @@ public class YaVersion {
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
   //   the minimum interval to elapse before calling a shaking event when necessary.
-  
   //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
-  // - Sensitivty property was added to accelerometer.
+  // - AccelerometerSensor.Sensitivty property was added.
   public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 3;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:

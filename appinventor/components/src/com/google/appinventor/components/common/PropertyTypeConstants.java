@@ -48,7 +48,6 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY = "accelerometer_sensitivity";
   
-
   /**
    * Button shapes.
    * @see

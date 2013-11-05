@@ -35,9 +35,9 @@ public interface Component {
   /*
    * Accelerometer sensitivity.
    */
-  static final int ACCELEROMETER_SENSITIVITY_WEAK = 0;
-  static final int ACCELEROMETER_SENSITIVITY_MODERATE = 1;
-  static final int ACCELEROMETER_SENSITIVITY_STRONG = 2;
+  static final int ACCELEROMETER_SENSITIVITY_WEAK = 1;
+  static final int ACCELEROMETER_SENSITIVITY_MODERATE = 2;
+  static final int ACCELEROMETER_SENSITIVITY_STRONG = 3;
    
   /*
    * Button Styles.

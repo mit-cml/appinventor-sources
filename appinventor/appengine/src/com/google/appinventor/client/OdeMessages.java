@@ -443,6 +443,7 @@ public interface OdeMessages extends Messages {
   String blocksLoadFailure(String formName);
   
   //Used in editor/youngandroid/properties/YoungAndroidAccelerometerSensitivityChoicePropertyEditor.java
+  
   @DefaultMessage("weak")  
   @Description("Text for accelerometer sensitivity choice 'weak'") 
   String weakAccelerometerSensitivity();

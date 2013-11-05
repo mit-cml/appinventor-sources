@@ -350,16 +350,16 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-          // The AccelerometerSensor.MinimumInterval property was added.
-          // No properties need to be modified to upgrade to version 2.
-          srcCompVersion = 2;
+      // The AccelerometerSensor.MinimumInterval property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     if (srcCompVersion < 3) {
-        // The AccelerometerSensor.Sensitivity property was added.
-        // No properties need to be modified to upgrade to version 3.
-        srcCompVersion = 3;
-  }
-        return srcCompVersion;
+      // The AccelerometerSensor.Sensitivity property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
   }
 
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,

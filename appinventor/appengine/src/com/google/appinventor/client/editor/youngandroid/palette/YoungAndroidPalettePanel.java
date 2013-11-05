@@ -198,7 +198,7 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new YoungAndroidVisibilityChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXT_RECEIVING)) {
       return new YoungAndroidTextReceivingPropertyEditor();
-    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY )) {
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY)) {
       return new YoungAndroidAccelerometerSensitivityChoicePropertyEditor();
     } else {
       return new TextPropertyEditor();

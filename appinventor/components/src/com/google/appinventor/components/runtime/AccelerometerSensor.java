@@ -15,6 +15,7 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
 import android.content.Context;
 import android.hardware.Sensor;
@@ -120,6 +121,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     Sensitivity(Component.ACCELEROMETER_SENSITIVITY_MODERATE); 
   }
   
+
   /**
    * Returns the minimum interval required between calls to Shaking(),
    * in milliseconds.
@@ -149,7 +151,8 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns the sensitivity of the accelerometer.
+   * Returns a number that encodes how sensitive the AccelerometerSensor is. 
+   * The choices are: 1 = weak, 2 = moderate, 3 = strong.
    *
    * @return  one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
    *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
@@ -157,29 +160,34 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      description = "A number that encodes how sensitive the accelerometer is. " +
+              "The choices are: 1 = weak, 2 = moderate, " +
+              " 3 = strong.")
   public int Sensitivity() {
     return sensitivity;
   }
-  
+  			
   /**
-   * Specifies the sensitivity of the accelerometer.
+   * Specifies the sensitivity of the accelerometer
+   * and checks that the argument is a legal value.
    *
    * @param sensitivity one of {@link Component#ACCELEROMETER_SENSITIVITY_WEAK},
    *          {@link Component#ACCELEROMETER_SENSITIVITY_MODERATE} or
    *          {@link Component#ACCELEROMETER_SENSITIVITY_STRONG} 
    *  
-   * @throws IllegalArgumentException if shape is not a legal value.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ACCELEROMETER_SENSITIVITY,
-	      defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
-	  @SimpleProperty(description = "Specifies the accelerometer's sensitivity (weak, moderate or strong)", userVisible = false)
-	  public void Sensitivity(int sensitivity) {
-	    this.sensitivity = sensitivity;
-	   }
-
-  
-  
+	  defaultValue = Component.ACCELEROMETER_SENSITIVITY_MODERATE + "")
+  @SimpleProperty
+  public void Sensitivity(int sensitivity) {
+    if ((sensitivity == 1) || (sensitivity == 2) || (sensitivity == 3)) {
+      this.sensitivity = sensitivity;
+	} else {
+	  form.dispatchErrorOccurredEvent(this, "Sensitivity",
+	    ErrorMessages.ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY, sensitivity);
+	}  
+  }
+      	
   /**
    * Indicates the acceleration changed in the X, Y, and/or Z dimensions.
    */
@@ -188,7 +196,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     this.xAccel = xAccel;
     this.yAccel = yAccel;
     this.zAccel = zAccel;
-
+    
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
@@ -202,10 +210,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
       timeLastShook = currentTime;
       Shaking();
     }
-
+              
     EventDispatcher.dispatchEvent(this, "AccelerationChanged", xAccel, yAccel, zAccel);
   }
-
+  			
   /**
    * Indicates the device started being shaken or continues to be shaken.
    */
@@ -331,16 +339,18 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     }
 
     average /= cache.size();
-
-    if (Sensitivity() == 0) { //sensitivity is weak
-    	return Math.abs(average - currentValue) > strongShakeThreshold;
-    } else if (Sensitivity() == 1) { //sensitivity is moderate
-    	return ((Math.abs(average - currentValue) > moderateShakeThreshold) && (Math.abs(average - currentValue) < strongShakeThreshold));
+  
+    if (Sensitivity() == 1) { //sensitivity is weak
+      return Math.abs(average - currentValue) > strongShakeThreshold;
+    } else if (Sensitivity() == 2) { //sensitivity is moderate
+      return ((Math.abs(average - currentValue) > moderateShakeThreshold) 
+        && (Math.abs(average - currentValue) < strongShakeThreshold));
     } else { //sensitivity is strong
-    	return ((Math.abs(average - currentValue) > weakShakeThreshold) && (Math.abs(average - currentValue) < moderateShakeThreshold));
+      return ((Math.abs(average - currentValue) > weakShakeThreshold) 
+        && (Math.abs(average - currentValue) < moderateShakeThreshold));
     }
   }
-
+        
   // SensorListener implementation
   @Override
   public void onSensorChanged(SensorEvent sensorEvent) {
