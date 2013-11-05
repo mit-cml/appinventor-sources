@@ -109,6 +109,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
   private final int offset = 5;
+  private final String activeNext = "http://i.imgur.com/PC2RTC5.png";
+  private final String activePrev = "http://i.imgur.com/K8aiGBZ.png";
+  private final String disabledNext = "http://i.imgur.com/UYeELMN.png";
+  private final String disabledPrev = "http://i.imgur.com/FGDpu47.png";
 
   /**
    * Creates a new GalleryList
@@ -140,8 +144,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     // Add content to panels
     addGalleryAppTab(appFeatured, appFeaturedContent, 1);
     addGalleryAppTab(appRecent, appRecentContent, 2);
+    addGalleryAppTab(appSearch, appSearchContent, 3);
     addGalleryAppTab(appPopular, appPopularContent, 5);
-    addGallerySearchTab(appSearch);
+//    addGallerySearchTab(appSearch);
 
     // Add panels to main tabPanel
     appTabs.add(appRecent, "Recent");
@@ -168,6 +173,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
   /**
    * Creates the GUI components for a regular app tab.
+   * This method resides here because it needs access to global variables.
    *
    * @param container: the FlowPanel that this app tab will reside.
    *
@@ -176,23 +182,48 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * @param request: type of app request, for pagination.
    */
   private void addGalleryAppTab(FlowPanel container, FlowPanel content, final int request) {
+
+    final TextBox searchText = new TextBox();
+    // Search specific
+    if (request == 3) {
+      FlowPanel searchPanel = new FlowPanel();
+      searchText.addStyleName("gallery-search-textarea");
+      Button sb = new Button("Search for apps");
+      searchPanel.add(searchText);
+      searchPanel.add(sb);
+      searchPanel.addStyleName("gallery-search-panel");
+      container.add(searchPanel);
+      appSearchContent.addStyleName("gallery-search-results");
+      container.add(appSearchContent);
+      container.addStyleName("gallery-search");
+      sb.addClickHandler(new ClickHandler() {
+        //  @Override
+        public void onClick(ClickEvent event) {
+          gallery.FindApps(searchText.getText(), 0, offset, 0);
+        }
+      }); 
+    }
     
-    // Add GUI components
-    Image pagePrev = new Image();
-    pagePrev.setUrl("http://apps.microsoft.com/windows/images/dark_previous_rest.png");
-     
-    pagePrev.addStyleName("gallery-nav-prev");
-    container.add(pagePrev);
+    // Add regular GUI components
+    final Image buttonPrev = new Image();
+//    buttonPrev.setUrl(activePrev);
+    buttonPrev.setUrl(disabledPrev);
+    FlowPanel prev = new FlowPanel();
+    prev.add(buttonPrev);
+    prev.addStyleName("gallery-nav-prev");
+    container.add(prev);
     
     gallery.GetMostRecent(appRecentCounter, 5);
     container.add(content);
 
-    Image pageNext = new Image();
-    pageNext.setUrl("http://apps.microsoft.com/windows/images/dark_next_rest.png");
-    pageNext.addStyleName("gallery-nav-next");
-    container.add(pageNext);
+    final Image buttonNext = new Image();
+    buttonNext.setUrl(activeNext);
+    FlowPanel next = new FlowPanel();
+    next.add(buttonNext);
+    next.addStyleName("gallery-nav-next");
+    container.add(next);
     
-    pagePrev.addClickHandler(new ClickHandler() {
+    buttonPrev.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
         switch (request) {
@@ -201,7 +232,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appFeaturedCounter -= offset;
             gallery.GetFeatured(appFeaturedCounter, offset, 0);
+            buttonPrev.setUrl(activePrev);
           } else {
+            buttonPrev.setUrl(disabledPrev);
             OdeLog.log("prev appFeaturedCounter = " + appFeaturedCounter);
           }
           break;   
@@ -210,8 +243,21 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appRecentCounter -= offset;
             gallery.GetMostRecent(appRecentCounter, offset);
+            buttonPrev.setUrl(activePrev);
           } else {
+            buttonPrev.setUrl(disabledPrev);
             OdeLog.log("prev appRecentCounter = " + appRecentCounter);
+          }
+          break;  
+        case 3: 
+          if (appSearchCounter - offset >= 0) {
+            // If the previous page still has apps to retrieve, do it
+            appSearchCounter -= offset;
+            gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
+            buttonPrev.setUrl(activePrev);
+          } else {
+            buttonPrev.setUrl(disabledPrev);
+            OdeLog.log("prev appSearchCounter = " + appSearchCounter);
           }
           break;  
         case 5:
@@ -219,14 +265,16 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appPopularCounter -= offset;
             gallery.GetMostDownloaded(appPopularCounter, offset);
+            buttonPrev.setUrl(activePrev);
           } else {
+            buttonPrev.setUrl(disabledPrev);
             OdeLog.log("prev appPopularCounter = " + appPopularCounter);
           }
           break;  
         }
       }
     });    
-    pageNext.addClickHandler(new ClickHandler() {
+    buttonNext.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
         switch (request) {
@@ -235,7 +283,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appFeaturedCounter += offset;
               gallery.GetFeatured(appFeaturedCounter, offset, 0);
+              buttonNext.setUrl(activeNext);
             } else {
+              buttonNext.setUrl(disabledNext);
               OdeLog.log("next appFeaturedCounter = " + appFeaturedCounter);
             }
             break;    
@@ -244,8 +294,21 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appRecentCounter += offset;
               gallery.GetMostRecent(appRecentCounter, offset);
+              buttonNext.setUrl(activeNext);
             } else {
+              buttonNext.setUrl(disabledNext);
               OdeLog.log("next appRecentCounter = " + appRecentCounter);
+            }
+            break;   
+          case 3: 
+            if (!appSearchExhausted) {
+              // If the next page still has apps to retrieve, do it
+              appSearchCounter += offset;
+              gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
+              buttonNext.setUrl(activeNext);
+            } else {
+              buttonNext.setUrl(disabledNext);
+              OdeLog.log("next appSearchCounter = " + appSearchCounter);
             }
             break;   
           case 5:
@@ -253,17 +316,16 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appPopularCounter += offset;
               gallery.GetMostDownloaded(appPopularCounter, offset);
+              buttonNext.setUrl(activeNext);
             } else {
+              buttonNext.setUrl(disabledNext);
               OdeLog.log("next appPopularCounter = " + appPopularCounter);
             }
             break;   
         }
       }
     });    
-    
   }
-
-
 
   /**
    * Creates the GUI components for search tab.
@@ -321,6 +383,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(apps, appRecentContent, true); 
         break;    
       case 3: 
+        if (apps.size() < offset) {
+          // That means there's not enough apps to show (reaches the end)
+          appSearchExhausted = true;
+        } else {
+          appSearchExhausted = false;
+        }
         galleryGF.generateHorizontalAppList(apps, appSearchContent, true); 
         break;   
       case 5: 

@@ -118,8 +118,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
       appCardMeta.add(gaw.numDownloadsLabel);
-      appCardMeta.add(numLikes);
-      appCardMeta.add(gaw.numLikesLabel);
+//      appCardMeta.add(numLikes);
+//      appCardMeta.add(gaw.numLikesLabel);
       // For generic cards, do not show comment
 //      appCardMeta.add(numComments);
 //      appCardMeta.add(gaw.numCommentsLabel);

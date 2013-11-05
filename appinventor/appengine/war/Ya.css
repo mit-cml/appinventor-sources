@@ -1281,9 +1281,10 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery-specific styles */
 /* Gallery app collections, or app cards related styles */
-.gallery table {
+.gallery > table {
   border: none;
   border-style: none;
+  width: 100%;
 }
 .gallery .gwt-TabPanel {
   margin: 10px 0;
@@ -1319,6 +1320,27 @@ textarea::-webkit-input-placeholder {
   border-style: none;
   padding: 0;
 }
+.gallery-nav-prev,
+.gallery-nav-next {
+  float: left;
+  background-color: #fff;
+  height: 239px;
+  width: 25px;
+  margin: 5px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.gallery-nav-prev .gwt-Image,
+.gallery-nav-next .gwt-Image {
+  top: 50%;
+  position: relative;
+}
+.gallery-app-collection {
+  
+}
 .gallery-card {
 }
 .gallery-app-collection .gallery-card {
@@ -1334,6 +1356,8 @@ textarea::-webkit-input-placeholder {
   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+.gallery-nav-prev:hover,
+.gallery-nav-next:hover,
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
   background-color: #EEE;
