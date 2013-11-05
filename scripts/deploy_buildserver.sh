@@ -9,3 +9,4 @@ cp ~/appinventor-sources/appinventor/misc/buildserver/launch-buildserver .
 tar -xf BuildServer.tar
 
 ./launch-buildserver
+tail -f buildserver-log.out
