@@ -3,7 +3,7 @@ var path = fs.absolute('.');
 
 
 //Read files from filesystem
-var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/factorial/Screen1.yail');
+var expected = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/factorial/factorialExpected.yail');
 var formJson = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/factorial/Screen1.scm');
 formJson = formJson.substring(9, formJson.length-2); // Cut off Leading $JSON
 var blocks = fs.read(path + '/blocklyeditor/tests/com/google/appinventor/blocklyeditor/data/factorial/Screen1.bky');

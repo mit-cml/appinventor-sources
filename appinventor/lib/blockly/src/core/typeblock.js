@@ -69,7 +69,14 @@ Blockly.TypeBlock = function( htmlConfig ){
       // Enter in the panel makes it select an option
       if (e.keyCode === 13) Blockly.TypeBlock.hide();
     }
-    else Blockly.TypeBlock.show();
+    else {
+      Blockly.TypeBlock.show();
+      // Can't seem to make Firefox display first character, so keep all browsers from automatically
+      // displaying the first character and add it manually.
+      e.preventDefault();
+      goog.dom.getElement(Blockly.TypeBlock.inputText_).value =
+	String.fromCharCode(e.charCode != null ? e.charCode : e.keycode);
+    }
   };
 
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
@@ -417,7 +424,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       var blockToCreate = goog.object.get(Blockly.TypeBlock.TBOptions_, blockName);
       if (!blockToCreate) {
         //If the input passed is not a block, check if it is a number or a pre-populated text block
-        var numberReg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
+        var numberReg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
         var numberMatch = numberReg.exec(blockName);
         var textReg = new RegExp('^[\"|\'].+', 'g');
         var textMatch = textReg.exec(blockName);
@@ -460,6 +467,10 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
+          if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
+            //Need to make sure Procedure Block inputs are updated
+            Blockly.FieldProcedure.onChange.call(block.getTitle_("PROCNAME"), blockToCreate.dropDown.value);
+          }
         }
 
         if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
@@ -586,7 +597,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   var matches = this.getPrefixMatches(token, maxMatches);
 
   // Added code to handle any number typed in the widget (including negatives and decimals)
-  var reg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
+  var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
     matches.push(token);
