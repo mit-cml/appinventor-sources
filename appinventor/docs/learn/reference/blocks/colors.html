@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Color Blocks - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Color             Blocks &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Color Blocks
+       </h1>
+       <p>
+        The Blocks Editor Colors drawer contains several blocks corresponding to commonly
+                used colors. You can plug these into the sockets for blocks that require colors,
+                such as setting the text color or the background color of a component. These same
+                colors can also be selected from the color dropdown lists in the Designer's
+                Properties panel.
+       </p>
+       <h3>
+       Using Predefined Colors
+       </h3>
+       <p>
+       Predefined colors are listed in the Colors drawer.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="images/predefinedcolors.png" width="162" />
+       </div>
+       <h3>
+        Making your own colors
+       </h3>
+       <p>
+        Colors in App Inventor are encoded as numbers, as you can see if you print a color
+                block. For example, the color blue is the large negative number −16776961. If you
+                know the secret to encoding colors, you don't need to be restricted to App
+                Inventor's built-in colors. You can put any color at all into your apps.
+       </p>
+       <p>
+        Colors are created using four numbers, each running from 0 through 255. The first
+                three numbers signify the amount of red, green, and blue in the color. You can find
+                color charts on the Web that give the
+        <em>
+         R
+        </em>
+        ,
+        <em>
+         G
+        </em>
+        ,
+        <em>
+         B
+        </em>
+        specifications for many colors, or you can experiment with your own
+        <em>
+         R
+        </em>
+        ,
+        <em>
+         G
+        </em>
+        ,
+        <em>
+         B
+        </em>
+        mixtures. The fourth number specifies
+        <em>
+         opacity
+        </em>
+        which
+                comes into play when regions overlap. Opacity 255 is fully opaque: the color will
+                completely block out anything under it. Opacity 0 is fully transparent: you won't
+                even see the color on the screen. Intermediate values determine how much the
+                underlying screen will show though.
+       </p>
+       <p>
+       	A "make color" block will take a list of your 
+       	<em>
+       	R
+       	</em>
+       	,
+       	<em>
+       	 G
+       	 </em>
+       	 , 
+       	 <em>
+       	 B
+       	 </em>
+       	  and opacity components and create 
+       		that color for you. The opacity component is optional, if omitted is set to 255. A 
+       		"split color" block takes a color and returns a list of the four number components.
+       </p>
+       <p>
+        <a href="colorchart.html">
+         This chart
+        </a>
+         gives the numbers for a variety
+                of colors.
+       </p>
+       <p>
+        Here's a sample program that assigns the name purple to the color with R=160, G=32, B= 240,
+          and opacity = 255.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="images/makecolor.png" width="483" />
+       </div>
+       <p>
+       Using the "split color" block, the user can manipulate the R, G, B and opacity values separately.
+       		Here’s an example program using “split color”. The procedure takes in a color and then 
+       		returns a new color with the opacity at 100.
+       </p>
+       <div class="imagecontainer">
+       <img alt="" src="images/splitcolor.png" width="561" />
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

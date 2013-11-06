@@ -1,0 +1,67 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_Jeffrey_Schiller.pictureCycle.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def g$picList (call-yail-primitive make-yail-list (*list-for-runtime* ) '() "make a list"))
+(def g$Current 1)
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+ (set-and-coerce-property! 'Screen1 'BackgroundColor #xFF000000 'number)
+ (set-and-coerce-property! 'Screen1 'Title "PictureCycle" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 Button Button1 
+(set-and-coerce-property! 'Button1 'BackgroundColor #xFF000000 'number)
+
+(set-and-coerce-property! 'Button1 'Text "Take a picture." 'text)
+
+(set-and-coerce-property! 'Button1 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'Button1 'Width -2 'number)
+
+(set-and-coerce-property! 'Button1 'Height 50 'number)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'Camera1 'TakePicture (*list-for-runtime*) '()))
+;;; Image1
+
+(add-component Screen1 Image Image1 
+(set-and-coerce-property! 'Image1 'Width -2 'number)
+
+(set-and-coerce-property! 'Image1 'Height 300 'number)
+
+)
+
+;;; Button2
+
+(add-component Screen1 Button Button2 
+(set-and-coerce-property! 'Button2 'BackgroundColor #xFF000000 'number)
+
+(set-and-coerce-property! 'Button2 'Text "See next." 'text)
+
+(set-and-coerce-property! 'Button2 'TextColor #xFFFFFFFF 'number)
+
+(set-and-coerce-property! 'Button2 'Width -2 'number)
+
+(set-and-coerce-property! 'Button2 'Height 50 'number)
+
+)
+
+(define-event Button2 Click()(set-this-form)
+    (set-and-coerce-property! 'Image1 'Picture (call-yail-primitive yail-list-get-item (*list-for-runtime* (get-var g$picList) (get-var g$Current)) '(list number) "select list item") 'text)(if (call-yail-primitive < (*list-for-runtime* (get-var g$Current) (call-yail-primitive yail-list-length (*list-for-runtime* (get-var g$picList) ) '(list) "length of list")) '(number number) "<") (begin   (set-var! g$Current (call-yail-primitive + (*list-for-runtime* (get-var g$Current) 1 ) '(number number ) "+"))) (begin   (set-var! g$Current 1))))
+;;; Camera1
+
+(add-component Screen1 Camera Camera1 
+)
+
+(define-event Camera1 AfterPicture($image)(set-this-form)
+    (call-yail-primitive yail-list-add-to-list! (*list-for-runtime* (get-var g$picList) (lexical-value $image) ) '(list any ) "add items to list"))
+(init-runtime)

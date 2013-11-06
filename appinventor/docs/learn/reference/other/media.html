@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Media - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; Media             &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Accessing images and sounds
+       </h1>
+       Applications built with App Inventor can access sound, image, and video sources
+              from three different kinds of locations:
+       <dl>
+        <dt>
+         Application assets
+        </dt>
+        <dd>
+         <p>
+          The sources labeled
+          <em>
+           Media
+          </em>
+          shown in the designer — part of the
+                    application's
+          <em>
+           assets
+          </em>
+          — are packaged with the application. Anyone who
+                    installs your application will have them, as part of the application. You also
+                    specify them in the designer, which is convenient. You can also specify these
+                    in programs by their file name: just use the file name without any special
+                    prefix. For example, if you have an image asset named
+          <em>
+           kitty.png
+          </em>
+          , you
+                    can use it as an image: just set the
+          <em>
+           Picture
+          </em>
+          property of an image
+                    component to the text
+          <em>
+           kitty.png
+          </em>
+          . You can similarly use files names for
+                    sound (Sound or Player) or video (VideoPlayer).
+         </p>
+         <p>
+          Assets are the most convenient to use, but the space for them is limited to a
+                    few megabytes, because they must be packaged with the application. They are
+                    good for small images and short audio selections. Bit you would probably not
+                    use them for complete songs or videos.
+         </p>
+        </dd>
+        <dt>
+         The phone SD card
+        </dt>
+        <dd>
+         <p>
+          You can access files on your phone's SD (secure digital) card using file names
+                    that begin with
+          <em>
+           /sdcard
+          </em>
+          . You could play a song on your SDCard by
+                    setting the source of a
+          <code>
+           Player
+          </code>
+          component to
+         </p>
+         <p>
+          /sdcard/Music/Blondie/The Best of Blondie/Heart of Glass.mp3
+         </p>
+         and starting the
+         <code>
+          Player
+         </code>
+         (assuming of course, that the song file
+                  is on the SDCard). Make sure to specify the complete file name, including the
+                  "mp3".
+         <p>
+          The Android system also includes an alternative way to designe SDCard files as
+                    URLs. Here you prefix the file name with
+          <em>
+           file:///sdcard
+          </em>
+          and use "URL
+                    encoding" for special characters. For example, a space is "%20". So you could
+                    designate the same file by setting the player source to
+         </p>
+         <p>
+          file:///sdcard/Music/Blondie/The%20Best%20of%20Blondie/Heart%20of%20Glass.mp3
+         </p>
+         Note that you'll want to use a
+         <code>
+          Player
+         </code>
+         component for this, not
+         <code>
+          Sound
+         </code>
+         . A complete song like this is too large for
+         <code>
+          Sound
+         </code>
+         to handle.
+         <p>
+          Images and videos can be designated similarly.
+         </p>
+         <p>
+          App Inventor doesn't (yet) include any way to store files on the SD card. It
+                    also doesn't (yet) include a way to list the files on the SDCard. You'll have
+                    to use other applications or the Android phone file manager for that.
+         </p>
+         <p>
+          Using the SD Card provides a lot more space for media than trying to package
+                    things as assets. The drawback is that users won't automatically get them by
+                    installing your application.
+         </p>
+        </dd>
+        <dt>
+         URLs and the Web
+        </dt>
+        <dd>
+         <p>
+          You can access files on Web using URLs, starting with
+          <em>
+           http://
+          </em>
+          , for
+                    example, setting the picture property of an image to
+         </p>
+         <p>
+          http://www.google.com/images/srpr/nav_logo14.png
+         </p>
+         <p>
+          and similarly for music and videos. Make sure you use the link that points to
+                    the actual file, not to players for the files, which is much more common on the
+                    Web, especially for music and videos.
+         </p>
+        </dd>
+        <dt>
+         Other content URLs
+        </dt>
+        <dd>
+         <p>
+          The Android system also uses URLs to access various places that media is stored
+                    on the phone. For example, the images in the photo gallery can be accessed with
+                    file names beginning
+          <em>
+           content://media/external/images/media
+          </em>
+          , as you can
+                    see by using the
+          <code>
+           ImagePicker
+          </code>
+          and examining the resulting image
+                    path.
+         </p>
+        </dd>
+       </dl>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

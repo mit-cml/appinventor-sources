@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Building Your First App - (Part 2)
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c5 {border-width:0}
+    li.c4 {list-style: none; display: inline}
+    p.c3 {font-style: italic; font-weight: bold}
+    p.c2 {font-weight: bold}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/setup/">Set Up</a> &gt; Completing             Hello Purr (Part 2) ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Building your first app (Part 2): Completing HelloPurr
+       </h1>
+       <p>
+        Now that you've set up your computer and device, and you've learned how the
+                Designer and the Blocks Editor work, you are ready to complete the HelloPurr app.
+                At this point, you should have the Designer open in your browser, the Blocks Editor
+                open in another window, and your chosen device (phone or emulator) connected to the
+                Blocks Editor.
+       </p>
+       <p>
+        Here's a preview of the steps you'll do in this tutorial to complete the app:
+       </p>
+       <b>
+        In the Designer:
+       </b>
+       <ul>
+        <li>
+         Add a
+         <em>
+          Label
+         </em>
+         component that reads "Pet the Kitty".
+        </li>
+        <li>
+         Upload the meow.mp3 file
+        </li>
+        <li>
+         Add a
+         <em>
+          Sound
+         </em>
+         component that plays the meow.mp3 file.
+        </li>
+       </ul>
+       <b>
+        In the Blocks Editor:
+       </b>
+       <ul>
+        <li>
+         Create an
+         <i>
+          event handler
+         </i>
+         that tells the Sound component to play when the
+                user taps the button.
+        </li>
+       </ul>
+       <h2>
+        Adding the label
+       </h2>
+       <p class="c2">
+        Under
+        <em>
+         Palette
+        </em>
+       </p>
+       <ol>
+        <li>
+         Drag and drop the
+         <span class="ButtonText">
+          Label
+         </span>
+         component to the
+         <em>
+          Viewer
+         </em>
+         , placing it below the kitty. It will appear under your list of
+                components as
+         <i>
+          Label1
+         </i>
+        </li>
+       </ol>
+       <p class="c2">
+        Under
+        <em>
+         Properties
+        </em>
+       </p>
+       <ol>
+        <li>
+         Change the Text property of Label1 to read "Pet the Kitty". You'll see the text
+                change in the Designer and on your device.
+        </li>
+        <li>
+         Change the BackgroundColor of Label1 by clicking on the box
+        </li>
+        <li>
+         Change the TextColor of Label1
+        </li>
+        <li>
+         Change the FontSize of Label1 to 30
+        </li>
+       </ol>
+       The Designer should now look like this:
+       <div class="imagecontainer">
+        <img alt="" src="/learn/tutorials/hellopurr/HelloPurrAssets/kittybluebutton.png" width="760" />
+       </div>
+       <h2>
+        Adding the meow sound
+       </h2>
+       <p class="c2">
+        Under
+        <em>
+         Palette
+        </em>
+       </p>
+       <ol>
+        <li>
+         Click on the header marked
+         <span class="ButtonText">
+          Media
+         </span>
+         to expand the
+                Media section of the palette of components.
+        </li>
+        <li>
+         Drag out a
+         <span class="ButtonText">
+          Sound
+         </span>
+         component and place it in the
+         <em>
+          Viewer
+         </em>
+         . Wherever you drop it, it will appear in the area at the bottom of
+                the
+         <em>
+          Viewer
+         </em>
+         marked
+         <span class="ButtonText">
+          Non-visible components
+         </span>
+         .
+        </li>
+       </ol>
+       <p class="c2">
+        Under
+        <em>
+         Media
+        </em>
+       </p>
+       <ol>
+        <li>
+         Click
+         <span class="ButtonText">
+          Add...
+         </span>
+        </li>
+        <li>
+         Upload the meow.mp3 file to this project.
+        </li>
+       </ol>
+       <p class="c2">
+        Under
+        <em>
+         Properties
+        </em>
+       </p>
+       <ol>
+        <li>
+         For the
+         <span class="ButtonText">
+          Sound1
+         </span>
+         component, set its
+         <span class="ButtonText">
+          Source
+         </span>
+         to meow.mp3.
+        </li>
+       </ol>
+       The Designer should now look like this:
+       <div class="imagecontainer">
+        <img alt="" src="/learn/tutorials/hellopurr/HelloPurrAssets/kittybluebuttonsound.png" width="760" />
+       </div>
+       <h2>
+        Making the sound play
+       </h2>
+       <p>
+        Using the Blocks Editor we will define how the app is going to behave. We'll tell
+                the components what to do, and when to do it. You're going to tell the kitty button
+                to play a sound when the user taps it. If components are ingredients in a recipe,
+                you can think of blocks as the cooking instructions.
+       </p>
+       <p>
+        The Blocks Editor has two tabs on the upper left hand corner:
+        <span class="ButtonText">
+         Built-in
+        </span>
+        and
+        <span class="ButtonText">
+         My Blocks
+        </span>
+        . The
+                buttons under each tab expand and expose blocks when clicked. The
+        <span class="ButtonText">
+         Built-in
+        </span>
+        blocks are the standard set of blocks that are
+                available for every app you build. The blocks under
+        <span class="ButtonText">
+         My
+                Blocks
+        </span>
+        contain specific blocks that are tied to the set of components that
+                you have chosen for your app.
+       </p>
+       <p>
+        To make the sound play, you'll need to drag and drop the
+        <span class="ButtonText">
+         Button1.Click
+        </span>
+        block and the
+        <span class="ButtonText">
+         Sound1.Play
+        </span>
+        block into the editor. The blocks connect together
+                like puzzle pieces.
+       </p>
+       <h4>
+        Steps for making the sound play
+       </h4>
+       <ol>
+        <li>
+         Navigate to the
+         <em>
+          Blocks Editor
+         </em>
+         . It may be covered up by the web
+                browser.
+        </li>
+        <li>
+         Click the
+         <span class="ButtonText">
+          My Blocks
+         </span>
+         tab at the top left hand
+                side.
+        </li>
+        <li>
+         Click
+         <span class="ButtonText">
+          Button1
+         </span>
+         .
+        </li>
+        <li>
+         Drag and drop the
+         <span class="Block">
+          when Button1.Click do
+         </span>
+         block onto
+                the editor.
+        </li>
+        <li>
+         Click
+         <span class="ButtonText">
+          Sound1
+         </span>
+         .
+        </li>
+        <li>
+         Drag the
+         <span class="Block">
+          call Sound1.Play
+         </span>
+         block onto the editor and
+                drop it into the
+         <span class="Block">
+          when Button1.Click do
+         </span>
+         block.
+        </li>
+        <li>
+         Click the kitty picture on your device. You should hear the kitty meow.
+        </li>
+       </ol>
+       Your Blocks Editor should look like this:
+       <div class="imagecontainer">
+        <img alt="" src="/learn/tutorials/hellopurr/HelloPurrAssets/blockseditorwithblocks.png" width="760" />
+       </div>
+       <h2>
+        Packaging your app
+       </h2>
+       <p>
+        Congratulations, your first app is running! If you're using a phone, then the app
+                is running on the phone, but it runs only while the phone is connected to App
+                Inventor. If you unplug the USB cord, the app will vanish. You can reconnect the
+                phone to make it come back. To get an that app runs without being connected to App
+                Inventor, you must "package" the app to produce an
+        <em>
+         application package
+        </em>
+        (apk file). Pressing
+        <span class="ButtonText">
+         Package for Phone
+        </span>
+        at the upper
+                right of the designer page will present three options for packaging:
+       </p>
+       <ol>
+        <li>
+         If the phone is connected, you can download and automatically install the app
+                on your phone.
+        </li>
+        <li>
+         You can download the app to your computer as an apk file, which you can
+                distribute and share as you like, and manually install on phones using the Android
+                ADB program.
+        </li>
+        <li>
+         You can generate a Barcode, which you can use to install the app on your phone
+                with the aid of a barcode scanner, like the ZXing barcode scanner (freely available
+                in the Android Market). This barcode works only for your own phone. If you want to
+                share the app with others, you'll need to download the apk file to your computer
+                and share the file.
+        </li>
+       </ol>
+       <h2>
+        Review
+       </h2>
+       <p>
+        Here are the key ideas covered so far:
+       </p>
+       <ul>
+        <li>
+         <p>
+          You build apps by selecting components (ingredients) and then telling them what
+                    to do and when to do it.
+         </p>
+        </li>
+        <li>
+         <p>
+          You use the
+          <em>
+           Designer
+          </em>
+          to select components. Some components are visible
+                    and some aren't.
+         </p>
+        </li>
+        <li>
+         <p>
+          You can add media (sounds and images) to apps by uploading them from your
+                    computer.
+         </p>
+        </li>
+        <li>
+         <p>
+          You use the Blocks Editor to assemble blocks that define the components'
+                    behavior
+         </p>
+        </li>
+        <li>
+         <p>
+          <span class="block">
+           when ... do ...
+          </span>
+          blocks define
+          <em>
+           event
+                    handlers
+          </em>
+          , that tell components what to do
+          <em>
+           when
+          </em>
+          something happens.
+         </p>
+        </li>
+        <li>
+         <p>
+          <span class="block">
+           call ...
+          </span>
+          blocks tell components to do things.
+         </p>
+        </li>
+       </ul>
+       <h2>
+        Next Steps
+       </h2>
+       <p>
+        Now that your computer is set up and you know the basics of how App Inventor works
+                we recommend you:
+       </p>
+       <ul>
+        <li>
+         Complete additional
+         <a href="/learn/tutorials/index.html">
+          Tutorials
+         </a>
+         .
+        </li>
+        <li>
+         Review the
+         <a href="/learn/reference/index.html">
+          Reference Documentation
+         </a>
+         .
+        </li>
+        <li>
+         Join the
+         <a href="/forum/index.html">
+          User Discussion Forum
+         </a>
+         .
+        </li>
+        <li class="c4">
+         <p class="c3">
+          OR
+         </p>
+        </li>
+        <li>
+         If you've been using the emulator and want to start using your phone, you can
+         <a href="/learn/setup/phone.html">
+          set up
+         </a>
+         your Android phone to build apps.
+        </li>
+        <li class="c4">
+         <blockquote class="notice">
+          Something not working right? Visit the
+          <a href="../troubleshooting.html">
+           troubleshooting page
+          </a>
+          , or check the
+          <a href="/forum/">
+           App Inventor User Forum
+          </a>
+          for help.
+         </blockquote>
+        </li>
+       </ul>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

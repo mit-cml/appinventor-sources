@@ -1,0 +1,13 @@
+To build using ant:
+    ant
+
+To run build server:
+   ant RunLocalBuildServer
+
+To test server:
+   POST of file to http://localhost:9990/buildserver/build-from-zip -> file. Something like the following works:
+        curl --data-binary  @$HOME/MyDownloads/ImageUpload.zip  --output foo.apk --dump-header headers.out \
+        http://localhost:9990/buildserver/build-from-zip?uname=$USER
+
+To run standalone zip file builder:
+   ant RunMain -Dzip.file=$HOME/MyDownloads/ImageUpload.zip -Duser.name=$USER -Doutput.dir=/tmp

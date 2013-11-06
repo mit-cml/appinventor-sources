@@ -1,0 +1,23 @@
+<xml>
+  <block type="Button1_Click" x="33" y="13">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="SpeechRecognizer1_GetText">
+        <title name="COMPONENT_SELECTOR">SpeechRecognizer1</title>
+      </block>
+    </statement>
+  </block>
+  <block type="SpeechRecognizer1_AfterGettingText" x="32" y="98">
+    <title name="COMPONENT_SELECTOR">SpeechRecognizer1</title>
+    <statement name="DO">
+      <block type="TextToSpeech1_Speak" inline="false">
+        <title name="COMPONENT_SELECTOR">TextToSpeech1</title>
+        <value name="ARG0">
+          <block type="lexical_variable_get">
+            <title name="VAR">result</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

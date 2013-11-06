@@ -1,0 +1,37 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_Jeffrey_Schiller.factorial.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$factorial $x) (let ( ($acc 1)  ) (begin   (while (call-yail-primitive yail-not-equal? (*list-for-runtime* (lexical-value $x) 0) '(any any) "=") (begin   (set-lexical! $acc (call-yail-primitive * (*list-for-runtime* (lexical-value $acc) (lexical-value $x) ) '(number number ) "*"))(set-lexical! $x (call-yail-primitive - (*list-for-runtime* (lexical-value $x) 1) '(number number) "-")))) (lexical-value $acc)) ))
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; Button1
+
+(add-component Screen1 Button Button1 
+(set-and-coerce-property! 'Button1 'Text "Compute Factorial" 'text)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (set-and-coerce-property! 'Label1 'Text ((get-var p$factorial) (get-property 'TextBox1 'Text)) 'text))
+;;; TextBox1
+
+(add-component Screen1 TextBox TextBox1 
+(set-and-coerce-property! 'TextBox1 'Hint "Hint for TextBox1" 'text)
+
+)
+
+;;; Label1
+
+(add-component Screen1 Label Label1 
+(set-and-coerce-property! 'Label1 'Text "Text for Label1" 'text)
+
+)
+
+(init-runtime)

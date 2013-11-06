@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"76","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"10","Uuid":"0","Title":"Screen1","$Components":[{"$Name":"ThreeButtons","$Type":"HorizontalArrangement","$Version":"2","Uuid":"-1104855319","Width":"-2","$Components":[{"$Name":"Red","$Type":"Button","$Version":"5","Uuid":"412399953","BackgroundColor":"&HFFFF0000","Text":"Red","Width":"-2"},{"$Name":"Blue","$Type":"Button","$Version":"5","Uuid":"-313770685","BackgroundColor":"&HFF0000FF","Text":"Blue","Width":"-2"},{"$Name":"Green","$Type":"Button","$Version":"5","Uuid":"1961523526","BackgroundColor":"&HFF00FF00","Text":"Green","Width":"-2"}]},{"$Name":"DrawingCanvas","$Type":"Canvas","$Version":"7","Uuid":"1063385511","Width":"-2","Height":"300"},{"$Name":"Wipe","$Type":"Button","$Version":"5","Uuid":"-2141541097","Text":"Wipe","Width":"-2"}]}}
+|#

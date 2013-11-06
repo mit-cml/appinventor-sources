@@ -1,0 +1,51 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_Jeffrey_Schiller.copycat.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+ (set-and-coerce-property! 'Screen1 'Title "CopyCat" 'text)
+)
+
+;;; Image1
+
+(add-component Screen1 Image Image1 
+(set-and-coerce-property! 'Image1 'Picture "kitty.png" 'text)
+
+)
+
+;;; Label1
+
+(add-component Screen1 Label Label1 
+(set-and-coerce-property! 'Label1 'Text "Tell Me Something!" 'text)
+
+)
+
+;;; Button1
+
+(add-component Screen1 Button Button1 
+(set-and-coerce-property! 'Button1 'FontSize 20 'number)
+
+(set-and-coerce-property! 'Button1 'Text "Press Me" 'text)
+
+)
+
+(define-event Button1 Click()(set-this-form)
+    (call-component-method 'SpeechRecognizer1 'GetText (*list-for-runtime*) '()))
+;;; SpeechRecognizer1
+
+(add-component Screen1 SpeechRecognizer SpeechRecognizer1 
+)
+
+(define-event SpeechRecognizer1 AfterGettingText($result)(set-this-form)
+    (call-component-method 'TextToSpeech1 'Speak (*list-for-runtime* (lexical-value $result)) '(text)))
+;;; TextToSpeech1
+
+(add-component Screen1 TextToSpeech TextToSpeech1 
+)
+
+(init-runtime)

@@ -1,0 +1,2 @@
+Needed for file uploads.  Downloaded unmodified from http://commons.apache.org/fileupload/download_fileupload.cgi
+Note that only the streaming API will work on appengine, cf http://groups.google.com/group/google-appengine-java/web/will-it-play-in-app-engine

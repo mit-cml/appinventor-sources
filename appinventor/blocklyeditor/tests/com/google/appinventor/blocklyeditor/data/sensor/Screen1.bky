@@ -1,0 +1,73 @@
+<xml>
+  <block type="AccelerometerSensor1_Shaking" x="31" y="33">
+    <title name="COMPONENT_SELECTOR">AccelerometerSensor1</title>
+    <statement name="DO">
+      <block type="LocationSensor1_setproperty" inline="false">
+        <mutation yailtype="boolean"></mutation>
+        <title name="COMPONENT_SELECTOR">LocationSensor1</title>
+        <title name="PROP">Enabled</title>
+        <value name="VALUE">
+          <block type="logic_boolean">
+            <title name="BOOL">TRUE</title>
+          </block>
+        </value>
+        <next>
+          <block type="Label6_setproperty" inline="false">
+            <mutation yailtype="text"></mutation>
+            <title name="COMPONENT_SELECTOR">Label6</title>
+            <title name="PROP">Text</title>
+            <value name="VALUE">
+              <block type="LocationSensor1_getproperty">
+                <mutation yailtype="number"></mutation>
+                <title name="COMPONENT_SELECTOR">LocationSensor1</title>
+                <title name="PROP">Altitude</title>
+              </block>
+            </value>
+            <next>
+              <block type="Label7_setproperty" inline="false">
+                <mutation yailtype="text"></mutation>
+                <title name="COMPONENT_SELECTOR">Label7</title>
+                <title name="PROP">Text</title>
+                <value name="VALUE">
+                  <block type="LocationSensor1_getproperty">
+                    <mutation yailtype="number"></mutation>
+                    <title name="COMPONENT_SELECTOR">LocationSensor1</title>
+                    <title name="PROP">Latitude</title>
+                  </block>
+                </value>
+                <next>
+                  <block type="Label8_setproperty" inline="false">
+                    <mutation yailtype="text"></mutation>
+                    <title name="COMPONENT_SELECTOR">Label8</title>
+                    <title name="PROP">Text</title>
+                    <value name="VALUE">
+                      <block type="LocationSensor1_getproperty">
+                        <mutation yailtype="number"></mutation>
+                        <title name="COMPONENT_SELECTOR">LocationSensor1</title>
+                        <title name="PROP">Longitude</title>
+                      </block>
+                    </value>
+                    <next>
+                      <block type="Label9_setproperty" inline="false">
+                        <mutation yailtype="text"></mutation>
+                        <title name="COMPONENT_SELECTOR">Label9</title>
+                        <title name="PROP">Text</title>
+                        <value name="VALUE">
+                          <block type="OrientationSensor1_getproperty">
+                            <mutation yailtype="number"></mutation>
+                            <title name="COMPONENT_SELECTOR">OrientationSensor1</title>
+                            <title name="PROP">Angle</title>
+                          </block>
+                        </value>
+                      </block>
+                    </next>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

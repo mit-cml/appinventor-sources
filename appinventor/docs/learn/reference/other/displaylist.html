@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Display Lists - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference">Reference</a> &gt; Display             Lists &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Displaying a List
+       </h1>
+       <p>
+        You'll often define list variables to store data. For instance, the following
+                variable stores a list of phone numbers:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="168" src="DisplayListAssets/broadcastListItems.png" width="321" />
+       </div>
+       <p>
+        When you want to display such a list on the phone, you can plug it into the Text
+                property of a Label, such as in this example:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="62" src="DisplayListAssets/simpleDisplayList.png" width="342" />
+       </div>
+       <p>
+        On the phone, the items of the list will appear in BroadcastListLabel as a
+                space-delimited list:
+       </p>
+       <blockquote>
+        (1112222 3334444 5556666)
+       </blockquote>
+       <p>
+        The user can see the data, but it's not very elegant. Generally lists are displayed
+                on separate lines or with commas separating each item.
+       </p>
+       <p>
+        To display a list more elegantly, you'll
+        <em>
+         serialize
+        </em>
+        it-- write blocks to
+                move the list items into the Label with the formatting you want. You can display
+                the items on separate lines, add decorative text-- just about anything you can
+                imagine. To serialize a list, you'll use a foreach block to successively add each
+                item to the Label.
+       </p>
+       <p>
+        Here's a sample that displays the BroadcastList on separate lines. The blocks are
+                within a procedure which you call anytime the list is modified.
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="306" src="DisplayListAssets/displayNumbersOnly.png" width="630" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        The BroadcasatListLabel.Text is first initialized to a header, "Phone Numbers...".
+                Then the foreach block begins-- all the blocks within it will be repeated for each
+                item in BroadcastList. If the list has three items, as in BroadcastList, the blocks
+                within the foreach will be executed three times. Each time the blocks are repeated,
+                the variable pnumber has a different item in it. The first time it will have
+                1112222, the second time it will have 3334444, and the third time it will have
+                5556666. Each time the make a text block appends the pnumber to the end of
+                BroadcastListLabel.Text, placing a newline chracter, "\n", in between.
+       </p>
+       <h3>
+        The newline character "\n"
+       </h3>
+       <p>
+        Text objects generally consist of letters, digits, and punctuation marks. But text
+                can also store special control characters which don't map to a single character.
+                "\n" is such a control character. When it appears in a text block, it means "go
+                down to the next line before you display the next thing." So the text
+                "1112222\n3334444\n5556666" would appear as:
+       </p>
+       <blockquote>
+        1112222
+        <br />
+        3334444
+        <br />
+        5556666
+       </blockquote>
+       <p>
+        Let's trace the blocks to see how the BroadcastListLabel is built. Tracing means to
+                show how each variable/property changes as the blocks are executed. Since there is
+                a foreach, we'll consider the values after each iteration-- each time the blocks
+                within the foreach are executed:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Iteration
+           </td>
+           <td class="tbl-header">
+            pnumber
+           </td>
+           <td class="tbl-header">
+            PhoneListLabel.Text
+           </td>
+          </tr>
+          <tr>
+           <td>
+            Before foreach
+           </td>
+           <td>
+            n/a
+           </td>
+           <td>
+            PhoneNumbers...
+           </td>
+          </tr>
+          <tr>
+           <td>
+            after first iteration
+           </td>
+           <td>
+            1112222
+           </td>
+           <td>
+            PhoneNumbers...\n1112222
+           </td>
+          </tr>
+          <tr>
+           <td>
+            after second iteration
+           </td>
+           <td>
+            3334444
+           </td>
+           <td>
+            PhoneNumbers...\n1112222\n3334444
+           </td>
+          </tr>
+          <tr>
+           <td>
+            after third iteration
+           </td>
+           <td>
+            3334444
+           </td>
+           <td>
+            PhoneNumbers...\n1112222\n3334444\n5556666
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        As the table shows, the foreach block performs the task of successively placing the
+                next item of BroadcastList into the variable number. On first iteration, pnumber is
+                1112222, on second 3334444, and on third 5556666. foreach does part of the work for
+                you-- you don't have to explicitly set the variable pnumber to one of the items in
+                the list.
+       </p>
+       <p>
+        The blocks within the foreach append a "\n" and the number to the previous value of
+                PhoneListLabel.Text. So after each iteration, the label becomes larger and holds
+                one more phone number (and one more newline). By the end of the foreach,
+                PhoneListLabel.Text is set so that the numbers will appear as:
+       </p>
+       <blockquote>
+        1112222
+        <br />
+        3334444
+        <br />
+        5556666
+       </blockquote>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://appinventorblog.com">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                reference material.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

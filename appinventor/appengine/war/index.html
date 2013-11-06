@@ -1,0 +1,43 @@
+<!-- Copyright 2007 Google Inc. All Rights Reserved. -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    <!-- Title is set at runtime. -->
+    <title> </title>
+    <link type="text/css" rel="stylesheet" href="gwt.css">
+    <link type="text/css" rel="stylesheet" href="Ya.css">
+    <link href='http://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
+    <noscript>
+      <div class="floatingBox">
+        <h2> App Inventor needs JavaScript enabled to run.</h2>
+      </div>
+    </noscript>
+  </head>
+
+  <!-- ODE scripts -->
+  <body>
+    <div class="floatingBox" style="display:none" id="unsupported">
+      <h2> Your browser might not be compatible. </h2>
+      To use App Inventor for Android, you must use a compatible browser.<br>
+      Currently the supported browsers are:
+      <ul>
+        <li> Internet Explorer 10+ </li>
+        <li> Google Chrome 29+ </li>
+        <li> Safari 5+ </li>
+        <li> Firefox 23+ </li>
+      </ul>
+    </div>
+    <script language="javascript" src="ode/ode.nocache.js"></script>
+    <script>
+      if (window.navigator.userAgent.indexOf("MSIE") != -1){
+        if (window.navigator.userAgent.indexOf("MSIE 10") != -1){
+          //IE 10 is supported - nothing to do
+        }
+        else {
+          document.getElementById("unsupported").style.display = 'block';
+        }
+      }
+    </script>
+  </body>
+</html>

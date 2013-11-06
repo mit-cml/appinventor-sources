@@ -1,0 +1,475 @@
+<!--
+  This is a test for Yail text comparison, focusing on matching defined procedures and screen element properties. This does nothing in browser,
+  but instead holds the functions used for phantomJS tests.
+  Author: Edwin Zhang (ehzhang@mit.edu)
+ -->
+
+<html>
+<head>
+<title> Yail Comparison Test </title>
+
+<script type="text/javascript" src="../../../../lib/closure-library/closure/goog/base.js"></script>
+<script type="text/javascript" src="../../../../build/blocklyeditor/blockly-all.js"></script>
+<script type="text/javascript" src="../../../../build/blocklyeditor/component-types.js"></script>
+
+<script type ="text/javascript">
+
+// -----------------
+// Yail generation using .scm and .bky
+// -----------------
+
+var formJson = "";
+var componentTypes = {};
+
+function start() {
+
+  var formName = window.location.hash.substr(1);
+  // Blockly.BlocklyEditor.startup(document.body, formName);
+
+  // --- Begin Blockly Initialization
+
+  Blockly.inject(document.body);
+
+  Blockly.Drawer.createDom();
+  Blockly.Drawer.init();
+
+  Blockly.BlocklyEditor.formName_ = formName;
+
+  Blockly.showPrefixToUser = true;
+  Blockly.usePrefixInYail = false;
+
+  Blockly.globalNamePrefix = "global"; // For names introduced by global variable declarations
+  Blockly.procedureParameterPrefix = "input"; // For names introduced by procedure/function declarations
+  Blockly.handlerParameterPrefix = "input"; // For names introduced by event handlers
+  Blockly.localNamePrefix = "local"; // For names introduced by local variable declarations
+  Blockly.loopParameterPrefix = "index"; // For names introduced by for loops
+
+  Blockly.menuSeparator = " "; // Separate prefix from name with this. E.g., space in "param x"
+  Blockly.yailSeparator = "_"; // Separate prefix from name with this. E.g., underscore "param_ x"
+
+  // Curried for convenient use in field_lexical_variable.js
+  Blockly.possiblyPrefixMenuNameWith = // e.g., "param x" vs "x"
+    function (prefix) {
+      return function (name) {
+        return (Blockly.showPrefixToUser ? (prefix + Blockly.menuSeparator) : "") + name;
+      }
+    };
+
+  // Curried for convenient use in generators/yail/variables.js
+  Blockly.possiblyPrefixYailNameWith = // e.g., "param_x" vs "x"
+    function (prefix) {
+      return function (name) {
+        return (Blockly.usePrefixInYail ? (prefix + Blockly.yailSeparator) : "") + name;
+      }
+    };
+
+  Blockly.prefixGlobalMenuName = function (name) {
+    return Blockly.globalNamePrefix + Blockly.menuSeparator + name;
+  };
+
+  // Return a list of (1) prefix (if it exists, "" if not) and (2) unprefixed name
+  Blockly.unprefixName = function (name) {
+    if (name.indexOf(Blockly.globalNamePrefix + Blockly.menuSeparator) == 0) {
+      // Globals always have prefix, regardless of flags. Handle these specially
+      return [Blockly.globalNamePrefix, name.substring(Blockly.globalNamePrefix.length + Blockly.menuSeparator.length)];
+    } else if (!Blockly.showPrefixToUser) {
+      return ["", name];
+    } else {
+      var prefixes = [Blockly.procedureParameterPrefix,
+                      Blockly.handlerParameterPrefix,
+                      Blockly.localNamePrefix,
+                      Blockly.loopParameterPrefix]
+      for (i=0; i < prefixes.length; i++) {
+        if (name.indexOf(prefixes[i]) == 0) {
+          // name begins with prefix
+          return [prefixes[i], name.substring(prefixes[i].length + Blockly.menuSeparator.length)]
+        }
+      }
+      // Really an error if get here ...
+      return ["", name];
+    }
+  }
+
+  // ----- End the Blockly Initialization
+
+  // ----- Emulate GWT Provided functions
+  BlocklyPanel_getComponentsJSONString = function(type) {
+    return JSON.stringify(componentTypeJson);
+  };
+
+  BlocklyPanel_getComponentInstanceTypeName = function(formName,instanceName) {
+    var json = JSON.parse(formJson);
+    var components = json.Properties.$Components;
+    var findtype = function(components) {
+      for (var i = 0, comp; comp = components[i]; i++) {
+        if (components[i].$Name == instanceName) {
+          return (components[i].$Type)
+        } else {
+          if (comp.$Components) {
+            var retval = findtype(comp.$Components); // Recurse!
+            if (retval) {
+              return retval;
+            }
+          }
+        }
+      }
+    };
+    if (instanceName == json.Properties.$Name) {
+      return (json.Properties.$Type);
+    }
+    var retval = findtype(json.Properties.$Components);
+    return (retval);
+  };
+
+    document.getElementById('formFile').addEventListener('change', handleLoadForm, false);
+    document.getElementById('blocksFile').addEventListener('change', handleLoadBlocks, false);
+    initComponentTypes();
+    Blockly.ComponentTypes.populateTypes();
+}
+
+function initComponentTypes() {
+    // Note: var componentTypeJson comes from component-types.js
+    for (var i = 0, comp; comp = componentTypeJson[i]; i++) {
+        componentTypes[comp.name] = comp;
+    }
+}
+
+function handleLoadBlocks(event) {
+    var files = event.target.files;
+    var reader = new FileReader();
+
+    reader.onloadend = function(event) {
+        var target = event.target;
+        // 2 == FileReader.DONE
+        if (target.readyState == 2) {
+            Blockly.SaveFile.load(target.result);
+        }
+    };
+    reader.readAsText(files[0]);
+}
+
+function handleLoadForm(event) {
+    var files = event.target.files;
+    var reader = new FileReader();
+
+    reader.onloadend = function(event) {
+        var target = event.target;
+        // 2 == FileReader.DONE
+        if (target.readyState == 2) {
+            formJson = target.result;
+            // strip off leading "#|\n$JSON\n" and trailing "|#"
+            formJson = formJson.substring(9, formJson.length-2);
+            getFormComponents(formJson);
+        }
+    };
+    reader.readAsText(files[0]);
+}
+
+function processBlocks(blocks){
+    return Blockly.SaveFile.load(blocks);
+}
+
+function processForm(formo){
+    formJson = formo;
+    getFormComponents(formJson);
+}
+
+function getFormComponents(formJson) {
+    var formJsonObj = JSON.parse(formJson);
+    defineComponents(formJsonObj.Properties);
+}
+
+function defineComponents(componentJsonObj) {
+    Blockly.Component.add(componentJsonObj.$Name, componentJsonObj.Uuid);
+//    Blockly.Component.add(JSON.stringify(componentTypes[componentJsonObj.$Type]),
+//            componentJsonObj.$Name, componentJsonObj.Uuid);
+    if (componentJsonObj.$Components) {
+        for (var i = 0, comp; comp = componentJsonObj.$Components[i]; i++) {
+            defineComponents(comp);
+        }
+    }
+}
+
+function setOutput(text) {
+    var output = document.getElementById('importExport');
+    output.value = text;
+    output.focus();
+    output.select();
+}
+
+function toXml() {
+    var xmlDom = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+    var xmlText = Blockly.Xml.domToPrettyText(xmlDom);
+    setOutput(xmlText);
+}
+
+function toAppYail() {
+    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", false);
+    setOutput(code);
+    return code;
+}
+
+function toReplYail() {
+    var code = Blockly.Yail.getFormYail(formJson, "fakepackagename", true);
+    setOutput(code);
+    return code;
+}
+
+// -----------------
+// Start of Yail Comparison functions
+// -----------------
+
+var defs = '(def ' // Definitions
+var elements = ';;;' // Screen Elements
+var eProperties = '(set-and-coerce-property' // Element Properties
+var events = '(define-event';
+
+// Takes the startIndex of the first parenthesis (or before) and
+// returns the final index of the closing parens.
+function endParens(startIndex, text) {
+  var leftP = '(';
+  var rightP = ')';
+  var parenCounter = 1;
+  var index = text.indexOf(leftP, startIndex) + 1;
+
+  while (parenCounter != 0) {
+    switch (text[index]) {
+      case leftP:
+        parenCounter+=1;
+        break;
+      case rightP:
+        parenCounter+=-1;
+        break;
+    }
+    index++
+  }
+
+  return index;
+}
+
+// Smooshes the text together, removing lines and spaces.
+function smoosh(text) {
+  var smooshed = text.replace(/\s/g, '');
+  smooshed = smooshed.replace(/\\u2212/g, '-');
+  smooshed = smooshed.replace(/\\u00d7/g, '*');
+  return smooshed;
+}
+
+// Input the text of the yail definition, beginning with (def ...)
+// Returns the name of the definition
+function findDefName(text) {
+  var name = '';
+
+  // Check if the definition is in a parenthesis
+  if (text[5] == '(') {
+    name = text.substring(6, endParens(5, text) - 1);
+  } else {
+    // Else, the definition is a variable and not a method
+    lastIndex = text.indexOf(' ', 5);
+    name = text.substring(5, lastIndex);
+  }
+  return name;
+}
+
+function findEleName(element) {
+  return element.substring(4, element.indexOf('\n'));
+}
+
+function findEventName(event) {
+  return event.substring(event.indexOf(' ') + 1, endParens(6, event));
+}
+function yFind(type, text) {
+  // Find the maximum index of definitions, ending at the declaration
+  // of the first screen element.
+  var firstIndex = text.indexOf(type);
+  var workingText = text.substring(firstIndex, text.length);
+
+  // Store the definitions in an array
+  var things = new Array();
+
+  var i = 0;
+
+  while (workingText.indexOf(type) > -1) {
+    firstIndex = workingText.indexOf(type);
+    var end = endParens(firstIndex, workingText);
+    things[i] = workingText.substring(firstIndex, end);
+    workingText = workingText.substring(end, workingText.length);
+    i++;
+  }
+
+  things.sort();
+
+  return things;
+}
+
+// Compare the Element Properties, given elements
+function compareEleProperties(expected, given) {
+
+  var expectedElements = yFind(eProperties, expected);
+  var givenElements = yFind(eProperties, given);
+
+  if (expectedElements.length != givenElements.length) {
+    console.log("Not the same number of Properties: " + findEleName(expected));
+    return false;
+  }
+
+  for (var i = expectedElements.length - 1; i >= 0; i--) {
+    if (smoosh(expectedElements[i]) != smoosh(givenElements[i])) {
+      console.log("Element properties do not match:", findEleName(expected));
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Compare the Element Definitions, given elements
+function compareEvents(expected, given) {
+
+  var expectedEvents = yFind(events, expected);
+  var givenEvents = yFind(events, given);
+
+  if (expectedEvents.length != givenEvents.length) {
+    console.log("Not the same number of Events");
+    return false;
+  }
+
+  var flag = true;
+
+  for (var i = expectedEvents.length - 1; i >= 0; i--) {
+    if (smoosh(expectedEvents[i]) != smoosh(givenEvents[i])) {
+      console.log("Events do not match: ", findEventName(expectedEvents[i]));
+      flag = false;
+    }
+  }
+
+  return flag;
+}
+
+// Compares the Definitions of expected (classic) vs newblocks
+function compareDefinitions(expected, given) {
+
+  expectedDefs = yFind(defs, expected);
+  givenDefs = yFind(defs, given);
+
+
+  if (expectedDefs.length != givenDefs.length) {
+    console.log("Not the same number of Definitions");
+    return false;
+  }
+
+  var flag = true;
+
+  for (var i = expectedDefs.length - 1; i >= 0; i--) {
+    if (smoosh(expectedDefs[i]) != smoosh(givenDefs[i])) {
+      console.log(findDefName(expectedDefs[i]), (smoosh(expectedDefs[i]) == smoosh(givenDefs[i])));
+      flag = false;
+    };
+  };
+
+  return flag;
+}
+
+// Compare the Elements of the classic and NB
+function compareElements(expected, given) {
+
+  var expectedEles = yFind(elements, expected);
+  var givenEles = yFind(elements, given);
+
+  if (expectedEles.length != givenEles.length) {
+    console.log("Not the same number of Elements");
+    return false;
+  }
+
+  var flag = true;
+
+  for (var i = expectedEles.length - 1; i >= 0; i--) {
+
+    if (smoosh(expectedEles[i]) != smoosh(givenEles[i])) {
+      // Check if the properties do not match
+      if (!compareEleProperties(expectedEles[i], givenEles[i])) {
+        flag = false;
+      };
+    };
+  }
+  return flag;
+}
+
+// Find out if the NB yail matches Classic Yail
+function doTheyMatch(expected, given) {
+    if (compareElements(expected, given) && compareDefinitions(expected, given) && compareEvents(expected, given)) {
+    return true;
+    }
+
+    return false;
+}
+
+// Check if a string contains a pattern, ignoring whitespace
+
+function doesContain(data, pattern) {
+  var dataNoWhitespace = data.replace(/\s/g, "");
+  var patternNoWhitespace = pattern.replace(/\s/g, "");
+  return dataNoWhitespace.indexOf(patternNoWhitespace) >= 0;
+}
+
+//Contains function for JavaScript strings
+// Polyfill for https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/contains
+// Pass in the string to match, and if needed, the starting position (defaults to start of String)
+if (!('contains' in String.prototype))
+  String.prototype.contains = function(str, startIndex) {
+    return -1 !== String.prototype.indexOf.call(this, str, startIndex);
+  }
+
+</script>
+
+<style>
+body {
+    background-color: white;
+    font-family: sans-serif;
+}
+h1 {
+    font-weight: normal;
+    font-size: 140%;
+}
+#svg {
+    float: right;
+    height: 95%;
+    width: 70%;
+}
+.blocklySvg {
+    border: 1px solid black;
+}
+#importExport {
+    height: 100%;
+    width: 100%;
+}
+</style>
+        </head>
+<body onload="start()">
+
+        <div id="svg"></div>
+
+        <table height="95%" width="30%"><tr><td valign="top">
+        <h1>Yail Generator Test</h1>
+        <p> Upload a form (.scm) file first and then its corresponding blocks file (.bky).)
+<p>
+Form:
+<input type="file" id="formFile">
+        </p>
+        <p>
+        Blocks:
+<input type="file" id="blocksFile">
+        </p>
+
+        <p>
+        Generate:
+<input type="button" value="For app" onclick="toAppYail()">
+        <input type="button" value="For repl" onclick="toReplYail()">
+        <input type="button" value="Blocks XML" onclick="toXml()">
+        </p>
+        </td></tr><tr><td height="99%">
+        <textarea id="importExport" readonly="readonly" wrap="off"></textarea>
+        </td></tr></table>
+        </body>
+
+</html>

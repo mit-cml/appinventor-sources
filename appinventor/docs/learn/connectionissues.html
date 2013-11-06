@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Connection Issues - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   .issue {
+    background-color: #efefef;
+    padding: 10px;  
+    color: #333;
+    font-size: 12px;
+    font-weight: normal;
+    }
+    .cause {
+    background-color: #ffffff;
+    padding: 10px;  
+    color: #333;
+    font-size: 12px;
+    border: 1px solid #efefef;
+    }
+    .workaround {
+    background-color: #ffffff;
+    padding: 10px;  
+    color: #576b07;
+    font-size: 12px;
+    border: 2px solid #adca3c;
+    margin-top: 5px;
+    }
+  </style>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; Connection Issues &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        Work-Arounds &amp; Solutions for Connecting Phones to the Blocks Editor
+       </h1>
+       <h2>
+        Summary
+       </h2>
+       <p>
+        This page may provide some help on troubleshooting connection problems between the
+                phone and Blocks editor. There are several different causes for these. We're
+                attempting to sort through the various symptoms, causes, and solutions. Thanks for
+                your patience and assistance while we're doing this.
+       </p>
+       <h2>
+        Work-Arounds &amp; Solutions
+       </h2>
+       <p>
+        Here are a few of the issues we know about, with work-arounds. Most of these are
+                identified by looking at the Java console and what happens on the phone and in the
+                blocks editor. You can find instructions for how to view the Java console at bottom
+                of the documentation on
+        <a href="/learn/reference/other/testing.html">
+         testing
+        </a>
+        .
+       </p>
+       <div class="issue">
+        <strong>
+         Issue
+        </strong>
+        : After clicking
+        <em>
+         Connect To Phone
+        </em>
+        in the Blocks
+                Editor, the white Screen1 on the phone flashes and disappears, or you never see it
+                at all and the Blocks Editor tells you to plug in the phone. The Java console has a
+                message saying "Failed in setupSocket".
+       </div>
+       <div class="cause">
+        <strong>
+         Cause:
+        </strong>
+        The most likely cause of this is that your phone is running
+                Android 1.5. (If not and these are your exact symptoms, please let us know).
+       </div>
+       <div class="workaround">
+        <strong>
+         Workaround:
+        </strong>
+        Android 1.5 is not currently working with App Inventor
+                in connected phone. We're happy to report that we have a fix for this! Your Android
+                1.5 phones will work in connected mode the next time we update our App Inventor
+                servers (probably in a week or two). In the meantime, we recommend using the
+                emulator (make sure it is version 1.6 or higher) for connected development, and
+                then downloading your packaged apps to your phone.
+       </div>
+       <br />
+       <div class="issue">
+        <strong>
+         Issue:
+        </strong>
+        Your phone is running version 1.6 or newer. After clicking
+        <em>
+         Connect To Phone
+        </em>
+        in the Blocks Editor, the white Screen1 appears
+                eventually, but the Blocks Editor tells you to plug in the phone and the Java
+                console has a message saying "Failed in setupSocket". This might happen every time
+                you try to connect, or just some of the time.
+       </div>
+       <div class="cause">
+        <strong>
+         Cause:
+        </strong>
+        It looks like there is a timing issue where the app that
+                runs on the phone to connect to the blocks editor doesn't start up quickly enough
+                and the blocks editor gives up and assumes it cannot make the connection.
+       </div>
+       <div class="workaround">
+        <strong>
+         Workaround:
+        </strong>
+        You can try stopping other apps on your phone that
+                might be slowing it down (e.g., sync services, Twitter, etc.) and then try
+                connecting to the blocks editor. If this works for you then you probably are
+                experiencing the timing problem mentioned above. We believe we have a fix for this
+                that will be available the next time we update the App Inventor servers (in a week
+                or two).
+       </div>
+       <br />
+       <div class="issue">
+        <strong>
+         Issue:
+        </strong>
+        The Java console prints the message "adb-forward: Device
+                rejected command: cannot bind socket" and the blocks editor fails to connect to the
+                phone.
+       </div>
+       <div class="cause">
+        <strong>
+         Cause:
+        </strong>
+        Most likely, some other application on your computer is
+                using port 9997.
+       </div>
+       <div class="workaround">
+        <strong>
+         Workaround:
+        </strong>
+        You can usually use a command on your computer to find
+                out which applications might have the port open.
+        <p>
+         For Linux (and perhaps Mac?) open a shell (Terminal) window and type
+         <br />
+         <code>
+          lsof | grep 9997
+         </code>
+         <br />
+         to see the name and process id of the application that has port 9997 open.
+        </p>
+        <p>
+         On Windows, use the command
+         <br />
+         <code>
+          netstat -ao |find /i "9997"
+         </code>
+         <br />
+         At the end of the line is the process id (PID). Use the command
+         <br />
+         <code>
+          tasklist |find /i "PID"
+         </code>
+        </p>
+        <p>
+         If you stop the application that was using port 9997 then the blocks editor
+                  should be able successfully run the "adb forward" command and, hopefully, connect
+                  to your phone (assuming you don't also have one of the other problems mentioned
+                  above).
+        </p>
+        <p>
+         In the future we may allow the blocks editor to use ports other than 9997 to
+                  connect to the phone, but it will probably not be possible in the next server
+                  update.
+        </p>
+       </div>
+       <br />
+       <div class="issue">
+        <strong>
+         Issue:
+        </strong>
+        When you try to Connect to Phone the blocks editor tells
+                you to plug in a phone. The Java console contains the line: Device connected:
+                ????????????
+       </div>
+       <div class="cause">
+        <strong>
+         Cause:
+        </strong>
+        Your phone is not being recognized by the ADB (Android
+                Debug Bridge). This could be an issue with drivers or permissions.
+       </div>
+       <div class="workaround">
+        <strong>
+         Workaround:
+        </strong>
+        The solution varies depending on the type of system
+                you are on and the type of phone you have. Search the App Inventor Forum and other
+                Android forums on the web to find advice for your particular system and phone. Many
+                people have posted fixes with pointers to drivers or instructions. You will know
+                that you have solved this particular problem when the command "adb devices" shows
+                you a device id that is a combination of letters and numbers. See the documentation
+                under "Testing and Debugging" for information on how to run the adb program.
+       </div>
+       <br />
+       <div class="issue">
+        <strong>
+         Issue:
+        </strong>
+        You can connect to the phone but you are not seeing any of
+                your media on the phone (images, sounds). The Java console might have a message
+                like "ddms: transfer error: Permission denied" and
+                "yacodeblocks.AndroidControllerException: Failed to upload file". Or the Blocks
+                Editor migth give an error "Can't play the file meow.wav."
+       </div>
+       <div class="cause">
+        <strong>
+         Cause:
+        </strong>
+        The phone's USB connection mode is set to the wrong option.
+       </div>
+       <div class="workaround">
+        <strong>
+         Workaround:
+        </strong>
+        Pull down the screen notification panel (where the USB
+                icon should be showing), and press the "USB connected" button. The options shown
+                will depend on the phone model:
+        <ul>
+         <li>
+          On the Nexus One, you'll see a button to "Turn on USB Storage" â&euro;&rdquo; don't select
+                  it.
+         </li>
+         <li>
+          On the Droid, you'll see four different options. Select the option for
+                  "Windows Media Sync".
+         </li>
+        </ul>
+       </div>
+       <br />
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"79","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"11","Uuid":"0","AlignHorizontal":"3","BackgroundColor":"&HFF000000","Title":"PictureCycle","$Components":[{"$Name":"Button1","$Type":"Button","$Version":"5","Uuid":"1018031166","BackgroundColor":"&HFF000000","Text":"Take a picture.","TextColor":"&HFFFFFFFF","Width":"-2","Height":"50"},{"$Name":"Image1","$Type":"Image","$Version":"1","Uuid":"263539714","Width":"-2","Height":"300"},{"$Name":"Button2","$Type":"Button","$Version":"5","Uuid":"1123550381","BackgroundColor":"&HFF000000","Text":"See next.","TextColor":"&HFFFFFFFF","Width":"-2","Height":"50"},{"$Name":"Camera1","$Type":"Camera","$Version":"1","Uuid":"601161840"}]}}
+|#

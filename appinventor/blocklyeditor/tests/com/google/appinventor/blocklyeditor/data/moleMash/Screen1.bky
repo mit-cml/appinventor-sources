@@ -1,0 +1,170 @@
+<xml>
+  <block type="procedures_defnoreturn" x="13" y="12">
+    <mutation></mutation>
+    <title name="NAME">MoveMole</title>
+    <statement name="STACK">
+      <block type="Mole_MoveTo" inline="false">
+        <title name="COMPONENT_SELECTOR">Mole</title>
+        <value name="ARG0">
+          <block type="math_multiply" inline="true">
+            <mutation items="2"></mutation>
+            <value name="NUM0">
+              <block type="math_random_float"></block>
+            </value>
+            <value name="NUM1">
+              <block type="math_subtract" inline="true">
+                <value name="A">
+                  <block type="MyCanvas_getproperty">
+                    <mutation yailtype="number"></mutation>
+                    <title name="COMPONENT_SELECTOR">MyCanvas</title>
+                    <title name="PROP">Width</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="Mole_getproperty">
+                    <mutation yailtype="number"></mutation>
+                    <title name="COMPONENT_SELECTOR">Mole</title>
+                    <title name="PROP">Width</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+        <value name="ARG1">
+          <block type="math_multiply" inline="true">
+            <mutation items="2"></mutation>
+            <value name="NUM0">
+              <block type="math_random_float"></block>
+            </value>
+            <value name="NUM1">
+              <block type="math_subtract" inline="true">
+                <value name="A">
+                  <block type="MyCanvas_getproperty">
+                    <mutation yailtype="number"></mutation>
+                    <title name="COMPONENT_SELECTOR">MyCanvas</title>
+                    <title name="PROP">Height</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="Mole_getproperty">
+                    <mutation yailtype="number"></mutation>
+                    <title name="COMPONENT_SELECTOR">Mole</title>
+                    <title name="PROP">Height</title>
+                  </block>
+                </value>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" inline="false" x="16" y="182">
+    <title name="NAME">score</title>
+    <value name="VALUE">
+      <block type="math_number">
+        <title name="NUM">0</title>
+      </block>
+    </value>
+  </block>
+  <block type="procedures_defnoreturn" x="17" y="223">
+    <mutation></mutation>
+    <title name="NAME">UpdateScore</title>
+    <statement name="STACK">
+      <block type="ScoreLabel_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">ScoreLabel</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="text_join" inline="false">
+            <mutation items="2"></mutation>
+            <value name="ADD0">
+              <block type="text">
+                <title name="TEXT">Score:</title>
+              </block>
+            </value>
+            <value name="ADD1">
+              <block type="lexical_variable_get">
+                <title name="VAR">global score</title>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="ResetButton_Click" x="267" y="326">
+    <title name="COMPONENT_SELECTOR">ResetButton</title>
+    <statement name="DO">
+      <block type="lexical_variable_set" inline="false">
+        <title name="VAR">global score</title>
+        <value name="VALUE">
+          <block type="math_number">
+            <title name="NUM">0</title>
+          </block>
+        </value>
+        <next>
+          <block type="procedures_callnoreturn">
+            <mutation name="UpdateScore"></mutation>
+            <title name="PROCNAME">UpdateScore</title>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+  <block type="MoleTimer_Timer" x="20" y="330">
+    <title name="COMPONENT_SELECTOR">MoleTimer</title>
+    <statement name="DO">
+      <block type="procedures_callnoreturn">
+        <mutation name="MoveMole"></mutation>
+        <title name="PROCNAME">MoveMole</title>
+      </block>
+    </statement>
+  </block>
+  <block type="Mole_Touched" x="21" y="411">
+    <title name="COMPONENT_SELECTOR">Mole</title>
+    <statement name="DO">
+      <block type="lexical_variable_set" inline="false">
+        <title name="VAR">global score</title>
+        <value name="VALUE">
+          <block type="math_add" inline="true">
+            <mutation items="2"></mutation>
+            <value name="NUM0">
+              <block type="lexical_variable_get">
+                <title name="VAR">global score</title>
+              </block>
+            </value>
+            <value name="NUM1">
+              <block type="math_number">
+                <title name="NUM">1</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="Noise_Vibrate" inline="false">
+            <title name="COMPONENT_SELECTOR">Noise</title>
+            <value name="ARG0">
+              <block type="math_number">
+                <title name="NUM">100</title>
+              </block>
+            </value>
+            <next>
+              <block type="procedures_callnoreturn">
+                <mutation name="UpdateScore"></mutation>
+                <title name="PROCNAME">UpdateScore</title>
+                <next>
+                  <block type="procedures_callnoreturn">
+                    <mutation name="MoveMole"></mutation>
+                    <title name="PROCNAME">MoveMole</title>
+                  </block>
+                </next>
+              </block>
+            </next>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

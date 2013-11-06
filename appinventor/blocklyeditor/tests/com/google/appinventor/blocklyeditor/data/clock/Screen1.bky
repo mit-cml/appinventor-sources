@@ -1,0 +1,22 @@
+<xml>
+  <block type="Button1_Click" x="-26" y="-1">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="Label2_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">Label2</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="Clock1_FormatTime" inline="false">
+            <title name="COMPONENT_SELECTOR">Clock1</title>
+            <value name="ARG0">
+              <block type="Clock1_Now">
+                <title name="COMPONENT_SELECTOR">Clock1</title>
+              </block>
+            </value>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+</xml>

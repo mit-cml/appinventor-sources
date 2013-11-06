@@ -1,0 +1,14 @@
+URL: http://mojo.codehaus.org/animal-sniffer/
+Version: 1.7
+License: MIT
+License File: LICENSE
+
+Description:
+Animal Sniffer provides tools to assist verifying that classes compiled with a
+newer JDK/API are compatible with an older JDK/API.
+
+Local Modifications:
+No Modifications
+
+Jar downloaded from:
+http://repo1.maven.org/maven2/org/codehaus/mojo/animal-sniffer-ant-tasks/1.7/animal-sniffer-ant-tasks-1.7.jar
