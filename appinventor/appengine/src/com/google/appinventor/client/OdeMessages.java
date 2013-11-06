@@ -38,9 +38,13 @@ public interface OdeMessages extends Messages {
   @Description("Caption for None entry")
   String noneCaption();
 
-  @DefaultMessage("Delete Project")
+  @DefaultMessage("Delete")
   @Description("Text on 'Delete' button")
   String deleteButton();
+
+  @DefaultMessage("Delete Project")
+  @Description("Text on 'Delete Project' button")
+  String deleteProjectButton();
 
   @DefaultMessage("Show Warnings")
   @Description("Text on Toggle Warning Button")
