@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+
+<!-- ======================================================================
+     Copyright 2011 Google Inc.  All Rights Reserved.
+     Author: lizlooney@google.com (Liz Looney)
+
+     App Inventor common libraries
+     ====================================================================== -->
+
+<project name="AllProjects" default="all">
+  <description>
+    App Inventor
+  </description>
+
+  <target name="all">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
+  <target name="noplay">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+  </target>
+
+  <target name="installplay">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
+  </target>
+
+  <target name="RunLocalBuildServer">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="RunLocalBuildServer"/>
+  </target>
+
+  <target name="PlayApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
+  </target>
+
+  <target name="AIMergerApp">
+    <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="AIMergerApp"/>
+  </target>
+
+  <target name="Blockly">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="CopyBlocklyToBuildWar"/>
+  </target>
+
+  <!-- Convenient target for just running the blockly related tests -->
+  <target name="BlocklyTest">
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
+  </target>
+
+  <target name="tests">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common" target="tests"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components" target="tests"/>
+    <mkdir dir="reports"/>
+    <junitreport todir="reports">
+      <fileset dir="appengine/reports/raw" includes="TEST-*.xml"/>
+      <!-- These are not the comments you're looking for.  This is for testing -->
+      <fileset dir="blocklyeditor/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="buildserver/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="common/reports/raw" includes="TEST-*.xml"/>
+      <fileset dir="components/reports/raw" includes="TEST-*.xml"/>
+      <report format="frames" todir="reports/html"/>
+    </junitreport>
+    <echo message="Please see the report at file://${basedir}/reports/html/index.html"/>
+  </target>
+
+  <target name="javadoc">
+    <mkdir dir="build/javadoc"/>
+    <javadoc destdir="build/javadoc">
+      <sourcepath>
+        <pathelement location="appengine/src" />
+        <pathelement location="buildserver/src" />
+        <pathelement location="common/src" />
+        <pathelement location="components/src" />
+      </sourcepath>
+      <classpath>
+        <pathelement location="lib/android/4.2.2/android.jar" />
+        <pathelement location="lib/android/tools/ddmlib.jar"/>
+        <pathelement location="lib/bouncycastle/bcprov-jdk15on-149.jar"/>
+        <pathelement location="lib/bouncycastle/bcpkix-jdk15on-149.jar"/>
+        <pathelement location="lib/android/tools/sdklib.jar"/>
+        <pathelement location="lib/args4j/args4j-2.0.18.jar" />
+        <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />
+        <pathelement location="lib/commons-io/commons-io-2.0.1.jar"/>
+        <pathelement location="lib/findbugs/jsr305.jar" /> <!-- for javax.annotation.Nullable -->
+        <pathelement location="lib/guava/guava-14.0.1.jar" />
+        <pathelement location="lib/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
+        <pathelement location="lib/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
+        <pathelement location="lib/json/json.jar" />
+        <pathelement location="lib/kawa/kawa-1.11-modified.jar" />
+        <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
+        <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
+        <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
+        <pathelement location="lib/twitter/twitter4j-core-3.0.3.jar" />
+        <pathelement location="lib/twitter/twitter4j-media-support-3.0.3.jar" />
+        <pathelement location="lib/QRGenerator/core.jar" />
+        <pathelement location="lib/QRGenerator/javase.jar" />
+        <fileset dir="buildserver/lib" includes="**/*.jar"/>
+        <!-- oauth libs -->
+        <pathelement location="lib/oauth/google-api-client-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-api-client-android2-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-android2-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-http-client-android3-1.10.3-beta.jar" />
+        <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
+        <!-- fusiontables libs -->
+        <pathelement location="lib/fusiontables/fusiontables.jar" />
+        <!-- acra -->
+        <pathelement location="lib/acra/acra-4.4.0.jar" />
+        <!-- gwt libs -->
+        <pathelement location="lib/gwt/2.5.1/gwt-dev.jar"/>
+        <pathelement location="lib/gwt/2.5.1/gwt-user.jar"/>
+        <!-- app engine libs -->
+        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
+        <pathelement location="lib/appengine/appengine-java-sdk-1.7.6/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+        <!-- prevent error importing GitBuildId if it has been generated -->
+        <pathelement location="common/build/classes/CommonVersion" />
+      </classpath>
+      <!-- Ignore non-standard tags used in blockslib.  -->
+      <tag name="assumptions" />
+      <tag name="effect" />
+      <tag name="effects" />
+      <tag name="expects" />
+      <tag name="modifies" />
+      <tag name="override" />
+      <tag name="requires" />
+      <tag name="specfield" />
+      <tag name="warning" />
+      <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the
+           classpath above,so our javadoc will link appropriate online javadoc for libraries we
+           depend on. -->
+      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+      <link href="http://google-web-toolkit.googlecode.com/svn/javadoc/2.5/"/>
+      <link href="http://d.android.com/reference"
+            offline="true"
+            packagelistLoc="lib/android"/>
+    </javadoc>
+  </target>
+
+  <target name="clean">
+    <ant inheritAll="false" useNativeBasedir="true" dir="appengine" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="aimerger" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <delete dir="build"/>
+    <delete dir="reports"/>
+  </target>
+</project>

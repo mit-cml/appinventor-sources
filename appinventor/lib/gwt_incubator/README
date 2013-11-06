@@ -1,0 +1,7 @@
+This library comes from http://code.google.com/p/google-web-toolkit-incubator/. The web page says:
+The Google Web Toolkit Incubator project is deprecated and is no longer supported by the GWT team.
+
+Most of the important widgets and APIs made their way into GWT trunk a long time ago. The rest may be included at a later date.
+
+App Inventor uses classes from com.google.gwt.widgetideas*.* from this library. We should probably replace them at some point with 
+non-deprecated classes.

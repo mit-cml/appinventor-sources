@@ -1,0 +1,20 @@
+#|
+$Source $Yail
+|#
+
+(define-form fakepackagename Screen1)
+(require <com.google.youngandroid.runtime>)
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+;;; Button1
+(add-component Screen1 Button Button1 (set-and-coerce-property! 'Button1 'Image "kitty.png" 'text)
+)
+;;; Label1
+(add-component Screen1 Label Label1 (set-and-coerce-property! 'Label1 'FontSize 30.0 'number)
+(set-and-coerce-property! 'Label1 'Text "Pet Me!" 'text)
+)
+;;; Sound1
+(add-component Screen1 Sound Sound1 (set-and-coerce-property! 'Sound1 'Source "meow.mp3" 'text)
+)
+(init-runtime)

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Setup - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c3 {border-width:0}
+    li.c2 {list-style: none}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; Setup &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <script>
+        function toggleShowHide(elementId) {
+              var element = document.getElementById(elementId);
+              if (element) {
+              if (element.style.display == "none")
+              element.style.display = "inline";
+              else
+              element.style.display = "none";
+              }
+              }
+       </script>
+       <h1>
+        App Inventor Setup
+       </h1>
+       <p>
+        App Inventor runs through a Web browser. If you're using a phone, you work with the
+                phone connected to your computer by a USB cord. Your app will emerge on the phone
+                bit by bit as you work. If you don't have a phone, there's a phone emulator
+                included with the App Inventor setup package that you can use instead. When you're
+                done building, you can "package" your finished app to produce an "application
+                package" (Android apk file) that can be shared around and installed on any Android
+                phone, just like any other Android app.
+       </p>
+       <p>
+        To get started you need to complete the following steps:
+       </p>
+       <ul>
+        <li>
+         <b>
+          Step 1:
+         </b>
+         <a href="#setupComputer">
+          Set up your computer
+         </a>
+        </li>
+        <li class="c2">
+         <br />
+        </li>
+        <li>
+         <b>
+          Step 2:
+         </b>
+         Do one of the following, depending on whether you will develop on
+                  an Android phone or with the emulator:
+         <ul>
+          <li>
+           <a href="/learn/setup/phone.html">
+            Set up your Android phone
+           </a>
+           and
+           <a href="/learn/setup/hellopurr/hellopurrphonepart1.html">
+            build your first app with
+                      the phone
+           </a>
+           , OR
+          </li>
+          <li>
+           <a href="/learn/setup/hellopurr/hellopurremulatorpart1.html">
+            Build your first
+                      app with the emulator
+           </a>
+          </li>
+         </ul>
+        </li>
+       </ul>
+       <h2>
+        <a name="setupComputer">
+        </a>
+        Set up your computer
+       </h2>
+       <h4>
+        System requirements:
+       </h4>
+       <p>
+        Computer and operating system
+       </p>
+       <ul>
+        <li>
+         Macintosh (with Intel processor): Mac OS X 10.5, 10.6
+        </li>
+        <li>
+         Windows: Windows XP, Windows Vista, Windows 7
+        </li>
+        <li>
+         GNU/Linux: Ubuntu 8+, Debian 5+
+        </li>
+       </ul>
+       <p>
+        Browser
+       </p>
+       <ul>
+        <li>
+         Mozilla Firefox 3.6 or higher
+         <ul>
+          <li>
+           Note: If you are using Firefox with the
+           <em>
+            NoScript
+           </em>
+           extension, you'll
+                    need to turn the extension off. See the
+           <a href="../troubleshooting.html#BlocksEditor">
+            note on the troubleshooting page
+           </a>
+           .
+          </li>
+         </ul>
+        </li>
+        <li>
+         Apple Safari 5.0 or higher
+        </li>
+        <li>
+         Google Chrome 4.0 or higher
+        </li>
+        <li>
+         Microsoft Internet Explorer 7 or higher
+        </li>
+       </ul>
+       <h4>
+        Test your Java configuration
+       </h4>
+       <p>
+        Your computer needs to run Java 6 (also known as Java 1.6). You can download Java
+                from
+        <a href="http://www.java.com">
+         www.java.com
+        </a>
+        .
+       </p>
+       <p>
+        Test your Java configuration by performing both of the following tests:
+       </p>
+       <ol>
+        <li>
+         Visit the
+         <a href="http://www.java.com/en/download/help/testvm.xml">
+          Java test
+                page
+         </a>
+         . You should see a message that Java is working and that the version is
+                Java 1.6.
+        </li>
+        <li>
+         Run the AppInventor Java test by clicking on
+         <a href="misc/JWSTest/AppInvJWSTest.html">
+          this link
+         </a>
+         .
+                This will check that your browser is properly configured to run Java, and that your
+                computer can launch applications with Java Web Start.
+        </li>
+       </ol>
+       App Inventor will not work on your computer if these tests do not succeed. Don't
+              go on to try to use App Inventor until you've dealt with the issue.
+       <a name="install">
+       </a>
+       <h4>
+        Install the App Inventor Setup Software
+       </h4>
+       <p>
+        Before you can use App Inventor, you need to install some software on your
+                computer. The software you need is provided in a package called
+        <em>
+         App Inventor
+                Setup
+        </em>
+        . Follow the instructions for your operating system to do the
+                installation, and then go on to build the demo app (Hello Purr) with the phone or
+                with the emulator.
+       </p>
+       <ul>
+        <li>
+         <a href="setupmac.html">
+          Instructions for Mac OS X
+         </a>
+        </li>
+        <li>
+         <a href="setuplinux.html">
+          Instructions for GNU/Linux
+         </a>
+        </li>
+        <li>
+         <a href="setupwindows.html">
+          Instructions for Windows
+         </a>
+        </li>
+       </ul>
+       <blockquote class="notice">
+        Something not working right? Visit the
+        <a href="../troubleshooting.html">
+         troubleshooting page
+        </a>
+        , or check the
+        <a href="../../forum">
+         App Inventor User Forum
+        </a>
+        for help.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

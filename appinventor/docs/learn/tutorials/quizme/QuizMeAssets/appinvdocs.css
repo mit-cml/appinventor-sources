@@ -1,0 +1,37 @@
+body {background: #FFFFFF;
+    margin-left: 5%;
+    margin-right: 5%;
+    margin-top: 1.5em;
+    margin-bottom: 3em;
+    font-family: "arial", "geneva", "helvetica"
+}
+
+span.ButtonText {
+    /* Color to match what Dave Wolber is using */
+    color: rgb(56, 118, 29) ;
+}
+
+span.Block {
+    color: rgb(56, 118, 29) ;
+    border-color: rgb(56, 118, 29) ;
+    border: dotted;
+    border-width: 1pt;
+    padding: 1pt;
+}
+
+blockquote.Dogfooding {
+    border:solid;
+    border-width: 1pt;
+    border-color: red;
+    padding: 0.5em;
+}
+
+
+   
+
+.helpicon {
+	margin: 5px 10px 0pt 40px; 
+	display: inline;
+	float: left;
+	
+}

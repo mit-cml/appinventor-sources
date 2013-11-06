@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   No Text While Driving (Part 2) - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials">Tutorials</a> &gt; No Text             While Driving Part 2 ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        No Text While Driving, Part 2
+       </h1>
+       <div class="imagecontainer">
+        <img align="right" alt="" border="0" src="NoText2Assets/emulator.png" />
+       </div>
+                      <span align="RIGHT"><a href = "http://cs.usfca.edu/~wolber/appinventor/bookSplits/ch4NoTexting.pdf" title="Get the updated, refined version of this tutorial from the book, App Inventor: Create your own Android Apps">Download Book Chapter</a><img src="/static/images/pdficon_small.png" /></span>
+
+       <p>
+        You know that texting while driving is dangerous, so you've created and installed
+                the
+        <a href="/learn/tutorials/notext/notext.html">
+         No Text While Driving app
+        </a>
+        on
+                your phone. Now, when you drive you open that app and let it auto-respond to
+                incoming texts.
+       </p>
+       <p>
+        But the jingle of the texts coming in is killing you with curiosity-- wouldn't it
+                be great if you could hear the texts spoken aloud? With Part II of the tutorial,
+                you'll extend the app so that it speaks out both the message and who sent it. And
+                since you're making some changes anyway, you'll modify the auto-response so it
+                reports your whereabouts in the reply: "Sorry, I'm driving and I'm at 1600
+                Pennsylvania Avenue".
+        <br />
+       </p>
+       <p>
+        Before completing this tutorial you should complete
+        <a href="/learn/tutorials/notext/notext.html">
+         part I
+        </a>
+        .
+       </p>
+       <h2>
+        Getting Started
+       </h2>
+       <p>
+        For this app to work, you'll need to load a text-to-speech module,
+        <em>
+         Text-To-Speech Extended
+        </em>
+        , on your phone. App Inventor and other apps rely
+                on this module for the underlying voice synthesis. If you don't already have it,
+                you can download onto your phone using the Android Market:
+       </p>
+       <ul>
+        <li>
+         On your phone, open the Market app
+        </li>
+        <li>
+         Search for TTS
+        </li>
+        <li>
+         Select the app
+         <em>
+          Text-To-Speech Extended
+         </em>
+         to install
+        </li>
+       </ul>
+       <p>
+        Once the
+        <em>
+         Text-To-Speech
+        </em>
+        module is installed, open it to test its features.
+                When it opens, set the default language as desired. Then select "Listen to
+                Preview". If you don't hear anything, make sure the volume on your phone is turned
+                on. You can also change the default Engine which can enhance the quality of the
+                spoken words.
+       </p>
+       <p>
+        Once the Text-To-Speech module is installed and configured as desired, you can use
+                the
+        <span class="ButtonText">
+         TextToSpeech
+        </span>
+        component within App Inventor.
+                Begin by opening App Inventor and your NoTextWhileDriving project from part I.
+        <span class="ButtonText">
+         SaveAs
+        </span>
+        the project and name the new copy
+                "NoTextWhileDriving2".
+       </p>
+       <h2>
+        What you'll learn
+       </h2>
+       <p>
+        The app demonstrates two powerful components:
+       </p>
+       <ul>
+        <li>
+         The
+         <span class="ButtonText">
+          LocationSensor
+         </span>
+         component to determine the
+                phone's location, and
+        </li>
+        <li>
+         The
+         <span class="ButtonText">
+          TextToSpeech
+         </span>
+         component to speak the
+                incoming texts aloud.
+        </li>
+       </ul>
+       <p>
+        These components encapsulate some advanced functionality, but using them in
+                building an app is relatively straight-forward.
+        <br />
+       </p>
+       <h2>
+        Set up the Components
+        <br />
+       </h2>
+       <p>
+        Leave the user interface for
+        <em>
+         NoTextWhileDriving, part II
+        </em>
+        the same as in
+                part I. But in the Component Designer, add two non-visual components: a
+        <span class="ButtonText">
+         LocationSensor
+        </span>
+        and a
+        <span class="ButtonText">
+         TextToSpeech
+        </span>
+        component. You do not need to set any properties
+                of the components.
+       </p>
+       <h2>
+        Add behaviors to the components
+        <br />
+       </h2>
+       <p>
+        The behavior for part I of
+        <em>
+         No Text While Driving
+        </em>
+        was: "when a text is
+                received, the message the user has put in
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        is sent as a text message response to the
+                sender."
+       </p>
+       <p>
+        For part II, the behavior will be changed to: "when a text is received, it is
+                spoken aloud and a message, including the text in
+        <span class="ButtonText">
+         MessageTextbox
+        </span>
+        and the phone's current location, is sent in
+                response to the sender.
+       </p>
+       <h2>
+        <strong>
+         Speaking the text aloud
+        </strong>
+       </h2>
+       <p>
+        When a text message is received by the phone, the
+        <span class="ButtonText">
+         Texting.MessageReceived
+        </span>
+        event is triggered. The blocks from
+                Part I handle this event by setting the
+        <span class="ButtonText">
+         PhoneNumber
+        </span>
+        and
+        <span class="ButtonText">
+         Message
+        </span>
+        properties of the
+        <span class="ButtonText">
+         Texting
+        </span>
+        component appropriately and then sending the response
+                text.
+       </p>
+       <p>
+        Extend the blocks from Part I by using the
+        <span class="ButtonText">
+         TextToSpeech
+        </span>
+        component to speak both the sender's phone number
+                and the message. You'll add the following blocks to the exisiting
+        <span class="ButtonText">
+         Texting.MessageReceived
+        </span>
+        blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             TextToSpeech1.Speak
+            </span>
+           </td>
+           <td>
+            TextToSpeech1
+           </td>
+           <td>
+            speak out the message received
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            build the words that are to be spoken
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text "
+            </span>
+            message from "
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            First words spoken, put a space at end
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             number
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            This is the number the original text was received from
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text "
+            </span>
+            "
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            Put a space in between number and message
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             messageText
+            </span>
+           </td>
+           <td>
+            My Definitions
+           </td>
+           <td>
+            This is the original message received
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="359" src="NoText2Assets/MessageReceivedSpoken.png" width="620" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        After the response is sent, the
+        <span class="ButtonText">
+         TextToSpeech1.Speak
+        </span>
+        functon is called. You can plug any text object into the
+        <span class="ButtonText">
+         message
+        </span>
+        slot of the
+        <span class="ButtonText">
+         Speak
+        </span>
+        function. In this case,
+        <span class="ButtonText">
+         make text
+        </span>
+        is used to build
+                the words to be spoken, including the text "message from", the phone number from
+                which the message was received (
+        <span class="ButtonText">
+         number),
+        </span>
+        a blank
+                text, and the message received (
+        <span class="ButtonText">
+         messageText
+        </span>
+        ). If
+                the text "hello" was received from the number "111-2222", the words "message from
+                111-2222. hello." would be spoken.
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        You'll need a second phone to test the
+                behaviors in this app. From the second phone, send a text to the phone that is
+                running the app. Does the second phone speak the text aloud? Does it still send an
+                automated response?
+        <br />
+       </blockquote>
+       <h2>
+        Adding location information to the auto-response
+       </h2>
+       <p>
+        Next, add a
+        <span class="ButtonText">
+         LocationSensor.LocationChanged
+        </span>
+        event
+                handler which places the current address into a variable,
+        <span class="ButtonText">
+         lastKnownLocation
+        </span>
+        . When a text comes in, the value of that
+                variable can be added to the response message. Here are the blocks you'll need:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             def variable
+            </span>
+            (lastKnownLocation)
+           </td>
+           <td>
+            Definitions
+           </td>
+           <td>
+            create a variable to hold the last read address
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ("unknown")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            set the default value in case the phone's sensor is not working
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             LocationSensor1.LocationChanged
+            </span>
+           </td>
+           <td>
+            LocationSensor1
+           </td>
+           <td>
+            this is triggered on the first location reading and every change.
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             set lastKnownLocation
+            </span>
+            to
+            <br />
+           </td>
+           <td>
+            My Definitions
+            <br />
+           </td>
+           <td>
+            set this variable to be used later.
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             LocationSensor1.CurrentAddress
+            </span>
+           </td>
+           <td>
+            LocationSensor1
+           </td>
+           <td>
+            this is a street address such as "2222 Willard Street, Atlanta, Georgia"
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        Here are the blocks:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" src="NoText2Assets/lastLocation.png" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        <span class="ButtonText">
+         LocationSensor1.LocationChanged
+        </span>
+        is called the first
+                time the sensor gets a reading and each time the phone is moved enough to trigger a
+                new reading. These blocks just place the current (street) address into the variable
+        <span class="ButtonText">
+         lastKnownLocation
+        </span>
+        , which you'll use later when you
+                change the auto-response that is sent out.
+       </p>
+       <h2>
+        Modify the message with location information
+       </h2>
+       <p>
+        Next, modify the
+        <span class="ButtonText">
+         Texting1.MessageReceived
+        </span>
+        event-handler so that the current address is added to the response. You'll need the
+                following blocks:
+       </p>
+       <div class="advtutorial">
+        <table>
+         <tbody>
+          <tr>
+           <td class="tbl-header">
+            Block Type
+           </td>
+           <td class="tbl-header">
+            Drawer
+           </td>
+           <td class="tbl-header">
+            Purpose
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             make text
+            </span>
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            if there is a location reading, build a compound text object
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             MessageTextBox.Text
+            </span>
+            <br />
+           </td>
+           <td>
+            MessageTextBox
+            <br />
+           </td>
+           <td>
+            this is the (custom) message in the text box
+            <br />
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             text
+            </span>
+            ( "My location is:")
+           </td>
+           <td>
+            Text
+           </td>
+           <td>
+            This will be spoken after the custom message (note the leading space)
+           </td>
+          </tr>
+          <tr>
+           <td>
+            <span class="ButtonText">
+             global lastKnownLocation
+            </span>
+           </td>
+           <td>
+            LocatonSensor
+           </td>
+           <td>
+            This is an address such as "2222 Willard Street, Atlanta, Georgia"
+           </td>
+          </tr>
+         </tbody>
+        </table>
+       </div>
+       <p>
+        The blocks should look like this:
+       </p>
+       <div class="imagecontainer">
+        <img alt="" height="445" src="NoText2Assets/ReceivedText.png" width="621" />
+       </div>
+       <h2>
+        How the Blocks Work
+       </h2>
+       <p>
+        Instead of directly sending a message of the text in
+        <span class="ButtonText">
+         MessageTextbox.Text
+        </span>
+        , the app first builds a message using
+        <span class="ButtonText">
+         make text
+        </span>
+        . It combines the response text in
+        <span class="ButtonText">
+         MessageTextBox.Text
+        </span>
+        with the text " My location is
+                " and then the variable
+        <span class="ButtonText">
+         lastKnownLocation
+        </span>
+        .
+       </p>
+       <blockquote class="testing">
+        <strong>
+         Test the behavior.
+        </strong>
+        From the second phone, send a text to the phone
+                that is running the app. Does the second phone receive the response text? Does it
+                include location information?
+        <br />
+       </blockquote>
+       <h2>
+        Final Program
+       </h2>
+       <div class="imagecontainer">
+        <img alt="" height="562" src="NoText2Assets/finalProg.png" width="940" />
+       </div>
+       <div class="advtutorial">
+        <h2>
+         Variations
+        </h2>
+        <p>
+         Once you get the app working, you might want to explore some variations. For
+                  example,
+        </p>
+        <ul>
+         <li>
+          Write a version that lets the user define custom responses for particular
+                  phone numbers.
+         </li>
+         <li>
+          Write a version that sounds an alarm when a text is received from a number in
+                  a "notify" list.
+         </li>
+        </ul>
+        <br />
+        <h2>
+         Review
+        </h2>
+        <p>
+         Here are some of the ideas covered in this tutorial:
+         <br />
+        </p>
+        <ul>
+         <li>
+          The
+          <span class="ButtonText">
+           TextToSpeech
+          </span>
+          component takes any text
+                  object and speaks it aloud. It relies on an Android module, T
+          <em>
+           ext-To-Speech
+                  Extended
+          </em>
+          , which must be downloaded to the phone for the app to work.
+         </li>
+         <li>
+          make text is used to piece together (concatenate) separate text items into a
+                  single text object.
+         </li>
+         <li>
+          The
+          <span class="ButtonText">
+           LocationSensor
+          </span>
+          component can report the
+                  phone's latitude, longitude, and current street address. To ensure that it has a
+                  reading, you should access Its data in its
+          <span class="ButtonText">
+           LocationChanged
+          </span>
+          event-handler, which is triggered the first
+                  time a reading is made and on every change thereafter.
+          <br />
+         </li>
+        </ul>
+        <h2>
+         Scan the Sample App to your Phone
+        </h2>
+        <p>
+         Scan the following barcode onto your phone to install and run the sample app.
+        </p>
+        <div class="imagecontainer">
+         <img alt="" height="215" src="NoText2Assets/barcode.png" width="254" />
+        </div>
+        <h2>
+         Download Source Code
+        </h2>
+        If you'd like to customize this sample in App Inventor, download the
+        <a href="NoText2Assets/notextwhiledriving2.zip">
+         source code
+        </a>
+        to your computer, then open
+                App Inventor, go to the
+        <span class="ButtonText">
+         My Projects
+        </span>
+        page, and
+                choose
+        <span class="ButtonText">
+         More Actions | Upload Source
+        </span>
+        .
+       </div>
+       <blockquote class="notice">
+        Google is grateful to
+        <a href="http://www.appinventor.org/">
+         Professor David
+                Wolber
+        </a>
+        , CS Professor at The University of San Francisco, for developing this
+                tutorial.
+       </blockquote>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

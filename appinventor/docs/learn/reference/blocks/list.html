@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   List Blocks - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <link href="test.css" rel="stylesheet" />
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/reference/">Reference</a> &gt; List             Blocks &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        List Blocks
+       </h1>
+       <ul>
+        <li>
+         <a href="#makealist">
+          make a list
+         </a>
+        </li>
+        <li>
+         <a href="#selectlistitem">
+          select list item
+         </a>
+        </li>
+        <li>
+         <a href="#replacelistitem">
+          replace list item
+         </a>
+        </li>
+        <li>
+         <a href="#removelistitem">
+          remove list item
+         </a>
+        </li>
+        <li>
+         <a href="#insertlistitem">
+          insert list item
+         </a>
+        </li>
+        <li>
+         <a href="#lengthoflist">
+          length of list
+         </a>
+        </li>
+        <li>
+         <a href="#appendtolist">
+          append to list
+         </a>
+        </li>
+        <li>
+         <a href="#additemstolist">
+          add items to list
+         </a>
+        </li>
+        <li>
+         <a href="#isinlist">
+          is in list?
+         </a>
+        </li>
+        <li>
+         <a href="#positioninlist">
+          position in list
+         </a>
+        </li>
+        <li>
+         <a href="#pickrandomitem">
+          pick random item
+         </a>
+        </li>
+        <li>
+         <a href="#islistempty">
+          is list empty?
+         </a>
+        </li>
+        <li>
+         <a href="#copylist">
+          copy list
+         </a>
+        </li>
+        <li>
+         <a href="#isalist">
+          is a list?
+         </a>
+        </li>
+        <li>
+         <a href="#listtocsvrow">
+          list to csv row
+         </a>
+        </li>
+        <li>
+         <a href="#listtocsvtable">
+          list to csv table
+         </a>
+        </li>
+        <li>
+         <a href="#listfromcsvrow">
+          list from csv row
+         </a>
+        </li>
+        <li>
+         <a href="#listfromcsvtable">
+          list from csv table
+         </a>
+        </li>
+       </ul>
+       <h2 id="makealist">
+        make a list
+       </h2>
+       <img alt="" src="images/makealist.png" />
+       <p>
+        Creates a list from the given blocks. If you don't supply any arguments, this
+                creates an empty list, which you can add elements to later.
+       </p>
+       <h2 id="selectlistitem">
+        select list item
+       </h2>
+       <img alt="" src="images/selectlistitem.png" />
+       <p>
+        Selects the item at the given index in the given list. The first list item is at
+                index 1.
+       </p>
+       <h2 id="replacelistitem">
+        replace list item
+       </h2>
+       <img alt="" src="images/replacelistitem.png" />
+       <p>
+        Inserts
+        <code>
+         replacement
+        </code>
+        into the given list at position
+        <code>
+         index
+        </code>
+        . The previous item at that position is removed.
+       </p>
+       <h2 id="removelistitem">
+        remove list item
+       </h2>
+       <img alt="" src="images/removelistitem.png" />
+       <p>
+        Removes the item at the specified position from the list.
+       </p>
+       <h2 id="insertlistitem">
+        insert list item
+       </h2>
+       <p>
+        Inserts an item into a list at the specified position.
+       </p>
+       <h2 id="lengthoflist">
+        length of list
+       </h2>
+       <img alt="" src="images/lengthoflist.png" />
+       <p>
+        Returns the number of items in the list.
+       </p>
+       <h2 id="appendtolist">
+        append to list
+       </h2>
+       <img alt="" src="images/appendtolist.png" />
+       <p>
+        Adds the items in the second list to the end of the first list
+       </p>
+       <h2 id="additemstolist">
+        add items to list
+       </h2>
+       <img alt="" src="images/additemstolist.png" />
+       <p>
+        Adds the given items to the end of the list. The difference between this and
+        <code>
+         append to list
+        </code>
+        is that
+        <code>
+         append to list
+        </code>
+        takes the items to
+                be appended as a single list, while
+        <code>
+         add items to list
+        </code>
+        takes the items
+                as individual arguments.
+       </p>
+       <h2 id="isinlist">
+        is in list?
+       </h2>
+       <img alt="" src="images/isinlist.png" />
+       <p>
+        If
+        <code>
+         thing
+        </code>
+        is one of the elements of the
+        <code>
+         list
+        </code>
+        , returns
+                true; otherwise, returns false. Note that if a list contains sublists, the members
+                of the sublists are not themselves members of the list. For example, the members of
+                the list (1 2 (3 4)) are 1, 2, and the list (3 4); 3 and 4 are not themselves
+                members of the list.
+       </p>
+       <h2 id="positioninlist">
+        position in list
+       </h2>
+       <img alt="" src="images/positioninlist.png" />
+       <p>
+        Returns the position of
+        <code>
+         thing
+        </code>
+        in the list, or 0 if it's not in the
+                list.
+       </p>
+       <h2 id="pickrandomitem">
+        pick random item
+       </h2>
+       <img alt="" src="images/pickrandomitem.png" />
+       <p>
+        Picks an item at random from the list.
+       </p>
+       <h2 id="islistempty">
+        is list empty?
+       </h2>
+       <img alt="" src="images/islistempty.png" />
+       <p>
+        If list has no items, returns true; otherwise, returns false.
+       </p>
+       <h2 id="copylist">
+        copy list
+       </h2>
+       <p>
+        Makes a copy of a list, including copying all sublists.
+       </p>
+       <h2 id="isalist">
+        is a list
+       </h2>
+       <img alt="" src="images/isalist.png" />
+       <p>
+        If
+        <code>
+         thing
+        </code>
+        is a list, returns true; otherwise, returns false.
+       </p>
+       <h2 id="listtocsvrow">
+        list to csv row
+       </h2>
+       <img alt="" height="32" src="images/listtocsvrow.png" />
+       <p>
+        Interprets the list as a row of a table and returns a CSV (comma-separated value)
+                text representing the row. Each item in the row list is considered to be a field,
+                and is quoted with double-quotes in the resulting CSV text. Items are separated by
+                commas. The returned row text does not have a line separator at the end.
+       </p>
+       <h2 id="listtocsvtable">
+        list to csv table
+       </h2>
+       <img alt="" height="32" src="images/listtocsvtable.png" />
+       <p>
+        Interprets the list as a table in row-major format and returns a CSV
+                (comma-separated value) text representing the table. Each item in the list should
+                itself be a list representing a row of the CSV table. Each item in the row list is
+                considered to be a field, and is quoted with double-quotes in the resulting CSV
+                text. In the returned text, items in rows are separated by commas and rows are
+                separated by CRLF (\r\n).
+       </p>
+       <h2 id="listfromcsvrow">
+        list from csv row
+       </h2>
+       <img alt="" height="32" src="images/listfromcsvrow.png" />
+       <p>
+        Parses a text as a CSV (comma-separated value) formatted row to produce a list of
+                fields. It is an error for the row text to contain unescaped newlines inside fields
+                (effectively, multiple lines). It is okay for the row text to end in a single
+                newline or CRLF
+       </p>
+       <h2 id="listfromcsvtable">
+        list from csv table
+       </h2>
+       <img alt="" height="32" src="images/listfromcsvtable.png" />
+       <p>
+        Parses a text as a CSV (comma-separated value) formatted table to produce a list of
+                rows, each of which is a list of fields. Rows can be separated by newlines (\n) or
+                CRLF (\r\n).
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

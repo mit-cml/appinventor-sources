@@ -1,0 +1,122 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="Button1_Click" x="12" y="-94">
+    <title name="COMPONENT_SELECTOR">Button1</title>
+    <statement name="DO">
+      <block type="Camera1_TakePicture">
+        <title name="COMPONENT_SELECTOR">Camera1</title>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" inline="false" x="627" y="-74">
+    <title name="NAME">picList</title>
+    <value name="VALUE">
+      <block type="lists_create_with" inline="false">
+        <mutation items="2"></mutation>
+      </block>
+    </value>
+  </block>
+  <block type="Camera1_AfterPicture" x="11" y="-14">
+    <title name="COMPONENT_SELECTOR">Camera1</title>
+    <statement name="DO">
+      <block type="lists_add_items" inline="false">
+        <mutation items="1"></mutation>
+        <value name="LIST">
+          <block type="lexical_variable_get">
+            <title name="VAR">global picList</title>
+          </block>
+        </value>
+        <value name="ITEM0">
+          <block type="lexical_variable_get">
+            <title name="VAR">image</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="global_declaration" inline="false" x="633" y="13">
+    <title name="NAME">Current</title>
+    <value name="VALUE">
+      <block type="math_number">
+        <title name="NUM">1</title>
+      </block>
+    </value>
+  </block>
+  <block type="Button2_Click" x="13" y="117">
+    <title name="COMPONENT_SELECTOR">Button2</title>
+    <statement name="DO">
+      <block type="Image1_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">Image1</title>
+        <title name="PROP">Picture</title>
+        <value name="VALUE">
+          <block type="lists_select_item" inline="false">
+            <value name="LIST">
+              <block type="lexical_variable_get">
+                <title name="VAR">global picList</title>
+              </block>
+            </value>
+            <value name="NUM">
+              <block type="lexical_variable_get">
+                <title name="VAR">global Current</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <next>
+          <block type="controls_if" inline="false">
+            <mutation else="1"></mutation>
+            <value name="IF0">
+              <block type="math_compare" inline="true">
+                <title name="OP">LT</title>
+                <value name="A">
+                  <block type="lexical_variable_get">
+                    <title name="VAR">global Current</title>
+                  </block>
+                </value>
+                <value name="B">
+                  <block type="lists_length" inline="false">
+                    <value name="LIST">
+                      <block type="lexical_variable_get">
+                        <title name="VAR">global picList</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </value>
+            <statement name="DO0">
+              <block type="lexical_variable_set" inline="false">
+                <title name="VAR">global Current</title>
+                <value name="VALUE">
+                  <block type="math_add" inline="true">
+                    <mutation items="2"></mutation>
+                    <value name="NUM0">
+                      <block type="lexical_variable_get">
+                        <title name="VAR">global Current</title>
+                      </block>
+                    </value>
+                    <value name="NUM1">
+                      <block type="math_number">
+                        <title name="NUM">1</title>
+                      </block>
+                    </value>
+                  </block>
+                </value>
+              </block>
+            </statement>
+            <statement name="ELSE">
+              <block type="lexical_variable_set" inline="false">
+                <title name="VAR">global Current</title>
+                <value name="VALUE">
+                  <block type="math_number">
+                    <title name="NUM">1</title>
+                  </block>
+                </value>
+              </block>
+            </statement>
+          </block>
+        </next>
+      </block>
+    </statement>
+  </block>
+</xml>

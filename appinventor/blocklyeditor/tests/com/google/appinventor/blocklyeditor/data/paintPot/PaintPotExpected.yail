@@ -1,0 +1,83 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_Jeffrey_Schiller.paintpot.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; ThreeButtons
+
+(add-component Screen1 HorizontalArrangement ThreeButtons 
+(set-and-coerce-property! 'ThreeButtons 'Width -2 'number)
+
+)
+
+;;; Red
+
+(add-component ThreeButtons Button Red 
+(set-and-coerce-property! 'Red 'BackgroundColor #xFFFF0000 'number)
+
+(set-and-coerce-property! 'Red 'Text "Red" 'text)
+
+(set-and-coerce-property! 'Red 'Width -2 'number)
+
+)
+
+(define-event Red Click()(set-this-form)
+    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -65536 'number))
+(define-event Blue Click()(set-this-form)
+    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16776961 'number))
+(define-event Green Click()(set-this-form)
+    (set-and-coerce-property! 'DrawingCanvas 'PaintColor -16711936 'number))
+(define-event Wipe Click()(set-this-form)
+    (call-component-method 'DrawingCanvas 'Clear (*list-for-runtime*) '()))
+;;; Blue
+
+(add-component ThreeButtons Button Blue 
+(set-and-coerce-property! 'Blue 'BackgroundColor #xFF0000FF 'number)
+
+(set-and-coerce-property! 'Blue 'Text "Blue" 'text)
+
+(set-and-coerce-property! 'Blue 'Width -2 'number)
+
+)
+
+;;; Green
+
+(add-component ThreeButtons Button Green 
+(set-and-coerce-property! 'Green 'BackgroundColor #xFF00FF00 'number)
+
+(set-and-coerce-property! 'Green 'Text "Green" 'text)
+
+(set-and-coerce-property! 'Green 'Width -2 'number)
+
+)
+
+;;; DrawingCanvas
+
+(add-component Screen1 Canvas DrawingCanvas 
+(set-and-coerce-property! 'DrawingCanvas 'Width -2 'number)
+
+(set-and-coerce-property! 'DrawingCanvas 'Height 300 'number)
+
+)
+
+(define-event DrawingCanvas Touched($x $y $touchedSprite)(set-this-form)
+    (call-component-method 'DrawingCanvas 'DrawCircle (*list-for-runtime* (lexical-value $x)  (lexical-value $y)  5) '(number number number)))
+(define-event DrawingCanvas Dragged($startX $startY $prevX $prevY $currentX $currentY $draggedSprite)(set-this-form)
+    (call-component-method 'DrawingCanvas 'DrawLine (*list-for-runtime* (lexical-value $prevX)  (lexical-value $prevY)  (lexical-value $currentX)  (lexical-value $currentY)) '(number number number number)))
+;;; Wipe
+
+(add-component Screen1 Button Wipe 
+(set-and-coerce-property! 'Wipe 'Text "Wipe" 'text)
+
+(set-and-coerce-property! 'Wipe 'Width -2 'number)
+
+)
+
+(init-runtime)

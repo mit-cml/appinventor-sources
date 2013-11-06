@@ -1,0 +1,59 @@
+/**
+ * To run this test make sure you add it to BlocklyEvalTest.java
+ * From the command line you can execute it from the appinventor folder with
+ * $> phantomjs blocklyeditor/tests/com/google/appinventor/generators_unit/NameOfTestFile.js
+ *
+ * Because we need to fully load Blockly for the generator functions to be available, we do so
+ * by using the html file at: blocklyeditor/src/demos/yail/yail_testing_index.html
+ *
+ * This particular template is a test for the block 'make a list ' ==  lists_create_with
+ * Author: Jos (josmasflores@gmail.com)
+ */
+
+// This could be read from a file, and it's the expected YAIL code that the generator should
+// create.
+var expected = "(call-yail-primitive make-yail-list (*list-for-runtime* ) '() \"make a list\")";
+
+// PhantomJS page object to open and load an URL - unfortunately we need to fully load Blockly
+var page = require('webpage').create();
+// Some debugging from PhantomJS
+page.onConsoleMessage = function (msg) { console.log(msg); };
+page.onError = function (msg, trace) {
+  console.log(msg);
+  trace.forEach(function(item) {
+    console.log('  ', item.file, ':', item.line);
+  });
+};
+
+// Open the actual page and load all the JavaScript in it
+// if success is true, all went well
+page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(status) {
+  //The evaluate function has arguments passed after the callback
+  //in this case we are passing the expected value defined earlier
+  if (status !== 'success') {
+    console.log('load unsuccessful');
+  }
+
+  var passed = page.evaluate(function(){
+
+    var expected = arguments[0];
+    //Here we create the block that we want to generate YAIL for
+    //Note that other blocks could be created, but they cannot be connected without rendering the
+    //block, and that is not supported outside the browser. So these tests are limited to creating
+    //generic blocks with no arguments.
+    var yailForBlock = Blockly.Yail.lists_create_with.call(
+        new Blockly.Block(Blockly.mainWorkspace, 'lists_create_with'));
+
+    if (yailForBlock.length !== 2)
+      return false;
+
+    // the return value of this function is the actual result: true == PASS | false == FAIL
+    return yailForBlock[0] === expected && yailForBlock[1] === 0;
+  }, expected);
+
+  //This is the actual result of the test
+  console.log(passed);
+
+  //Exit the phantom process
+  phantom.exit();
+});

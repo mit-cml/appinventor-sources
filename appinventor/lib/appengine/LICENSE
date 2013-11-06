@@ -1,0 +1,127 @@
+
+GOOGLE APP ENGINE SOFTWARE DEVELOPMENT KIT FOR JAVA LICENSE INFORMATION
+
+April 2, 2009
+
+=====
+
+The App Engine SDK is licensed to you under the Google App Engine Terms of Service (the "Terms"); you may not use this file except in compliance with the Terms.  You may obtain a copy of the Terms at
+
+    http://code.google.com/appengine/terms.html
+
+Unless required by applicable law or agreed to in writing, software distributed under the Terms is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the Terms for the specific language governing permissions and limitations under the Terms.
+
+This version of the App Engine SDK is being offered to the developer community on an "early look" basis and is "experimental" for purposes of the deprecation provisions of the Terms.  With the help of the developer community, Google will add new features to continually improve the SDK.  Once the SDK reaches a more finished form, Google intends to release most of the components under the Apache v2.0 open source license.  Use, reproduction, and distribution of any components of the App Engine SDK that are now or in the future released by Google under an open source software license shall be governed solely by the terms of that open source software license.
+
+=====
+
+
+LICENSE INFORMATION REGARDING BUNDLED THIRD-PARTY SOFTWARE
+
+The following third party software is distributed with the 
+Google App Engine SDK for Java and is provided under other 
+licenses and/or has source available from other locations. 
+
+* Jetty
+  License: Apache License v. 2.0 
+  Source code availability: http://www.mortbay.org/jetty/
+  Bundled in lib/appengine-tools-api.jar, impl/appengine-local-runtime.jar under org/mortbay
+    
+* Apache Ant
+  License: Apache License v. 2.0 
+  Source code availability: http://ant.apache.org/
+  Bundled in lib/impl/appengine-local-runtime.jar under org/apache/tools/ant
+  lib/shared/jsp/repackaged-appengine-ant-1.7.1.jar
+  lib/shared/jsp/repackaged-appengine-ant-launcher-1.7.1.jar
+
+* Apache HttpComponents
+  License: Apache License v. 2.0 
+  Source code availability: http://hc.apache.org/
+  Bundled in lib/impl/appengine-api-stubs.jar under org/apache/http
+
+* Jakarta Commons Logging 
+    License: Apache License v. 2.0 
+    Source code availability: http://commons.apache.org/logging/
+    Bundled in lib/impl/appengine-api-stubs.jar under org/apache/commons/logging
+    Modifications in /lib/shared/jsp/repackaged-appengine-commons-logger-1.1.1.jar at com/google/appengine/repackaged/org/apache/commons/logging
+    
+* Jakarta HTTP Client 
+    License: Apache License v. 2.0 
+    Source code availability: http://jakarta.apache.org/commons/httpclient/
+    Bundled in lib/impl/appengine-api-stubs.jar under org/apache/commons/httpclient
+
+* Jakarta Commons Codec
+    License: Apache License v. 2.0 
+    Source code availability: http://commons.apache.org/codec/
+    Bundled in lib/impl/appengine-api-stubs.jar under org/apache/commons/codec
+
+* Jakarta Commons EL
+    License: Apache License v. 2.0 
+    Source code availability: http://commons.apache.org/el/
+    lib/shared/jsp/repackaged-appengine-commons-el-1.0.jar
+
+* Jakarta Jasper
+    License: Apache License v. 2.0 
+    Source code availability: http://tomcat.apache.org/svn.html
+    lib/shared/jsp/repackaged-appengine-jasper-runtime-5.0.28.jar
+    lib/shared/jsp/repackaged-appengine-jasper-compiler-5.0.28.jar
+
+* Jakarta Taglibs
+    License: Apache License v. 2.0 
+    Source code availability: http://jakarta.apache.org/taglibs/
+    lib/tools/jsp/jakarta-standard-1.1.2.jar
+    lib/tools/jsp/jakarta-jstl-1.1.2.jar
+
+* Apache Geronimo 
+    Certain libraries and specifications from Apache Geronimo have
+    been used in this SDK. They are listed below.
+    License: Apache License v. 2.0 
+    Source code availability: http://geronimo.apache.org/apache-geronimo-v213-release.html
+
+  * Geronimo JavaMail 
+      Modifications at org/apache/geronimo/mail within appengine-api.jar
+
+  * Geronimo Activation 
+      Bundled in appengine-api.jar at javax/activation
+
+  * Geronimo JCache 
+      Bundled in appengine-api.jar at javax/cache
+  
+  * Geronimo Servlet Spec
+      lib/shared/geronimo-servlet_2.5_spec-1.2.jar
+
+  * Geronimo JSP Spec
+      lib/shared/geronimo-jsp_2.1_spec-1.0.1.jar
+
+  * Geronimo JSTL Expression Language (EL) 
+      lib/shared/geronimo-el_1.0_spec-1.0.1.jar
+
+* OpenSymphony Quartz
+    License: Apache License v. 2.0
+    Source code availability: http://www.quartz-scheduler.org/
+    Bundled in lib/impl/appengine-api-stubs.jar under org/quartz
+
+* Antlr 3
+    License: BSD
+    Source code availability: http://antlr.org
+    Bundled in lib/impl/appengine-api-tools.jar under com/google/appengine/repackaged/org/antlr
+
+* DataNucleus Access Platform
+    License: Apache License v. 2.0
+    Source code availability: http://www.datanucleus.org/
+    lib/tools/orm/datanucleus-core-1.1.5.jar
+    lib/tools/orm/datanucleus-jpa-1.1.5.jar
+    lib/tools/orm/datanucleus-enhancer-1.1.4.jar
+    lib/user/orm/datanucleus-core-1.1.5.jar
+    lib/user/orm/datanucleus-jpa-1.1.5.jar
+
+* YamlBeans
+    License: MIT
+    Source code availability: http://code.google.com/p/yamlbeans/
+    Bundled in lib/appengine-api-tools.jar under com/google/appengine/repackaged/net/sourceforge/yamlbeans
+
+* MediaUtil
+    License: BSD
+    Copyright (C) 1999-2005 Dmitriy Rogatkin, Suresh Mahalingam.  All rights reserved.
+    Source code availability: http://mediachest.sourceforge.net/mediautil/
+    Bundled in lib/impl/appengine-api-stubs.jar under mediautil

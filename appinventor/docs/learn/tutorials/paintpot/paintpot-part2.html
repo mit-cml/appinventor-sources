@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="utf-8" />
+  <meta content="App Inventor for Android" name="description" />
+  <meta content="Android, Blocks App Inventor, Mobile, Phone, IDE" name="keywords" />
+  <title>
+   Paint Pot (Part 2) - App Inventor for Android
+  </title>
+  <link href="/static/images/appinventor-16.png" rel="SHORTCUT ICON" type="image/ico" />
+  <link href="/static/images/appinventor-16.png" rel="icon" type="image/png" />
+  <link href="/static/css/appinventor.css" rel="stylesheet" />
+  <script src="http://www.google.com/js/gweb/analytics/autotrack.js">
+  </script>
+  <script>
+   var tracker = new gweb.analytics.AutoTrack({
+        profile: 'UA-5856106-2'
+      });
+  </script>
+  <script language = "JavaScript" src="/static/scripts/HeaderAndFooter.js"></script>
+  <style>
+   img.c2 {border-width:0}
+    div.c1 {clear:both;}
+  </style>
+ </head>
+ <body>
+  <script language = "JavaScript">createHeader('<div id="navigation-breadcrumb"> <a href="/learn/">Learn</a> &gt; <a href="/learn/tutorials/">Tutorials</a> &gt; Paint             Pot (Part 2) &gt; ');</script><br>
+  <div id="aiac">
+   <div class="main-container">
+    <div class="customhr customhr-gray">
+    </div>
+    <div class="content">
+     <div class="content-body">
+      <div class="learn-page">
+       <h1>
+        PaintPot (Part 2)
+       </h1>
+       <p>
+        This project extends
+        <a href="paintpot-part1.html">
+         Part 1
+        </a>
+        of the tutorial to
+                create both large and small dots, as a demonstration of how to use
+        <em>
+         global
+                variables
+        </em>
+        .
+       </p>
+       <h2>
+        Starting
+       </h2>
+       <p>
+        Make sure you've completed the
+        <a href="/learn/setup/index.html">
+         Set Up
+        </a>
+        process
+                and you have your completed project from
+        <a href="paintpot-part1.html">
+         PaintPot
+                Part 1
+        </a>
+        loaded.
+       </p>
+       <p>
+        Start where you left off at the end of Part 1, with the project open in App
+                Inventor. Use the
+        <span class="ButtonText">
+         Save As
+        </span>
+        button to make a copy of
+                PaintPot so you can work on the new version without affecting the original version.
+                Name the copy PaintPotV2 (with no spaces). After saving a copy, you should see
+                PaintPotV2 in the
+        <span class="ButtonText">
+         Designer
+        </span>
+        .
+       </p>
+       <h2>
+        Creating variables
+       </h2>
+       <p>
+        The size of the dots drawn on the canvas is determined in the
+        <span class="Block">
+         when DrawingCanvas.Touched
+        </span>
+        event handler where
+        <span class="Block">
+         call Drawing.DrawCircle
+        </span>
+        is called with
+        <span class="ButtonText">
+         r
+        </span>
+        , the radius of the circle, equal to 5. To change the
+                thickness, all we need to do is use different values for
+        <span class="ButtonText">
+         r
+        </span>
+        . Use
+        <em>
+         r
+        </em>
+        = 2 for small dots and
+        <em>
+         r
+        </em>
+        = 8 for
+                large dots.
+       </p>
+       <p>
+        Start by creating names for these values:
+       </p>
+       <ol>
+        <li>
+         Open the Blocks Editor if it isn't already open and connect the phone. Your
+                phone should show the buttons and the canvas you built previously.
+        </li>
+        <li>
+         In the Blocks Editor, in the
+         <span class="ButtonText">
+          Built-In
+         </span>
+         column,
+                open the
+         <span class="ButtonText">
+          Definitions
+         </span>
+         drawer. Drag out a
+         <span class="Block">
+          def variable
+         </span>
+         block. Change the text that reads
+         <span class="ButtonText">
+          variable
+         </span>
+         to read
+         <span class="ButtonText">
+          small
+         </span>
+         . A yellow warning exclamation mark will appear on the
+                  block. If you mouse over this you'll see a warning message explaining that the
+                  block has an empty socket.
+        </li>
+        <li>
+         You need to fill in the socket with a number block that specifies the value for
+         <span class="ButtonText">
+          small
+         </span>
+         -- use 2 as the value. To create the number
+                block, type the number 2. A menu will appear, showing you all the possible blocks
+                that include "2" in their name. Click on the first one, which is the number 2
+                itself, and a number block with the value 2 should appear. Plug that in to the
+         <span class="Block">
+          def variable
+         </span>
+         block. The yellow warning mark will
+                disappear, because the empty socket has been filled. (The second value listed in
+                the menu is the math block
+         <span class="ButtonText">
+          atan2
+         </span>
+         , which you won't
+                use here.)
+        </li>
+       </ol>
+       <p>
+        Here are the steps in the sequence:
+       </p>
+       <div class="imagecontainer">
+        <table align="center" cellspacing="10">
+         <tr valign="top">
+          <td>
+           <img alt="" src="PaintPotAssets/vardefblocks/vb1.png" width="166" />
+          </td>
+          <td>
+           <img alt="" src="PaintPotAssets/vardefblocks/vb2.png" width="166" />
+          </td>
+         </tr>
+         <tr valign="top">
+          <td>
+           <img alt="" src="PaintPotAssets/vardefblocks/vb3.png" width="166" />
+          </td>
+          <td>
+           <img alt="" src="PaintPotAssets/vardefblocks/vb4.png" width="166" />
+          </td>
+          <td>
+           <img alt="" src="PaintPotAssets/vardefblocks/vb5.png" width="200" />
+          </td>
+         </tr>
+        </table>
+       </div>
+       <p>
+        You've now defined a global variable named
+        <span class="ButtonText">
+         small
+        </span>
+        whose value is the number 2.
+       </p>
+       <p>
+        Similar to
+        <span class="ButtonText">
+         small
+        </span>
+        , define a global variable
+        <span class="ButtonText">
+         big
+        </span>
+        , whose value is 8.
+       </p>
+       <p>
+        Finally, define a global variable
+        <span class="ButtonText">
+         dotsize
+        </span>
+        and give
+                it an initial value of 2.
+       </p>
+       <blockquote class="notice">
+        You might wonder whether it would be better programming style to make the initial
+                value of
+        <span class="ButtonText">
+         dotsize
+        </span>
+        be the value of
+        <span class="ButtonText">
+         small
+        </span>
+        rather than 2. That would be true, except for a subtle
+                programming point: Doing that would be relying on the assumption that
+        <span class="ButtonText">
+         small
+        </span>
+        will already have a value at the point where
+        <span class="ButtonText">
+         dotsize
+        </span>
+        is assigned its value. In App Inventor, you can't make
+                assumptions about the order in which different
+        <span class="Block">
+         def
+        </span>
+        blocks will be processed. In general, of course, you really
+        <em>
+         would
+        </em>
+        like to
+                specify the order in which variables are assigned. You can do this by assigning all
+                values when the application is initialized, using the Screen initialize event. The
+        <a href="http:/learn/tutorials/quizme/quizme.html">
+         Quiz Me
+        </a>
+        tutorial gives an
+                example of initialization.
+       </blockquote>
+       <h2>
+        Using variables
+       </h2>
+       <p>
+        Now change the call to
+        <span class="ButtonText">
+         DrawCircle
+        </span>
+        in the touch
+                event handler so that it uses the value of
+        <span class="ButtonText">
+         dotsize
+        </span>
+        rather than always using 5.
+       </p>
+       In the Blocks Editor, switch to the
+       <span class="ButtonText">
+        My Blocks
+       </span>
+       column, and open the
+       <span class="ButtonText">
+        My Definitions
+       </span>
+       drawer. You
+              should see six new blocks, two for each of the three variables defined:
+       <ul>
+        <li>
+         a
+         <span class="Block">
+          global ...
+         </span>
+         block that produces the value of the
+                variable
+        </li>
+        <li>
+         a
+         <span class="Block">
+          set global ...
+         </span>
+         block that sets the variable to a
+                new value.
+        </li>
+       </ul>
+       <p>
+        These blocks were automatically created, similarly to the way that the blocks for
+        <span class="ButtonText">
+         x
+        </span>
+        and
+        <span class="ButtonText">
+         y
+        </span>
+        were
+                created when you defined the
+        <span class="Block">
+         when DrawingCanvas.Touched
+        </span>
+        event handler in the part 1 of this tutorial. "Global" means "global variable", in
+                contrast to the event-handler arguments, whose blocks are labeled "value". The
+                difference is that the argument values are accessible only within the body of the
+                event handler, while global variables are accessible throughout the entire program.
+       </p>
+       <ul>
+        <li>
+         Go to the
+         <span class="Block">
+          when MyCanvas.Touched
+         </span>
+         event handler and
+                replace the number 5 block in
+         <span class="Block">
+          call DrawCircle
+         </span>
+         with the
+         <span class="Block">
+          global dotsize
+         </span>
+         block from the
+         <span class="ButtonText">
+          MyDefinitions
+         </span>
+         drawer.
+        </li>
+       </ul>
+       <h2>
+        Changing the values of variables
+       </h2>
+       <p>
+        Now set up a way to change dotsize to be small (2) or big (8). Do this with
+                buttons.
+       </p>
+       <ol>
+        <li>
+         In the Designer, drag a
+         <span class="ButtonText">
+          HorizontalArrangement
+         </span>
+         component into the Viewer pane below the
+         <span class="ButtonText">
+          DrawingCanvas
+         </span>
+         component. Name the component
+         <span class="ButtonText">
+          BottomButtons
+         </span>
+        </li>
+        <li>
+         Drag the existing
+         <span class="ButtonText">
+          Wipe
+         </span>
+         button into
+         <span class="ButtonText">
+          BottomButtons
+         </span>
+         .
+        </li>
+        <li>
+         Drag two more button components from the Palette into
+         <span class="ButtonText">
+          BottomButtons
+         </span>
+         , placing them next to the
+         <span class="ButtonText">
+          Wipe
+         </span>
+         button.
+        </li>
+        <li>
+         Name the buttons
+         <span class="ButtonText">
+          ButtonBig
+         </span>
+         and
+         <span class="ButtonText">
+          ButtonSmall
+         </span>
+         , and set their
+         <span class="ButtonText">
+          Text
+         </span>
+         to read "Big dots" and "Small dots", respectively.
+        </li>
+        <li>
+         In the Blocks Editor under
+         <span class="ButtonText">
+          My Blocks
+         </span>
+         , create a
+         <span class="Block">
+          when ... Clicked
+         </span>
+         event handler for
+         <span class="ButtonText">
+          ButtonSmall
+         </span>
+         that changes dotsize to be the value of small. To
+                change
+         <span class="ButtonText">
+          dotsize
+         </span>
+         use the
+         <span class="Block">
+          set
+                global dotsize to
+         </span>
+         block from the
+         <span class="ButtonText">
+          MyDefinitions
+         </span>
+         drawer and plug in the
+         <span class="Block">
+          global
+                small
+         </span>
+         block.
+        </li>
+        <li>
+         Make a similar event handler for
+         <span class="ButtonText">
+          ButtonBig
+         </span>
+         .
+        </li>
+       </ol>
+       The two click event handlers should look like this:
+       <div class="imagecontainer">
+        <img alt="" height="109" src="PaintPotAssets/PaintPot2Clicks.png" width="578" />
+       </div>
+       <p>
+        You're done! You can draw in PaintPot and use the new buttons to draw either big
+                dots or small dots. Notice that dragging your finger still produces a thin line.
+                That's because the changes we just made don't affect how
+        <span class="ButtonText">
+         DrawLine
+        </span>
+        is called.
+       </p>
+       Here's the finished program in the
+       <span class="ButtonText">
+        Designer
+       </span>
+       <div class="imagecontainer">
+        <img alt="" src="PaintPotAssets/PaintPotAllDesigner.png" width="600" />
+       </div>
+       and in the Blocks window
+       <div class="imagecontainer">
+        <img alt="" height="454" src="PaintPotAssets/PaintPotAllBlocks.png" width="800" />
+       </div>
+       <blockquote class="notice">
+        <em>
+         A bug for you to work on:
+        </em>
+        The program you just built has a slight bug. If
+                you start drawing before pressing any of the paint buttons, the paint color will be
+                black; but after you choose a color, there's no way to get back to black. Think
+                about how you could fix that.
+       </blockquote>
+       <h2>
+        Review
+       </h2>
+       <p>
+        You create global variables by using
+        <span class="ButtonText">
+         def
+        </span>
+        blocks
+                from the
+        <span class="ButtonText">
+         Definitions
+        </span>
+        drawer.
+       </p>
+       <p>
+        For each global variable you define, App Inventor automatically supplies a
+        <span class="Block">
+         global
+        </span>
+        block that gives the value of the variable, and a
+        <span class="Block">
+         set global ... to
+        </span>
+        block for changing the value of the
+                variable. These blocks can be found in the
+        <span class="ButtonText">
+         My
+                Definitions
+        </span>
+        drawer.
+       </p>
+      </div>
+     </div>
+    </div>
+    <div class="footer">
+     <script language = "JavaScript">createFooter();</script><br>
+     <div class="footer-lastupdate">
+      <script>
+       if (document.lastModified != '') {
+                var m = "Page last updated: " + document.lastModified;
+                var p = m.length-8;
+                document.writeln("<center>");
+                document.write(m.substring(p, 0));
+                document.writeln("<\/center>");
+              }
+      </script>
+     </div>
+    </div>
+   </div>
+  </div>
+ </body>
+</html>

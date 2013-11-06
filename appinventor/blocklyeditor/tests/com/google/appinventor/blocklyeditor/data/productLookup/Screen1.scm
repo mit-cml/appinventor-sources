@@ -1,0 +1,4 @@
+#|
+$JSON
+{"YaVersion":"76","Source":"Form","Properties":{"$Name":"Screen1","$Type":"Form","$Version":"10","Uuid":"0","AlignHorizontal":"3","Title":"Product Lookup","$Components":[{"$Name":"Label2","$Type":"Label","$Version":"2","Uuid":"1041475519","FontSize":"20","Text":"Scan the barcode of any product you wish to look up.","TextAlignment":"1","Width":"-2","Height":"40"},{"$Name":"Button1","$Type":"Button","$Version":"5","Uuid":"902139557","FontBold":"True","FontSize":"30","Text":"Scan Now"},{"$Name":"HorizontalArrangement1","$Type":"HorizontalArrangement","$Version":"2","Uuid":"77942656","$Components":[{"$Name":"Label3","$Type":"Label","$Version":"2","Uuid":"-1713891082","Text":"UPC:"},{"$Name":"Label1","$Type":"Label","$Version":"2","Uuid":"232001132"}]},{"$Name":"ActivityStarter1","$Type":"ActivityStarter","$Version":"4","Uuid":"915948893"},{"$Name":"BarcodeScanner1","$Type":"BarcodeScanner","$Version":"1","Uuid":"1212356011"}]}}
+|#

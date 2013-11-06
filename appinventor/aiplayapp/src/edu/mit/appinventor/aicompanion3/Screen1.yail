@@ -1,0 +1,268 @@
+#|
+$Source $Yail
+|#
+
+(define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (startdirectconnect )  (let ( (ignore "")  )   (set-lexical! ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"    ) '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t    ) '(boolean)))
+(def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
+(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)    ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f    ) '(boolean)))
+(def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*   ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")    ) '(list))    ) '(text)))
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+ (set-and-coerce-property! 'Screen1 'BackgroundColor #x00FFFFFF 'number)
+ (set-and-coerce-property! 'Screen1 'BackgroundImage "mooning.png" 'text)
+ (set-and-coerce-property! 'Screen1 'Icon "AI2Companion-Icon.png" 'text)
+ (set-and-coerce-property! 'Screen1 'Title "MIT App Inventor 2 Companion" 'text)
+)
+
+(define-event Screen1 Initialize()(set-this-form)
+    (set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*   ) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*   ) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*   ) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*   ) '()) 'text))
+;;; Header
+
+(add-component Screen1 HorizontalArrangement Header 
+(set-and-coerce-property! 'Header 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'Header 'Width -2 'number)
+
+)
+
+;;; Image1
+
+(add-component Header Image Image1 
+(set-and-coerce-property! 'Image1 'Picture "Title.png" 'text)
+
+)
+
+;;; EmulatorPanel
+
+(add-component Screen1 VerticalArrangement EmulatorPanel 
+(set-and-coerce-property! 'EmulatorPanel 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'EmulatorPanel 'Width -2 'number)
+
+)
+
+;;; Label5
+
+(add-component EmulatorPanel Label Label5 
+(set-and-coerce-property! 'Label5 'Text "Running in the emulator, waiting to get blocks..." 'text)
+
+)
+
+;;; ErrorLabel
+
+(add-component Screen1 Label ErrorLabel 
+(set-and-coerce-property! 'ErrorLabel 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'ErrorLabel 'TextColor #xFFFF0000 'number)
+
+(set-and-coerce-property! 'ErrorLabel 'Width -2 'number)
+
+)
+
+;;; PhonePanel
+
+(add-component Screen1 VerticalArrangement PhonePanel 
+(set-and-coerce-property! 'PhonePanel 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'PhonePanel 'Width -2 'number)
+
+)
+
+;;; Spacer1
+
+(add-component PhonePanel Label Spacer1 
+(set-and-coerce-property! 'Spacer1 'Visible #f 'boolean)
+
+(set-and-coerce-property! 'Spacer1 'Height 8 'number)
+
+)
+
+;;; instructionContainer
+
+(add-component PhonePanel HorizontalArrangement instructionContainer 
+(set-and-coerce-property! 'instructionContainer 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'instructionContainer 'Width -2 'number)
+
+)
+
+;;; Spacer2
+
+(add-component instructionContainer Label Spacer2 
+(set-and-coerce-property! 'Spacer2 'Width 8 'number)
+
+)
+
+;;; Image2
+
+(add-component instructionContainer Image Image2 
+(set-and-coerce-property! 'Image2 'Picture "Instructions.png" 'text)
+
+)
+
+;;; Spacer3
+
+(add-component instructionContainer Label Spacer3 
+(set-and-coerce-property! 'Spacer3 'Width 8 'number)
+
+)
+
+;;; Label10
+
+(add-component PhonePanel Label Label10 
+(set-and-coerce-property! 'Label10 'Height 8 'number)
+
+)
+
+;;; HorizontalArrangement2
+
+(add-component PhonePanel HorizontalArrangement HorizontalArrangement2 
+(set-and-coerce-property! 'HorizontalArrangement2 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'HorizontalArrangement2 'Width -2 'number)
+
+)
+
+;;; Label7
+
+(add-component HorizontalArrangement2 Label Label7 
+(set-and-coerce-property! 'Label7 'Width 16 'number)
+
+)
+
+;;; CodeBox
+
+(add-component HorizontalArrangement2 TextBox CodeBox 
+(set-and-coerce-property! 'CodeBox 'FontTypeface 1 'number)
+
+(set-and-coerce-property! 'CodeBox 'Hint "Six Digit Code" 'text)
+
+(set-and-coerce-property! 'CodeBox 'MultiLine #t 'boolean)
+
+(set-and-coerce-property! 'CodeBox 'TextAlignment 1 'number)
+
+(set-and-coerce-property! 'CodeBox 'Width -2 'number)
+
+)
+
+;;; Label8
+
+(add-component HorizontalArrangement2 Label Label8 
+(set-and-coerce-property! 'Label8 'Width 16 'number)
+
+)
+
+;;; Label9
+
+(add-component PhonePanel Label Label9 
+(set-and-coerce-property! 'Label9 'Height 4 'number)
+
+)
+
+;;; ConnectButton
+
+(add-component PhonePanel Button ConnectButton 
+(set-and-coerce-property! 'ConnectButton 'BackgroundColor #xFFFFFF00 'number)
+
+(set-and-coerce-property! 'ConnectButton 'FontSize 18 'number)
+
+(set-and-coerce-property! 'ConnectButton 'Image "connectwCode.png" 'text)
+
+(set-and-coerce-property! 'ConnectButton 'TextColor #xFF000000 'number)
+
+)
+
+(define-event ConnectButton Click()(set-this-form)
+    (call-component-method 'CodeBox 'HideKeyboard (*list-for-runtime*   ) '())((get-var doconnect) (get-property 'CodeBox 'Text)))
+;;; Spacer
+
+(add-component PhonePanel Label Spacer 
+(set-and-coerce-property! 'Spacer 'Height 8 'number)
+
+)
+
+;;; ScanButton
+
+(add-component PhonePanel Button ScanButton 
+(set-and-coerce-property! 'ScanButton 'BackgroundColor #xFF00FF00 'number)
+
+(set-and-coerce-property! 'ScanButton 'FontSize 18 'number)
+
+(set-and-coerce-property! 'ScanButton 'Image "connectwQR.png" 'text)
+
+(set-and-coerce-property! 'ScanButton 'TextColor #xFFFFFFFF 'number)
+
+)
+
+(define-event ScanButton Click()(set-this-form)
+    (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*   ) '()))
+;;; IPContainer
+
+(add-component Screen1 HorizontalArrangement IPContainer 
+(set-and-coerce-property! 'IPContainer 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'IPContainer 'Width -2 'number)
+
+)
+
+;;; Label4
+
+(add-component IPContainer Label Label4 
+(set-and-coerce-property! 'Label4 'Text "Your IP Address is: " 'text)
+
+)
+
+;;; ipaddrlabel
+
+(add-component IPContainer Label ipaddrlabel 
+(set-and-coerce-property! 'ipaddrlabel 'Text "Unknown" 'text)
+
+)
+
+;;; HorizontalArrangement3
+
+(add-component Screen1 HorizontalArrangement HorizontalArrangement3 
+(set-and-coerce-property! 'HorizontalArrangement3 'AlignHorizontal 3 'number)
+
+(set-and-coerce-property! 'HorizontalArrangement3 'Width -2 'number)
+
+)
+
+;;; Label11
+
+(add-component HorizontalArrangement3 Label Label11 
+(set-and-coerce-property! 'Label11 'Text "Version: " 'text)
+
+)
+
+;;; versionlabel
+
+(add-component HorizontalArrangement3 Label versionlabel 
+(set-and-coerce-property! 'versionlabel 'Text "Unknown" 'text)
+
+)
+
+;;; PhoneStatus1
+
+(add-component Screen1 PhoneStatus PhoneStatus1 
+)
+
+;;; Web1
+
+(add-component Screen1 Web Web1 
+(set-and-coerce-property! 'Web1 'Url "http://rendezvous.appinventor.mit.edu/rendezvous/" 'text)
+
+)
+
+;;; BarcodeScanner1
+
+(add-component Screen1 BarcodeScanner BarcodeScanner1 
+)
+
+(define-event BarcodeScanner1 AfterScan(result)(set-this-form)
+    (set-and-coerce-property! 'CodeBox 'Text (lexical-value result) 'text)((get-var doconnect) (lexical-value result)))
+(init-runtime)

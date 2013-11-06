@@ -1,0 +1,35 @@
+#|
+$Source $Yail
+|#
+
+(define-form fakepackagename Screen1)
+(require <com.google.youngandroid.runtime>)
+;;; Screen1
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
+(set-and-coerce-property! 'Screen1 'Title "ClockTest" 'text)
+)
+;;; HorizontalArrangement1
+(add-component Screen1 HorizontalArrangement HorizontalArrangement1 )
+;;; Label1
+(add-component HorizontalArrangement1 Label Label1 (set-and-coerce-property! 'Label1 'Text "What time is it?" 'text)
+)
+;;; Button1
+(add-component HorizontalArrangement1 Button Button1 (set-and-coerce-property! 'Button1 'Text "Press Me" 'text)
+)
+(define-event Button1 Click()
+ (set-this-form)
+ (set-and-coerce-property! 'Label2 'Text (call-component-method 'Clock1 'FormatTime (*list-for-runtime* (call-component-method 'Clock1 'Now (*list-for-runtime*)
+ '())
+)
+ '( InstantInTime)
+)
+ 'text)
+
+)
+;;; Label2
+(add-component Screen1 Label Label2 (set-and-coerce-property! 'Label2 'FontBold #t 'boolean)
+(set-and-coerce-property! 'Label2 'FontSize 30 'number)
+)
+;;; Clock1
+(add-component Screen1 Clock Clock1 )
+(init-runtime)

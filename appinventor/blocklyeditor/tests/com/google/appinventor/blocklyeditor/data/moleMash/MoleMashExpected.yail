@@ -1,0 +1,71 @@
+#|
+$Source $Yail
+|#
+
+(define-form fakepackagename Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$MoveMole )  (call-component-method 'Mole 'MoveTo (*list-for-runtime* (call-yail-primitive * (*list-for-runtime* (call-yail-primitive random-fraction (*list-for-runtime*) '() "random fraction") (call-yail-primitive - (*list-for-runtime* (get-property 'MyCanvas 'Width) (get-property 'Mole 'Width)) '(number number) "-") ) '(number number ) "*")  (call-yail-primitive * (*list-for-runtime* (call-yail-primitive random-fraction (*list-for-runtime*) '() "random fraction") (call-yail-primitive - (*list-for-runtime* (get-property 'MyCanvas 'Height) (get-property 'Mole 'Height)) '(number number) "-") ) '(number number ) "*")) '(number number)))
+(def g$score 0)
+(def (p$UpdateScore )  (set-and-coerce-property! 'ScoreLabel 'Text (call-yail-primitive string-append (*list-for-runtime* "Score:" (get-var g$score) ) '(text text ) "join") 'text))
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; MyCanvas
+
+(add-component Screen1 Canvas MyCanvas 
+(set-and-coerce-property! 'MyCanvas 'Width -2 'number)
+
+(set-and-coerce-property! 'MyCanvas 'Height 300 'number)
+
+)
+
+;;; Mole
+
+(add-component MyCanvas ImageSprite Mole 
+(set-and-coerce-property! 'Mole 'Interval 600 'number)
+
+(set-and-coerce-property! 'Mole 'Picture "mole.png" 'text)
+
+(set-and-coerce-property! 'Mole 'X 100 'number)
+
+(set-and-coerce-property! 'Mole 'Y 100 'number)
+
+)
+
+(define-event Mole Touched($x $y)(set-this-form)
+    (set-var! g$score (call-yail-primitive + (*list-for-runtime* (get-var g$score) 1 ) '(number number ) "+"))(call-component-method 'Noise 'Vibrate (*list-for-runtime* 100) '(number))((get-var p$UpdateScore) )((get-var p$MoveMole) ))
+;;; ScoreLabel
+
+(add-component Screen1 Label ScoreLabel 
+(set-and-coerce-property! 'ScoreLabel 'Text "..." 'text)
+
+)
+
+;;; ResetButton
+
+(add-component Screen1 Button ResetButton 
+(set-and-coerce-property! 'ResetButton 'Text "Reset" 'text)
+
+)
+
+(define-event ResetButton Click()(set-this-form)
+    (set-var! g$score 0)((get-var p$UpdateScore) ))
+;;; Noise
+
+(add-component Screen1 Sound Noise 
+)
+
+;;; MoleTimer
+
+(add-component Screen1 Clock MoleTimer 
+(set-and-coerce-property! 'MoleTimer 'TimerInterval 500 'number)
+
+)
+
+(define-event MoleTimer Timer()(set-this-form)
+    ((get-var p$MoveMole) ))
+(init-runtime)
+

@@ -1,0 +1,12 @@
+URL: http://args4j.kohsuke.org/
+Version: 2.0.18
+License: MIT
+License File: LICENSE
+
+Description:
+args4j is a small Java class library that makes it easy to parse command line
+options/arguments in your CUI application.
+
+Local Modifications:
+No Modifications
+
