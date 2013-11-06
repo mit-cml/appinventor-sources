@@ -73,7 +73,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.ASCENDING;
 
     // Initialize UI
-    table = new Grid(1, 3); // The table initially contains just the header row.
+    table = new Grid(1, 4); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
