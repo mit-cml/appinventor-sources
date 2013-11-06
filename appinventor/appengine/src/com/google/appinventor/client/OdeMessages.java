@@ -54,7 +54,7 @@ public interface OdeMessages extends Messages {
   @Description("Text on Toggle Warning Button")
   String hideWarnings();
 
-  @DefaultMessage("Upload new...")
+  @DefaultMessage("Upload File ...")
   @Description("Text on 'Add...' button")
   String addButton();
 
@@ -76,15 +76,15 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for save")
   String saveButton();
 
-  @DefaultMessage("Save As")
+  @DefaultMessage("Save As...")
   @Description("Label of the button for save as")
   String saveAsButton();
 
-  @DefaultMessage("Checkpoint")
+  @DefaultMessage("Checkpoint ...")
   @Description("Label of the button for checkpoint")
   String checkpointButton();
 
-  @DefaultMessage("Add Screen")
+  @DefaultMessage("Add Screen ...")
   @Description("Label of the button for adding a new screen")
   String addFormButton();
 
@@ -106,7 +106,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor")
   String openBlocksEditorButton();
 
-  @DefaultMessage("Screens...")
+  @DefaultMessage("Screens ...")
   @Description("Label of the button for switching screens")
   String screensButton();
 
@@ -118,11 +118,11 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
 
-  @DefaultMessage("Application ( provide QR code )")
+  @DefaultMessage("App ( provide QR code )")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeButton();
 
-  @DefaultMessage("Application ( save to my computer )")
+  @DefaultMessage("App ( save to my computer )")
   @Description("Label of item for building a project and downloading")
   String downloadToComputerButton();
 
@@ -134,7 +134,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button leading to build related cascade items")
   String buildButton();
 
-  @DefaultMessage("Packaging...")
+  @DefaultMessage("Packaging ...")
   @Description("Label of the button leading to build related cascade items, when building")
   String isBuildingButton();
 
@@ -180,27 +180,27 @@ public interface OdeMessages extends Messages {
 
   // Used in RpcStatusPopup.java
 
-  @DefaultMessage("Loading...")
+  @DefaultMessage("Loading ...")
   @Description("Message that is shown to indicate that a loading RPC is going on")
   String defaultRpcMessage();
 
-  @DefaultMessage("Saving...")
+  @DefaultMessage("Saving ...")
   @Description("Message that is shown to indicate that a saving RPC is going on")
   String savingRpcMessage();
 
-  @DefaultMessage("Copying...")
+  @DefaultMessage("Copying ...")
   @Description("Message that is shown to indicate that a copying RPC is going on")
   String copyingRpcMessage();
 
-  @DefaultMessage("Deleting...")
+  @DefaultMessage("Deleting ...")
   @Description("Message that is shown to indicate that a deleting RPC is going on")
   String deletingRpcMessage();
 
-  @DefaultMessage("Packaging...")
+  @DefaultMessage("Packaging ...")
   @Description("Message shown during a building RPC (for Young Android, called 'packaging')")
   String packagingRpcMessage();
 
-  @DefaultMessage("Downloading to phone...")
+  @DefaultMessage("Downloading to phone ...")
   @Description("Message shown while downloading application to the phone (during compilation)")
   String downloadingRpcMessage();
 
@@ -232,15 +232,15 @@ public interface OdeMessages extends Messages {
 
   // Used in TopPanel.java
 
-  @DefaultMessage("Import Project")
+  @DefaultMessage("Import ...")
   @Description("Name of Import Project menuitem")
   String importProjectButton();
 
-  @DefaultMessage("Export Project")
+  @DefaultMessage("Export")
   @Description("Name of Export Project menuitem")
   String exportProjectButton();
 
-  @DefaultMessage("Export all Projects")
+  @DefaultMessage("Export all")
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsButton();
 
@@ -738,12 +738,12 @@ public interface OdeMessages extends Messages {
 
   // Used in explorer/commands/AddFormCommand.java
 
-  @DefaultMessage("New Form")
-  @Description("Title of new form dialog.")
+  @DefaultMessage("New Screen")
+  @Description("Title of new Screen dialog.")
   String newFormTitle();
 
-  @DefaultMessage("Form name:")
-  @Description("Label in front of name in new form dialog.")
+  @DefaultMessage("Screen name:")
+  @Description("Label in front of name in new screen dialog.")
   String formNameLabel();
 
   @DefaultMessage("Screen names can contain only letters, numbers, and underscores and must " +
@@ -874,11 +874,19 @@ public interface OdeMessages extends Messages {
 
   // Used in explorer/youngandroid/Toolbar.java
 
-  @DefaultMessage("File")
+  @DefaultMessage("Project")
   @Description("Label for the File Button")
   String fileButton();
 
-  @DefaultMessage("New Project")
+  @DefaultMessage("New ...")
+  @Description("Label of the button for creating a new project")
+  String newMenuItemButton();
+
+  @DefaultMessage("Delete")
+  @Description("Label of the button for creating a new project")
+  String deleteMenuItemButton();
+
+  @DefaultMessage("New Project ...")
   @Description("Label of the button for creating a new project")
   String newButton();
 
@@ -1085,7 +1093,7 @@ public interface OdeMessages extends Messages {
 
   // Used in wizards/FileUploadWizard.java
 
-  @DefaultMessage("Upload File...")
+  @DefaultMessage("Upload File ...")
   @Description("Caption for file upload wizard.")
   String fileUploadWizardCaption();
 
@@ -1144,7 +1152,7 @@ public interface OdeMessages extends Messages {
 
   // Used in wizards/ProjectUploadWizard.java
 
-  @DefaultMessage("Upload Project...")
+  @DefaultMessage("Import Project...")
   @Description("Caption for project upload wizard.")
   String projectUploadWizardCaption();
 
@@ -1169,7 +1177,7 @@ public interface OdeMessages extends Messages {
 
   // Used in wizards/youngandroid/NewYoungAndroidProjectWizard.java
 
-  @DefaultMessage("New App Inventor for Android Project...")
+  @DefaultMessage("Create new App Inventor project")
   @Description("Caption for the wizard to create a new Young Android project")
   String newYoungAndroidProjectWizardCaption();
 
