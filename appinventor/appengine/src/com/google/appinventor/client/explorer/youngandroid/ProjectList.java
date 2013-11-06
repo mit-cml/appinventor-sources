@@ -109,7 +109,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.setWidget(0, 1, nameHeader);
 
     HorizontalPanel dateCreatedHeader = new HorizontalPanel();
-    Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
+    final Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
     dateCreatedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
     dateCreatedHeader.add(dateCreatedHeaderLabel);
     dateCreatedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
@@ -117,7 +117,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     table.setWidget(0, 2, dateCreatedHeader);
     
     HorizontalPanel dateModifiedHeader = new HorizontalPanel();
-    Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
+    final Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
     dateModifiedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
     dateModifiedHeader.add(dateModifiedHeaderLabel);
     dateModifiedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
@@ -244,7 +244,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           break;
         case DATE_MODIFIED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING;
+              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
               : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
           break;
       }
