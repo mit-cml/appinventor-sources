@@ -6,6 +6,7 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.commands.*;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
@@ -13,7 +14,8 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
-import com.google.appinventor.client.widgets.TextButton;
+import com.google.appinventor.client.wizards.KeystoreUploadWizard;
+import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.common.version.GitBuildId;
@@ -22,10 +24,9 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.collect.Lists;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -60,6 +61,8 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_ADMIN = "Admin";
   private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
+  private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
+  private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
   private static final String WIDGET_NAME_SAVE_OPTIONS = "SaveOptions";
@@ -80,87 +83,45 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_FILE = "File";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
-  private static final String WIDGET_NAME_GUIDE = "Guide";
-  private static final String WIDGET_NAME_FEEDBACK = "Report a Problem";
+  private static final String WIDGET_NAME_LIBRARY = "Library";
+  private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
+  private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
+  private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
+  private static final String WIDGET_NAME_FORUMS = "Forums";
+  private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
+  private static final String WIDGET_NAME_IMPORTPROJECT = "ImportProject";
+  private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
+  private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
+  private DropDownButton fileDropDown;
   private DropDownButton connectDropDown;
-
-//  private DesignProject currentProject;
-//
-//  // Whether or not the we are talking to the repl
-//
-///*
-// * A Screen groups together the form editor and blocks editor for an
-// * application screen. Name is the name of the screen (form) displayed
-// * in the screens pull-down.
-// */
-//  private static class Screen {
-//    private final String screenName;
-//    private final FileEditor formEditor;
-//    private final FileEditor blocksEditor;
-//
-//    public Screen(String name, FileEditor formEditor, FileEditor blocksEditor) {
-//      this.screenName = name;
-//      this.formEditor = formEditor;
-//      this.blocksEditor = blocksEditor;
-//    }
-//  }
-
-// /*
-//  * Representation of a Project. Each project has a name diplayed
-//  * in the toolbar, a set of named screens, and an indication of
-//  * which screen is currently being edited.
-//  */
-//  private static class DesignProject {
-//    private final String name;
-//    private final Map<String, Screen> screens; // screen name -> Screen
-//    private String currentScreen; // name of currently displayed screen
-//
-//    public DesignProject(String name) {
-//      this.name = name;
-//      screens = Maps.newHashMap();
-//      // Screen1 is initial screen by default
-//      currentScreen = YoungAndroidSourceNode.SCREEN1_FORM_NAME;
-//    }
-//
-//    // Returns true if we added the screen (it didn't previously exist), false otherwise.
-//    public boolean addScreen(String name, FileEditor formEditor, FileEditor blocksEditor) {
-//      if (!screens.containsKey(name)) {
-//        screens.put(name, new Screen(name, formEditor, blocksEditor));
-//        return true;
-//      } else {
-//        return false;
-//      }
-//    }
-//
-//    public void removeScreen(String name) {
-//      screens.remove(name);
-//    }
-//
-//    public void setCurrentScreen(String name) {
-//      currentScreen = name;
-//    }
-//  }
+  private DropDownButton buildDropDown;
+  private DropDownButton helpDropDown;
 
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------------------+
-     * | File ▾ | Save ▾ | Connect ▾ | Download ▾| Help ▾ |
-     * +--------------------------------------------------+
+     * +--------------------------------------+
+     * | File ▾ | Connect ▾ | Build ▾| Help ▾ |
+     * +--------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
 
     List<DropDownItem> fileItems = Lists.newArrayList();
-    List<DropDownItem> saveItems = Lists.newArrayList();
     List<DropDownItem> connectItems = Lists.newArrayList();
-    List<DropDownItem> downloadItems = Lists.newArrayList();
+    List<DropDownItem> buildItems = Lists.newArrayList();
     List<DropDownItem> helpItems = Lists.newArrayList();
 
     // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
+    fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.tabNameProjects(),
+        new SwitchToProjectAction()));
+    fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
         new NewAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
+        new DeleteAction()));
+    fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
         new SaveAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsButton(),
@@ -168,88 +129,83 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
         new CheckpointAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.tabNameProjects(),
-        new SwitchToProjectAction()));
-
-    // Save
-    TextButton saveButton = new TextButton(MESSAGES.saveButton());
-    saveButton.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        new SaveAction().execute();
-      }
-    });
+    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectButton(),
+        new ImportProjectAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectButton(),
+        new ExportProjectAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsButton(),
+        new ExportAllProjectsAction()));
+    fileItems.add(null);
+    fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreButton(),
+        new UploadKeystoreAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreButton(),
+        new DownloadKeystoreAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreButton(),
+        new DeleteKeystoreAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator}
-    DropDownItem wireless = new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
-        MESSAGES.wirelessButton(), new WirelessAction());
-    connectItems.add(wireless);
-
-    DropDownItem emulator = new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
-        MESSAGES.emulatorButton(), new EmulatorAction());
-    connectItems.add(emulator);
-
-    DropDownItem usb = new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbButton(),
-        new UsbAction());
-    connectItems.add(usb);
-
+    connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
+        MESSAGES.wirelessButton(), new WirelessAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
+        MESSAGES.emulatorButton(), new EmulatorAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbButton(),
+        new UsbAction()));
     connectItems.add(null);
+    connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnections(),
+        new ResetAction()));
 
-    DropDownItem reset = new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnections(),
-        new ResetAction());
-    connectItems.add(reset);
-
-    // Download -> {Show Barcode; Download to Computer; Download Source; Download Keystore}
-    downloadItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeButton(),
+    // Build -> {Show Barcode; Download to Computer; Download Source; Download Keystore}
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeButton(),
         new BarcodeAction()));
-    downloadItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerButton(),
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerButton(),
         new DownloadAction()));
-    downloadItems.add(null);
-    downloadItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_SOURCE, MESSAGES.downloadSourceButton(),
-        new DownloadSourceAction()));
-    downloadItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreButton(),
-        new DownloadKeystoreAction()));
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
-      downloadItems.add(null);
-      downloadItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailButton(),
+      buildItems.add(null);
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailButton(),
           new GenerateYailAction()));
     }
 
     // Help -> {About, Guide}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutLink(),
         new AboutAction()));
-
-    helpItems.add(new DropDownItem(WIDGET_NAME_GUIDE, MESSAGES.guideLink(),
-        new GuideAction()));
-
-    // Decide later whether to use
-    //   helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackLink(),
-    //       new FeedbackAction()));
+    helpItems.add(null);
+    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryLink(),
+        new LibraryAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedLink(),
+        new GetStartedAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsLink(),
+        new TutorialsAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingLink(),
+        new TroubleShootingAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsLink(),
+        new ForumsAction()));
+    helpItems.add(null);
+    helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackLink(),
+        new FeedbackAction()));
 
     // Create the DropDownButtons
-    DropDownButton fileDropDown = new DropDownButton(WIDGET_NAME_FILE, MESSAGES.fileButton(),
+    fileDropDown = new DropDownButton(WIDGET_NAME_FILE, MESSAGES.fileButton(),
         fileItems, false);
-    connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectToButton(),
+    connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectButton(),
         connectItems, false);
-    DropDownButton downloadDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(),
-        downloadItems, false);
-    DropDownButton helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpLink(),
+    buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(),
+        buildItems, false);
+    helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpLink(),
         helpItems, false);
 
     connectDropDown.setItemEnabled(MESSAGES.resetConnections(), false);
+    updateFileMenuButtons(false);
 
     // Set the DropDown Styles
     fileDropDown.setStyleName("ode-TopPanelButton");
-    saveButton.setStyleName("ode-TopPanelButton");
     connectDropDown.setStyleName("ode-TopPanelButton");
-    downloadDropDown.setStyleName("ode-TopPanelButton");
+    buildDropDown.setStyleName("ode-TopPanelButton");
     helpDropDown.setStyleName("ode-TopPanelButton");
 
     // Add the Buttons to the Toolbar.
     toolbar.add(fileDropDown);
-    toolbar.add(saveButton);
     toolbar.add(connectDropDown);
-    toolbar.add(downloadDropDown);
+    toolbar.add(buildDropDown);
     toolbar.add(helpDropDown);
 
     initWidget(toolbar);
@@ -387,26 +343,122 @@ public class TopToolbar extends Composite {
       }
     }
   }
-  private static class DownloadSourceAction implements Command {
+  private static class ExportProjectAction implements Command {
     @Override
     public void execute() {
       List<Project> selectedProjects =
           ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() == 1) {
-        downloadSource(selectedProjects.get(0));
+        exportProject(selectedProjects.get(0));
       } else {
         // The user needs to select only one project.
         ErrorReporter.reportInfo(MESSAGES.wrongNumberProjectsSelected());
       }
     }
 
-    private void downloadSource(Project project) {
+    private void exportProject(Project project) {
       Tracking.trackEvent(Tracking.PROJECT_EVENT,
           Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
 
       Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
           ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
     }
+  }
+
+  private static class ExportAllProjectsAction implements Command {
+    @Override
+    public void execute() {
+      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+          Tracking.PROJECT_ACTION_DOWNLOAD_ALL_PROJECTS_SOURCE_YA);
+
+      // Is there a way to disable the Download All button until this completes?
+      if (Window.confirm(MESSAGES.downloadAllAlert())) {
+
+        Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+            ServerLayout.DOWNLOAD_ALL_PROJECTS_SOURCE);
+      }
+    }
+  }
+
+  private static class ImportProjectAction implements Command {
+    @Override
+    public void execute() {
+      new ProjectUploadWizard().center();
+    }
+  }
+
+  private static class DeleteAction implements Command {
+    @Override
+    public void execute() {
+      List<Project> selectedProjects =
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+      if (selectedProjects.size() > 0) {
+        // Show one confirmation window for selected projects.
+        if (deleteConfirmation(selectedProjects)) {
+          for (Project project : selectedProjects) {
+            deleteProject(project);
+          }
+        }
+
+      } else {
+        // The user can select a project to resolve the
+        // error.
+        ErrorReporter.reportInfo(MESSAGES.noProjectSelectedForDelete());
+      }
+    }
+
+    private boolean deleteConfirmation(List<Project> projects) {
+      String message;
+      if (projects.size() == 1) {
+        message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+      } else {
+        StringBuilder sb = new StringBuilder();
+        String separator = "";
+        for (Project project : projects) {
+          sb.append(separator).append(project.getProjectName());
+          separator = ", ";
+        }
+        String projectNames = sb.toString();
+        message = MESSAGES.confirmDeleteManyProjects(projectNames);
+      }
+      return Window.confirm(message);
+    }
+
+    private void deleteProject(Project project) {
+      Tracking.trackEvent(Tracking.PROJECT_EVENT,
+          Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+
+      final long projectId = project.getProjectId();
+
+      Ode ode = Ode.getInstance();
+      boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
+      ode.getEditorManager().closeProjectEditor(projectId);
+      if (isCurrentProject) {
+        // If we're deleting the project that is currently open in the Designer we
+        // need to clear the ViewerBox first.
+        ViewerBox.getViewerBox().clear();
+      }
+      // Make sure that we delete projects even if they are not open.
+      doDeleteProject(projectId);
+    }
+
+    private void doDeleteProject(final long projectId) {
+      Ode.getInstance().getProjectService().deleteProject(projectId,
+          new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.deleteProjectError()) {
+            @Override
+            public void onSuccess(Void result) {
+              Ode.getInstance().getProjectManager().removeProject(projectId);
+              // Show a welcome dialog in case there are no
+              // projects saved.
+              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+                Ode.getInstance().createNoProjectsDialog(false);
+              }
+            }
+          });
+    }
+
   }
 
   private static class DownloadKeystoreAction implements Command {
@@ -426,6 +478,89 @@ public class TopToolbar extends Composite {
             }
           });
     }
+  }
+
+  private class UploadKeystoreAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          new OdeAsyncCallback<Boolean>(MESSAGES.uploadKeystoreError()) {
+            @Override
+            public void onSuccess(Boolean keystoreFileExists) {
+              if (!keystoreFileExists || Window.confirm(MESSAGES.confirmOverwriteKeystore())) {
+                KeystoreUploadWizard wizard = new KeystoreUploadWizard(new Command() {
+                  @Override
+                  public void execute() {
+                    Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_UPLOAD_KEYSTORE);
+                    updateKeystoreFileMenuButtons();
+                  }
+                });
+                wizard.center();
+              }
+            }
+          });
+    }
+  }
+
+  private class DeleteKeystoreAction implements Command {
+    @Override
+    public void execute() {
+      final String errorMessage = MESSAGES.deleteKeystoreError();
+      Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+          new OdeAsyncCallback<Boolean>(errorMessage) {
+            @Override
+            public void onSuccess(Boolean keystoreFileExists) {
+              if (keystoreFileExists && Window.confirm(MESSAGES.confirmDeleteKeystore())) {
+                Tracking.trackEvent(Tracking.USER_EVENT, Tracking.USER_ACTION_DELETE_KEYSTORE);
+                Ode.getInstance().getUserInfoService().deleteUserFile(
+                    StorageUtil.ANDROID_KEYSTORE_FILENAME,
+                    new OdeAsyncCallback<Void>(errorMessage) {
+                      @Override
+                      public void onSuccess(Void result) {
+                        updateKeystoreFileMenuButtons();
+                      }
+                    });
+              }
+            }
+          });
+    }
+  }
+
+  /**
+   * Enables and/or disables buttons based on how many projects exist
+   * (in the case of "Download All Projects") or are selected (in the case
+   * of "Delete" and "Download Source").
+   */
+  public void updateFileMenuButtons(boolean enablemenuitem) {
+    fileDropDown.setItemEnabled(MESSAGES.deleteButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.downloadAllButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.importProjectButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.uploadKeystoreButton(), enablemenuitem);
+  }
+
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file.
+   */
+  public void updateKeystoreFileMenuButtons() {
+    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+        new AsyncCallback<Boolean>() {
+          @Override
+          public void onSuccess(Boolean keystoreFileExists) {
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), keystoreFileExists);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), keystoreFileExists);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), true);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), true);
+          }
+        });
   }
 
   /**
@@ -489,10 +624,46 @@ public class TopToolbar extends Composite {
     }
   }
 
-  private static class GuideAction implements Command {
+  private static class LibraryAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/ai2/user-guide", "_blank", "");
+      Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", "");
+    }
+  }
+
+  private static class GetStartedAction implements Command {
+    @Override
+    public void execute() {
+      Window.open("http://dev-explore.appinventor.mit.edu/get-started", "_ai2", "");
+    }
+  }
+
+  private static class TutorialsAction implements Command {
+    @Override
+    public void execute() {
+      Window.open("http://dev-explore.appinventor.mit.edu/ai2/tutorials", "_ai2", "");
+    }
+  }
+
+  private static class TroubleShootingAction implements Command {
+    @Override
+    public void execute() {
+      Window.open("http://dev-explore.appinventor.mit.edu/ai2/support/troubleshooting", "_ai2",
+          "");
+    }
+  }
+
+  private static class ForumsAction implements Command {
+    @Override
+    public void execute() {
+      Window.open("http://dev-explore.appinventor.mit.edu/forums", "_ai2", "");
+    }
+  }
+
+  private static class FeedbackAction implements Command {
+    @Override
+    public void execute() {
+      Window.open("http://something.example.com", "_blank", null);
     }
   }
 

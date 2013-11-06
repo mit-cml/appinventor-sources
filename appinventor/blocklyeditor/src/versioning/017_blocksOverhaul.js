@@ -12,18 +12,21 @@
 
 
 Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
-// otherwise, we loaded in something with no version, we need to translate
+  // we loaded in something with no version, we need to translate
+  var renameAlert=0;
   var blocks = xmlFromFile.getElementsByTagName('block');
   for (var i=0, im=blocks.length; i<im; i++)  {
     var blockElem=blocks[i];
     var blockType = blockElem.getAttribute('type');
     // all built-in blocks have an entry already in Blockly.Language
-    //  we don't need to translate those, but if null we have some component thing
+    //  we don't need to translate those, so if the following is non-null we ignore
     if (Blockly.Language[blockType] == null)
     {
-      // if above is null we know we don't have a built-in block
-      
-      // add some translations for language changes
+      // add some translations for language changes...
+      //   these should really be in a map or at procedure that checks and
+      //   returns replacement...straight translations...we could also put
+      //   lexical_variable_get and set here so that we don't have to have a special
+      //   case below
       if (blockType=='procedures_do_then_return')
         blockElem.setAttribute('type',"controls_do_then_return");
       else
@@ -32,24 +35,37 @@ Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
       else
       if (blockType=='for_lexical_variable_get')
         blockElem.setAttribute('type',"lexical_variable_get");
-      else
-      {
-      
-        // 1st check if type has 'any' in it, if so we have a generic method
+      else {
         var splitComponent=blockType.split('_');
+        // there are some blocks that are not built-in but are not component based,
+        //   we want to ignore them
         if (splitComponent[0]!='lexical') {
           // methods on any (generics) have a blocktype of _any_someComponent_method
+          //   so 1st check if type has 'any' in it, if so we have a generic method
           if (splitComponent[1]=='any')  // we have a generic method call
             Blockly.Versioning.translateAnyMethod(blockElem);
           else {
             // we have a set, get, component get, event, or method
-            // check if the first thing is a component type. If so, we have a (generic)
-            //   component set/get
-            if (Blockly.ComponentTypes[splitComponent[0]]!=null)  // we have a component
-              Blockly.Versioning.translateComponentSetGetProperty(blockElem);
+            // check if the first thing is a component type. If so, the only
+            // legal thing it could be is a (generic) component set/get
+            //   but old programs allow instance names same as type names, so
+            //   we can get a Accelerometer.Shaking which is really an instance event
+            if ((Blockly.ComponentTypes[splitComponent[0]]!=null) &&
+               (splitComponent[1]=='setproperty' || splitComponent[1]=='getproperty'))
+                 Blockly.Versioning.translateComponentSetGetProperty(blockElem);
             else {
               instance=splitComponent[0];
               var componentType=Blockly.Component.instanceNameToTypeName(instance);
+              if (componentType==instance && renameAlert==0) {
+                alert("Your app was created in an earlier version of App Inventor and may be loaded incorrectly."+
+                    " The problem is that it names a component instance"+
+                    " the same as the component type, which is longer allowed.");
+                renameAlert=1;
+              }
+              // we should really check for null here so if there are blocks that
+              //   are not instance_ we can ignore. Right now the following ifs
+              //   probably make sure of this-- if none of the questions about rightside
+              //    are answered affirmatively, but this should be checked here as well
               rightside=splitComponent[1];
               if (rightside=='setproperty' || rightside=='getproperty')
                 Blockly.Versioning.translateSetGetProperty(blockElem);
@@ -148,15 +164,16 @@ Blockly.Versioning.translateAnyMethod = function(blockElem) {
 };
 /**
  * translateComponentGet is called when we know we have a component get, e.g.
- * [Button1]
+ * TinyDB_component as the block
 */
 Blockly.Versioning.translateComponentGet = function(blockElem) {
   // the type attribute is "instance_method"
   var blockType = blockElem.getAttribute('type');
-  // method block types look like: <block type="TinyDB_component" x="132" y="72">
+  // block type looks like: <block type="TinyDB1_component" ..> note an instance
+  //    not a type as you'd expect
   var splitComponent=blockType.split('_');
   var instance = splitComponent[0];
-  // if we got here we no splitComponent[1] is "component"
+  // if we got here splitComponent[1] must be "component"
   // Paul has a function to convert instance to type
   var componentType=Blockly.Component.instanceNameToTypeName(instance);
   // ok, we have all the info, now we can override the old event attribute with 'event'
@@ -183,7 +200,9 @@ Blockly.Versioning.translateSetGetProperty = function(blockElem) {
   var type=splitComponent[1]; //setproperty or getproperty
   // Paul has a function to convert instance to type
   var componentType=Blockly.Component.instanceNameToTypeName(instance);
-  // grab titles to find the particular property
+  // grab titles to find the particular property. There is a title elem with
+  //   a "PROP" attribute right under and within the block element itself
+  //   There might be many titles, but we grab the first.
   var titles= blockElem.getElementsByTagName('title');
   var propName='unknown';
   for (var i=0, len=titles.length; i<len; i++)
@@ -218,8 +237,9 @@ Blockly.Versioning.translateSetGetProperty = function(blockElem) {
 */
 Blockly.Versioning.translateComponentSetGetProperty = function(blockElem) {
   // the type attribute is "component_setproperty" or "component_getproperty"
+  //   where component is a type, e.g., Button
   var blockType = blockElem.getAttribute('type');
-  // set block look like: <block type="Button_setproperty" >
+  // set block looks like: <block type="Button_setproperty" >
   var splitComponent=blockType.split('_');
   var type=splitComponent[1]; //setproperty or getproperty
   var componentType=splitComponent[0];
@@ -228,8 +248,10 @@ Blockly.Versioning.translateComponentSetGetProperty = function(blockElem) {
   var propName='unknown';
   for (var i=0, len=titles.length; i<len; i++)
   {
-    if (titles[i].getAttribute('name')=='PROP')
-      propName=titles[i].text;
+    if (titles[i].getAttribute('name')=='PROP') {
+      propName=titles[i].textContent;
+      break;
+    }
   }
   // ok, we have all the info, now we can override the old event attribute with 'event'
   blockElem.setAttribute('type','component_set_get');

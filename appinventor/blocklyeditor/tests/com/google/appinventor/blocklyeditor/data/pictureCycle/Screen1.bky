@@ -1,4 +1,4 @@
-<xml>
+<xml xmlns="http://www.w3.org/1999/xhtml">
   <block type="Button1_Click" x="12" y="-94">
     <title name="COMPONENT_SELECTOR">Button1</title>
     <statement name="DO">
@@ -27,7 +27,7 @@
         </value>
         <value name="ITEM0">
           <block type="lexical_variable_get">
-            <title name="VAR">input image</title>
+            <title name="VAR">image</title>
           </block>
         </value>
       </block>

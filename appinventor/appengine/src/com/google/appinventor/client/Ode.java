@@ -1058,7 +1058,9 @@ public class Ode implements EntryPoint {
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
-    dialogBox.show();
+    if (showDialog) {
+      dialogBox.show();
+    }
     return dialogBox;
   }
 
