@@ -454,13 +454,17 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       var block;
       if (blockToCreate.dropDown){ //All blocks should have a dropDown property, even if empty
         blockToCreateName = blockToCreate.canonicName;
-        if(blockToCreate.mutatorAttributes) {
+        // components have mutator attributes we need to deal with. We can also add these for special blocks
+        //   e.g., this is done for create empty list
+        if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
           //construct xml
           var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
           for(var attributeName in blockToCreate.mutatorAttributes) {
             xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
           }
-          xmlString += '></mutation></block></xml>';
+
+          xmlString += '>';
+          xmlString += '</mutation></block></xml>';
           var xml = Blockly.Xml.textToDom(xmlString);
           block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
 
@@ -487,11 +491,6 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       }
 
       block.render();
-      //If we are creating a local variable, we need to update the mutator names
-      if (block.type && (block.type === 'local_declaration_expression' ||
-              block.type === 'local_declaration_statement')){
-        block.domToMutation(block.mutationToDom());
-      }
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;
       if (blockSelected) {

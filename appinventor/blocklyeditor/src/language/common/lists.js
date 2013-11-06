@@ -65,7 +65,11 @@ Blockly.Language.lists_create_with = {
   updateContainerBlock: function(containerBlock) {
     containerBlock.setTitleValue(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD,"CONTAINER_TEXT");
   },
-  typeblock: [{ translatedName: Blockly.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST }]
+  // create type blocks for both make a list (two items) and create empty list
+  typeblock: [
+      { translatedName: Blockly.LANG_LISTS_CREATE_WITH_TITLE_MAKE_LIST },
+      { translatedName: Blockly.LANG_LISTS_CREATE_EMPTY_TITLE,
+        mutatorAttributes: { items: 0 } }]
 
 };
 
