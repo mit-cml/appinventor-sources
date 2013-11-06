@@ -70,7 +70,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projectWidgets = new HashMap<Project, ProjectWidgets>();
 
     sortField = SortField.DATE_MODIFIED;
-    sortOrder = SortOrder.ASCENDING;
+    sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
     table = new Grid(1, 4); // The table initially contains just the header row.
