@@ -57,7 +57,7 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
         new NewAction()));
 
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
+    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
 //    List<DropDownItem> otherItems = Lists.newArrayList();
 //    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_SOURCE,
