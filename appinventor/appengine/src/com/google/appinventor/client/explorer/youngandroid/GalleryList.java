@@ -108,7 +108,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
-  private final int offset = 100;
+  private final int offset = 5;
   private final String activeNext = "http://i.imgur.com/PC2RTC5.png";
   private final String activePrev = "http://i.imgur.com/K8aiGBZ.png";
   private final String disabledNext = "http://i.imgur.com/UYeELMN.png";
