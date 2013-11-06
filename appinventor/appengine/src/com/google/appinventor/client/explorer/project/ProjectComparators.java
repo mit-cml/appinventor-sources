@@ -64,7 +64,7 @@ public final class ProjectComparators {
   
   public static final Comparator<Project> COMPARE_BY_DATE_MODIFIED_DESCENDING = new Comparator<Project>() {
     @Override
-    public int compare(Project proj1, Project proj) {
+    public int compare(Project proj1, Project proj2) {
       long date1 = proj1.getDateModified();
       long date2 = proj2.getDateModified();
       return Long.signum(date2 - date1); // descending
