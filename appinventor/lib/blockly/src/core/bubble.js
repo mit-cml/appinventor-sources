@@ -245,7 +245,7 @@ Blockly.Bubble.prototype.createDom_ = function(content, hasResize) {
  * @param {!Event} e Mouse down event.
  * @private
  */
-Blockly.Bubble.prototype.bubbleMouseDown_ = function(e) {
+Blockly.Bubble.prototype.bubbleMouseDown_ = function(e) { 
   this.promote_();
   Blockly.Bubble.unbindDragEvents_();
   if (Blockly.isRightButton(e)) {

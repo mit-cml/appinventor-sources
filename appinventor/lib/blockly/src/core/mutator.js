@@ -109,6 +109,14 @@ Blockly.Mutator.prototype.createEditor_ = function() {
   this.flyout_.autoClose = false;
   this.svgDialog_.appendChild(this.flyout_.createDom());
   this.svgDialog_.appendChild(this.workspace_.createDom());
+
+  //when mutator bubble is clicked, does not close mutator
+  Blockly.bindEvent_(this.svgDialog_, 'mousedown', this.svgDialog_,
+          function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+          });
+
   return this.svgDialog_;
 };
 
@@ -163,18 +171,16 @@ Blockly.Mutator.prototype.resizeBubble_ = function() {
  */
 Blockly.Mutator.prototype.setVisible = function(visible) {
   if (visible == this.isVisible()) {
-    // No change.
     return;
   }
   if (visible) {
-    // Create the bubble.
-    this.bubble_ = new Blockly.Bubble(this.block_.workspace,
+    this.bubble_ = new Blockly.Bubble(this.block_.workspace, 
         this.createEditor_(), this.block_.svg_.svgGroup_,
         this.iconX_, this.iconY_, null, null);
     var thisObj = this;
     this.flyout_.init(this.workspace_, false);
     this.flyout_.show(this.quarkXml_);
-
+    
     this.rootBlock_ = this.block_.decompose(this.workspace_);
     var blocks = this.rootBlock_.getDescendants();
     for (var i = 0, child; child = blocks[i]; i++) {
@@ -229,6 +235,9 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
  * @private
  */
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
+  if(this.workspace_==null) {
+    return null;
+  }
   if (Blockly.Block.dragMode_ == 0) {
     var blocks = this.workspace_.getTopBlocks(false);
     var MARGIN = 20;
