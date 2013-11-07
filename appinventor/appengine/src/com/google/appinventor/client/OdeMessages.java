@@ -63,8 +63,12 @@ public interface OdeMessages extends Messages {
   String projectNameHeader();
 
   @DefaultMessage("Date Created")
-  @Description("Header for date column of project table.")
-  String projectDateHeader();
+  @Description("Header for date created column of project table.")
+  String projectDateCreatedHeader();
+
+  @DefaultMessage("Date Modified")
+  @Description("Header for date modified column of project table.")
+  String projectDateModifiedHeader();
 
   // Used in DesignToolbar.java
 
