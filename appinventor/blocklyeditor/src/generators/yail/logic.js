@@ -52,6 +52,26 @@ Blockly.Yail.logic_negate = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
+Blockly.Yail.logic_negate_negate = function() {
+  // negate operation
+  var argument = Blockly.Yail
+  	  .valueToCode(this, 'BOOL', Blockly.Yail.ORDER_NONE)
+	  || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "yail-not-not"
+      + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_OPEN_COMBINATION
+      + Blockly.Yail.YAIL_LIST_CONSTRUCTOR + Blockly.Yail.YAIL_SPACER
+      + argument + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  code = code + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_QUOTE
+      + Blockly.Yail.YAIL_OPEN_COMBINATION + "boolean"
+      + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
+  code = code + Blockly.Yail.YAIL_DOUBLE_QUOTE + "not-not"
+      + Blockly.Yail.YAIL_DOUBLE_QUOTE + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [ code, Blockly.Yail.ORDER_ATOMIC ];
+};
+
+
+
 Blockly.Yail.logic_operation = function() {
   // The and, or logic operations
   // TODO: (Andrew) Make these take multiple arguments.
