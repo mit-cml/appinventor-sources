@@ -145,7 +145,7 @@ Blockly.Block.prototype.getIcons = function() {
   if (this.comment) {
     icons.push(this.comment);
   }
-  //keertan
+  
   if (this.doitbubble) {
 	    icons.push(this.doitbubble);
 	  }
@@ -1581,7 +1581,7 @@ Blockly.Block.prototype.setMutator = function(mutator) {
     }
   }
 };
-//MAY NEED TO WRITE ANOTHER Keertan
+
 /**
  * Returns the comment on this block (or '' if none).
  * @return {string} Block's comment.
@@ -1625,7 +1625,7 @@ Blockly.Block.prototype.setCommentText = function(text) {
   }
 };
 
-//keertan
+
 Blockly.Block.prototype.setDoItBubbleText = function(text) {
 	  if (!Blockly.Comment) {
 	    throw 'DoitBubble not supported.';

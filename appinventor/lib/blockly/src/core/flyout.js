@@ -355,7 +355,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
       // There is no good way to handle comment bubbles inside the flyout.
       // Blocks shouldn't come with predefined comments, but someone will
       // try this, I'm sure.  Kill the comment.
-      //keertan was here
+      
       Blockly.Comment && child.setCommentText(null) && child.setDoItBubbleText(null);
     }
     block.render();
