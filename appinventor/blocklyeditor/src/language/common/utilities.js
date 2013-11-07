@@ -84,6 +84,9 @@ Blockly.Language.wrapSentence = function(str, len) {
   }
 };
 
+// unicode multiplication symbol
+Blockly.Language.times_symbol = '\u00D7';
+
 
 
 

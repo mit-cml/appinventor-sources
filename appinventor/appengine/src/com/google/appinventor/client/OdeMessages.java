@@ -38,9 +38,13 @@ public interface OdeMessages extends Messages {
   @Description("Caption for None entry")
   String noneCaption();
 
-  @DefaultMessage("Delete Project")
+  @DefaultMessage("Delete")
   @Description("Text on 'Delete' button")
   String deleteButton();
+
+  @DefaultMessage("Delete Project")
+  @Description("Text on 'Delete Project' button")
+  String deleteProjectButton();
 
   @DefaultMessage("Show Warnings")
   @Description("Text on Toggle Warning Button")
@@ -59,8 +63,12 @@ public interface OdeMessages extends Messages {
   String projectNameHeader();
 
   @DefaultMessage("Date Created")
-  @Description("Header for date column of project table.")
-  String projectDateHeader();
+  @Description("Header for date created column of project table.")
+  String projectDateCreatedHeader();
+
+  @DefaultMessage("Date Modified")
+  @Description("Header for date modified column of project table.")
+  String projectDateModifiedHeader();
 
   // Used in DesignToolbar.java
 

@@ -296,9 +296,26 @@ Blockly.onMouseDown_ = function(e) {
   Blockly.latestClick = { x: e.clientX, y: e.clientY };
   Blockly.terminateDrag_(); // In case mouse-up event was lost.
   Blockly.hideChaff();
+  //if drawer exists and supposed to close
   if(Blockly.Drawer && Blockly.Drawer.flyout_.autoClose) {
-    Blockly.Drawer.hide()
+    Blockly.Drawer.hide();
   }
+
+  //Closes mutators
+  var blocks = Blockly.mainWorkspace.getAllBlocks();
+  var numBlocks = blocks.length;
+  var temp_block = null;
+  for(var i =0; i<numBlocks; i++){
+    temp_block = blocks[i];
+    if(temp_block.mutator){
+      //deselect block in mutator workspace
+      if(Blockly.selected && Blockly.selected.workspace && Blockly.selected.workspace!=Blockly.mainWorkspace){
+        Blockly.selected.unselect();
+      }
+      blocks[i].mutator.setVisible(false);
+    }
+  }
+
   var isTargetSvg = e.target && e.target.nodeName &&
       e.target.nodeName.toLowerCase() == 'svg';
   if (!Blockly.readOnly && Blockly.selected && isTargetSvg) {

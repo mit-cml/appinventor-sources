@@ -119,7 +119,7 @@ public class TopToolbar extends Composite {
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
         new NewAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
@@ -532,7 +532,7 @@ public class TopToolbar extends Composite {
    * of "Delete" and "Download Source").
    */
   public void updateFileMenuButtons(boolean enablemenuitem) {
-    fileDropDown.setItemEnabled(MESSAGES.deleteButton(), enablemenuitem);
+    fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.downloadAllButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), enablemenuitem);
     fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), enablemenuitem);
