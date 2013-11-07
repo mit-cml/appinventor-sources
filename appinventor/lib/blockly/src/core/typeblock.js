@@ -563,13 +563,13 @@ Blockly.TypeBlock.connectIfPossible = function(blockSelected, createdBlock) {
         //If it's not, no connections should be made  
         } else return;
       } 
-    } 
     else {
       //try the parent for other connections
       Blockly.TypeBlock.connectIfPossible(blockSelected.parentBlock_, createdBlock);
       //recursive call: creates the inner functions again, but should not be much
       //overhead; if it is, optimise!   
     }
+  }
 };
 
 //--------------------------------------
