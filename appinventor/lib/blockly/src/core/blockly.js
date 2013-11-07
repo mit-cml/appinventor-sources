@@ -23,6 +23,10 @@
  */
 'use strict';
 
+/**
+ * [lyn, 10/10/13] Modified Blockly.hideChaff() method to hide single instance of Blockly.FieldFlydown.
+ */
+
 // Top level object for Blockly.
 goog.provide('Blockly');
 
@@ -614,6 +618,7 @@ Blockly.hideChaff = function(opt_allowToolbox) {
   Blockly.Tooltip && Blockly.Tooltip.hide();
   Blockly.ContextMenu && Blockly.ContextMenu.hide();
   Blockly.FieldDropdown && Blockly.FieldDropdown.hide();
+  Blockly.FieldFlydown && Blockly.FieldFlydown.hide(); // [lyn, 10/06/13] for handling parameter & procedure flydowns
   Blockly.WidgetDiv.hide();
   //if (!opt_allowToolbox &&
   //    Blockly.Toolbox.flyout_ && Blockly.Toolbox.flyout_.autoClose) {

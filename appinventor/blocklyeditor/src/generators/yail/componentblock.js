@@ -14,6 +14,13 @@
  * @author sharon@google.com (Sharon Perl)
  */
 
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified event parameter names to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     All setters/getters assume such a tag. At least on Kawa-legal first character is necessary to
+ *     ensure AI identifiers satisfy Kawa's identifier rules.
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 /**
@@ -31,13 +38,16 @@ Blockly.Yail.component_event = function() {
     body = Blockly.Yail.YAIL_NULL;
   }
 
+
   var code = Blockly.Yail.YAIL_DEFINE_EVENT
     + this.getTitleValue("COMPONENT_SELECTOR")
     + Blockly.Yail.YAIL_SPACER
     + this.eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
     // TODO: formal params go here
-    + this.getVarString()
+    + this.declaredNames()
+          .map(function (name) {return Blockly.Yail.YAIL_LOCAL_VAR_TAG+name;})
+          .join(' ')
     + Blockly.Yail.YAIL_CLOSE_COMBINATION
     + Blockly.Yail.YAIL_SET_THIS_FORM
     + Blockly.Yail.YAIL_SPACER

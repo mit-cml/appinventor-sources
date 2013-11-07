@@ -64,7 +64,14 @@ select {
 }
 
 .ode-ContextMenuItem {
-  padding: 6px 12px;
+  min-width: 50px;
+  padding: 4px 12px;
+  -o-transition:color .1s ease-out, background .1s ease-in;
+  -ms-transition:color .1s ease-out, background .1s ease-in;
+  -moz-transition:color .1s ease-out, background .1s ease-in;
+  -webkit-transition:color .1s ease-out, background .1s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .1s ease-out, background .1s ease-in;
 }
 
 .ode-ContextMenuItemSeparator {
@@ -83,15 +90,7 @@ select {
 
 .ode-ContextMenuItem-selected {
   color: #ffffff;
-  text-decoration: none;
-  background-color: #99CC00;
-  background-image: -moz-linear-gradient(top, #99CC00, #8fc202);
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#99CC00), to(#8fc202));
-  background-image: -webkit-linear-gradient(top, #99CC00, #8fc202);
-  background-image: -o-linear-gradient(top, #99CC00, #8fc202);
-  background-image: linear-gradient(to bottom, #99CC00, #8fc202);
-  background-repeat: repeat-x;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff8fc202', endColorstr='#ff8fc202', GradientType=0);
+  background: #99CC00;
 }
 
 .ode-ContextMenuItem-disabled {
@@ -227,6 +226,7 @@ select {
 
 .ode-TopPanel {
   min-height: 40px;
+  height: 40px;
   margin-bottom: 4px;
   padding-right: 4px;
   padding-left: 4px;
@@ -257,14 +257,14 @@ select {
 }
 
 .ode-LogoText {
-  font-size: 18px;
+  font-size: 16px;
   color: grey;
   font-weight: 500;
   text-shadow: 0px 0px 0px #404040;
 }
 
 .ode-LogoVersion {
-  font-size: 11px;
+  font-size: 12px;
   color: grey;
   text-shadow: 0px 0px 0px #404040;
 }
@@ -283,21 +283,21 @@ select {
   color: #dedede;
 }
 
-.ode-TopPanelMiddleLinks .gwt-Label,
-.ode-TopPanelMiddleLinks .gwt-Anchor,
-.ode-TopPanelMiddleLinks .gwt-TitleLabel {
+.ode-TopPanelLinks .gwt-Label,
+.ode-TopPanelLinks .gwt-Anchor,
+.ode-TopPanelLinks .gwt-TitleLabel {
   cursor: pointer;
   color: rgb(100, 100, 100);
   font-family: Roboto, Helvetica, Arial, sans-serif;
   font-weight: 300;
-  font-size: 14px;
+  font-size: 12px;
   margin-right: 16px;
   text-decoration: none;
 }
 
-.ode-TopPanelMiddleLinks .gwt-Label:hover,
-.ode-TopPanelMiddleLinks .gwt-Anchor:hover,
-.ode-TopPanelMiddleLinks .gwt-TitleLabel:hover {
+.ode-TopPanelLinks .gwt-Label:hover,
+.ode-TopPanelLinks .gwt-Anchor:hover,
+.ode-TopPanelLinks .gwt-TitleLabel:hover {
   text-shadow: 0px 0px 1px #BABABA;
 }
 
@@ -311,6 +311,62 @@ select {
   font-size: 15px;
 }
 
+.ode-TopPanelIconButton {
+  margin: 4px 8px;
+  cursor: pointer;
+}
+
+.ode-TopPanelIconButton:hover {
+  -webkit-filter: drop-shadow(0px 0px 3px #222);
+  filter:         drop-shadow(0px 0px 3px #222);
+}
+
+.ode-TopPanelIconButton:active {
+
+}
+
+.ode-TopPanelButton,
+.ActionDropDown-Default,
+.ActionDropDown-Options {
+  font-size: 12px;
+  cursor: pointer;
+  margin: -12px 0px;
+  padding: 0px 12px;
+  height: 40px;
+  border: transparent;
+  background: transparent;
+  color: grey;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .2s ease-out, background .2s ease-in;
+}
+
+.ode-TopPanelButton:hover,
+.ActionDropDown-Default:hover
+.ActionDropDown-Options:hover {
+  background: #E6E6E6;
+  color: #5B5B5B;
+}
+
+.ode-TopPanelButton:active
+.ActionDropDown-Default:active
+.ActionDropDown-Options:active {
+
+}
+
+.ActionDropDown-Default {
+  padding: 0px 6px;
+}
+
+.ActionDropDown-Options {
+  padding: 0px 6px;
+}
+
+
+
 /*
  * Deck Panel
  */
@@ -318,6 +374,21 @@ select {
 .ode-DeckPanel {
   margin: 4px 8px 8px;
 }
+
+.ode-NavArrow {
+  border: transparent;
+  background: #C2C2C2;
+  -o-transition:color .2s ease-out, background .2s ease-in;
+  -ms-transition:color .2s ease-out, background .2s ease-in;
+  -moz-transition:color .2s ease-out, background .2s ease-in;
+  -webkit-transition:color .2s ease-out, background .2s ease-in;
+  /* ...and now override with proper CSS property */
+  transition:color .2s ease-out, background .2s ease-in;}
+
+.ode-NavArrow:hover {
+  background-color: darkgray;
+}
+
 
 
 /*
@@ -327,7 +398,10 @@ select {
 .ode-StatusPanel {
   font-size: 12px;
   color: #888;
-  padding: 15px 4px 4px 4px;
+  padding: 4px 12px;
+  background: url(images/toolbarBG.png) repeat;
+  border: 1px;
+  border-bottom: 1px solid #bbccff;
 }
 
 .ode-StatusPanel a {
@@ -396,6 +470,11 @@ select {
 
 .gwt-VerticalSplitPanel, gwt-HorizontalSplitPanel {
   background: white;
+}
+
+.gwt-TextBox {
+  padding: 0px !important;
+  margin: 0px !important;
 }
 
 .gwt-Tree .gwt-TreeItem span * {
@@ -981,9 +1060,9 @@ select.ode-PropertyEditor[disabled] {
   border: 1px solid rgba(0, 0, 0, 0.2);
   *border-right-width: 2px;
   *border-bottom-width: 2px;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  border-radius: 6px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);

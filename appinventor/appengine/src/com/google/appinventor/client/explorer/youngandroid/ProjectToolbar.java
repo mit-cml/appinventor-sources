@@ -5,8 +5,6 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.OdeAsyncCallback;
@@ -15,6 +13,7 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
@@ -28,6 +27,8 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.
@@ -56,32 +57,32 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
         new NewAction()));
 
-    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteButton(),
+    addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
-    List<ToolbarItem> otherItems = Lists.newArrayList();
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_SOURCE,
-        MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_SOURCE,
-        MESSAGES.uploadSourceButton(), new UploadSourceAction()));
-    otherItems.add(null);
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
-        MESSAGES.downloadKeystoreButton(), new DownloadKeystoreAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_UPLOAD_KEYSTORE,
-        MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DELETE_KEYSTORE,
-        MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
-
-    otherItems.add(null);
-    otherItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
-        new DownloadAllAction()));
-
-    addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
+//    List<DropDownItem> otherItems = Lists.newArrayList();
+//    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_SOURCE,
+//        MESSAGES.downloadSourceButton(), new DownloadSourceAction()));
+//    otherItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_SOURCE,
+//        MESSAGES.uploadSourceButton(), new UploadSourceAction()));
+//    otherItems.add(null);
+//    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE,
+//        MESSAGES.downloadKeystoreButton(), new DownloadKeystoreAction()));
+//    otherItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE,
+//        MESSAGES.uploadKeystoreButton(), new UploadKeystoreAction()));
+//    otherItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE,
+//        MESSAGES.deleteKeystoreButton(), new DeleteKeystoreAction()));
+//
+//    otherItems.add(null);
+//    otherItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_ALL, MESSAGES.downloadAllButton(),
+//        new DownloadAllAction()));
+//
+//    addDropDownButton(WIDGET_NAME_MORE_ACTIONS, MESSAGES.moreActionsButton(), otherItems);
 
     if (Ode.getInstance().getUser().getIsAdmin()) {
-      List<ToolbarItem> adminItems = Lists.newArrayList();
-      adminItems.add(new ToolbarItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
+      List<DropDownItem> adminItems = Lists.newArrayList();
+      adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
           MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
-      adminItems.add(new ToolbarItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+      adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
           MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
       addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
     }
@@ -186,7 +187,7 @@ public class ProjectToolbar extends Toolbar {
           // Show a welcome dialog in case there are no
           // projects saved.
           if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-            Ode.getInstance().createWelcomeDialog(true);
+            Ode.getInstance().createWelcomeDialog(false);
           }
         }
       });
@@ -305,12 +306,14 @@ public class ProjectToolbar extends Toolbar {
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
 
+   Ode.getInstance().getTopToolbar().updateFileMenuButtons(numProjects >= 0);
+
     //    setButtonEnabled(WIDGET_NAME_DOWNLOAD_ALL, numProjects > 0);
 
     setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
 
-    setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_SOURCE, 
-        numSelectedProjects == 1);
+//    setDropItemEnabled(WIDGET_NAME_MORE_ACTIONS, WIDGET_NAME_DOWNLOAD_SOURCE,
+//        numSelectedProjects == 1);
   }
 
   /**

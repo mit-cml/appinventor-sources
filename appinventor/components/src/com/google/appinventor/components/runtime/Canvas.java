@@ -815,7 +815,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
 
  /**
   * Set the canvas width
-  * The width cannot be set to less than 1
+  * The width can only be set to >0 or -1 (automatic) or -2 (fill parent).
   *
   * @param width
   */
@@ -823,14 +823,18 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the width is set to 0
   public void Width(int width) {
-    if (width >= MIN_WIDTH_HEIGHT) {
-        super.Width(width);
+    if ((width > 0) || (width==LENGTH_FILL_PARENT) || (width==LENGTH_PREFERRED)) {
+       super.Width(width);
+    }
+    else {
+       container.$form().dispatchErrorOccurredEvent(this, "Width",
+            ErrorMessages.ERROR_CANVAS_WIDTH_ERROR);
     }
   }
 
   /**
    * Set the canvas height
-  *  The height cannot be set to less than 1
+   * The height can only be set to >0 or -1 (automatic) or -2 (fill parent)
    *
    * @param height
    */
@@ -838,9 +842,13 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleProperty
   // the bitmap routines will crash if the height is set to 0
    public void Height(int height) {
-     if (height >= MIN_WIDTH_HEIGHT) {
+     if ((height > 0) || (height==LENGTH_FILL_PARENT) || (height==LENGTH_PREFERRED)) {
        super.Height(height);
      }
+     else {
+       container.$form().dispatchErrorOccurredEvent(this, "Height",
+            ErrorMessages.ERROR_CANVAS_HEIGHT_ERROR);
+    }
    }
 
 
@@ -1379,3 +1387,4 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     }
   }
 }
+
