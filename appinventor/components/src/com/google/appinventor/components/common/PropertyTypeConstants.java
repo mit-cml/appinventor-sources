@@ -146,6 +146,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_TEXTALIGNMENT = "textalignment";
 
   /**
+   * Choices of toast display length (short, long) offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidToastLengthChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_TOAST_LENGTH = "toast_length";
+  
+  /**
    * Choices of typefaces offered by {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidFontTypefaceChoicePropertyEditor}.
    */
