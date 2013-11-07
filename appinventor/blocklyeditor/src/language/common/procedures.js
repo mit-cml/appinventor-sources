@@ -883,7 +883,7 @@ Blockly.Language.procedures_callnoreturn = {
     // Add option to find caller.
     var option = {enabled: true};
     option.text = Blockly.LANG_PROCEDURES_HIGHLIGHT_DEF;
-    var name = this.getTitleValue('NAME');
+    var name = this.getTitleValue('PROCNAME');
     var workspace = this.workspace;
     option.callback = function() {
       var def = Blockly.Procedures.getDefinition(name, workspace);

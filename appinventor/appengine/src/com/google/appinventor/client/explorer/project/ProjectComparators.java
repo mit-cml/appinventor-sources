@@ -35,7 +35,7 @@ public final class ProjectComparators {
     }
   };
 
-  public static final Comparator<Project> COMPARE_BY_DATE_ASCENDING = new Comparator<Project>() {
+  public static final Comparator<Project> COMPARE_BY_DATE_CREATED_ASCENDING = new Comparator<Project>() {
     @Override
     public int compare(Project proj1, Project proj2) {
       long date1 = proj1.getDateCreated();
@@ -44,11 +44,29 @@ public final class ProjectComparators {
     }
   };
 
-  public static final Comparator<Project> COMPARE_BY_DATE_DESCENDING = new Comparator<Project>() {
+  public static final Comparator<Project> COMPARE_BY_DATE_CREATED_DESCENDING = new Comparator<Project>() {
     @Override
     public int compare(Project proj1, Project proj2) {
       long date1 = proj1.getDateCreated();
       long date2 = proj2.getDateCreated();
+      return Long.signum(date2 - date1); // descending
+    }
+  };
+
+  public static final Comparator<Project> COMPARE_BY_DATE_MODIFIED_ASCENDING = new Comparator<Project>() {
+    @Override
+    public int compare(Project proj1, Project proj2) {
+      long date1 = proj1.getDateModified();
+      long date2 = proj2.getDateModified();
+      return Long.signum(date1 - date2); // ascending
+    }
+  };
+
+  public static final Comparator<Project> COMPARE_BY_DATE_MODIFIED_DESCENDING = new Comparator<Project>() {
+    @Override
+    public int compare(Project proj1, Project proj2) {
+      long date1 = proj1.getDateModified();
+      long date2 = proj2.getDateModified();
       return Long.signum(date2 - date1); // descending
     }
   };
