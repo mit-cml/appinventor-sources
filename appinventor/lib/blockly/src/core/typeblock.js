@@ -556,13 +556,32 @@ Blockly.TypeBlock.connectIfPossible = function(blockSelected, createdBlock) {
   }
   if (createdBlock.parentBlock_ !== null) return; //Already connected --> return
 
+  // Are both blocks statement blocks? If so, connect created block below the selected block
+  if (blockSelected.outputConnection == null && createdBlock.outputConnection == null) {
+      createdBlock.previousConnection.connect(blockSelected.nextConnection);
+      return;
+  }
+
   // No connections? Try the parent (if it exists)
   if (blockSelected.parentBlock_) {
-    //recursive call: creates the inner functions again, but should not be much
-    //overhead; if it is, optimise!
-    Blockly.TypeBlock.connectIfPossible(blockSelected.parentBlock_, createdBlock);
-  }
-};
+    //Is the parent block a statement?
+    if (blockSelected.parentBlock_.outputConnection == null) {
+        //Is the created block a statment? If so, connect it below the parent block,
+        // which is a statement
+        if(createdBlock.outputConnection == null) {
+          blockSelected.parentBlock_.nextConnection.connect(createdBlock.previousConnection);
+          return;
+        //If it's not, no connections should be made
+        } else return;
+      }
+      else {
+        //try the parent for other connections
+        Blockly.TypeBlock.connectIfPossible(blockSelected.parentBlock_, createdBlock);
+        //recursive call: creates the inner functions again, but should not be much
+        //overhead; if it is, optimise!
+      }
+    }
+  };
 
 //--------------------------------------
 // A custom matcher for the auto-complete widget that can handle numbers as well as the default
