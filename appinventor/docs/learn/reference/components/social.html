@@ -407,7 +407,7 @@
       <header class="clearfix" role="banner">
         <div id="top_bar">
           <div id="branding">
-            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="/static/images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page" class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
           </div>
 
           <div id="menu-bar" class="nav clearfix">
@@ -435,6 +435,7 @@
               <section id="main-content" role="main">
                 <div id="content">  <div class="region region-content">
                     <h1>Social Components - App Inventor for Android</h1>
+                    <h2>Table of Contents</h2>
                     <ul>
                       <li>
                         <a href="#ContactPicker">
@@ -1298,505 +1299,108 @@
                       <dt><code>SendMessage()</code></dt>
                       <dd>Send a text message</dd>
                     </dl>
-                    <h2 id="Twitter">
-                      Twitter
-                    </h2>
+                    <h2 id="Twitter"> Twitter </h2>
                     <img alt="" src="images/twitter.png" />
-                    <p>
-                      This component allows users to interact with Twitter.
-                    </p>
-                    <p>
-                      This non-visible component enables communication with Twitter. Once a user has logged in (
-                      <code>
-                        Authorize
-                      </code>
-                      ) and the login has been
-                      confirmed successful by the
-                      <code>
-                        IsAuthorized
-                      </code>
-                      event, you can use the
-                      following methods:
+                    <p> This component allows users to interact with Twitter.  </p>
+                    <p> This non-visible component enables communication with Twitter. Once a user has logged in ( <code> Authorize </code>) and the login has been confirmed successful by the <code> IsAuthorized </code> event, you can use the following methods:
                     </p>
                     <ul>
-                      <li>
-                        Search Twitter for tweets or labels (
-                        <code>
-                          SearchTwitter
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Set the status of the logged-in user (
-                        <code>
-                          SetStatus
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Send a direct message to a specific user (
-                        <code>
-                          DirectMessage
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Receive the most recent direct messages (
-                        <code>
-                          RequestDirectMessages
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Follow a user (
-                        <code>
-                          Follow
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Unfollow a user (
-                        <code>
-                          StopFollowing
-                        </code>
-                        .)
-                      </li>
-                      <li>
-                        Get the list of users who follow the logged-in user
-                        (
-                        <code>
-                          RequestFollowers
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Get the most recent messages in the user's timeline.
-                        (
-                        <code>
-                          RequestFriendTimeline
-                        </code>
-                        ).
-                      </li>
-                      <li>
-                        Get the most recent mentions of the logged-in user
-                        (
-                        <code>
-                          RequestMentions
-                        </code>
-                        ).
-                      </li>
+                      <li> Search Twitter for tweets or labels ( <code> SearchTwitter </code>).  </li>
+                      <li> Set the status of the logged-in user ( <code> SetStatus </code>).  </li>
+                      <li> Send a direct message to a specific user ( <code> DirectMessage </code>).  </li>
+                      <li> Receive the most recent direct messages ( <code> RequestDirectMessages </code>).  </li>
+                      <li> Follow a user ( <code> Follow </code>).  </li>
+                      <li> Unfollow a user ( <code> StopFollowing </code> .) </li>
+                      <li> Get the list of users who follow the logged-in user ( <code> RequestFollowers </code>).  </li>
+                      <li> Get the most recent messages in the user's timeline.  ( <code> RequestFriendTimeline </code>).  </li>
+                      <li> Get the most recent mentions of the logged-in user ( <code> RequestMentions </code>).  </li>
                     </ul>
-                    <p>
-                      In general, you invoke one of these methods and the result will become available
-                      when the corresponding receipt event is signaled. For example, if you call
-                      <code>
-                        RequestFollowers
-                      </code>
-                      , then the
-                      <code>
-                        FollowersReceived
-                      </code>
-                      event will
-                      be signaled when the list of followers is available. This might take time, because
-                      the request is going over the web; the result might even never become available if,
-                      for example, your device is not connected to the web or the Twitter web site is down.
-                    </p>
-                    <p>
-                      Login is handled using the OAuth protocol, as required by the Twitter API (
-                      <a href="http://dev.twitter.com/pages/auth">
-                        dev.twitter.com/pages/auth
-                      </a>
-                      ). An App
-                      Inventor app that needs to make Twitter API calls on behalf of an authenticated
-                      user should first call
-                      <code>
-                        Authorize
-                      </code>
-                      . This loads a Twitter login page that will allow the user to login with their username and password, and then return appropriate credentials to the Twitter component in the
-                      app. Once the Twitter component has the credentials the
-                      <code>
-                        IsAuthorized
-                      </code>
-                      event is raised to let the app know that it can proceed with Twitter API calls. An app retains Twitter credentials across invocations,
-                      so it may not be necessary for the user to login each time he or she uses the app.
-                      Reinstalling an app will clear the credentials, as will calling the
-                      <code>
-                        DeAuthorize
-                      </code>
-                      method. A user can revoke authorization for an app from
-                      the Twitter web site via the
-                      <i>
-                        Settings
-                      </i>
-                      page as well. To check whether an app
-                      already has valid credentials, use the
-                      <code>
-                        CheckAuthorized
-                      </code>
-                      method.
-                    </p>
-                    <p>
-                      <b>
-                        Important:
-                      </b>
-                      Most of the operation of the OAuth protocol is hidden inside the
-                      Twitter component and you do not need to understand how it works to use
-                      the component. However, it is necessary for anyone building an app with the Twitter
-                      component to supply a
-                      <i>
-                        Consumer key
-                      </i>
-                      and a
-                      <i>
-                        Consumer secret
-                      </i>
-                      as
-                      properties of the component. These are text strings specific to your app that you
-                      can obtain by registering the app with Twitter at
-                      <a href="http://twitter.com/oauth_clients/new">
-                        twitter.com/oauth_clients/new
-                      </a>
-                      . On the
-                      registration page you will need to supply the following information:
-                    </p>
+                    <p> In general, you invoke one of these methods and the result will become available when the corresponding receipt event is signaled. For example, if you call <code> RequestFollowers </code> , then the <code> FollowersReceived </code> event will be signaled when the list of followers is available. This might take time, because the request is going over the web; the result might even never become available if, for example, your device is not connected to the web or the Twitter web site is down.  </p>
+                    <p> Login is handled using the OAuth protocol, as required by the Twitter API ( <a href="http://dev.twitter.com/pages/auth"> dev.twitter.com/pages/auth </a>). An App Inventor app that needs to make Twitter API calls on behalf of an authenticated user should first call <code> Authorize </code> . This loads a Twitter login page that will allow the user to login with their username and password, and then return appropriate credentials to the Twitter component in the app. Once the Twitter component has the credentials the <code> IsAuthorized </code> event is raised to let the app know that it can proceed with Twitter API calls. An app retains Twitter credentials across invocations, so it may not be necessary for the user to login each time he or she uses the app.  Reinstalling an app will clear the credentials, as will calling the <code> DeAuthorize </code> method. A user can revoke authorization for an app from the Twitter web site via the <i> Settings </i> page as well. To check whether an app already has valid credentials, use the <code> CheckAuthorized </code> method.  </p>
+                    <p> <b> Important: </b> Most of the operation of the OAuth protocol is hidden inside the Twitter component and you do not need to understand how it works to use the component. However, it is necessary for anyone building an app with the Twitter component to supply a <i> Consumer key </i> and a <i> Consumer secret </i> as properties of the component. These are text strings specific to your app that you can obtain by registering the app with Twitter at <a href="http://twitter.com/oauth_clients/new"> twitter.com/oauth_clients/new </a> . On the registration page you will need to supply the following information: </p>
                     <dl>
-                      <dt>
-                        Application name
-                      </dt>
+                      <dt> Application name </dt>
+                      <dd> A unique name for your application. When you submit the form It will warn you if the name isn't unique. This name will be shown to the user of your app when they are asked to login to Twitter as a result of the app calling the <code> Authorize </code> method.  </dd>
+                      <dt> Description </dt>
+                      <dd> A description of your app.  </dd>
+                      <dt> Application website </dt>
+                      <dd> The website where a user can go to find out more about your app or download it, if there is one. Otherwise, you could give your home web site, or another web site. The field cannot be left blank.  </dd>
+                      <dt> Application type </dt>
+                      <dd> This should be set to <i> Browser </i> .  </dd>
+                      <dt> Callback URL </dt>
+                      <dd> A valid URL. The value doesn't matter since the Twitter component will set it to the proper value.  </dd>
+                      <dt> Default access type </dt>
+                      <dd> Set this to <i> read/write </i> </dd>
+                      <dt> The other fields can be left blank if you like. When you have successfully registered your app you'll see a page that displays Consumer key and Consumer secret text strings that are specific to the registered app. You can copy these into the corresponding Twitter component properties in your App Inventor app. If you want to change the settings for your app at a later time, login to Twitter via a web browser and go to <a href="http://twitter.com/apps"> twitter.com/apps </a> to see and modify your registered apps.  </dt>
                       <dd>
-                        A unique name for your application. When you submit the form It will warn you if
-                        the name isn't unique. This name will be shown to the user of your app when they
-                        are asked to login to Twitter as a result of the app calling the
-                        <code>
-                          Authorize
-                        </code>
-                        method.
-                      </dd>
-                      <dt>
-                        Description
-                      </dt>
-                      <dd>
-                        A description of your app.
-                      </dd>
-                      <dt>
-                        Application website
-                      </dt>
-                      <dd>
-                        The website where a user can go to find out more about your app or download it,
-                        if there is one. Otherwise, you could give your home web site, or another web
-                        site. The field cannot be left blank.
-                      </dd>
-                      <dt>
-                        Application type
-                      </dt>
-                      <dd>
-                        This should be set to
-                        <i>
-                          Browser
-                        </i>
-                        .
-                      </dd>
-                      <dt>
-                        Callback URL
-                      </dt>
-                      <dd>
-                        A valid URL. The value doesn't matter since the Twitter component will set it to
-                        the proper value.
-                      </dd>
-                      <dt>
-                        Default access type
-                      </dt>
-                      <dd>
-                        Set this to
-                        <i>
-                          read/write
-                        </i>
-                      </dd>
-                      <dt>
-                        The other fields can be left blank if you like. When you have successfully
-                        registered your app you'll see a page that displays Consumer key and Consumer
-                        secret text strings that are specific to the registered app. You can copy these
-                        into the corresponding Twitter component properties in your App Inventor app. If
-                        you want to change the settings for your app at a later time, login to Twitter
-                        via a web browser and go to
-                        <a href="http://twitter.com/apps">
-                          twitter.com/apps
-                        </a>
-                        to see and modify your registered
-                        apps.
-                      </dt>
-                      <dd>
-                        <h3>
-                          Properties
-                        </h3>
+                        <h3> Properties </h3>
                         <dl>
-                          <dt class="c2">
-                            <code>
-                              ConsumerKey
-                            </code>
-                          </dt>
-                          <dd>
-                            The consumer key identifying this app, obtained from
-                            <a href="http://twitter.com/oauth_clients/new">
-                              twitter.com/oauth_clients/new
-                            </a>
-                            as
-                            described above.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              ConsumerSecret
-                            </code>
-                          </dt>
-                          <dd>
-                            The consumer secret identifying this app, obtained from
-                            <a href="http://twitter.com/oauth_clients/new">
-                              twitter.com/oauth_clients/new
-                            </a>
-                            as
-                            described above.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              DirectMessages
-                            </code>
-                          </dt>
-                          <dd>
-                            User's direct messages on Twitter.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              Followers
-                            </code>
-                          </dt>
-                          <dd>
-                            User's list of Twitter followers.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              FriendTimeline
-                            </code>
-                          </dt>
-                          <dd>
-                            User's Twitter message timeline.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              Mentions
-                            </code>
-                          </dt>
-                          <dd>
-                            List of messages that mention the user.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              SearchResults
-                            </code>
-                          </dt>
-                          <dd>
-                            Results of Twitter search query.
-                          </dd>
-                          <dt class="c2">
-                            <code>
-                              Username
-                            </code>
-                          </dt>
-                          <dd>
-                            The user name of the authorized user. Empty if there is no authorized user.
-                          </dd>
+                          <dt class="c2"> <code> ConsumerKey </code> </dt>
+                          <dd> The consumer key identifying this app, obtained from <a href="http://twitter.com/oauth_clients/new"> twitter.com/oauth_clients/new </a> as described above.  </dd>
+                          <dt class="c2"> <code> ConsumerSecret </code> </dt>
+                          <dd> The consumer secret identifying this app, obtained from <a href="http://twitter.com/oauth_clients/new"> twitter.com/oauth_clients/new </a> as described above.  </dd>
+                          <dt class="c2"> <code> DirectMessages </code> </dt>
+                          <dd> User's direct messages on Twitter.  </dd>
+                          <dt class="c2"> <code> Followers </code> </dt>
+                          <dd> User's list of Twitter followers.  </dd>
+                          <dt class="c2"> <code> FriendTimeline </code> </dt>
+                          <dd> User's Twitter message timeline.  </dd>
+                          <dt class="c2"> <code> Mentions </code> </dt>
+                          <dd> List of messages that mention the user.  </dd>
+                          <dt class="c2"> <code> SearchResults </code> </dt>
+                          <dd> Results of Twitter search query.  </dd>
+                          <dt><code>TwitPic_API_Key</code></dt>
+                          <dd></dd>
+                          <dt class="c2"> <code> Username </code> </dt>
+                          <dd> The user name of the authorized user. Empty if there is no authorized user.  </dd>
                         </dl>
-                        <h3>
-                          Events
-                        </h3>
+                        <h3> Events </h3>
                         <dl>
-                          <dt>
-                            <code>
-                              DirectMessagesReceived(list messages)
-                            </code>
-                          </dt>
-                          <dd>
-                            Called when all the direct messages requested with
-                            <code>
-                              RequestDirectMessages
-                            </code>
-                            have been retrieved.
-                          </dd>
-                          <dt>
-                            <code>
-                              FollowersReceived(list followers)
-                            </code>
-                          </dt>
-                          <dd>
-                            Called when all the followers requested with
-                            <code>
-                              RequestFollowers
-                            </code>
-                            have been retrieved.
-                          </dd>
-                          <dt>
-                            <code>
-                              FriendTimelineReceived(list user-messages-list)
-                            </code>
-                          </dt>
-                          <dd>
-                            Called when the timeline requested with
-                            <code>
-                              RequestFriendTimeline
-                            </code>
-                            has been retrieved. Each element is itself a list whose first element is a
-                            username and whose second element is a status tweeted by that user.
-                          </dd>
-                          <dt>
-                            <code>
-                              IsAuthorized()
-                            </code>
-                          </dt>
-                          <dd>
-                            Called after the program calls
-                            <code>
-                              Authorize
-                            </code>
-                            if the authorization
-                            was successful. It is also called after a call to
-                            <code>
-                              CheckAuthorized
-                            </code>
-                            if we already have a valid credentials. After
-                            this event has been raised, any other method for this component can be
-                            called.
-                          </dd>
-                          <dt>
-                            <code>
-                              MentionsReceived(list mentions)
-                            </code>
-                          </dt>
-                          <dd>
-                            Called when all the mentions requested with
-                            <code>
-                              RequestMentions
-                            </code>
-                            have
-                            been retrieved.
-                          </dd>
-                          <dt>
-                            <code>
-                              SearchSuccessful(list searchResults)
-                            </code>
-                          </dt>
-                          <dd>
-                            Called when the search requested with
-                            <code>
-                              SearchTwitter
-                            </code>
-                            has been
-                            completed.
-                          </dd>
+                          <dt> <code> DirectMessagesReceived(list messages) </code> </dt>
+                          <dd> Called when all the direct messages requested with <code> RequestDirectMessages </code> have been retrieved.  </dd>
+                          <dt> <code> FollowersReceived(list followers) </code> </dt>
+                          <dd> Called when all the followers requested with <code> RequestFollowers </code> have been retrieved.  </dd>
+                          <dt> <code> FriendTimelineReceived(list user-messages-list) </code> </dt>
+                          <dd> Called when the timeline requested with <code> RequestFriendTimeline </code> has been retrieved. Each element is itself a list whose first element is a username and whose second element is a status tweeted by that user.  </dd>
+                          <dt> <code> IsAuthorized() </code> </dt>
+                          <dd> Called after the program calls <code> Authorize </code> if the authorization was successful. It is also called after a call to <code> CheckAuthorized </code> if we already have a valid credentials. After this event has been raised, any other method for this component can be called.  </dd>
+                          <dt> <code> MentionsReceived(list mentions) </code> </dt>
+                          <dd> Called when all the mentions requested with <code> RequestMentions </code> have been retrieved.  </dd>
+                          <dt> <code> SearchSuccessful(list searchResults) </code> </dt>
+                          <dd> Called when the search requested with <code> SearchTwitter </code> has been completed.  </dd>
                         </dl>
                         <h3>
                           Methods
                         </h3>
                         <dl>
-                          <dt>
-                            <code>
-                              Authorize
-                            </code>
-                          </dt>
-                          <dd>
-                            Presents a Twitter login page so that the user can authorize access.
-                            IsAuthorize will be called when the user successfully grants access to the
-                            app.
-                          </dd>
-                          <dt>
-                            <code>
-                              CheckAuthorized
-                            </code>
-                          </dt>
-                          <dd>
-                            Checks whether we already have access, and if so, causes IsAuthorized event
-                            handler to be called.
-                          </dd>
-                          <dt>
-                            <code>
-                              DeAuthorize
-                            </code>
-                          </dt>
-                          <dd>
-                            Removes authorization from this running app instance. A user will have to
-                            login again to use any Twitter method.
-                          </dd>
-                          <dt>
-                            <code>
-                              DirectMessage(text user, text message)
-                            </code>
-                          </dt>
-                          <dd>
-                            Sends the specified message to the given user.
-                          </dd>
-                          <dt>
-                            <code>
-                              Follow(text user)
-                            </code>
-                          </dt>
-                          <dd>
-                            Start following the given user.
-                          </dd>
-                          <dt>
-                            <code>
-                              RequestDirectMessages()
-                            </code>
-                          </dt>
-                          <dd>
-                            Retrieves the most recent direct messages.
-                          </dd>
-                          <dt>
-                            <code>
-                              RequestFollowers()
-                            </code>
-                          </dt>
-                          <dd>
-                            Retrieves the list of the user's followers.
-                          </dd>
-                          <dt>
-                            <code>
-                              RequestFriendTimeline()
-                            </code>
-                          </dt>
-                          <dd>
-                            Retrieves the 20 most recent messages in your timeline. Returns a list of
-                            tuples (sub-lists), where each tuple contains a username and status message.
-                          </dd>
-                          <dt>
-                            <code>
-                              RequestMentions()
-                            </code>
-                          </dt>
-                          <dd>
-                            Retrieves the most recent mentions of the user.
-                          </dd>
-                          <dt>
-                            <code>
-                              SearchTwitter(text query)
-                            </code>
-                          </dt>
-                          <dd>
-                            Searches Twitter for the given text.
-                          </dd>
-                          <dt>
-                            <code>
-                              SetStatus(text s)
-                            </code>
-                          </dt>
-                          <dd>
-                            Post the specified text as a status message.
-                          </dd>
-                          <dt>
-                            <code>
-                              StopFollowing(text user)
-                            </code>
-                          </dt>
-                          <dd>
-                            Stop following the given user.
-                          </dd>
+                          <dt> <code> Authorize </code> </dt>
+                          <dd> Presents a Twitter login page so that the user can authorize access.  IsAuthorize will be called when the user successfully grants access to the app.  </dd>
+                          <dt> <code> CheckAuthorized </code> </dt>
+                          <dd> Checks whether we already have access, and if so, causes IsAuthorized event handler to be called.  </dd>
+                          <dt> <code> DeAuthorize </code> </dt>
+                          <dd> Removes authorization from this running app instance. A user will have to login again to use any Twitter method.  </dd>
+                          <dt> <code> DirectMessage(text user, text message) </code> </dt>
+                          <dd> Sends the specified message to the given user.  </dd>
+                          <dt> <code> Follow(text user) </code> </dt>
+                          <dd> Start following the given user.  </dd>
+                          <dt> <code> RequestDirectMessages() </code> </dt>
+                          <dd> Retrieves the most recent direct messages.  </dd>
+                          <dt> <code> RequestFollowers() </code> </dt>
+                          <dd> Retrieves the list of the user's followers.  </dd>
+                          <dt> <code> RequestFriendTimeline() </code> </dt>
+                          <dd> Retrieves the 20 most recent messages in your timeline. Returns a list of tuples (sub-lists), where each tuple contains a username and status message.  </dd>
+                          <dt> <code> RequestMentions() </code> </dt>
+                          <dd> Retrieves the most recent mentions of the user.  </dd>
+                          <dt> <code> SearchTwitter(text query) </code> </dt>
+                          <dd> Searches Twitter for the given text.  </dd>
+                          <dt> <code> SetStatus(text s) </code> </dt>
+                          <dd> Post the specified text as a status message.  </dd>
+                          <dt> <code> StopFollowing(text user) </code> </dt>
+                          <dd> Stop following the given user.  </dd>
+                          <dt><code>Tweet(text status)</code></dt>
+                          <dd>This sends a tweet as the logged-in user with the specified Text, which will be trimmed if it exceeds 160 characters. <p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
+                          <dt><code>TweetWithImage(text status, text ImagePath)</code></dt>
+                          <dd>This sends a tweet as the logged-in user with the specified Text and a URL to the uploaded image on TwitPic, which will be trimmed if it exceeds160 characters. If an image is not found or invalid, only the text will be tweeted.<p><u>Requirements</u>: This should only be called after the <code>IsAuthorized</code> event has been raised, indicating that the user has successfully logged in to Twitter.</p></dd>
                         </dl>
                       </dd>
                     </dl>
