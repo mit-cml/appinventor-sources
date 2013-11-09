@@ -16,7 +16,7 @@ This code is tested and known to work with Oracle Java 6 and 7. There might be s
 
 ##Setup instructions
 
-This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen here, and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project can be found in our [site](http://appinventor.mit.edu/appinventor-sources/).
+This is a quick guide to get started with the sources. More detailed instructions can be found [here](https://docs.google.com/document/pub?id=1Xc9yt02x3BRoq5m1PJHBr81OOv69rEBy8LVG_84j9jc), a slide show can be seen [here](http://josmas.github.io/contributingToAppInventor2/#/), and all the [documentation](http://appinventor.mit.edu/appinventor-sources/#documentation) for the project is available in our [site](http://appinventor.mit.edu/appinventor-sources/).
 
 ###Dependencies
 You will need a full Java JDK (6 or 7, preferably from Oracle; JRE is not enough) and Python to compile and run the servers.
@@ -83,7 +83,7 @@ The automated tests depend on [Phantomjs](http://phantomjs.org/). Make sure you 
 
 
 ##Contributing to the project
-check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to get a lot more information about the project and how to contribute to it.
+Check out our open source [site](http://appinventor.mit.edu/appinventor-sources/) to find a lot more information about the project and how to contribute to it.
 
 ##Need help?
 Contact us through our [Google Group](https://groups.google.com/forum/#!forum/app-inventor-open-source-dev) or [G+ community](https://plus.google.com/u/0/b/116831753302186936352/116831753302186936352/posts).
