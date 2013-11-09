@@ -94,8 +94,8 @@
     <attribute name="destdir"/>
     <attribute name="encoding" default="utf-8"/>
     <attribute name="nowarn" default="off"/>
-    <attribute name="source" default="6"/>
-    <attribute name="target" default="6"/>
+    <attribute name="source" default="7"/>
+    <attribute name="target" default="7"/>
     <attribute name="deprecation" default="off"/>
     <attribute name="debug" default="${debug.compile}"/>
     <attribute name="debuglevel" default="lines,vars,source"/>
