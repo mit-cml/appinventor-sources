@@ -22,6 +22,7 @@ import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -97,17 +98,22 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
+  private static final String WIDGET_NAME_ADMIN = "Admin";
+  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
+
   public DropDownButton fileDropDown;
   public DropDownButton connectDropDown;
   public DropDownButton buildDropDown;
   public DropDownButton helpDropDown;
+  public DropDownButton adminDropDown;
 
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +-----------------------------------------+
-     * | Project ▾ | Connect ▾ | Build ▾| Help ▾ |
-     * +-----------------------------------------+
+     * +-------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
+     * +-------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -208,6 +214,19 @@ public class TopToolbar extends Composite {
     toolbar.add(connectDropDown);
     toolbar.add(buildDropDown);
     toolbar.add(helpDropDown);
+
+    //Only if logged in as an admin, add the Admin Button
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      List<DropDownItem> adminItems = Lists.newArrayList();
+      adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
+          MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+      adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
+      adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems,
+          false);
+      adminDropDown.setStyleName("ode-TopPanelButton");
+      toolbar.add(adminDropDown);
+    }
 
     initWidget(toolbar);
 
@@ -738,6 +757,22 @@ public class TopToolbar extends Composite {
             fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), true);
           }
         });
+  }
+
+
+  //Admin commands
+  private static class DownloadUserSourceAction implements Command {
+    @Override
+    public void execute() {
+      new DownloadUserSourceWizard().center();
+    }
+  }
+
+  private static class SwitchToDebugAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToDebuggingView();
+    }
   }
 
 }

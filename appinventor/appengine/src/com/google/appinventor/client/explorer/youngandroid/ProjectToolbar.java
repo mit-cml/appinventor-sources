@@ -12,11 +12,8 @@ import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.tracking.Tracking;
-import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.Toolbar;
-import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
-import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 
@@ -31,9 +28,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
-  private static final String WIDGET_NAME_ADMIN = "Admin";
-  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
-  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
 
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
@@ -47,14 +41,6 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
 
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      List<DropDownItem> adminItems = Lists.newArrayList();
-      adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
-          MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
-      adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
-          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
-      addDropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems);
-    }
     updateButtons();
   }
 
@@ -138,20 +124,6 @@ public class ProjectToolbar extends Toolbar {
       });
     }
 
-  }
-
-  private static class DownloadUserSourceAction implements Command {
-    @Override
-    public void execute() {
-      new DownloadUserSourceWizard().center();
-    }
-  }
-
-  private static class SwitchToDebugAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToDebuggingView();
-    }
   }
 
   /**
