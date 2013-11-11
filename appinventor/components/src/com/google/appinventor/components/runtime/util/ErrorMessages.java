@@ -139,8 +139,10 @@ public final class ErrorMessages {
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
+  //AccelerometerSensor Errors
+  public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
 
-  // Please start the next group of error numbers at 1901.
+  // Please start the next group of error numbers at 2001.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -370,6 +372,10 @@ public final class ErrorMessages {
       "Text Receiving should be either 1, 2 or 3.");
     errorMessages.put(ERROR_REPL_SECURITY_ERROR,
       "Security Error Receiving Blocks from Browser.");
+    //AccelerometerSensor errors
+    errorMessages.put(ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY,
+       "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. " +
+       "The only legal values are 1, 2, or 3.");
   }
 
   private ErrorMessages() {

@@ -63,7 +63,15 @@ public class IdMap {
 
   private final HashMap<String,String> addresses = new HashMap<String,String>();
 
-  IdMap() {
+  private static IdMap INSTANCE = null;
+
+  public static IdMap getInstance() {
+    if (INSTANCE == null)
+      INSTANCE = new IdMap();
+    return INSTANCE;
+  }
+
+  private IdMap() {
     validfixId = false;
     try {
       FileInputStream mapfile = new FileInputStream(pathTofixId);

@@ -350,11 +350,16 @@ public final class YoungAndroidFormUpgrader {
   private static int upgradeAccelerometerSensorProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
-          // The AccelerometerSensor.MinimumInterval property was added.
-          // No properties need to be modified to upgrade to version 2.
-          srcCompVersion = 2;
+      // The AccelerometerSensor.MinimumInterval property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
-        return srcCompVersion;
+    if (srcCompVersion < 3) {
+      // The AccelerometerSensor.Sensitivity property was added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
+    }
+    return srcCompVersion;
   }
 
   private static int upgradeActivityStarterProperties(Map<String, JSONValue> componentProperties,
@@ -886,6 +891,11 @@ public final class YoungAndroidFormUpgrader {
       // A new boolean socket was added to allow canceling out of ShowChooseDialog
       // and ShowTextDialog
       srcCompVersion = 2;
+    }
+    if (srcCompVersion < 3) {
+      // The BackgroundColor, NotifierLength, and TextColor options were added.
+      // No properties need to be modified to upgrade to version 3.
+      srcCompVersion = 3;
     }
     return srcCompVersion;
   }

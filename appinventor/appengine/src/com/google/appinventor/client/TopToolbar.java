@@ -7,13 +7,22 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
-import com.google.appinventor.client.explorer.commands.*;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
+import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.wizards.DownloadUserSourceWizard;
 import com.google.appinventor.client.wizards.KeystoreUploadWizard;
 import com.google.appinventor.client.wizards.ProjectUploadWizard;
 import com.google.appinventor.client.wizards.youngandroid.NewYoungAndroidProjectWizard;
@@ -27,7 +36,15 @@ import com.google.common.collect.Lists;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ClickListener;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
 
@@ -38,7 +55,6 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  * TopToolbar lives in the TopPanel, to create functionality in the designer.
  */
 public class TopToolbar extends Composite {
-  private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
   private static final String KNOWN_ISSUES_LINK_URL =
       Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
   private static final String RELEASE_NOTES_LINK_URL =
@@ -47,40 +63,29 @@ public class TopToolbar extends Composite {
       "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
   private static final String RELEASE_NOTES_LINK_AND_TEXT =
       "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>" ;
-  private static final String GALLERY_LINK_AND_TEXT =
-      "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
-          "Try the App Inventor Community Gallery (Beta)</a>";
   private static final String termsOfServiceText =
       "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
           " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
 
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
-  private static final String WIDGET_NAME_DOWNLOAD_SOURCE = "DownloadSource";
-  private static final String WIDGET_NAME_UPLOAD_SOURCE = "UploadSource";
-  private static final String WIDGET_NAME_ADMIN = "Admin";
-  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
   private static final String WIDGET_NAME_DOWNLOAD_KEYSTORE = "DownloadKeystore";
   private static final String WIDGET_NAME_UPLOAD_KEYSTORE = "UploadKeystore";
   private static final String WIDGET_NAME_DELETE_KEYSTORE = "DeleteKeystore";
   private static final String WIDGET_NAME_SAVE = "Save";
   private static final String WIDGET_NAME_SAVE_AS = "SaveAs";
-  private static final String WIDGET_NAME_SAVE_OPTIONS = "SaveOptions";
   private static final String WIDGET_NAME_CHECKPOINT = "Checkpoint";
   private static final String WIDGET_NAME_MY_PROJECTS = "MyProjects";
   private static final String WIDGET_NAME_BUILD = "Build";
   private static final String WIDGET_NAME_BUILD_BARCODE = "Barcode";
   private static final String WIDGET_NAME_BUILD_DOWNLOAD = "Download";
   private static final String WIDGET_NAME_BUILD_YAIL = "Yail";
-  private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
-  private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
-  private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
   private static final String WIDGET_NAME_CONNECT_TO = "ConnectTo";
   private static final String WIDGET_NAME_WIRELESS_BUTTON = "Wireless";
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
-  private static final String WIDGET_NAME_FILE = "File";
+  private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_LIBRARY = "Library";
@@ -93,17 +98,22 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EXPORTALLPROJECTS = "ExportAllProjects";
   private static final String WIDGET_NAME_EXPORTPROJECT = "ExportProject";
 
-  private DropDownButton fileDropDown;
-  private DropDownButton connectDropDown;
-  private DropDownButton buildDropDown;
-  private DropDownButton helpDropDown;
+  private static final String WIDGET_NAME_ADMIN = "Admin";
+  private static final String WIDGET_NAME_DOWNLOAD_USER_SOURCE = "DownloadUserSource";
+  private static final String WIDGET_NAME_SWITCH_TO_DEBUG = "SwitchToDebugPane";
+
+  public DropDownButton fileDropDown;
+  public DropDownButton connectDropDown;
+  public DropDownButton buildDropDown;
+  public DropDownButton helpDropDown;
+  public DropDownButton adminDropDown;
 
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------+
-     * | File ▾ | Connect ▾ | Build ▾| Help ▾ |
-     * +--------------------------------------+
+     * +-------------------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾| Admin ▾ |
+     * +-------------------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -117,9 +127,11 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.tabNameProjects(),
         new SwitchToProjectAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newMenuItemButton(),
         new NewAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectButton(),
+        new ImportProjectAction()));
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteMenuItemButton(),
         new DeleteAction()));
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
@@ -129,8 +141,6 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
         new CheckpointAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectButton(),
-        new ImportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectButton(),
         new ExportProjectAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsButton(),
@@ -143,7 +153,7 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreButton(),
         new DeleteKeystoreAction()));
 
-    // Connect -> {Connect to Companion; Connect to Emulator}
+    // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
         MESSAGES.wirelessButton(), new WirelessAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
@@ -154,7 +164,7 @@ public class TopToolbar extends Composite {
     connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnections(),
         new ResetAction()));
 
-    // Build -> {Show Barcode; Download to Computer; Download Source; Download Keystore}
+    // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeButton(),
         new BarcodeAction()));
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerButton(),
@@ -165,7 +175,7 @@ public class TopToolbar extends Composite {
           new GenerateYailAction()));
     }
 
-    // Help -> {About, Guide}
+    // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue}
     helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutLink(),
         new AboutAction()));
     helpItems.add(null);
@@ -183,8 +193,8 @@ public class TopToolbar extends Composite {
     helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackLink(),
         new FeedbackAction()));
 
-    // Create the DropDownButtons
-    fileDropDown = new DropDownButton(WIDGET_NAME_FILE, MESSAGES.fileButton(),
+    // Create the TopToolbar drop down menus.
+    fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectButton(),
         fileItems, false);
     connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectButton(),
         connectItems, false);
@@ -192,9 +202,6 @@ public class TopToolbar extends Composite {
         buildItems, false);
     helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpLink(),
         helpItems, false);
-
-    connectDropDown.setItemEnabled(MESSAGES.resetConnections(), false);
-    updateFileMenuButtons(false);
 
     // Set the DropDown Styles
     fileDropDown.setStyleName("ode-TopPanelButton");
@@ -208,7 +215,22 @@ public class TopToolbar extends Composite {
     toolbar.add(buildDropDown);
     toolbar.add(helpDropDown);
 
+    //Only if logged in as an admin, add the Admin Button
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      List<DropDownItem> adminItems = Lists.newArrayList();
+      adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
+          MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+      adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
+          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
+      adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems,
+          false);
+      adminDropDown.setStyleName("ode-TopPanelButton");
+      toolbar.add(adminDropDown);
+    }
+
     initWidget(toolbar);
+
+    connectDropDown.setItemEnabled(MESSAGES.resetConnections(), false);
   }
 
   // -----------------------------
@@ -263,6 +285,7 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().switchToProjectsView();
+      Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     }
   }
 
@@ -453,12 +476,11 @@ public class TopToolbar extends Composite {
               // Show a welcome dialog in case there are no
               // projects saved.
               if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-                Ode.getInstance().createNoProjectsDialog(false);
+                Ode.getInstance().createNoProjectsDialog(true);
               }
             }
           });
     }
-
   }
 
   private static class DownloadKeystoreAction implements Command {
@@ -527,43 +549,7 @@ public class TopToolbar extends Composite {
   }
 
   /**
-   * Enables and/or disables buttons based on how many projects exist
-   * (in the case of "Download All Projects") or are selected (in the case
-   * of "Delete" and "Download Source").
-   */
-  public void updateFileMenuButtons(boolean enablemenuitem) {
-    fileDropDown.setItemEnabled(MESSAGES.deleteProjectButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.downloadAllButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.importProjectButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), enablemenuitem);
-    fileDropDown.setItemEnabled(MESSAGES.uploadKeystoreButton(), enablemenuitem);
-  }
-
-  /**
-   * Enables or disables buttons based on whether the user has an android.keystore file.
-   */
-  public void updateKeystoreFileMenuButtons() {
-    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
-        new AsyncCallback<Boolean>() {
-          @Override
-          public void onSuccess(Boolean keystoreFileExists) {
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), keystoreFileExists);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), keystoreFileExists);
-          }
-
-          @Override
-          public void onFailure(Throwable caught) {
-            // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), true);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), true);
-          }
-        });
-  }
-
-  /**
+   *  Made changes to the now Projects menu made name changes to the menu items
    * Implements the action to generate the ".yail" file for each screen in the current project.
    * It does not build the entire project. The intention is that this will be helpful for
    * debugging during development, and will most likely be disabled in the production system.
@@ -620,7 +606,6 @@ public class TopToolbar extends Composite {
       DialogBoxContents.add(holder);
       db.setWidget(DialogBoxContents);
       db.show();
-
     }
   }
 
@@ -720,6 +705,73 @@ public class TopToolbar extends Composite {
       }
     } else {
       updateConnectToDropDownButton(false, false, false);
+    }
+  }
+
+  /**
+   * Enables and/or disables buttons based on how many projects exist
+   * (in the case of "Download All Projects") or are selected (in the case
+   * of "Delete" and "Download Source").
+   */
+  public void updateFileMenuButtons(int view) {
+    if (view == 0) {  // We are in the Projects view
+      fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(),
+          Ode.getInstance().getProjectManager().getProjects() == null);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(),
+          Ode.getInstance().getProjectManager().getProjects().size() > 0);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), false);
+      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), false);
+    } else { // We have to be in the Designer/Blocks view
+      fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), true);
+      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), true);
+    }
+    updateKeystoreFileMenuButtons();
+  }
+
+  /**
+   * Enables or disables buttons based on whether the user has an android.keystore file.
+   */
+  public void updateKeystoreFileMenuButtons() {
+    Ode.getInstance().getUserInfoService().hasUserFile(StorageUtil.ANDROID_KEYSTORE_FILENAME,
+        new AsyncCallback<Boolean>() {
+          @Override
+          public void onSuccess(Boolean keystoreFileExists) {
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), keystoreFileExists);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), keystoreFileExists);
+          }
+
+          @Override
+          public void onFailure(Throwable caught) {
+            // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), true);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), true);
+          }
+        });
+  }
+
+
+  //Admin commands
+  private static class DownloadUserSourceAction implements Command {
+    @Override
+    public void execute() {
+      new DownloadUserSourceWizard().center();
+    }
+  }
+
+  private static class SwitchToDebugAction implements Command {
+    @Override
+    public void execute() {
+      Ode.getInstance().switchToDebuggingView();
     }
   }
 

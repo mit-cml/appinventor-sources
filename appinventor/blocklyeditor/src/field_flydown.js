@@ -176,7 +176,9 @@ Blockly.FieldFlydown.prototype.showFlydown_ = function() {
   flydown.setCSSClass(this.flyoutCSSClassName); // This could have been changed by another field.
   var blocksXMLText = this.flydownBlocksXML_()
   var blocksDom = Blockly.Xml.textToDom(blocksXMLText);
-  var blocksXMLList = blocksDom.children; // List of blocks for flydown
+  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or .childNodes
+  //   to make this code work across browsers.
+  var blocksXMLList = goog.dom.getChildren(blocksDom); // List of blocks for flydown
   var xy = Blockly.getSvgXY_(this.borderRect_);
   var borderBBox = this.borderRect_.getBBox();
   var x = xy.x;

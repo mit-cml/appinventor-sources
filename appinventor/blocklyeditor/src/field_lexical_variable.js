@@ -80,6 +80,7 @@ Blockly.FieldLexicalVariable.prototype.getValue = function() {
  * @param {string} text New text.
  */
 Blockly.FieldLexicalVariable.prototype.setValue = function(text) {
+  this.value_ = text;
   this.setText(text);
 };
 
