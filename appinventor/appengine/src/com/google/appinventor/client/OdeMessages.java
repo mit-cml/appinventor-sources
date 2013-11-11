@@ -875,8 +875,8 @@ public interface OdeMessages extends Messages {
   // Used in explorer/youngandroid/Toolbar.java
 
   @DefaultMessage("Project")
-  @Description("Label for the File Button")
-  String fileButton();
+  @Description("Label for the Project Button")
+  String projectButton();
 
   @DefaultMessage("New ...")
   @Description("Label of the button for creating a new project")

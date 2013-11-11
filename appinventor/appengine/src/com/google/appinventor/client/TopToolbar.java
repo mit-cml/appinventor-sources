@@ -84,7 +84,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
-  private static final String WIDGET_NAME_FILE = "File";
+  private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
   private static final String WIDGET_NAME_LIBRARY = "Library";
@@ -105,9 +105,9 @@ public class TopToolbar extends Composite {
   public TopToolbar() {
     /*
      * Layout is as follows:
-     * +--------------------------------------+
-     * | File ▾ | Connect ▾ | Build ▾| Help ▾ |
-     * +--------------------------------------+
+     * +-----------------------------------------+
+     * | Project ▾ | Connect ▾ | Build ▾| Help ▾ |
+     * +-----------------------------------------+
      */
     HorizontalPanel toolbar = new HorizontalPanel();
     toolbar.setVerticalAlignment(HorizontalPanel.ALIGN_MIDDLE);
@@ -188,7 +188,7 @@ public class TopToolbar extends Composite {
         new FeedbackAction()));
 
     // Create the TopToolbar drop down menus.
-    fileDropDown = new DropDownButton(WIDGET_NAME_FILE, MESSAGES.fileButton(),
+    fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectButton(),
         fileItems, false);
     connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectButton(),
         connectItems, false);
