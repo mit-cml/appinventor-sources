@@ -209,6 +209,21 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value is the raw file contents encoded as base64.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  raw file content as base 64
+   */
+  @Override
+  public String loadraw2(long projectId, String fileId) {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).loadraw2(userId, projectId, fileId);
+  }
+
+  /**
    * Loads the contents of multiple files.
    *
    * @param files  list containing file descriptor of files to be loaded
@@ -304,10 +319,12 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * Write the serialized response out to stdout. This is a very unusual thing
    * to do, but it allows us to create a static file version of the response
    * without deploying a servlet.
+   *
+   * Commented out by JIS 11/12/13
    */
   @Override
   protected void onAfterResponseSerialized(String serializedResponse) {
-    System.out.println(serializedResponse);  // COV_NF_LINE
+    // System.out.println(serializedResponse);  // COV_NF_LINE
   }
 
   private UserProject makeUserProject(String userId, long projectId) {

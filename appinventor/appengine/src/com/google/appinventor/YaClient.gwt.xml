@@ -75,7 +75,7 @@
   <source path="shared/settings"/>
   <source path="shared/simple"/>
   <source path="shared/storage"/>
-  <source path="shared/utils"/>
+  <source path="shared/util"/>
   <source path="shared/youngandroid"/>
   <source path="shared/properties/json"/>
   <source path="shared/rpc/help"/>
