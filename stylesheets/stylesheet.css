@@ -72,6 +72,61 @@ h2 {
   color: rgb(0,0,0);
 }
 
+#forkongithub a {
+  margin-top: 25px;
+  background:#6d6d6d;
+  color:#fff;
+  text-decoration:none;
+  font-family:arial, sans-serif;
+  text-align:center;
+  font-weight:bold;
+  padding:5px 40px;
+  font-size:1rem;
+  line-height:2rem;
+  position:relative;
+  transition:0.5s;
+}
+#forkongithub a:hover {
+  background:#6d6d6d;
+  color:#fff;
+}
+
+#forkongithub a::before, #forkongithub a::after {
+  content:"";
+  width:100%;
+  display:block;
+  position:absolute;
+  top:1px;
+  left:0;
+  height:1px;
+  background:#fff;
+}
+
+#forkongithub a::after {
+  bottom:1px;
+  top:auto;
+}
+@media screen and (min-width:800px) {
+  #forkongithub {
+    position:absolute;
+    display:block;
+    top:0;
+    right:0;
+    width:200px;
+    overflow:hidden;
+    height:200px;
+  }
+  #forkongithub a {
+    width:200px;
+    position:absolute;
+    top:60px;
+    right:-60px;
+    transform:rotate(45deg);
+    -webkit-transform:rotate(45deg);
+    box-shadow:4px 4px 10px rgba(0,0,0,0.8);
+  }
+}
+
 .container div .page_container {
   position: relative;
   top: 100%;
@@ -159,7 +214,7 @@ h2 {
   margin-left: -1095px;
 }
 .container div.page3 .page_container {
-  min-height:700px;
+  min-height:800px;
   height:auto !important;
   height:700px; 
 }
@@ -196,7 +251,7 @@ h2 {
   width: 700px;
 }
 .container div.page3 .page_container #help {
-  margin-top: 50px;
+  margin-top: 80px;
   float: right;
   margin-right: 0px;
   width: 700px;
