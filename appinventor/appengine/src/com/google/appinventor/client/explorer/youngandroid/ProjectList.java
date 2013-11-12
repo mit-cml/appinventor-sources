@@ -6,10 +6,15 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.OdeAsyncCallback;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.client.tracking.Tracking;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -17,6 +22,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -188,6 +194,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label nameLabel;
     final Label dateCreatedLabel;
     final Label dateModifiedLabel;
+    final Button srcButton;
+    final Button apkButton;
+    final Button delButton;
 
     private ProjectWidgets(final Project project) {
       checkBox = new CheckBox();
@@ -216,14 +225,77 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/DD/YY h:mma");
 
       Date dateCreated = new Date(project.getDateCreated());
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
 
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
+
+      srcButton = new Button("src");
+      srcButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent arg0) {
+          // TODO Auto-generated method stub
+          
+        }
+      });
+      
+      apkButton = new Button("apk");
+      apkButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent arg0) {
+          // TODO Auto-generated method stub
+          
+        }
+      });
+      
+      delButton = new Button("del");
+      delButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent arg0) {
+          // TODO Auto-generated method stub
+          deleteProject(project);
+        }
+      });
+      
+      
     }
+  }
+  private void deleteProject(Project project) {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_DELETE_PROJECT_YA, project.getProjectName());
+
+    final long projectId = project.getProjectId();
+
+    Ode ode = Ode.getInstance();
+    boolean isCurrentProject = (projectId == ode.getCurrentYoungAndroidProjectId());
+    ode.getEditorManager().closeProjectEditor(projectId);
+    if (isCurrentProject) {
+      // If we're deleting the project that is currently open in the Designer we
+      // need to clear the ViewerBox first.
+      ViewerBox.getViewerBox().clear();
+    }
+    // Make sure that we delete projects even if they are not open.
+    doDeleteProject(projectId);
+  }
+
+  private void doDeleteProject(final long projectId) {
+    Ode.getInstance().getProjectService().deleteProject(projectId,
+        new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.deleteProjectError()) {
+      @Override
+      public void onSuccess(Void result) {
+        Ode.getInstance().getProjectManager().removeProject(projectId);
+        // Show a welcome dialog in case there are no
+        // projects saved.
+        if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+          Ode.getInstance().createWelcomeDialog(false);
+        }
+      }
+    });
   }
 
   private void refreshTable(boolean needToSort) {
