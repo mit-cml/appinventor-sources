@@ -294,9 +294,7 @@ Blockly.ReplMgr.putYail = (function() {
                     } else {
                         var json = goog.json.parse(this.response);
                         var version = json.version.substr(0,7);
-                        if (version != "2.07nb6" &&
-                            version != "2.07nb7" &&
-                            version != "2.07nb8") {
+                        if (version != "2.07nb9") {
                             engine.showversioncompmessage(true);
                             engine.resetcompanion();
                             return;
