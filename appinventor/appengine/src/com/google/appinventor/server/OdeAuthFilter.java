@@ -45,7 +45,7 @@ public class OdeAuthFilter implements Filter {
 
   // Note that if no whitelist exists, then no whitelist will be used.
 //  private static final Whitelist whitelist = new Whitelist();
-  private static final IdMap idmap = new IdMap();
+  private static final IdMap idmap = IdMap.getInstance();
 
   // Whether this server should use a whitelist to determine who can
   // access it. Value is specified in the <system-properties> section

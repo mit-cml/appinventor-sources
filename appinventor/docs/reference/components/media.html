@@ -1,0 +1,894 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0"
+  dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  class="js">
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
+    <meta content="Front Page" about="/front_page" property="dc:title">
+    <meta name="Generator" content="Drupal 7 (http://drupal.org)">
+    <title>Media Components - App Inventor for Android</title>
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: inline-block;
+      }
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+      background:transparent !important;
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+  <body>
+    <div id="page" class="container">
+      <header class="clearfix" role="banner">
+        <div id="top_bar">
+          <div id="branding">
+            <div id="logo"><a href="http://appinventor.mit.edu" title="Home page"
+                class="active"><img src="images/logo2.png" alt="Explore MIT App Inventor logo"></a></div>
+          </div>
+          <div id="menu-bar" class="nav clearfix">
+            <nav role="navigation">
+              <ul>
+                <li><a href="http://appinventor.mit.edu">Home</a></li>
+                <li><a href="http://appinventor.mit.edu/explore/news-events">Blog
+                    ▾</a></li>
+                <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+                    ▾</a></li>
+              </ul>
+            </nav>
+          </div>
+          <div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
+          </div>
+        </div>
+      </header>
+      <div id="columns" class="no-menu-bar" style="margin-top:15px;">
+        <div class="columns-inner clearfix">
+          <div id="content-column">
+            <div class="content-inner">
+              <section id="main-content" role="main">
+                <div id="content">
+                  <div class="region region-content">
+                    <h1>Media Components - App Inventor for Android</h1>
+                    <h2>Table of Contents</h2>
+                    <ul>
+                      <li> <a href="#Camcorder"> Camcorder </a> </li>
+                      <li> <a href="#Camera"> Camera </a> </li>
+                      <li> <a href="#ImagePicker"> ImagePicker </a> </li>
+                      <li> <a href="#Player"> Player </a> </li>
+                      <li> <a href="#Sound"> Sound </a> </li>
+                      <li> <a href="#SoundRecorder"> SoundRecorder </a> </li>
+                      <li> <a href="#SpeechRecognizer"> SpeechRecognizer </a>
+                      </li>
+                      <li> <a href="#TextToSpeech"> TextToSpeech </a> </li>
+                      <li> <a href="#VideoPlayer"> VideoPlayer </a> </li>
+                    </ul>
+                    <h2 id="Camcorder"> Camcorder </h2>
+                    <img alt="" src="images/camcorder.png">
+                    <p> A component to record a video using the device's
+                      camcorder.After the video is recorded, the name of the
+                      file on the phone containing the clip is available as an
+                      argument to the AfterRecording event. The file name can be
+                      used, for example, to set the source property of a
+                      VideoPlayer component. </p>
+                    <h3> Properties </h3>
+                    none
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterRecording(text clip) </code> </dt>
+                      <dd> Indicates that a video was recorded with the camera
+                        and provides the path to the stored picture. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> RecordVideo() </code> </dt>
+                      <dd> Records a video, then raises the AfterRecoding event.
+                      </dd>
+                    </dl>
+                    <h2 id="Camera"> Camera </h2>
+                    <img alt="" src="images/camera.png">
+                    <p> Use a camera component to take a picture on the phone. </p>
+                    <p> Camera is a non-visible component that takes a picture
+                      using the device's camera. After the picture is taken, the
+                      path to the file on the phone containing the picture is
+                      available as an argument to the AfterPicture event. The
+                      path can be used, for example, as the Picture property of
+                      an Image component. </p>
+                    <h3> Properties </h3>
+                    none
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> TakePicture() </code> </dt>
+                      <dd> Opens the phone's camera to allow a picture to be
+                        taken. </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterPicture(Text image) </code> </dt>
+                      <dd> Called after the picture is taken. The text argument
+                        <code> image </code> is the path that can be used to
+                        locate the image on the phone. </dd>
+                    </dl>
+                    <h2 id="ImagePicker"> ImagePicker </h2>
+                    <img alt="" src="images/imagepicker.png">
+                    <p> Use an image picker component to choose an image from
+                      your image gallery. </p>
+                    <p> An image picker is a kind of button. When the user taps
+                      an image picker, the device's image gallery appears, and
+                      the user can choose an image. After the user picks an
+                      image, the property <code> ImagePath </code> is set to a
+                      text string that represents that image. You can then use
+                      that result, for example, to set the image of a button. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code class="c2"> ImagePath </code> </dt>
+                      <dd> The image the user chose, represented as a text
+                        string that gives the location of the images. </dd>
+                      <dt> <code> Enabled </code> </dt>
+                      <dd> If true, image picker can be used. </dd>
+                      <dt> <code> BackgroundColor </code> </dt>
+                      <dd> Color for image picker background. </dd>
+                      <dt> <code> Enabled </code> </dt>
+                      <dd> If set, user can tap image picker to cause action. </dd>
+                      <dt> <code> FontBold </code> </dt>
+                      <dd> If set, image picker button text is displayed in
+                        bold. </dd>
+                      <dt> <code> FontItalic </code> </dt>
+                      <dd> If set, image picker button text is displayed in
+                        italics. </dd>
+                      <dt> <code> FontSize </code> </dt>
+                      <dd> Point size for image picker button text. </dd>
+                      <dt> <code> FontTypeface </code> </dt>
+                      <dd> Font family for image picker button text. </dd>
+                      <dt> <code> Height </code> </dt>
+                      <dd> image picker button height (y-size). </dd>
+                      <dt> <code> Width </code> </dt>
+                      <dd> image picker button width (x-size). </dd>
+                      <dt> <code> Image </code> </dt>
+                      <dd> Image to display on image picker button. </dd>
+                      <dt> <code> Text </code> </dt>
+                      <dd> Text to display on image picker button. </dd>
+                      <dt> <code> TextAlignment </code> </dt>
+                      <dd> Left, center, or right. </dd>
+                      <dt> <code> TextColor </code> </dt>
+                      <dd> Color for image picker button text. </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterPicking() </code> </dt>
+                      <dd> User selected an item from the image picker. </dd>
+                      <dt> <code> BeforePicking() </code> </dt>
+                      <dd> User has tapped the image picker but hasn't yet
+                        selected an item. </dd>
+                      <dt> <code> GotFocus() </code> </dt>
+                      <dd> Image picker became the focused component. </dd>
+                      <dt> <code> LostFocus() </code> </dt>
+                      <dd> Image picker is no longer the focused component. </dd>
+                    </dl>
+                    <h2 id="Player"> Player </h2>
+                    <img alt="" src="images/player.png">
+                    <p> Use a player component to play an audio or video file,
+                      or to vibrate the phone. </p>
+                    <p> Player is a non-visible component that plays audio or
+                      video and controls phone vibration. The name of a media
+                      file is specified in the <code> Source </code> property,
+                      which can be set in the Designer or in the Blocks Editor.
+                      To use a Player for streaming, set the <code> Source </code>
+                      inside the Blocks Editor to a text block with the URL. The
+                      length of time for a vibration is specified in the Blocks
+                      Editor in milliseconds (thousandths of a second). The
+                      volume should be an integer between 0 and 100. </p>
+                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
+                        Android Supported Media Formats </a> for more
+                      information on which types of files you can use. </p>
+                    <p> Use a player component for playing long sound files,
+                      video files, and vibrating the phone. For playing short
+                      sound files, such as sound effects, use a <code> Sound </code>
+                      component instead. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> IsLooping </code> </dt>
+                      <dd> If set, the media is looping. </dd>
+                      <dt> <code> IsPlaying </code> </dt>
+                      <dd> Whether the media is playing. </dd>
+                      <dt> <code> Source </code> </dt>
+                      <dd> Audio or video file associated with this player. </dd>
+                      <dt> <code> Volume </code> </dt>
+                      <dd> A number between 0 and 100. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> Pause() </code> </dt>
+                      <dd> Pauses playing the audio or video file. </dd>
+                      <dt> <code> Start() </code> </dt>
+                      <dd> Starts playing the audio or video file. </dd>
+                      <dt> <code> Stop() </code> </dt>
+                      <dd> Stops playing the audio or video file. </dd>
+                      <dt> <code> Vibrate(number milliseconds) </code> </dt>
+                      <dd> Activate the phone's vibration motor for the given
+                        number of milliseconds. </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> Completed() </code> </dt>
+                      <dd> Media has finished playing. </dd>
+                    </dl>
+                    <h2 id="Sound"> Sound </h2>
+                    <img alt="" src="images/sound.png">
+                    <p> Use a sound component to play an audio file, or to
+                      vibrate the phone. </p>
+                    <p> Sound is a non-visible component that plays sound files
+                      and vibrates for the number of milliseconds (thousandths
+                      of a second) specified in the Blocks Editor. The name of
+                      the sound file to play can be specified either in the
+                      Designer or in the Blocks Editor. </p>
+                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
+                        Android Supported Media Formats </a> for more
+                      information on which types of files you can use. </p>
+                    <p> This component is best for short sound files, such as
+                      sound effects, while the <code> Player </code> component
+                      is more efficient for longer sounds, such as songs. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> Source </code> </dt>
+                      <dd> Audio file associated with this sound. </dd>
+                      <dt> <code> MinimumInterval </code> </dt>
+                      <dd> Minimum time before sound is repeated. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> Pause() </code> </dt>
+                      <dd> Pauses playing the audio file. </dd>
+                      <dt> <code> Play() </code> </dt>
+                      <dd> Starts playing the audio file. </dd>
+                      <dt> <code> Resume() </code> </dt>
+                      <dd> Resumes playing a paused audio file. </dd>
+                      <dt> <code> Stop() </code> </dt>
+                      <dd> Stops playing the audio file. </dd>
+                      <dt> <code> Vibrate(number millisecs) </code> </dt>
+                      <dd> Activate the phone's vibration motor for the given
+                        number of milliseconds. </dd>
+                    </dl>
+                    <h2 id="SoundRecorder"> SoundRecorder </h2>
+                    <img src="images/soundRecorder.png" alt="Picture of Sound Recorder component">
+                    <p> Multimedia component that records audio. </p>
+                    <h3> Properties </h3>
+                    none
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterSoundRecorded(text sound) </code> </dt>
+                      <dd> Provides the location of the newly created sound. </dd>
+                      <dt> <code> StartedRecording() </code> </dt>
+                      <dd> Indicates that the recorder has started, and can be
+                        stopped. </dd>
+                      <dt> <code> StoppedRecording() </code> </dt>
+                      <dd> Indicates that the recorder has stopped, and can be
+                        started again. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> Start </code> () </dt>
+                      <dd> Starts recording. </dd>
+                      <dt> <code> Stop </code> () </dt>
+                      <dd> Stops recording. </dd>
+                    </dl>
+                    <h2 id="SpeechRecognizer"> SpeechRecognizer </h2>
+                    <img src="images/speechrecognizer.png" alt="Picture of Speech Recognizer component">
+                    <p> Use a speech recognizer component to listen to the user
+                      speaking and convert the spoken sound into text using
+                      Android's speech recognition feature. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code class="c2"> Result </code> </dt>
+                      <dd> The last text produced by the recognizer. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> GetText() </code> </dt>
+                      <dd> Asks the user to speak, and converts the speech to
+                        text. Signals the <code> AfterGettingText </code>
+                        event when the result is available. </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterGetting(Text result) </code> </dt>
+                      <dd> Signaled after the recognizer has produced text. The
+                        argument is the text result that was produced. </dd>
+                      <dt> <code> BeforeGettingText() </code> </dt>
+                      <dd> Signaled just before the recognizer is called. </dd>
+                    </dl>
+                    <h2 id="TextToSpeech"> TextToSpeech </h2>
+                    <img src="images/texttospeech.png" alt="Picture of Text to Speech component">
+                    <p> Use a text-to-speech component to have the device speak
+                      text audibly. </p>
+                    <p> In order for this component to work, the device must
+                      have the <em> TTS Extended Service </em> app by
+                      Eyes-Free Project installed. You can download this from <a
+                        href="http://code.google.com/p/eyes-free/downloads/list">
+                        http://code.google.com/p/eyes-free/downloads/list </a>
+                    </p>
+                    <p> The text-to-speech component has properties you can set
+                      to guide the pronunciation of the text to be spoken. These
+                      properties use three-letter codes to specify the language
+                      and the country in which the language is spoken. For
+                      example, you can specify British English or US English.
+                      For British English, the language code is <code> eng </code>
+                      and the country code is <code> GBR </code> , while for
+                      US English, the language code is <code> eng </code> and
+                      the country code is <code> USA </code> . The complete
+                      list is below. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> Country </code> </dt>
+                      <dd> The country code for speech production. </dd>
+                      <dt> <code> Language </code> </dt>
+                      <dd> The language code for speech production. </dd>
+                      <dt> <code class="c2"> Result </code> </dt>
+                      <dd> Details to come. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> Speak(Text message) </code> </dt>
+                      <dd> Speaks the given text. </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt> <code> AfterSpeaking(Text result) </code> </dt>
+                      <dd> Signaled after the text is spoken. The argument is
+                        the text result that was produced. </dd>
+                      <dt> <code> BeforeSpeaking() </code> </dt>
+                      <dd> Signaled just before the text is spoken. </dd>
+                    </dl>
+                    <p> Here are the language and country codes you can use. The
+                      codes are organized first by language; then, in each
+                      language section are a list of possible country codes: </p>
+                    <ul>
+                      <li> ces (Czech)
+                        <ul>
+                          <li> CZE </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> spa (Spanish)
+                        <ul>
+                          <li> ESP </li>
+                          <li> USA </li>
+                        </ul>
+                        <br>
+                      </li>
+                      <li> deu (German)
+                        <ul>
+                          <li> AUT </li>
+                          <li> BEL </li>
+                          <li> CHE </li>
+                          <li> DEU </li>
+                          <li> LIE </li>
+                          <li> LUX </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> fra (French)
+                        <ul>
+                          <li> BEL </li>
+                          <li> CAN </li>
+                          <li> CHE </li>
+                          <li> FRA </li>
+                          <li> LUX </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> nld (Dutch)
+                        <ul>
+                          <li> BEL </li>
+                          <li> NLD </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> ita (Italian)
+                        <ul>
+                          <li> CHE </li>
+                          <li> ITA </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> pol (Polish)
+                        <ul>
+                          <li> POL </li>
+                        </ul>
+                      </li>
+                      <br>
+                      <li> eng (English)
+                        <ul>
+                          <li> AUS </li>
+                          <li> BEL </li>
+                          <li> BWA </li>
+                          <li> BLZ </li>
+                          <li> CAN </li>
+                          <li> GBR </li>
+                          <li> HKG </li>
+                          <li> IRL </li>
+                          <li> IND </li>
+                          <li> JAM </li>
+                          <li> MHL </li>
+                          <li> MLT </li>
+                          <li> NAM </li>
+                          <li> NZL </li>
+                          <li> PHL </li>
+                          <li> PAK </li>
+                          <li> SGP </li>
+                          <li> TTO </li>
+                          <li> USA </li>
+                          <li> VIR </li>
+                          <li> ZAF </li>
+                          <li> ZWE </li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <h2 id="VideoPlayer"> VideoPlayer </h2>
+                    <img alt="" src="images/videoplayer.png">
+                    <p> Use a VideoPlayer component to play a video file. </p>
+                    <p> Video player is a media component that plays videos. A
+                      video player appears in your app as a rectangle. If the
+                      user taps the rectangle, media controls appear:
+                      play/pause, skip ahead, and skip backward. Your app can
+                      control playback behavior by calling the <code> Start </code>
+                      , <code> Pause </code> , and <code> SeekTo </code>
+                      methods. </p>
+                    <p> Video files should be in Windows Media Video (.wmv),
+                      3GPP (.3gp), or MPEG-4 (.mp4) format. For more details
+                      about formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html">
+                        Android Supported Media Formats </a> . </p>
+                    <p> App Inventor accepts video files up to 1 MB in size and
+                      limits the total size of an app to 5 MB, not all of which
+                      is available for media files. If your media files are too
+                      large, you might get errors when packaging or installing
+                      your app, in which case you should reduce the number of
+                      media files or their sizes. Video editing software, such
+                      as Windows Movie Maker or Apple iMovie, can help you
+                      decrease the size of videos by shortening them or
+                      re-encoding them into more compact formats. </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> Source </code> </dt>
+                      <dd> Video file associated with this player. </dd>
+                      <dt> <code> Visible </code> </dt>
+                      <dd> If set, VideoPlayer is visible. </dd>
+                    </dl>
+                    <h3> Methods </h3>
+                    <dl>
+                      <dt> <code> Pause() </code> </dt>
+                      <dd> Pauses playing the video file. </dd>
+                      <dt> <code> Start() </code> </dt>
+                      <dd> Starts playing the video file. </dd>
+                      <dt> <code> SeekTo(number millisecs) </code> </dt>
+                      <dd> Seeks to the requested time (specified in
+                        milliseconds) in the video. </dd>
+                      <dt> <code> GetDuration() </code> </dt>
+                      <dd> Returns the duration of the video in milliseconds. </dd>
+                    </dl>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer role="contentinfo">
+        <div class="region region-footer">
+          <div id="block-block-3" class="block block-block block-odd block-count-8 block-region-footer">
+            <div class="block-inner clearfix">
+              <div class="block-content content no-title">
+                <p style="text-align: center;"><a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                    target="_blank"><img alt="Creative Commons License" src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"></a>
+                  <br>
+                  This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                    class="ext" target="_blank">Creative Commons
+                    Attribution-ShareAlike 3.0 Unported License</a><span class="ext"></span></p>
+                <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/"
+                    class="ext" target="_blank">Massachusetts Institute of
+                    Technology</a><span class="ext"></span></p>
+                <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+                    Us</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <table class="gstl_50 gssb_c" style="width: 183px; display: none; top: 110px; position: absolute;
+                  left: 924px;" cellpadding="0" cellspacing="0">
+      <tbody>
+        <tr>
+          <td class="gssb_f"></td>
+          <td class="gssb_e" style="width: 100%;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

@@ -25,45 +25,16 @@ import static com.google.appinventor.client.Ode.MESSAGES;
  *
  */
 public class TopPanel extends Composite {
-  private static final String LEARN_URL = Ode.APP_INVENTOR_DOCS_URL + "/learn/";
-  private static final String KNOWN_ISSUES_LINK_URL =
-    Ode.APP_INVENTOR_DOCS_URL + "/knownIssues.html";
-  private static final String RELEASE_NOTES_LINK_URL =
-    Ode.APP_INVENTOR_DOCS_URL + "/ReleaseNotes.html";
-  private static final String KNOWN_ISSUES_LINK_AND_TEXT =
-    "<a href=\"" + KNOWN_ISSUES_LINK_URL + "\" target=\"_blank\">known issues</a>" ;
-  private static final String RELEASE_NOTES_LINK_AND_TEXT =
-    "<a href=\"" + RELEASE_NOTES_LINK_URL + "\" target=\"_blank\">release notes</a>"; 
-  private static final String GALLERY_LINK_AND_TEXT =
-    "<a href=\"http://gallery.appinventor.mit.edu\" target=\"_blank\">" +
-    "Try the App Inventor Community Gallery (Beta)</a>";
+  // Strings for links and dropdown menus:
+  private final DropDownButton accountButton;
+  private final String WIDGET_NAME_SIGN_OUT = "Signout";
+  private final String WIDGET_NAME_USER = "User";
   private static final String SIGNOUT_URL = "/ode/_logout";
-
   private static final String LOGO_IMAGE_URL = "/images/logo.png";
-  private static final String MYPROJECTS_IMAGE_URL = "/images/myprojects.png";
 
   private final VerticalPanel rightPanel;  // remember this so we can add MOTD later if needed
 
-  private String termsOfServiceText =
-    "<a href='" + Ode.APP_INVENTOR_DOCS_URL + "/about/termsofservice.html'" +
-    " target=_blank>" + MESSAGES.privacyTermsLink() + "</a>";
-
-  private final HTML welcome = new HTML("Welcome to the App Inventor 2 alpha release.<BR>" + "."
-  );
-
-  private HTML divider() {
-    return new HTML("<span class='linkdivider'>&nbsp;|&nbsp;</span>");
-  }
-
-  private final DropDownButton accountButton;
-
   final Ode ode = Ode.getInstance();
-
-  // Strings for Drop Down Menus:
-  private final String WIDGET_NAME_MY_PROJECTS = "myProjects";
-  private final String WIDGET_NAME_FEEDBACK = "Report a problem";
-  private final String WIDGET_NAME_SIGN_OUT = "signOut";
-  private final String WIDGET_NAME_USER = "user";
 
   /**
    * Initializes and assembles all UI elements shown in the top panel.
@@ -104,56 +75,16 @@ public class TopPanel extends Composite {
     myProjects.setStyleName("ode-TopPanelButton");
     links.add(myProjects);
 
-    TextButton guideLink = new TextButton("Guide");
+    TextButton guideLink = new TextButton(MESSAGES.guideLink());
     guideLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        Window.open("http://appinventor.mit.edu/explore/ai2/user-guide", "_blank", null);
+        Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", null);
       }
     });
 
     guideLink.setStyleName("ode-TopPanelButton");
     links.add(guideLink);
-
-	/*
-	// Code on master branch
-    // Gallery Link
-    if (Ode.getInstance().getUser().getIsAdmin()) {
-      TextButton gallery = new TextButton("Gallery");
-      gallery.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", null);
-        }
-    });
-
-    // Code on gallery2 branch
-    gallery.setStyleName("ode-TopPanelButton");
-    links.add(gallery);
-    }
-	Label galleryLabel = new Label(MESSAGES.tabNameGallery());
-	galleryLabel.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        ode.switchToGalleryView();
-      }
-     });
-    galleryLabel.setStyleName("gwt-TitleLabel");
-    middleLinks.add(galleryLabel);		
-	*/
-		
-	// Gallery Link	
-	TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
-    gallery.setStyleName("ode-TopPanelButton");
-    gallery.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent clickEvent) {
-        ode.switchToGalleryView();
-      }
-    });
-    links.add(gallery);
-	
-	
 
     // Feedback Link
     TextButton feedbackLink = new TextButton(MESSAGES.feedbackLink());
@@ -168,6 +99,35 @@ public class TopPanel extends Composite {
 
     feedbackLink.setStyleName("ode-TopPanelButton");
     links.add(feedbackLink);
+	
+	/*
+	// Code on master branch
+    // Gallery Link
+    if (Ode.getInstance().getUser().getIsAdmin()) {
+      TextButton gallery = new TextButton(MESSAGES.galleryLink());
+      gallery.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent clickEvent) {
+          Window.open("http://gallery.appinventor.mit.edu", "_blank", null);
+        }
+      });
+
+      gallery.setStyleName("ode-TopPanelButton");
+      links.add(gallery);
+    }
+	*/
+		
+	// Code on gallerydev branch
+	// Gallery Link	
+	TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery.setStyleName("ode-TopPanelButton");
+    gallery.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToGalleryView();
+      }
+    });
+    links.add(gallery);
 
     // Create the Account Information
     rightPanel = new VerticalPanel();
@@ -179,9 +139,6 @@ public class TopPanel extends Composite {
 
     // Account Drop Down Button
     List<DropDownItem> userItems = Lists.newArrayList();
-
-    // My Projects
-    userItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.tabNameProjects(), new SwitchToProjectAction()));
 
     // Sign Out
     userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
@@ -219,18 +176,24 @@ public class TopPanel extends Composite {
     Image logo = new Image(LOGO_IMAGE_URL + "?t=" + System.currentTimeMillis());
     logo.setSize("40px", "40px");
     logo.setStyleName("ode-Logo");
+    logo.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        Window.open("http://dev-explore.appinventor.mit.edu", "_ai2", null);
+      }
+    });
     panel.add(logo);
     panel.setCellWidth(logo, "50px");
     Label title = new Label("MIT App Inventor 2");
     Label version = new Label("Beta");
+    title.setStyleName("ode-LogoText");
+    version.setStyleName("ode-LogoVersion");
     VerticalPanel titleContainer = new VerticalPanel();
     titleContainer.add(title);
     titleContainer.add(version);
     titleContainer.setCellHorizontalAlignment(version, HorizontalPanel.ALIGN_RIGHT);
     panel.add(titleContainer);
     panel.setCellWidth(titleContainer, "180px");
-    title.setStyleName("ode-LogoText");
-    version.setStyleName("ode-LogoVersion");
     panel.setCellHorizontalAlignment(logo, HorizontalPanel.ALIGN_LEFT);
     panel.setCellVerticalAlignment(logo, HorizontalPanel.ALIGN_MIDDLE);
   }
@@ -256,17 +219,6 @@ public class TopPanel extends Composite {
    */
   public void showMotd() {
     addMotd(rightPanel);
-  }
-
-  private static String makeSpacesNonBreakable(String s) {
-    return s.replace(" ", "&nbsp;");
-  }
-
-  private static class SwitchToProjectAction implements Command {
-    @Override
-    public void execute() {
-      Ode.getInstance().switchToProjectsView();
-    }
   }
 
   private static class SignOutAction implements Command {

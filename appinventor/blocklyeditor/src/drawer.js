@@ -249,8 +249,11 @@ Blockly.Drawer.blockTypeToXMLArray = function(blockType,mutatorAttributes) {
   }
   var xmlBlockArray = [];
   var xmlFromString = Blockly.Xml.textToDom(xmlString);
-  for(var i=0;i<xmlFromString.children.length;i++) {
-    xmlBlockArray.push(xmlFromString.children[i]);
+  // [lyn, 11/10/13] Use goog.dom.getChildren rather than .children or .childNodes
+  //   to make this code work across browsers.
+  var children = goog.dom.getChildren(xmlFromString);
+  for(var i=0;i<children.length;i++) {
+    xmlBlockArray.push(children[i]);
   }
   return xmlBlockArray;
 }

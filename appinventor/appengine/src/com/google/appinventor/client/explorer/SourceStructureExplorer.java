@@ -6,9 +6,9 @@
 package com.google.appinventor.client.explorer;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.TextButton;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.*;
 import com.google.gwt.user.client.ui.*;
 
@@ -82,6 +82,17 @@ public class SourceStructureExplorer extends Composite {
         }
       }
     });
+    tree.addKeyDownHandler(new KeyDownHandler() {
+      @Override
+      public void onKeyDown(KeyDownEvent event) {
+        int keyCode = event.getNativeKeyCode();
+        if (keyCode == KeyCodes.KEY_DELETE || keyCode == KeyCodes.KEY_BACKSPACE) {
+          event.preventDefault();
+          deleteItemFromTree();
+        }
+      }
+    });
+
     // Put a ScrollPanel around the tree.
     ScrollPanel scrollPanel = new ScrollPanel(tree);
     scrollPanel.setWidth("200px");  // wide enough to avoid a horizontal scrollbar most of the time
@@ -114,14 +125,7 @@ public class SourceStructureExplorer extends Composite {
     deleteButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        TreeItem treeItem = tree.getSelectedItem();
-        if (treeItem != null) {
-          Object userObject = treeItem.getUserObject();
-          if (userObject instanceof SourceStructureExplorerItem) {
-            SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
-            item.delete();
-          }
-        }
+        deleteItemFromTree();
       }
     });
     buttonPanel.add(deleteButton);
@@ -133,6 +137,17 @@ public class SourceStructureExplorer extends Composite {
     panel.add(buttonPanel);
     panel.setCellHorizontalAlignment(buttonPanel, HorizontalPanel.ALIGN_CENTER);
     initWidget(panel);
+  }
+
+  private void deleteItemFromTree() {
+    TreeItem treeItem = tree.getSelectedItem();
+    if (treeItem != null) {
+      Object userObject = treeItem.getUserObject();
+      if (userObject instanceof SourceStructureExplorerItem) {
+        SourceStructureExplorerItem item = (SourceStructureExplorerItem) userObject;
+        item.delete();
+      }
+    }
   }
 
   private void enableButtons(SourceStructureExplorerItem item) {

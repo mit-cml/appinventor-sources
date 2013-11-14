@@ -5,8 +5,12 @@
 
 package com.google.appinventor.client.editor.simple.components;
 
+// import com.google.gwt.event.dom.client.LoadEvent;
+// import com.google.gwt.event.dom.client.LoadHandler;
+import com.google.gwt.event.shared.GwtEvent.Type;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 import com.google.gwt.widgetideas.graphics.client.Color;
@@ -46,6 +50,42 @@ public final class MockComponentsUtil {
     DOM.setStyleAttribute(widget.getElement(), "backgroundRepeat", "no-repeat");
     DOM.setStyleAttribute(widget.getElement(), "backgroundPosition", "center");
     DOM.setStyleAttribute(widget.getElement(), "backgroundSize", "100% 100%");
+  }
+
+  /**
+   * Sets the background image for the given widget.
+   *
+   * @param container the MockContainer to refresh when image is loaded
+   * @param widget  widget to change background image for
+   * @param image  URL
+   */
+  static void setWidgetBackgroundImage(final MockContainer container, Widget widget, String image) {
+    // Problem: When we change the background image via a Style referencing a "url"
+    // the browser doesn't initially know the size of the image. We need to know it
+    // when the container layout height and/or width is "Automatic." If we query right
+    // away, we will be told the image is 0 x 0 because it isn't loaded yet.
+    // I have not been able to figure out how to get the browser to give us a onLoad (or
+    // similar event) when the image is loaded. If we could get such an event, we can
+    // call refreshForm in the container and win.
+    //
+    // The code below fudges this by setting up a time to fire after 1 second with the
+    // hope that the image will have been loaded by then and its dimensions known.
+    // The code commented out immediately below this code is what I would like to use,
+    // but it doesn't seem to work!   -JIS
+    Timer t = new Timer() {
+        @Override
+        public void run() {
+          container.refreshForm();
+        }
+      };
+//    widget.addHandler(new LoadHandler() {
+//        @Override
+//        public void onLoad(LoadEvent event) {
+//          container.refreshForm();
+//        }
+//      }, new Type<LoadHandler>());
+    setWidgetBackgroundImage(widget, image);
+    t.schedule(1000);           // Fire in one second
   }
 
   /**

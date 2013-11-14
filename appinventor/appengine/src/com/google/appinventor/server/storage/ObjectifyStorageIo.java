@@ -12,6 +12,10 @@ import com.google.appengine.api.files.AppEngineFile;
 import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.memcache.ErrorHandlers;
+import com.google.appengine.api.memcache.MemcacheService;
+import com.google.appengine.api.memcache.MemcacheServiceFactory;
+import com.google.appengine.api.memcache.Expiration;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
@@ -79,6 +83,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
+  private final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+
   // Use this class to define the work of a job that can be retried. The
   // "datastore" argument to run() is the Objectify object for this job
   // (created with ObjectifyService.beginTransaction()). Note that all operations
@@ -119,6 +125,7 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   ObjectifyStorageIo() {
     fileService = FileServiceFactory.getFileService();
+    memcache.setErrorHandler(ErrorHandlers.getConsistentLogAndContinue(Level.INFO));
     initMotd();
   }
 
@@ -140,7 +147,15 @@ public class ObjectifyStorageIo implements  StorageIo {
    */
   @Override
   public User getUser(final String userId, final String email) {
-    final User user = new User(userId, email, false, false);
+    String cachekey = User.usercachekey + "|" + userId;
+    User tuser = (User) memcache.get(cachekey);
+    if (tuser != null && tuser.getUserTosAccepted() && ((email == null) || (tuser.getUserEmail().equals(email)))) {
+      return tuser;
+    } else {                    // If not in memcache, or tos
+                                // not yet accepted, fetch from datastore
+      tuser = new User(userId, email, false, false);
+    }
+    final User user = tuser;
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -159,6 +174,13 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+    memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
+    // The choice of one minute here is arbitrary. getUser() is called on every authenticated
+    // RPC call to the system (out of OdeAuthFilter), so using memcache will save a significant
+    // number of calls to the datastore. If someone is idle for more then a minute, it isn't
+    // unreasonable to hit the datastore again. By pruning memcache ourselves, we have a
+    // bit more control (maybe) of how things are flushed from memcache. Otherwise we are
+    // at the whim of whatever algorithm App Engine employs now or in the future.
     return user;
   }
 

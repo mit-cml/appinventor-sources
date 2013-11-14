@@ -6,12 +6,13 @@
 package com.google.appinventor.shared.rpc.user;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import java.io.Serializable;
 
 /**
  * Data Transfer Object representing user data.
  *
  */
-public class User implements IsSerializable, UserInfoProvider {
+public class User implements IsSerializable, UserInfoProvider, Serializable {
   // Unique identifier for the user
   private String id;
 
@@ -23,6 +24,13 @@ public class User implements IsSerializable, UserInfoProvider {
   
   // whether the user has admin priviledges
   private boolean isAdmin;
+
+  public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
+  // This UUID is prepended to any key lookup for User objects. Memcache is a common
+  // key/value store for the entire application. By prepending a unique value, we ensure
+  // that other modules that use Memcache will not collide with us. By using a UUID,
+  // properly generated, we don't have to worry about allocating specific prefixes and
+  // ensuring that they are unique.
 
   /**
    * Creates a new user data transfer object.

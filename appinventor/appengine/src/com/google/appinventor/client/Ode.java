@@ -256,6 +256,7 @@ public class Ode implements EntryPoint {
    */
   public void switchToProjectsView() {
     currentView = PROJECTS;
+    getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
   }
   
@@ -287,6 +288,7 @@ public class Ode implements EntryPoint {
     // Only show designer if there is a current editor.
     // ***** THE DESIGNER TAB DOES NOT DISPLAY CORRECTLY IF THERE IS NO CURRENT EDITOR. *****
     currentView = DESIGNER;
+    getTopToolbar().updateFileMenuButtons(currentView);
     if (currentFileEditor != null) {
       deckPanel.showWidget(designTabIndex);
     } else {
@@ -378,6 +380,7 @@ public class Ode implements EntryPoint {
       }
       assetManager.loadAssets(project.getProjectId());
     }
+    getTopToolbar().updateFileMenuButtons(1);
   }
 
   /**
@@ -1055,8 +1058,8 @@ public class Ode implements EntryPoint {
         HasVerticalAlignment.ALIGN_MIDDLE);
 
     Label messageChunk1 = new Label("You don't have any projects yet."
-        + " To learn how to use App Inventor, click the \"Learn\" item"
-        + " at the top of the window; or to start your first project, click "
+        + " To learn how to use App Inventor, click the \"Guide\" link"
+        + " at the upper right of the window; or to start your first project, click "
         + " the \"New\" button at the upper left of the window.");
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label("Happy Inventing!");
@@ -1064,16 +1067,16 @@ public class Ode implements EntryPoint {
     // Add the elements to the grids and DialogBox.
     messageGrid.setWidget(0, 0, messageChunk1);
     messageGrid.setWidget(1, 0, messageChunk2);
-
     mainGrid.setWidget(0, 0, dialogImage);
     mainGrid.setWidget(0, 1, messageGrid);
 
     dialogBox.setWidget(mainGrid);
-
     dialogBox.center();
+
     if (showDialog) {
       dialogBox.show();
     }
+
     return dialogBox;
   }
 
@@ -1121,7 +1124,9 @@ public class Ode implements EntryPoint {
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
-    dialogBox.show();
+    if (showDialog) {
+      dialogBox.show();
+    }
     return dialogBox;
   }
 
