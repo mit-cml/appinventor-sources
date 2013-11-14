@@ -223,6 +223,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     next.addStyleName("gallery-nav-next");
     container.add(next);
     
+    final Label counter = new Label("Counting...");
+    counter.addStyleName("gallery-nav-counter");
+    if (request != 1) {
+      container.add(counter);
+      counter.setText("");      
+    }
+    
     buttonPrev.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
