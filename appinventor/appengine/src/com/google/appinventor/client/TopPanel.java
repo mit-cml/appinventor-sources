@@ -99,7 +99,9 @@ public class TopPanel extends Composite {
 
     feedbackLink.setStyleName("ode-TopPanelButton");
     links.add(feedbackLink);
-
+	
+	/*
+	// Code on master branch
     // Gallery Link
     if (Ode.getInstance().getUser().getIsAdmin()) {
       TextButton gallery = new TextButton(MESSAGES.galleryLink());
@@ -113,6 +115,19 @@ public class TopPanel extends Composite {
       gallery.setStyleName("ode-TopPanelButton");
       links.add(gallery);
     }
+	*/
+		
+	// Code on gallerydev branch
+	// Gallery Link	
+	TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery.setStyleName("ode-TopPanelButton");
+    gallery.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToGalleryView();
+      }
+    });
+    links.add(gallery);
 
     // Create the Account Information
     rightPanel = new VerticalPanel();

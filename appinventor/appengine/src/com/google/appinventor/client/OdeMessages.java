@@ -257,9 +257,10 @@ public interface OdeMessages extends Messages {
   String feedbackLink();
 
   @DefaultMessage("Gallery")
-  @Description("Link for Gallery")
-  String galleryLink();
 
+  @Description("Name of Gallery tab")
+  String tabNameGallery();
+  
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();
@@ -331,6 +332,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
+  
+  // Used in boxes/GalleryListBox.java
+
+  @DefaultMessage("Gallery")
+  @Description("Caption for gallery list box.")
+  String galleryListBoxCaption();
+
+  // Used in boxes/GalleryAppBox.java
+
+  @DefaultMessage("Gallery App")
+  @Description("Caption for gallery app box.")
+  String galleryAppBoxCaption();
 
   // Used in boxes/PropertiesBox.java
 
@@ -1155,6 +1168,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Import Project...")
   @Description("Caption for project upload wizard.")
   String projectUploadWizardCaption();
+  
+  // Used in gallerylist.java
+
+  @DefaultMessage("Server error: gallery cannot be accessed")
+  @Description("Error message reported when the gallery cannot be accessed.")
+  String galleryError();
 
   @DefaultMessage("Server error: could not upload project. Please try again later!")
   @Description("Error message reported when a project couldn't be uploaded to the server.")
