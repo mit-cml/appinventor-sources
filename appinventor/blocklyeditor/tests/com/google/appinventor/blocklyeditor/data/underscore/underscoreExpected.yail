@@ -1,0 +1,42 @@
+#|
+$Source $Yail
+|#
+
+(define-form appinventor.ai_test.testuserscores.Screen1 Screen1)
+(require <com.google.youngandroid.runtime>)
+
+(def (p$procedure )  (call-component-method 'listpicker_one 'Open (*list-for-runtime*) '()))
+;;; Screen1
+
+(do-after-form-creation (set-and-coerce-property! 'Screen1 'Title "Screen1" 'text)
+)
+
+;;; button_one
+
+(add-component Screen1 Button button_one 
+(set-and-coerce-property! 'button_one 'Text "Text for Button1" 'text)
+
+)
+
+(define-event button_one Click()(set-this-form)
+    (set-and-coerce-property! 'label_one 'Text "foobar" 'text))
+;;; label_one
+
+(add-component Screen1 Label label_one 
+(set-and-coerce-property! 'label_one 'Text "Text for Label1" 'text)
+
+)
+
+;;; listpicker_one
+
+(add-component Screen1 ListPicker listpicker_one 
+(set-and-coerce-property! 'listpicker_one 'Text "Text for ListPicker1" 'text)
+
+)
+
+;;; tinydb_one
+
+(add-component Screen1 TinyDB tinydb_one 
+)
+
+(init-runtime)
