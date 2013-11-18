@@ -632,6 +632,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         }
         this.resetYail();
         window.parent.ReplState.state = this.rsState.IDLE;
+        this.hardreset();       // Tell aiStarter to kill off adb
     }
 };
 
@@ -787,6 +788,12 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     }
     conn.send(arraybuf);
     return true;
+};
+
+Blockly.ReplMgr.hardreset = function() {
+    var xhr = goog.net.XmlHttp();
+    xhr.open("GET", "http://localhost:8004/reset/", false);
+    xhr.send();                 // We don't care about the return...
 };
 
 //---------------------------------------------------------------------
