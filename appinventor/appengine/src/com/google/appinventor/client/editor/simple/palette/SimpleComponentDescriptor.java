@@ -111,6 +111,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/datePicker.png", images.datePickerComponent());
     bundledImages.put("images/timePicker.png", images.timePickerComponent());
     bundledImages.put("images/tinyDB.png", images.tinyDB());
+    bundledImages.put("images/file.png", images.file());
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
     bundledImages.put("images/voting.png", images.voting());
