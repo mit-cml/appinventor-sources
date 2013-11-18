@@ -2,7 +2,6 @@
 from bottle import run,route,app,request,response,template,default_app,Bottle,debug,abort
 import sys
 import os
-import platform
 import subprocess
 import re
 #from flup.server.fcgi import WSGIServer
@@ -12,18 +11,17 @@ import re
 app = Bottle()
 default_app.push(app)
 
-platforms = platform.uname()[0]
-print "Platform = %s" % platforms
-if platforms == 'Windows':               # Windows
-    PLATDIR = os.environ["ProgramFiles"]
-    PLATDIR = '"' + PLATDIR + '"'
-else:
+platform = os.uname()[0]
+if platform == 'Linux':
+    PLATDIR = '/usr/google/appinventor/'
+elif platform == 'Darwin':               # MacOS
+    PLATDIR = '/Applications/AppInventor/'
+else:                                   # Need to add Windows
     sys.exit(1)
-print PLATDIR
 
 @route('/start/')
 def start():
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
+    subprocess.call(PLATDIR + "commands-for-Appinventor/run-emulator ", shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -53,24 +51,22 @@ def ucheck():
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
-    subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s forward tcp:8001 tcp:8001") %
-                    device, shell=True)
+    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s forward tcp:8001 tcp:8001") % device, shell=True, close_fds=True)
     if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
-        subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell input keyevent 82")
-                        % device, shell=True)
-    subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True)
+        subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell input keyevent 82") % device, shell=True, close_fds=True)
+    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
 
 def checkrunning(emulator):
-    result = subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb devices", shell=True)
+    result = subprocess.check_output(PLATDIR + 'commands-for-Appinventor/adb devices', shell=True, close_fds=True)
     lines = result.split('\n')
     for line in lines[1:]:
         if emulator:
             m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
         else:
-            m = re.search('^([0-9.:]+.*?)\t+device.*', line)
+            m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
         if m:
             break
     if m:

@@ -516,7 +516,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     }
                     if (!dialog) {
                         window.parent.BlocklyPanel_indicateDisconnect();
-                        dialog = new Blockly.ReplMgr.Dialog("Helper?", 'The aiDaemon helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>', "OK", 0, function() {
+                        dialog = new Blockly.ReplMgr.Dialog("Helper?", 'The aiStarter helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>', "OK", 0, function() {
                             dialog.hide();
                             dialog = null;
                             if (progdialog) {
