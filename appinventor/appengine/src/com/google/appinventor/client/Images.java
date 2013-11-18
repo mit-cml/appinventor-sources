@@ -312,6 +312,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/tinyDB.png")
   ImageResource tinyDB();
+  
+  //TODO make an image for a file
+  @Source("com/google/appinventor/images/tinyDB.png")
+  ImageResource file();
 
   /**
    * Designer palette item: TinyWebDB Component
