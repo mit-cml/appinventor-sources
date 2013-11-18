@@ -25,6 +25,9 @@ goog.require('goog.crypt.Hmac');
 // Repl State
 // Repl "state" definitions
 
+Blockly.ReplMgr.COMPANION_VERSION = "2.07nb9zx1";
+Blockly.ReplMgr.ACCEPTABLE_VERSIONS = [Blockly.ReplMgr.COMPANION_VERSION, "2.07nb9"];
+
 Blockly.ReplMgr.rsState = {
     IDLE : 0,                   // Not connected nor connection requested
     RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
@@ -293,8 +296,7 @@ Blockly.ReplMgr.putYail = (function() {
                         return;
                     } else {
                         var json = goog.json.parse(this.response);
-                        var version = json.version.substr(0,7);
-                        if (version != "2.07nb9") {
+                        if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
                             engine.showversioncompmessage(true);
                             engine.resetcompanion();
                             return;
@@ -304,8 +306,7 @@ Blockly.ReplMgr.putYail = (function() {
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
-                    rs.didversioncheck = true;
-                    engine.showversioncompmessage(true);
+                    var dialog = new Blockly.ReplMgr.Dialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and re-connecting", "OK", 0, function() { dialog.hide(); });
                     engine.resetcompanion();
                     return;
                 }
@@ -350,7 +351,7 @@ Blockly.ReplMgr.putYail = (function() {
         "showversioncompmessage" : function(fatal) {
             var dialog;
             if (fatal) {
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.", "OK", 0, function() { dialog.hide();});
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.<br/><br/>This Version of App Inventor wants Companion version" + Blockly.ReplMgr.COMPANION_VERSION, "OK", 0, function() { dialog.hide();});
             } else {
                 dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "You are using an out-of-date Companion, you should consider updating to the latest version.", "Dismiss", 1, function() { dialog.hide();});
             }
@@ -359,6 +360,15 @@ Blockly.ReplMgr.putYail = (function() {
     engine.putYail.reset = engine.reset;
     return engine.putYail;
 })();
+
+Blockly.ReplMgr.acceptableVersion = function(version) {
+    for (var i = 0; i < Blockly.ReplMgr.ACCEPTABLE_VERSIONS.length; i++) {
+        if (Blockly.ReplMgr.ACCEPTABLE_VERSIONS[i] == version) {
+            return true;
+        }
+    }
+    return false;
+};
 
 Blockly.ReplMgr.processRetvals = function(responses) {
     var block;
