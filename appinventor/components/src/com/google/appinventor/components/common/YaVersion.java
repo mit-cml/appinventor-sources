@@ -229,7 +229,14 @@ public class YaVersion {
   // - NEARFIELD_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 79:
   // - FORM_COMPONENT_VERSION was incremented to 11.
-  public static final int YOUNG_ANDROID_VERSION = 79;
+  // For YOUNG_ANDROID_VERSION 80:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 7.
+  // For YOUNG_ANDROID_VERSION 81:
+  // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 82:
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3;
+
+    public static final int YOUNG_ANDROID_VERSION = 82;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -301,7 +308,9 @@ public class YaVersion {
   // - AccelerometerSensor.MinimumInterval property was added.
   // - AccelerometerSensor.AccelerationChanged method was modified to wait for
   //   the minimum interval to elapse before calling a shaking event when necessary.
-  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 2;
+  //For ACCELEROMETERSENSOR_COMPONENT_VERSION 3:
+  // - AccelerometerSensor.Sensitivty property was added.
+  public static final int ACCELEROMETERSENSOR_COMPONENT_VERSION = 3;
 
   // For ACTIVITYSTARTER_COMPONENT_VERSION 2:
   // - The ActivityStarter.DataType, ActivityStarter.ResultType, and ActivityStarter.ResultUri
@@ -489,7 +498,9 @@ public class YaVersion {
   // For LISTPICKER_COMPONENT_VERSION 6:
   // - The getIntent method was modified to provide the ListPickerActivity
   //   with the parent Form's open screen animation.
-  public static final int LISTPICKER_COMPONENT_VERSION = 6;
+  // For LISTPICKER_COMPONENT_VERSION 7:
+  // - Added ShowFilterBar property
+  public static final int LISTPICKER_COMPONENT_VERSION = 7;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -500,7 +511,9 @@ public class YaVersion {
 
   // For NOTIFIER_COMPONENT_VERSION 2:
   // - To ShowChooseDialog and ShowTextDialog, new arg was added to indicate if dialog is cancelable
-  public static final int NOTIFIER_COMPONENT_VERSION = 2;
+  // For NOTIFIER_COMPONENT_VERSION 3:
+  // - Added NotifierColor, TextColor and NotifierLength options
+  public static final int NOTIFIER_COMPONENT_VERSION = 3;
 
   // For ORIENTATIONSENSOR_COMPONENT_VERSION = 2:
   // - The Yaw property was renamed to Azimuth.

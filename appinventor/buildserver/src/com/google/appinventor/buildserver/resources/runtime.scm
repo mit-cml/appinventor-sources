@@ -1,5 +1,5 @@
 ;;; Copyright 2009-2011 Google, All Rights reserved
-;;; Copyright 2011-2012 MIT, All rights reserved
+;;; Copyright 2011-2013 MIT, All rights reserved
 ;;; Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 ;;; These are the functions that define the YAIL (Young Android Intermediate Language) runtime They
@@ -18,7 +18,9 @@
 ;;; but the top-level forms are evaluated in that run() function.
 ;;;
 
+;;; also see *debug-form* below
 (define *debug* #f)
+
 (define *this-is-the-repl* #f)
 
 (define (android-log message)
@@ -374,13 +376,17 @@
                (cons thunk
                      form-do-after-creation)))
 
+       (define (send-error error)
+         (com.google.appinventor.components.runtime.util.RetValManager:sendError error))
+
        (define (process-exception ex)
          (define-alias YailRuntimeError <com.google.appinventor.components.runtime.errors.YailRuntimeError>)
          ;; The call below is a no-op unless we are in the wireless repl
          (com.google.appinventor.components.runtime.ReplApplication:reportError ex)
          (if isrepl
              (when ((this):toastAllowed)
-                   ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show))
+                   (begin (send-error (ex:getMessage))
+                          ((android.widget.Toast:makeText (this) (ex:getMessage) 5):show)))
 
              (com.google.appinventor.components.runtime.util.RuntimeErrorAlert:alert
               (this)
@@ -1969,8 +1975,8 @@ list, use the make-yail-list constructor with no arguments.
 
 
 (define (make-disjunct x)
-  (cond ((null? (cdr x)) (car x))
-    (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
+  (cond ((null? (cdr x)) (Pattern:quote (car x)))
+        (#t (string-append (Pattern:quote (car x)) (string-append "|" (make-disjunct (cdr x)))))))
 
 
 (define (array->list arr) (insert-yail-list-header (gnu.lists.LList:makeList arr 0)))
@@ -1997,7 +2003,7 @@ list, use the make-yail-list constructor with no arguments.
 
 (define (string-split text at)
   (array->list
-   ((text:toString):split (Pattern:quote at) -1)))
+   ((text:toString):split (Pattern:quote at))))
 
 (define (string-split-at-any text at)
   (if (null? (yail-list-contents at))

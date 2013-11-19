@@ -23,16 +23,25 @@
  */
 'use strict';
 
+/**
+ * [lyn, 10/10/13]
+ * + Added CSS tags blocklyFieldParameter and blocklyFieldParameterFlydown
+ *   to control parameter flydowns.
+ * + Added CSS tags blocklyFieldProcedure and blocklyFieldProcedureFlydown
+ *   to control procedure flydowns.
+ */
+
 goog.provide('Blockly.Css');
 
 goog.require('goog.cssom');
+
 
 /**
  * Inject the CSS into the DOM.  This is preferable over using a regular CSS
  * file since:
  * a) It loads synchronously and doesn't force a redraw later.
  * b) It speeds up loading by not blocking on a separate HTTP transfer.
- * c) The CSS cantent may be made dynamic depending on init options.
+ * c) The CSS content may be made dynamic depending on init options.
  */
 Blockly.Css.inject = function() {
   var text = Blockly.Css.CONTENT.join('\n');
@@ -42,7 +51,9 @@ Blockly.Css.inject = function() {
   goog.cssom.addCssText(text);
 };
 
-
+/**
+ * Array making up the CSS content for Blockly.
+ */
 Blockly.Css.CONTENT = [
   '.blocklySvg {',
   '  background-color: #fff;',
@@ -127,6 +138,70 @@ Blockly.Css.CONTENT = [
   '  stroke: #fff;',
   '}',
   '/*',
+  ' * [lyn, 10/08/13] Control parameter fields with flydown getter/setter blocks.',
+  ' * Brightening factors for variable color rgb(208,95,45):',
+  ' * 10%: rgb(212, 111, 66)',
+  ' * 20%: rgb(217, 127, 87)',
+  ' * 30%: rgb(222, 143, 108)',
+  ' * 40%: rgb(226, 159, 129)',
+  ' * 50%: rgb(231, 175, 150)',
+  ' * 60%: rgb(236, 191, 171)',
+  ' * 70%: rgb(240, 207, 192)',
+  ' * 80%: rgb(245, 223, 213)',
+  ' * 90%: rgb(250, 239, 234)',
+  ' */',
+  '.blocklyFieldParameter>rect {',
+  '  /* fill: rgb(231,175,150);*/ /* This looks too much like getter/setter var */',
+  '  fill: rgb(222, 143, 108);',
+  '  fill-opacity: 1.0;',
+  '  stroke-width: 2;',
+  '  stroke: rgb(231, 175, 150);',
+  '}',
+  '.blocklyFieldParameter>text {',
+  ' /* fill: #000; */ /* Use white rather than black on dark orange */',
+  '  stroke-width: 1;',
+  '  fill: #000;',
+  '}',
+  '.blocklyFieldParameter:hover>rect {',
+  '  stroke-width: 2;',
+  '  stroke: rgb(231,175,150);',
+  '  fill: rgb(231,175,150);',
+  '  fill-opacity: 1.0;',
+  '}',
+  '/*',
+  ' * [lyn, 10/08/13] Control flydown with the getter/setter blocks.',
+  ' */',
+  '.blocklyFieldParameterFlydown {',
+  '  fill: rgb(231,175,150);',
+  '  fill-opacity: 0.8;',
+  '}',
+  '/*',
+  ' * [lyn, 10/08/13] Control parameter fields with flydown procedure caller block.',
+  ' */',
+  '.blocklyFieldProcedure>rect {',
+  '  /*  rgb(231,175,150) is procedure color rgb(124,83,133) brightened by 70% */',
+  '  fill: rgb(215,203,218);',
+  '  fill-opacity: 1.0;',
+  '  stroke-width: 0;',
+  '  stroke: #000;',
+  '}',
+  '.blocklyFieldProcedure>text {',
+  '  fill: #000;',
+  '}',
+  '.blocklyFieldProcedure:hover>rect {',
+  '  stroke-width: 2;',
+  '  stroke: #fff;',
+  '  fill: rgb(215,203,218);',
+  '  fill-opacity: 1.0;',
+  '}',
+  '/*',
+  ' * [lyn, 10/08/13] Control flydown with the procedure caller block.',
+  ' */',
+  '.blocklyFieldProcedureFlydown {',
+  '  fill: rgb(215,203,218);',
+  '  fill-opacity: 0.8;',
+  '}',
+  '/*',
   ' * Don\'t allow users to select text.  It gets annoying when trying to',
   ' * drag a block and selected text moves instead.',
   ' */',
@@ -199,6 +274,7 @@ Blockly.Css.CONTENT = [
   '  font-size: 11pt;',
   '  border: none;',
   '  outline: none;',
+  '  width: 100%',
   '}',
   '.blocklyContextMenuBackground,',
   '.blocklyMutatorBackground {',
@@ -256,6 +332,20 @@ Blockly.Css.CONTENT = [
   '.blocklyInvalidInput {',
   '  background: #faa;',
   '}',
+  '.blocklyAngleCircle {',
+  '  stroke: #444;',
+  '  stroke-width: 1;',
+  '  fill: #ddd;',
+  '  fill-opacity: 0.8;',
+  '}',
+  '.blocklyAngleMarks {',
+  '  stroke: #444;',
+  '  stroke-width: 1;',
+  '}',
+  '.blocklyAngleGuage {',
+  '  fill: #d00;',
+  '  fill-opacity: 0.8;  ',
+  '}',
   '',
   '/* Category tree in Toolbox. */',
   '.blocklyToolboxDiv {',
@@ -264,7 +354,6 @@ Blockly.Css.CONTENT = [
   '  overflow-x: visible;',
   '  overflow-y: auto;',
   '  position: absolute;',
-  '  z-index: 888;',
   '}',
   '.blocklyTreeRoot {',
   '  padding: 4px 0;',
@@ -339,8 +428,8 @@ Blockly.Css.CONTENT = [
   '/* Author: pupius@google.com (Daniel Pupius) */',
   '',
   '/*',
-  '  Styles to make the colorpicker look like the old gmail color picker',
-  '  NOTE: without CSS scoping this will override styles defined in palette.css',
+  ' Styles to make the colorpicker look like the old gmail color picker',
+  ' NOTE: without CSS scoping this will override styles defined in palette.css',
   '*/',
   '.goog-palette {',
   '  outline: none;',

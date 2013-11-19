@@ -69,7 +69,14 @@ Blockly.TypeBlock = function( htmlConfig ){
       // Enter in the panel makes it select an option
       if (e.keyCode === 13) Blockly.TypeBlock.hide();
     }
-    else Blockly.TypeBlock.show();
+    else {
+      Blockly.TypeBlock.show();
+      // Can't seem to make Firefox display first character, so keep all browsers from automatically
+      // displaying the first character and add it manually.
+      e.preventDefault();
+      goog.dom.getElement(Blockly.TypeBlock.inputText_).value =
+	String.fromCharCode(e.charCode != null ? e.charCode : e.keycode);
+    }
   };
 
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
@@ -153,6 +160,8 @@ Blockly.TypeBlock.currentListener_ = null;
  * Blockly.js
  */
 Blockly.TypeBlock.hide = function(){
+//  if (Blockly.TypeBlock.typeBlockDiv_ == null)
+//    return;
   goog.style.showElement(goog.dom.getElement(Blockly.TypeBlock.typeBlockDiv_), false);
   goog.events.unlisten(Blockly.TypeBlock.inputKh_, 'key', Blockly.TypeBlock.handleKey);
   goog.events.listen(Blockly.TypeBlock.docKh_, 'key', Blockly.TypeBlock.handleKey);
@@ -219,10 +228,15 @@ Blockly.TypeBlock.generateOptions = function() {
 
   var buildListOfOptions = function() {
     var listOfOptions = {};
+    var typeblockArray;
     for (var name in Blockly.Language) {
       var block = Blockly.Language[name];
       if(block.typeblock){
-        createOption(block.typeblock, name);
+        typeblockArray = block.typeblock;
+        if(typeof block.typeblock == "function") {
+          typeblockArray = block.typeblock();
+        }
+        createOption(typeblockArray, name);
       }
     }
 
@@ -230,7 +244,7 @@ Blockly.TypeBlock.generateOptions = function() {
       if (tb){
         goog.array.forEach(tb, function(dd){
           var dropDownValues = {};
-
+          var mutatorAttributes = {};
           if (dd.dropDown){
             if (dd.dropDown.titleName && dd.dropDown.value){
               dropDownValues.titleName = dd.dropDown.titleName;
@@ -240,19 +254,14 @@ Blockly.TypeBlock.generateOptions = function() {
               throw new Error('TypeBlock not correctly set up for ' + canonicName);
             }
           }
-
-          if (dropDownValues.length === 0){ //only one name to associate
-            listOfOptions[dd.translatedName] = {
-              canonicName: canonicName,
-              dropDown: dropDownValues // this is {}
-            };
+          if(dd.mutatorAttributes) {
+            mutatorAttributes = dd.mutatorAttributes;
           }
-          else {
-            listOfOptions[dd.translatedName] = {
-              canonicName: canonicName,
-              dropDown: dropDownValues
-            };
-          }
+          listOfOptions[dd.translatedName] = {
+            canonicName: canonicName,
+            dropDown: dropDownValues,
+            mutatorAttributes: mutatorAttributes
+          };
         });
       }
     }
@@ -415,7 +424,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       var blockToCreate = goog.object.get(Blockly.TypeBlock.TBOptions_, blockName);
       if (!blockToCreate) {
         //If the input passed is not a block, check if it is a number or a pre-populated text block
-        var numberReg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
+        var numberReg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
         var numberMatch = numberReg.exec(blockName);
         var textReg = new RegExp('^[\"|\'].+', 'g');
         var textMatch = textReg.exec(blockName);
@@ -445,22 +454,31 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       var block;
       if (blockToCreate.dropDown){ //All blocks should have a dropDown property, even if empty
         blockToCreateName = blockToCreate.canonicName;
-        if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
+        // components have mutator attributes we need to deal with. We can also add these for special blocks
+        //   e.g., this is done for create empty list
+        if(!goog.object.isEmpty(blockToCreate.mutatorAttributes)) {
+          //construct xml
+          var xmlString = '<xml><block type="' + blockToCreateName + '"><mutation ';
+          for(var attributeName in blockToCreate.mutatorAttributes) {
+            xmlString += attributeName + '="' + blockToCreate.mutatorAttributes[attributeName] + '" ';
+          }
+
+          xmlString += '>';
+          xmlString += '</mutation></block></xml>';
+          var xml = Blockly.Xml.textToDom(xmlString);
+          block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
+
+        } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
+          if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
+            //Need to make sure Procedure Block inputs are updated
+            Blockly.FieldProcedure.onChange.call(block.getTitle_("PROCNAME"), blockToCreate.dropDown.value);
+          }
+        }
+
+        if (blockToCreate.dropDown.titleName && blockToCreate.dropDown.value){
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
-          //If we are changing a property in a component, we need to change the connection Check
-          var typeForDropDown;
-          if (block.blockType === 'setter' || block.blockType === 'genericsetter'){
-            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.INPUT);
-            block.getInput('VALUE').connection.setCheck(typeForDropDown);
-          }
-          else if (block.blockType === 'getter' || block.blockType === 'genericgetter'){
-            typeForDropDown = Blockly.Language.YailTypeToBlocklyType(
-                block.propYailTypes[blockToCreate.dropDown.value], Blockly.Language.OUTPUT);
-            block.outputConnection.setCheck(typeForDropDown);
-          }
           // change type checking for split blocks
           if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
             block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
@@ -468,21 +486,11 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
             block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
           }
         }
-        else {
-          block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
-          block.initSvg();
-        }
-      }
-      else {
+      } else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
 
       block.render();
-      //If we are creating a local variable, we need to update the mutator names
-      if (block.type && (block.type === 'local_declaration_expression' ||
-              block.type === 'local_declaration_statement')){
-        block.domToMutation(block.mutationToDom());
-      }
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;
       if (blockSelected) {
@@ -499,9 +507,9 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       }
       else {
         //calculate positions relative to the view and the latest click
-        var left = Blockly.getMainWorkspaceMetrics().viewLeft +
+        var left = Blockly.mainWorkspace.getMetrics().viewLeft +
             Blockly.latestClick.x;
-        var top = Blockly.getMainWorkspaceMetrics().viewTop +
+        var top = Blockly.mainWorkspace.getMetrics().viewTop +
             Blockly.latestClick.y;
         block.moveBy(left, top);
         block.select();
@@ -513,7 +521,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
 
 /**
  * Blocks connect in different ways; a block with an outputConnection such as
- * a number will connect in one of its parent's input connection (inputLis).
+ * a number will connect in one of its parent's input connection (inputLis).                          .
  * A block with no outputConnection could be connected to its parent's next
  * connection.
  */
@@ -547,13 +555,32 @@ Blockly.TypeBlock.connectIfPossible = function(blockSelected, createdBlock) {
   }
   if (createdBlock.parentBlock_ !== null) return; //Already connected --> return
 
+  // Are both blocks statement blocks? If so, connect created block below the selected block
+  if (blockSelected.outputConnection == null && createdBlock.outputConnection == null) {
+      createdBlock.previousConnection.connect(blockSelected.nextConnection);
+      return;
+  }
+
   // No connections? Try the parent (if it exists)
   if (blockSelected.parentBlock_) {
-    //recursive call: creates the inner functions again, but should not be much
-    //overhead; if it is, optimise!
-    Blockly.TypeBlock.connectIfPossible(blockSelected.parentBlock_, createdBlock);
-  }
-};
+    //Is the parent block a statement?
+    if (blockSelected.parentBlock_.outputConnection == null) {
+        //Is the created block a statment? If so, connect it below the parent block,
+        // which is a statement
+        if(createdBlock.outputConnection == null) {
+          blockSelected.parentBlock_.nextConnection.connect(createdBlock.previousConnection);
+          return;
+        //If it's not, no connections should be made
+        } else return;
+      }
+      else {
+        //try the parent for other connections
+        Blockly.TypeBlock.connectIfPossible(blockSelected.parentBlock_, createdBlock);
+        //recursive call: creates the inner functions again, but should not be much
+        //overhead; if it is, optimise!
+      }
+    }
+  };
 
 //--------------------------------------
 // A custom matcher for the auto-complete widget that can handle numbers as well as the default
@@ -588,7 +615,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   var matches = this.getPrefixMatches(token, maxMatches);
 
   // Added code to handle any number typed in the widget (including negatives and decimals)
-  var reg = new RegExp('^-?[1-9]\\d*(\.\\d+)?$', 'g');
+  var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
   if (match && match.length > 0){
     matches.push(token);

@@ -1,0 +1,1204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html class="js" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:og="http://ogp.me/ns#"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:dc="http://purl.org/dc/terms/" xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  dir="ltr" version="XHTML+RDFa 1.0" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head profile="http://www.w3.org/1999/xhtml/vocab">
+    <meta http-equiv="content-type" content="application/xhtml+xml; charset=UTF-8" />
+    <meta datatype="xsd:integer" content="0" property="sioc:num_replies" about="/front_page" />
+    <meta property="dc:title" about="/front_page" content="Front Page" />
+    <meta content="Drupal 7 (http://drupal.org)" name="Generator" />
+    <!-- Title ----------------------- -->
+    <title>User Interface Components - App Inventor for Android</title>
+    <!-- Title ----------------------- -->
+    <style>
+      body{
+      background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
+      margin-top:0;
+      }
+      #page{
+      width: 960px;
+      margin: 0 auto;
+      }
+      #branding, #menu-bar, #create-button,#region-create{
+      display: inline-block;
+
+      }
+      #branding{
+      width:25%;
+      margin:0;
+      }
+
+      #top_bar, #top_bar_background {
+      top:0;
+      min-height: 40px;
+      width:100%;
+      margin-bottom: 4px;
+      padding-right: 0px;
+      padding-left: 0px;
+      background-color: #f2f2f2;
+      background-image: -moz-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#f2f2f2), to(#f3f3f3));
+      background-image: -webkit-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: -o-linear-gradient(top, #f2f2f2, #f3f3f3);
+      background-image: linear-gradient(to bottom, #f2f2f2, #f3f3f3);
+      background-repeat: repeat-x;
+      border: 1px solid #d4d4d4;
+      filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff2f2f2', GradientType=0);
+      *zoom: 1;
+      -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.065);
+      position: relative;
+      }
+
+      #top_bar, #top_bar_background{
+      width:100%;
+      height: 70px;
+      /*position:absolute;*/
+      margin:0 auto;
+      left:0;
+      right:0;
+      top:0;
+      }
+
+      #header{
+      width:960px;
+      margin:0 auto;
+      height:50px;
+      position: relative;
+      }
+      /* LOGO */
+      #logo {
+      margin: 8px 4px 4px 4px;
+      float: left;
+      padding: 0 20px;
+
+      }
+      #logo img{
+      /*background: url(../images/logo_text.png) no-repeat;*/
+      width: auto;
+      height: 50px;
+      display: block;
+      }
+      #logo img:hover {
+      -webkit-filter: drop-shadow(0px 0px 3px #eee);
+      filter:         drop-shadow(0px 0px 3px #eee);
+      }
+
+      button {
+      border-radius:0 !important;
+      color:#FFF;
+      border:none;
+      padding: 0.5em 1em;
+      }
+      button:hover{
+      color:#FFF;
+      border:none;
+      border-radius:0 !important;
+      }
+
+      #branding, #create-button, #region-create, #menu-bar li{
+      display: inline-block;
+      }
+      #menu-bar{
+      margin: 0;
+      padding-top:10px;
+      position: absolute;
+      top: 0;
+      }
+      #menu-bar li{
+      margin:0;
+
+      }
+      #menu-bar li a{
+      font-family: 'Roboto Light', Helvetica, sans-serif;
+      font-weight:300;
+      font-size: 22px;
+      text-decoration: none;
+      color: #3D3D3D;
+      background:transparent !important;
+      border-radius:0 !important;
+      display: block;
+      line-height: 2.5em;
+      padding: 0 1em;
+      white-space: nowrap;
+      }
+      #menu-bar li a.active{
+      color: #000;
+      }
+      #menu-bar li a:hover{
+      color: #8fc202;
+      }
+      .create-button{
+      float:right;
+      margin:8px 25px 10px 10px;
+      }
+      .create-button button:hover{
+      cursor: pointer;
+      background: #ffa033;
+      }
+      .create-button button{background: #FF8800 !important;
+      border: none !important;
+      color: #FFF;
+      font-weight: 300;
+      border-radius: 0;
+      font-family: 'Roboto',Helvetica,Arial,sans-serif;
+      font-size: 20px;
+      }
+      #content-column {
+      background: #F7F9F2;
+      border-radius: 2px;
+      margin-top: 0px;
+      padding: 15px 20px;
+      }
+      footer{
+      background-color: #e3e1df;
+      color: #010101;
+      padding: 20px 0;
+      margin-top: 25px;
+      }
+      /*################TYPOGRAPHY##################*/
+      /* html elements */
+      html {
+      font-size: 81.3%; /* 16px x 81.3% = 13px */
+      }
+      body {
+      font-family: "Helvetica Neue", Helvetica, Arial, Geneva, sans-serif;
+      line-height: 1.6em;
+      margin: 0;
+      padding: 0;
+      }
+      /* Sizes match proper font scaling. */
+      h1, h2, h3, h4, h5, h6 {
+      font-weight: 400;
+      line-height: 1em;
+      padding: 0;
+      margin: 24px 0 12px 0;
+      }
+      h1 { font-size: 2.153em; } /* 28px */
+      h2 { font-size: 1.692em; } /* 22px */
+      h3 { font-size: 1.385em; } /* 18px */
+      h4 { font-size: 1.231em; } /* 16px */
+      h5 { font-size: 1.077em; } /* 14px */
+      h6 { font-size: 1em; }
+      img,
+      a img {
+      border:none;
+      }
+      img {
+      max-width: 100%;
+      height: auto;
+      }
+      p {
+      margin: 0 0 1.5em;
+      padding: 0;
+      }
+      em,
+      dfn {
+      font-style: italic;
+      }
+      ins {
+      border-bottom: none;
+      text-decoration: none;
+      }
+      abbr, acronym {
+      border-bottom: 1px dotted;
+      cursor: help;
+      white-space: nowrap;
+      }
+      pre,
+      code,
+      tt,
+      samp,
+      kbd,
+      var {
+      font-size: 0.846em;
+      font-family: Monaco, "DejaVu Sans Mono", monospace, sans-serif; /* Safari hack */
+      }
+      blockquote,
+      q {
+      font-style:italic;
+      quotes:"" "";
+      }
+      blockquote,
+      p {
+      margin: 1.5em 0;
+      }
+      p:first-child,
+      p.first-child {
+      margin-top: 0;
+      }
+      blockquote:before,
+      blockquote:after,
+      q:before,
+      q:after {
+      content:"";
+      }
+      strong,
+      dfn,
+      caption,
+      th {
+      font-weight: 700;
+      }
+      pre,
+      div.codeblock {
+      background-color: #f5f5f5;
+      border: solid 1px #ddd;
+      border-bottom-color: #ccc;
+      border-right-color: #ccc;
+      padding: 1em;
+      white-space: pre-wrap;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      }
+
+      /* Lists */
+      ul,
+      ol {
+      margin: 0 0 1.5em 1em;
+      padding:0;
+      }
+      .item-list ul,
+      .item-list ol {
+      margin: 0 0 0 1em;
+      padding: 0;
+      }
+      ul ul,
+      ul ol,
+      ol ol,
+      ol ul,
+      .block ul ul,
+      .block ul ol,
+      .block ol ol,
+      .block ol ul,
+      .item-list ul ul,
+      .item-list ul ol,
+      .item-list ol ol,
+      .item-list ol ul {
+      margin-bottom: 0;
+      }
+      ul {
+      list-style-type: disc;
+      }
+      ul ul ul {
+      list-style-type: square;
+      }
+      ol {
+      list-style-type: decimal;
+      }
+      ol ol {
+      list-style-type: lower-alpha;
+      }
+      ol ol ol {
+      list-style-type: lower-roman;
+      }
+      ul ul,
+      ul ul ul ul {
+      list-style-type: circle;
+      }
+      dl {
+      margin: 1em 0;
+      padding: 0;
+      }
+      dt {
+      font-size: 1.231em;
+      }
+      dd {
+      margin: 0 0 0.4em 0;
+      padding: 0 0 0 2em;
+      }
+      dd:last-child {
+      border-bottom: 0;
+      }
+      dl dl {
+      margin-left: 1em;
+      }
+
+      body {
+      font: 13px/1.5 'Roboto','Helvetica Neue', Arial, 'Liberation Sans', FreeSans, sans-serif !important;
+      color: #3D3D3D;
+      }
+
+      pre,
+      code {
+      font-family: 'DejaVu Sans Mono', Menlo, Consolas, monospace;
+      }
+
+      hr {
+      border: 0 #ccc solid;
+      border-top-width: 1px;
+      clear: both;
+      height: 0;
+      }
+
+      /* `Headings
+      ----------------------------------------------------------------------------------------------------*/
+
+      h1 {
+      font-size: 20px;
+      line-height: 22px;
+      }
+
+      h2 {
+      font-size: 18px;
+      line-height: 20px;
+      }
+
+      h3 {
+      font-size: 16px;
+      line-height: 18px;
+      }
+
+      h4 {
+      font-size: 14px;
+      line-height: 16px;
+      }
+
+      h5 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      h6 {
+      font-size: 12px;
+      line-height: 14px;
+      }
+
+      /* `Spacing
+      ----------------------------------------------------------------------------------------------------*/
+
+      ol {
+      list-style: decimal;
+      }
+
+      ul {
+      list-style: disc;
+      }
+
+      li {
+      margin-left: 30px;
+      }
+
+      p,
+      dl,
+      hr,
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      ol,
+      ul,
+      pre,
+      table,
+      address,
+      fieldset,
+      figure {
+      margin-bottom: 10px;
+      }
+
+      address { font-style: normal; }
+
+
+
+    </style>
+  </head>
+  <body>
+    <div class="container" id="page">
+      <header role="banner" class="clearfix"> </header>
+      <div id="top_bar">
+        <div id="branding">
+          <div id="logo"><a class="active" title="Home page" href="http://appinventor.mit.edu"><img
+                alt="Explore MIT App Inventor logo" src="images/logo2.png" /></a></div>
+        </div>
+        <div class="nav clearfix" id="menu-bar">
+          <nav role="navigation"> </nav>
+          <ul>
+            <li><a href="http://appinventor.mit.edu">Home</a></li>
+            <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
+            <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+                ▾</a></li>
+          </ul>
+        </div>
+        <div class="create-button"> <a href="http://ai2.appinventor.mit.edu/"><button>Create</button></a>
+        </div>
+      </div>
+      <div style="margin-top: 15px;" class="no-menu-bar" id="columns">
+        <div class="columns-inner clearfix">
+          <div id="content-column">
+            <div class="content-inner">
+              <section role="main" id="main-content"> </section>
+              <div id="content">
+                <div class="region region-content">
+                  <!-- Content ----------------------- -->
+                  <h1>User Interface Components - App Inventor for Android</h1>
+                  <h2> Table of Contents </h2>
+                  <ul>
+                    <li> <a href="#Button"> Button </a> </li>
+                    <li> <a href="#CheckBox"> CheckBox </a> </li>
+                    <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#Image"> Image </a> </li>
+                    <li> <a href="#Label"> Label </a> </li>
+                    <li> <a href="#ListPicker"> ListPicker </a> </li>
+                    <li> <a href="#Notifier"> Notifier </a> </li>
+                    <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
+                    <li> <a href="#Screen"> Screen </a> </li>
+                    <li> <a href="#Slider"> Slider </a> </li>
+                    <li> <a href="#TextBox"> TextBox </a> </li>
+                    <li> <a href="#WebViewer"> WebViewer </a> </li>
+                  </ul>
+                  <h2 id="Button"> Button </h2>
+                  <img src="images/button.png" alt="" />
+                  <p> Buttons are components that users touch to perform some
+                    action in
+                    your app. </p>
+                  <p> Buttons detect when users tap them. Many aspects of a
+                    button's
+                    appearance can be changed. You can use the <code> Enabled </code>
+                    property to choose whether a button can be tapped. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for button background. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, user can tap button to cause action. </dd>
+                    <dt> <code> FontBold </code> </dt>
+                    <dd> If set, button text is displayed in bold. </dd>
+                    <dt> <code> FontItalic </code> </dt>
+                    <dd> If set, button text is displayed in italics. </dd>
+                    <dt> <code> FontSize </code> </dt>
+                    <dd> Point size for button text. </dd>
+                    <dt> <code> FontTypeface </code> </dt>
+                    <dd> Font family for button text. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Button height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Button width (x-size). </dd>
+                    <dt> <code> Image </code> </dt>
+                    <dd> Image to display on button. </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Text to display on button. </dd>
+                    <dt> <code> TextAlignment </code> </dt>
+                    <dd> Left, center, or right. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for button text. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> Click() </code> </dt>
+                    <dd> User tapped and released the button. </dd>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Button became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Button stopped being the focused component. </dd>
+                  </dl>
+                  <h2 id="CheckBox"> CheckBox </h2>
+                  <img src="images/checkbox.png" alt="" />
+                  <p> Check box components can detect user taps and can change
+                    their
+                    boolean state in response. </p>
+                  <p> A check box component raises an event when the user taps
+                    it. There
+                    are many properties affecting its appearance that can be set
+                    in the
+                    Designer or Blocks Editor. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for check box background. </dd>
+                    <dt> <code> Checked </code> </dt>
+                    <dd> True if the box is checked, false otherwise. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, user can tap check box to cause action. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Check box height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Check box width (x-size). </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Text to display on check box. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for check box text. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If set, check box is visible. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> Click() </code> </dt>
+                    <dd> User tapped and released check box. </dd>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Check box became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Check box stopped being the focused component. </dd>
+                  </dl>
+                  <h2 id="Clock"> Clock </h2>
+                  <img src="images/clock.png" alt="" />
+                  <p> Use a clock component to create a timer that signals
+                    events at
+                    regular intervals. The clock component also does various
+                    conversions
+                    and manipulations with time units. </p>
+                  <p> One use of the clock component is a a <em> timer </em> :
+                    set the
+                    timer interval, and the timer will fire repeatedly at the
+                    interval,
+                    signalling a timer event. </p>
+                  <p> A second use of the clock component is to manipulate time,
+                    and
+                    express time in various units. The internal time format used
+                    by the
+                    clock is called an <em> instant </em> . The clock's <code>
+                      Now </code>
+                    method returns the current time as an instant. The clock
+                    provides
+                    methods to manipulate instants, for example, return an
+                    instant that is
+                    several seconds, or months, or years from the given instant.
+                    It also
+                    provides methods to show the second, minute, hour, day, …,
+                    corresponding to a given instant. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> TimerInterval </code> </dt>
+                    <dd> timer interval in milliseconds </dd>
+                    <dt> <code> TimerEnabled </code> </dt>
+                    <dd> If true, then the timer will fire </dd>
+                    <dt> <code> TimerAlwaysFires </code> </dt>
+                    <dd> if true, the timer will fire even if the application is
+                      not
+                      showing on the screen </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> Timer() </code> </dt>
+                    <dd> This event is signaled when the timer fires </dd>
+                  </dl>
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> SystemTime() </code> </dt>
+                    <dd> The phone's internal time in milliseconds </dd>
+                    <dt> <code> Now() </code> </dt>
+                    <dd> The instant in time read from phone's clock </dd>
+                    <dt> <code> MakeInstant(Text from) </code> </dt>
+                    <dd> Make an instant specified by MM/DD/YYYY hh:mm:ss or
+                      MM/DD/YYYY
+                      or hh:mm. </dd>
+                    <dt> <code> MakeInstantFromMillis(Number millis) </code> </dt>
+                    <dd> Make an instant specified by time in milliseconds </dd>
+                    <dt> <code> GetMillis(instant) </code> </dt>
+                    <dd> The instant in time measured as milliseconds since 1970
+                    </dd>
+                    <dt> <code> AddSeconds(instant, Number seconds) </code> </dt>
+                    <dd> An instant in time some number of seconds after the
+                      given
+                      instant </dd>
+                    <dt> <code> AddMinutes(instant, Number minutes) </code> </dt>
+                    <dd> An instant in time some number of minutes after the
+                      given
+                      instant </dd>
+                    <dt> <code> AddHours(instant, Number hours) </code> </dt>
+                    <dd> An instant in time some number of hours after the given
+                      instant </dd>
+                    <dt> <code> AddDays(instant, Number days) </code> </dt>
+                    <dd> An instant in time some number of days after the given
+                      instant </dd>
+                    <dt> <code> AddWeeks(instant, Number weeks) </code> </dt>
+                    <dd> An instant in time some number of weeks after the given
+                      instant </dd>
+                    <dt> <code> AddMonths(instant, Number months) </code> </dt>
+                    <dd> An instant in time some number of months after the
+                      given instant </dd>
+                    <dt> <code> AddYears(instant, Number years) </code> </dt>
+                    <dd> An instant in time some number of years after the given
+                      instant </dd>
+                    <dt> <code> Duration(Calendar start, Calendar end) </code>
+                    </dt>
+                    <dd> Milliseconds between instants </dd>
+                    <dt> <code> Second(Calendar instant) </code> </dt>
+                    <dd> The second of the minute </dd>
+                    <dt> <code> Minute(Calendar instant) </code> </dt>
+                    <dd> The minute of the hour </dd>
+                    <dt> <code> Hour(Calendar instant) </code> </dt>
+                    <dd> The hour of the day </dd>
+                    <dt> <code> DayOfMonth(Calendar instant) </code> </dt>
+                    <dd> The day of the month,a number from 1 to 31 </dd>
+                    <dt> <code> Weekday(Calendar instant) </code> </dt>
+                    <dd> The day of the week. a number from 1 (Sunday) to 7
+                      (Saturday) </dd>
+                    <dt> <code> WeekdayName(Calendar instant) </code> </dt>
+                    <dd> The name of the day of the week </dd>
+                    <dt> <code> Month(Calendar instant) </code> </dt>
+                    <dd> The month of the year, a number from 1 to 12) </dd>
+                    <dt> <code> MonthName(Calendar instant) </code> </dt>
+                    <dd> The name of the month </dd>
+                    <dt> <code> Year(Calendar instant) </code> </dt>
+                    <dd> The year </dd>
+                    <dt> <code> FormatDateTime(Calendar instant) </code> </dt>
+                    <dd> Text describing the date and time of an instant </dd>
+                    <dt> <code> FormatDate(Calendar instant) </code> </dt>
+                    <dd> Text describing the date of an instant </dd>
+                    <dt> <code> FormatTime(Calendar instant) </code> </dt>
+                    <dd> Text describing time time of an instant </dd>
+                  </dl>
+                  <h2 id="Image"> Image </h2>
+                  <img width="100" src="images/image.png" alt="" />
+                  <p> You use image components to represent images that users
+                    select and
+                    manipulate. </p>
+                  <p> An image component displays an image. You can specify the
+                    picture
+                    to display and other aspects of the image's appearance in
+                    the Designer
+                    or in the Blocks Editor. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> Picture </code> </dt>
+                    <dd> Picture displayed by this image. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If true, image is displayed. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Image height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Image width (x-size). </dd>
+                  </dl>
+                  <h2 id="Label"> Label </h2>
+                  <img src="images/label.png" alt="" />
+                  <p> Labels are components used to show text. </p>
+                  <p> A label displays text which is specified by the <code>
+                      Text </code>
+                    property. Other properties, all of which can be set in the
+                    Designer or
+                    Blocks Editor, control the appearance and placement of the
+                    text. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for label background. </dd>
+                    <dt> <code> FontBold </code> </dt>
+                    <dd> If set, label text is displayed in bold. </dd>
+                    <dt> <code> FontItalic </code> </dt>
+                    <dd> If set, label text is displayed in italics. </dd>
+                    <dt> <code> FontSize </code> </dt>
+                    <dd> Point size for label text. </dd>
+                    <dt> <code> FontTypeface </code> </dt>
+                    <dd> Font family for label text. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Label height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Label width (x-size). </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Text to display on label. </dd>
+                    <dt> <code> TextAlignment </code> </dt>
+                    <dd> Left, center, or right. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for label text. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If set, label is visible. </dd>
+                  </dl>
+                  <h2 id="ListPicker"> ListPicker </h2>
+                  <img src="images/listpicker.png" alt="" />
+                  <p> Users tap a list picker component to select one item from a list of text strings. </p>
+                  When a user taps a list picker, it displays a list of text items for the user to choose from. The text items can be specified through the Designer or Blocks Editor by setting the <code> ElementsFromString </code> property to their comma-separated concatenation (for example, <code> choice 1, choice 2, choice 3 </code> ) or by setting the <code> Elements </code> property to a <code> List </code> in the Blocks Editor.
+                  <p> Other properties, including <code> TextAlignment </code> and <code> BackgroundColor </code> , affect the appearance of the button and whether it can be tapped ( <code> Enabled </code> ). </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> Selection </code> </dt>
+                    <dd> Selected list element. </dd>
+                    <dt> <code> Items </code> </dt>
+                    <dd> Comma-separated list of items to display in component.  </dd>
+                    <dt> <code> ElementsFromString </code> </dt>
+                    <dd> (Description to come.) </dd>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for list picker background. </dd>
+                    <dt> <code> FontBold </code> </dt>
+                    <dd> If set, list picker text is displayed in bold. </dd>
+                    <dt> <code> FontItalic </code> </dt>
+                    <dd> If set, list picker text is displayed in italics. </dd>
+                    <dt> <code> FontSize </code> </dt>
+                    <dd> Point size for list picker text. </dd>
+                    <dt> <code> FontTypeface </code> </dt>
+                    <dd> Font family for list picker text. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> List picker height (y-size). </dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code>Selection</code></dt>
+                    <dd><p>The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.</p></dd>
+                    <dt><code>SelectionIndex</code></dt>
+                    <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>ShowFilterBar</code></dt>
+                    <dd>Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not</dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> Title text to display on list picker. </dd>
+                    <dt> <code> TextAlignment </code> </dt>
+                    <dd> Left, center, or right. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for list picker text. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> If set, list picker is visible. </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> List picker width (x-size). </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> AfterPicking() </code> </dt>
+                    <dd> User selected an item from the list picker. </dd>
+                    <dt> <code> BeforePicking() </code> </dt>
+                    <dd> User has tapped the list picker but hasn't yet selected
+                      an item. </dd>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> List picker became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> List picker is no longer the focused component. </dd>
+                  </dl>
+                  <h2 id="Notifier"> Notifier </h2>
+                  <img src="images/notifier.png" alt="Picture of Notifier component" />
+                  <p> A notifier is a non-visible component that can show
+                    verious kinds
+                    of alerts and can log information. Use a notifier to display
+                    notices
+                    and alerts to users of your app, and also to log
+                    information that can
+                    help you debug your app. </p>
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> ShowMessageDialog(Text message, Text title,
+                        Text
+                        buttonText) </code> </dt>
+                    <dd> Pops up a notice that remains until the user taps a
+                      button with
+                      the given text. The arguments are the message to be shown,
+                      the title of
+                      the notice, and the label on the button. </dd>
+                    <dt> <code> ShowChooseDialog(Text message, Text title, Text
+                        button1Text, Text button2Text) </code> </dt>
+                    <dd> Pops up a notice the user must respond to by tapping
+                      one of two
+                      buttons with the given text. The arguments are the message
+                      to be shown,
+                      the title of the notice, and the labels on the left and
+                      right buttons,
+                      respectively. The <code> AfterChoosing </code> event is
+                      signalled
+                      after the user taps one of the buttons. </dd>
+                    <dt> <code> ShowTextDialog(Text message, Text title) </code>
+                    </dt>
+                    <dd> Pops up a notice which the user must respond to by
+                      entering some
+                      text. The arguments are the message to be shown and the
+                      title of the
+                      notice. The <code> AfterTextInput </code> event is
+                      signalled after
+                      the user enters the text. </dd>
+                    <dt> <code> ShowAlert(Text message </code> </dt>
+                    <dd> Pops up a temporary notice, which vanishes after a few
+                      seconds.
+                      The argument is the text of the notice. </dd>
+                    <dt> <code> LogError(Text message) </code> </dt>
+                    <dt> <code> LogError(Text message) </code> </dt>
+                    <dt> <code> LogError(Text message) </code> </dt>
+                    <dd> These methods are for use in debugging. They write
+                      messages to
+                      the various logs on the Android device. The logs can be
+                      read with the
+                      use of Android debugging tools, like the Android Debug
+                      Bridge (ADB). </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> AfterChoosing(Text choice) </code> </dt>
+                    <dd> Signaled after the user has made a choice in response
+                      to <code>
+                        ShowChooseDialog </code> . The argument is the text on
+                      the button that
+                      the user tapped. </dd>
+                    <dt> <code> AfterTextInput(Text response) </code> </dt>
+                    <dd> Signaled after the user has responded to <code>
+                        ShowTextDialog </code>
+                      . The argument is the text on the button that the user
+                      entered. </dd>
+                  </dl>
+                  <h2 id="PasswordTextBox"> PasswordTextBox </h2>
+                  <img src="images/passwordtextbox.png" alt="" />
+                  <p> Users enter passwords in a password text box component,
+                    which hides
+                    the text that has been typed in it. </p>
+                  <p> A password text box is the same as the ordinary <code>
+                      TextBox </code>
+                    component, except that it does not display the characters
+                    typed by the
+                    user. </p>
+                  <p> You can get or set the value of the text in the box with
+                    the <code>
+                      Text </code> property. If <code> Text </code> is blank,
+                    you can use
+                    the <code> Hint </code> property to provide the user with
+                    a
+                    suggestion of what to type. The <code> Hint </code>
+                    appears as faint
+                    text in the box. </p>
+                  <p> Password text box components are usually used with a
+                    button
+                    component. The user taps the button after entering text. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> Color for text box background. </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> If set, user can enter a password in the box. </dd>
+                    <dt> <code> FontBold </code> </dt>
+                    <dd> If set, text is displayed in bold. </dd>
+                    <dt> <code> FontItalic </code> </dt>
+                    <dd> If set, text is displayed in italics. </dd>
+                    <dt> <code> FontSize </code> </dt>
+                    <dd> Point size for text. </dd>
+                    <dt> <code> FontTypeface </code> </dt>
+                    <dd> Font family for text. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dd> Box height (y-size). </dd>
+                    <dt> <code> Width </code> </dt>
+                    <dd> Box width (x-size). </dd>
+                    <dt> <code> TextAlignment </code> </dt>
+                    <dd> Left, center, or right. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> Color for text. </dd>
+                    <dt> <code> Hint </code> </dt>
+                    <dd> Password hint. </dd>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Box became the focused component. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Box is no longer the focused component. </dd>
+                  </dl>
+</dl>
+
+                    <h2 id="Screen"> Screen </h2>
+                    <p> The screen does not appear in the palette like other components, but if comes automatically with the project. Each project has exactly one screen, named Screen1.  This name cannot be changed.  </p>
+                    <h3> Properties </h3>
+                    <dl>
+                      <dt> <code> BackgroundColor </code> </dt>
+                      <dd> Color for screen background.  </dd>
+                      <dt> <code> BackgroundImage </code> </dt>
+                      <dd> An image that forms the screen's background.  </dd>
+  <dt><code>CloseScreenAnimation</code></dt>
+  <dd>The animation for closing current screen and returning  to the previous screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
+                      <dt> <code class="c2"> Height </code> </dt>
+                      <dd> Screen height (y-size).  </dd>
+                      <dt> <code> Icon </code> </dt>
+                      <dd> An image to be used as the icon for the installed application on the phone. This should be a PNG or a JPG image; 48x48 is a good size.  <i> Warning: </i> Specifying images other than PNG or JPG, for example GIF or .ico files, may prevent App Inventor from being able to package the application.  </dd>
+  <dt><code>OpenScreenAnimation</code></dt>
+  <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
+  <dt><code>ScreenOrientation</code></dt>
+  <dd>The requested screen orientation. Commonly used values are unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
+                      <dt> <code> Scrollable </code> </dt>
+                      <dd> This is set by a checkbox in the designer. When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.  </dd>
+                      <dt> <code> Title </code> </dt>
+                      <dd> Title for the screen (text). This will appear at the upper left of the phone when the application runs. A natural choice for the title is the title of the App, but you could make it something else, or even change it while the app is running.  </dd>
+                      <dt> <code> VersionCode </code> </dt>
+                      <dd> An integer value which must be incremented each time a new Android Application Package File (APK) is created for the Google Play Store.  </dd>
+                      <dt> <code> VersionName </code> </dt>
+                      <dd> A string which can be changed to allow Google Play Store users to distinguish between different versions of the App.  </dd>
+                      <dt> <code class="c2"> Width </code> </dt>
+                      <dd> Screen width (x-size).  </dd>
+                    </dl>
+                    <h3> Events </h3>
+                    <dl>
+                      <dt><code>BackPressed()</code></dt>
+                      <dd>Device back button pressed.</dd>
+                      <dt> <code> ErrorOccurred(component component, text functionName, number errorNumber, text message) </code> </dt>
+                      <dd> Signaled when an error occurs. The ErrorOccurred event is currently used for a small set of errors including:
+                        <ul>
+                          <li> Errors that occur in the LEGO MINDSTORMS Nxt* components </li>
+                          <li> Errors that occur in the Bluetooth components </li>
+                          <li> Errors that occur in the Twitter component </li>
+                          <li> Errors that occur in the SoundRecorder component </li>
+                          <li> ActivityStarter - when StartActivity is called, but there is no activity that corresponds to the activity properties.  </li>
+                          <li> LocationSensor - when LatitudeFromAddress or LongitudeFromAddress fails </li>
+                          <li> Player - when setting the Source property fails </li>
+                          <li> Sound - when setting the Source property fails or when the Play function fails </li>
+                          <li> VideoPlayer - when setting the Source property fails </li>
+                        </ul>
+                        For those errors, the system will show a notification by default, with an error number and a message. You can use this event handler to prescribe an error behavior different than the default, by testing errorNumber and taking the appropriate action.  </dd>
+                      <dt> <code> Initialize() </code> </dt>
+                      <dd> Signaled when the application starts. It can be used setting initial values and performing other setup operations.  </dd>
+                      <dt><code>OtherScreenClosed(text otherScreenName, any result)</code></dt>
+                      <dd>Event raised when another screen has closed and control has returned to this screen.</dd>
+                      <dt><code>ScreenOrientationChanged()</code></dt>
+                      <dd>Screen orientation changed</dd>
+                    </dl>
+
+<h2 id="Slider">Slider</h2>
+                  <img alt="" src="images/slider.png" />
+<p>A Slider is a progress bar that adds a draggable thumb. You can touch the thumb and drag left or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the PositionChanged event, reporting the position of the Slider thumb. The reported position of the Slider thumb can be used to dynamically update another component attribute, such as the font size of a TextBox or the radius of a Ball.</p>
+<h3 id="sliderproperties">Properties</h3>
+<dl><dt><code>ColorLeft</code></dt>
+<dd>The color of slider to the left of the thumb.</dd>
+<dt><code>ColorRight</code></dt>
+<dd>The color of slider to the left of the thumb.</dd>
+<dt><code>MaxValue</code></dt>
+<dd>Sets the maximum value of slider.  Changing the maximum value also resets Thumbposition to be halfway between the minimum and the (new) maximum. If the new maximum is less than the current minimum, then minimum and maximum will both be set to this value.  Setting MaxValue resets the thumb position to halfway between MinValue and MaxValue and signals the PositionChanged event.</dd>
+<dt><code>MinValue</code></dt>
+<dd>Sets the minimum value of slider.  Changing the minimum value also resets Thumbposition to be halfway between the (new) minimum and the maximum. If the new minimum is greater than the current maximum, then minimum and maximum will both be set to this value.  Setting MinValue resets the thumb position to halfway between MinValue and MaxValue and signals the PositionChanged event.</dd>
+<dt><code>ThumbPosition</code></dt>
+<dd>Sets the position of the slider thumb. If this value is greater than MaxValue, then it will be set to same value as MaxValue. If this value is less than MinValue, then it will be set to same value as MinValue.</dd>
+<dt><code>Visible</code></dt>
+<dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+<dt><code>Width</code></dt>
+<dd></dd>
+</dl><h3 id="sliderevents">Events</h3>
+<dl><dt><code>PositionChanged(number thumbPosition)</code></dt>
+<dd>Indicates that position of the slider thumb has changed.</dd>
+</dl><h3 id="slidermethods">Methods</h3>
+<p>none</p>
+
+                  <h2 id="TextBox"> TextBox </h2>
+                  <img src="images/textbox.png" alt="" />
+                  <p> Users enter text in a text box component. </p>
+                  <p> The initial or user-entered text value in a text box
+                    component is
+                    in the <code> Text </code> property. If <code> Text </code>
+                    is
+                    blank, you can use the <code> Hint </code> property to
+                    provide the
+                    user with a suggestion of what to type. The <code> Hint </code>
+                    appears as faint text in the box. </p>
+                  <p> The <code> MultiLine </code> property determines if the
+                    text can
+                    have more than one line. For a single line text box, the
+                    keyboard will
+                    close automatically when the user presses the Done key. To
+                    close the
+                    keyboard for multiline text boxes, the app should use the
+                    HideKeyboard
+                    method or rely on the user to press the Back key. </p>
+                  <p> The <code> NumbersOnly </code> property restricts the
+                    keyboard to
+                    accept numeric input only. </p>
+                  <p> Other properties affect the appearance of the text box ( <code>
+                      TextAlignment </code> , <code> BackgroundColor </code>
+                    , etc.) and
+                    whether it can be used ( <code> Enabled </code> ). </p>
+                  <p> Text boxes are usually used with the <code> Button </code>
+                    component, with the user clicking on the button when text
+                    entry is
+                    complete. </p>
+                  <p> If the text entered by the user should not be displayed,
+                    use <code>
+                      PasswordTextBox </code> instead. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> BackgroundColor </code> </dt>
+                    <dd> The background color of the input box. You can choose a
+                      color by
+                      name in the Designer or in the Blocks Editor. The default
+                      background
+                      color is 'default' (shaded 3-D look). </dd>
+                    <dt> <code> Enabled </code> </dt>
+                    <dd> Whether the user can enter text into this input box. By
+                      default,
+                      this is true. </dd>
+                    <dt> <code> FontBold </code> (designer only) </dt>
+                    <dd> Whether the font for the text should be bold. By
+                      default, it is
+                      not. </dd>
+                    <dt> <code> FontItalic </code> (designer only) </dt>
+                    <dd> Whether the text should appear in italics. By default,
+                      it does
+                      not. </dd>
+                    <dt> <code> FontSize </code> </dt>
+                    <dd> The font size for the text. By default, it is 14.0
+                      points. </dd>
+                    <dt> <code> FontTypeface </code> (designer only) </dt>
+                    <dd> The font for the text. The value can be changed in the
+                      Designer. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dt> <code> Hint </code> </dt>
+                    <dd> Text that should appear faintly in the input box to
+                      provide a
+                      hint as to what the user should enter. This can only be
+                      seen if the <code>
+                        Text </code> property is empty. </dd>
+                    <dt> <code> MultiLine </code> </dt>
+                    <dd> If true, then this text box accepts multiple lines of
+                      input,
+                      which are entered using the return key. For single line
+                      text boxes
+                      there is a Done key instead of a return key, and pressing
+                      Done hides
+                      the keyboard. The app should call the HideKeyboard method
+                      to hide the
+                      keyboard for a mutiline text box. </dd>
+                    <dt> <code> NumbersOnly </code> </dt>
+                    <dd> If true, then this text box accepts only numbers as
+                      keyboard
+                      input. Numbers can include a decimal point and an optional
+                      leading
+                      minus sign. This applies to keyboard input only. Even if
+                      NumbersOnly is
+                      true, you can use [set Text to] to enter any text at all.
+                    </dd>
+                    <dt> <code> Text </code> </dt>
+                    <dd> The text in the input box, which can be set by the
+                      programmer in
+                      the Designer or Blocks Editor, or it can be entered by the
+                      user (unless
+                      the <code> Enabled </code> property is false). </dd>
+                    <dt> <code> TextAlignment </code> (designer only) </dt>
+                    <dd> Whether the text should be left justified, centered, or
+                      right
+                      justified. By default, text is left justified. </dd>
+                    <dt> <code> TextColor </code> </dt>
+                    <dd> The color for the text. You can choose a color by name
+                      in the
+                      Designer or in the Blocks Editor. The default text color
+                      is black. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> Whether the component is visible </dd>
+                    <dt> <code> Width </code> </dt>
+                  </dl>
+                  <h3> Events </h3>
+                  <dl>
+                    <dt> <code> GotFocus() </code> </dt>
+                    <dd> Event raised when this component is selected for input,
+                      such as
+                      by the user touching it. </dd>
+                    <dt> <code> LostFocus() </code> </dt>
+                    <dd> Event raised when this component is no longer selected
+                      for
+                      input, such as if the user touches a different text box. </dd>
+                  </dl>
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> HideKeyboard() </code> </dt>
+                    <dd> Hide the keyboard. Only multiline text boxes need this.
+                      Single
+                      line text boxes close the keyboard when the users presses
+                      the Done key. </dd>
+                  </dl>
+                  <h2 id="WebViewer"> WebViewer </h2>
+                  <img src="images/webviewer.png" alt="Picture of WebViewer component" />
+                  <p> Component for viewing Web pages. The Home URL can be
+                    specified in
+                    the Designer or in the Blocks Editor. The view can be set to
+                    follow
+                    links when they are tapped, and users can fill in Web forms.
+                    Warning:
+                    This is not a full browser. For example, pressing the
+                    phone's hardware
+                    Back key will exit the app, rather than move back in the
+                    browser
+                    history. </p>
+                  <h3> Properties </h3>
+                  <dl>
+                    <dt> <code> <em> CurrentPageTitle </em> </code> </dt>
+                    <dd> Title of the page currently viewed </dd>
+                    <dt> <code> <em> CurrentUrl </em> </code> </dt>
+                    <dd> URL of the page currently viewed. This could be
+                      different from
+                      the Home URL if new pages were visited by following links.
+                    </dd>
+                    <dt> <code> FollowLinks </code> </dt>
+                    <dd> Determines whether to follow links when they are tapped
+                      in the
+                      WebViewer. If you follow links, you can use GoBack and
+                      GoForward to
+                      navigate the browser history. </dd>
+                    <dt> <code> Height </code> </dt>
+                    <dt> <code> HomeUrl </code> </dt>
+                    <dd> URL of the page the WebViewer should initially open to.
+                      Setting
+                      this will load the page. </dd>
+                    <dt> <code> PromptforPermission </code> </dt>
+                    <dd> If True, then prompt the user of the WebView to give
+                      permission
+                      to access the geolocation API. If False, then assume
+                      permission is
+                      granted. </dd>
+                    <dt> <code> UsesLocation </code> </dt>
+                    <dd> Whether or not to give the application permission to
+                      use the
+                      Javascript geolocation API. </dd>
+                    <dt> <code> Visible </code> </dt>
+                    <dd> Whether the component is visible </dd>
+                    <dt> <code> Width </code> </dt>
+                  </dl>
+                  <h3> Events </h3>
+                  none
+                  <h3> Methods </h3>
+                  <dl>
+                    <dt> <code> boolean CanGoBack() </code> </dt>
+                    <dd> Returns true if the WebViewer can go back in the
+                      history list. </dd>
+                    <dt> <code> boolean CanGoForward() </code> </dt>
+                    <dd> Returns true if the WebViewer can go forward in the
+                      history
+                      list. </dd>
+                    <dt> <code> GoBack() </code> </dt>
+                    <dd> Go back to the previous page in the history list. Does
+                      nothing
+                      if there is no previous page. </dd>
+                    <dt> <code> GoForward() </code> </dt>
+                    <dd> Go forward to the next page in the history list. Does
+                      nothing if
+                      there is no next page. </dd>
+                    <dt> <code> GoHome() </code> </dt>
+                    <dd> Loads the home URL page. This happens automatically
+                      when the
+                      home URL is changed. </dd>
+                    <dt> <code> GoToUrl(text url) </code> </dt>
+                    <dd> Load the page at the given URL. </dd>
+                  </dl>
+                  <!-- Content ----------------------- -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer role="contentinfo"> </footer>
+      <div class="region region-footer">
+        <div class="block block-block block-odd block-count-8 block-region-footer"
+          id="block-block-3">
+          <div class="block-inner clearfix">
+            <div class="block-content content no-title">
+              <p style="text-align: center;"><a target="_blank" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                  rel="license"><img src="http://i.creativecommons.org/l/by-sa/3.0/88x31.png"
+                    alt="Creative Commons License" /></a> <br />
+                This work is licensed under a <a target="_blank" class="ext" href="http://creativecommons.org/licenses/by-sa/3.0/"
+                  rel="license">Creative Commons Attribution-ShareAlike 3.0
+                  Unported
+                  License</a><span class="ext"></span></p>
+              <p style="text-align: center;">© 2012-2013 <a target="_blank" class="ext"
+                  href="http://web.mit.edu/">Massachusetts
+                  Institute of Technology</a><span class="ext"></span></p>
+              <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+                  Us</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <table cellspacing="0" cellpadding="0" style="width: 183px; display: none; top: 110px; position: absolute; left: 924px;"
+      class="gstl_50 gssb_c">
+      <tbody>
+        <tr>
+          <td class="gssb_f"><br />
+            <br />
+          </td>
+          <td style="width: 100%;" class="gssb_e"><br />
+            <br />
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>

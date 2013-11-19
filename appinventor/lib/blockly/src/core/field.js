@@ -40,19 +40,15 @@ goog.require('Blockly.BlockSvg');
 Blockly.Field = function(text) {
   this.sourceBlock_ = null;
   // Build the DOM.
-  this.group_ = Blockly.createSvgElement('g', {}, null);
+  this.fieldGroup_ = Blockly.createSvgElement('g', {}, null);
   this.borderRect_ = Blockly.createSvgElement('rect',
       {'rx': 4,
        'ry': 4,
        'x': -Blockly.BlockSvg.SEP_SPACE_X / 2,
        'y': -12,
-       'height': 16}, this.group_);
+       'height': 16}, this.fieldGroup_);
   this.textElement_ = Blockly.createSvgElement('text',
-      {'class': 'blocklyText'}, this.group_);
-  if (this.CURSOR) {
-    // Different field types show different cursor hints.
-    this.group_.style.cursor = this.CURSOR;
-  }
+      {'class': 'blocklyText'}, this.fieldGroup_);
   this.size_ = {height: 25, width: 0};
   this.setText(text);
 };
@@ -76,13 +72,30 @@ Blockly.Field.prototype.init = function(block) {
     throw 'Field has already been initialized once.';
   }
   this.sourceBlock_ = block;
-  this.group_.setAttribute('class',
-      block.editable ? 'blocklyEditableText' : 'blocklyNonEditableText');
-  block.getSvgRoot().appendChild(this.group_);
-  if (block.editable) {
-    this.mouseUpWrapper_ =
-        Blockly.bindEvent_(this.group_, 'mouseup', this, this.onMouseUp_);
+  this.updateEditable();
+
+  // [lyn, 10/25/13] Handle the special case where adding a title to a collapsed block.
+  // This can happen if a mutator is forced open on a procedure declaration, which happens
+  // in the current AI implementation in Blockly.FieldProcedure.onChange and
+  // in Blockly.Language.procedures_callnoreturn.setProcedureParameters.
+  // Then when the mutator is closed, the compose method of a procedure declaration
+  // is called, and this can invoke the declarations updateParams_ method, which
+  // makes new title elements for the declaration (even a collapsed one).
+  //
+  // Note: even with this "fix", can still see a few white pixels added to top of
+  // collapsed procedure decl when svg is added. I can't explain why.
+  // So it's even better to avoid adding titles to collapsed blocks in the first place!
+  // E.g., I modified proc decl compose method to avoid calling updateParams_
+  // if arg names haven't changed from before.
+  if (block.collapsed) {
+    // this.fieldGroup_.style.display = 'none';
+    this.getRootElement().style.display = 'none';
   }
+
+  block.getSvgRoot().appendChild(this.fieldGroup_);
+
+  this.mouseUpWrapper_ =
+      Blockly.bindEvent_(this.fieldGroup_, 'mouseup', this, this.onMouseUp_);
   // Bump to set the colours for dropdown arrows.
   this.setText(null);
 };
@@ -96,10 +109,32 @@ Blockly.Field.prototype.dispose = function() {
     this.mouseUpWrapper_ = null;
   }
   this.sourceBlock_ = null;
-  goog.dom.removeNode(this.group_);
-  this.group_ = null;
+  goog.dom.removeNode(this.fieldGroup_);
+  this.fieldGroup_ = null;
   this.textElement_ = null;
   this.borderRect_ = null;
+};
+
+/**
+ * Add or remove the UI indicating if this field is editable or not.
+ */
+Blockly.Field.prototype.updateEditable = function() {
+  if (!this.EDITABLE) {
+    return;
+  }
+  if (this.sourceBlock_.isEditable()) {
+    Blockly.addClass_(/** @type {!Element} */ (this.fieldGroup_),
+                      'blocklyEditableText');
+    Blockly.removeClass_(/** @type {!Element} */ (this.fieldGroup_),
+                         'blocklyNoNEditableText');
+    this.fieldGroup_.style.cursor = this.CURSOR;
+  } else {
+    Blockly.addClass_(/** @type {!Element} */ (this.fieldGroup_),
+                      'blocklyNonEditableText');
+    Blockly.removeClass_(/** @type {!Element} */ (this.fieldGroup_),
+                         'blocklyEditableText');
+    this.fieldGroup_.style.cursor = '';
+  }
 };
 
 /**
@@ -116,7 +151,7 @@ Blockly.Field.prototype.setVisible = function(visible) {
  * @return {!Element} The group element.
  */
 Blockly.Field.prototype.getRootElement = function() {
-  return /** @type {!Element} */ (this.group_);
+  return /** @type {!Element} */ (this.fieldGroup_);
 };
 
 /**
@@ -157,7 +192,7 @@ Blockly.Field.prototype.getText = function() {
  * @param {?string} text New text.
  */
 Blockly.Field.prototype.setText = function(text) {
-  if (text === null) {
+  if (text === null || text === this.text_) {
     // No change if null.
     return;
   }
@@ -213,9 +248,10 @@ Blockly.Field.prototype.onMouseUp_ = function(e) {
   } else if (Blockly.Block.dragMode_ == 2) {
     // Drag operation is concluding.  Don't open the editor.
     return;
+  } else if (this.sourceBlock_.isEditable()) {
+    // Non-abstract sub-classes must define a showEditor_ method.
+    this.showEditor_();
   }
-  // Non-abstract sub-classes must define a showEditor_ method.
-  this.showEditor_();
 };
 
 /**

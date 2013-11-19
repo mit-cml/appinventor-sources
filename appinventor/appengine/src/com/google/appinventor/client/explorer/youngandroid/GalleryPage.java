@@ -93,6 +93,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appComments;
   private final FlowPanel appCommentsList;
   
+  private String tagSelected;
+  
   /**
    * Creates a new GalleryPage
    */
@@ -116,6 +118,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     appsByAuthor = new FlowPanel();
     appsByTags = new FlowPanel();
+    tagSelected = "";
 
     // App header - image
     appDetails.add(appHeader);
@@ -197,7 +200,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       t.addClickHandler(new ClickHandler() {
         // Open up source file if clicked the action button
         public void onClick(ClickEvent event) {
-          gallery.FindByTag(t.getText(), 0, 3, 0);
+          gallery.FindByTag(t.getText(), 0, 5, 0);
+          tagSelected = t.getText();
         }
       });
     }
@@ -218,9 +222,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appCommentsList.addStyleName("app-comments");
  
     // Add sidebar stuff
-    gallery.GetAppsByDeveloper(0, 3, app.getDeveloperName());
+    gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());
     // By default, load the first tag's apps
-    gallery.GetAppsByDeveloper(0, 3, app.getTags().get(0));
+    tagSelected = app.getTags().get(0);
+    gallery.FindByTag(app.getTags().get(0), 0, 5, 0);
 
     // Add everything to top-level containers
     appSingle.add(appDetails);
@@ -244,8 +249,13 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
    */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
-      case 7: galleryGF.generateSidebar(apps, appsByAuthor, false); break;
-      case 8: galleryGF.generateSidebar(apps, appsByTags, true); break;
+      case 7: 
+        galleryGF.generateSidebar(apps, appsByAuthor, "By this developer", false); 
+        break;
+      case 8: 
+        String tagTitle = "Tagged with " + tagSelected;
+        galleryGF.generateSidebar(apps, appsByTags, tagTitle, true); 
+        break;
     } 
   }
   

@@ -28,7 +28,7 @@ import java.util.ArrayList;
  */
 @DesignerComponent(version = YaVersion.SPEECHRECOGNIZER_COMPONENT_VERSION,
     description = "Component for using Voice Recognition to convert from speech to text",
-    category = ComponentCategory.MISC,
+    category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/speechRecognizer.png")
 @SimpleObject

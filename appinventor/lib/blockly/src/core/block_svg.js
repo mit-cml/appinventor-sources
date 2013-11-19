@@ -27,6 +27,7 @@ goog.provide('Blockly.BlockSvg');
 
 goog.require('goog.userAgent');
 
+
 /**
  * Class for a block's SVG representation.
  * @param {!Blockly.Block} block The underlying block object.
@@ -45,10 +46,7 @@ Blockly.BlockSvg = function(block) {
       {'class': 'blocklyPathLight'}, this.svgGroup_);
     this.svgPath_.tooltip = this.block_;
     Blockly.Tooltip && Blockly.Tooltip.bindMouseEvents(this.svgPath_);
-    if (block.editable) {
-      Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
-      'blocklyDraggable');
-    }
+    this.updateMovable();
 };
 
 /**
@@ -71,6 +69,19 @@ Blockly.BlockSvg.prototype.init = function() {
     if (block.mutator) {
       block.mutator.createIcon();
     }
+};
+
+/**
+ * Add or remove the UI indicating if this block is movable or not.
+ */
+Blockly.BlockSvg.prototype.updateMovable = function() {
+  if (this.block_.isMovable()) {
+    Blockly.addClass_(/** @type {!Element} */ (this.svgGroup_),
+                      'blocklyDraggable');
+  } else {
+    Blockly.removeClass_(/** @type {!Element} */ (this.svgGroup_),
+                         'blocklyDraggable');
+  }
 };
 
 /**
@@ -377,13 +388,17 @@ Blockly.BlockSvg.connectionUiStep_ = function(ripple) {
  * Change the colour of a block.
  */
 Blockly.BlockSvg.prototype.updateColour = function() {
-    var hexColour = Blockly.makeColour(this.block_.getColour());
-    var rgb = goog.color.hexToRgb(hexColour);
-    var rgbLight = goog.color.lighten(rgb, 0.3);
-    var rgbDark = goog.color.darken(rgb, 0.4);
-    this.svgPathLight_.setAttribute('stroke', goog.color.rgbArrayToHex(rgbLight));
-    this.svgPathDark_.setAttribute('fill', goog.color.rgbArrayToHex(rgbDark));
-    this.svgPath_.setAttribute('fill', hexColour);
+  if (this.block_.disabled) {
+    // Disabled blocks don't have colour.
+    return;
+  }
+  var hexColour = Blockly.makeColour(this.block_.getColour());
+  var rgb = goog.color.hexToRgb(hexColour);
+  var rgbLight = goog.color.lighten(rgb, 0.3);
+  var rgbDark = goog.color.darken(rgb, 0.4);
+  this.svgPathLight_.setAttribute('stroke', goog.color.rgbArrayToHex(rgbLight));
+  this.svgPathDark_.setAttribute('fill', goog.color.rgbArrayToHex(rgbDark));
+  this.svgPath_.setAttribute('fill', hexColour);
 };
 
 /**
@@ -446,26 +461,17 @@ Blockly.BlockSvg.prototype.removeDragging = function() {
  */
 Blockly.BlockSvg.prototype.render = function() {
     this.block_.rendered = true;
-
-    var cursorX = Blockly.BlockSvg.SEP_SPACE_X;
-    if (Blockly.RTL) {
-      cursorX = -cursorX;
-    }
-    // Move the icons into position.
-    if (this.block_.mutator) {
-      cursorX = this.block_.mutator.renderIcon(cursorX);
-    }
-    if (this.block_.comment) {
-      cursorX = this.block_.comment.renderIcon(cursorX);
-    }
-    if (this.block_.warning) {
-      cursorX = this.block_.warning.renderIcon(cursorX);
-    }
-    if (this.block_.errorIcon) {
-      cursorX = this.block_.errorIcon.renderIcon(cursorX);
-    }
-    cursorX += Blockly.RTL ?
-      Blockly.BlockSvg.SEP_SPACE_X : -Blockly.BlockSvg.SEP_SPACE_X;
+  var cursorX = Blockly.BlockSvg.SEP_SPACE_X;
+  if (Blockly.RTL) {
+    cursorX = -cursorX;
+  }
+  // Move the icons into position.
+  var icons = this.block_.getIcons();
+  for (var x = 0; x < icons.length; x++) {
+    cursorX = icons[x].renderIcon(cursorX);
+  }
+  cursorX += Blockly.RTL ?
+    Blockly.BlockSvg.SEP_SPACE_X : -Blockly.BlockSvg.SEP_SPACE_X;
     // If there are no icons, cursorX will be 0, otherwise it will be the
     // width that the first label needs to move over by.
 
@@ -576,36 +582,23 @@ Blockly.BlockSvg.prototype.renderCompute_ = function(iconWidth) {
       } else {
         row = inputRows[inputRows.length - 1];
       }
-      row.push(input);
-      // Compute minimum input size.
-      input.renderHeight = Blockly.BlockSvg.MIN_BLOCK_Y;
-      // The width is currently only needed for inline value inputs.
-      if (this.block_.inputsInline && input.type == Blockly.INPUT_VALUE) {
-        input.renderWidth = Blockly.BlockSvg.TAB_WIDTH +
-        Blockly.BlockSvg.SEP_SPACE_X;
-      } else {
-        input.renderWidth = 0;
-      }
-      // Expand input size if there is a connection.
-      if (input.connection && input.connection.targetConnection) {
-        var linkedBlock = input.connection.targetBlock().getSvgRoot();
-        try {
-          var bBox = linkedBlock.getBBox();
-        } catch (e) {
-        // Firefox has trouble with hidden elements (Bug 528969).
-          var bBox = {height: 0, width: 0};
-        }
-        if (goog.userAgent.WEBKIT) {
-        /* HACK:
-        The current versions of Chrome (16.0) and Safari (5.1) with a common
-        root of WebKit 535 has a size reporting bug where the height of a
-        block is 3 pixels too large.  If WebKit browsers start under-sizing
-        connections to other blocks, then delete this entire hack.
-        */
-        bBox.height -= 3;
-      }
-      // Subtract one from the height due to the shadow.
-      input.renderHeight = Math.max(input.renderHeight, bBox.height - 1);
+
+    row.push(input);
+
+    // Compute minimum input size.
+    input.renderHeight = Blockly.BlockSvg.MIN_BLOCK_Y;
+    // The width is currently only needed for inline value inputs.
+    if (this.block_.inputsInline && input.type == Blockly.INPUT_VALUE) {
+      input.renderWidth = Blockly.BlockSvg.TAB_WIDTH +
+          Blockly.BlockSvg.SEP_SPACE_X;
+    } else {
+      input.renderWidth = 0;
+    }
+    // Expand input size if there is a connection.
+    if (input.connection && input.connection.targetConnection) {
+      var linkedBlock = input.connection.targetBlock();
+      var bBox = linkedBlock.getHeightWidth();
+      input.renderHeight = Math.max(input.renderHeight, bBox.height);
       input.renderWidth = Math.max(input.renderWidth, bBox.width);
     }
     row.height = Math.max(row.height, input.renderHeight);
@@ -768,6 +761,13 @@ Blockly.BlockSvg.prototype.renderDrawTop_ =
       steps.push(Blockly.BlockSvg.TOP_LEFT_CORNER);
       highlightSteps.push(Blockly.BlockSvg.TOP_LEFT_CORNER_HIGHLIGHT);
       }
+  if (Blockly.BROKEN_CONTROL_POINTS) {
+    /* HACK:
+     WebKit bug 67298 causes control points to be included in the reported
+     bounding box.  Add 5px control point to the top of the path.
+    */
+    steps.push('c 0,5 0,-5 0,0');
+  }
 
       // Top edge.
       if (this.block_.previousConnection) {
@@ -1085,6 +1085,13 @@ Blockly.BlockSvg.prototype.renderDrawBottom_ = function(steps, highlightSteps,co
     }
   }
 
+  if (Blockly.BROKEN_CONTROL_POINTS) {
+    /* HACK:
+     WebKit bug 67298 causes control points to be included in the reported
+     bounding box.  Add 5px control point to the bottom of the path.
+    */
+    steps.push('c 0,5 0,-5 0,0');
+  }
   // Should the bottom-left corner be rounded or square?
   if (this.squareBottomLeftCorner_) {
     steps.push('H 0');

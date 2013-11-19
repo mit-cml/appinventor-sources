@@ -914,11 +914,19 @@ public class YailEvalTest extends TestCase {
     // Corner cases
     String schemeString = "(clarify (string-split \"&&ab&cd&ef&\" \"&\")) ";
 
-    assertEquals("(<empty> <empty> ab cd ef <empty>)", scheme.eval(schemeString).toString());
+    // There should not be a trailing <empty> here 
+    assertEquals("(<empty> <empty> ab cd ef)", scheme.eval(schemeString).toString());
+
+    //assertEquals("(<empty> <empty> ab cd ef <empty>)", scheme.eval(schemeString).toString());
 
     schemeString = "(clarify (string-split-at-any \"&ab&-cd-ef&\" (make-yail-list \"&\" \"-\" )))";
 
     assertEquals("(<empty> ab <empty> cd ef <empty>)", scheme.eval(schemeString).toString());
+
+    schemeString = "(clarify (string-split-at-any \"&ab&+cd+ef&\" (make-yail-list \"&\" \"+\" )))";
+
+    assertEquals("(<empty> ab <empty> cd ef <empty>)", scheme.eval(schemeString).toString());
+
 
     schemeString = "(clarify (string-split-at-spaces \" ab  cd ef  \" ))";
 

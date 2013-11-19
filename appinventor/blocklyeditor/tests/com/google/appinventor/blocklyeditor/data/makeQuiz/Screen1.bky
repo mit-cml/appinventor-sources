@@ -1,5 +1,5 @@
-<xml>
-  <block type="SubmitButton_Click" x="-56" y="203">
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="SubmitButton_Click" x="325" y="624">
     <title name="COMPONENT_SELECTOR">SubmitButton</title>
     <statement name="DO">
       <block type="lists_add_items" inline="false">
@@ -96,7 +96,7 @@
       </block>
     </statement>
   </block>
-  <block type="procedures_defnoreturn" x="817" y="203">
+  <block type="procedures_defnoreturn" x="864" y="624">
     <mutation></mutation>
     <title name="NAME">displayQAs</title>
     <statement name="STACK">
@@ -182,7 +182,7 @@
                                 </value>
                                 <value name="ADD2">
                                   <block type="lexical_variable_get">
-                                    <title name="VAR">index question</title>
+                                    <title name="VAR">question</title>
                                   </block>
                                 </value>
                                 <value name="ADD3">
@@ -210,7 +210,7 @@
       </block>
     </statement>
   </block>
-  <block type="TinyWebDB1_GotValue" x="-56" y="629">
+  <block type="TinyWebDB1_GotValue" x="325" y="1020">
     <title name="COMPONENT_SELECTOR">TinyWebDB1</title>
     <statement name="DO">
       <block type="controls_if" inline="false">
@@ -218,7 +218,7 @@
           <block type="lists_is_list" inline="false">
             <value name="ITEM">
               <block type="lexical_variable_get">
-                <title name="VAR">input valueFromWebDB</title>
+                <title name="VAR">valueFromWebDB</title>
               </block>
             </value>
           </block>
@@ -231,7 +231,7 @@
                 <title name="OP">EQ</title>
                 <value name="A">
                   <block type="lexical_variable_get">
-                    <title name="VAR">input tagFromWebDB</title>
+                    <title name="VAR">tagFromWebDB</title>
                   </block>
                 </value>
                 <value name="B">
@@ -246,7 +246,7 @@
                 <title name="VAR">global QuestionList</title>
                 <value name="VALUE">
                   <block type="lexical_variable_get">
-                    <title name="VAR">input valueFromWebDB</title>
+                    <title name="VAR">valueFromWebDB</title>
                   </block>
                 </value>
               </block>
@@ -256,7 +256,7 @@
                 <title name="VAR">global AnswerList</title>
                 <value name="VALUE">
                   <block type="lexical_variable_get">
-                    <title name="VAR">input valueFromWebDB</title>
+                    <title name="VAR">valueFromWebDB</title>
                   </block>
                 </value>
               </block>
@@ -299,7 +299,7 @@
       </block>
     </statement>
   </block>
-  <block type="global_declaration" inline="false" x="817" y="661">
+  <block type="global_declaration" inline="false" x="1286" y="1020">
     <title name="NAME">QuestionList</title>
     <value name="VALUE">
       <block type="lists_create_with" inline="false">
@@ -307,7 +307,7 @@
       </block>
     </value>
   </block>
-  <block type="global_declaration" inline="false" x="817" y="743">
+  <block type="global_declaration" inline="false" x="325" y="1337">
     <title name="NAME">AnswerList</title>
     <value name="VALUE">
       <block type="lists_create_with" inline="false">
@@ -315,7 +315,7 @@
       </block>
     </value>
   </block>
-  <block type="global_declaration" inline="false" x="817" y="825">
+  <block type="global_declaration" inline="false" x="740" y="1337">
     <title name="NAME">answer</title>
     <value name="VALUE">
       <block type="text">
@@ -323,7 +323,7 @@
       </block>
     </value>
   </block>
-  <block type="global_declaration" inline="false" x="817" y="882">
+  <block type="global_declaration" inline="false" x="1079" y="1337">
     <title name="NAME">answerIndex</title>
     <value name="VALUE">
       <block type="math_number">
@@ -331,7 +331,7 @@
       </block>
     </value>
   </block>
-  <block type="Screen1_Initialize" x="-56" y="958">
+  <block type="Screen1_Initialize" x="325" y="1413">
     <title name="COMPONENT_SELECTOR">Screen1</title>
     <statement name="DO">
       <block type="TinyWebDB1_GetValue" inline="false">

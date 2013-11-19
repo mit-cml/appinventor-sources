@@ -237,6 +237,20 @@
     <servlet-name>tosServlet</servlet-name>
   </filter-mapping>
 
+  <!-- feedback -->
+  <servlet>
+    <servlet-name>feedbackServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.FeedbackServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>feedbackServlet</servlet-name>
+    <url-pattern>/ode/feedback</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>feedbackServlet</servlet-name>
+  </filter-mapping>
+
   <!-- logout -->
   <servlet>
     <servlet-name>logoutServlet</servlet-name>

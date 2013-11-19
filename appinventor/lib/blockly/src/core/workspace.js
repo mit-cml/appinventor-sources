@@ -34,14 +34,18 @@ goog.require('Blockly.Xml');
 
 /**
  * Class for a workspace.
- * @param {boolean} editable Is this workspace freely interactive?
+ * @param {Function} getMetrics A function that returns size/scrolling metrics.
+ * @param {Function} setMetrics A function that sets size/scrolling metrics.
  * @constructor
  */
-Blockly.Workspace = function(editable) {
+Blockly.Workspace = function(getMetrics, setMetrics) {
+  this.getMetrics = getMetrics;
+  this.setMetrics = setMetrics;
+
   /** @type {boolean} */
-  this.editable = editable;
+  this.isFlyout = false;
   /**
-   * @type {!Array.<Blockly.Block>}
+   * @type {!Array.<!Blockly.Block>}
    * @private
    */
   this.topBlocks_ = [];
@@ -51,6 +55,14 @@ Blockly.Workspace = function(editable) {
 
   Blockly.ConnectionDB.init(this);
 };
+
+/**
+ * Angle away from the horizontal to sweep for blocks.  Order of execution is
+ * generally top to bottom, but a small angle changes the scan to give a bit of
+ * a left to right bias (reversed in RTL).  Units are in degrees.
+ * See: http://tvtropes.org/pmwiki/pmwiki.php/Main/DiagonalBilling.
+ */
+Blockly.Workspace.SCAN_ANGLE = 3;
 
 /**
  * Can this workspace be dragged around (true) or is it fixed (false)?
@@ -138,11 +150,10 @@ Blockly.Workspace.prototype.dispose = function() {
 
 /**
  * Add a trashcan.
- * @param {!Function} getMetrics A function that returns workspace's metrics.
  */
-Blockly.Workspace.prototype.addTrashcan = function(getMetrics) {
-  if (Blockly.Trashcan && this.editable) {
-    this.trashcan = new Blockly.Trashcan(getMetrics);
+Blockly.Workspace.prototype.addTrashcan = function() {
+  if (Blockly.hasTrashcan && !Blockly.readOnly) {
+    this.trashcan = new Blockly.Trashcan(this);
     var svgTrashcan = this.trashcan.createDom();
     this.svgGroup_.insertBefore(svgTrashcan, this.svgBlockCanvas_);
     this.trashcan.init();
@@ -154,7 +165,7 @@ Blockly.Workspace.prototype.addTrashcan = function(getMetrics) {
  * @param {!Function} getMetrics A function that returns workspace's metrics.
  */
 Blockly.Workspace.prototype.addWarningIndicator = function(getMetrics) {
-  if (Blockly.WarningIndicator && this.editable) {
+  if (Blockly.WarningIndicator && !this.readOnly) {
     this.warningIndicator = new Blockly.WarningIndicator(getMetrics);
     var svgWarningIndicator = this.warningIndicator.createDom();
     this.svgGroup_.insertBefore(svgWarningIndicator, this.svgBlockCanvas_);
@@ -213,7 +224,7 @@ Blockly.Workspace.prototype.removeTopBlock = function(block) {
 
 /**
  * Finds the top-level blocks and returns them.  Blocks are optionally sorted
- * by position; top to bottom.
+ * by position; top to bottom (with slight LTR or RTL bias).
  * @param {boolean} ordered Sort the list if true.
  * @return {!Array.<!Blockly.Block>} The top-level block objects.
  */
@@ -221,8 +232,15 @@ Blockly.Workspace.prototype.getTopBlocks = function(ordered) {
   // Copy the topBlocks_ list.
   var blocks = [].concat(this.topBlocks_);
   if (ordered && blocks.length > 1) {
-    blocks.sort(function(a, b)
-        {return a.getRelativeToSurfaceXY().y - b.getRelativeToSurfaceXY().y;});
+    var offset = Math.sin(Blockly.Workspace.SCAN_ANGLE / 180 * Math.PI);
+    if (Blockly.RTL) {
+      offset *= -1;
+    }
+    blocks.sort(function(a, b) {
+      var aXY = a.getRelativeToSurfaceXY();
+      var bXY = b.getRelativeToSurfaceXY();
+      return (aXY.y + offset * aXY.x) - (bXY.y + offset * bXY.x);
+    });
   }
   return blocks;
 };

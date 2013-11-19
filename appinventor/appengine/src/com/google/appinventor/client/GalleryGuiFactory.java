@@ -62,7 +62,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
-	public void generateHorizontalCards(List<GalleryApp> apps, FlowPanel container, Boolean refreshable) {
+	public void generateHorizontalAppList(List<GalleryApp> apps, 
+	    FlowPanel container, Boolean refreshable) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
@@ -76,7 +77,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       FlowPanel appCardContent = new FlowPanel();
       FlowPanel appCardMeta = new FlowPanel();
       
-      // Special processing for the app title, mainly for fade-out effect
+      // Special processing for app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
         "<span class='paragraph-end-block'></span></div>");
@@ -117,8 +118,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
       appCardMeta.add(gaw.numDownloadsLabel);
-      appCardMeta.add(numLikes);
-      appCardMeta.add(gaw.numLikesLabel);
+//      appCardMeta.add(numLikes);
+//      appCardMeta.add(gaw.numLikesLabel);
       // For generic cards, do not show comment
 //      appCardMeta.add(numComments);
 //      appCardMeta.add(gaw.numCommentsLabel);
@@ -199,13 +200,20 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    * @param container: the GUI panel where the sidebar will reside.
    * 
+   * @param name: the name or title of this particular sidebar.
+   * 
    * @param refreshable: if true then the GUI can be reloaded later.
    */
-  public void generateSidebar(List<GalleryApp> apps, FlowPanel container, Boolean refreshable) {
+  public void generateSidebar(List<GalleryApp> apps, FlowPanel container, String name, Boolean refreshable) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
     }
+    
+    Label title = new Label(name);
+    title.addStyleName("gallery-showcase-title");
+    container.add(title);
+    
     for (final GalleryApp app : apps) {
       // Create the associated GUI object for app
       GalleryAppWidget gaw = new GalleryAppWidget(app);
@@ -264,6 +272,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       
       // Add associated styling
       appCard.addStyleName("gallery-card");
+      appCard.addStyleName("clearfix");
       gaw.image.addStyleName("gallery-card-cover");
 //      gaw.nameLabel.addStyleName("gallery-title");
       gaw.authorLabel.addStyleName("gallery-subtitle");

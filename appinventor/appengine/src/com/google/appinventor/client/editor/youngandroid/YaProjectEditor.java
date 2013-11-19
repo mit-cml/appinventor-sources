@@ -82,6 +82,40 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
     project.addProjectChangeListener(this);
   }
 
+  private void loadBlocksEditor(String formNamePassedIn) {
+
+    final String formName = formNamePassedIn;
+    final YaBlocksEditor newBlocksEditor = editorMap.get(formName).blocksEditor;
+    newBlocksEditor.loadFile(new Command() {
+        @Override
+        public void execute() {
+          YaBlocksEditor newBlocksEditor = editorMap.get(formName).blocksEditor;
+          int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
+              getFileIdComparator());
+          if (pos < 0) {
+            pos = -pos - 1;
+          }
+          insertFileEditor(newBlocksEditor, pos);
+          if (isScreen1(formName)) {
+            screen1BlocksLoaded = true;
+            if (readyToShowScreen1()) {
+              OdeLog.log("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen "
+                  + formName + " for project " + newBlocksEditor.getProjectId());
+              Ode.getInstance().getDesignToolbar().switchToScreen(newBlocksEditor.getProjectId(),
+                  formName, DesignToolbar.View.FORM);
+            }
+          }
+        }
+      });
+
+  }
+
+  // Note: When we add the blocks editors in the loop below we do not actually
+  // have them load the blocks file. Instead we trigger the load of a blocks file
+  // in the callback for the loading of its associated forms file. This is important
+  // because we have to ensure that the component type data is available when the
+  // blocks are loaded!
+
   @Override
   public void loadProject() {
     // add form editors first, then blocks editors because the blocks editors
@@ -312,6 +346,7 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
                 formName, DesignToolbar.View.FORM);
           }
         }
+        loadBlocksEditor(formName);
       }
     });
   }
@@ -332,26 +367,6 @@ public final class YaProjectEditor extends ProjectEditor implements ProjectChang
       editors.blocksEditor = newBlocksEditor;
       editorMap.put(formName, editors);
     }
-    newBlocksEditor.loadFile(new Command() {
-      @Override
-      public void execute() {
-        int pos = Collections.binarySearch(fileIds, newBlocksEditor.getFileId(),
-            getFileIdComparator());
-        if (pos < 0) {
-          pos = -pos - 1;
-        }
-        insertFileEditor(newBlocksEditor, pos);
-        if (isScreen1(formName)) {
-          screen1BlocksLoaded = true;
-          if (readyToShowScreen1()) {
-            OdeLog.log("YaProjectEditor.addBlocksEditor.loadFile.execute: switching to screen " 
-                + formName + " for project " + newBlocksEditor.getProjectId());
-            Ode.getInstance().getDesignToolbar().switchToScreen(newBlocksEditor.getProjectId(),
-                formName, DesignToolbar.View.FORM);
-          }
-        }
-      }
-    });
   }
   
   private void removeFormEditor(String formName) {

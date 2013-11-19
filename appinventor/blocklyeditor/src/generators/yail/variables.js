@@ -16,15 +16,37 @@
  *         files.
  */
 
+
+/**
+ * Lyn's History:
+ * [lyn, 10/27/13] Modified global variable names to begin with YAIL_GLOBAL_VAR_TAG (currently 'g$')
+ *     and local variables to begin with YAIL_LOCAL_VAR_TAG (currently '$').
+ *     At least on Kawa-legal first character is necessary to ensure AI identifiers
+ *     satisfy Kawa's identifier rules. And the global 'g$' tag is necessary to
+ *     distinguish globals from procedures (which use the 'g$' tag).
+ * [lyn, 12/27/2012] Abstract over handling of param/local/index prefix
+ */
+
 Blockly.Yail = Blockly.Generator.get('Yail');
 
 // Variable Blocks
+/**
+ * The identifier rules specified in Blockly.LexicalVariable.checkIdentifier *REQUIRE*
+ * a nonempty prefix (here, "tag") whose first character is a legal Kawa identifier character
+ * in the character set [a-zA-Z_\!\$%&\?\^\*~\/>\=<]
+ * Note this set does not include the characters [@.-\+], which are special in Kawa
+ *  and cannot begin identifiers.
+ *
+ * Why use '$'?  Because $ means money, which is "valuable", and "valuable" sounds like "variable"!
+ */
+Blockly.Yail.YAIL_GLOBAL_VAR_TAG = 'g$';
+Blockly.Yail.YAIL_LOCAL_VAR_TAG = '$';
 
 // Global variable definition block
 Blockly.Yail.global_declaration = function() {
-  var name = this.getTitleValue('NAME');
+  var name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + this.getTitleValue('NAME');
   var argument0 = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || '0';
-  var code = Blockly.Yail.YAIL_DEFINE + name + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var code = Blockly.Yail.YAIL_DEFINE +  name + Blockly.Yail.YAIL_SPACER + argument0 + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
 
@@ -49,7 +71,6 @@ Blockly.Yail.lexical_variable_set = function() {
   var commandAndName = Blockly.Yail.setVariableCommandAndName(varName);
   code += commandAndName[0];
   name = commandAndName[1];
-  
   code += name + Blockly.Yail.YAIL_SPACER + argument0
       + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
@@ -62,10 +83,10 @@ Blockly.Yail.getVariableCommandAndName = function(name){
   var prefix = pair[0];
   var unprefixedName = pair[1];
   if (prefix === Blockly.globalNamePrefix) {
-    name = unprefixedName;
+    name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
     command = Blockly.Yail.YAIL_GET_VARIABLE;
   } else {
-    name = (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
+    name = Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
     command = Blockly.Yail.YAIL_LEXICAL_VALUE;
   }
   return [command,name]
@@ -78,10 +99,10 @@ Blockly.Yail.setVariableCommandAndName = function(name){
   var prefix = pair[0];
   var unprefixedName = pair[1];
   if (prefix === Blockly.globalNamePrefix) {
-    name = unprefixedName;
+    name = Blockly.Yail.YAIL_GLOBAL_VAR_TAG + unprefixedName;
     command = Blockly.Yail.YAIL_SET_VARIABLE;
   } else {
-    name = (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
+    name = Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.possiblyPrefixYailNameWith(prefix))(unprefixedName);
     command = Blockly.Yail.YAIL_SET_LEXICAL_VALUE;
   }
   return [command,name]
@@ -99,7 +120,7 @@ Blockly.Yail.local_variable = function(block,isExpression) {
   var code = Blockly.Yail.YAIL_LET;
   code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_SPACER;
   for(var i=0;block.getTitleValue("VAR" + i);i++){
-    code += Blockly.Yail.YAIL_OPEN_COMBINATION + (Blockly.usePrefixInYail ? "local_" : "") + block.getTitleValue("VAR" + i);
+    code += Blockly.Yail.YAIL_OPEN_COMBINATION + Blockly.Yail.YAIL_LOCAL_VAR_TAG + (Blockly.usePrefixInYail ? "local_" : "") + block.getTitleValue("VAR" + i);
     code += Blockly.Yail.YAIL_SPACER + ( Blockly.Yail.valueToCode(block, 'DECL' + i, Blockly.Yail.ORDER_NONE) || '0' );
     code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER;
   }
