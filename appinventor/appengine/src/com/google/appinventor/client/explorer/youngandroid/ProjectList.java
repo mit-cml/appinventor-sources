@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -274,12 +275,38 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.editButton);
+      preparePublishApp(pw);
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
-
+  
+  /**
+   * Prepares the app publishing process
+   *
+   * @param the project widget of the specific app
+   */
+  private void preparePublishApp(ProjectWidgets pw) {
+//    final GalleryApp app  = new GalleryApp(String title, String developerName, String description,
+//        String creationDate, String updateDate, String imageURL, String sourceFileName,
+//        int downloads, int views, int likes, int comments, 
+//        String imageBlobId, String sourceBlobId, String galleryAppId, 
+//        ArrayList<String> tags);
+    final GalleryApp app  = new GalleryApp("Test title", "dev guy", "",
+        "", "", "", "",
+        0, 0, 0, 0,
+        "", "", "", 
+        null);
+    
+    pw.editButton.addClickHandler(new ClickHandler() {
+    //  @Override
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().switchToGalleryAppView(app); 
+      }
+    });
+  }
+  
   /**
    * Gets the number of projects
    *
