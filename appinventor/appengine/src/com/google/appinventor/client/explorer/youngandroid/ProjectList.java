@@ -275,7 +275,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.editButton);
-      preparePublishApp(pw);
+      preparePublishApp(project, pw);
       row++;
     }
 
@@ -284,20 +284,22 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   
   /**
    * Prepares the app publishing process
-   *
-   * @param the project widget of the specific app
+   * 
    */
-  private void preparePublishApp(ProjectWidgets pw) {
+  private void preparePublishApp(Project p, ProjectWidgets pw) {
 //    final GalleryApp app  = new GalleryApp(String title, String developerName, String description,
 //        String creationDate, String updateDate, String imageURL, String sourceFileName,
 //        int downloads, int views, int likes, int comments, 
 //        String imageBlobId, String sourceBlobId, String galleryAppId, 
 //        ArrayList<String> tags);
-    final GalleryApp app  = new GalleryApp("Test title", "dev guy", "",
-        "", "", "", "",
+    String dateCreated = String.valueOf(p.getDateCreated());
+    String dateModified = String.valueOf(p.getDateModified());
+    ArrayList<String> tags = new ArrayList<String>();
+    final GalleryApp app = new GalleryApp(p.getProjectName(), "pseudo guy", "",
+        dateCreated, dateModified, "", "",
         0, 0, 0, 0,
         "", "", "", 
-        null);
+        tags);
     
     pw.editButton.addClickHandler(new ClickHandler() {
     //  @Override
