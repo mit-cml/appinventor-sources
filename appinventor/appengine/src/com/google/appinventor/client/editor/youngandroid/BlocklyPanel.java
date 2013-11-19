@@ -13,6 +13,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.common.collect.Maps;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Button;
@@ -126,6 +127,11 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public static void initUi() {
     exportMethodsToJavascript();
+    // Tell the blockly world about companion versions.
+    setPreferredCompanion(YaVersion.PREFERRED_COMPANION);
+    for (int i = 0; i < YaVersion.ACCEPTABLE_COMPANIONS.length; i++) {
+      addAcceptableCompanion(YaVersion.ACCEPTABLE_COMPANIONS[i]);
+    }
   }
 
   /*
@@ -804,8 +810,19 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public static native String getCompVersion() /*-{
-    var formName = $wnd.location.hash.substr(1) + "_Screen1";
-    return $wnd.Blocklies[formName].ReplMgr.COMPANION_VERSION;
+    return $wnd.PREFERRED_COMPANION;
+  }-*/;
+
+  static native void setPreferredCompanion(String comp) /*-{
+    $wnd.PREFERRED_COMPANION = comp;
+  }-*/;
+
+  static native void addAcceptableCompanion(String comp) /*-{
+    if ($wnd.ACCEPTABLE_COMPANIONS === null ||
+        $wnd.ACCEPTABLE_COMPANIONS === undefined) {
+      $wnd.ACCEPTABLE_COMPANIONS = [];
+    }
+    $wnd.ACCEPTABLE_COMPANIONS.push(comp);
   }-*/;
 
 }
