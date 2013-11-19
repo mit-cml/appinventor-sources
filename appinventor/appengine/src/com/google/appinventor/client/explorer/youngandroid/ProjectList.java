@@ -226,7 +226,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
       
-      editButton = new Button("Edit Project");
+      editButton = new Button("Publish");
     }
   }
 
