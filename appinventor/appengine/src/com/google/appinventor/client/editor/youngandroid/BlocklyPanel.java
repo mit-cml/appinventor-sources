@@ -803,4 +803,9 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.Blocklies[formName].WarningHandler.checkAllBlocksForWarningsAndErrors();
   }-*/;
 
+  public static native String getCompVersion() /*-{
+    var formName = $wnd.location.hash.substr(1) + "_Screen1";
+    return $wnd.Blocklies[formName].ReplMgr.COMPANION_VERSION;
+  }-*/;
+
 }

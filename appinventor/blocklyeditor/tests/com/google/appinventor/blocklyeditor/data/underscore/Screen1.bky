@@ -1,0 +1,26 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+  <block type="button_one_Click" x="354" y="33">
+    <title name="COMPONENT_SELECTOR">button_one</title>
+    <statement name="DO">
+      <block type="label_one_setproperty" inline="false">
+        <mutation yailtype="text"></mutation>
+        <title name="COMPONENT_SELECTOR">label_one</title>
+        <title name="PROP">Text</title>
+        <value name="VALUE">
+          <block type="text">
+            <title name="TEXT">foobar</title>
+          </block>
+        </value>
+      </block>
+    </statement>
+  </block>
+  <block type="procedures_defnoreturn" x="334" y="177">
+    <mutation></mutation>
+    <title name="NAME">procedure</title>
+    <statement name="STACK">
+      <block type="listpicker_one_Open">
+        <title name="COMPONENT_SELECTOR">listpicker_one</title>
+      </block>
+    </statement>
+  </block>
+</xml>

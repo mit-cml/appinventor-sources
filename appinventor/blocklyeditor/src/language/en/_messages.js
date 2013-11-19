@@ -877,266 +877,266 @@ Blockly.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = 'of component';
 /* HelpURLs for Component Blocks */
 
 //User Interface Components
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_HELPURL = '/learn/reference/components/userinterface.html#Button';
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#buttonproperties';
-Blockly.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#buttonevents';
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_HELPURL = '/reference/components/userinterface.html#Button';
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL = '/reference/components/userinterface.html#buttonproperties';
+Blockly.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL = '/reference/components/userinterface.html#buttonevents';
 
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL = '/learn/reference/components/userinterface.html#CheckBox';
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#checkboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#checkboxevents';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL = '/reference/components/userinterface.html#CheckBox';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL = '/reference/components/userinterface.html#checkboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL = '/reference/components/userinterface.html#checkboxevents';
 
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL = '/learn/reference/components/userinterface.html#Clock';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#clockproperties';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#clockevents';
-Blockly.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL = '/learn/reference/components/userinterface.html#clockmethods';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL = '/reference/components/userinterface.html#Clock';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL = '/reference/components/userinterface.html#clockproperties';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL = '/reference/components/userinterface.html#clockevents';
+Blockly.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL = '/reference/components/userinterface.html#clockmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL = '/learn/reference/components/userinterface.html#Image';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#imageproperties';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#imageevents';
-Blockly.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL = '/learn/reference/components/userinterface.html#imagemethods';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL = '/reference/components/userinterface.html#Image';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL = '/reference/components/userinterface.html#imageproperties';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL = '/reference/components/userinterface.html#imageevents';
+Blockly.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL = '/reference/components/userinterface.html#imagemethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL = '/learn/reference/components/userinterface.html#Label';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#labelproperties';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#labelevents';
-Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = '/learn/reference/components/userinterface.html#labelmethods';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL = '/reference/components/userinterface.html#Label';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = '/reference/components/userinterface.html#labelproperties';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = '/reference/components/userinterface.html#labelevents';
+Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = '/reference/components/userinterface.html#labelmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = '/learn/reference/components/userinterface.html#ListPicker';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#listpickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#listpickerevents';
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/learn/reference/components/userinterface.html#listpickermethods';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = '/reference/components/userinterface.html#ListPicker';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#listpickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#listpickerevents';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#listpickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL = "/learn/reference/components/userinterface.html#Notifier";
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#notifierproperties';
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#notifierevents';
-Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = '/learn/reference/components/userinterface.html#notifiermethods';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL = "/reference/components/userinterface.html#Notifier";
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#notifierproperties';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL = '/reference/components/userinterface.html#notifierevents';
+Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = '/reference/components/userinterface.html#notifiermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = '/learn/reference/components/userinterface.html#PasswordTextBox';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#pwdboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#pwdboxevents';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = '/learn/reference/components/userinterface.html#pwdboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = '/reference/components/userinterface.html#PasswordTextBox';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = '/reference/components/userinterface.html#pwdboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = '/reference/components/userinterface.html#pwdboxevents';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = '/reference/components/userinterface.html#pwdboxmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = '/learn/reference/components/userinterface.html#Screen';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#screenproperties';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#screenevents';
-Blockly.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL = '/learn/reference/components/userinterface.html#screenmethods';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = '/reference/components/userinterface.html#Screen';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = '/reference/components/userinterface.html#screenproperties';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL = '/reference/components/userinterface.html#screenevents';
+Blockly.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL = '/reference/components/userinterface.html#screenmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL = '/learn/reference/components/userinterface.html#Slider';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#sliderproperties';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#sliderevents';
-Blockly.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL = '/learn/reference/components/userinterface.html#slidermethods';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL = '/reference/components/userinterface.html#Slider';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#sliderproperties';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL = '/reference/components/userinterface.html#sliderevents';
+Blockly.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL = '/reference/components/userinterface.html#slidermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL = '/learn/reference/components/userinterface.html#TextBox';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#textboxproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#textboxevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL = '/learn/reference/components/userinterface.html#textboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL = '/reference/components/userinterface.html#TextBox';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL = '/reference/components/userinterface.html#textboxproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL = '/reference/components/userinterface.html#textboxevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL = '/reference/components/userinterface.html#textboxmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL = "/learn/reference/components/userinterface.html#WebViewer";
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL = '/learn/reference/components/userinterface.html#webviewerproperties';
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL = '/learn/reference/components/userinterface.html#webviewerevents';
-Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL = '/learn/reference/components/userinterface.html#webviewermethods';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL = "/reference/components/userinterface.html#WebViewer";
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#webviewerproperties';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL = '/reference/components/userinterface.html#webviewerevents';
+Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL = '/reference/components/userinterface.html#webviewermethods';
 
 //Layout components
-Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL = "/learn/reference/components/layout.html#HorizontalArrangement";
-Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL = '/learn/reference/components/layout.html#horizarrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL = "/reference/components/layout.html#HorizontalArrangement";
+Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL = '/reference/components/layout.html#horizarrangeproperties';
 
-Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL = "/learn/reference/components/layout.html#VerticalArrangement";
-Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL = '/learn/reference/components/layout.html#vertarrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL = "/reference/components/layout.html#VerticalArrangement";
+Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL = '/reference/components/layout.html#vertarrangeproperties';
 
-Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL = "/learn/reference/components/layout.html#TableArrangement";
-Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL = '/learn/reference/components/layout.html#tablearrangeproperties';
+Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL = "/reference/components/layout.html#TableArrangement";
+Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL = '/reference/components/layout.html#tablearrangeproperties';
 
 //Media components
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL = '/learn/reference/components/media.html#Camcorder';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#camcorderproperties';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL = '/learn/reference/components/media.html#camcorderevents';
-Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = '/learn/reference/components/media.html#camcordermethods';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL = '/reference/components/media.html#Camcorder';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL = '/reference/components/media.html#camcorderproperties';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL = '/reference/components/media.html#camcorderevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = '/reference/components/media.html#camcordermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = '/learn/reference/components/media.html#Camera';
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = '/learn/reference/components/media.html#cameraproperties';
-Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = '/learn/reference/components/media.html#cameraevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = '/reference/components/media.html#Camera';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = '/reference/components/media.html#cameraproperties';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = '/reference/components/media.html#cameraevents';
 
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = '/learn/reference/components/media.html#ImagePicker';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#imagepickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL = '/learn/reference/components/media.html#imagepickerevents';
-Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL = '/learn/reference/components/media.html#imagepickermethods';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = '/reference/components/media.html#ImagePicker';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = '/reference/components/media.html#imagepickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL = '/reference/components/media.html#imagepickerevents';
+Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL = '/reference/components/media.html#imagepickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_HELPURL = '/learn/reference/components/media.html#Player';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#playerproperties';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL = '/learn/reference/components/media.html#playerevents';
-Blockly.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL = '/learn/reference/components/media.html#playermethods';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_HELPURL = '/reference/components/media.html#Player';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL = '/reference/components/media.html#playerproperties';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL = '/reference/components/media.html#playerevents';
+Blockly.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL = '/reference/components/media.html#playermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SOUND_HELPURL = '/learn/reference/components/media.html#Sound';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL = '/learn/reference/components/media.html#soundproperties';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL = '/learn/reference/components/media.html#soundevents';
-Blockly.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL = '/learn/reference/components/media.html#soundmethods';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_HELPURL = '/reference/components/media.html#Sound';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL = '/reference/components/media.html#soundproperties';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL = '/reference/components/media.html#soundevents';
+Blockly.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL = '/reference/components/media.html#soundmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL = "/learn/reference/components/media.html#SoundRecorder";
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#soundrecorderproperties';
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL = '/learn/reference/components/media.html#soundrecorderevents';
-Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL = '/learn/reference/components/media.html#soundrecordermethods';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL = "/reference/components/media.html#SoundRecorder";
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL = '/reference/components/media.html#soundrecorderproperties';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL = '/reference/components/media.html#soundrecorderevents';
+Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL = '/reference/components/media.html#soundrecordermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL = "/learn/reference/components/media.html#SpeechRecognizer";
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#speechrecognizerproperties';
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = '/learn/reference/components/media.html#speechrecognizerevents';
-Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = '/learn/reference/components/media.html#speechrecognizermethods';
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL = "/reference/components/media.html#SpeechRecognizer";
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = '/reference/components/media.html#speechrecognizerproperties';
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = '/reference/components/media.html#speechrecognizerevents';
+Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = '/reference/components/media.html#speechrecognizermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "/learn/reference/components/media.html#TextToSpeech";
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = '/learn/reference/components/media.html#texttospeechproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = '/learn/reference/components/media.html#texttospeechevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = '/learn/reference/components/media.html#texttospeechmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "/reference/components/media.html#TextToSpeech";
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = '/reference/components/media.html#texttospeechproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = '/reference/components/media.html#texttospeechevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = '/reference/components/media.html#texttospeechmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = '/learn/reference/components/media.html#VideoPlayer';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = '/learn/reference/components/media.html#videoplayerproperties';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL = '/learn/reference/components/media.html#videoplayerevents';
-Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL = '/learn/reference/components/media.html#videoplayermethods';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = '/reference/components/media.html#VideoPlayer';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = '/reference/components/media.html#videoplayerproperties';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL = '/reference/components/media.html#videoplayerevents';
+Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL = '/reference/components/media.html#videoplayermethods';
 
 // Drawing and Animation components
-Blockly.LANG_COMPONENT_BLOCK_BALL_HELPURL = "/learn/reference/components/animation.html#Ball";
-Blockly.LANG_COMPONENT_BLOCK_BALL_PROPERTIES_HELPURL = '/learn/reference/components/animation.html#ballproperties';
-Blockly.LANG_COMPONENT_BLOCK_BALL_EVENTS_HELPURL = '/learn/reference/components/animation.html#ballevents';
-Blockly.LANG_COMPONENT_BLOCK_BALL_METHODS_HELPURL = '/learn/reference/components/animation.html#ballmethods';
+Blockly.LANG_COMPONENT_BLOCK_BALL_HELPURL = "/reference/components/animation.html#Ball";
+Blockly.LANG_COMPONENT_BLOCK_BALL_PROPERTIES_HELPURL = '/reference/components/animation.html#ballproperties';
+Blockly.LANG_COMPONENT_BLOCK_BALL_EVENTS_HELPURL = '/reference/components/animation.html#ballevents';
+Blockly.LANG_COMPONENT_BLOCK_BALL_METHODS_HELPURL = '/reference/components/animation.html#ballmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_HELPURL = '/learn/reference/components/animation.html#Canvas';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL = '/learn/reference/components/animation.html#canvasproperties';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL = '/learn/reference/components/animation.html#canvasevents';
-Blockly.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL = '/learn/reference/components/animation.html#canvasmethods';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_HELPURL = '/reference/components/animation.html#Canvas';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL = '/reference/components/animation.html#canvasproperties';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL = '/reference/components/animation.html#canvasevents';
+Blockly.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL = '/reference/components/animation.html#canvasmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_HELPURL = "/learn/reference/components/animation.html#ImageSprite";
-Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL = '/learn/reference/components/animation.html#imagespriteproperties';
-Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL = '/learn/reference/components/animation.html#imagespriteevents';
-Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = '/learn/reference/components/animation.html#imagespritemethods';
+Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_HELPURL = "/reference/components/animation.html#ImageSprite";
+Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL = '/reference/components/animation.html#imagespriteproperties';
+Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL = '/reference/components/animation.html#imagespriteevents';
+Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = '/reference/components/animation.html#imagespritemethods';
 
 //Sensor components
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/learn/reference/components/sensor.html#AccelerometerSensor";
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/learn/reference/components/sensor.html#accelerometersensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/learn/reference/components/sensor.html#accelerometersensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/learn/reference/components/sensor.html#accelerometersensormethods';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensor.html#AccelerometerSensor";
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#accelerometersensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#accelerometersensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#accelerometersensormethods';
 
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/learn/reference/components/sensor.html#BarcodeScanner";
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/learn/reference/components/sensor.html#barcodescannerproperties';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/learn/reference/components/sensor.html#barcodescannerevents';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/learn/reference/components/sensor.html#barcodescannermethods';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensor.html#BarcodeScanner";
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensor.html#barcodescannerproperties';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensor.html#barcodescannerevents';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensor.html#barcodescannermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/learn/reference/components/sensor.html#LocationSensor";
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/learn/reference/components/sensor.html#locationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/learn/reference/components/sensor.html#locationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/learn/reference/components/sensor.html#locationsensormethods';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensor.html#LocationSensor";
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#locationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#locationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#locationsensormethods';
 
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/learn/reference/components/sensor.html#OrientationSensor";
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/learn/reference/components/sensor.html#orientationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/learn/reference/components/sensor.html#orientationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/learn/reference/components/sensor.html#orientationsensormethods';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensor.html#OrientationSensor";
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#orientationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#orientationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#orientationsensormethods';
 
 //Social components
-Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "/learn/reference/components/social.html#ContactPicker";
-Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL = '/learn/reference/components/social.html#contactpickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL = '/learn/reference/components/social.html#contactpickerevents';
-Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL = '/learn/reference/components/social.html#contactpickermethods';
+Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "/reference/components/social.html#ContactPicker";
+Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL = '/reference/components/social.html#contactpickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL = '/reference/components/social.html#contactpickerevents';
+Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL = '/reference/components/social.html#contactpickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL = "/learn/reference/components/social.html#EmailPicker";
-Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_PROPERTIES_HELPURL = '/learn/reference/components/social.html#emailpickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_EVENTS_HELPURL = '/learn/reference/components/social.html#emailpickerevents';
-Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_METHODS_HELPURL = '/learn/reference/components/social.html#emailpickermethods';
+Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL = "/reference/components/social.html#EmailPicker";
+Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_PROPERTIES_HELPURL = '/reference/components/social.html#emailpickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_EVENTS_HELPURL = '/reference/components/social.html#emailpickerevents';
+Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_METHODS_HELPURL = '/reference/components/social.html#emailpickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PHONECALL_HELPURL = "/learn/reference/components/social.html#PhoneCall";
-Blockly.LANG_COMPONENT_BLOCK_PHONECALL_PROPERTIES_HELPURL = '/learn/reference/components/social.html#phonecallproperties';
-Blockly.LANG_COMPONENT_BLOCK_PHONECALL_EVENTS_HELPURL = '/learn/reference/components/social.html#phonecallevents';
-Blockly.LANG_COMPONENT_BLOCK_PHONECALL_METHODS_HELPURL = '/learn/reference/components/social.html#phonecallmethods';
+Blockly.LANG_COMPONENT_BLOCK_PHONECALL_HELPURL = "/reference/components/social.html#PhoneCall";
+Blockly.LANG_COMPONENT_BLOCK_PHONECALL_PROPERTIES_HELPURL = '/reference/components/social.html#phonecallproperties';
+Blockly.LANG_COMPONENT_BLOCK_PHONECALL_EVENTS_HELPURL = '/reference/components/social.html#phonecallevents';
+Blockly.LANG_COMPONENT_BLOCK_PHONECALL_METHODS_HELPURL = '/reference/components/social.html#phonecallmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_HELPURL = "/learn/reference/components/social.html#PhoneNumberPicker";
-Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_PROPERTIES_HELPURL = '/learn/reference/components/social.html#phonenumberpickerproperties';
-Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_EVENTS_HELPURL = '/learn/reference/components/social.html#phonenumberpickerevents';
-Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_METHODS_HELPURL = '/learn/reference/components/social.html#phonenumberpickermethods';
+Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_HELPURL = "/reference/components/social.html#PhoneNumberPicker";
+Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_PROPERTIES_HELPURL = '/reference/components/social.html#phonenumberpickerproperties';
+Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_EVENTS_HELPURL = '/reference/components/social.html#phonenumberpickerevents';
+Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_METHODS_HELPURL = '/reference/components/social.html#phonenumberpickermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTING_HELPURL = "/learn/reference/components/social.html#Texting";
-Blockly.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL = '/learn/reference/components/social.html#textingproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL = '/learn/reference/components/social.html#textingevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL = '/learn/reference/components/social.html#textingmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTING_HELPURL = "/reference/components/social.html#Texting";
+Blockly.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL = '/reference/components/social.html#textingproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL = '/reference/components/social.html#textingevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL = '/reference/components/social.html#textingmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TWITTER_HELPURL = "/learn/reference/components/social.html#Twitter";
-Blockly.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL = '/learn/reference/components/social.html#twitterproperties';
-Blockly.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL = '/learn/reference/components/social.html#twitterevents';
-Blockly.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL = '/learn/reference/components/social.html#twittermethods';
+Blockly.LANG_COMPONENT_BLOCK_TWITTER_HELPURL = "/reference/components/social.html#Twitter";
+Blockly.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL = '/reference/components/social.html#twitterproperties';
+Blockly.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL = '/reference/components/social.html#twitterevents';
+Blockly.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL = '/reference/components/social.html#twittermethods';
 
 //Storage Components
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL = "/learn/reference/components/storage.html#FusiontablesControl";
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL = '/learn/reference/components/storage.html#fusiontablescontrolproperties';
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL = '/learn/reference/components/storage.html#fusiontablescontrolevents';
-Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL = '/learn/reference/components/storage.html#fusiontablescontrolmethods';
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL = "/reference/components/storage.html#FusiontablesControl";
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL = '/reference/components/storage.html#fusiontablescontrolproperties';
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL = '/reference/components/storage.html#fusiontablescontrolevents';
+Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL = '/reference/components/storage.html#fusiontablescontrolmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_HELPURL = '/learn/reference/components/storage.html#TinyDB';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL = '/learn/reference/components/storage.html#tinydbproperties';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL = '/learn/reference/components/storage.html#tinydbevents';
-Blockly.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL = '/learn/reference/components/storage.html#tinydbmethods';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_HELPURL = '/reference/components/storage.html#TinyDB';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL = '/reference/components/storage.html#tinydbproperties';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL = '/reference/components/storage.html#tinydbevents';
+Blockly.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL = '/reference/components/storage.html#tinydbmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL = "/learn/reference/components/storage.html#TinyWebDB";
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL = '/learn/reference/components/storage.html#tinywebdbproperties';
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = '/learn/reference/components/storage.html#tinywebdbevents';
-Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = '/learn/reference/components/storage.html#tinywebdbmethods';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL = "/reference/components/storage.html#TinyWebDB";
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL = '/reference/components/storage.html#tinywebdbproperties';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL = '/reference/components/storage.html#tinywebdbevents';
+Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL = '/reference/components/storage.html#tinywebdbmethods';
 
 //Connectivity components
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "/learn/reference/components/connectivity.html#ActivityStarter";
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = '/learn/reference/components/connectivity.html#activitystarterproperties';
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL = '/learn/reference/components/connectivity.html#activitystarterevents';
-Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL = '/learn/reference/components/connectivity.html#activitystartermethods';
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL = "/reference/components/connectivity.html#ActivityStarter";
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL = '/reference/components/connectivity.html#activitystarterproperties';
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL = '/reference/components/connectivity.html#activitystarterevents';
+Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL = '/reference/components/connectivity.html#activitystartermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL = "/learn/reference/components/connectivity.html#BluetoothClient";
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL = '/learn/reference/components/connectivity.html#bluetoothclientproperties';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL = '/learn/reference/components/connectivity.html#bluetoothclientevents';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL = '/learn/reference/components/connectivity.html#bluetoothclientmethods';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL = "/reference/components/connectivity.html#BluetoothClient";
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL = '/reference/components/connectivity.html#bluetoothclientproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL = '/reference/components/connectivity.html#bluetoothclientevents';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL = '/reference/components/connectivity.html#bluetoothclientmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL = "/learn/reference/components/connectivity.html#BluetoothServer";
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL = '/learn/reference/components/connectivity.html#bluetoothserverproperties';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = '/learn/reference/components/connectivity.html#bluetoothserverevents';
-Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = '/learn/reference/components/connectivity.html#bluetoothservermethods';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL = "/reference/components/connectivity.html#BluetoothServer";
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL = '/reference/components/connectivity.html#bluetoothserverproperties';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL = '/reference/components/connectivity.html#bluetoothserverevents';
+Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL = '/reference/components/connectivity.html#bluetoothservermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL = "/learn/reference/components/connectivity.html#Web";
-Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = '/learn/reference/components/connectivity.html#webproperties';
-Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = '/learn/reference/components/connectivity.html#webevents';
-Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL = '/learn/reference/components/connectivity.html#webmethods';
+Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL = "/reference/components/connectivity.html#Web";
+Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL = '/reference/components/connectivity.html#webproperties';
+Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL = '/reference/components/connectivity.html#webevents';
+Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL = '/reference/components/connectivity.html#webmethods';
 
 //Lego mindstorms components
-Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_HELPURL = "/learn/reference/components/legomindstorms.html#NxtDirectCommands";
-Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtdirectproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtdirectmethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_HELPURL = "/reference/components/legomindstorms.html#NxtDirectCommands";
+Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtdirectproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtdirectmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_HELPURL = "/learn/reference/components/legomindstorms.html#NxtColorSensor";
-Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtcolorproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtcolorevents';
-Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtcolormethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_HELPURL = "/reference/components/legomindstorms.html#NxtColorSensor";
+Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtcolorproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL = '/reference/components/legomindstorms.html#nxtcolorevents';
+Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtcolormethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_HELPURL = "/learn/reference/components/legomindstorms.html#NxtLightSensor";
-Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtlightproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtlightevents';
-Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtlightmethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_HELPURL = "/reference/components/legomindstorms.html#NxtLightSensor";
+Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtlightproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL = '/reference/components/legomindstorms.html#nxtlightevents';
+Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtlightmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_HELPURL = "/learn/reference/components/legomindstorms.html#NxtSoundSensor";
-Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtsoundproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtsoundevents';
-Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtsoundmethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_HELPURL = "/reference/components/legomindstorms.html#NxtSoundSensor";
+Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtsoundproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL = '/reference/components/legomindstorms.html#nxtsoundevents';
+Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtsoundmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_HELPURL = "/learn/reference/components/legomindstorms.html#NxtTouchSensor";
-Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxttouchproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_EVENTS_HELPURL = '/learn/reference/components/legomindstorms.html#nxttouchevents';
-Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxttouchmethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_HELPURL = "/reference/components/legomindstorms.html#NxtTouchSensor";
+Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxttouchproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_EVENTS_HELPURL = '/reference/components/legomindstorms.html#nxttouchevents';
+Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxttouchmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_HELPURL = "/learn/reference/components/legomindstorms.html#NxtUltrasonicSensor";
-Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtultrasonicproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_EVENTS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtultrasonicevents';
-Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtultrasonicmethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_HELPURL = "/reference/components/legomindstorms.html#NxtUltrasonicSensor";
+Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtultrasonicproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_EVENTS_HELPURL = '/reference/components/legomindstorms.html#nxtultrasonicevents';
+Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtultrasonicmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_HELPURL = "/learn/reference/components/legomindstorms.html#NxtDrive";
-Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_PROPERTIES_HELPURL = '/learn/reference/components/legomindstorms.html#nxtdriveproperties';
-Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL = '/learn/reference/components/legomindstorms.html#nxtdrivemethods';
+Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_HELPURL = "/reference/components/legomindstorms.html#NxtDrive";
+Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_PROPERTIES_HELPURL = '/reference/components/legomindstorms.html#nxtdriveproperties';
+Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL = '/reference/components/legomindstorms.html#nxtdrivemethods';
 
 //Internal components
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "/learn/reference/components/internal.html#GameClient";
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = '/learn/reference/components/internal.html#gameclientproperties';
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL = '/learn/reference/components/internal.html#gameclientevents';
-Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL = '/learn/reference/components/internal.html#gameclientmethods';
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL = "/reference/components/internal.html#GameClient";
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL = '/reference/components/internal.html#gameclientproperties';
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL = '/reference/components/internal.html#gameclientevents';
+Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL = '/reference/components/internal.html#gameclientmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL = "/learn/reference/components/internal.html#Voting";
-Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = '/learn/reference/components/internal.html#votingproperties';
-Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = '/learn/reference/components/internal.html#votingevents';
-Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = '/learn/reference/components/internal.html#votingmethods';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL = "/reference/components/internal.html#Voting";
+Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = '/reference/components/internal.html#votingproperties';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = '/reference/components/internal.html#votingevents';
+Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = '/reference/components/internal.html#votingmethods';
 

@@ -7,6 +7,7 @@ package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
@@ -588,9 +589,10 @@ public class TopToolbar extends Composite {
       VerticalPanel DialogBoxContents = new VerticalPanel();
       HTML message = new HTML(
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
-              "<BR><BR>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
+              "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
+              "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
               " and " + KNOWN_ISSUES_LINK_AND_TEXT  + "." +
-              "<BR><BR>" + termsOfServiceText
+              "<BR/><BR/>" + termsOfServiceText
       );
 
       SimplePanel holder = new SimplePanel();

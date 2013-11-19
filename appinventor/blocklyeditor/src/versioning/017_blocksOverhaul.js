@@ -37,6 +37,10 @@ Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
         blockElem.setAttribute('type',"lexical_variable_get");
       else {
         var splitComponent=blockType.split('_');
+        if (splitComponent.length > 2) {
+          // This happens when someone puts an _ in a block name!
+          splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+        }
         // there are some blocks that are not built-in but are not component based,
         //   we want to ignore them
         if (splitComponent[0]!='lexical') {
@@ -56,7 +60,7 @@ Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
             else {
               instance=splitComponent[0];
               var componentType=Blockly.Component.instanceNameToTypeName(instance);
-              if (componentType==instance && renameAlert==0) {
+              if (componentType==instance && renameAlert===0) {
                 alert("Your app was created in an earlier version of App Inventor and may be loaded incorrectly."+
                     " The problem is that it names a component instance"+
                     " the same as the component type, which is longer allowed.");
@@ -71,7 +75,7 @@ Blockly.Versioning.blocksOverhaul = function(xmlFromFile) {
                 Blockly.Versioning.translateSetGetProperty(blockElem);
               else
                 if (rightside=='component')
-                  Blockly.Versioning.translateComponentGet(blockElem)
+                  Blockly.Versioning.translateComponentGet(blockElem);
                 else
                   if (Blockly.ComponentTypes[componentType].eventDictionary[rightside]!=null)
                     Blockly.Versioning.translateEvent(blockElem);
@@ -98,6 +102,10 @@ Blockly.Versioning.translateEvent = function(blockElem) {
   var component_event = blockType;
   // event block types look like: <block type="Button1_Click" x="132" y="72">
   var splitComponent=component_event.split('_');
+  if (splitComponent.length > 2) {
+    // This happens when someone puts an _ in a block name!
+    splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+  }
   var instance = splitComponent[0];
   var event=splitComponent[1];
   // Paul has a function to convert instance to type
@@ -123,6 +131,10 @@ Blockly.Versioning.translateMethod = function(blockElem) {
   var blockType = blockElem.getAttribute('type');
   // method block types look like: <block type="TinyDB_StoreValue" ...>
   var splitComponent=blockType.split('_');
+  if (splitComponent.length > 2) {
+    // This happens when someone puts an _ in a block name!
+    splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+  }
   var instance = splitComponent[0];
   var method=splitComponent[1];
   // Paul has a function to convert instance to type
@@ -149,6 +161,11 @@ Blockly.Versioning.translateAnyMethod = function(blockElem) {
   var blockType = blockElem.getAttribute('type');
   // any method block types look like: <block type="_any_ImageSprite_MoveTo" inline="false">
   var splitComponent=blockType.split('_');
+  if (splitComponent.length > 3) {
+    // This happens when someone puts an _ in a block name!
+    var ctemp = splitComponent.slice(-2);
+    splitComponent = [splitComponent.slice(0, -2).join('_'), ctemp.pop(), ctemp.pop()];
+  }
   var componentType = splitComponent[2];
   var method=splitComponent[3];
   // ok, we have all the info, now we can override the old event attribute with 'event'
@@ -172,6 +189,10 @@ Blockly.Versioning.translateComponentGet = function(blockElem) {
   // block type looks like: <block type="TinyDB1_component" ..> note an instance
   //    not a type as you'd expect
   var splitComponent=blockType.split('_');
+  if (splitComponent.length > 2) {
+    // This happens when someone puts an _ in a block name!
+    splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+  }
   var instance = splitComponent[0];
   // if we got here splitComponent[1] must be "component"
   // Paul has a function to convert instance to type
@@ -196,6 +217,10 @@ Blockly.Versioning.translateSetGetProperty = function(blockElem) {
   var blockType = blockElem.getAttribute('type');
   // set block look like: <block type="Button1_setproperty" x="132" y="72">
   var splitComponent=blockType.split('_');
+  if (splitComponent.length > 2) {
+    // This happens when someone puts an _ in a block name!
+    splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+  }
   var instance = splitComponent[0];
   var type=splitComponent[1]; //setproperty or getproperty
   // Paul has a function to convert instance to type
@@ -241,6 +266,10 @@ Blockly.Versioning.translateComponentSetGetProperty = function(blockElem) {
   var blockType = blockElem.getAttribute('type');
   // set block looks like: <block type="Button_setproperty" >
   var splitComponent=blockType.split('_');
+  if (splitComponent.length > 2) {
+    // This happens when someone puts an _ in a block name!
+    splitComponent = [splitComponent.slice(0, -1).join('_'), splitComponent.pop()];
+  }
   var type=splitComponent[1]; //setproperty or getproperty
   var componentType=splitComponent[0];
   // grab titles to find the particular property

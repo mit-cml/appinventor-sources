@@ -58,6 +58,12 @@ Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors = function() {
 //the appropriate error or warning on the block,
 //and returns the corresponding warning state
 Blockly.WarningHandler.checkErrors = function() {
+  // [lyn, 11/11/2013] Special case: ignore blocks in flyout for purposes of error handling
+  //   Otherwise, blocks in drawer having connected subblocks (see Blockly.Drawer.defaultBlockXMLStrings)
+  //   will increment warning indicator.
+  if (this.isInFlyout) {
+    return Blockly.WarningHandler.warningState.NO_ERROR;
+  }
   if(typeof showWarnings == "undefined") {
     showWarnings = Blockly.WarningHandler.showWarningsToggle;
   }
