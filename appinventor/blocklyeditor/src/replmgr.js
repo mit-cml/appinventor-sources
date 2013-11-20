@@ -25,9 +25,6 @@ goog.require('goog.crypt.Hmac');
 // Repl State
 // Repl "state" definitions
 
-Blockly.ReplMgr.COMPANION_VERSION = "2.07nb9zx1";
-Blockly.ReplMgr.ACCEPTABLE_VERSIONS = [Blockly.ReplMgr.COMPANION_VERSION, "2.07nb9"];
-
 Blockly.ReplMgr.rsState = {
     IDLE : 0,                   // Not connected nor connection requested
     RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
@@ -351,7 +348,7 @@ Blockly.ReplMgr.putYail = (function() {
         "showversioncompmessage" : function(fatal) {
             var dialog;
             if (fatal) {
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.<br/><br/>This Version of App Inventor wants Companion version" + Blockly.ReplMgr.COMPANION_VERSION, "OK", 0, function() { dialog.hide();});
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.<br/><br/>This Version of App Inventor wants Companion version" + window.parent.PREFERRED_COMPANION, "OK", 0, function() { dialog.hide();});
             } else {
                 dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "You are using an out-of-date Companion, you should consider updating to the latest version.", "Dismiss", 1, function() { dialog.hide();});
             }
@@ -362,8 +359,8 @@ Blockly.ReplMgr.putYail = (function() {
 })();
 
 Blockly.ReplMgr.acceptableVersion = function(version) {
-    for (var i = 0; i < Blockly.ReplMgr.ACCEPTABLE_VERSIONS.length; i++) {
-        if (Blockly.ReplMgr.ACCEPTABLE_VERSIONS[i] == version) {
+    for (var i = 0; i < window.parent.ACCEPTABLE_COMPANIONS.length; i++) {
+        if (window.parent.ACCEPTABLE_COMPANIONS[i] == version) {
             return true;
         }
     }
@@ -632,6 +629,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         }
         this.resetYail();
         window.parent.ReplState.state = this.rsState.IDLE;
+        this.hardreset();       // Tell aiStarter to kill off adb
     }
 };
 
@@ -787,6 +785,12 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     }
     conn.send(arraybuf);
     return true;
+};
+
+Blockly.ReplMgr.hardreset = function() {
+    var xhr = goog.net.XmlHttp();
+    xhr.open("GET", "http://localhost:8004/reset/", false);
+    xhr.send();                 // We don't care about the return...
 };
 
 //---------------------------------------------------------------------

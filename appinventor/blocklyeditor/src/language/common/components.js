@@ -326,7 +326,7 @@ Blockly.Language.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodType.name);
+      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodName);
       if (this.type.indexOf(oldname) != -1) {
         this.type = this.type.replace(oldname, newname);
       }
@@ -379,7 +379,7 @@ Blockly.Language.component_method = {
     //If the block was copy+pasted from another block, instanaceName is set to the original block
     if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName)
       this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
-    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.methodType.name);
+    this.getTitle_('COLLAPSED_TEXT').setText(this.typeName + '.' + this.methodName);
   }
 };
 

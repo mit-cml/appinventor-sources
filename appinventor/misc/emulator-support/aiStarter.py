@@ -48,6 +48,14 @@ def ucheck():
     else:
         return '{ "status" : "NO" }'
 
+@route('/reset/')
+def reset():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    response.headers['Content-Type'] = 'application/json'
+    killadb()
+    return '{ "status" : "OK" }'
+
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
@@ -73,7 +81,17 @@ def checkrunning(emulator):
         return m.group(1)
     return False
 
+def killadb():
+    """Time to nuke adb!"""
+    subprocess.call(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
+    sys.stdout.write("Killed adb\n")
+
+def shutdown():
+    killadb()
+
 if __name__ == '__main__':
+    import atexit
+    atexit.register(shutdown)
     run(host='127.0.0.1', port=8004)
     ##WSGIServer(app).run()
 
