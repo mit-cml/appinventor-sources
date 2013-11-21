@@ -17,9 +17,15 @@ print "Platform = %s" % platforms
 if platforms == 'Windows':               # Windows
     PLATDIR = os.environ["ProgramFiles"]
     PLATDIR = '"' + PLATDIR + '"'
+    print "AppInventor tools located here: %s" % PLATDIR
 else:
     sys.exit(1)
-print PLATDIR
+
+@route('/ping/')
+def ping():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    return 'running'
 
 @route('/start/')
 def start():
@@ -78,6 +84,8 @@ def checkrunning(emulator):
         if emulator:
             m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
         else:
+            if re.search('^(.*emulator-[1-9]+)\t+device.*', line): # We are an emulator
+                continue                                           # Skip it
             m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
         if m:
             break
@@ -89,6 +97,8 @@ def killadb():
     """Time to nuke adb!"""
     subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
     sys.stdout.write("Killed adb\n")
+    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
+    sys.stdout.write("Killed emulator\n")
 
 def shutdown():
     killadb()
