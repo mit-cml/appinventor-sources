@@ -653,7 +653,7 @@ public class YaVersion {
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
   // Companion Versions
-  public static final String PREFERRED_COMPANION = "2.07nb9zx1";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.07nb9zx1", "2.07nb9" };
+  public static final String PREFERRED_COMPANION = "2.08ai2";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.08ai2", "2.07nb9zx1", "2.07nb9" };
 
 }
