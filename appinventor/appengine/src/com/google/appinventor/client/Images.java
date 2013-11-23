@@ -314,7 +314,7 @@ public interface Images extends Resources {
   ImageResource tinyDB();
   
   //TODO make an image for a file
-  @Source("com/google/appinventor/images/tinyDB.png")
+  @Source("com/google/appinventor/images/file.png")
   ImageResource file();
 
   /**
