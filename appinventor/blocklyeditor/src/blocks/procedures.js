@@ -26,7 +26,7 @@
  * [lyn, 10/27/13]
  *   + Fix bug in list of callers in flyout by simplifying domToMutation for procedure callers.
  *     This should never look for associated declaration, but just take arguments from given xml.
- *   + Removed render() call from updateParams. Seems unnecessary. <== I WAS WRONG. SEE 10/28/13 NOTE
+ *   + Removed render() call from updateParams_. Seems unnecessary. <== I WAS WRONG. SEE 10/28/13 NOTE
  *   + Specify direction of flydowns
  *   + Replaced Blockly.Procedures.rename by Blockly.AIProcedure.renameProcedure in proc decls
  * [lyn, 10/26/13] Modify procedure parameter changeHandler to propagate name changes to caller arg labels

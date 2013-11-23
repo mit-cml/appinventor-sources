@@ -37,7 +37,7 @@
       </block>
     </statement>
   </block>
-  <block type="Red_Click" x="-12" y="78">
+  <block type="Blue_Click" x="-12" y="78">
     <title name="COMPONENT_SELECTOR">Blue</title>
     <statement name="DO">
       <block type="DrawingCanvas_setproperty" inline="false">
@@ -52,7 +52,7 @@
       </block>
     </statement>
   </block>
-  <block type="Red_Click" x="-12" y="150">
+  <block type="Green_Click" x="-12" y="150">
     <title name="COMPONENT_SELECTOR">Green</title>
     <statement name="DO">
       <block type="DrawingCanvas_setproperty" inline="false">
@@ -67,7 +67,7 @@
       </block>
     </statement>
   </block>
-  <block type="Red_Click" x="-16" y="224">
+  <block type="Wipe_Click" x="-16" y="224">
     <title name="COMPONENT_SELECTOR">Wipe</title>
     <statement name="DO">
       <block type="DrawingCanvas_Clear">

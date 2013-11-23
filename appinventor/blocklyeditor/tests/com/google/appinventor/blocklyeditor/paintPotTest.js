@@ -42,7 +42,7 @@ page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(statu
 
     // Functions in yail_testing_index.html
     processForm(arguments[1]);
-    processBlocks(arguments[2]);
+    processBlocks(arguments[1], arguments[2]); // [lyn, 2015/01/01] Changed to handle upgrader
 
     var newblocks = toAppYail();
 

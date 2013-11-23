@@ -585,6 +585,16 @@ public final class YoungAndroidFormUpgrader {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // DrawCircle parameter names changed to centerx,centery, radius
+      // Touched parameter touchedSprite name changed to touchedAnySprite
+      // Dragged parameter draggedSprite name changed to draggedAnySprite
+      srcCompVersion = 8;
+    }
+    if (srcCompVersion < 9) {
+      // DrawCircle takes a new isFilled as fourth parameter.
+      srcCompVersion = 9;
+    }
     return srcCompVersion;
   }
 

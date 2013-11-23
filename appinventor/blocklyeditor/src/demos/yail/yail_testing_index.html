@@ -30,6 +30,13 @@ function start() {
 
   Blockly.inject(document.body);
 
+  // [lyn, 2015/01/02] Logging interferes with equality tests.
+  Blockly.Versioning.setLogging(false);
+
+  // [lyn, 2015/01/02] All BlocklyEvalTests fail in Blockly.TypeBlock.hide
+  // so I've redefined it to avoid errors.
+  Blockly.TypeBlock.hide = function () {};
+
   Blockly.Drawer.createDom();
   Blockly.Drawer.init();
 
@@ -108,6 +115,11 @@ function start() {
   window.parent.BlocklyPanel_getLocalizedParameterName =
     function (name) {return name} ;
 
+  // [lyn, 2015/01/02] Needed by the upgrader in versioning.js
+  // Is there a way to get the actual current version number?
+
+  window.parent.BlocklyPanel_getBlocksLanguageVersion = function () { return 18; }
+
 
   // ----- End the Mock locale operations
 
@@ -162,7 +174,7 @@ function handleLoadBlocks(event) {
         var target = event.target;
         // 2 == FileReader.DONE
         if (target.readyState == 2) {
-            Blockly.SaveFile.load(target.result);
+            Blockly.SaveFile.load(formJson, target.result);
         }
     };
     reader.readAsText(files[0]);
@@ -185,8 +197,8 @@ function handleLoadForm(event) {
     reader.readAsText(files[0]);
 }
 
-function processBlocks(blocks){
-    return Blockly.SaveFile.load(blocks);
+function processBlocks(formJsonString, blocks){ // [lyn, 2015/01/01] Modified to handled upgrader changes
+    return Blockly.SaveFile.load(formJsonString, blocks);
 }
 
 function processForm(formo){
