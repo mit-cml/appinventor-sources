@@ -53,7 +53,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction
   public void OverwriteFile(String text, String fileName) {
       FileUtil.checkExternalStorageWriteable();
-      Write(filename, text, false);
+      Write(fileName, text, false);
   }
   
   /**
@@ -65,7 +65,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
   @SimpleFunction
   public void AppendToFile(String text, String fileName) {
   	  FileUtil.checkExternalStorageWriteable();
-      Write(filename, text, true);
+      Write(fileName, text, true);
   }
 
   /**
@@ -78,7 +78,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public String ReadFrom(String fileName) {
-      String filepath = AbsoluteFileName(filename);
+      String filepath = AbsoluteFileName(fileName);
       java.io.File file = new java.io.File(filepath);
       StringBuilder sb = new StringBuilder();
       try {
@@ -86,6 +86,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
 		  String line;
 		  while ((line = bufferedReader.readLine()) != null) {
 		  	sb.append(line);
+		  	sb.append(System.getProperty("line.separator"));
 	      }
 	  } catch (FileNotFoundException e) {
 			form.dispatchErrorOccurredEvent(this, "ReadFrom",
