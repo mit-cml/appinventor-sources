@@ -405,6 +405,8 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
+  
+  public static final int FILE_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
