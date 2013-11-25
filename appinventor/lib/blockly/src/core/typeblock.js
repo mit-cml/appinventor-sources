@@ -414,6 +414,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
   var inputHandler = new goog.ui.ac.InputHandler(null, null, false);
 
   Blockly.TypeBlock.ac_ = new goog.ui.ac.AutoComplete(matcher, renderer, inputHandler);
+  Blockly.TypeBlock.ac_.setMaxMatches(100); //Renderer has a set height of 294px and a scroll bar.
   inputHandler.attachAutoComplete(Blockly.TypeBlock.ac_);
   inputHandler.attachInputs(goog.dom.getElement(inputText));
 
