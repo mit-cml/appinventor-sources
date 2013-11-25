@@ -35,10 +35,10 @@ public final class GalleryAppBox extends Box {
     return INSTANCE;
   }
   
-  public static void setApp(GalleryApp app)
+  public static void setApp(GalleryApp app, Boolean editable)
   {
 //	OdeLog.log("######### I got in setApp");
-    pPage = new GalleryPage(app);
+    pPage = new GalleryPage(app, editable);
     INSTANCE.setContent(pPage);
   }
   /**

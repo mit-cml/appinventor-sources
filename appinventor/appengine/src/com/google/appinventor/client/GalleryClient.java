@@ -138,7 +138,7 @@ public class GalleryClient {
       @Override
       public void onSuccess(List<GalleryApp> list) {
         // the server has returned us something
-//    	  OdeLog.log("#############################");
+    	  OdeLog.log("#############################");
         if (list== null) {
           return;
         }

@@ -297,11 +297,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     ArrayList<String> tags = new ArrayList<String>();
     tags.add("Education");
     tags.add("testing");
-    final GalleryApp app = new GalleryApp(p.getProjectName(), "pseudo guy", "",
-        dateCreated, dateModified, "", "",
-        0, 0, 0, 0,
-        "", "", "", 
-        tags);
     final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game","1355091003791","1355091003791",
         "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
         "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
@@ -310,7 +305,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     pw.editButton.addClickHandler(new ClickHandler() {
     //  @Override
       public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToGalleryAppView(app1); 
+        Ode.getInstance().switchToGalleryAppView(app1, true); 
       }
     });
   }

@@ -85,14 +85,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
 
@@ -231,14 +231,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
 
