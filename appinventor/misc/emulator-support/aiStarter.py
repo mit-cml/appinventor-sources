@@ -74,6 +74,8 @@ def checkrunning(emulator):
         if emulator:
             m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
         else:
+            if re.search('^(.*emulator-[1-9]+)\t+device.*', line): # We are an emulator
+                continue                                           # Skip it
             m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
         if m:
             break
