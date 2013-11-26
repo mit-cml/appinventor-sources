@@ -150,6 +150,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    */
   public void generateAppPageComments(List<GalleryComment> comments, FlowPanel container) {
+    if (comments == null) {
+      Label noCommnets = new Label("This app has no comments just yet.");
+      noCommnets.addStyleName("comment-nope");
+      container.add(noCommnets);
+    }
 
     for ( GalleryComment c : comments) {
       FlowPanel commentItem = new FlowPanel();

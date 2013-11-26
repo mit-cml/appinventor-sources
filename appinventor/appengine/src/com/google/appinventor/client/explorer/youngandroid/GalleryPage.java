@@ -165,7 +165,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel titleBox = new FlowPanel();
       titleBox.addStyleName("app-titlebox");
       titleBox.addStyleName("gallery-editbox");
-      Label titlePrompt = new Label("Project title");
+      Label titlePrompt = new Label("Please enter your project title here!");
       titlePrompt.addStyleName("app-titleprompt");
       titlePrompt.addStyleName("gallery-editprompt");
       titleBox.add(titlePrompt);
@@ -220,10 +220,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel descBox = new FlowPanel();
       descBox.addStyleName("app-descbox");
       descBox.addStyleName("gallery-editbox");
-      Label descPrompt = new Label("Please describe your project here!");
-      descPrompt.addStyleName("app-descprompt");
-      descPrompt.addStyleName("gallery-editprompt");
-      descBox.add(descPrompt);
+      Label descPrompt1 = new Label("Please describe your project here!");
+      descPrompt1.addStyleName("app-descprompt");
+      descPrompt1.addStyleName("gallery-editprompt");
+      descBox.add(descPrompt1);
+      Label descPrompt2 = new Label("Tell us what your project is about in a few sentences.");
+      descPrompt2.addStyleName("app-descprompt");
+      descPrompt2.addStyleName("gallery-editprompt");
+      descBox.add(descPrompt2);
       appInfo.add(descBox);
     } else {
       appInfo.add(appDescription);
@@ -238,7 +242,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Editable tag panel here
     } else {
       FlowPanel appTags = new FlowPanel();
-      appDetails.add(appTags);
+      appInfo.add(appTags);
       for (String tag : app.getTags()) {
         final Label t = new Label(tag);
         appTags.add(t);
@@ -324,10 +328,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   
   @Override
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-      if (comments != null) 
-        galleryGF.generateAppPageComments(comments, appCommentsList);
-      else 
-          Window.alert("comment list was null");    	
+      galleryGF.generateAppPageComments(comments, appCommentsList);
+      if (comments == null) 
+        Window.alert("comment list was null");    	
   }
   
   @Override
