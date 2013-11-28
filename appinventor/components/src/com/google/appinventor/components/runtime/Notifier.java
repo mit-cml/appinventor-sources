@@ -55,7 +55,19 @@ import android.widget.Toast;
 
 @DesignerComponent(version = YaVersion.NOTIFIER_COMPONENT_VERSION,
     category = ComponentCategory.USERINTERFACE,
-    description = "Component that creates alert messages, popup dialogs, and log entries.",
+    description = "The Notifier component displays alert messages and creates Android log entries " +
+                "through the following methods: " +
+        "<ul>" +
+        "<li> ShowMessageDialog: user must dismiss the message by pressing a button.</li>" +
+        "<li> ShowChooseDialog: displays two buttons to let the user choose one of two responses, " +
+        "for example, yes or no, after which the AfterChoosing event is raised.</li>" +
+        "<li> ShowTextDialog: lets the user enter text in response to the message, after " +
+        "which the AfterTextInput event is raised. " +
+        "<li> ShowAlert: displays an alert that goes away by itself after a short time.</li>" +
+        "<li> LogError: logs an error message to the Android log. </li>" +
+        "<li> LogInfo: logs an info message to the Android log.</li>" +
+        "<li> LogWarning: logs a warning message to the Android log.</li>" +
+        "</ul>",
     nonVisible = true,
     iconName = "images/notifier.png")
 @SimpleObject
@@ -87,7 +99,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Display an alert dialog with a single button
+   * Display an alert dialog with a single button that dismisses the alert.
    *
    * @param message the text in the alert box
    * @param title the title for the alert box
@@ -258,9 +270,9 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   }
 
   /**
-   * Sets the length of time that the Toast is shown -- either "short" or "long".
+   * Specifies the length of time that the alert is shown -- either "short" or "long".
    *
-   * @param length  Length of time that a toast is visible
+   * @param length  Length of time that an alert is visible
    */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
@@ -271,34 +283,38 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     notifierLength = length;
   }
 
+  @SimpleProperty(
+      description="specifies the length of time that the alert is shown -- either \"short\" or \"long\".",
+      category = PropertyCategory.APPEARANCE)
+  public int NotifierLength() {
+    return notifierLength;
+  }
+
   /**
-   * Specifies the Toast's background color as an alpha-red-green-blue
-   * integer.
+   * Specifies the letr's background color.
    *
    * @param argb  background RGB color with alpha
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
-  @SimpleProperty
+  @SimpleProperty(description="Specifies the alert's background color.")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
   }
 
   /**
-   * Returns the Toast's text color as an alpha-red-green-blue
-   * integer.
+   * Returns the alert's text color.
    *
    * @return  text RGB color with alpha
    */
-  @SimpleProperty(
+  @SimpleProperty(description = "Specifies the alert's text color.",
       category = PropertyCategory.APPEARANCE)
   public int TextColor() {
     return textColor;
   }
 
   /**
-   * Specifies the Toast's text color as an alpha-red-green-blue
-   * integer.
+   * Specifies the alert's text color.
    *
    * @param argb  text RGB color with alpha
    */
@@ -338,7 +354,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @param message the error message
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Writes an error message to the Android log.")
   public void LogError(String message) {
     Log.e(LOG_TAG, message);
   }
@@ -348,7 +364,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @param message the warning message
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Writes a warning message to the Android log.")
   public void LogWarning(String message) {
     Log.w(LOG_TAG, message);
   }
@@ -358,7 +374,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @param message the information message
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Writes an information message to the Android log.")
   public void LogInfo(String message) {
     Log.i(LOG_TAG, message);
   }
