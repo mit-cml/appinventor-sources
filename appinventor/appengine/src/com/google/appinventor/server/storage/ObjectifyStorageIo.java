@@ -48,12 +48,23 @@ import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
 import java.io.ByteArrayOutputStream;
+
+// GCS imports
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
@@ -86,6 +97,13 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final int MAX_JOB_RETRIES = 10;
 
   private final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService();
+
+  private final GcsService gcsService =
+    GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+
+  private final String GCS_BUCKET_NAME = Flag.createFlag("gcs.bucket", "").get();
+  private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
+
 
   // Use this class to define the work of a job that can be retried. The
   // "datastore" argument to run() is the Objectify object for this job
@@ -306,22 +324,20 @@ public class ObjectifyStorageIo implements  StorageIo {
           // written in this job, reading the assigned id from pd should work.
 
           Key<ProjectData> projectKey = projectKey(projectId.t);
-          try {
-            for (TextFile file : project.getSourceFiles()) {
-              try {
-                addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE,
-                    file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
-              } catch (BlobWriteException e) {
-                rememberBlobsToDelete();
-                // Note that this makes the BlobWriteException fatal. The job will
-                // not be retried if we get this exception.
-                throw CrashReport.createAndLogError(LOG, null,
-                    collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
-              }
+          for (TextFile file : project.getSourceFiles()) {
+            try {
+              addedFiles.add(createRawFile(projectKey, FileData.RoleEnum.SOURCE,
+                  file.getFileName(), file.getContent().getBytes(DEFAULT_ENCODING)));
+            } catch (BlobWriteException e) {
+              rememberBlobsToDelete();
+              // Note that this makes the BlobWriteException fatal. The job will
+              // not be retried if we get this exception.
+              throw CrashReport.createAndLogError(LOG, null,
+                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+            } catch (IOException e) { // GCS throws this
+              throw CrashReport.createAndLogError(LOG, null,
+                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
             }
-          } catch (UnsupportedEncodingException e) {  // shouldn't happen!
-            rememberBlobsToDelete();
-            throw CrashReport.createAndLogError(LOG, null, project.getProjectName(), e);
           }
           for (RawFile file : project.getRawSourceFiles()) {
             try {
@@ -333,6 +349,9 @@ public class ObjectifyStorageIo implements  StorageIo {
               // not be retried if we get this exception.
               throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
+            } catch (IOException e) {
+              throw CrashReport.createAndLogError(LOG, null,
+                collectProjectErrorInfo(userId, projectId.t, file.getFileName()), e);
             }
           }
           datastore.put(addedFiles);  // batch put
@@ -393,12 +412,21 @@ public class ObjectifyStorageIo implements  StorageIo {
    *  the database.
    */
   private FileData createRawFile(Key<ProjectData> projectKey, FileData.RoleEnum role,
-      String fileName, byte[] content) throws BlobWriteException, ObjectifyException {
+    String fileName, byte[] content) throws BlobWriteException, ObjectifyException, IOException {
     FileData file = new FileData();
     file.fileName = fileName;
     file.projectKey = projectKey;
     file.role = role;
-    if (useBlobstoreForFile(fileName)) {
+    if (useGCSforFile(fileName, content.length)) {
+      file.isGCS = true;
+      file.gcsName = makeGCSfileName(fileName, projectKey.getId());
+      if (content.length > 0) { // If there is actual content
+        GcsOutputChannel outputChannel =
+          gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, file.gcsName), GcsFileOptions.getDefaultInstance());
+        outputChannel.write(ByteBuffer.wrap(content));
+        outputChannel.close();
+      }
+    } else if (useBlobstoreForFile(fileName, content.length)) {
       file.isBlob = true;
       file.blobstorePath = uploadToBlobstore(content, makeBlobName(projectKey.getId(), fileName));
     } else {
@@ -411,6 +439,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   public void deleteProject(final String userId, final long projectId) {
     // blobs associated with the project
     final List<String> blobPaths = new ArrayList<String>();
+    final List<String> gcsPaths = new ArrayList<String>();
     try {
       // first job deletes the UserProjectData in the user's entity group
       runJobWithRetries(new JobRetryHelper() {
@@ -430,7 +459,9 @@ public class ObjectifyStorageIo implements  StorageIo {
           Key<ProjectData> projectKey = projectKey(projectId);
           Query<FileData> fdq = datastore.query(FileData.class).ancestor(projectKey);
           for (FileData fd: fdq) {
-            if (fd.isBlob) {
+            if (fd.isGCS) {
+              gcsPaths.add(fd.gcsName);
+            } else if (fd.isBlob) {
               blobPaths.add(fd.blobstorePath);
             }
           }
@@ -442,6 +473,14 @@ public class ObjectifyStorageIo implements  StorageIo {
       // have to delete the blobs outside of the user and project jobs
       for (String blobPath: blobPaths) {
         deleteBlobstoreFile(blobPath);
+      }
+      // Now delete the gcs files
+      for (String gcsName: gcsPaths) {
+        try {
+          gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, gcsName));
+        } catch (IOException e) {
+          LOG.log(Level.WARNING, "Unable to delete " + gcsName + " from GCS while deleting project", e);
+        }
       }
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,
@@ -1021,7 +1060,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   public long uploadRawFile(final long projectId, final String fileName, final String userId,
       final byte[] content) {
     final Result<Long> modTime = new Result<Long>();
-    final boolean useBlobstore = useBlobstoreForFile(fileName);
+    final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
+    final boolean useGCS = useGCSforFile(fileName, content.length);
     final Result<String> oldBlobstorePath = new Result<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -1035,8 +1075,25 @@ public class ObjectifyStorageIo implements  StorageIo {
             // mark the old blobstore blob for deletion
            oldBlobstorePath.t = fd.blobstorePath;
           }
-          if (useBlobstore) {
-            fd.isBlob = true;
+          if (useGCS) {
+            fd.isGCS = true;
+            fd.gcsName = makeGCSfileName(fileName, projectId);
+            try {
+              if (content.length > 0) { // If there is actual content
+                GcsOutputChannel outputChannel =
+                  gcsService.createOrReplace(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName), GcsFileOptions.getDefaultInstance());
+                outputChannel.write(ByteBuffer.wrap(content));
+                outputChannel.close();
+              }
+            } catch (IOException e) {
+              throw CrashReport.createAndLogError(LOG, null,
+                collectProjectErrorInfo(userId, projectId, fileName), e);
+            }
+            // If the content was previously stored in the datastore, clear it out.
+            fd.content = null;
+            fd.isBlob = false;  // in case we are converting from a blob
+            fd.blobstorePath = null;
+          } else if (useBlobstore) {
             try {
               fd.blobstorePath = uploadToBlobstore(content, makeBlobName(projectId, fileName));
             } catch (BlobWriteException e) {
@@ -1045,9 +1102,28 @@ public class ObjectifyStorageIo implements  StorageIo {
               throw CrashReport.createAndLogError(LOG, null,
                   collectProjectErrorInfo(userId, projectId, fileName), e);
             }
-            // If the content was previously stored in the datastore, clear it out.
+            // If the content was previously stored in the datastore or GCS, clear it out.
+            fd.isBlob = true;
+            fd.isGCS = false;
+            fd.gcsName = null;
             fd.content = null;
           } else {
+            if (fd.isGCS) {     // Was a GCS file, must have gotten smaller
+              try {             // and is now stored in the data store
+                gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, fd.gcsName));
+              } catch (IOException e) {
+                throw CrashReport.createAndLogError(LOG, null,
+                  collectProjectErrorInfo(userId, projectId, fileName), e);
+              }
+              fd.isGCS = false;
+              fd.gcsName = null;
+            }
+            // Note, Don't have to do anything if the file was in the
+            // Blobstore and shrank because the code above (3 lines
+            // into the function) already handles removing the old
+            // contents from the Blobstore.
+            fd.isBlob = false;
+            fd.blobstorePath = null;
             fd.content = content;
           }
           datastore.put(fd);
@@ -1115,11 +1191,39 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @VisibleForTesting
-  boolean useBlobstoreForFile(String fileName) {
-    return fileName.contains("assets/")
-           || fileName.endsWith(".apk")
-           || (fileName.contains("src/") && fileName.endsWith(".blk"))
-           || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
+  boolean useBlobstoreForFile(String fileName, int length) {
+    if (useGcs)
+      return false;               // Disable for now
+    boolean shouldUse =  fileName.contains("assets/")
+      || fileName.endsWith(".apk");
+    if (shouldUse)
+      return true;              // Use GCS for package output and assets
+    boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
+      || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
+    if (mayUse && length > 50000) // Only use Blobstore for larger blocks files
+      return true;
+    return false;
+  }
+
+  // Experimental -- Use the Google Cloud Store for a file
+  @VisibleForTesting
+  boolean useGCSforFile(String fileName, int length) {
+    if (!useGcs)                // Using legacy blob store solution
+      return false;
+    boolean shouldUse =  fileName.contains("assets/")
+      || fileName.endsWith(".apk");
+    if (shouldUse)
+      return true;              // Use GCS for package output and assets
+    boolean mayUse = (fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
+      || (fileName.contains("src/") && fileName.endsWith(".bky")); // Blockly files
+    if (mayUse && length > 50000) // Only use GCS for larger blocks files
+      return true;
+    return false;
+  }
+
+  // Make a GCS file name
+  String makeGCSfileName(String fileName, long projectId) {
+    return (projectId + "/" + fileName);
   }
 
   @Override
@@ -1131,6 +1235,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     final Result<Long> modTime = new Result<Long>();
     final Result<String> oldBlobstorePath = new Result<String>();
+    final Result<String> oldgcsName = new Result<String>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1139,6 +1244,9 @@ public class ObjectifyStorageIo implements  StorageIo {
           FileData fileData = datastore.find(fileKey);
           if (fileData != null) {
             oldBlobstorePath.t = fileData.blobstorePath;
+            if (fileData.isGCS) {
+              oldgcsName.t = fileData.gcsName;
+            }
           }
           datastore.delete(fileKey);
           modTime.t = updateProjectModDate(datastore, projectId);
@@ -1150,6 +1258,13 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     if (oldBlobstorePath.t != null) {
       deleteBlobstoreFile(oldBlobstorePath.t);
+    }
+    if (oldgcsName.t != null) {
+      try {
+        gcsService.delete(new GcsFilename(GCS_BUCKET_NAME, oldgcsName.t));
+      } catch (IOException e) {
+        LOG.log(Level.WARNING, "Unable to delete " + oldgcsName + " from GCS.", e);
+      }
     }
     return (modTime.t == null) ? 0 : modTime.t;
   }
@@ -1189,10 +1304,26 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectProjectErrorInfo(userId, projectId, fileName), e);
     }
-    // read the blob outside of the job
+    // read the blob/GCS File outside of the job
     FileData fileData = fd.t;
     if (fileData != null) {
-      if (fileData.isBlob) {
+      if (fileData.isGCS) {     // It's in the Cloud Store
+        try {
+          GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
+          int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+          ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+          GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+          try {
+            readChannel.read(resultBuffer);
+          } finally {
+            readChannel.close();
+          }
+          result.t = resultBuffer.array();
+        } catch (IOException e) {
+          throw CrashReport.createAndLogError(LOG, null,
+              collectProjectErrorInfo(userId, projectId, fileName), e);
+        }
+      } else if (fileData.isBlob) {
         try {
           result.t = getBlobstoreBytes(fileData.blobstorePath);
         } catch (BlobReadException e) {
@@ -1297,6 +1428,22 @@ public class ObjectifyStorageIo implements  StorageIo {
           } catch (BlobReadException e) {
             throw CrashReport.createAndLogError(LOG, null,
                 collectProjectErrorInfo(userId, projectId, fileName), e);
+          }
+        } else if (fd.isGCS) {
+          try {
+            GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
+            int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
+            ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
+            GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
+            try {
+              readChannel.read(resultBuffer);
+            } finally {
+              readChannel.close();
+            }
+            data = resultBuffer.array();
+          } catch (IOException e) {
+            throw CrashReport.createAndLogError(LOG, null,
+              collectProjectErrorInfo(userId, projectId, fileName), e);
           }
         } else {
           data = fd.content;
