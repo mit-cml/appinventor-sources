@@ -132,6 +132,13 @@
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.3.jar" />
     <copy toFile="${classes.files.dir}/twitter4jmedia.jar" file="${lib.dir}/twitter/twitter4j-media-support-3.0.3.jar" />
     <copy toFile="${classes.files.dir}/fusiontables.jar" file="${lib.dir}/fusiontables/fusiontables.jar" />
+
+    <copy toFile="${classes.files.dir}/gdata-client-1.0.jar" file="${lib.dir}/spreadsheets/gdata-client-1.0.jar" />
+    <copy toFile="${classes.files.dir}/gdata-client-meta-1.0.jar" file="${lib.dir}/spreadsheets/gdata-client-meta-1.0.jar" />
+    <copy toFile="${classes.files.dir}/gdata-core-1.0.jar" file="${lib.dir}/spreadsheets/gdata-core-1.0.jar" />
+    <copy toFile="${classes.files.dir}/gdata-spreadsheet-3.0.jar" file="${lib.dir}/spreadsheets/gdata-spreadsheet-3.0.jar" />
+    <copy toFile="${classes.files.dir}/gdata-spreadsheet-meta-3.0.jar" file="${lib.dir}/spreadsheets/gdata-spreadsheet-meta-3.0.jar" />
+
     <copy toFile="${classes.files.dir}/google-api-client-beta.jar" file="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-http-client-beta.jar" file="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
     <copy toFile="${classes.files.dir}/google-api-client-android2-beta.jar" file="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
