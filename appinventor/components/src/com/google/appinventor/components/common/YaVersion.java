@@ -654,6 +654,10 @@ public class YaVersion {
 
   // Companion Versions
   public static final String PREFERRED_COMPANION = "2.08ai2";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.08ai2", "2.07nb9zx1", "2.07nb9" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.08ai2", "2.07nb9zx1", "2.07nb9", "2.08ai2zx1" };
+
+  // Splash Screen Values
+  public static final int SPLASH_SURVEY = 1;
+
 
 }

@@ -20,6 +20,10 @@ public class SettingsConstants {
 
   public static final String GENERAL_SETTINGS_CURRENT_PROJECT_ID = "CurrentProjectId";
 
+  public static final String SPLASH_SETTINGS = "SplashSettings";
+
+  public static final String SPLASH_SETTINGS_SHOWSURVEY = "ShowSurvey";
+  public static final String SPLASH_SETTINGS_DECLINED = "DeclinedSurvey";
   /**
    *  YoungAndroid settings.
    */
