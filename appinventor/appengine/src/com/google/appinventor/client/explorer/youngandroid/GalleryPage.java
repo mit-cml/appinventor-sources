@@ -35,6 +35,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
@@ -86,6 +87,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appsByTags;
   private final FlowPanel appDetails;
   private final FlowPanel appHeader;
+  private final FlowPanel appInfo;
   private final FlowPanel appAction;
   private final FlowPanel appMeta;
   private final FlowPanel appDates;
@@ -98,7 +100,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   /**
    * Creates a new GalleryPage
    */
-  public GalleryPage(final GalleryApp app) {
+  public GalleryPage(final GalleryApp app, Boolean editable) {
 
     this.app = app;
     // Initialize UI
@@ -109,6 +111,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appSingle = new FlowPanel();
     appDetails = new FlowPanel();
     appHeader = new FlowPanel();
+    appInfo = new FlowPanel();
     appAction = new FlowPanel();
     appMeta = new FlowPanel();
     appDates = new FlowPanel();
@@ -121,13 +124,29 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     tagSelected = "";
 
     // App header - image
-    appDetails.add(appHeader);
     appHeader.addStyleName("app-header");
-    Image image = new Image();
-    image.setUrl(app.getImageURL());
-    image.addStyleName("app-image");
-    appHeader.add(image);
-    
+    if (editable) {
+      FlowPanel imageUploadBox = new FlowPanel();
+      imageUploadBox.addStyleName("app-image-uploadbox");
+      imageUploadBox.addStyleName("gallery-editbox");
+      Label imageUploadPrompt = new Label("Upload your project image!");
+      imageUploadPrompt.addStyleName("app-image-uploadprompt");
+      imageUploadPrompt.addStyleName("gallery-editprompt");
+      imageUploadBox.add(imageUploadPrompt);
+      
+   // Create a FileUpload widget.
+      FileUpload upload = new FileUpload();
+      upload.setName("uploadFormElement");
+      imageUploadBox.add(upload);
+      
+      appHeader.add(imageUploadBox);
+    } else {
+      Image image = new Image();
+      image.setUrl(app.getImageURL());
+      image.addStyleName("app-image");
+      appHeader.add(image);      
+    }
+
     // App header - action button
     appHeader.add(appAction);
     Button actionButton = new Button("Try this app");
@@ -142,16 +161,36 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appAction.add(actionButton);       
     
     // App details - header title
-    Label title = new Label(app.getTitle());
-    appDetails.add(title);
-    title.addStyleName("app-title");
+    if (editable) {
+      // GUI for editable title container
+      FlowPanel titleBox = new FlowPanel();
+      titleBox.addStyleName("app-titlebox");
+      titleBox.addStyleName("gallery-editbox");
+      Label titlePrompt = new Label("Please enter your project title here!");
+      titlePrompt.addStyleName("app-titleprompt");
+      titlePrompt.addStyleName("gallery-editprompt");
+      titleBox.add(titlePrompt);
+      appInfo.add(titleBox);
+      // Event handler for editing
+      titlePrompt.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          
+        }
+      });
+      
+      
+    } else {
+      Label title = new Label(app.getTitle());
+      appInfo.add(title);
+      title.addStyleName("app-title");      
+    }
     
     Label devName = new Label("By " + app.getDeveloperName());
-    appDetails.add(devName);
+    appInfo.add(devName);
     devName.addStyleName("app-subtitle");
     
     // App details - meta
-    appDetails.add(appMeta);
+    appInfo.add(appMeta);
     appMeta.addStyleName("app-meta");
     
     // Images for meta data
@@ -175,7 +214,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(new Label(Integer.toString(app.getComments())));
     
     // Add app dates
-    appDetails.add(appDates);
+    appInfo.add(appDates);
     Date creationDate = new Date(Long.parseLong(app.getCreationDate()));
     Date updateDate = new Date(Long.parseLong(app.getUpdateDate()));
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
@@ -186,26 +225,54 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appDates.addStyleName("app-dates");
 
     // App details - description
-    appDetails.add(appDescription);
-    Label description = new Label(app.getDescription());
-    appDescription.add(description);
-    appDescription.addStyleName("app-description");
+    if (editable) {
+      FlowPanel descBox = new FlowPanel();
+      descBox.addStyleName("app-descbox");
+      descBox.addStyleName("gallery-editbox");
+      Label descPrompt1 = new Label("Please describe your project here!");
+      descPrompt1.addStyleName("app-descprompt");
+      descPrompt1.addStyleName("gallery-editprompt");
+      descBox.add(descPrompt1);
+      Label descPrompt2 = new Label("Tell us what your project is about in a few sentences.");
+      descPrompt2.addStyleName("app-descprompt");
+      descPrompt2.addStyleName("gallery-editprompt");
+      descBox.add(descPrompt2);
+      appInfo.add(descBox);
+    } else {
+      appInfo.add(appDescription);
+      Label description = new Label(app.getDescription());
+      appDescription.add(description);
+      appDescription.addStyleName("app-description");      
+    }
+
     
     // Add app tags
-    FlowPanel appTags = new FlowPanel();
-    appDetails.add(appTags);
-    for (String tag : app.getTags()) {
-      final Label t = new Label(tag);
-      appTags.add(t);
-      t.addClickHandler(new ClickHandler() {
-        // Open up source file if clicked the action button
-        public void onClick(ClickEvent event) {
-          gallery.FindByTag(t.getText(), 0, 5, 0);
-          tagSelected = t.getText();
-        }
-      });
+    if (editable) {
+      // Editable tag panel here
+    } else {
+      FlowPanel appTags = new FlowPanel();
+      appInfo.add(appTags);
+      for (String tag : app.getTags()) {
+        final Label t = new Label(tag);
+        appTags.add(t);
+        t.addClickHandler(new ClickHandler() {
+          // Open up source file if clicked the action button
+          public void onClick(ClickEvent event) {
+            gallery.FindByTag(t.getText(), 0, 5, 0);
+            tagSelected = t.getText();
+          }
+        });
+      }
+      appTags.addStyleName("app-tags");      
     }
-    appTags.addStyleName("app-tags");
+
+    appInfo.addStyleName("app-info-container");
+
+    FlowPanel appClear = new FlowPanel();
+    appClear.addStyleName("clearfix");
+    appClear.add(appHeader);
+    appClear.add(appInfo);
+    appDetails.add(appClear);
     
     HTML divider = new HTML("<div class='section-divider'></div>");
     appDetails.add(divider);
@@ -270,10 +337,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   
   @Override
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-      if (comments != null) 
-        galleryGF.generateAppPageComments(comments, appCommentsList);
-      else 
-          Window.alert("comment list was null");    	
+      galleryGF.generateAppPageComments(comments, appCommentsList);
+      if (comments == null) 
+        Window.alert("comment list was null");    	
   }
   
   @Override

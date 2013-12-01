@@ -12,7 +12,7 @@ public class GalleryApp implements IsSerializable {
    * Default constructor. This constructor is required by GWT.
    */
   @SuppressWarnings("unused")
-  private GalleryApp() {
+  public GalleryApp() {
   }
 	
 	public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
@@ -22,7 +22,7 @@ public class GalleryApp implements IsSerializable {
 			String creationDate, String updateDate, String imageURL, String sourceFileName,
 			int downloads, int views, int likes, int comments, 
 			String imageBlobId, String sourceBlobId, String galleryAppId, 
-			ArrayList<String> tags ) {
+			ArrayList<String> tags) {
 		super();
 		this.title = title;
 		this.developerName = developerName;

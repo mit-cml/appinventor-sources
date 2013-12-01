@@ -191,14 +191,16 @@ public class GalleryClient {
   } 
     
   public List<GalleryApp> generateFakeApps()  {
-//    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13","http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",2,5,"","","");
+    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13",
+        "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
+        "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
+        2,5,3,4,"","","", null);
 //    GalleryApp app2 = new GalleryApp("Basketball Quiz", "Bill Jones", "sports quiz","2/3/13","2/5/13", "http://lh5.ggpht.com/21QTcnF3vENnlyKiYbtxrcU0VlxNlJp1Ht79pZ_GU5z3gWPxdefa79DIqjI2FvDLNz4zieFeE15y00r4DJjHMix6DVQeu-X5o_xG1g=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",7,3,"","","");
 //    //app1.setName(requestApps( "http://app-inventor-gallery.appspot.com/rpc?tag=all:0:3:asc:uid" ));
-//    ArrayList<GalleryApp> list = new ArrayList<GalleryApp>();
-//    list.add(app1);
+    ArrayList<GalleryApp> list = new ArrayList<GalleryApp>();
+    list.add(app1);
 //    list.add(app2);
-//    return list;
-	  return null;
+    return list;
   }
 
   private String getStartCountString(int start, int count) {

@@ -85,14 +85,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
 
@@ -150,6 +150,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    */
   public void generateAppPageComments(List<GalleryComment> comments, FlowPanel container) {
+    if (comments == null) {
+      Label noCommnets = new Label("This app has no comments just yet.");
+      noCommnets.addStyleName("comment-nope");
+      container.add(noCommnets);
+    }
 
     for ( GalleryComment c : comments) {
       FlowPanel commentItem = new FlowPanel();
@@ -231,14 +236,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app); 
+          Ode.getInstance().switchToGalleryAppView(app, false); 
         }
       });
 

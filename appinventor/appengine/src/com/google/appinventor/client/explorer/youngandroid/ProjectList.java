@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -274,12 +275,41 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.editButton);
+      preparePublishApp(project, pw);
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
-
+  
+  /**
+   * Prepares the app publishing process
+   * 
+   */
+  private void preparePublishApp(Project p, ProjectWidgets pw) {
+//    final GalleryApp app  = new GalleryApp(String title, String developerName, String description,
+//        String creationDate, String updateDate, String imageURL, String sourceFileName,
+//        int downloads, int views, int likes, int comments, 
+//        String imageBlobId, String sourceBlobId, String galleryAppId, 
+//        ArrayList<String> tags);
+    String dateCreated = String.valueOf(p.getDateCreated());
+    String dateModified = String.valueOf(p.getDateModified());
+    ArrayList<String> tags = new ArrayList<String>();
+    tags.add("Education");
+    tags.add("testing");
+    final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game","1355091003791","1355091003791",
+        "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
+        "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
+        2,5,3,4,"","","", tags);
+    
+    pw.editButton.addClickHandler(new ClickHandler() {
+    //  @Override
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().switchToGalleryAppView(app1, true); 
+      }
+    });
+  }
+  
   /**
    * Gets the number of projects
    *
