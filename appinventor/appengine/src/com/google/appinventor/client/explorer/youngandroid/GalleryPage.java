@@ -162,6 +162,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     // App details - header title
     if (editable) {
+      // GUI for editable title container
       FlowPanel titleBox = new FlowPanel();
       titleBox.addStyleName("app-titlebox");
       titleBox.addStyleName("gallery-editbox");
@@ -170,6 +171,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       titlePrompt.addStyleName("gallery-editprompt");
       titleBox.add(titlePrompt);
       appInfo.add(titleBox);
+      // Event handler for editing
+      titlePrompt.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          
+        }
+      });
+      
+      
     } else {
       Label title = new Label(app.getTitle());
       appInfo.add(title);

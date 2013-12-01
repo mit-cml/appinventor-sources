@@ -21,6 +21,27 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
+import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
+
 /**
  * The project toolbar houses command buttons in the Young Android Project tab.
  *
@@ -28,7 +49,9 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class ProjectToolbar extends Toolbar {
   private static final String WIDGET_NAME_NEW = "New";
   private static final String WIDGET_NAME_DELETE = "Delete";
-
+  private final static GcsService gcsService =
+      GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+  
   /**
    * Initializes and assembles all commands into buttons in the toolbar.
    */
@@ -41,7 +64,18 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
 
+    addButton(new ToolbarItem("Test", "Test Cloud Storage",
+        new CloudAction()));
+
     updateButtons();
+  }
+
+  private static class CloudAction implements Command {
+    @Override
+    public void execute() {
+      GcsOutputChannel outputChannel =
+          gcsService.createOrReplace(fileName, GcsFileOptions.getDefaultInstance());
+    }
   }
 
   private static class NewAction implements Command {
