@@ -1283,8 +1283,29 @@ textarea::-webkit-input-placeholder {
 }
 
 
-
 /* Gallery-specific styles */
+/* "My Stuff" page GUI */
+.ode-MyTabs {
+  width: 100%;
+}
+.ode-MyTabs .gwt-TabBar {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem,
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
+	
+}
+.ode-MyTabs .gwt-TabPanelBottom { /* GWT wrapper for the selected tab content */
+
+}
+
+
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
   border: none;

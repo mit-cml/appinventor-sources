@@ -329,7 +329,7 @@ public interface OdeMessages extends Messages {
 
   // Used in boxes/ProjectListBox.java
 
-  @DefaultMessage("Projects")
+  @DefaultMessage("My Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
   
