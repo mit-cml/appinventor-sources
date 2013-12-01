@@ -46,11 +46,12 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
     plist = new ProjectList();
     
     FlowPanel slist = new FlowPanel();
+    this.selectTab(0);
     this.add(plist, MESSAGES.projectListBoxCaption());
     this.add(slist, "My Studios");
     
     // Styling options
-    this.addStyleName("gallery-app-tabs");
+    this.addStyleName("ode-MyTabs");
     
 
   }
