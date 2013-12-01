@@ -80,8 +80,8 @@ public class ProjectComparatorsTest extends TestCase {
     }
   }
 
-  public void testCompareByDateAscending() {
-    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_ASCENDING);
+  public void testCompareByDateCreatedAscending() {
+    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING);
     long previousDate = 0;
     for (Project project : projects) {
       long date = project.getDateCreated();
@@ -93,7 +93,31 @@ public class ProjectComparatorsTest extends TestCase {
   }
 
   public void testCompareByDateDescending() {
-    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_DESCENDING);
+    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING);
+    long previousDate = 0;
+    for (Project project : projects) {
+      long date = project.getDateCreated();
+      if (previousDate != 0) {
+        assertTrue(date <= previousDate);
+      }
+      previousDate = date;
+    }
+  }
+
+  public void testCompareByDateModifiedAscending() {
+    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING);
+    long previousDate = 0;
+    for (Project project : projects) {
+      long date = project.getDateCreated();
+      if (previousDate != 0) {
+        assertTrue(date >= previousDate);
+      }
+      previousDate = date;
+    }
+  }
+
+  public void testCompareByDateModifiedDescending() {
+    Collections.sort(projects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING);
     long previousDate = 0;
     for (Project project : projects) {
       long date = project.getDateCreated();

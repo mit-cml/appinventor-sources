@@ -101,6 +101,8 @@ public final class ErrorMessages {
   public static final int ERROR_SCREEN_INVALID_ANIMATION = 905;
   // Canvas errors
   public static final int ERROR_CANVAS_BITMAP_ERROR = 1001;
+  public static final int ERROR_CANVAS_WIDTH_ERROR = 1002;
+  public static final int ERROR_CANVAS_HEIGHT_ERROR = 1003;
   // Web errors
   public static final int ERROR_WEB_UNABLE_TO_GET = 1101;
   public static final int ERROR_WEB_UNSUPPORTED_ENCODING = 1102;
@@ -137,8 +139,10 @@ public final class ErrorMessages {
 
   // Repl Communication Errors
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
+  //AccelerometerSensor Errors
+  public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
 
-  // Please start the next group of error numbers at 1901.
+  // Please start the next group of error numbers at 2001.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -308,6 +312,8 @@ public final class ErrorMessages {
         "Bad value for screen open/close animation: %s");
     // Canvas errors
     errorMessages.put(ERROR_CANVAS_BITMAP_ERROR, "Error getting Canvas contents to save");
+    errorMessages.put(ERROR_CANVAS_WIDTH_ERROR, "Canvas width cannot be set to non-positive number");
+    errorMessages.put(ERROR_CANVAS_HEIGHT_ERROR, "Canvas height cannot be set to non-positive number");
     // Web errors
     errorMessages.put(ERROR_WEB_UNABLE_TO_GET,
         "Unable to get a response with the specified URL: %s");
@@ -366,6 +372,10 @@ public final class ErrorMessages {
       "Text Receiving should be either 1, 2 or 3.");
     errorMessages.put(ERROR_REPL_SECURITY_ERROR,
       "Security Error Receiving Blocks from Browser.");
+    //AccelerometerSensor errors
+    errorMessages.put(ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY,
+       "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. " +
+       "The only legal values are 1, 2, or 3.");
   }
 
   private ErrorMessages() {
@@ -376,3 +386,4 @@ public final class ErrorMessages {
     return String.format(format, messageArgs);
   }
 }
+

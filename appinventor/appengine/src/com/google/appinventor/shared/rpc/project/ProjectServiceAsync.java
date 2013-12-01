@@ -77,7 +77,12 @@ public interface ProjectServiceAsync {
   /**
    * @see ProjectService#loadraw(long, String)
    */
+
   void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+  /**
+   * @see ProjectService#loadraw2(long, String)
+   */
+  void loadraw2(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
    * @see ProjectService#load(List)

@@ -6,10 +6,14 @@
 package com.google.appinventor.components.runtime;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.DesignerProperty;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 
@@ -61,6 +65,15 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
   private static final String LOG_TAG = "Notifier";
   private final Activity activity;
   private final Handler handler;
+
+  //Length of Notifier message display
+  private int notifierLength = Component.TOAST_LENGTH_LONG;
+
+  // Notifier background color
+  private int backgroundColor = Color.DKGRAY;
+
+  // Notifier text color
+  private int textColor = Color.WHITE;
 
   /**
    * Creates a new Notifier component.
@@ -243,6 +256,59 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
       }
     });
   }
+
+  /**
+   * Sets the length of time that the Toast is shown -- either "short" or "long".
+   *
+   * @param length  Length of time that a toast is visible
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH,
+      defaultValue = Component.TOAST_LENGTH_LONG + "")
+  @SimpleProperty(
+      userVisible = false)
+  public void NotifierLength(int length){
+    notifierLength = length;
+  }
+
+  /**
+   * Specifies the Toast's background color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  background RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
+  @SimpleProperty
+  public void BackgroundColor(int argb) {
+    backgroundColor = argb;
+  }
+
+  /**
+   * Returns the Toast's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @return  text RGB color with alpha
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE)
+  public int TextColor() {
+    return textColor;
+  }
+
+  /**
+   * Specifies the Toast's text color as an alpha-red-green-blue
+   * integer.
+   *
+   * @param argb  text RGB color with alpha
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
+      defaultValue = Component.DEFAULT_VALUE_COLOR_WHITE)
+  @SimpleProperty
+  public void TextColor(int argb) {
+    textColor = argb;
+  }
+
   // show a toast using a TextView, which allows us to set the
   // font size.  The default toast is too small.
   private void toastNow (String message) {
@@ -253,11 +319,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     // I (hal) can't figure it out.
     int fontsize = (SdkLevel.getLevel() >= SdkLevel.LEVEL_ICE_CREAM_SANDWICH)
         ? 22 : 15;
-    Toast toast = Toast.makeText(activity, message, Toast.LENGTH_LONG);
+    Toast toast = Toast.makeText(activity, message, notifierLength);
     toast.setGravity(Gravity.CENTER, toast.getXOffset() / 2, toast.getYOffset() / 2);
     TextView textView = new TextView(activity);
-    textView.setBackgroundColor(Color.DKGRAY);
-    textView.setTextColor(Color.WHITE);
+    textView.setBackgroundColor(backgroundColor);
+    textView.setTextColor(textColor);
     textView.setTextSize(fontsize);
     Typeface typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
     textView.setTypeface(typeface);

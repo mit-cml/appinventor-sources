@@ -98,8 +98,8 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
         if (checkpointProjects.isEmpty()) {
           nextSuffix = "1";
         } else {
-          // Sort the checkpoints project by the date they were created, in descending order.
-          Collections.sort(checkpointProjects, ProjectComparators.COMPARE_BY_DATE_DESCENDING);
+          // Sort the checkpoints project by the date they were last modified, in descending order.
+          Collections.sort(checkpointProjects, ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING);
 
           VerticalPanel previousCheckpointsPanel = new VerticalPanel();
           previousCheckpointsPanel.setSpacing(0);
@@ -190,13 +190,14 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
     }
 
     private Widget createPreviousCheckpointsTable(List<Project> checkpointProjects) {
-      Grid table = new Grid(1 + checkpointProjects.size(), 2);
+      Grid table = new Grid(1 + checkpointProjects.size(), 3);
       table.addStyleName("ode-ProjectTable");
 
       // Set the widgets for the header row.
       table.getRowFormatter().setStyleName(0, "ode-ProjectHeaderRow");
       table.setWidget(0, 0, new Label(MESSAGES.projectNameHeader()));
-      table.setWidget(0, 1, new Label(MESSAGES.projectDateHeader()));
+      table.setWidget(0, 1, new Label(MESSAGES.projectDateCreatedHeader()));
+      table.setWidget(0, 2, new Label(MESSAGES.projectDateModifiedHeader()));
 
       // Set the widgets for the rows representing previous checkpoints
       DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
@@ -206,8 +207,11 @@ public final class CopyYoungAndroidProjectCommand extends ChainableCommand {
         Label nameLabel = new Label(checkpointProject.getProjectName());
         table.setWidget(row, 0, nameLabel);
 
-        Date date = new Date(checkpointProject.getDateCreated());
-        table.setWidget(row, 1, new Label(dateTimeFormat.format(date)));
+        Date dateCreated = new Date(checkpointProject.getDateCreated());
+        table.setWidget(row, 1, new Label(dateTimeFormat.format(dateCreated)));
+
+        Date dateModified = new Date(checkpointProject.getDateModified());
+        table.setWidget(row, 2, new Label(dateTimeFormat.format(dateModified)));
         row++;
       }
 

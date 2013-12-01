@@ -10,6 +10,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -17,6 +18,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Grid;
@@ -35,14 +37,15 @@ import java.util.Map;
 /**
  * The project list shows all projects in a table.
  *
- * <p> The project name and date created will be shown in the table.
+ * <p> The project name, date created, and date modified will be shown in the table.
  *
  * @author lizlooney@google.com (Liz Looney)
  */
 public class ProjectList extends Composite implements ProjectManagerEventListener {
   private enum SortField {
     NAME,
-    DATE,
+    DATE_CREATED,
+    DATE_MODIFIED,
   }
   private enum SortOrder {
     ASCENDING,
@@ -57,7 +60,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   // UI elements
   private final Grid table;
   private final Label nameSortIndicator;
-  private final Label dateSortIndicator;
+  private final Label dateCreatedSortIndicator;
+  private final Label dateModifiedSortIndicator;
 
   /**
    * Creates a new ProjectList
@@ -67,16 +71,17 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedProjects = new ArrayList<Project>();
     projectWidgets = new HashMap<Project, ProjectWidgets>();
 
-    sortField = SortField.NAME;
-    sortOrder = SortOrder.ASCENDING;
+    sortField = SortField.DATE_MODIFIED;
+    sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
-    table = new Grid(1, 3); // The table initially contains just the header row.
+    table = new Grid(1, 4); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
     nameSortIndicator = new Label("");
-    dateSortIndicator = new Label("");
+    dateCreatedSortIndicator = new Label("");
+    dateModifiedSortIndicator = new Label("");
     refreshSortIndicators();
     setHeaderRow();
 
@@ -105,28 +110,42 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     nameHeader.add(nameSortIndicator);
     table.setWidget(0, 1, nameHeader);
 
-    HorizontalPanel dateHeader = new HorizontalPanel();
-    Label dateHeaderLabel = new Label(MESSAGES.projectDateHeader());
-    dateHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
-    dateHeader.add(dateHeaderLabel);
-    dateSortIndicator.addStyleName("ode-ProjectHeaderLabel");
-    dateHeader.add(dateSortIndicator);
-    table.setWidget(0, 2, dateHeader);
+    HorizontalPanel dateCreatedHeader = new HorizontalPanel();
+    final Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
+    dateCreatedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    dateCreatedHeader.add(dateCreatedHeaderLabel);
+    dateCreatedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
+    dateCreatedHeader.add(dateCreatedSortIndicator);
+    table.setWidget(0, 2, dateCreatedHeader);
+
+    HorizontalPanel dateModifiedHeader = new HorizontalPanel();
+    final Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
+    dateModifiedHeaderLabel.addStyleName("ode-ProjectHeaderLabel");
+    dateModifiedHeader.add(dateModifiedHeaderLabel);
+    dateModifiedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
+    dateModifiedHeader.add(dateModifiedSortIndicator);
+    table.setWidget(0, 3, dateModifiedHeader);
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
       public void onMouseDown(MouseDownEvent e) {
-        SortField clickedSortField =
-            (e.getSource() == nameHeaderLabel || e.getSource() == nameSortIndicator)
-            ? SortField.NAME
-            : SortField.DATE;
+        SortField clickedSortField;
+        if (e.getSource() == nameHeaderLabel || e.getSource() == nameSortIndicator) {
+          clickedSortField = SortField.NAME;
+        } else if (e.getSource() == dateCreatedHeaderLabel || e.getSource() == dateCreatedSortIndicator) {
+          clickedSortField = SortField.DATE_CREATED;
+        } else {
+          clickedSortField = SortField.DATE_MODIFIED;
+        }
         changeSortOrder(clickedSortField);
       }
     };
     nameHeaderLabel.addMouseDownHandler(mouseDownHandler);
     nameSortIndicator.addMouseDownHandler(mouseDownHandler);
-    dateHeaderLabel.addMouseDownHandler(mouseDownHandler);
-    dateSortIndicator.addMouseDownHandler(mouseDownHandler);
+    dateCreatedHeaderLabel.addMouseDownHandler(mouseDownHandler);
+    dateCreatedSortIndicator.addMouseDownHandler(mouseDownHandler);
+    dateModifiedHeaderLabel.addMouseDownHandler(mouseDownHandler);
+    dateModifiedSortIndicator.addMouseDownHandler(mouseDownHandler);
   }
 
   private void changeSortOrder(SortField clickedSortField) {
@@ -150,10 +169,17 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     switch (sortField) {
       case NAME:
         nameSortIndicator.setText(text);
-        dateSortIndicator.setText("");
+        dateCreatedSortIndicator.setText("");
+        dateModifiedSortIndicator.setText("");
         break;
-      case DATE:
-        dateSortIndicator.setText(text);
+      case DATE_CREATED:
+        dateCreatedSortIndicator.setText(text);
+        dateModifiedSortIndicator.setText("");
+        nameSortIndicator.setText("");
+        break;
+      case DATE_MODIFIED:
+        dateModifiedSortIndicator.setText(text);
+        dateCreatedSortIndicator.setText("");
         nameSortIndicator.setText("");
         break;
     }
@@ -162,7 +188,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private class ProjectWidgets {
     final CheckBox checkBox;
     final Label nameLabel;
-    final Label dateLabel;
+    final Label dateCreatedLabel;
+    final Label dateModifiedLabel;
+    final Button editButton;
 
     private ProjectWidgets(final Project project) {
       checkBox = new CheckBox();
@@ -191,9 +219,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
-      Date date = new Date(project.getDateCreated());
       DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
-      dateLabel = new Label(dateTimeFormat.format(date));
+
+      Date dateCreated = new Date(project.getDateCreated());
+      dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
+
+      Date dateModified = new Date(project.getDateModified());
+      dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
+      
+      editButton = new Button("Publish");
     }
   }
 
@@ -208,10 +242,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
               ? ProjectComparators.COMPARE_BY_NAME_ASCENDING
               : ProjectComparators.COMPARE_BY_NAME_DESCENDING;
           break;
-        case DATE:
+        case DATE_CREATED:
           comparator = (sortOrder == SortOrder.ASCENDING)
-              ? ProjectComparators.COMPARE_BY_DATE_ASCENDING
-              : ProjectComparators.COMPARE_BY_DATE_DESCENDING;
+              ? ProjectComparators.COMPARE_BY_DATE_CREATED_ASCENDING
+              : ProjectComparators.COMPARE_BY_DATE_CREATED_DESCENDING;
+          break;
+        case DATE_MODIFIED:
+          comparator = (sortOrder == SortOrder.ASCENDING)
+              ? ProjectComparators.COMPARE_BY_DATE_MODIFIED_ASCENDING
+              : ProjectComparators.COMPARE_BY_DATE_MODIFIED_DESCENDING;
           break;
       }
       Collections.sort(projects, comparator);
@@ -220,7 +259,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 3);
+    table.resize(1 + projects.size(), 5);
     int row = 1;
     for (Project project : projects) {
       ProjectWidgets pw = projectWidgets.get(project);
@@ -233,13 +272,44 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       }
       table.setWidget(row, 0, pw.checkBox);
       table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row, 2, pw.dateLabel);
+      table.setWidget(row, 2, pw.dateCreatedLabel);
+      table.setWidget(row, 3, pw.dateModifiedLabel);
+      table.setWidget(row, 4, pw.editButton);
+      preparePublishApp(project, pw);
       row++;
     }
 
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
-
+  
+  /**
+   * Prepares the app publishing process
+   * 
+   */
+  private void preparePublishApp(Project p, ProjectWidgets pw) {
+//    final GalleryApp app  = new GalleryApp(String title, String developerName, String description,
+//        String creationDate, String updateDate, String imageURL, String sourceFileName,
+//        int downloads, int views, int likes, int comments, 
+//        String imageBlobId, String sourceBlobId, String galleryAppId, 
+//        ArrayList<String> tags);
+    String dateCreated = String.valueOf(p.getDateCreated());
+    String dateModified = String.valueOf(p.getDateModified());
+    ArrayList<String> tags = new ArrayList<String>();
+    tags.add("Education");
+    tags.add("testing");
+    final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game","1355091003791","1355091003791",
+        "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
+        "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
+        2,5,3,4,"","","", tags);
+    
+    pw.editButton.addClickHandler(new ClickHandler() {
+    //  @Override
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().switchToGalleryAppView(app1, true); 
+      }
+    });
+  }
+  
   /**
    * Gets the number of projects
    *

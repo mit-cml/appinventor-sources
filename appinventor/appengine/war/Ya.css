@@ -472,6 +472,11 @@ select {
   background: white;
 }
 
+.gwt-TextBox {
+  padding: 0px !important;
+  margin: 0px !important;
+}
+
 .gwt-Tree .gwt-TreeItem span * {
   margin: 0 2px;
 }
@@ -1278,8 +1283,29 @@ textarea::-webkit-input-placeholder {
 }
 
 
-
 /* Gallery-specific styles */
+/* "My Stuff" page GUI */
+.ode-MyTabs {
+  width: 100%;
+}
+.ode-MyTabs .gwt-TabBar {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem,
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem {
+	
+}
+.ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
+	
+}
+.ode-MyTabs .gwt-TabPanelBottom { /* GWT wrapper for the selected tab content */
+
+}
+
+
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
   border: none;
@@ -1441,7 +1467,8 @@ textarea::-webkit-input-placeholder {
   height: 12px;
 }
 .gallery-app-details .gwt-HTML {
-  padding: 30px 0;
+  padding: 0 0 30px;
+  clear: both;
 }
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
@@ -1499,6 +1526,24 @@ textarea::-webkit-input-placeholder {
   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
+.gallery-editbox {
+  border: 1px dashed #ccc!important;
+  background-color: #fff!important;
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+}
+.gallery-editprompt {
+  text-align: center;
+  color: #bebebe;
+  font-size: 16px;	
+}
+.app-info-container .gallery-editbox {
+  width: 100%;
+}
+.app-info-container .gallery-editprompt {
+  padding: 10px;
+}
 .gallery-app-single .gallery-app-showcase {
   width: 260px;
   padding: 15px 0;
@@ -1510,14 +1555,24 @@ textarea::-webkit-input-placeholder {
 .gallery-app-single .gallery-app-details {
   width: 600px;
   padding: 30px;
+  height: auto;
+  overflow: hidden;
 }
 .app-header {
   margin: 0px 30px 0 0;
   float: left;
+  overflow: hidden;
 }
 .app-header .app-image {
   width: 130px;
   height: 130px;
+}
+.app-header .app-image-uploadbox {
+  width: 128px;
+  height: 128px;
+}
+.app-header .app-image-uploadprompt {
+  margin: 30px auto;
 }
 .app-header .app-action {
   display: block;
@@ -1536,6 +1591,10 @@ textarea::-webkit-input-placeholder {
   border: none;
   border-color: none;
   margin: 15px 0;
+}
+.app-info-container {
+  width: 430px;
+  float: left;
 }
 .app-title,
 .gallery-app-details .app-comments-header {
@@ -1570,10 +1629,10 @@ textarea::-webkit-input-placeholder {
 }
 .app-dates {
   display: block;
-  margin: 5px 0 0;
+  margin: 10px 0;
 }
 .app-dates .gwt-Label {
-  display: inline-block;
+  line-height: 175%;
   margin: 0 15px 0 0;
   color: #999;
 }

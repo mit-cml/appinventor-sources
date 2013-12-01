@@ -488,7 +488,9 @@ Blockly.Language.controls_choose = {
     this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE }]
+  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE + ' ' +
+      Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN + ' ' +
+      Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN}]
 };
 
 // [lyn, 10/10/13] This used to be in the control drawer as well as the procedure drawer

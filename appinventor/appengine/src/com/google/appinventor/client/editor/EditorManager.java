@@ -39,7 +39,9 @@ public final class EditorManager {
   // Timeout (in ms) after which changed content is auto-saved if the user did
   // not continue typing.
   // TODO(user): Make this configurable.
-  private static final int AUTO_SAVE_IDLE_TIMEOUT = 500;
+  private static final int AUTO_SAVE_IDLE_TIMEOUT = 5000;
+  // Currently set to 5 seconds. Note: the GWT code as a ClosingHandler
+  // that will perform a save when the user closes the window.
 
   // Timeout (in ms) after which changed content is auto-saved even if the user
   // continued typing.
