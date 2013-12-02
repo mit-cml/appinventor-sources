@@ -625,8 +625,8 @@ public class Ode implements EntryPoint {
     appListPanel.setWidth("100%");
     
     appListPanel.add(GalleryListBox.getGalleryListBox());
-    //projectToolbar = new ProjectToolbar();
-    //gVertPanel.add(projectToolbar);
+    projectToolbar = new ProjectToolbar();
+    gVertPanel.add(projectToolbar);
     
     gVertPanel.add(appListPanel);
     galleryTabIndex = deckPanel.getWidgetCount();
