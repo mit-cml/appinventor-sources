@@ -8,7 +8,6 @@ package com.google.appinventor.client.boxes;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
-import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
@@ -25,7 +24,7 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
   // Project list for young android
   private final ProjectList plist;
   
-//  private static ProjectToolbar projectToolbar;
+  private ProjectToolbar projectToolbar;
   
 
   /**
@@ -33,10 +32,15 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
    *
    * @return  project list box
    */
-  public static ProjectListBox getProjectListBox() {
+  public static ProjectListBox getProjectListBox(ProjectToolbar pt) {
+    INSTANCE.setToolbar(pt);
     return INSTANCE;
   }
 
+  
+  private void setToolbar(ProjectToolbar pt) {
+    
+  }
   /**
    * Creates new project list box.
    */
@@ -50,13 +54,13 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
     plist = new ProjectList();
     
 //    projectToolbar = new ProjectToolbar();
-//    FlowPanel pContainer = new FlowPanel();
+    FlowPanel pContainer = new FlowPanel();
 //    pContainer.add(projectToolbar);
-//    pContainer.add(plist);
+    pContainer.add(plist);
     FlowPanel slist = new FlowPanel();
-    this.selectTab(0);
-    this.add(plist, MESSAGES.projectListBoxCaption());
+    this.add(pContainer, MESSAGES.projectListBoxCaption());
     this.add(slist, "My Studios");
+    this.selectTab(0);
     
     // Styling options
     this.addStyleName("ode-MyTabs");
