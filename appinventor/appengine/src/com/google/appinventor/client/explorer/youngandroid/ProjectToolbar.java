@@ -37,10 +37,10 @@ public class ProjectToolbar extends Toolbar {
 
     addButton(new ToolbarItem(WIDGET_NAME_NEW, MESSAGES.newButton(),
         new NewAction()));
-
+/*
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
-
+*/
     updateButtons();
   }
 
@@ -52,7 +52,7 @@ public class ProjectToolbar extends Toolbar {
       // project is created.
     }
   }
-
+/*
   private static class DeleteAction implements Command {
     @Override
     public void execute() {
@@ -125,7 +125,7 @@ public class ProjectToolbar extends Toolbar {
     }
 
   }
-
+*/
   /**
    * Enables and/or disables buttons based on how many projects exist
    * (in the case of "Download All Projects") or are selected (in the case
@@ -135,7 +135,7 @@ public class ProjectToolbar extends Toolbar {
     ProjectList projectList = ProjectListBox.getProjectListBox().getProjectList();
     int numProjects = projectList.getNumProjects();
     int numSelectedProjects = projectList.getNumSelectedProjects();
-    setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
+    //setButtonEnabled(WIDGET_NAME_DELETE, numSelectedProjects > 0);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(),
         numSelectedProjects > 0);
     Ode.getInstance().getTopToolbar().fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(),

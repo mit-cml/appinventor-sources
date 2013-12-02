@@ -293,7 +293,7 @@ public class Ode implements EntryPoint {
     openProject(value);
   }
 
-  private void openProject(String projectIdString) {
+  public void openProject(String projectIdString) {
     OdeLog.log("Ode.openProject called for " + projectIdString);
     if (projectIdString.equals("")) {
       openPreviousProject();

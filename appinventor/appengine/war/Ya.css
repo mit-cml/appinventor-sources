@@ -26,7 +26,8 @@ body {
 
 table td,
 select {
-  font-family: Roboto, Helvetica, Arial, sans-serif;
+  font-family: Helvetica Neue, Arial, sans-serif;
+  /* border: 1px solid; */;
 }
 /* For the TOS Form*/
 .floatingBox {
@@ -99,7 +100,7 @@ select {
 
 .ode-Box-content {
   font-size: 13px;
-  background-color: #f7f9f2;
+  background-color: white;
   /* TODO(opensource): Delete the background-image line below once we're ready */
   background-image: url(images/watermark.png);
   color: #555;
@@ -120,9 +121,11 @@ select {
 .ode-Box-header-caption,
 .ode-Box-header-caption-highlighted {
   font-size: 13px;
-  font-weight: bold;
+  /* font-weight: bold; */
   padding-top: 7px;
-  padding-left: 9px;
+  /* padding-left: inherit; */
+  padding-bottom: 7px;
+  text-align: center;
 }
 
 .ode-Box-header-caption {
@@ -138,6 +141,7 @@ select {
 
 .ode-Box-body-padding {
   padding: 6px;
+  /* border-left-width: 5px; */
 }
 
 .ode-BoxResizeControl {
@@ -172,24 +176,41 @@ select {
  */
 
 .ode-ProjectNameLabel {
-  font-weight: bold;
-  font-size: small;
+  /* font-weight: bold; */
+  font-size: 16px;
   color: #555;
   cursor: pointer;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  /* border-bottom-color: #555; */
+  /* border-spacing: 5px; */
 }
 
 .ode-ProjectTable {
   padding: 0px;
   margin: 0px;
   border: 1px;
+  /* border-bottom: 5px solid #555; */
 }
 
 .ode-ProjectTable td {
-  border-collapse: collapse;
-  font-size: small;
+  /* border-bottom-color: rgb(230, 227, 227); */
+  /* border-bottom-color: rgb(226, 222, 222); */
+  /* border-bottom-color: rgb(224, 220, 220); */
+  /* border-bottom-color: rgb(223, 218, 218); */
+  /* border-bottom-color: rgb(223, 218, 218); */
+  /* border-bottom-color: rgb(223, 217, 217); */
+  /* border-bottom-color: rgb(219, 212, 212); */
+  /* border-collapse: collapse; */
+  /* border: aliceblue; */
+  font-size: 14px;
   color: #555;
   text-align: left;
+  padding-left: 1%;
   margin: 0px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(226, 226, 226);
 }
 
 .ode-ProjectRowHighlighted {
@@ -199,20 +220,30 @@ select {
 }
 
 .ode-ProjectRowUnHighlighted {
-  border-bottom: 1px solid #ddd;
-  background-color: white
+  /* border-bottom: 5px solid #555; */
+  background-color: white;
+  /* border: 50px solid #555; */
+  /* border-bottom-color: #555; */
+  /* border-bottom: 3px; */
 }
 
 .ode-ProjectHeaderRow {
   background: url(images/toolbarBG.png) repeat;
-  border: 1px;
-  border-bottom: 1px solid #bbccff;
+  /* background-color: lightgray; */
+  /* border: 50px; */
+  /* border-bottom: 1px solid #bbccff; */
+  font-size: large;
+  /* border: none; */
+  /* padding-left: 5px; */
+  text-align: center;
 }
 
 .ode-ProjectHeaderLabel {
   color: #112abb;
-  font-size: 11px;
+  font-size: 14px;
   cursor: pointer;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
 .ode-CheckpointProjectTable {
@@ -563,6 +594,45 @@ select {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
+}
+
+.gwt-Red-Button{
+  
+  display: inline-block;
+  *display: inline;
+  padding: 2px 6px;
+  margin-bottom: 0;
+  *margin-left: .3em;
+  font-size: 14px;
+  line-height: 20px;
+  color: white;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(184, 55, 55, 0.75);
+  vertical-align: middle;
+  cursor: pointer;
+  background: transparent;
+  background-color: #B62626;
+  *background-color: #e6e6e6;
+  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#F35B5B), to(#D53030));
+  background-image: -webkit-linear-gradient(top, #F35B5B, #D53030);
+  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
+  background-image: linear-gradient(to bottom, #F35B5B, #D53030);
+  background-repeat: repeat-x;
+  border: 1px solid #cccccc;
+  *border: 0;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-bottom-color: #b3b3b3;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+  *zoom: 1;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .ode-TextButton:hover,

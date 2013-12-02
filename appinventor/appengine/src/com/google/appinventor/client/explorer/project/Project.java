@@ -44,6 +44,7 @@ public final class Project {
     this.projectInfo = projectInfo;
 
     projectChangeListeners = new ArrayList<ProjectChangeListener>();
+    loadProjectNodes();
   }
 
   /*

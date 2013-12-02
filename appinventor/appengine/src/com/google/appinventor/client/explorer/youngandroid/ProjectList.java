@@ -11,10 +11,22 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.boxes.ViewerBox;
+import com.google.appinventor.client.explorer.commands.BuildCommand;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
+import com.google.appinventor.client.explorer.commands.DownloadProjectOutputCommand;
+import com.google.appinventor.client.explorer.commands.GenerateYailCommand;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
+import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
+import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.client.tracking.Tracking;
+import com.google.appinventor.client.utils.Downloader;
+import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.ProjectNode;
+import com.google.appinventor.shared.rpc.project.ProjectRootNode;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -22,6 +34,7 @@ import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -79,7 +92,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     sortOrder = SortOrder.DESCENDING;
 
     // Initialize UI
-    table = new Grid(1, 4); // The table initially contains just the header row.
+    table = new Grid(1, 6); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -112,7 +125,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     nameHeader.add(nameHeaderLabel);
     nameSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     nameHeader.add(nameSortIndicator);
-    table.setWidget(0, 1, nameHeader);
+    table.setWidget(0, 0, nameHeader);
 
     HorizontalPanel dateCreatedHeader = new HorizontalPanel();
     final Label dateCreatedHeaderLabel = new Label(MESSAGES.projectDateCreatedHeader());
@@ -120,7 +133,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateCreatedHeader.add(dateCreatedHeaderLabel);
     dateCreatedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     dateCreatedHeader.add(dateCreatedSortIndicator);
-    table.setWidget(0, 2, dateCreatedHeader);
+    table.setWidget(0, 1, dateCreatedHeader);
 
     HorizontalPanel dateModifiedHeader = new HorizontalPanel();
     final Label dateModifiedHeaderLabel = new Label(MESSAGES.projectDateModifiedHeader());
@@ -128,7 +141,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateModifiedHeader.add(dateModifiedHeaderLabel);
     dateModifiedSortIndicator.addStyleName("ode-ProjectHeaderLabel");
     dateModifiedHeader.add(dateModifiedSortIndicator);
-    table.setWidget(0, 3, dateModifiedHeader);
+    table.setWidget(0, 2, dateModifiedHeader);
 
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
@@ -190,7 +203,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   }
 
   private class ProjectWidgets {
-    final CheckBox checkBox;
+    //final CheckBox checkBox;
     final Label nameLabel;
     final Label dateCreatedLabel;
     final Label dateModifiedLabel;
@@ -199,8 +212,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Button delButton;
 
     private ProjectWidgets(final Project project) {
-      checkBox = new CheckBox();
-      checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      //checkBox = new CheckBox();
+      /*checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
         @Override
         public void onValueChange(ValueChangeEvent<Boolean> event) {
           boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
@@ -215,6 +228,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           Ode.getInstance().getProjectToolbar().updateButtons();
         }
       });
+      */
 
       nameLabel = new Label(project.getProjectName());
       nameLabel.addClickHandler(new ClickHandler() {
@@ -225,7 +239,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");
 
-      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/DD/YY h:mma");
+      DateTimeFormat dateTimeFormat = DateTimeFormat.getFormat("MM/dd/yy h:mma");
 
       Date dateCreated = new Date(project.getDateCreated());
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
@@ -233,25 +247,26 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
 
-      srcButton = new Button("src");
+      srcButton = new Button(".aia");
       srcButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent arg0) {
           // TODO Auto-generated method stub
-          
+          exportProject(project);
         }
       });
       
-      apkButton = new Button("apk");
+      apkButton = new Button(".apk");
       apkButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent arg0) {
           // TODO Auto-generated method stub
-          
+          packageProject(project);
         }
       });
       
       delButton = new Button("del");
+      delButton.setStyleName("gwt-Red-Button");
       delButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent arg0) {
@@ -280,7 +295,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     // Make sure that we delete projects even if they are not open.
     doDeleteProject(projectId);
   }
+  private void exportProject(Project project) {
+    Tracking.trackEvent(Tracking.PROJECT_EVENT,
+        Tracking.PROJECT_ACTION_DOWNLOAD_PROJECT_SOURCE_YA, project.getProjectName());
 
+    Downloader.getInstance().download(ServerLayout.DOWNLOAD_SERVLET_BASE +
+        ServerLayout.DOWNLOAD_PROJECT_SOURCE + "/" + project.getProjectId());
+  }
   private void doDeleteProject(final long projectId) {
     Ode.getInstance().getProjectService().deleteProject(projectId,
         new OdeAsyncCallback<Void>(
@@ -297,6 +318,51 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       }
     });
   }
+//WORK IN PROGRESSSSSSSS
+  private class loadCommand extends ChainableCommand{
+    public loadCommand(ChainableCommand nextCommand){
+      super(nextCommand);
+    }
+    @Override
+    protected boolean willCallExecuteNextCommand() {
+      return true;
+    }
+    @Override
+    protected void execute(ProjectNode node) {
+      //Ode.getInstance().openYoungAndroidProjectInDesigner(node.getProjectId());
+      Ode.getInstance().openProject(String.valueOf((node.getProjectId())));
+      executeNextCommand(node);
+    }
+
+  }
+  public void packageProject(Project project) {
+    ProjectRootNode projectRootNode = project.getRootNode();
+    if (projectRootNode != null) {
+      String target = YoungAndroidProjectNode.YOUNG_ANDROID_TARGET_ANDROID;
+      ChainableCommand cmd = new loadCommand(new SaveAllEditorsCommand(
+          new GenerateYailCommand(
+              new BuildCommand(target,
+                  new ShowProgressBarCommand(target,
+                      new WaitForBuildResultCommand(target,
+                          new DownloadProjectOutputCommand(target)), "DownloadAction")))));
+//      updateBuildButton(true);
+      cmd.startExecuteChain(Tracking.PROJECT_ACTION_BUILD_DOWNLOAD_YA, projectRootNode,
+          new Command() {
+            @Override
+            public void execute() {
+              Ode.getInstance().switchToProjectsView();
+//            updateBuildButton(false);
+            }
+          });
+    }
+    else{
+      //try to print that it's null
+      Ode.getInstance().createWelcomeDialog(true);
+    }
+
+    
+  }
+ //WORK IN PROGRESSSSS
 
   private void refreshTable(boolean needToSort) {
     if (needToSort) {
@@ -326,21 +392,24 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshSortIndicators();
 
     // Refill the table.
-    table.resize(1 + projects.size(), 4);
+    table.resize(1 + projects.size(), 6);
     int row = 1;
     for (Project project : projects) {
       ProjectWidgets pw = projectWidgets.get(project);
       if (selectedProjects.contains(project)) {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowHighlighted");
-        pw.checkBox.setValue(true);
+        //pw.checkBox.setValue(true);
       } else {
         table.getRowFormatter().setStyleName(row, "ode-ProjectRowUnHighlighted");
-        pw.checkBox.setValue(false);
+        //pw.checkBox.setValue(false);
       }
-      table.setWidget(row, 0, pw.checkBox);
-      table.setWidget(row, 1, pw.nameLabel);
-      table.setWidget(row, 2, pw.dateCreatedLabel);
-      table.setWidget(row, 3, pw.dateModifiedLabel);
+      //table.setWidget(row, 0, pw.checkBox);
+      table.setWidget(row, 0, pw.nameLabel);
+      table.setWidget(row, 1, pw.dateCreatedLabel);
+      table.setWidget(row, 2, pw.dateModifiedLabel);
+      table.setWidget(row, 3, pw.srcButton);
+      table.setWidget(row, 4, pw.apkButton);
+      table.setWidget(row, 5, pw.delButton);
       row++;
     }
 
