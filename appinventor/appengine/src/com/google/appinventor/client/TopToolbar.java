@@ -591,7 +591,6 @@ public class TopToolbar extends Composite {
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
               "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
               "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
-              " and " + KNOWN_ISSUES_LINK_AND_TEXT  + "." +
               "<BR/><BR/>" + termsOfServiceText
       );
 
@@ -614,28 +613,28 @@ public class TopToolbar extends Composite {
   private static class LibraryAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "");
     }
   }
 
   private static class GetStartedAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/get-started", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/get-started", "_ai2", "");
     }
   }
 
   private static class TutorialsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/tutorials", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/ai2/tutorials", "_ai2", "");
     }
   }
 
   private static class TroubleShootingAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/support/troubleshooting", "_ai2",
+      Window.open("http://appinventor.mit.edu/explore/ai2/support/troubleshooting", "_ai2",
           "");
     }
   }
@@ -643,7 +642,7 @@ public class TopToolbar extends Composite {
   private static class ForumsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/forums", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/forums", "_ai2", "");
     }
   }
 
