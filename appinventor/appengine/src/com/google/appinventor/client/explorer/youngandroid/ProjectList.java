@@ -143,6 +143,13 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     dateModifiedHeader.add(dateModifiedSortIndicator);
     table.setWidget(0, 2, dateModifiedHeader);
 
+    table.getCellFormatter().setWidth(0, 0, "44%");
+    table.getCellFormatter().setWidth(0, 1, "18%");
+    table.getCellFormatter().setWidth(0, 2, "18%");
+    table.getCellFormatter().setWidth(0, 3, "6%");
+    table.getCellFormatter().setWidth(0, 4, "6%");
+    table.getCellFormatter().setWidth(0, 5, "6%");
+
     MouseDownHandler mouseDownHandler = new MouseDownHandler() {
       @Override
       public void onMouseDown(MouseDownEvent e) {
@@ -248,6 +255,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
 
       srcButton = new Button(".aia");
+      srcButton.setWidth("45px");
       srcButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent arg0) {
@@ -257,6 +265,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       
       apkButton = new Button(".apk");
+      apkButton.setWidth("45px");
       apkButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent arg0) {
@@ -266,6 +275,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       });
       
       delButton = new Button("del");
+      delButton.setWidth("45px");
       delButton.setStyleName("gwt-Red-Button");
       delButton.addClickHandler(new ClickHandler() {
         @Override
@@ -413,7 +423,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       row++;
     }
 
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    //Ode.getInstance().getProjectToolbar().updateButtons();
   }
 
   /**
@@ -460,6 +470,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     refreshTable(false);
 
     selectedProjects.remove(project);
-    Ode.getInstance().getProjectToolbar().updateButtons();
+    //Ode.getInstance().getProjectToolbar().updateButtons();
   }
 }

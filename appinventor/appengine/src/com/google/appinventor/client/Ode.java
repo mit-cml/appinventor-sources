@@ -24,7 +24,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
-import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
+//import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.Settings;
@@ -161,7 +161,7 @@ public class Ode implements EntryPoint {
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
   private VerticalPanel structureAndAssets;
-  private ProjectToolbar projectToolbar;
+  //private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
@@ -533,8 +533,8 @@ public class Ode implements EntryPoint {
     HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
     projectListPanel.add(ProjectListBox.getProjectListBox());
-    projectToolbar = new ProjectToolbar();
-    pVertPanel.add(projectToolbar);
+    //projectToolbar = new ProjectToolbar();
+    //pVertPanel.add(projectToolbar);
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(pVertPanel);
@@ -721,10 +721,11 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link ProjectToolbar}
    */
+  /*
   public ProjectToolbar getProjectToolbar() {
     return projectToolbar;
   }
-
+*/
   /**
    * Returns the structureAndAssets panel.
    *

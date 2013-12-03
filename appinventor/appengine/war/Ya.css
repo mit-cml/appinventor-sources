@@ -116,6 +116,7 @@ select {
   height: 31px;
   border: 1px solid;
   border-color: #d2d2d2 #d2d2d2 #b0b2a7 #d2d2d2;
+  vertical-align: middle;
 }
 
 .ode-Box-header-caption,
@@ -130,6 +131,12 @@ select {
 
 .ode-Box-header-caption {
   color: #555;
+}
+
+.ode-Box-header-caption-large{
+  font-size: 22px;
+  text-align: center;
+  padding-top: 3px;
 }
 
 .ode-Box-header-caption-highlighted {
@@ -244,6 +251,7 @@ select {
   cursor: pointer;
   text-transform: uppercase;
   font-weight: bold;
+  white-space: nowrap;
 }
 
 .ode-CheckpointProjectTable {
