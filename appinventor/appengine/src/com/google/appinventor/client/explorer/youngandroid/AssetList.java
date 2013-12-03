@@ -99,8 +99,11 @@ public class AssetList extends Composite implements ProjectChangeListener {
       for (ProjectNode node : assetsFolder.getChildren()) {
         // Add the name to the tree. We need to enclose it in a span
         // because the CSS style for selection specifies a span.
+        String nodeName = node.getName();
+        if (nodeName.length() > 20)
+          nodeName = nodeName.substring(0, 17) + "...";
         TreeItem treeItem = new TreeItem(
-            new HTML("<span>" + node.getName() + "</span>"));
+            new HTML("<span>" + nodeName + "</span>"));
         // keep a pointer from the tree item back to the actual node
         treeItem.setUserObject(node);
         assetList.addItem(treeItem);

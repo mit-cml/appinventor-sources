@@ -955,6 +955,19 @@ select.ode-PropertyEditor[disabled] {
   border-bottom: 4px solid #8fc202;
 }
 
+.ode-DialogBox .gwt-CheckBox {
+  font-size: 12px;
+}
+
+.ode-DialogBox .gwt-CheckBox label {
+  padding-left: 4px;
+}
+
+.ode-DialogBox .gwt-CheckBox input[type="checkbox"] {
+  margin: 0;
+  padding-left: 4px;
+}
+
 .ode-DialogBox .dialogTop {
   background-color: #8fc202;
 }

@@ -617,7 +617,7 @@ Blockly.LANG_LISTS_IS_IN_TOOLTIP = 'Returns true if the the thing is an item in 
   + 'false if not.';
 
 Blockly.LANG_LISTS_POSITION_IN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#indexinlist';
-Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'position in list';
+Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'index in list';
 Blockly.LANG_LISTS_POSITION_IN_INPUT_THING = 'thing';
 Blockly.LANG_LISTS_POSITION_IN_INPUT_LIST = 'list';
 Blockly.LANG_LISTS_POSITION_IN_TOOLTIP = 'Find the position of the thing in the list. If it\'s not in '
@@ -720,7 +720,7 @@ Blockly.LANG_LISTS_INSERT_INPUT_ITEM = 'item';
 Blockly.LANG_LISTS_INSERT_TOOLTIP = 'Insert an item into a list at the specified position.';
 
 Blockly.LANG_LISTS_IS_EMPTY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#islistempty';
-Blockly.LANG_LISTS_TITLE_IS_EMPTY = 'is empty';
+Blockly.LANG_LISTS_TITLE_IS_EMPTY = 'is list empty?';
 Blockly.LANG_LISTS_INPUT_LIST = 'list';
 Blockly.LANG_LISTS_IS_EMPTY_TOOLTIP = 'Returns true if the list is empty.';
 

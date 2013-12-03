@@ -516,10 +516,46 @@ Blockly.showContextMenu_ = function(xy) {
   };
   options.push(arrangeOptionV);
 
+  /**
+   * Function that returns a name to be used to sort blocks.
+   * The general comparator is the block.category attribute.
+   * In the case of 'Components' the comparator is the instanceName of the component if it exists
+   * (it does not exist for generic components).
+   * In the case of Procedures the comparator is the NAME(for definitions) or PROCNAME (for calls)
+   * @param {!Blockly.Block} the block that will be compared in the sortByCategory function
+   * @returns {string} text to be used in the comparison
+   */
+  function comparisonName(block){
+    if (block.category === 'Component' && block.instanceName)
+      return block.instanceName;
+    if (block.category === 'Procedures')
+      return (block.getTitleValue('NAME') || block.getTitleValue('PROCNAME'));
+    return block.category;
+  }
+
+  /**
+   * Function used to sort blocks by Category.
+   * @param {!Blockly.Block} first block to be compared
+   * @param {!Blockly.Block} b second block to be compared
+   * @returns {number} returns 0 if the blocks are equal, and -1 or 1 if they are not
+   */
+  function sortByCategory(a,b) {
+    var comparatorA = comparisonName(a).toLowerCase();
+    var comparatorB = comparisonName(b).toLowerCase();
+
+    if (comparatorA < comparatorB) return -1;
+    else if (comparatorA > comparatorB) return +1;
+    else return 0;
+  }
+
   // Arranges block in layout (Horizontal or Vertical).
   function arrangeBlocks(layout) {
     var SPACER = 25;
     var topblocks = Blockly.mainWorkspace.getTopBlocks(false);
+    // If the blocks are arranged by Category, sort the array
+    if (Blockly.workspace_arranged_type === Blockly.BLKS_CATEGORY){
+      topblocks.sort(sortByCategory);
+    }
     var metrics = Blockly.mainWorkspace.getMetrics();
     var viewLeft = metrics.viewLeft + 5;
     var viewTop = metrics.viewTop + 5;
@@ -577,12 +613,6 @@ Blockly.showContextMenu_ = function(xy) {
   sortOptionCat.text = Blockly.MSG_SORT_C;
   sortOptionCat.callback = function() {
     Blockly.workspace_arranged_type = Blockly.BLKS_CATEGORY;
-    var blocks = Blockly.mainWorkspace.getAllBlocks();
-    blocks.sort(function compare(a,b) {
-      if (a.category <  b.category) return -1;
-      else if (a.category > b.category) return +1;
-      else return 0;
-    });
     rearrangeWorkspace();
   };
   options.push(sortOptionCat);

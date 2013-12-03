@@ -19,6 +19,12 @@ elif platform == 'Darwin':               # MacOS
 else:                                   # Need to add Windows
     sys.exit(1)
 
+@route('/ping/')
+def ping():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    return 'running'
+
 @route('/start/')
 def start():
     subprocess.call(PLATDIR + "commands-for-Appinventor/run-emulator ", shell=True, close_fds=True)
@@ -74,6 +80,8 @@ def checkrunning(emulator):
         if emulator:
             m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
         else:
+            if re.search('^(.*emulator-[1-9]+)\t+device.*', line): # We are an emulator
+                continue                                           # Skip it
             m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
         if m:
             break
@@ -85,6 +93,8 @@ def killadb():
     """Time to nuke adb!"""
     subprocess.call(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
     sys.stdout.write("Killed adb\n")
+    subprocess.call(PLATDIR + "commands-for-Appinventor/kill-emulator", shell=True, close_fds=True)
+    sys.stdout.write("Killed emulator\n")
 
 def shutdown():
     killadb()

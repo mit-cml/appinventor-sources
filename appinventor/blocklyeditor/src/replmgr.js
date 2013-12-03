@@ -789,8 +789,9 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
 
 Blockly.ReplMgr.hardreset = function() {
     var xhr = goog.net.XmlHttp();
-    xhr.open("GET", "http://localhost:8004/reset/", false);
-    xhr.send();                 // We don't care about the return...
+    xhr.open("GET", "http://localhost:8004/reset/", true);
+    xhr.onreadystatechange = function() {}; // Ignore errors
+    xhr.send();
 };
 
 //---------------------------------------------------------------------
