@@ -496,7 +496,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     } else {
                         if (first && !usb) { // Need to actually start the thing!
                             var xhr = goog.net.XmlHttp();
-                            xhr.open("GET", "http://localhost:8004/start/", false); // We don't look at the response
+                            xhr.open("GET", "http://localhost:8004/start/", true); // We don't look at the response
                             xhr.send();
                             first = false;
                         } else if (first) { // USB
@@ -526,9 +526,9 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                 }
             };
             if (usb) {
-                xhr.open("GET", "http://localhost:8004/ucheck/", false);
+                xhr.open("GET", "http://localhost:8004/ucheck/", true);
             } else {
-                xhr.open("GET", "http://localhost:8004/echeck/", false);
+                xhr.open("GET", "http://localhost:8004/echeck/", true);
             }
             xhr.send();
             break;
@@ -548,7 +548,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                 pc = 2;
                 counter = 10;
                 xhr = goog.net.XmlHttp();
-                xhr.open("GET", "http://localhost:8004/replstart/" + device, false); // Don't look at response
+                xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
             }
             break;
