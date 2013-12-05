@@ -8,6 +8,8 @@ import re
 #from cStringIO import StringIO
 #import memcache
 
+VERSION = "2.0"
+
 app = Bottle()
 default_app.push(app)
 
@@ -23,7 +25,19 @@ else:                                   # Need to add Windows
 def ping():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
-    return 'running'
+    response.headers['Content-Type'] = 'application/json'
+    return '{ "status" : "OK", "version" : "%s" }' % VERSION
+
+@route('/utest/')
+def utest():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    response.headers['Content-Type'] = 'application/json'
+    device = checkrunning(False)
+    if device:
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s" }' % (device, VERSION)
+    else:
+        return '{ "status" : "NO" }'
 
 @route('/start/')
 def start():
@@ -39,9 +53,9 @@ def echeck():
     response.headers['Content-Type'] = 'application/json'
     device = checkrunning(True)
     if device:
-        return '{ "status" : "OK", "device" : "%s"}' % device
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s"}' % (device, VERSION)
     else:
-        return '{ "status" : "NO" }'
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/ucheck/')
 def ucheck():
@@ -50,9 +64,9 @@ def ucheck():
     response.headers['Content-Type'] = 'application/json'
     device = checkrunning(False)
     if device:
-        return '{ "status" : "OK", "device" : "%s"}' % device
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s"}' % (device, VERSION)
     else:
-        return '{ "status" : "NO" }'
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/reset/')
 def reset():
