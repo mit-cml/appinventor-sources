@@ -268,7 +268,11 @@ Blockly.ReplMgr.putYail = (function() {
                         if (work.failure) {
                             work.failure("Network Connection Error");
                         }
-                        var dialog = new Blockly.ReplMgr.Dialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and re-connecting", "OK", 0, function() { dialog.hide(); });
+                        var dialog = new Blockly.ReplMgr.Dialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting", "OK", 0,
+                            function() {
+                                dialog.hide();
+                                context.hardreset(context.formName);
+                            });
                         engine.resetcompanion();
                     }
                 }
@@ -303,7 +307,9 @@ Blockly.ReplMgr.putYail = (function() {
                     return;
                 }
                 if (this.readyState == 4) { // Old Companion, doesn't do CORS so we fail to talk to it
-                    var dialog = new Blockly.ReplMgr.Dialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and re-connecting", "OK", 0, function() { dialog.hide(); });
+                    var dialog = new Blockly.ReplMgr.Dialog("Network Error", "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting", "OK", 0, function() {
+                        dialog.hide();
+                    });
                     engine.resetcompanion();
                     return;
                 }
@@ -342,6 +348,9 @@ Blockly.ReplMgr.putYail = (function() {
             rs.state = Blockly.ReplMgr.rsState.IDLE;
             rs.connection = null;
             context.resetYail();
+//   hardreset is now done in the handler for the network error dialog OK
+//   button.
+//          context.hardreset(context.formName); // kill adb and emulator
             rs.didversioncheck = false;
             window.parent.BlocklyPanel_indicateDisconnect();
         },
@@ -629,7 +638,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
         }
         this.resetYail();
         window.parent.ReplState.state = this.rsState.IDLE;
-        this.hardreset();       // Tell aiStarter to kill off adb
+        this.hardreset(this.formName);       // Tell aiStarter to kill off adb
     }
 };
 
@@ -787,7 +796,9 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     return true;
 };
 
-Blockly.ReplMgr.hardreset = function() {
+Blockly.ReplMgr.hardreset = function(formName) {
+    window.parent.AssetManager_reset(formName); // Reset the notion of what assets
+                                                // are loaded.
     var xhr = goog.net.XmlHttp();
     xhr.open("GET", "http://localhost:8004/reset/", true);
     xhr.onreadystatechange = function() {}; // Ignore errors
