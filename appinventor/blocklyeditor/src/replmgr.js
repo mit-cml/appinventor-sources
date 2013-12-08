@@ -494,9 +494,9 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                         console.log("ReplMgr: set device = " + device);
                         pc = 1;                    // Next State
                         if (usb) {
-                            counter = 5;               // Wait five seconds for usb
+                            counter = 6;               // Wait five seconds for usb
                         } else {
-                            counter = 10;              // Wiat ten seconds for the emulator
+                            counter = 11;              // Wait ten seconds for the emulator
                         }
                         if (udialog) {             // Get rid of dialog he/she plugged in the cable!
                             udialog.hide();
@@ -542,12 +542,12 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             xhr.send();
             break;
         case 1:
+            counter -= 1;
             if (usb) {
                 progdialog.setContent("USB Connected, waiting " + counter + " seconds to ensure all is running.");
             } else {
                 progdialog.setContent("Emulator started, waiting " + counter + " seconds to ensure all is running.");
             }
-            counter -= 1;
             if (counter <= 0) {
                 if (usb) {
                     progdialog.setContent("Starting the Companion App on the connected phone.");
@@ -555,15 +555,15 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     progdialog.setContent("Starting the Companion App in the emulator.");
                 }
                 pc = 2;
-                counter = 10;
+                counter = 21;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
             }
             break;
         case 2:
-            progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
             counter -= 1;
+            progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
             if (counter <= 0) {
                 progdialog.hide();
                 rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
