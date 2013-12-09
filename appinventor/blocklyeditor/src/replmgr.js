@@ -496,7 +496,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                         if (usb) {
                             counter = 6;               // Wait five seconds for usb
                         } else {
-                            counter = 11;              // Wait ten seconds for the emulator
+                            counter = 21;              // Wait twenty seconds for the emulator
                         }
                         if (udialog) {             // Get rid of dialog he/she plugged in the cable!
                             udialog.hide();
@@ -555,7 +555,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     progdialog.setContent("Starting the Companion App in the emulator.");
                 }
                 pc = 2;
-                counter = 21;
+                counter = 6;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
@@ -563,14 +563,36 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             break;
         case 2:
             counter -= 1;
-            progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
-            if (counter <= 0) {
-                progdialog.hide();
-                rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
+            if (counter > 0) {
+                progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
+            } else {
+                progdialog.setContent("Verifying that the Companion Started....");
+                xhr = goog.net.XmlHttp();
+                xhr.open("GET", rs.versionurl, true);
+                xhr.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) {
+                            pc = 4; // We got a response!
+                            return;
+                        } else {
+                            // We didn't work, add some time and go back to state 2
+                            counter = 5; // Wait 5 more seconds
+                            pc = 2;
+                        }
+                    }
+                };
+                xhr.send();
                 pc = 3;
-                clearInterval(interval);
-                window.parent.BlocklyPanel_blocklyWorkspaceChanged(blockly.formName);
             }
+            break;
+        case 3:
+            break;              // We don't do anything in this state
+                                // we are waiting for the version check (noop) to finish
+        case 4:
+            progdialog.hide();
+            rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
+            clearInterval(interval);
+            window.parent.BlocklyPanel_blocklyWorkspaceChanged(blockly.formName);
         }
     }, 1000);                   // We poll once per second
 };
