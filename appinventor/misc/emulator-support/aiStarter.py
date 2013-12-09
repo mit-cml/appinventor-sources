@@ -8,7 +8,7 @@ import re
 #from cStringIO import StringIO
 #import memcache
 
-VERSION = "2.0"
+VERSION = "2.1"
 
 app = Bottle()
 default_app.push(app)
@@ -79,10 +79,10 @@ def reset():
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
-    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s forward tcp:8001 tcp:8001") % device, shell=True, close_fds=True)
+    subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s forward tcp:8001 tcp:8001") % device, shell=True, close_fds=True)
     if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
-        subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell input keyevent 82") % device, shell=True, close_fds=True)
-    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True, close_fds=True)
+        subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s shell input keyevent 82") % device, shell=True, close_fds=True)
+    subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -105,9 +105,9 @@ def checkrunning(emulator):
 
 def killadb():
     """Time to nuke adb!"""
-    subprocess.call(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
+    subprocess.check_output(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
     sys.stdout.write("Killed adb\n")
-    subprocess.call(PLATDIR + "commands-for-Appinventor/kill-emulator", shell=True, close_fds=True)
+    subprocess.check_output(PLATDIR + "commands-for-Appinventor/kill-emulator", shell=True, close_fds=True)
     sys.stdout.write("Killed emulator\n")
 
 def shutdown():

@@ -12,7 +12,7 @@ import re
 app = Bottle()
 default_app.push(app)
 
-VERSION = "2.0"
+VERSION = "2.1"
 
 platforms = platform.uname()[0]
 print "Platform = %s" % platforms
@@ -43,7 +43,7 @@ def utest():
 
 @route('/start/')
 def start():
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
+    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -81,12 +81,11 @@ def reset():
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
-    subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s forward tcp:8001 tcp:8001") %
+    subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s forward tcp:8001 tcp:8001") %
                     device, shell=True)
     if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
-        subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell input keyevent 82")
-                        % device, shell=True)
-    subprocess.call((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True)
+        subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell input keyevent 82") % device, shell=True)
+    subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -109,9 +108,9 @@ def checkrunning(emulator):
 
 def killadb():
     """Time to nuke adb!"""
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
+    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
     sys.stdout.write("Killed adb\n")
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
+    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
     sys.stdout.write("Killed emulator\n")
 
 def shutdown():
