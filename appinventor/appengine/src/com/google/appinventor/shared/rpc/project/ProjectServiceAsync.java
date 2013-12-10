@@ -34,6 +34,11 @@ public interface ProjectServiceAsync {
    */
   void deleteProject(long projectId, AsyncCallback<Void> callback);
 
+   /**
+   * @see ProjectService#setGalleryid
+   */
+  void setGalleryId(long projectId, long galleryId, AsyncCallback<java.lang.Void> callback);
+
   /**
    * @see ProjectService#getProjects()
    */

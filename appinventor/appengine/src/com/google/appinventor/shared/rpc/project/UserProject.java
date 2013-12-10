@@ -40,6 +40,8 @@ public class UserProject implements IsSerializable {
    */
   private long modificationDate;
 
+  private long galleryId;
+
   private static final String DELIM = "#DELIM#";
 
   /**
@@ -55,13 +57,16 @@ public class UserProject implements IsSerializable {
    * @param projectId the project id
    * @param projectName the project name
    * @param projectType the project type
+   * @param creationDate the creation date
+   * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = creationDate;
+    this.galleryId = galleryId;
   }
 
   /**
@@ -72,12 +77,13 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate) {
+      long modificationDate, long galleryId) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
+    this.galleryId = galleryId;
   }
 
   /**
@@ -114,10 +120,17 @@ public class UserProject implements IsSerializable {
   public long getDateModified() {
     return modificationDate;
   }
-
+  public long getGalleryId() {
+    return galleryId;
+  }
   public void setDateModified(long modificationDate) {
     if (modificationDate != 0) {
       this.modificationDate = modificationDate;
+    }
+  }
+  public void setGalleryId(long id) {
+    if (id != 0) {
+      this.galleryId = galleryId;
     }
   }
 

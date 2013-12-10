@@ -80,6 +80,8 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   private static final long MOTD_ID = 1;
 
+  public static final long NOTPUBLISHED = -1;
+
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
@@ -292,6 +294,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.name = project.getProjectName();
           pd.settings = projectSettings;
           pd.type = project.getProjectType();
+          pd.galleryId = NOTPUBLISHED;
           datastore.put(pd); // put the project in the db so that it gets assigned an id
 
           assert pd.id != null;
@@ -448,6 +451,24 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public void setProjectGalleryId(final String userId, final long projectId,final long galleryId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.galleryId = galleryId;
+            datastore.put(projectData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
   public List<Long> getProjects(final String userId) {
     final List<Long> projects = new ArrayList<Long>();
     try {
@@ -579,6 +600,28 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return modDate.t;
   }
+  
+  @Override
+  public long getGalleryId(final String userId, final long projectId) {
+    final Result<Long> galleryId = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            galleryId.t = pd.galleryId;
+          } else {
+            galleryId.t = Long.valueOf(0);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    return galleryId.t;
+  }
 
   @Override
   public String getProjectHistory(final String userId, final long projectId) {
@@ -627,6 +670,28 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return dateCreated.t;
+  }
+
+  @Override
+  public long getProjectGalleryId(final long projectId) {
+    final Result<Long> galleryId = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            galleryId.t = pd.galleryId;
+          } else {
+            galleryId.t = Long.valueOf(0);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "gallery error", e);
+    }
+    return galleryId.t;
   }
 
   @Override

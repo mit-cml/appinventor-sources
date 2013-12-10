@@ -74,6 +74,8 @@ public class StoredData {
 
     // The specially formatted project history
     String history;
+
+    long galleryId;    
   }
 
   // Project properties specific to the user

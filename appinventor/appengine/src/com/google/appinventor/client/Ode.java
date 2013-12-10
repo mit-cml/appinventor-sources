@@ -47,6 +47,10 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+
+import com.google.appinventor.shared.rpc.project.GalleryService;
+import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
+
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
@@ -178,6 +182,9 @@ public class Ode implements EntryPoint {
 
   // Web service for project related information
   private final ProjectServiceAsync projectService = GWT.create(ProjectService.class);
+
+  // Web service for gallery related information
+  private final GalleryServiceAsync galleryService = GWT.create(GalleryService.class);
 
   // Web service for user related information
   private final UserInfoServiceAsync userInfoService = GWT.create(UserInfoService.class);
@@ -518,6 +525,7 @@ public class Ode implements EntryPoint {
     // Register services with RPC status popup
     rpcStatusPopup.register((ExtendedServiceProxy<?>) helpService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) projectService);
+    rpcStatusPopup.register((ExtendedServiceProxy<?>) galleryService);
     rpcStatusPopup.register((ExtendedServiceProxy<?>) userInfoService);
 
     Window.setTitle(MESSAGES.titleYoungAndroid());
@@ -851,6 +859,16 @@ public class Ode implements EntryPoint {
   public ProjectServiceAsync getProjectService() {
     return projectService;
   }
+
+  /**
+   * Get an instance of the gallery information web service.
+   *
+   * @return gallery web service instance
+   */
+  public GalleryServiceAsync getGalleryService() {
+    return galleryService;
+  }
+
 
   /**
    * Get an instance of the user information web service.
