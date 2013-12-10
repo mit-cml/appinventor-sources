@@ -39,7 +39,7 @@ def utest():
     if device:
         return '{ "status" : "OK", "device" : "%s", "version" : "%s" }' % (device, VERSION)
     else:
-        return '{ "status" : "NO" }'
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/start/')
 def start():
@@ -76,7 +76,7 @@ def reset():
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     response.headers['Content-Type'] = 'application/json'
     killadb()
-    return '{ "status" : "OK" }'
+    return '{ "status" : "OK", "version" : "%s" }' % VERSION
 
 @route('/replstart/:device')
 def replstart(device=None):
