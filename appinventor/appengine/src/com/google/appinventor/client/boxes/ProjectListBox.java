@@ -32,8 +32,8 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
    *
    * @return  project list box
    */
-  public static ProjectListBox getProjectListBox(ProjectToolbar pt) {
-    INSTANCE.setToolbar(pt);
+  public static ProjectListBox getProjectListBox() {
+    //INSTANCE.setToolbar(pt);
     return INSTANCE;
   }
 
@@ -57,9 +57,10 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
     FlowPanel pContainer = new FlowPanel();
 //    pContainer.add(projectToolbar);
     pContainer.add(plist);
-    FlowPanel slist = new FlowPanel();
+    FlowPanel sContainer = new FlowPanel();
+    
     this.add(pContainer, MESSAGES.projectListBoxCaption());
-    this.add(slist, "My Studios");
+    this.add(sContainer, "My Studios");
     this.selectTab(0);
     
     // Styling options
