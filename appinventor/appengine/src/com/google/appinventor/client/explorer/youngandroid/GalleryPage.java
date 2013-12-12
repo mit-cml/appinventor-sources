@@ -152,7 +152,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // App header - action button
     appHeader.add(appAction);
+
+    // SHOULD ONLY SHOW THIS IF WE ARE NOT IN EDIT MODE
     Button actionButton = new Button("Try this app");
+    
     actionButton.addClickHandler(new ClickHandler() {
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
@@ -253,7 +256,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(new Label(Integer.toString(app.getLikes())));
     appMeta.add(numComments);
     appMeta.add(new Label(Integer.toString(app.getComments())));
-    
+
+    // WHEN PUBLISHING/EDITING THESE NEED DEFAULT VALUES
     // Add app dates
     appInfo.add(appDates);
     Date creationDate = new Date(app.getCreationDate());
