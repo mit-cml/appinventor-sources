@@ -43,7 +43,7 @@ def utest():
 
 @route('/start/')
 def start():
-    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
+    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -76,45 +76,62 @@ def reset():
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     response.headers['Content-Type'] = 'application/json'
     killadb()
+    killemulator()
     return '{ "status" : "OK", "version" : "%s" }' % VERSION
 
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
-    subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s forward tcp:8001 tcp:8001") %
-                    device, shell=True)
-    if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
-        subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell input keyevent 82") % device, shell=True)
-    subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True)
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
-    return ''
+    try:
+        subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s forward tcp:8001 tcp:8001") % device, shell=True)
+        if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
+            subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell input keyevent 82") % device, shell=True)
+        subprocess.check_output((PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True)
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+        return ''
+    except subprocess.CalledProcessError as e:
+        print "Problem starting companion app : status %i\n" % e.returncode
+        return ''
+
 
 def checkrunning(emulator):
-    result = subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb devices", shell=True)
-    lines = result.split('\n')
-    for line in lines[1:]:
-        if emulator:
-            m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
-        else:
-            if re.search('^(.*emulator-[1-9]+)\t+device.*', line): # We are an emulator
-                continue                                           # Skip it
-            m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
+    try:
+        result = subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb devices", shell=True)
+        lines = result.split('\n')
+        for line in lines[1:]:
+            if emulator:
+                m = re.search('^(.*emulator-[1-9]+)\t+device.*', line)
+            else:
+                if re.search('^(.*emulator-[1-9]+)\t+device.*', line): # We are an emulator
+                    continue                                           # Skip it
+                m = re.search('^([A-z0-9.:]+.*?)\t+device.*', line)
+            if m:
+                break
         if m:
-            break
-    if m:
-        return m.group(1)
-    return False
+            return m.group(1)
+        return False
+    except subprocess.CalledProcessError as e:
+        print "Problem checking for devices : status %i\n" % e.returncode
+        return False
 
 def killadb():
     """Time to nuke adb!"""
-    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
-    sys.stdout.write("Killed adb\n")
-    subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
-    sys.stdout.write("Killed emulator\n")
+    try:
+        subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
+        sys.stdout.write("Killed adb\n")
+    except subprocess.CalledProcessError as e:
+        print "Problem stopping adb : status %i\n" % e.returncode
+        return ''
+
+def killemulator():
+    """Time to nuke emulator!"""
+    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
+    print("Killed emulator\n")
 
 def shutdown():
     killadb()
+    killemulator()
 
 if __name__ == '__main__':
     import atexit
