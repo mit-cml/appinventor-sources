@@ -133,6 +133,20 @@ public final class Project {
     projectInfo.setDateModified(date);
   }
 
+  public boolean isPublished() {
+    if (projectInfo.getGalleryId()==-1) {
+      return false;
+    }
+    return true;
+  }
+  public long getGalleryId() {
+    return projectInfo.getGalleryId();
+  }
+  
+  public void setGalleryId(long id) {
+    projectInfo.setGalleryId(id);
+  }
+
   /**
    * Returns the project specific settings, or null if the settings haven't
    * been loaded.

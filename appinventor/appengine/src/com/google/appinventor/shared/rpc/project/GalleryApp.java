@@ -19,7 +19,7 @@ public class GalleryApp implements IsSerializable {
 //    private static final Logger LOG = Logger.getLogger(GalleryApp.class.getName());
 	
 	public GalleryApp(String title, String developerName, String description,
-			String creationDate, String updateDate, String imageURL, String sourceFileName,
+			long creationDate, long updateDate, String imageURL, String sourceFileName,
 			int downloads, int views, int likes, int comments, 
 			String imageBlobId, String sourceBlobId, String galleryAppId, 
 			ArrayList<String> tags) {
@@ -52,8 +52,8 @@ public class GalleryApp implements IsSerializable {
 	private String title;
 	private String developerName;
 	private String description;
-	private String creationDate;
-	private String updateDate;
+	private long creationDate;
+	private long updateDate;
 	// creation date and update date?
 	
 	// an image, icon, zip file 
@@ -67,7 +67,15 @@ public class GalleryApp implements IsSerializable {
   private String sourceBlobId;
   private String galleryAppId;
   private ArrayList<String> tags;
-    
+  private long projectId;  // when we edit a newly published app, we need the ai proj id.
+
+  public long getProjectId() {
+    return projectId;
+  }
+  public void setProjectId(long projectId) {
+    this.projectId=projectId;
+  }
+
 	public String getTitle() {
 		return title;
 	}
@@ -86,16 +94,16 @@ public class GalleryApp implements IsSerializable {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public String getCreationDate() {
-		return creationDate;
+	public long getCreationDate() {
+		return this.creationDate; 
 	}
-	public void setCreationDate(String creationDate) {
+	public void setCreationDate(long creationDate) {
 		this.creationDate = creationDate;
 	}
-	public String getUpdateDate() {
-		return updateDate;
+	public long getUpdateDate() {
+		return this.updateDate;
 	}
-	public void setUpdateDate(String updateDate) {
+	public void setUpdateDate(long updateDate) {
 		this.updateDate = updateDate;
 	}
 	public String getImageURL() {

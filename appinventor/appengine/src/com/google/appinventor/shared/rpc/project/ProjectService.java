@@ -46,6 +46,13 @@ public interface ProjectService extends RemoteService {
   void deleteProject(long projectId);
 
   /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  void setGalleryId(long projectId, long galleryId);
+
+  /**
    * Returns an array with project IDs.
    *
    * @return  IDs of projects found by the back-end

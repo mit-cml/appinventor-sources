@@ -45,6 +45,8 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.user.client.ui.Image;
 
+import com.google.appinventor.client.explorer.project.Project;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -80,6 +82,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   GalleryClient gallery = new GalleryClient(this);
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
+  Project project;
 
   private final FlowPanel galleryGUI;
   private final FlowPanel appSingle;
@@ -100,7 +103,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   /**
    * Creates a new GalleryPage
    */
-  public GalleryPage(final GalleryApp app, Boolean editable) {
+  public GalleryPage(final GalleryApp app,Boolean editable) {
 
     this.app = app;
     // Initialize UI
@@ -158,7 +161,45 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       }
     });
     actionButton.addStyleName("app-action");
-    appAction.add(actionButton);       
+    appAction.add(actionButton);     
+
+
+    Button publishButton = new Button("Publish");
+    publishButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          int STATUS_CODE_OK = 200;  
+          // Callback for when the server returns us the apps
+          final Ode ode = Ode.getInstance();
+          final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
+             // failure message
+             MESSAGES.galleryError()) {
+             @Override
+             public void onSuccess(Long galleryId) {
+               // the server has returned us something
+    	       OdeLog.log("we had a successful publish");
+               String s = String.valueOf(galleryId);
+
+               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+               // failure message
+               MESSAGES.galleryError()) {
+               @Override
+               public void onSuccess(Void result) {
+				
+               }
+               };
+               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
+             }  
+          
+          };
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+        }
+      });
+
+    
+    publishButton.addStyleName("app-action");
+    appAction.add(publishButton);       
     
     // App details - header title
     if (editable) {
@@ -215,8 +256,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     // Add app dates
     appInfo.add(appDates);
-    Date creationDate = new Date(Long.parseLong(app.getCreationDate()));
-    Date updateDate = new Date(Long.parseLong(app.getUpdateDate()));
+    Date creationDate = new Date(app.getCreationDate());
+    Date updateDate = new Date(app.getUpdateDate());
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
     Label creation = new Label("Created on " + dateFormat.format(creationDate));
     Label update = new Label("Updated on " + dateFormat.format(updateDate));

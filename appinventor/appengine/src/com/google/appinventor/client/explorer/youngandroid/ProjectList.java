@@ -34,6 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.output.OdeLog;
+
 /**
  * The project list shows all projects in a table.
  *
@@ -227,7 +230,45 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
       
-      editButton = new Button("Publish");
+      editButton = new Button("---");
+      if (project.isPublished())
+        editButton.setText("Update...");
+      else
+        editButton.setText("Publish...");
+    /*
+      editButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          int STATUS_CODE_OK = 200;  
+          // Callback for when the server returns us the apps
+          final Ode ode = Ode.getInstance();
+          final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
+             // failure message
+             MESSAGES.galleryError()) {
+             @Override
+             public void onSuccess(Long galleryId) {
+               // the server has returned us something
+    	       OdeLog.log("we had a successful publish");
+               String s = String.valueOf(galleryId);
+
+               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+               // failure message
+               MESSAGES.galleryError()) {
+               @Override
+               public void onSuccess(Void result) {
+				
+               }
+               };
+               ode.getProjectService().setGalleryId(project.getProjectId(),galleryId,projectCallback);
+    	       project.setGalleryId(galleryId);
+             }  
+          
+          };
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().publishApp(project.getProjectId(),project.getProjectName(), "description", callback);
+        }
+      });
+    */
     }
   }
 
@@ -286,7 +327,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * Prepares the app publishing process
    * 
    */
-  private void preparePublishApp(Project p, ProjectWidgets pw) {
+  private void preparePublishApp(final Project p, ProjectWidgets pw) {
 //    final GalleryApp app  = new GalleryApp(String title, String developerName, String description,
 //        String creationDate, String updateDate, String imageURL, String sourceFileName,
 //        int downloads, int views, int likes, int comments, 
@@ -297,14 +338,15 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     ArrayList<String> tags = new ArrayList<String>();
     tags.add("Education");
     tags.add("testing");
-    final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game","1355091003791","1355091003791",
+    final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game",0L,0L,
         "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
         "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
         2,5,3,4,"","","", tags);
     
     pw.editButton.addClickHandler(new ClickHandler() {
-    //  @Override
+      @Override
       public void onClick(ClickEvent event) {
+        app1.setProjectId(p.getProjectId());
         Ode.getInstance().switchToGalleryAppView(app1, true); 
       }
     });

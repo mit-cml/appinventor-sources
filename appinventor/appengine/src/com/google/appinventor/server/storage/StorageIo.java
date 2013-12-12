@@ -112,6 +112,15 @@ public interface StorageIo {
    * @return  list of projects
    */
   List<Long> getProjects(String userId);
+  
+  /**
+   * sets a projects gallery id when it is published
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param galleryId gallery ID
+   */
+  void setProjectGalleryId(final String userId, final long projectId,final long galleryId); 
+  
 
   /**
    * Returns a string with the project settings.
@@ -173,6 +182,14 @@ public interface StorageIo {
    * @return long milliseconds
    */
   long getProjectDateCreated(String userId, long projectId);
+ /**
+   * Returns the gallery id or -1 if not published.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   *
+   * @return long milliseconds
+   */
+  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -305,6 +322,14 @@ public interface StorageIo {
    * @return  list of output file ID
    */
   List<String> getProjectOutputFiles(String userId, long projectId);
+
+  /**
+   * Returns the gallery id for a project.
+   * @param projectId  project ID
+   *
+   * @return  list of output file ID
+   */
+  long getProjectGalleryId(final long projectId);
 
   /**
    * Uploads a file.

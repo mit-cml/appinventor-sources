@@ -41,6 +41,14 @@ public class ServerLayout {
   public static final String PROJECT_SERVICE = "projects";
 
   /**
+   * Relative path of the
+   * {@link com.google.appinventor.shared.rpc.project.GalleryService} within
+   * the ODE GWT module.
+   */
+  public static final String GALLERY_SERVICE = "gallery";
+
+
+  /**
    * Relative path of the {@link com.google.appinventor.server.AndroidServlet}
    * within the ODE GWT module.
    */
