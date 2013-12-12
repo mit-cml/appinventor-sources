@@ -14,6 +14,7 @@ import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
 
 
+
 /**
  * Box implementation for Gallery list.
  *
@@ -35,10 +36,10 @@ public final class GalleryAppBox extends Box {
     return INSTANCE;
   }
   
-  public static void setApp(GalleryApp app, Boolean editable)
+  public static void setApp(GalleryApp app,  Boolean editable)
   {
 //	OdeLog.log("######### I got in setApp");
-    pPage = new GalleryPage(app, editable);
+    pPage = new GalleryPage(app,editable);
     INSTANCE.setContent(pPage);
   }
   /**

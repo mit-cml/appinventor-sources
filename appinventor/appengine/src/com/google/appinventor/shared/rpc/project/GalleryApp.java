@@ -6,149 +6,164 @@ import java.util.ArrayList;
 import java.util.logging.Logger;
 
 public class GalleryApp implements IsSerializable {
-	
-
-	/**
+  /**
    * Default constructor. This constructor is required by GWT.
    */
   @SuppressWarnings("unused")
   public GalleryApp() {
   }
+
+  public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
 	
-	public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
-//    private static final Logger LOG = Logger.getLogger(GalleryApp.class.getName());
-	
-	public GalleryApp(String title, String developerName, String description,
-			String creationDate, String updateDate, String imageURL, String sourceFileName,
-			int downloads, int views, int likes, int comments, 
-			String imageBlobId, String sourceBlobId, String galleryAppId, 
-			ArrayList<String> tags) {
-		super();
-		this.title = title;
-		this.developerName = developerName;
-		this.description = description;
-		this.creationDate = creationDate;
-		this.updateDate = updateDate;
-		this.imageURL = imageURL;
-        // the name we get from gallery can have some bad characters in it...
-        //   e.g., name  (2).zip. We need to cleanse this and probably deal with url as
-        //   well.
-//        LOG.info("HERE:"+sourceFileName);
-        if (sourceFileName.contains(".")) {
-          String[] splitName = sourceFileName.split("\\.");
-          projectName = splitName[0];
-        } else {
-          projectName = sourceFileName;
-        }
-		this.downloads = downloads;
-		this.views = views;
-		this.likes = likes;
-		this.comments = comments;
-		this.imageBlobId= imageBlobId;
-		this.sourceBlobId= sourceBlobId;
-		this.galleryAppId= galleryAppId;
-		this.tags = tags;
-	}
-	private String title;
-	private String developerName;
-	private String description;
-	private String creationDate;
-	private String updateDate;
-	// creation date and update date?
-	
-	// an image, icon, zip file 
-	private String projectName;
-	private String imageURL;
-	private int downloads;
-	private int views;
-	private int likes;
-	private int comments;
+  public GalleryApp(String title, String developerName, String description,
+      long creationDate, long updateDate, String imageURL, String sourceFileName,
+      int downloads, int views, int likes, int comments, 
+      String imageBlobId, String sourceBlobId, String galleryAppId, 
+      ArrayList<String> tags) {
+    super();
+    this.title = title;
+    this.developerName = developerName;
+    this.description = description;
+    this.creationDate = creationDate;
+    this.updateDate = updateDate;
+    this.imageURL = imageURL;
+    // the source file name we get from gallery can have some bad characters in it...
+    // e.g., name  (2).zip. We need to cleanse this and probably deal with url as
+    //   well.
+
+    if (sourceFileName.contains(".")) {
+      String[] splitName = sourceFileName.split("\\.");
+      projectName = splitName[0];
+    } else {
+      projectName = sourceFileName;
+    }
+    this.downloads = downloads;
+    this.views = views;
+    this.likes = likes;
+    this.comments = comments;
+    this.imageBlobId= imageBlobId;
+    this.sourceBlobId= sourceBlobId;
+    this.galleryAppId= galleryAppId;
+    this.tags = tags;
+  }
+  /* this constructor is called when we are creating a new gallery app but don't have
+     the stuff yet */
+  public GalleryApp(String title, long projectId) {
+	super();
+    this.title=title;
+    this.downloads=0;
+    this.views=0;
+    this.likes=0;
+    this.comments=0;
+    this.projectId=projectId;
+  }
+
+  private String title;
+  private String developerName;
+  private String description;
+  private long creationDate;
+  private long updateDate;
+
+  private String projectName;
+  private String imageURL;
+  private int downloads;
+  private int views;
+  private int likes;
+  private int comments;
   private String imageBlobId;
   private String sourceBlobId;
   private String galleryAppId;
   private ArrayList<String> tags;
-    
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	public String getDeveloperName() {
-		return developerName;
-	}
-	public void setDeveloperName(String developerName) {
-		this.developerName = developerName;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public String getCreationDate() {
-		return creationDate;
-	}
-	public void setCreationDate(String creationDate) {
-		this.creationDate = creationDate;
-	}
-	public String getUpdateDate() {
-		return updateDate;
-	}
-	public void setUpdateDate(String updateDate) {
-		this.updateDate = updateDate;
-	}
-	public String getImageURL() {
-		return imageURL;
-	}
-	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
-	}
-	public String getProjectName() {
-		return projectName;
-	}
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
-	}
-	public int getDownloads() {
-		return downloads;
-	}
-	public void setDownloads(int downloads) {
-		this.downloads = downloads;
-	}
-	public int getViews() {
-		return views;
-	}
-	public void setViews(int views) {
-		this.views = views;
-	}
-	public int getLikes() {
-		return likes;
-	}
-	public void setLikes(int likes) {
-		this.likes = likes;
-	}
-	public int getComments() {
-		return comments;
-	}
-	public void setComments(int comments) {
-		this.comments = comments;
-	}
-	public void setImageBlobId(String imageBlobId) {
-		this.imageBlobId = imageBlobId;
-	}
-	public String getImageBlobId() {
-      return this.imageBlobId;
-    }
-	public void setSourceBlobId(String sourceBlobId) {
-		this.sourceBlobId = sourceBlobId;
-	}
+  private long projectId;  // when we edit a newly published app, we need the ai proj id.
+
+  public long getProjectId() {
+    return projectId;
+  }
+  public void setProjectId(long projectId) {
+    this.projectId=projectId;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+  public void setTitle(String title) {
+    this.title = title;
+  }
+  public String getDeveloperName() {
+    return developerName;
+  }
+  public void setDeveloperName(String developerName) {
+    this.developerName = developerName;
+  }
+  public String getDescription() {
+    return description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
+  public long getCreationDate() {
+    return this.creationDate; 
+  }
+  public void setCreationDate(long creationDate) {
+    this.creationDate = creationDate;
+  }
+  public long getUpdateDate() {
+    return this.updateDate;
+  }
+  public void setUpdateDate(long updateDate) {
+    this.updateDate = updateDate;
+  }
+  public String getImageURL() {
+    return imageURL;
+  }
+  public void setImageURL(String imageURL) {
+    this.imageURL = imageURL;
+  }
+  public String getProjectName() {
+    return projectName;
+  }
+  public void setProjectName(String projectName) {
+    this.projectName = projectName;
+  }
+  public int getDownloads() {
+    return downloads;
+  }
+  public void setDownloads(int downloads) {
+    this.downloads = downloads;
+  }
+  public int getViews() {
+    return views;
+  }
+  public void setViews(int views) {
+    this.views = views;
+  }
+  public int getLikes() {
+    return likes;
+  }
+  public void setLikes(int likes) {
+    this.likes = likes;
+  }
+  public int getComments() {
+    return comments;
+  }
+  public void setComments(int comments) {
+    this.comments = comments;
+  }
+  public void setImageBlobId(String imageBlobId) {
+    this.imageBlobId = imageBlobId;
+  }
+  public String getImageBlobId() {
+    return this.imageBlobId;
+  }
+  public void setSourceBlobId(String sourceBlobId) {
+    this.sourceBlobId = sourceBlobId;
+  }
   public String getSourceBlobId() {
     return this.sourceBlobId;
   }
-	public void setGalleryAppId(String galleryAppId) {
-		this.galleryAppId = galleryAppId;
-	}
+  public void setGalleryAppId(String galleryAppId) {
+    this.galleryAppId = galleryAppId;
+  }
   public String getGalleryAppId() {
     return this.galleryAppId;
   }
@@ -167,9 +182,8 @@ public class GalleryApp implements IsSerializable {
     this.tags = tags;
   }
   
-	@Override
-	public String toString() {
-		return title + " ||| " + description + " ||| " +  imageURL; 
-	}
-
+  @Override
+  public String toString() {
+    return title + " ||| " + description + " ||| " +  imageURL; 
+  }
 }

@@ -115,6 +115,17 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     getProjectRpcImpl(userId, projectId).deleteProject(userId, projectId);
   }
 
+ /**
+   * On publish this sets the project's gallery id
+   * @param projectId  project ID
+   * @param galleryId  gallery ID
+   */
+  public void setGalleryId(long projectId, long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).setGalleryId(userId, projectId, galleryId);
+  }
+  
+
   /**
    * Returns an array with project IDs.
    *
@@ -366,7 +377,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
                            storageIo.getProjectType(userId, projectId),
                            storageIo.getProjectDateCreated(userId, projectId),
-                           storageIo.getProjectDateModified(userId, projectId));
+                           storageIo.getProjectDateModified(userId, projectId),
+                           storageIo.getGalleryId(userId, projectId));
   }
 
   /*
@@ -504,9 +516,10 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       for (int i = 0; i < tagArray.length(); i++) {
         tags.add(tagArray.getString(i));
       }  
-	    
+      Long creationTimeLong = Long.parseLong(creationTime); 
+      Long uploadTimeLong = Long.parseLong(uploadTime);  
       GalleryApp galleryApp = new GalleryApp(title, displayName, description,
-			  creationTime, uploadTime, image1, sourceFileName,
+			  creationTimeLong, uploadTimeLong, image1, sourceFileName,
 			  numDownloads, numViewed, numLikes, numComments, 
 			  imageBlobId, sourceBlobId, galleryAppId, tags);
 	  

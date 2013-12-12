@@ -191,7 +191,7 @@ public class GalleryClient {
   } 
     
   public List<GalleryApp> generateFakeApps()  {
-    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game","1/1/13","2/1/13",
+    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game",0L,0L,
         "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
         "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
         2,5,3,4,"","","", null);

@@ -72,6 +72,15 @@ public abstract class CommonProjectService {
   }
 
   /**
+   * Sets the project's gallery id.
+   *
+   * @param userId the user id
+   * @param projectId  project ID as received by
+   */
+  public void setGalleryId(String userId, long projectId, long galleryId) {
+    storageIo.setProjectGalleryId(userId, projectId, galleryId);
+  }
+  /**
    * Returns the project root node for the requested project.
    *
    * @param userId the user id

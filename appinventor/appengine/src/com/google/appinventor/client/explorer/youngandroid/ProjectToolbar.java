@@ -21,24 +21,27 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-//import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-//import com.google.appengine.tools.cloudstorage.GcsFilename;
-//import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-//import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-//import com.google.appengine.tools.cloudstorage.GcsService;
-//import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-//import com.google.appengine.tools.cloudstorage.RetryParams;
-//import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
-//import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-//import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-//import java.io.IOException;
-//import java.io.ObjectInputStream;
-//import java.io.ObjectOutputStream;
-//import java.nio.ByteBuffer;
-//import java.nio.channels.Channels;
-//import java.util.Arrays;
-//import java.util.HashMap;
-//import java.util.Map;
+/*
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsInputChannel;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
+
+import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
+import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
+*/
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -67,8 +70,6 @@ public class ProjectToolbar extends Toolbar {
 //        new CloudAction()));
 
     updateButtons();
-  }
-
 //  private static class CloudAction implements Command {
 //    @Override
 //    public void execute() {
@@ -76,6 +77,16 @@ public class ProjectToolbar extends Toolbar {
 //          gcsService.createOrReplace(fileName, GcsFileOptions.getDefaultInstance());
 //    }
 //  }
+  }
+/*
+  private static class CloudAction implements Command {
+    @Override
+    public void execute() {
+      GcsOutputChannel outputChannel =
+          gcsService.createOrReplace(fileName, GcsFileOptions.getDefaultInstance());
+    }
+  }
+*/
 
   private static class NewAction implements Command {
     @Override
