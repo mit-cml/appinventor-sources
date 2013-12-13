@@ -37,7 +37,7 @@ Blockly.ReplStateObj = function() {};
 Blockly.ReplStateObj.prototype = {
     'state' : Blockly.ReplMgr.rsState.IDLE,     // Is the connection to the Repl Up
     'url' : null,                       // The url of the repl (Companion) when known
-    'asseturl' : null,                  // URL used to upload assets
+    'baseurl' : null,                  // URL used to upload assets
     'replcode' : null,                  // The six digit code used for rendezvous
     'rendezvouscode' : null,            // Code used for Rendezvous (hash of replcode)
     'dialog' : null,                    // The Dialog Box with the code and QR Code
@@ -292,13 +292,13 @@ Blockly.ReplMgr.putYail = (function() {
                 if (this.readyState == 4 && this.status == 200) {
                     rs.didversioncheck = true;
                     if (this.response[0] != "{") {
-                        engine.showversioncompmessage(true); // Old Companion
+                        engine.checkversionupgrade(true, ""); // Old Companion
                         engine.resetcompanion();
                         return;
                     } else {
                         var json = goog.json.parse(this.response);
                         if (!Blockly.ReplMgr.acceptableVersion(json.version)) {
-                            engine.showversioncompmessage(true);
+                            engine.checkversionupgrade(true, json.installer);
                             engine.resetcompanion();
                             return;
                         }
@@ -354,9 +354,17 @@ Blockly.ReplMgr.putYail = (function() {
             rs.didversioncheck = false;
             window.parent.BlocklyPanel_indicateDisconnect();
         },
-        "showversioncompmessage" : function(fatal) {
+        "checkversionupgrade" : function(fatal, installer) {
             var dialog;
-            if (fatal) {
+            if (installer === undefined)
+                installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
+            if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
+                var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "We need to update " + (emulator?"the Companion App installed in your emulator":"your AI2 Companion App") + " when you click \"OK\" below we will attempt this process. You will be required to approve the update and afterwards you will need to reconnect.", "OK", 0, function() {
+                    dialog.hide();
+                    context.triggerUpdate();
+                });
+            } else if (fatal) {
                 dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "The Companion you are using is not compatible with this version of AI2.<br/><br/>This Version of App Inventor wants Companion version" + window.parent.PREFERRED_COMPANION, "OK", 0, function() { dialog.hide();});
             } else {
                 dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "You are using an out-of-date Companion, you should consider updating to the latest version.", "Dismiss", 1, function() { dialog.hide();});
@@ -366,6 +374,17 @@ Blockly.ReplMgr.putYail = (function() {
     engine.putYail.reset = engine.reset;
     return engine.putYail;
 })();
+
+Blockly.ReplMgr.triggerUpdate = function() {
+    var rs = window.parent.ReplState;
+    var encoder = new goog.Uri.QueryData();
+    encoder.add('url', window.parent.COMPANION_UPDATE_URL);
+    encoder.add('mac', Blockly.ReplMgr.hmac(window.parent.COMPANION_UPDATE_URL));
+    var qs = encoder.toString();
+    var conn = goog.net.XmlHttp();
+    conn.open("POST", rs.baseurl + '_update', true);
+    conn.send(qs);
+};
 
 Blockly.ReplMgr.acceptableVersion = function(version) {
     for (var i = 0; i < window.parent.ACCEPTABLE_COMPANIONS.length; i++) {
@@ -634,7 +653,7 @@ Blockly.ReplMgr.startRepl = function(already, emulator, usb) {
             rs.url = 'http://127.0.0.1:8001/_newblocks';
             rs.rurl = 'http://127.0.0.1:8001/_values';
             rs.versionurl = 'http://127.0.0.1:8001/_getversion';
-            rs.asseturl = 'http://127.0.0.1:8001/';
+            rs.baseurl = 'http://127.0.0.1:8001/';
             rs.seq_count = 1;
             rs.count = 0;
             this.rendPoll();
@@ -693,7 +712,7 @@ Blockly.ReplMgr.getFromRendezvous = function() {
                 rs.url = 'http://' + json.ipaddr + ':8001/_newblocks';
                 rs.rurl = 'http://' + json.ipaddr + ':8001/_values';
                 rs.versionurl = 'http://' + json.ipaddr + ':8001/_getversion';
-                rs.asseturl = 'http://' + json.ipaddr + ':8001/';
+                rs.baseurl = 'http://' + json.ipaddr + ':8001/';
                 rs.state = Blockly.ReplMgr.rsState.CONNECTED;
                 rs.dialog.hide();
                 window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
@@ -808,7 +827,7 @@ Blockly.ReplMgr.putAsset = function(filename, blob) {
     var encoder = new goog.Uri.QueryData();
     var z = filename.split('/'); // Remove any directory components
     encoder.add('filename', z[z.length-1]);
-    conn.open('PUT', rs.asseturl + '?' + encoder.toString(), true);
+    conn.open('PUT', rs.baseurl + '?' + encoder.toString(), true);
     var arraybuf = new ArrayBuffer(blob.length);
     var arrayview = new Uint8Array(arraybuf);
     for (var i = 0; i < blob.length; i++) {

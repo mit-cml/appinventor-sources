@@ -9,12 +9,16 @@ import com.google.appinventor.components.runtime.ReplForm;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Properties;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -23,6 +27,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
 
 import kawa.standard.Scheme;
 import gnu.expr.Language;
@@ -204,8 +209,13 @@ public class AppInvHTTPD extends NanoHTTPD {
       Response res;
       try {
         PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
+        String installer = form.getPackageManager().getInstallerPackageName("edu.mit.appinventor.aicompanion3");
+        // installer will be "com.android.vending" if installed from the play store.
         String versionName = pInfo.versionName;
-        res = new Response(HTTP_OK, MIME_JSON, "{\"version\" : \"" + versionName + "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"}");
+        if (installer == null)
+          installer = "Not Known";
+        res = new Response(HTTP_OK, MIME_JSON, "{\"version\" : \"" + versionName +
+          "\", \"fingerprint\" : \"" + Build.FINGERPRINT + "\"," + " \"installer\" : \"" + installer + "\"}");
       } catch (NameNotFoundException n) {
         n.printStackTrace();
         res = new Response(HTTP_OK, MIME_JSON, "{\"verison\" : \"Unknown\"");
@@ -215,6 +225,60 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return (res);
+    } else if (uri.equals("/_update")) { // Companion! Update Thyself!
+      String url = parms.getProperty("url", "");
+      String inMac = parms.getProperty("mac", "");
+      String compMac;
+      if (!url.equals("") && (hmacKey != null) && !inMac.equals("")) {
+        try {
+          SecretKeySpec key = new SecretKeySpec(hmacKey, "RAW");
+          Mac hmacSha1 = Mac.getInstance("HmacSHA1");
+          hmacSha1.init(key);
+          byte [] tmpMac = hmacSha1.doFinal(url.getBytes());
+          StringBuffer sb = new StringBuffer(tmpMac.length * 2);
+          Formatter formatter = new Formatter(sb);
+          for (byte b : tmpMac)
+            formatter.format("%02x", b);
+          compMac = sb.toString();
+        } catch (Exception e) {
+          Log.e(LOG_TAG, "Error verifying update", e);
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Exception working on HMAC for update");
+          Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: Exception processing MAC\"}");
+          res.addHeader("Access-Control-Allow-Origin", "*");
+          res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+          res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+          res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+          return(res);
+        }
+        Log.d(LOG_TAG, "Incoming Mac (update) = " + inMac);
+        Log.d(LOG_TAG, "Computed Mac (update) = " + compMac);
+        if (!inMac.equals(compMac)) {
+          Log.e(LOG_TAG, "Hmac does not match");
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_REPL_SECURITY_ERROR, "Invalid HMAC (update)");
+          Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Security Error: Invalid MAC\"}");
+          res.addHeader("Access-Control-Allow-Origin", "*");
+          res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+          res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+          res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+          return(res);
+        }
+        doPackageUpdate(url);
+        Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"OK\", \"message\" : \"Update Should Happen\"}");
+        res.addHeader("Access-Control-Allow-Origin", "*");
+        res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+        res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+        res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+        return (res);
+      } else {
+          Response res = new Response(HTTP_OK, MIME_JSON, "{\"status\" : \"BAD\", \"message\" : \"Missing Parameters\"}");
+          res.addHeader("Access-Control-Allow-Origin", "*");
+          res.addHeader("Access-Control-Allow-Headers", "origin, content-type");
+          res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
+          res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
+          return(res);
+      }
     } else if (uri.equals("/_package")) { // Handle installing a package
       Response res;
       String packageapk = parms.getProperty("package", null);
@@ -349,6 +413,37 @@ public class AppInvHTTPD extends NanoHTTPD {
   public static void setHmacKey(String inputKey) {
     hmacKey = inputKey.getBytes();
     seq = 1;              // Initialize this now
+  }
+
+  private void doPackageUpdate(final String inurl) {
+    AsynchUtil.runAsynchronously(new Runnable() {
+        @Override
+        public void run() {
+          try {
+            URL url = new URL(inurl);
+            URLConnection conn = url.openConnection();
+            InputStream instream = new BufferedInputStream(conn.getInputStream());
+            File apkfile = new File(rootDir + "/update.apk");
+            FileOutputStream apkOut = new FileOutputStream(apkfile);
+            byte [] buffer = new byte[32768];
+            int len;
+            while ((len = instream.read(buffer, 0, 32768)) > 0) {
+              apkOut.write(buffer, 0, len);
+            }
+            instream.close();
+            apkOut.close();
+            // Call Package Manager Here
+            Log.d(LOG_TAG, "About to Install " + rootDir + "/update.apk");
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            Uri packageuri = Uri.fromFile(new File(rootDir + "/update.apk"));
+            intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
+            form.startActivity(intent);
+          } catch (Exception e) {
+          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
+            ErrorMessages.ERROR_WEB_UNABLE_TO_GET, inurl);
+          }
+        }
+      });
   }
 
 }
