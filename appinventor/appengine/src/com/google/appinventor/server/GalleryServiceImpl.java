@@ -5,6 +5,13 @@
 
 package com.google.appinventor.server;
 
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileReadChannel;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
@@ -24,7 +31,12 @@ import com.google.common.collect.Lists;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -82,6 +94,52 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
   @Override
   public void deleteApp(long galleryId) {
+  }
+  @Override
+  public Boolean storeAIAtoCloud(long projectId) {
+    FileService fileService = FileServiceFactory.getFileService();
+    GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
+    .setBucket("galleryai2")
+    .setKey("my_object_within_ai2")
+    .setAcl("public-read")
+    .setMimeType("text/html")
+    .addUserMetadata("myfield1", "my field value");
+
+    // Create your object
+    try {
+      AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
+      // Open a channel to write to it
+      boolean lock = false;
+      FileWriteChannel writeChannel =
+          fileService.openWriteChannel(writableFile, lock);
+      // Different standard Java ways of writing to the channel
+      // are possible. Here we use a PrintWriter:
+      PrintWriter out = new PrintWriter(Channels.newWriter(writeChannel, "UTF8"));
+      out.println("The woods are lovely dark and deep.");
+      out.println("But I have promises to keep.");
+      // Close without finalizing and save the file path for writing later
+      out.close();
+      String path = writableFile.getFullPath();
+      // Write more to the file in a separate request:
+      writableFile = new AppEngineFile(path);
+      // Lock the file because we intend to finalize it and
+      // no one else should be able to edit it
+      lock = true;
+      writeChannel = fileService.openWriteChannel(writableFile, lock);
+      // This time we write to the channel directly
+      writeChannel.write(ByteBuffer.wrap
+                ("And miles to go before I sleep.".getBytes()));
+
+      // Now finalize
+      writeChannel.closeFinally();
+      
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      LOG.log(Level.INFO, "FAILED GCS");
+      e.printStackTrace();
+    }
+    LOG.log(Level.INFO, "LEAVING GCS");
+    return true;
   }
 
 }

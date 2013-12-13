@@ -180,7 +180,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
              @Override
              public void onSuccess(Long galleryId) {
                // the server has returned us something
-    	       OdeLog.log("we had a successful publish");
+             OdeLog.log("we had a successful publish");
                String s = String.valueOf(galleryId);
 
                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
@@ -188,7 +188,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                MESSAGES.galleryError()) {
                @Override
                public void onSuccess(Void result) {
-				
+        
                }
                };
                ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
@@ -202,7 +202,34 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     
     publishButton.addStyleName("app-action");
-    appAction.add(publishButton);       
+    appAction.add(publishButton);    
+
+
+    final Button cloudButton = new Button("Test GCS");
+    cloudButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          int STATUS_CODE_OK = 200;  
+          // Callback for when the server returns us the apps
+          final Ode ode = Ode.getInstance();
+          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+             // failure message
+             MESSAGES.galleryError()) {
+             @Override
+             public void onSuccess(Boolean flag) {  // this is for 
+               cloudButton.setText("Completed");
+               OdeLog.log("################ SUCCESS");
+             }  
+          
+          };
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().storeAIAtoCloud(1, callback);
+        }
+      });
+
+    
+    cloudButton.addStyleName("app-action");
+    appAction.add(cloudButton);       
     
     // App details - header title
     if (editable) {
