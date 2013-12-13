@@ -957,7 +957,7 @@ public final class Twitter extends AndroidNonvisibleComponent implements
       catch (IllegalStateException ies) {
         //ignore: it means that the consumer data was already set
       }
-      if (userName.isEmpty()) {
+      if (userName.trim().length() == 0) {
         User user;
         try {
           user = twitter.verifyCredentials();
