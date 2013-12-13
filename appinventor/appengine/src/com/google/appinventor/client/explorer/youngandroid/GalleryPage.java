@@ -239,12 +239,15 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel titleBox = new FlowPanel();
       titleBox.addStyleName("app-titlebox");
       titleBox.addStyleName("gallery-editbox");
-      // Create an editable text cell to render values in this list
+      
+      // Create an editable text cell to render values
       EditTextCell titlePrompt = new EditTextCell();
       // Create a cell list that uses this cell
       CellList<String> titleCellList = new CellList<String>(titlePrompt);
       
-      List<String> titleList = Arrays.asList("Please enter your title");
+      // Forge the temporary prefilled title
+      String t = app.getTitle() + " (ProjectId:" + app.getProjectId() + ")";
+      List<String> titleList = Arrays.asList(t);
       titleCellList.setRowData(0, titleList);
       /*
       // EditTextCell.
@@ -267,9 +270,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       titleBox.add(titleCellList);
       appInfo.add(titleBox);
       // Event handler for editing
-      
-      
-      
     } else {
       Label title = new Label(app.getTitle());
       appInfo.add(title);
@@ -380,18 +380,22 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
  
-    // Add sidebar stuff
-    gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());
-    // By default, load the first tag's apps
-    tagSelected = app.getTags().get(0);
-    gallery.FindByTag(app.getTags().get(0), 0, 5, 0);
+    // Add sidebar stuff, only in public published state
+    if (!editable) {
+      gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());      
+      // By default, load the first tag's apps
+      tagSelected = app.getTags().get(0);
+      gallery.FindByTag(app.getTags().get(0), 0, 5, 0);
+    }
 
     // Add everything to top-level containers
     appSingle.add(appDetails);
     appDetails.addStyleName("gallery-container");
     appDetails.addStyleName("gallery-app-details");
-    appSingle.add(appsByAuthor);
-    appSingle.add(appsByTags);
+    if (!editable) {
+      appSingle.add(appsByAuthor);
+      appSingle.add(appsByTags);      
+    }
     galleryGUI.add(appSingle);
     appSingle.addStyleName("gallery-app-single");
     panel.add(galleryGUI);

@@ -60,17 +60,17 @@ public class GalleryApp implements IsSerializable {
      the stuff yet */
   public GalleryApp(String title, long projectId) {
 	super();
-    this.title=title;
-    this.downloads=0;
-    this.views=0;
-    this.likes=0;
-    this.comments=0;
-    this.projectId=projectId;
-    this.developerName="fred";
+    this.title = title;
+    this.downloads = 0;
+    this.views = 0;
+    this.likes = 0;
+    this.comments = 0;
+    this.projectId = projectId;
+    this.developerName = "Test user";
     this.creationDate = 0L;
-    this.updateDate=0L;
-    this.imageBlobId="SFKJF";
-    this.imageURL="http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
+    this.updateDate = 0L;
+    this.imageBlobId = "SFKJF";
+    this.imageURL = "http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
   private String title;
