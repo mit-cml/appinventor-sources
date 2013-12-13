@@ -28,7 +28,13 @@ public interface GalleryServiceAsync {
    * @see GalleryService#deleteApp(long galleryId)
    */
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
-
+  
+  /**
+   * 
+   * @param projectId
+   * @param callback
+   */
+  void storeAIAtoCloud(long projectId, AsyncCallback<java.lang.Boolean> callback);
 
   /**
    * @see GalleryService#getRecentApps(int start, int count)

@@ -33,6 +33,7 @@ public interface GalleryService extends RemoteService {
   
   void deleteApp(long galleryId);
 
+  Boolean storeAIAtoCloud(long projectId);
 
   /**
    * Returns a list of galleryApps
