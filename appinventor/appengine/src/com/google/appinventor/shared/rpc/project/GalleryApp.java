@@ -1,5 +1,4 @@
 package com.google.appinventor.shared.rpc.project;
-
 import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.util.ArrayList;
