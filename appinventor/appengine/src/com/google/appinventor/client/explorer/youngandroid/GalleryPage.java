@@ -142,7 +142,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
    // Create a FileUpload widget.
       FileUpload upload = new FileUpload();
       upload.setName("uploadFormElement");
+//      upload.addClickHandler(new ClickHandler() {
+//        @Override
+//        public void onClick(ClickEvent event) {
+//           //get the filename to be uploaded
+//           String filename = upload.getFilename();
+//           if (filename.length() == 0) {
+//              Window.alert("No File Specified!");
+//           } else {
+//              //submit the form
+//              form.submit();               
+//           }       
+//        }
+//     });
       imageUploadBox.add(upload);
+      
       
       appHeader.add(imageUploadBox);
     } else {
@@ -177,35 +191,30 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
-             // failure message
-             MESSAGES.galleryError()) {
-             @Override
-             public void onSuccess(Long galleryId) {
-               // the server has returned us something
-             OdeLog.log("we had a successful publish");
-               String s = String.valueOf(galleryId);
-
-               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-               // failure message
-               MESSAGES.galleryError()) {
-               @Override
-               public void onSuccess(Void result) {
-        
-               }
-               };
-               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
-             }  
+            // failure message
+            MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(Long galleryId) {
+              // the server has returned us something
+              OdeLog.log("we had a successful publish");
+              String s = String.valueOf(galleryId);
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void result) {
           
+                }
+              };
+              ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
+            }
           };
         // ok, this is below the call back, but of course it is done first 
         ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
         }
-      });
-
-    
+      });    
     publishButton.addStyleName("app-action");
     appAction.add(publishButton);    
-
 
     final Button cloudButton = new Button("Test GCS");
     cloudButton.addClickHandler(new ClickHandler() {
@@ -245,12 +254,13 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Create a cell list that uses this cell
       CellList<String> titleCellList = new CellList<String>(titlePrompt);
       
-      // Forge the temporary prefilled title
+      // Forge the temporary prefilled title, place it in cell list
       String t = app.getTitle() + " (ProjectId:" + app.getProjectId() + ")";
       List<String> titleList = Arrays.asList(t);
       titleCellList.setRowData(0, titleList);
+
       /*
-      // EditTextCell.
+      // EditTextCell, potential even handler sample
       Column<ContactInfo, String> editTextColumn =
           addColumn(new EditTextCell(), "EditText", new GetValue<String>() {
             @Override
@@ -265,6 +275,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           });
       contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
       */
+      
       titleCellList.addStyleName("app-titleprompt");
       titleCellList.addStyleName("gallery-editprompt");
       titleBox.add(titleCellList);
@@ -321,14 +332,25 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel descBox = new FlowPanel();
       descBox.addStyleName("app-descbox");
       descBox.addStyleName("gallery-editbox");
-      Label descPrompt1 = new Label("Please describe your project here!");
-      descPrompt1.addStyleName("app-descprompt");
-      descPrompt1.addStyleName("gallery-editprompt");
-      descBox.add(descPrompt1);
-      Label descPrompt2 = new Label("Tell us what your project is about in a few sentences.");
-      descPrompt2.addStyleName("app-descprompt");
-      descPrompt2.addStyleName("gallery-editprompt");
-      descBox.add(descPrompt2);
+
+      // Create an editable text cell to render values
+      EditTextCell descPrompt = new EditTextCell();
+      // Create a cell list that uses this cell
+      CellList<String> descCellList = new CellList<String>(descPrompt);
+      // Forge the temporary prefilled description, place it in cell list
+      String t = "Please describe your project here! \r\r " +
+      		"Tell us what your project is about in a few sentences.";
+//      if (app.getDescription().length() > 1) {
+//        t = "Please describe your project here! \r\r Tell us what your project is about in a few sentences.";
+//      } else {
+//        t = app.getDescription();
+//      }
+      List<String> descList = Arrays.asList(t);
+      descCellList.setRowData(0, descList);
+      
+      descCellList.addStyleName("app-descprompt");
+      descCellList.addStyleName("gallery-editprompt");
+      descBox.add(descCellList);
       appInfo.add(descBox);
     } else {
       appInfo.add(appDescription);

@@ -60,19 +60,8 @@ public class ProjectToolbar extends Toolbar {
     addButton(new ToolbarItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectButton(),
         new DeleteAction()));
 
-    addButton(new ToolbarItem("Test", "Test Cloud Storage",
-        new CloudAction()));
-
     updateButtons();
 
-  }
-
-  private static class CloudAction implements Command {
-    @Override
-    public void execute() {
-//      GcsOutputChannel outputChannel =
-//          gcsService.createOrReplace(fileName, GcsFileOptions.getDefaultInstance());
-    }
   }
 
 
