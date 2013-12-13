@@ -20,6 +20,7 @@ import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 
+import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -32,6 +33,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -237,17 +239,35 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel titleBox = new FlowPanel();
       titleBox.addStyleName("app-titlebox");
       titleBox.addStyleName("gallery-editbox");
-      Label titlePrompt = new Label("Please enter your project title here!");
-      titlePrompt.addStyleName("app-titleprompt");
-      titlePrompt.addStyleName("gallery-editprompt");
-      titleBox.add(titlePrompt);
+      // Create an editable text cell to render values in this list
+      EditTextCell titlePrompt = new EditTextCell();
+      // Create a cell list that uses this cell
+      CellList<String> titleCellList = new CellList<String>(titlePrompt);
+      
+      List<String> titleList = Arrays.asList("Please enter your title");
+      titleCellList.setRowData(0, titleList);
+      /*
+      // EditTextCell.
+      Column<ContactInfo, String> editTextColumn =
+          addColumn(new EditTextCell(), "EditText", new GetValue<String>() {
+            @Override
+            public String getValue(ContactInfo contact) {
+              return contact.getFirstName();
+            }
+          }, new FieldUpdater<ContactInfo, String>() {
+            @Override
+            public void update(int index, ContactInfo object, String value) {
+              pendingChanges.add(new FirstNameChange(object, value));
+            }
+          });
+      contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
+      */
+      titleCellList.addStyleName("app-titleprompt");
+      titleCellList.addStyleName("gallery-editprompt");
+      titleBox.add(titleCellList);
       appInfo.add(titleBox);
       // Event handler for editing
-      titlePrompt.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          
-        }
-      });
+      
       
       
     } else {
