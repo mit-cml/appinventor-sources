@@ -196,23 +196,17 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   @Override
   public List<GalleryApp> getRecentGalleryApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          // the following limits to count but doesn't use start, we'll need to use cursors for that
-          for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").limit(count)) {
-            GalleryApp gApp = new GalleryApp();
-            makeGalleryApp(appData,gApp);
-            apps.add(gApp);
-          }
-        }
-        
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, "gallery error", e);
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").limit(count)) {
+      
+      GalleryApp gApp = new GalleryApp();
+      makeGalleryApp(appData, gApp);
+      apps.add(gApp);
     }
-
     return apps;
   }
   /**
@@ -221,11 +215,13 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @return  list of gallery apps
    */
   private void makeGalleryApp(GalleryAppData appData, GalleryApp galleryApp) {
-    galleryApp.setTitle(appData.title);
+    galleryApp.setTitle (appData.title); 
+    galleryApp.setProjectId(appData.projectId);
     galleryApp.setDescription(appData.description);
     galleryApp.setDownloads(appData.numDownloads);  
     galleryApp.setCreationDate(appData.dateCreated);
     galleryApp.setUpdateDate(appData.dateModified);
+
   }
 
   private static String collectGalleryAppErrorInfo(final String galleryAppId) {

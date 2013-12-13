@@ -85,8 +85,27 @@ public class GalleryClient {
   // uploadTime,desc gets most recent uploaded of source, 
   // creationTime would give time project was first added to gallery
   public void GetMostRecent(int start, int count) {
-    requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
-       getStartCountString(start,count)+":desc:uploadTime", REQUEST_RECENT);
+    OdeLog.log("at getMostRecent in client");
+    int STATUS_CODE_OK = 200;  
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    // failure message
+    MESSAGES.galleryError()) {
+    @Override
+    public void onSuccess(List<GalleryApp> apps) {
+      // the server has returned us something
+      OdeLog.log("received recent gallery apps successfully"+apps.size());
+      OdeLog.log("first app title"+apps.get(0).getTitle());
+      listener.onAppListRequestCompleted(apps, REQUEST_RECENT); 
+    }
+    };
+      
+    // ok, this is below the call back, but of course it is done first 
+    ode.getGalleryService().getRecentApps(0,5,callback);
+  
+  /*  requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
+       getStartCountString(start,count)+":desc:uploadTime", REQUEST_RECENT); */
   }
   
   public void GetMostDownloaded(int start, int count) {
