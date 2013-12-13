@@ -248,7 +248,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
              @Override
              public void onSuccess(Long galleryId) {
                // the server has returned us something
-    	       OdeLog.log("we had a successful publish");
+             OdeLog.log("we had a successful publish");
                String s = String.valueOf(galleryId);
 
                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
@@ -256,11 +256,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
                MESSAGES.galleryError()) {
                @Override
                public void onSuccess(Void result) {
-				
+        
                }
                };
                ode.getProjectService().setGalleryId(project.getProjectId(),galleryId,projectCallback);
-    	       project.setGalleryId(galleryId);
+             project.setGalleryId(galleryId);
              }  
           
           };
@@ -338,12 +338,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     ArrayList<String> tags = new ArrayList<String>();
     tags.add("Education");
     tags.add("testing");
-    /* final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game",0L,0L,
+    final GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Hammons", "a great game",0L,0L,
         "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
         "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
         2,5,3,4,"","","", tags);
-    */
-    final GalleryApp app1 = new GalleryApp(p.getProjectName(), p.getProjectId());
     
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
