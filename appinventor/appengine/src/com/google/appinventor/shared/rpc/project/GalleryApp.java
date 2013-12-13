@@ -8,8 +8,19 @@ public class GalleryApp implements IsSerializable {
   /**
    * Default constructor. This constructor is required by GWT.
    */
-  @SuppressWarnings("unused")
+
   public GalleryApp() {
+    this.title="no title";
+    this.downloads=0;
+    this.views=0;
+    this.likes=0;
+    this.comments=0;
+    this.projectId=0L;
+    this.developerName="fred";
+    this.creationDate = 0L;
+    this.updateDate=0L;
+    this.imageBlobId="SFKJF";
+    this.imageURL="http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
   public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
@@ -55,6 +66,11 @@ public class GalleryApp implements IsSerializable {
     this.likes=0;
     this.comments=0;
     this.projectId=projectId;
+    this.developerName="fred";
+    this.creationDate = 0L;
+    this.updateDate=0L;
+    this.imageBlobId="SFKJF";
+    this.imageURL="http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
   private String title;

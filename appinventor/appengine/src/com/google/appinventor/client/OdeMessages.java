@@ -248,7 +248,7 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link for signing out")
   String signOutLink();
 
-  @DefaultMessage("My Projects")
+  @DefaultMessage("My Stuff")
   @Description("Name of My Projects tab")
   String tabNameProjects();
 
@@ -329,7 +329,7 @@ public interface OdeMessages extends Messages {
 
   // Used in boxes/ProjectListBox.java
 
-  @DefaultMessage("Projects")
+  @DefaultMessage("My Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
   

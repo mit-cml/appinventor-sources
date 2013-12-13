@@ -248,7 +248,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
              @Override
              public void onSuccess(Long galleryId) {
                // the server has returned us something
-    	       OdeLog.log("we had a successful publish");
+             OdeLog.log("we had a successful publish");
                String s = String.valueOf(galleryId);
 
                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
@@ -256,11 +256,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
                MESSAGES.galleryError()) {
                @Override
                public void onSuccess(Void result) {
-				
+        
                }
                };
                ode.getProjectService().setGalleryId(project.getProjectId(),galleryId,projectCallback);
-    	       project.setGalleryId(galleryId);
+             project.setGalleryId(galleryId);
              }  
           
           };

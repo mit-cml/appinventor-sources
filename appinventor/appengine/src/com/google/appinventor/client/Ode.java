@@ -152,7 +152,7 @@ public class Ode implements EntryPoint {
    *  |+-- topPanel -------------------------------+|
    *  ||                                           ||
    *  |+-------------------------------------------+|
-   *  |+-- deckPanel -------------------------------+|
+   *  |+-- deckPanel ------------------------------+|
    *  ||                                           ||
    *  |+-------------------------------------------+|
    *  |+-- statusPanel ----------------------------+|
@@ -559,8 +559,8 @@ public class Ode implements EntryPoint {
     pVertPanel.setSpacing(0);
     HorizontalPanel projectListPanel = new HorizontalPanel();
     projectListPanel.setWidth("100%");
-    projectListPanel.add(ProjectListBox.getProjectListBox());
     projectToolbar = new ProjectToolbar();
+    projectListPanel.add(ProjectListBox.getProjectListBox());
     pVertPanel.add(projectToolbar);
     pVertPanel.add(projectListPanel);
     projectsTabIndex = deckPanel.getWidgetCount();
@@ -633,8 +633,6 @@ public class Ode implements EntryPoint {
     appListPanel.setWidth("100%");
     
     appListPanel.add(GalleryListBox.getGalleryListBox());
-    //projectToolbar = new ProjectToolbar();
-    //gVertPanel.add(projectToolbar);
     
     gVertPanel.add(appListPanel);
     galleryTabIndex = deckPanel.getWidgetCount();

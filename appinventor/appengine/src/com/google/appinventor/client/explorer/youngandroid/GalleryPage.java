@@ -20,6 +20,7 @@ import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 
+import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -32,6 +33,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
@@ -152,7 +154,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // App header - action button
     appHeader.add(appAction);
+
+    // SHOULD ONLY SHOW THIS IF WE ARE NOT IN EDIT MODE
     Button actionButton = new Button("Try this app");
+    
     actionButton.addClickHandler(new ClickHandler() {
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
@@ -177,7 +182,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
              @Override
              public void onSuccess(Long galleryId) {
                // the server has returned us something
-    	       OdeLog.log("we had a successful publish");
+             OdeLog.log("we had a successful publish");
                String s = String.valueOf(galleryId);
 
                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
@@ -185,7 +190,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                MESSAGES.galleryError()) {
                @Override
                public void onSuccess(Void result) {
-				
+        
                }
                };
                ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
@@ -199,7 +204,34 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     
     publishButton.addStyleName("app-action");
-    appAction.add(publishButton);       
+    appAction.add(publishButton);    
+
+
+    final Button cloudButton = new Button("Test GCS");
+    cloudButton.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          int STATUS_CODE_OK = 200;  
+          // Callback for when the server returns us the apps
+          final Ode ode = Ode.getInstance();
+          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+             // failure message
+             MESSAGES.galleryError()) {
+             @Override
+             public void onSuccess(Boolean flag) {  // this is for 
+               cloudButton.setText("Completed");
+               OdeLog.log("################ SUCCESS");
+             }  
+          
+          };
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().storeAIAtoCloud(1, callback);
+        }
+      });
+
+    
+    cloudButton.addStyleName("app-action");
+    appAction.add(cloudButton);       
     
     // App details - header title
     if (editable) {
@@ -207,17 +239,35 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel titleBox = new FlowPanel();
       titleBox.addStyleName("app-titlebox");
       titleBox.addStyleName("gallery-editbox");
-      Label titlePrompt = new Label("Please enter your project title here!");
-      titlePrompt.addStyleName("app-titleprompt");
-      titlePrompt.addStyleName("gallery-editprompt");
-      titleBox.add(titlePrompt);
+      // Create an editable text cell to render values in this list
+      EditTextCell titlePrompt = new EditTextCell();
+      // Create a cell list that uses this cell
+      CellList<String> titleCellList = new CellList<String>(titlePrompt);
+      
+      List<String> titleList = Arrays.asList("Please enter your title");
+      titleCellList.setRowData(0, titleList);
+      /*
+      // EditTextCell.
+      Column<ContactInfo, String> editTextColumn =
+          addColumn(new EditTextCell(), "EditText", new GetValue<String>() {
+            @Override
+            public String getValue(ContactInfo contact) {
+              return contact.getFirstName();
+            }
+          }, new FieldUpdater<ContactInfo, String>() {
+            @Override
+            public void update(int index, ContactInfo object, String value) {
+              pendingChanges.add(new FirstNameChange(object, value));
+            }
+          });
+      contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
+      */
+      titleCellList.addStyleName("app-titleprompt");
+      titleCellList.addStyleName("gallery-editprompt");
+      titleBox.add(titleCellList);
       appInfo.add(titleBox);
       // Event handler for editing
-      titlePrompt.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          
-        }
-      });
+      
       
       
     } else {
@@ -253,7 +303,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(new Label(Integer.toString(app.getLikes())));
     appMeta.add(numComments);
     appMeta.add(new Label(Integer.toString(app.getComments())));
-    
+
+    // WHEN PUBLISHING/EDITING THESE NEED DEFAULT VALUES
     // Add app dates
     appInfo.add(appDates);
     Date creationDate = new Date(app.getCreationDate());
