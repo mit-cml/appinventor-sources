@@ -434,6 +434,8 @@ public class YaVersion {
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
   public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 2;
+  
+  public static final int SPREADSHEETSCONTROL_COMPONENT_VERSION = 1;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 

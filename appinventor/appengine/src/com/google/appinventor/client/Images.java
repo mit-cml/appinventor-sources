@@ -366,6 +366,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/fusiontables.png")
   ImageResource fusiontables();
+  
+  /**
+   * Designer palette item: Spreadsheets component
+   */
+  @Source("com/google/appinventor/images/spreadsheets.png")
+  ImageResource spreadsheets();
 
   /**
    * Designer palette item: WebViewer component

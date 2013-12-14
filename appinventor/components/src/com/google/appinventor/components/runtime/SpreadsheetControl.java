@@ -4,13 +4,6 @@
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 package com.google.appinventor.components.runtime;
 
-import com.google.api.client.extensions.android2.AndroidHttp;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
-import com.google.api.client.googleapis.services.GoogleKeyInitializer;
-import com.google.api.client.json.gson.GsonFactory;
-import com.google.api.services.fusiontables.Fusiontables;
-import com.google.api.services.fusiontables.Fusiontables.Query.Sql;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
@@ -24,13 +17,9 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
-import com.google.appinventor.components.runtime.util.ClientLoginHelper;
-import com.google.appinventor.components.runtime.util.ErrorMessages;
-import com.google.appinventor.components.runtime.util.IClientLoginHelper;
 import com.google.appinventor.components.runtime.util.OAuth2Helper;
 import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
-import com.google.gdata.client.spreadsheet.SpreadsheetQuery;
 import com.google.gdata.client.spreadsheet.SpreadsheetService;
 import com.google.gdata.data.PlainTextConstruct;
 import com.google.gdata.data.spreadsheet.CellEntry;
@@ -39,7 +28,6 @@ import com.google.gdata.data.spreadsheet.CustomElementCollection;
 import com.google.gdata.data.spreadsheet.ListEntry;
 import com.google.gdata.data.spreadsheet.ListFeed;
 import com.google.gdata.data.spreadsheet.SpreadsheetEntry;
-import com.google.gdata.data.spreadsheet.SpreadsheetFeed;
 import com.google.gdata.data.spreadsheet.WorksheetEntry;
 import com.google.gdata.data.spreadsheet.WorksheetFeed;
 import com.google.gdata.util.ServiceException;
@@ -51,892 +39,803 @@ import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpConnectionParams;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Appinventor fusiontables control.
+ * Appinventor Spreadsheet control.
  * 
- * This version has been migrated from the Fusiontables SQL API to the
- * Fusiontables V1.0 API.
- * 
- * See <a href="https://developers.google.com/fusiontables/">https://developers.
- * google.com/fusiontables/</a> See <a
- * href="https://developers.google.com/fusiontables/docs/v1/migration_guide"
- * >https://developers.google.com/fusiontables/</a>
+ * See <a
+ * href="https://developers.google.com/google-apps/spreadsheets/">https://
+ * developers.google.com/google-apps/spreadsheets/</a>
  * 
  * The main change occurs in the way API requests are authorized. This version
  * uses OAuth 2.0 and makes use of OAuth2Helper. The helper uses the Google
  * AccountManager to acquire an access token that must be attached as the OAuth
- * header in all Fusiontable Http requests.
+ * header in all Spreadsheets requests.
  * 
- * Before a Fusiontable request can be made, the app must acquire an OAuth
+ * Before a Spreadsheet request can be made, the app must acquire an OAuth
  * token. This may involve the user logging in to their Gmail account (or not if
  * they are already logged in) and then being prompted to give the app
- * permission to access the user's fusion tables.
+ * permission to access the user's spreadsheets.
  * 
  * Permission takes the form of an access token (called authToken), which must
- * be transmitted to the Fusiontables service as part of all Http requests.
+ * be transmitted to the Spreadsheets service as part of all requests.
  * 
  */
-@DesignerComponent(version = YaVersion.FUSIONTABLESCONTROL_COMPONENT_VERSION, description = "<p>A non-visible component that communicates with Google Spreadsheets. "
-		+ "Spreadsheets let you store, share, query and visualize data tables; "
-		+ "this component lets you modify information within these tables.</p> "
-		+ "<p>This component uses the "
-		+ "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API V1.0</a>. "
-		+ "<p>In order to develop apps that use Fusiontables, you must obtain an API Key."
-		+ "<p>To get an API key, follow these instructions.</p> "
-		+ "<ol>"
-		+ "<li>Go to your <a href=\"https://code.google.com/apis/console/\" target=\"_blank\">Google APIs Console</a> and login if necessary.</li>"
-		+ "<li>Select the <i>Services</i> item from the menu on the left.</li>"
-		+ "<li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>"
-		+ "<li>Go back to the main menu and select the <i>API Access</i> item. </li>"
-		+ "</ol>"
-		+ "<p>Your API Key will be near the bottom of that pane in the section called \"Simple API Access\"."
-		+ "You will have to provide that key as the value for the <i>ApiKey</i> property in your Fusiontables app.</p>"
-		+ "<p>Once you have an API key, set the value of the <i>Query</i> property to a valid Fusiontables SQL query "
-		+ "and call <i>SendQuery</i> to execute the query.  App Inventor will send the query to the Fusion Tables "
-		+ "server and the <i>GotResult</i> block will fire when a result is returned from the server."
-		+ "Query results will be returned in CSV format, and "
-		+ "can be converted to list format using the \"list from csv table\" or "
-		+ "\"list from csv row\" blocks.</p>"
-		+ "<p>Note that you do not need to worry about UTF-encoding the query. "
-		+ "But you do need to make sure the query follows the syntax described in "
-		+ "<a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, "
-		+ "which means that things like capitalization for names of columns matters, and "
-		+ "that single quotes must be used around column names if there are spaces in them.</p>", category = ComponentCategory.STORAGE, nonVisible = true, iconName = "images/fusiontables.png")
+@DesignerComponent(version = YaVersion.SPREADSHEETSCONTROL_COMPONENT_VERSION, description = "<p>A non-visible component that communicates with Google Spreadsheets. "
+    + "Spreadsheets "
+    + "this component lets you modify information within a Google Spreadsheet, including</p> "
+    + "<p>This component uses the "
+    + "<a href=\"https://developers.google.com/google-apps/spreadsheets\" target=\"_blank\">Google Spreadsheets API</a>. "
+    + "<p>In order to develop apps that use Spreadsheets, you must obtain an Spreadsheets Key."
+    + "<p>To get an Spreadsheets key, follow these instructions.</p> "
+    + "<ol>"
+    + "<li>Go to your Google Drive login if necessary.</li>"
+    + "<li>Select/Create the relevant Spreadsheet item from the menu on the left.</li>"
+    + "<li>The Spreadsheets key will be placed in the URL immediately after <i> key=</i></li>", category = ComponentCategory.STORAGE, nonVisible = true, iconName = "images/spreadsheets.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET,"
-		+ "android.permission.ACCOUNT_MANAGER,"
-		+ "android.permission.MANAGE_ACCOUNTS,"
-		+ "android.permission.GET_ACCOUNTS,"
-		+ "android.permission.USE_CREDENTIALS")
+    + "android.permission.ACCOUNT_MANAGER,"
+    + "android.permission.MANAGE_ACCOUNTS,"
+    + "android.permission.GET_ACCOUNTS,"
+    + "android.permission.USE_CREDENTIALS")
 @UsesLibraries(libraries = "google-api-client-beta.jar,"
-		+ "google-api-client-android2-beta.jar,"
-		+ "google-http-client-beta.jar,"
-		+ "google-http-client-android2-beta.jar,"
-		+ "google-http-client-android3-beta.jar,"
-		+ "google-oauth-client-beta.jar," + "gdata-client-1.0.jar,"
-		+ "gdata-client-meta-1.0.jar," + "gdata-core-1.0.jar,"
-		+ "gdata-spreadsheet-3.0.jar," + "gdata-spreadsheet-meta-3.0.jar,"
-		+ "guava-14.0.1.jar")
+    + "google-api-client-android2-beta.jar,"
+    + "google-http-client-beta.jar,"
+    + "google-http-client-android2-beta.jar,"
+    + "google-http-client-android3-beta.jar,"
+    + "google-oauth-client-beta.jar," + "gdata-client-1.0.jar,"
+    + "gdata-client-meta-1.0.jar," + "gdata-core-1.0.jar,"
+    + "gdata-spreadsheet-3.0.jar," + "gdata-spreadsheet-meta-3.0.jar,"
+    + "guava-14.0.1.jar")
 public class SpreadsheetControl extends AndroidNonvisibleComponent implements
-		Component {
-	private static final String LOG_TAG = "spreadsheet";
-	private static final String DIALOG_TEXT = "Choose an account to access Spreadsheets";
-	// private static final String FUSION_QUERY_URL =
-	// "http://www.google.com/fusiontables/api/query";
-	// public static final String FUSIONTABLES_POST =
-	// "https://www.googleapis.com/fusiontables/v1/tables";
-
-	// private static final String DEFAULT_QUERY = "show tables";
-	private static final String FUSIONTABLES_SERVICE = "fusiontables";
-	private static final int SERVER_TIMEOUT_MS = 30000;
-	public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
-
-	public static final String FUSIONTABLES_URL = "https://www.googleapis.com/fusiontables/v1/query";
-	public static final String AUTH_TOKEN_TYPE_SPREADSHEETS = "oauth2:https://spreadsheets.google.com/feeds";
-	public static final String APP_NAME = "App Inventor";
-
-	private String authTokenType = AUTH_TOKEN_TYPE_SPREADSHEETS;
-
-	/**
-	 * The developer's Google API key, See <a
-	 * href="https://code.google.com/apis/console/"
-	 * >https://code.google.com/apis/console/</a>
-	 */
-	// private String cellID;
-	// private String worksheetTitle;
-	private String spreadsheetKey;
-	private SpreadsheetEntry spreadsheet;
-	private SpreadsheetService service;
-	private URL SPREADSHEET_FEED_URL;
-	private final String FAIL_STRING = "fail";
-	/**
-	 * Error message returned from API query
-	 */
-	private String errorMessage = "Error on Spreadsheets query";
-
-	private final Activity activity;
-	private String[] headings;
-
-	private enum SpreadsheetAction {
-		SET_SPREADSHEET, CREATE_WORKSHEET, RESIZE_WORKSHEET, RENAME_WORKSHEET, DELETE_WORKSHEET, GET_WORKSHEET_ROW, GET_WORKSHEET_COL, ADD_ROW, UPDATE_ROW, DELETE_ROW, UPDATE_CELL, CLEAR_CELL, GET_CELL, READ_ROW;
-	};
-
-	public SpreadsheetControl(ComponentContainer componentContainer) {
-		super(componentContainer.$form());
-		this.activity = componentContainer.$context();
-		// requestHelper = createClientLoginHelper(DIALOG_TEXT,
-		// FUSIONTABLES_SERVICE);
-		// query = DEFAULT_QUERY;
-
-		if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
-			showNoticeAndDie(
-					"Sorry. The Fusiontables component is not compatible with this phone.",
-					"This application must exit.", "Rats!");
-		}
-	}
-
-	// show a notification and kill the app when the button is pressed
-	private void showNoticeAndDie(String message, String title,
-			String buttonText) {
-		AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
-		alertDialog.setTitle(title);
-		// prevents the user from escaping the dialog by hitting the Back button
-		alertDialog.setCancelable(false);
-		alertDialog.setMessage(message);
-		alertDialog.setButton(buttonText,
-				new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						activity.finish();
-					}
-				});
-		alertDialog.show();
-	}
-
-	/**
-	 * Setter for the specific Spreadsheet key.
-	 */
-	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-	@SimpleProperty
-	public void SpreadsheetKey(String spreadsheetKey) {
-		this.spreadsheetKey = spreadsheetKey;
-		new QueryProcessorV1(activity)
-				.execute(SpreadsheetAction.SET_SPREADSHEET.name());
-	}
-
-	// /**
-	// * Setter for the specific worksheet ID
-	// */
-	// @DesignerProperty(editorType =
-	// PropertyTypeConstants.PROPERTY_TYPE_STRING,
-	// defaultValue = "")
-	// @SimpleProperty
-	// public void WorksheetTitle(String worksheetTitle) {
-	// this.worksheetTitle = worksheetTitle;
-	// }
-
-	// /**
-	// * Setter for the cell ID
-	// */
-	// @DesignerProperty(editorType =
-	// PropertyTypeConstants.PROPERTY_TYPE_STRING,
-	// defaultValue = "")
-	// @SimpleProperty
-	// public void CellID(String cellID) {
-	// this.cellID = cellID;
-	// }
-
-	// /**
-	// * Setter for the cell value
-	// */
-	// @DesignerProperty(editorType =
-	// PropertyTypeConstants.PROPERTY_TYPE_STRING,
-	// defaultValue = "")
-	// @SimpleProperty
-	// public void Value(String value) {
-	// this.value = value;
-	// }
-	//
-	// /**
-	// * Getter for the cell value.
-	// * @return value the value
-	// */
-	// @SimpleProperty(
-	// description = "Your new Cell Value. For help, click on the question" +
-	// "mark (?) next to the SpreadsheetControl component in the Palette. ",
-	// category = PropertyCategory.BEHAVIOR)
-	// public String Value() {
-	// return this.value;
-	// }
-	/**
-	 * Getter for the Spreadsheet key.
-	 * 
-	 * @return spreadsheetKey the spreadsheetKey
-	 */
-	@SimpleProperty(description = "Your Spreadsheet Key. For help, click on the question"
-			+ "mark (?) next to the SpreadsheetControl component in the Palette. ", category = PropertyCategory.BEHAVIOR)
-	public String SpreadsheetKey() {
-		return this.spreadsheetKey;
-	}
-
-	// /**
-	// * Getter for the Worksheet ID.
-	// * @return apiKey the apiKey
-	// */
-	// @SimpleProperty(
-	// description = "Your WorksheetID. For help, click on the question" +
-	// "mark (?) next to the SpreadsheetControl component in the Palette. ",
-	// category = PropertyCategory.BEHAVIOR)
-	// public String WorksheetID() {
-	// return this.worksheetTitle;
-	// }
-	//
-	// /**
-	// * Getter for the CellID.
-	// * @return cellID the cellID
-	// */
-	// @SimpleProperty(
-	// description = "Your CellID. For help, click on the question" +
-	// "mark (?) next to the SpreadsheetControl component in the Palette. ",
-	// category = PropertyCategory.BEHAVIOR)
-	// public String CellID() {
-	// return this.cellID;
-	// }
-
-	/**
-	 * Calls QueryProcessorV1 to update the cell asynchronously, if the user has
-	 * already authenticated with the Google Spreadsheet service.
-	 */
-	@SimpleFunction(description = "Send the updated value to the Google Spreadsheet")
-	public void UpdateCell(String worksheetTitle, String cellID, String value) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.UPDATE_CELL.name(), worksheetTitle, cellID,
-				value);
-	}
-
-	/**
-	 * Calls QueryProcessorV1 to clear the cell asynchronously, if the user has
-	 * already authenticated with the Google Spreadsheet service.
-	 */
-	@SimpleFunction(description = "Clear the specified cell in the Google Spreadsheet")
-	public void ClearCell(String worksheetTitle, String cellID) {
-		new QueryProcessorV1(activity)
-				.execute(SpreadsheetAction.CLEAR_CELL.name(), worksheetTitle,
-						cellID, "");
-	}
-
-	@SimpleFunction(description = "Get Value of cell, if it exists, in existing worksheet")
-	public void getCellValue(String worksheetTitle, String cellID) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.GET_CELL.name(), worksheetTitle, cellID, "");
-	}
-
-	// Don't Touch
-	@SimpleEvent(description = "Indicates that the Spreadsheet query has finished processing, "
-			+ "with a result.")
-	public void GotResult(String result) {
-		// Invoke the application's "GotValue" event handler
-		EventDispatcher.dispatchEvent(this, "GotResult", result);
-	}
-
-	/**
-	 * Calls QueryProcessorV1 to clear the cell asynchronously, if the user has
-	 * already authenticated with the Google Spreadsheet service.
-	 */
-	@SimpleFunction(description = "Create a new worksheet in the Google Spreadsheet")
-	public void createWorksheet(String newWorksheetTitle, int rowCount,
-			int columnCount) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.CREATE_WORKSHEET.name(),
-				String.valueOf(rowCount), String.valueOf(columnCount),
-				newWorksheetTitle);
-	}
-
-	@SimpleFunction(description = "Resize an existing worksheet in the Google Spreadsheet")
-	public void resizeWorksheet(String worksheetTitle, int rowCount,
-			int columnCount) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.RESIZE_WORKSHEET.name(),
-				String.valueOf(rowCount), String.valueOf(columnCount),
-				worksheetTitle);
-	}
-
-	@SimpleFunction(description = "Rename an existing worksheet in the Google Spreadsheet")
-	public void renameWorksheet(String oldWorksheetTitle,
-			String newWorksheetTitle) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.RENAME_WORKSHEET.name(), oldWorksheetTitle,
-				newWorksheetTitle);
-	}
-
-	@SimpleFunction(description = "Rename an existing worksheet in the Google Spreadsheet")
-	public void deleteWorksheet(String worksheetTitle) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.DELETE_WORKSHEET.name(), worksheetTitle);
-	}
-
-	@SimpleFunction(description = "Get Row count in existing worksheet")
-	public void getWorksheetRowCount(String worksheetTitle) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.GET_WORKSHEET_ROW.name(), worksheetTitle);
-	}
-
-	@SimpleFunction(description = "Get Column count in existing worksheet")
-	public void getWorksheetColCount(String worksheetTitle) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.GET_WORKSHEET_ROW.name(), worksheetTitle);
-	}
-
-	/**
-	 * Elements property setter method
-	 * 
-	 * @param itemList
-	 *            - a YailList containing the strings representing headings
-	 */
-	// TODO(user): we need a designer property for lists
-	@SimpleProperty
-	public void Headings(YailList itemList) {
-		Object[] objects = itemList.toStringArray();
-		for (int i = 0; i < objects.length; i++) {
-			if (!(objects[i] instanceof String)) {
-				throw new YailRuntimeError(
-						"Headings passed to SpreadsheetControl must be Strings",
-						"Error");
-			}
-		}
-		headings = itemList.toStringArray();
-	}
-
-	@SimpleFunction(description = "Add a new row of information into an existing worksheet: "
-			+ "provide a list of 2-element lists--the first the column heading, the second the value")
-	public void appendWorksheetRecord(String worksheetTitle, YailList record) {
-		String csvRecord = checkRecordAndGenerateCSV(record);
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.ADD_ROW.name(), worksheetTitle, csvRecord);
-	}
-
-	@SimpleFunction(description = "Update a row of information into an existing worksheet: provide a list of 2-element lists--the first the column heading, the second the value")
-	public void updateWorksheetRecord(String worksheetTitle, YailList record,
-			String heading, String key) {
-		String csvRecord = checkRecordAndGenerateCSV(record);
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.UPDATE_ROW.name(), worksheetTitle, csvRecord,
-				heading, key);
-	}
-
-	@SimpleFunction(description = "Delete a row of information into an existing worksheet")
-	public void deleteWorksheetRecord(String worksheetTitle, String heading,
-			String key) {
-		new QueryProcessorV1(activity).execute(
-				SpreadsheetAction.DELETE_ROW.name(), worksheetTitle, heading,
-				key);
-	}
-
-	private String checkRecordAndGenerateCSV(YailList record) {
-		StringBuilder csvRecord = new StringBuilder();
-
-		Object[] items = record.toStringArray();
-		if (items.length != headings.length) {
-			throw new YailRuntimeError("Invalid records passed", "Error");
-		}
-		for (int j = 0; j < items.length; j++) {
-			if (!(items[j] instanceof String)) {
-				throw new YailRuntimeError(
-						"Items passed to SpreadsheetControl within List must be Strings",
-						"Error");
-			} else {
-				csvRecord.append((String) items[j]);
-				if (j < items.length - 1)
-					csvRecord.append(",");
-			}
-		}
-		return csvRecord.toString();
-	}
-
-	// TODO(sharon): figure out why this isn't working
-	// TODO(ralph): Looks like it's working for OAuth 2, Let's user switch
-	// accounts
-	// Don't Touch
-	@SimpleFunction
-	public void ForgetLogin() {
-		OAuth2Helper.resetAccountCredential(activity);
-	}
-
-	/**
-	 * Executes a Fusiontable query with an OAuth 2.0 authenticated request.
-	 * Requests are authenticated by attaching an Authentication header to the
-	 * Http request. The header takes the form 'Authentication Oauth
-	 * <access_token>'.
-	 * 
-	 * Requests take the form of SQL strings, using an Sql object from the
-	 * Google API Client library. Apparently the Sql object handles the decision
-	 * of whether the request should be a GET or a POST. Queries such as 'show
-	 * tables' and 'select' are supposed to be GETs and queries such as 'insert'
-	 * are supposed to be POSTS.
-	 * 
-	 * See <a
-	 * href="https://developers.google.com/fusiontables/docs/v1/using">https
-	 * ://developers.google.com/fusiontables/docs/v1/using</a>
-	 * 
-	 * @param authToken
-	 *            the OAuth 2.0 access token
-	 */
-	public void setSpreadsheet(String authToken) {
-		this.service = new SpreadsheetService("SpreadsheetIntegration");
-		this.service.setHeader("Authorization", "Bearer " + authToken);
-		// Define the URL to request. This should never change.
-		this.SPREADSHEET_FEED_URL = null;
-		try {
-			String url = "https://spreadsheets.google.com/feeds/spreadsheets/"
-					+ this.spreadsheetKey;
-
-			this.SPREADSHEET_FEED_URL = new URL(url);
-			Log.i("URL Spreadsheet", url);
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		SpreadsheetEntry spreadsheet = null;
-		try {
-			spreadsheet = this.service.getEntry(this.SPREADSHEET_FEED_URL,
-					SpreadsheetEntry.class);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-			Log.e("Spreadsheet Entry IOEx",
-					this.SPREADSHEET_FEED_URL.toString());
-
-		} catch (ServiceException e2) {
-			// TODO Auto-generated catch block
-			Log.e("Spreadsheet Entry ServEx",
-					this.SPREADSHEET_FEED_URL.toString());
-
-			e2.printStackTrace();
-		}
-		if (spreadsheet == null) {
-			Log.e("Spreadsheet Entry null",
-					this.SPREADSHEET_FEED_URL.toString());
-			throw new YailRuntimeError("Spreadsheet key invalid", "Error");
-		}
-		this.spreadsheet = spreadsheet;
-	}
-
-	public WorksheetEntry getWorksheet(String worksheetTitle) {
-		Log.i("Spreadsheet Name", spreadsheet.getTitle().getPlainText());
-
-		WorksheetFeed worksheetFeed = null;
-		try {
-			worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(),
-					WorksheetFeed.class);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (ServiceException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		WorksheetEntry worksheet = null;
-		List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
-		for (WorksheetEntry ws : worksheets) {
-			if (ws.getTitle().getPlainText().compareTo(worksheetTitle) == 0)
-				worksheet = ws;
-		}
-
-		if (worksheet == null) {
-			Log.e("Worksheet null", SPREADSHEET_FEED_URL.toString());
-			throw new YailRuntimeError("Worksheet Title invalid", "Error");
-		}
-		return worksheet;
-	}
-
-	public CellFeed getCellFeed(WorksheetEntry worksheet, String authToken) {
-
-		// Fetch the cell feed of the worksheet.
-		URL cellFeedUrl = worksheet.getCellFeedUrl();
-		CellFeed cellFeed = null;
-		try {
-			cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ServiceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return cellFeed;
-
-	}
-
-	/**
-	 * Callback used for error reporting.
-	 * 
-	 * @param msg
-	 */
-	public void handleOAuthError(String msg) {
-		Log.i(LOG_TAG, "handleOAuthError: " + msg);
-		errorMessage = msg;
-	}
-
-	/**
-	 * First uses OAuth2Helper to acquire an access token and then sends the
-	 * Fusiontables query asynchronously to the server and returns the result.
-	 * 
-	 * This version uses the Fusion Tabes V1.0 API.
-	 */
-	private class QueryProcessorV1 extends AsyncTask<String, Void, String> {
-		private static final String TAG = "QueryProcessorV1";
-
-		private final Activity activity; // The main list activity
-		private final ProgressDialog dialog;
-
-		/**
-		 * @param activity
-		 *            , needed to create a progress dialog
-		 */
-		QueryProcessorV1(Activity activity) {
-			Log.i(TAG, "Creating AsyncSpreadsheetQuery");
-			this.activity = activity;
-			dialog = new ProgressDialog(activity);
-		}
-
-		@Override
-		protected void onPreExecute() {
-		}
-
-		/**
-		 * The Oauth handshake and the API request are both handled here.
-		 */
-		@Override
-		protected String doInBackground(String... params) {
-			Log.i(TAG, "Starting doInBackground " + params[0]);
-			SpreadsheetAction action = SpreadsheetAction.valueOf(params[0]);
-			String output = "Success";
-			// Get a fresh access token
-			OAuth2Helper oauthHelper = new OAuth2Helper();
-			String authToken = oauthHelper.getRefreshedAuthToken(activity,
-					authTokenType);
-
-			if (authToken != null) {
-				switch (action) {
-				case SET_SPREADSHEET:
-					setSpreadsheet(authToken);
-					break;
-				case UPDATE_CELL:
-				case CLEAR_CELL:
-				case GET_CELL: {
-					String worksheetTitle = params[1];
-					String cellID = params[2];
-					String value = params[3];
-
-					WorksheetEntry worksheet = getWorksheet(worksheetTitle);
-					CellFeed cellFeed = getCellFeed(worksheet, authToken);
-
-					for (CellEntry cell : cellFeed.getEntries()) {
-						if (cell.getTitle().getPlainText().equals(cellID)) {
-
-							try {
-								switch (action) {
-								case UPDATE_CELL:
-								case CLEAR_CELL: {
-									cell.changeInputValueLocal(value);
-									CellEntry ce = cell.update();
-									// to bypass output reassignment at end
-									return ce.getCell().getValue();
-								}
-
-								case GET_CELL: {
-									// to bypass output reassignment at end
-									return cell.getCell().getValue();
-								}
-								}
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-								Log.e("Cell update IOException", "didn't work");
-							} catch (ServiceException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-								Log.e("Cell update Service Exception",
-										"didn't work");
-							}
-						}
-					}
-					output = "Cell not Found";
-				}
-					break;
-				case CREATE_WORKSHEET: {
-					int rowCount = Integer.parseInt(params[1]);
-					int columnCount = Integer.parseInt(params[2]);
-					String newWorksheetTitle = params[3];
-
-					// Create a local representation of the new worksheet.
-					WorksheetEntry newWorksheet = new WorksheetEntry();
-					newWorksheet.setTitle(new PlainTextConstruct(
-							newWorksheetTitle));
-					newWorksheet.setColCount(rowCount);
-					newWorksheet.setRowCount(columnCount);
-
-					URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
-					try {
-						service.insert(worksheetFeedUrl, newWorksheet);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Log.e("Worksheet Insertion", "Failed to insert");
-						output = null;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						Log.e("Worksheet Insertion", "Failed to insert");
-						output = null;
-					}
-				}
-					break;
-				case DELETE_WORKSHEET: {
-					String worksheetName = params[1];
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					try {
-						worksheet.delete();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					}
-				}
-					break;
-				case RENAME_WORKSHEET: {
-					String oldWorksheetName = params[1];
-					String newWorksheetName = params[2];
-					WorksheetEntry worksheet = getWorksheet(oldWorksheetName);
-
-					worksheet
-							.setTitle(new PlainTextConstruct(newWorksheetName));
-					// Send the local representation of the worksheet to the API
-					// for
-					// modification.
-
-					try {
-						worksheet.update();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					}
-				}
-					break;
-				case RESIZE_WORKSHEET: {
-					int rowCount = Integer.parseInt(params[1]);
-					int columnCount = Integer.parseInt(params[2]);
-					String worksheetName = params[3];
-
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					worksheet.setColCount(columnCount);
-					worksheet.setRowCount(rowCount);
-					// Send the local representation of the worksheet to the API
-					// for
-					// modification.
-					try {
-						worksheet.update();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-					}
-				}
-					break;
-				case GET_WORKSHEET_ROW: {
-					String worksheetName = params[1];
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					output = String.valueOf(worksheet.getRowCount());
-				}
-					break;
-				case GET_WORKSHEET_COL: {
-					String worksheetName = params[1];
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					output = String.valueOf(worksheet.getColCount());
-				}
-					break;
-				case ADD_ROW: {
-					String worksheetName = params[1];
-					String[] recordList = params[2].split(",");
-
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					// Define the URL to request the list feed of the worksheet.
-					// Fetch the list feed of the worksheet.
-					URL listFeedUrl = worksheet.getListFeedUrl();
-
-					ListEntry row = new ListEntry();
-
-					for (int i = 0; i < headings.length; i++) {
-						row.getCustomElements().setValueLocal(headings[i],
-								recordList[i]);
-					}
-					// Send the new row to the API for insertion.
-					try {
-						row = service.insert(listFeedUrl, row);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					}
-				}
-					break;
-				case UPDATE_ROW: {
-					String worksheetName = params[1];
-					String[] recordList = params[2].split(",");
-					String specificHeading = params[3];
-					String specificKey = params[4];
-
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					// Define the URL to request the list feed of the worksheet.
-					// Fetch the list feed of the worksheet.
-					URL listFeedUrl = worksheet.getListFeedUrl();
-					ListFeed listFeed = null;
-					try {
-						listFeed = service.getFeed(listFeedUrl, ListFeed.class);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					}
-					ListEntry row = null;
-					for (ListEntry r : listFeed.getEntries()) {
-						CustomElementCollection elements = r
-								.getCustomElements();
-						String name = elements.getValue(specificHeading);
-						if (name.compareTo(specificKey) == 0) {
-							row = r;
-							break;
-						}
-
-					}
-
-					for (int i = 0; i < headings.length; i++) {
-						row.getCustomElements().setValueLocal(headings[i],
-								recordList[i]);
-					}
-					// Send the new row to the API for insertion.
-					try {
-						row.update();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					}
-
-				}
-					break;
-				case DELETE_ROW: {
-					String worksheetName = params[1];
-					String specificHeading = params[2];
-					String specificKey = params[3];
-
-					WorksheetEntry worksheet = getWorksheet(worksheetName);
-					// Define the URL to request the list feed of the worksheet.
-					// Fetch the list feed of the worksheet.
-					URL listFeedUrl = worksheet.getListFeedUrl();
-					ListFeed listFeed = null;
-					try {
-						listFeed = service.getFeed(listFeedUrl, ListFeed.class);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					}
-					ListEntry row = null;
-					for (ListEntry r : listFeed.getEntries()) {
-						CustomElementCollection elements = r
-								.getCustomElements();
-						String name = elements.getValue(specificHeading);
-						if (name.compareTo(specificKey) == 0) {
-							row = r;
-							break;
-						}
-					}
-					try {
-						row.delete();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					} catch (ServiceException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-						output = null;
-						break;
-					}
-				}
-					break;
-
-				case READ_ROW: {
-
-				}
-					break;
-				default:
-					break;
-
-				}
-				return output;
-			} else {
-				return OAuth2Helper.getErrorMessage();
-			}
-
-		}
-
-		/**
-		 * Fires the AppInventor GotResult() method
-		 */
-		@Override
-		protected void onPostExecute(String result) {
-			Log.i(LOG_TAG, "Post result " + result);
-			if (result == null) {
-				result = "Error";
-			}
-			dialog.dismiss();
-			GotResult(result);
-		}
-	}
-
+Component {
+  private static final String LOG_TAG = "spreadsheet";
+  public static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
+
+  public static final String AUTH_TOKEN_TYPE_SPREADSHEETS = "oauth2:https://spreadsheets.google.com/feeds";
+  public static final String APP_NAME = "App Inventor";
+
+  private String authTokenType = AUTH_TOKEN_TYPE_SPREADSHEETS;
+
+  private String spreadsheetKey;
+  private SpreadsheetEntry spreadsheet;
+  private SpreadsheetService service;
+  private URL SPREADSHEET_FEED_URL;
+  private final Activity activity;
+  private String[] headings;
+
+  private enum SpreadsheetAction {
+    SET_SPREADSHEET, CREATE_WORKSHEET, RESIZE_WORKSHEET, RENAME_WORKSHEET, DELETE_WORKSHEET, GET_WORKSHEET_ROW, GET_WORKSHEET_COL, ADD_ROW, UPDATE_ROW, DELETE_ROW, UPDATE_CELL, CLEAR_CELL, GET_CELL;
+  };
+
+  public SpreadsheetControl(ComponentContainer componentContainer) {
+    super(componentContainer.$form());
+    this.activity = componentContainer.$context();
+
+    if (SdkLevel.getLevel() < SdkLevel.LEVEL_ECLAIR) {
+      showNoticeAndDie(
+          "Sorry. The Spreadsheets component is not compatible with this phone.",
+          "This application must exit.", "Rats!");
+    }
+  }
+
+  // show a notification and kill the app when the button is pressed
+  private void showNoticeAndDie(String message, String title,
+      String buttonText) {
+    AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
+    alertDialog.setTitle(title);
+    // prevents the user from escaping the dialog by hitting the Back button
+    alertDialog.setCancelable(false);
+    alertDialog.setMessage(message);
+    alertDialog.setButton(buttonText,
+        new DialogInterface.OnClickListener() {
+      public void onClick(DialogInterface dialog, int which) {
+        activity.finish();
+      }
+    });
+    alertDialog.show();
+  }
+
+  /**
+   * Setter for the specific Spreadsheet key.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty
+  public void SpreadsheetKey(String spreadsheetKey) {
+    this.spreadsheetKey = spreadsheetKey;
+    new QueryProcessorV1(activity)
+    .execute(SpreadsheetAction.SET_SPREADSHEET.name());
+  }
+
+
+  /**
+   * Method to retrieve the current Spreadsheet key.
+   * 
+   * @return spreadsheetKey 
+   */
+  @SimpleProperty(description = "Your Spreadsheet Key. For help, click on the question"
+      + "mark (?) next to the SpreadsheetControl component in the Palette. ", category = PropertyCategory.BEHAVIOR)
+  public String SpreadsheetKey() {
+    return this.spreadsheetKey;
+  }
+
+  
+
+  /**
+   * Calls QueryProcessorV1 to update the cell asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Send the updated value to the Google Spreadsheet")
+  public void UpdateCell(String worksheetTitle, String cellID, String value) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.UPDATE_CELL.name(), worksheetTitle, cellID,
+        value);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to clear the cell asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Clear the specified cell in the Google Spreadsheet")
+  public void ClearCell(String worksheetTitle, String cellID) {
+    new QueryProcessorV1(activity)
+    .execute(SpreadsheetAction.CLEAR_CELL.name(), worksheetTitle,
+        cellID, "");
+  }
+
+  /**
+   * Calls QueryProcessorV1 to get the cell value asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Get value of cell, if it exists, in existing worksheet")
+  public void getCellValue(String worksheetTitle, String cellID) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.GET_CELL.name(), worksheetTitle, cellID, "");
+  }
+
+  @SimpleEvent(description = "Indicates that the Cell Value has been retrieved, "
+      + "with a result.")
+  public void GotCellValue(String result) {
+    // Invoke the application's "GotCellValue" event handler
+    EventDispatcher.dispatchEvent(this, "GotCellValue", result);
+  }
+  
+  
+  @SimpleEvent(description = "Indicates that the Worksheet query has been retrieved, "
+      + "with a result.")
+  public void GotColumnCount(String result) {
+    // Invoke the application's "GotCellValue" event handler
+    EventDispatcher.dispatchEvent(this, "GotColumnCount", result);
+  }
+  
+  @SimpleEvent(description = "Indicates that the Worksheet query has been retrieved, "
+	      + "with a result.")
+	  public void GotRowCount(String result) {
+	    // Invoke the application's "GotRowalue" event handler
+	    EventDispatcher.dispatchEvent(this, "GotRowCount", result);
+	  }
+
+  /**
+   * Calls QueryProcessorV1 to create a worksheet asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Create a new worksheet in the Google Spreadsheet")
+  public void CreateWorksheet(String newWorksheetTitle, int rowCount,
+      int columnCount) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.CREATE_WORKSHEET.name(),
+        String.valueOf(rowCount), String.valueOf(columnCount),
+        newWorksheetTitle);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to resize a worksheet asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Resize an existing worksheet in the Google Spreadsheet")
+  public void ResizeWorksheet(String worksheetTitle, int rowCount,
+      int columnCount) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.RESIZE_WORKSHEET.name(),
+        String.valueOf(rowCount), String.valueOf(columnCount),
+        worksheetTitle);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to rename a worksheet asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Rename an existing worksheet in the Google Spreadsheet")
+  public void RenameWorksheet(String oldWorksheetTitle,
+      String newWorksheetTitle) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.RENAME_WORKSHEET.name(), oldWorksheetTitle,
+        newWorksheetTitle);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to Delete a worksheet asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Delete an existing worksheet in the Google Spreadsheet")
+  public void DeleteWorksheet(String worksheetTitle) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.DELETE_WORKSHEET.name(), worksheetTitle);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to retrieve a worksheet's row count asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Get Row count in existing worksheet")
+  public void GetWorksheetRowCount(String worksheetTitle) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.GET_WORKSHEET_ROW.name(), worksheetTitle);
+  }
+
+  /**
+   * Calls QueryProcessorV1 to retrieve a worksheet's column count asynchronously, if the user has
+   * already authenticated with the Google Spreadsheet service.
+   */
+  @SimpleFunction(description = "Get Column count in existing worksheet")
+  public void GetWorksheetColCount(String worksheetTitle) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.GET_WORKSHEET_ROW.name(), worksheetTitle);
+  }
+
+  /**
+   * Elements property setter method
+   * 
+   * @param itemList
+   *            - a YailList containing the strings representing headings
+   */
+  @SimpleProperty(description = "Column Headings of the worksheet"
+  		+ "for which you wish to enter information in records. For help, click on the question"
+	      + "mark (?) next to the SpreadsheetControl component in the Palette. ", category = PropertyCategory.BEHAVIOR)
+  public void Headings(YailList itemList) {
+    Object[] objects = itemList.toStringArray();
+    for (int i = 0; i < objects.length; i++) {
+      if (!(objects[i] instanceof String)) {
+        throw new YailRuntimeError(
+            "Headings passed to SpreadsheetControl must be Strings",
+            "Error");
+      }
+    }
+    headings = itemList.toStringArray();
+  }
+
+  @SimpleFunction(description = "Add a new record of information into an existing worksheet: "
+      + "provide a list of 2-element lists--the first the column heading, the second the value")
+  public void appendWorksheetRecord(String worksheetTitle, YailList record) {
+    String csvRecord = checkRecordAndGenerateCSV(record);
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.ADD_ROW.name(), worksheetTitle, csvRecord);
+  }
+
+  @SimpleFunction(description = "Update a record of information into an existing worksheet: provide a list of 2-element lists--the first the column heading, the second the value")
+  public void updateWorksheetRecord(String worksheetTitle, YailList record,
+      String heading, String key) {
+    String csvRecord = checkRecordAndGenerateCSV(record);
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.UPDATE_ROW.name(), worksheetTitle, csvRecord,
+        heading, key);
+  }
+
+  @SimpleFunction(description = "Delete a record of information into an existing worksheet")
+  public void deleteWorksheetRecord(String worksheetTitle, String heading,
+      String key) {
+    new QueryProcessorV1(activity).execute(
+        SpreadsheetAction.DELETE_ROW.name(), worksheetTitle, heading,
+        key);
+  }
+
+  /**
+   * Turns a Yaillist record into a single String csv to be parsed
+   * @param record
+   * @return csv String representation
+   */
+  private String checkRecordAndGenerateCSV(YailList record) {
+    StringBuilder csvRecord = new StringBuilder();
+
+    Object[] items = record.toStringArray();
+    if (items.length != headings.length) {
+      throw new YailRuntimeError("Invalid records passed", "Error");
+    }
+    for (int j = 0; j < items.length; j++) {
+      if (!(items[j] instanceof String)) {
+        throw new YailRuntimeError(
+            "Items passed to SpreadsheetControl within List must be Strings",
+            "Error");
+      } else {
+        csvRecord.append((String) items[j]);
+        if (j < items.length - 1)
+          csvRecord.append(",");
+      }
+    }
+    return csvRecord.toString();
+  }
+
+  // Don't Touch
+  @SimpleFunction
+  public void ForgetLogin() {
+    OAuth2Helper.resetAccountCredential(activity);
+  }
+
+  /**
+   * Creates a Spreadsheet Service using previously
+   * generated OAuth 2.0 access token, and gains
+   * the user's Spreadsheet feed.
+   * Also saves specific Spreadsheet Entry, if exists and
+   * user has access to it.
+   * 
+   * @param authToken
+   *            the OAuth 2.0 access token
+   */
+  private void setSpreadsheet(String authToken) {
+    this.service = new SpreadsheetService("SpreadsheetIntegration");
+    this.service.setHeader("Authorization", "Bearer " + authToken);
+    // Define the URL to request. This should never change.
+    this.SPREADSHEET_FEED_URL = null;
+    try {
+      String url = "https://spreadsheets.google.com/feeds/spreadsheets/"
+          + this.spreadsheetKey;
+
+      this.SPREADSHEET_FEED_URL = new URL(url);
+      
+    } catch (MalformedURLException e) {
+      e.printStackTrace();
+    }
+    SpreadsheetEntry spreadsheet = null;
+    try {
+      spreadsheet = this.service.getEntry(this.SPREADSHEET_FEED_URL,
+          SpreadsheetEntry.class);
+    } catch (IOException e2) {
+      e2.printStackTrace();
+      Log.e("Spreadsheet Entry Not Found",
+          this.SPREADSHEET_FEED_URL.toString());
+    } catch (ServiceException e2) {
+      Log.e("Spreadsheet Entry Not Found",
+          this.SPREADSHEET_FEED_URL.toString());
+      e2.printStackTrace();
+    }
+    if (spreadsheet == null) {
+      Log.e("Spreadsheet Entry null",
+          this.SPREADSHEET_FEED_URL.toString());
+      throw new YailRuntimeError("Spreadsheet key invalid", "Error");
+    }
+    this.spreadsheet = spreadsheet;
+  }
+
+  /**
+   * Locates worksheet with given worksheetTitle
+   * within set Spreadsheet, if it exists
+   * @param worksheetTitle
+   * @return specific WorksheetEntry
+   */
+  private WorksheetEntry getWorksheet(String worksheetTitle) {
+
+    WorksheetFeed worksheetFeed = null;
+    try {
+      worksheetFeed = service.getFeed(spreadsheet.getWorksheetFeedUrl(),
+          WorksheetFeed.class);
+    } catch (IOException e1) {
+      Log.e("Worksheet Entry", "Not found");
+      e1.printStackTrace();
+    } catch (ServiceException e1) {
+      Log.e("Worksheet Entry", "Not found");
+      e1.printStackTrace();
+    }
+    WorksheetEntry worksheet = null;
+    List<WorksheetEntry> worksheets = worksheetFeed.getEntries();
+    for (WorksheetEntry ws : worksheets) {
+      if (ws.getTitle().getPlainText().compareTo(worksheetTitle) == 0)
+        worksheet = ws;
+    }
+
+    if (worksheet == null) {
+      Log.e("Worksheet null", SPREADSHEET_FEED_URL.toString());
+      throw new YailRuntimeError("Worksheet Title invalid", "Error");
+    }
+    return worksheet;
+  }
+
+  /**
+   * Within given WorksheetEntry, returns feed representing
+   * Cells within the worksheet, if it exists
+   * @param worksheet
+   * @param authToken
+   * @return
+   */
+  private CellFeed getCellFeed(WorksheetEntry worksheet, String authToken) {
+
+    // Fetch the cell feed of the worksheet.
+    URL cellFeedUrl = worksheet.getCellFeedUrl();
+    CellFeed cellFeed = null;
+    try {
+      cellFeed = service.getFeed(cellFeedUrl, CellFeed.class);
+    } catch (IOException e) {
+      Log.e("CellFeed", "Not found");
+      e.printStackTrace();
+    } catch (ServiceException e) {
+      Log.e("CellFeed", "Not found");
+      e.printStackTrace();
+    }
+
+    return cellFeed;
+
+  }
+
+  /**
+   * Callback used for error reporting.
+   * 
+   * @param msg
+   */
+  private void handleOAuthError(String msg) {
+    Log.i(LOG_TAG, "handleOAuthError: " + msg);
+  }
+
+  /**
+   * First uses OAuth2Helper to acquire an access token and then sends the
+   * Spreadsheet Feed query asynchronously to the server and returns the
+   * result.
+   * 
+   * This version uses the Spreadsheets V3.0 API.
+   */
+  private class QueryProcessorV1 extends AsyncTask<String, Void, String> {
+    private static final String TAG = "QueryProcessorV1";
+
+    private final Activity activity; // The main list activity
+    private final ProgressDialog dialog;
+
+    /**
+     * @param activity
+     *            , needed to create a progress dialog
+     */
+    QueryProcessorV1(Activity activity) {
+      Log.i(TAG, "Creating AsyncSpreadsheetQuery");
+      this.activity = activity;
+      dialog = new ProgressDialog(activity);
+    }
+
+    @Override
+    protected void onPreExecute() {
+    }
+
+    /**
+     * The Oauth handshake and the API request are both handled here.
+     */
+    @Override
+    protected String doInBackground(String... params) {
+      Log.i(TAG, "Starting doInBackground " + params[0]);
+      SpreadsheetAction action = SpreadsheetAction.valueOf(params[0]);
+      String output = "Success";
+      // Get a fresh access token
+      OAuth2Helper oauthHelper = new OAuth2Helper();
+      String authToken = oauthHelper.getRefreshedAuthToken(activity,
+          authTokenType);
+
+      if (authToken != null) {
+        switch (action) {
+        case SET_SPREADSHEET:
+          setSpreadsheet(authToken);
+          break;
+        case UPDATE_CELL:
+        case CLEAR_CELL:
+        case GET_CELL: {
+          String worksheetTitle = params[1];
+          String cellID = params[2];
+          String value = params[3];
+
+          WorksheetEntry worksheet = getWorksheet(worksheetTitle);
+          CellFeed cellFeed = getCellFeed(worksheet, authToken);
+
+          for (CellEntry cell : cellFeed.getEntries()) {
+            if (cell.getTitle().getPlainText().equals(cellID)) {
+
+              try {
+                switch (action) {
+                case UPDATE_CELL:
+                case CLEAR_CELL: {
+                  cell.changeInputValueLocal(value);
+                  CellEntry ce = cell.update();
+                  // to bypass output reassignment at end
+                  return output;}
+                case GET_CELL: {
+                  // to bypass output reassignment at end
+                  return "CELL:" + cell.getCell().getValue();}
+                }
+              } catch (IOException e) {
+                e.printStackTrace();
+                Log.e("Cell update IOException", "didn't work");
+              } catch (ServiceException e) {
+                e.printStackTrace();
+                Log.e("Cell update Service Exception",
+                    "didn't work");
+              }
+            }
+          }
+          output = null;
+        }
+        break;
+        case CREATE_WORKSHEET: {
+          int rowCount = Integer.parseInt(params[1]);
+          int columnCount = Integer.parseInt(params[2]);
+          String newWorksheetTitle = params[3];
+
+          // Create a local representation of the new worksheet.
+          WorksheetEntry newWorksheet = new WorksheetEntry();
+          newWorksheet.setTitle(new PlainTextConstruct(
+              newWorksheetTitle));
+          newWorksheet.setColCount(rowCount);
+          newWorksheet.setRowCount(columnCount);
+
+          URL worksheetFeedUrl = spreadsheet.getWorksheetFeedUrl();
+          try {
+            service.insert(worksheetFeedUrl, newWorksheet);
+          } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Insertion", "Failed to insert");
+            output = null;
+          } catch (ServiceException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Insertion", "Failed to insert");
+            output = null;
+          }
+        }
+        break;
+        case DELETE_WORKSHEET: {
+          String worksheetName = params[1];
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          try {
+            worksheet.delete();
+          } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Deletion", "Failed to delete");
+            output = null;
+          } catch (ServiceException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Deletion", "Failed to delete");
+            output = null;
+          }
+        }
+        break;
+        case RENAME_WORKSHEET: {
+          String oldWorksheetName = params[1];
+          String newWorksheetName = params[2];
+          WorksheetEntry worksheet = getWorksheet(oldWorksheetName);
+
+          worksheet
+          .setTitle(new PlainTextConstruct(newWorksheetName));
+          // Send the local representation of the worksheet to the API
+          // for
+          // modification.
+
+          try {
+            worksheet.update();
+          } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Rename", "Failed to rename");
+            output = null;
+          } catch (ServiceException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Rename", "Failed to delete");
+            output = null;
+          }
+        }
+        break;
+        case RESIZE_WORKSHEET: {
+          int rowCount = Integer.parseInt(params[1]);
+          int columnCount = Integer.parseInt(params[2]);
+          String worksheetName = params[3];
+
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          worksheet.setColCount(columnCount);
+          worksheet.setRowCount(rowCount);
+          // Send the local representation of the worksheet to the API
+          // for
+          // modification.
+          try {
+            worksheet.update();
+          } catch (IOException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Resize", "Failed");
+            output = null;
+          } catch (ServiceException e) {
+            e.printStackTrace();
+            Log.e("Worksheet Resize", "Failed");
+            output = null;
+          }
+        }
+        break;
+        case GET_WORKSHEET_ROW: {
+          String worksheetName = params[1];
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          output = "ROW:" +String.valueOf(worksheet.getRowCount());
+        }
+        break;
+        case GET_WORKSHEET_COL: {
+          String worksheetName = params[1];
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          output = "COL:" + String.valueOf(worksheet.getColCount());
+        }
+        break;
+        case ADD_ROW: {
+          String worksheetName = params[1];
+          String[] recordList = params[2].split(",");
+
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          // Define the URL to request the list feed of the worksheet.
+          // Fetch the list feed of the worksheet.
+          URL listFeedUrl = worksheet.getListFeedUrl();
+
+          ListEntry row = new ListEntry();
+
+          for (int i = 0; i < headings.length; i++) {
+            row.getCustomElements().setValueLocal(headings[i],
+                recordList[i]);
+          }
+          // Send the new row to the API for insertion.
+          try {
+            row = service.insert(listFeedUrl, row);
+          } catch (IOException e) {
+            Log.e("Add Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          } catch (ServiceException e) {
+            Log.e("Add Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          }
+        }
+        break;
+        case UPDATE_ROW: {
+          String worksheetName = params[1];
+          String[] recordList = params[2].split(",");
+          String specificHeading = params[3];
+          String specificKey = params[4];
+
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          // Define the URL to request the list feed of the worksheet.
+          // Fetch the list feed of the worksheet.
+          URL listFeedUrl = worksheet.getListFeedUrl();
+          ListFeed listFeed = null;
+          try {
+            listFeed = service.getFeed(listFeedUrl, ListFeed.class);
+          } catch (IOException e) {
+            Log.e("Update Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          } catch (ServiceException e) {
+            Log.e("Update Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          }
+          ListEntry row = null;
+          for (ListEntry r : listFeed.getEntries()) {
+            CustomElementCollection elements = r
+                .getCustomElements();
+            String name = elements.getValue(specificHeading);
+            if (name.compareTo(specificKey) == 0) {
+              row = r;
+              break;
+            }
+
+          }
+
+          for (int i = 0; i < headings.length; i++) {
+            row.getCustomElements().setValueLocal(headings[i],
+                recordList[i]);
+          }
+          // Send the new row to the API for insertion.
+          try {
+            row.update();
+          } catch (IOException e) {
+            Log.e("Update Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          } catch (ServiceException e) {
+            Log.e("Update Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          }
+
+        }
+        break;
+        case DELETE_ROW: {
+          String worksheetName = params[1];
+          String specificHeading = params[2];
+          String specificKey = params[3];
+
+          WorksheetEntry worksheet = getWorksheet(worksheetName);
+          // Define the URL to request the list feed of the worksheet.
+          // Fetch the list feed of the worksheet.
+          URL listFeedUrl = worksheet.getListFeedUrl();
+          ListFeed listFeed = null;
+          try {
+            listFeed = service.getFeed(listFeedUrl, ListFeed.class);
+          } catch (IOException e) {
+            Log.e("Delete Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          } catch (ServiceException e) {
+            Log.e("Delete Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          }
+          ListEntry row = null;
+          for (ListEntry r : listFeed.getEntries()) {
+            CustomElementCollection elements = r
+                .getCustomElements();
+            String name = elements.getValue(specificHeading);
+            if (name.compareTo(specificKey) == 0) {
+              row = r;
+              break;
+            }
+          }
+          try {
+            row.delete();
+          } catch (IOException e) {
+            Log.e("Delete Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          } catch (ServiceException e) {
+            Log.e("Delete Row", "Failed");
+            e.printStackTrace();
+            output = null;
+            break;
+          }
+        }
+        break;
+
+        }
+        return output;
+      } else {
+        return OAuth2Helper.getErrorMessage();
+      }
+
+    }
+
+    /**
+     * Fires the appropriate event method
+     */
+    @Override
+    protected void onPostExecute(String result) {
+      String output = result;
+      if (result == null) {
+        output = "Error in completing request.";
+      }
+      else if (result.compareTo("Success")==0){
+    	  output = "Success";
+      }
+      else{
+    	  output = result.split(":")[1];
+      }
+      dialog.dismiss();
+      if (result.split(":")[0].compareTo("ROW")==0){
+    	  GotRowCount(output);
+      }
+      else if (result.split(":")[0].compareTo("COL")==0){
+    	  GotColumnCount(output);
+      }
+      else if (result.split(":")[0].compareTo("CELL")==0){
+    	  GotCellValue(output);
+      }
+      else{
+    	  return;
+      }
+    }
+  }
 }
