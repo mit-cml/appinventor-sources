@@ -236,6 +236,11 @@ Blockly.SNAP_RADIUS = 15;
 Blockly.BUMP_DELAY = 250;
 
 /**
+  * Scale factor for the workspace. This can be editted with a zoom slider
+  */
+Blockly.WORKSPACE_SCALE = 1; //Shirley addition
+
+/**
  * The main workspace (defined by inject.js).
  * @type {Blockly.Workspace}
  */
@@ -785,8 +790,8 @@ Blockly.getMainWorkspaceMetrics_ = function() {
   return {
     viewHeight: svgSize.height,
     viewWidth: svgSize.width,
-    contentHeight: bottomEdge - topEdge,
-    contentWidth: rightEdge - leftEdge,
+    contentHeight: (bottomEdge - topEdge)*Blockly.WORKSPACE_SCALE,
+    contentWidth: (rightEdge - leftEdge)*Blockly.WORKSPACE_SCALE,
     viewTop: -Blockly.mainWorkspace.scrollY,
     viewLeft: -Blockly.mainWorkspace.scrollX,
     contentTop: topEdge,
@@ -817,7 +822,7 @@ Blockly.setMainWorkspaceMetrics_ = function(xyRatio) {
   }
   var translation = 'translate(' +
       (Blockly.mainWorkspace.scrollX + metrics.absoluteLeft) + ',' +
-      (Blockly.mainWorkspace.scrollY + metrics.absoluteTop) + ')';
+      (Blockly.mainWorkspace.scrollY + metrics.absoluteTop) + ') scale('+Blockly.WORKSPACE_SCALE+')';
   Blockly.mainWorkspace.getCanvas().setAttribute('transform', translation);
   Blockly.mainWorkspace.getBubbleCanvas().setAttribute('transform',
                                                        translation);

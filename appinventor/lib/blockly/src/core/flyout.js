@@ -369,7 +369,7 @@ Blockly.Flyout.prototype.show = function(xmlList) {
     var root = block.getSvgRoot();
     var blockHW = block.getHeightWidth();
     var x = Blockly.RTL ? 0 : margin + Blockly.BlockSvg.TAB_WIDTH;
-    block.moveBy(x, cursorY);
+    block.moveBy(x*Blockly.WORKSPACE_SCALE, cursorY*Blockly.WORKSPACE_SCALE);
     cursorY += blockHW.height + gaps[i];
 
     // Create an invisible rectangle under the block to act as a button.  Just

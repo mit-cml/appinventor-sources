@@ -58,6 +58,7 @@ Blockly.parseOptions_ = function(options) {
   if (readOnly) {
     var hasCategories = false;
     var hasTrashcan = false;
+    var hasZoom = false;
     var hasCollapse = false;
     var tree = null;
   } else {
@@ -81,6 +82,10 @@ Blockly.parseOptions_ = function(options) {
     var hasTrashcan = options['trashcan'];
     if (hasTrashcan === undefined) {
       hasTrashcan = hasCategories;
+    }
+    var hasZoom = options['zoom'];
+    if (hasZoom === undefined) {
+      hasZoom = hasCategories;
     }
     var hasCollapse = options['collapse'];
     if (hasCollapse === undefined) {
@@ -107,6 +112,7 @@ Blockly.parseOptions_ = function(options) {
     hasCategories: hasCategories,
     hasScrollbars: hasScrollbars,
     hasTrashcan: hasTrashcan,
+    hasZoom: hasZoom,
     languageTree: tree,
     configForTypeBlock: configForTypeBlock
   };
@@ -394,6 +400,7 @@ Blockly.init_ = function() {
   }
 
   Blockly.mainWorkspace.addTrashcan();
+  Blockly.mainWorkspace.addZoomIcons();
   Blockly.mainWorkspace.addWarningIndicator(Blockly.mainWorkspace);
 
   // Load the sounds.
