@@ -49,7 +49,7 @@ public abstract class Picker extends ButtonBase implements ActivityResultListene
   /**
    * Opens the picker, as though the user clicked on it.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Opens the picker, as though the user clicked on it.")
   public void Open() {
     click();
   }

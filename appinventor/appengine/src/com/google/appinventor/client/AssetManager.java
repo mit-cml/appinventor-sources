@@ -117,6 +117,19 @@ public final class AssetManager implements ProjectChangeListener {
     INSTANCE.refreshAssets1(formName);
   }
 
+  public static void reset(String formName) {
+    if (INSTANCE == null)
+      return;
+    INSTANCE.reset1(formName);
+  }
+
+  public void reset1(String formName) {
+    OdeLog.log("AssetManager: formName = " + formName + " received reset.");
+    for (AssetInfo a: assets.values()) {
+      a.loaded = false;
+    }
+  }
+
   @Override
   public void onProjectLoaded(Project project) {
     if (DEBUG)
@@ -147,10 +160,12 @@ public final class AssetManager implements ProjectChangeListener {
   private static native void exportMethodsToJavascript() /*-{
     $wnd.AssetManager_refreshAssets =
       $entry(@com.google.appinventor.client.AssetManager::refreshAssets(Ljava/lang/String;));
+    $wnd.AssetManager_reset =
+      $entry(@com.google.appinventor.client.AssetManager::reset(Ljava/lang/String;));
   }-*/;
 
   private static native boolean doPutAsset(String formName, String filename, byte[] content) /*-{
     return $wnd.Blocklies[formName].ReplMgr.putAsset(filename, content);
-    }-*/;
+  }-*/;
 
 }

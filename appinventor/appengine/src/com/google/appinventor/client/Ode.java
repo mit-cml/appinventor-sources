@@ -27,6 +27,7 @@ import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.settings.Settings;
 import com.google.appinventor.client.settings.user.UserSettings;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.widgets.boxes.Box;
@@ -34,6 +35,7 @@ import com.google.appinventor.client.widgets.boxes.ColumnLayout;
 import com.google.appinventor.client.widgets.boxes.ColumnLayout.Column;
 import com.google.appinventor.client.widgets.boxes.WorkAreaPanel;
 import com.google.appinventor.common.version.AppInventorFeatures;
+import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.rpc.GetMotdService;
 import com.google.appinventor.shared.rpc.GetMotdServiceAsync;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -73,6 +75,7 @@ import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.HasVerticalAlignment;
@@ -457,6 +460,13 @@ public class Ode implements EntryPoint {
       }
     };
 
+    // The call below begins an asynchronous read of the user's settings
+    // When the settings are finished reading, various settings parsers
+    // will be called on the returned JSON object. They will call various
+    // other functions in this module, including openPreviousProject (the
+    // previous project ID is stored in the settings) as well as the splash
+    // screen displaying functions below.
+    //
     // TODO(user): ODE makes too many RPC requests at startup time. Currently
     // we do 3 RPCs + 1 per project + 1 per open file. We should bundle some of
     // those with each other or with the initial HTML transfer.
@@ -663,24 +673,6 @@ public class Ode implements EntryPoint {
         onClosing();
       }
     });
-
-    if (AppInventorFeatures.showSplashScreen()) {
-      createWelcomeDialog(true);
-    } else {
-      getProjectService().getProjects(new AsyncCallback<long[]>() {
-          @Override
-          public void onSuccess(long [] projectIds) {
-            if (projectIds.length == 0) {
-              createNoProjectsDialog(true);
-            }
-          }
-
-          @Override
-          public void onFailure(Throwable projectIds) {
-            OdeLog.elog("Could not get project list");
-          }
-        });
-    }
 
     setupMotd();
   }
@@ -966,7 +958,7 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setText("Welcome to App Inventor 2!");
 
     Grid mainGrid = new Grid(2, 2);
     mainGrid.getCellFormatter().setAlignment(0,
@@ -994,10 +986,17 @@ public class Ode implements EntryPoint {
         HasHorizontalAlignment.ALIGN_LEFT,
         HasVerticalAlignment.ALIGN_MIDDLE);
 
-    Label messageChunk1 = new Label("You don't have any projects yet."
-        + " To learn how to use App Inventor, click the \"Guide\" link"
-        + " at the upper right of the window; or to start your first project, click "
-        + " the \"New\" button at the upper left of the window.");
+    Label messageChunk1 = new HTML("<p>You don't have any projects in App Inventor 2 yet. " +
+      "To learn how to use App Inventor, click the \"Guide\" " +
+      "link at the upper right of the window; or to start your first project, " +
+      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
+      "<strong>Where did my projects go?</strong> " +
+      "If you had projects but now they're missing, " +
+      "you are probably looking for App Inventor version 1. " +
+      "It's still available here: " +
+      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n");
+
+
     messageChunk1.setWidth("23em");
     Label messageChunk2 = new Label("Happy Inventing!");
 
@@ -1066,5 +1065,122 @@ public class Ode implements EntryPoint {
     }
     return dialogBox;
   }
+
+  /**
+   * Show a Survey Splash Screen to the user if they have not previously
+   * acknowledged it.
+   */
+  private void showSurveySplash() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setHeight("200px");
+    dialogBox.setWidth("600px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button takesurvey = new Button("Take Survey Now");
+    takesurvey.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          // Update Splash Settings here
+          userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+            changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+              "" + YaVersion.SPLASH_SURVEY);
+          userSettings.saveSettings(null);
+          takeSurvey();         // Open survey in a new window
+          maybeShowSplash();
+        }
+      });
+    holder.add(takesurvey);
+    Button latersurvey = new Button("Take Survey Later");
+    latersurvey.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          maybeShowSplash();
+        }
+      });
+    holder.add(latersurvey);
+    Button neversurvey = new Button("Never Take Survey");
+    neversurvey.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          // Update Splash Settings here
+          Settings settings =
+            userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS);
+          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY,
+            "" + YaVersion.SPLASH_SURVEY);
+          String declined = settings.getPropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED);
+          if (declined == null) declined = ""; // Shouldn't happen
+          if (declined != "") declined += ",";
+          declined += "" + YaVersion.SPLASH_SURVEY; // Record that we declined this survey
+          settings.changePropertyValue(SettingsConstants.SPLASH_SETTINGS_DECLINED, declined);
+          userSettings.saveSettings(null);
+          maybeShowSplash();
+        }
+      });
+    holder.add(neversurvey);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  private void maybeShowSplash() {
+    if (AppInventorFeatures.showSplashScreen()) {
+      createWelcomeDialog(true);
+    } else {
+      getProjectService().getProjects(new AsyncCallback<long[]>() {
+          @Override
+            public void onSuccess(long [] projectIds) {
+            if (projectIds.length == 0) {
+              createNoProjectsDialog(true);
+            }
+          }
+
+          @Override
+            public void onFailure(Throwable projectIds) {
+            OdeLog.elog("Could not get project list");
+          }
+        });
+    }
+  }
+
+  // Display the Survey and/or Normal Splash Screens
+  // (if enabled). This function is called out of SplashSettings.java
+  // after the userSettings object is loaded (above) and parsed.
+  public void showSplashScreens() {
+    boolean showSplash = false;
+    if (AppInventorFeatures.showSurveySplashScreen()) {
+      int nvalue = 0;
+      String value = userSettings.getSettings(SettingsConstants.SPLASH_SETTINGS).
+        getPropertyValue(SettingsConstants.SPLASH_SETTINGS_SHOWSURVEY);
+      if (value != null) {
+        nvalue = Integer.parseInt(value);
+      }
+      if (nvalue < YaVersion.SPLASH_SURVEY) {
+        showSurveySplash();
+      } else {
+        showSplash = true;
+      }
+    } else {
+      showSplash = true;
+    }
+    if (showSplash) {
+      maybeShowSplash();
+    }
+  }
+
+  // Native code to open a new window (or tab) to display the
+  // desired survey. The value below "http://web.mit.edu" is just
+  // a plug value. You should insert your own as appropriate.
+  private native void takeSurvey() /*-{
+    $wnd.open("http://web.mit.edu");
+  }-*/;
 
 }

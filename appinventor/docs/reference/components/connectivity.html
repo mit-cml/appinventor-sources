@@ -425,7 +425,7 @@
 <ul>
   <li><a href="http://appinventor.mit.edu">Home</a></li>
   <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-  <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+  <li><a href="http://appinventor.mit.edu/explore/library">Support
 ▾</a></li>
 </ul>
 </div>
@@ -735,93 +735,82 @@ delimiter byte value is received. </dd>
   <dd> Send text to the connected Bluetooth device. </dd>
   <dt> <code> StopAccepting() </code> </dt>
   <dd> Stop accepting an incoming connection. </dd>
-</dl><h2 id="Web">Web </h2>
-                  <img src="images/web.png" alt="Picture of Web component" />
+</dl>
 
-<p> Non-visible component that provides functions for HTTP GET and POST
-requests. </p>
-<h3> Properties </h3>
+
+<h2 id="Web">Web</h2>
+
+<p>Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.</p>
+
+<h3>Properties</h3>
 <dl>
-  <dt> <code> AllowCookies </code> </dt>
-  <dd> Whether the cookies from a response should be saved and used in
-subsequent requests. Cookies are only supported on Android version 2.3
-or greater. </dd>
-  <dt> <code> RequestHeaders </code> </dt>
-  <dd> The request headers, as a list of two-element sublists. The
-first element of each sublist represents the request header field name.
-The second element of each sublist represents the request header field
-values, either a single value or a list containing multiple values. </dd>
-  <dt> <code> ResponseFileName </code> </dt>
-  <dd> The name of the file where the response should be saved. If
-SaveResponse is true and ResponseFileName is empty, then a new file
-name will be generated. </dd>
-  <dt> <code> SaveResponse </code> </dt>
-  <dd> Whether the response should be saved in a file. </dd>
-  <dt> <code> Url </code> </dt>
-  <dd> The URL for the web request. </dd>
+  <dt><code>AllowCookies</code></dt>
+  <dd>Whether the cookies from a response should be saved and used in subsequent requests. Cookies are only supported on Android version 2.3 or greater.</dd>
+  <dt><code>RequestHeaders</code></dt>
+  <dd>The request headers, as a list of two-element sublists. The first element of each sublist represents the request header field name. The second element of each sublist represents the request header field values, either a single value or a list containing multiple values.</dd>
+  <dt><code>ResponseFileName</code></dt>
+  <dd>The name of the file where the response should be saved. If SaveResponse is true and ResponseFileName is empty, then a new file name will be generated.</dd>
+  <dt><code>SaveResponse</code></dt>
+  <dd>Whether the response should be saved in a file.</dd>
+  <dt><code>Url</code></dt>
+  <dd>The URL for the web request.</dd>
 </dl>
-<h3> Events </h3>
+
+<h3>Events</h3>
 <dl>
-  <dt> <code> GotFile(text url, number responseCode, text
-responseType, text fileName) </code> </dt>
-  <dd> Event indicating that a request has finished. </dd>
-  <dt> <code> GotText(text url, number responseCode, text
-responseType, text responseContent) </code> </dt>
-  <dd> Event indicating that a request has finished. </dd>
+  <dt><code>GotFile(text url, number responseCode, text responseType, text fileName)</code></dt>
+  <dd>Event indicating that a request has finished.</dd>
+  <dt><code>GotText(text url, number responseCode, text responseType, text responseContent)</code></dt>
+  <dd>Event indicating that a request has finished.</dd>
 </dl>
-<h3> Methods </h3>
+
+<h3>Methods</h3>
 <dl>
-  <dt> <code> text BuildPostData(list list) </code> </dt>
-  <dd> Converts a list of two-element sublists, representing name and
-value pairs, to a string formatted as application/x-www-form-urlencoded
-media type, suitable to pass to PostText. </dd>
-  <dt> <code> ClearCookies() </code> </dt>
-  <dd> Clears all cookies for this Web component. </dd>
-  <dt> <code> Get() </code> </dt>
-  <dd> Performs an HTTP GET request using the Url property and
-retrieves the response. <br>
-If the SaveResponse property is true, the response will be saved in a
-file and the GotFile event will be triggered. The ResponseFileName
-property can be used to specify the name of the file. <br>
-If the SaveResponse property is false, the GotText event will be
-triggered. </dd>
-  <dt> <code> text HtmlTextDecode(text htmlText) </code> </dt>
-  <dd> Decodes the given HTML text value. HTML character entities such
-as &amp;amp;, &amp;lt;, &amp;gt;, &amp;apos;, and &amp;quot; are
-changed to &amp;, &lt;, &gt;, ', and ". Entities such as &amp;#xhhhh,
-and &amp;#nnnn are changed to the appropriate characters. </dd>
-  <dt> <code> text JsonTextDecode(text jsonText) </code> </dt>
-  <dd> Decodes the given JSON text value. If the given JSON text is
-surrounded by quotes, the quotes will be removed. </dd>
-  <dt> <code> PostFile(text path) </code> </dt>
-  <dd> Performs an HTTP POST request using the Url property and data
-from the specified file. <br>
-If the SaveResponse property is true, the response will be saved in a
-file and the GotFile event will be triggered. The ResponseFileName
-property can be used to specify the name of the file. <br>
-If the SaveResponse property is false, the GotText event will be
-triggered. </dd>
-  <dt> <code> PostText(text text) </code> </dt>
-  <dd> Performs an HTTP POST request using the Url property and the
-specified text. <br>
-The characters of the text are encoded using UTF-8 encoding. <br>
-If the SaveResponse property is true, the response will be saved in a
-file and the GotFile event will be triggered. The responseFileName
-property can be used to specify the name of the file. <br>
-If the SaveResponse property is false, the GotText event will be
-triggered. </dd>
-  <dt> <code> PostTextWithEncoding(text text, text encoding) </code> </dt>
-  <dd> Performs an HTTP POST request using the Url property and the
-specified text. <br>
-The characters of the text are encoded using the given encoding. <br>
-If the SaveResponse property is true, the response will be saved in a
-file and the GotFile event will be triggered. The ResponseFileName
-property can be used to specify the name of the file. <br>
-If the SaveResponse property is false, the GotText event will be
-triggered. </dd>
-  <dt> <code> text UriEncode(text text) </code> </dt>
-  <dd> Encodes the given text value so that it can be used in a URL. </dd>
+  <dt><code>text BuildRequestData(list list)</code></dt>
+  <dd>Converts a list of two-element sublists, representing name and value pairs, to a
+ string formatted as application/x-www-form-urlencoded media type, suitable to pass to
+ PostText.</dd>
+  <dt><code>ClearCookies()</code></dt>
+  <dd>Clears all cookies for this Web component.</dd>
+  <dt><code>Delete()</code></dt>
+  <dd>Performs an HTTP DELETE request using the Url property and retrieves the
+ response.<br>
+ If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.<br>
+ If the SaveResponse property is false, the GotText event will be
+ triggered.</dd>
+  <dt><code>Get()</code></dt>
+  <dd>Performs an HTTP GET request using the Url property and retrieves the
+ response.<br>
+ If the SaveResponse property is true, the response will be saved in a file
+ and the GotFile event will be triggered. The ResponseFileName property
+ can be used to specify the name of the file.<br>
+ If the SaveResponse property is false, the GotText event will be
+ triggered.</dd>
+  <dt><code>text HtmlTextDecode(text htmlText)</code></dt>
+  <dd>Decodes the given HTML text value. HTML character entities such as &amp;amp;, &amp;lt;, &amp;gt;, &amp;apos;, and &amp;quot; are changed to &amp;, &lt;, &gt;, &#39;, and &quot;. Entities such as &amp;#xhhhh, and &amp;#nnnn are changed to the appropriate characters.</dd>
+  <dt><code>any JsonTextDecode(text jsonText)</code></dt>
+  <dd>Decodes the given JSON encoded value to produce a corresponding AppInventor value.
+ A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
+ (denoted as A:B enclosed in curly braces) decodes to a list
+ ((A B)), that is, a list containing the two-element list (A B).</dd>
+  <dt><code>PostFile(text path)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and data from the specified file.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PostText(text text)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.<br>The characters of the text are encoded using UTF-8 encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The responseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PostTextWithEncoding(text text, text encoding)</code></dt>
+  <dd>Performs an HTTP POST request using the Url property and the specified text.<br>The characters of the text are encoded using the given encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutFile(text path)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and data from the specified file.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutText(text text)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.<br>The characters of the text are encoded using UTF-8 encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The responseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>PutTextWithEncoding(text text, text encoding)</code></dt>
+  <dd>Performs an HTTP PUT request using the Url property and the specified text.<br>The characters of the text are encoded using the given encoding.<br>If the SaveResponse property is true, the response will be saved in a file and the GotFile event will be triggered. The ResponseFileName property can be used to specify the name of the file.<br>If the SaveResponse property is false, the GotText event will be triggered.</dd>
+  <dt><code>text UriEncode(text text)</code></dt>
+  <dd>Encodes the given text value so that it can be used in a URL.</dd>
 </dl>
+
 <!-- Content ----------------------- -->
 </div>
 </div>
@@ -839,7 +828,7 @@ This work is licensed under a <a rel="license" href="http://creativecommons.org/
 License</a><span class="ext"></span></p>
 <p style="text-align: center;">&copy; 2012-2013 <a href="http://web.mit.edu/" class="ext" target="_blank">Massachusetts
 Institute of Technology</a><span class="ext"></span></p>
-<p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact Us</a></p>
+<p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact Us</a></p>
 </div>
 </div>
 </div>

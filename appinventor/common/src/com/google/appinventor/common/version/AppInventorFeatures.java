@@ -47,10 +47,36 @@ public final class AppInventorFeatures {
     return false;
   }
 
+  /**
+   * If set to return true, a splash screen will be shown on every login. The
+   * Contents are defined in {@link com.google.appinventor.client.Ode#createWelcomeDialog}
+   * You should set the "message" variable there to an iframe that points to your
+   * content. The default size of the splash box is 400x400 (which you can change).
+   *
+   * @return true to display a splash screen
+   */
   public static boolean showSplashScreen() {
-    // Set this to true to display a splash screen with an informative message
-    // each time MIT App Inventor is started. See Ode.java
     return false;
   }
 
+  /**
+   * If set to return true, a special splash screen offering the person to take
+   * a survey is displayed. it is defined in:
+   * {@link com.google.appinventor.client.Ode#showSurveySplash}
+   * You should alter the wording defined there to be appropriate for your
+   * situation. The words there are for MIT.
+   *
+   * The survey itself is defined in:
+   * {@link com.google.appinventor.client.Ode#takeSurvey}
+   *
+   * Surveys are versioned. Once a person takes a survey they are
+   * never shown the survey splash screen again until the value in
+   * {@link com.google.appinventor.components.common#YaVersion.SPLASH_SURVEY}
+   * is incremented.
+   *
+   * @return true to display the survey splash screen
+   */
+  public static boolean showSurveySplashScreen() {
+    return false;
+  }
 }

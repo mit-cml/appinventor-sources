@@ -652,7 +652,8 @@ public class YailEvalTest extends TestCase {
     assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
 
-  public void testForRangeError() throws Throwable {
+  // replace this by testForRangeErrorNonterminating if we make that an error
+  public void testForRangeEmpty() throws Throwable {
     /* test forrange giving error in nonterminating case */
     String schemeInputString =
         "(begin (def x 0)" +
@@ -665,14 +666,34 @@ public class YailEvalTest extends TestCase {
         "          (lexical-value i) ) "      +
         "     '( number number)  \"+\") )  ) "      +
         " 1 100 -1) "  +
+        " (get-var x) " +
         ")";
-    try {
-      scheme.eval(schemeInputString);
-      fail();
-    } catch (YailRuntimeError e) {
-      // expected
-    }
+    String schemeResultString = "0";
+    assertEquals(schemeResultString, scheme.eval(schemeInputString).toString());
   }
+
+  // (Hal) I removed this test because I eliminated the error
+  // public void testForRangeErrorNonterminating() throws Throwable {
+  //   /* test forrange giving error in nonterminating case */
+  //   String schemeInputString =
+  //       "(begin (def x 0)" +
+  //       "(forrange i " +
+  //       " (begin "      +
+  //       "   (set-var! x "      +
+  //       "    (call-yail-primitive "      +
+  //       "     + "      +
+  //       "     (*list-for-runtime* (get-var x) "      +
+  //       "          (lexical-value i) ) "      +
+  //       "     '( number number)  \"+\") )  ) "      +
+  //       " 1 100 -1) "  +
+  //       ")";
+  //   try {
+  //     scheme.eval(schemeInputString);
+  //     fail();
+  //   } catch (YailRuntimeError e) {
+  //     // expected
+  //   }
+  // }
 
   public void testForRangeConversionErrorOnStartArg() throws Throwable {
     /* test forrange signaling a converison error for the start argument */
@@ -914,7 +935,7 @@ public class YailEvalTest extends TestCase {
     // Corner cases
     String schemeString = "(clarify (string-split \"&&ab&cd&ef&\" \"&\")) ";
 
-    // There should not be a trailing <empty> here 
+    // There should not be a trailing <empty> here
     assertEquals("(<empty> <empty> ab cd ef)", scheme.eval(schemeString).toString());
 
     //assertEquals("(<empty> <empty> ab cd ef <empty>)", scheme.eval(schemeString).toString());

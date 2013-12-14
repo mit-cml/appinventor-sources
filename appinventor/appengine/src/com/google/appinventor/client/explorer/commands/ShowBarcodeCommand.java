@@ -83,8 +83,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
           Ode.getInstance().getUser().getUserEmail(),
-          "<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-          "/learn/userfaq.html\" target=\"_blank\">",
+          "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
+          "\" target=\"_blank\">",
           "</a>"));
       warningLabel.setWordWrap(true);
       warningLabel.setWidth("200px");  // set width to get the text to wrap
