@@ -192,7 +192,7 @@ Component {
    * already authenticated with the Google Spreadsheet service.
    */
   @SimpleFunction(description = "Get value of cell, if it exists, in existing worksheet")
-  public void getCellValue(String worksheetTitle, String cellID) {
+  public void GetCellValue(String worksheetTitle, String cellID) {
     new QueryProcessorV1(activity).execute(
         SpreadsheetAction.GET_CELL.name(), worksheetTitle, cellID, "");
   }
@@ -310,14 +310,14 @@ Component {
 
   @SimpleFunction(description = "Add a new record of information into an existing worksheet: "
       + "provide a list of 2-element lists--the first the column heading, the second the value")
-  public void appendWorksheetRecord(String worksheetTitle, YailList record) {
+  public void AppendWorksheetRecord(String worksheetTitle, YailList record) {
     String csvRecord = checkRecordAndGenerateCSV(record);
     new QueryProcessorV1(activity).execute(
         SpreadsheetAction.ADD_ROW.name(), worksheetTitle, csvRecord);
   }
 
   @SimpleFunction(description = "Update a record of information into an existing worksheet: provide a list of 2-element lists--the first the column heading, the second the value")
-  public void updateWorksheetRecord(String worksheetTitle, YailList record,
+  public void UpdateWorksheetRecord(String worksheetTitle, YailList record,
       String heading, String key) {
     String csvRecord = checkRecordAndGenerateCSV(record);
     new QueryProcessorV1(activity).execute(
@@ -326,7 +326,7 @@ Component {
   }
 
   @SimpleFunction(description = "Delete a record of information into an existing worksheet")
-  public void deleteWorksheetRecord(String worksheetTitle, String heading,
+  public void DeleteWorksheetRecord(String worksheetTitle, String heading,
       String key) {
     new QueryProcessorV1(activity).execute(
         SpreadsheetAction.DELETE_ROW.name(), worksheetTitle, heading,
