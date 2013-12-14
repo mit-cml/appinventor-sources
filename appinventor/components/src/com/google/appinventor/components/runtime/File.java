@@ -3,15 +3,18 @@ package com.google.appinventor.components.runtime;
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
+import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Environment;
 
@@ -33,7 +36,7 @@ import java.io.IOException;
     iconName = "images/file.png")
 @SimpleObject
 public class File extends AndroidNonvisibleComponent implements Component {
-		
+	private final Activity activity;
   /**
    * Creates a new File component.
    *
@@ -42,6 +45,7 @@ public class File extends AndroidNonvisibleComponent implements Component {
   public File(ComponentContainer container) {
     super(container.$form());
     final Context context = (Context) container.$context();
+    activity = (Activity) container.$context();
   }
   
   /**
@@ -72,30 +76,18 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * Retrieve the text stored in a specified file.
    *
    * @param fileName the file from which the text is read
-   * @return the text stored in the specified file
    * @throws FileNotFoundException if the file cannot be found
    * @throws IOException if the text cannot be read from the file
    */
   @SimpleFunction
-  public String ReadFrom(String fileName) {
-      String filepath = AbsoluteFileName(fileName);
-      java.io.File file = new java.io.File(filepath);
-      StringBuilder sb = new StringBuilder();
-      try {
- 	 	  BufferedReader bufferedReader = new BufferedReader(new FileReader(file)); 
-		  String line;
-		  while ((line = bufferedReader.readLine()) != null) {
-		  	sb.append(line);
-		  	sb.append(System.getProperty("line.separator"));
-	      }
-	  } catch (FileNotFoundException e) {
-			form.dispatchErrorOccurredEvent(this, "ReadFrom",
-                                  ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, filepath);
-	  } catch (IOException e) {
-                  form.dispatchErrorOccurredEvent(this, "ReadFrom",
-                                  ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, filepath);
-      }
-      return sb.toString();
+  public void ReadFrom(String fileName) {
+      final String filepath = AbsoluteFileName(fileName);
+      AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      	public void run() {
+      		AsyncRead(filepath);
+        }
+    });
   }
   
   /**
@@ -117,32 +109,86 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * @param text to write to the file
    * @param append determines whether text should be appended to the file, or overwrite the file
    */
-  private void Write(String filename, String text, boolean append) {
-      String filepath = AbsoluteFileName(filename);
-  	  java.io.File file = new java.io.File(filepath);
-      if(!file.exists()){
-      	try {
-      		file.createNewFile();
-        } catch (IOException e) {
-                  form.dispatchErrorOccurredEvent(this, "AppendTo",
-                                  ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, filepath);
-        }
-      }
-      
-      try {
-	      FileOutputStream fileWriter = new FileOutputStream(file, append);
-		  OutputStreamWriter out = new OutputStreamWriter(fileWriter);
-		  out.write(text);
-		  out.flush();
-	  	  out.close();
-	  	  fileWriter.close();
-	  }
-	  catch (IOException e) {
-                  form.dispatchErrorOccurredEvent(this, "AppendTo",
-                                  ErrorMessages.ERROR_UNABLE_TO_LOAD_MEDIA, filepath);
-      }
+  private void Write(final String filename, final String text, final boolean append) {
+      AsynchUtil.runAsynchronously(new Runnable() {
+      @Override
+      	public void run() {
+      		final String filepath = AbsoluteFileName(filename);
+  	  		final java.io.File file = new java.io.File(filepath);
+			if(!file.exists()){
+      			try {
+      				file.createNewFile();
+        		} catch (IOException e) {
+                  	if (append) {
+	  					form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+	  						ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+	  				} else {
+	  					form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+	  						ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+	  				}
+        		}
+      		}
+      		try {
+	    		FileOutputStream fileWriter = new FileOutputStream(file, append);
+				OutputStreamWriter out = new OutputStreamWriter(fileWriter);
+			  	out.write(text);
+			  	out.flush();
+	  	  		out.close();
+	  	  		fileWriter.close();
+	  		} catch (IOException e) {
+	  			if (append) {
+	  				form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+	  					ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+	  			} else {
+	  				form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+	  					ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+	  			}			      	
+      		}
+		}
+	}); 
   }
-  
+  /**
+   * Stuff
+   */
+  private void AsyncRead(final String filepath) {
+    try {
+	 	java.io.File file = new java.io.File(filepath);
+  		StringBuilder sb = new StringBuilder();
+  		BufferedReader bufferedReader = new BufferedReader(new FileReader(file)); 
+  		String line;
+  		while ((line = bufferedReader.readLine()) != null) {
+  			sb.append(line);
+			sb.append(System.getProperty("line.separator"));
+		}
+		final String text = sb.toString();
+		activity.runOnUiThread(new Runnable() {
+    	@Override
+        	public void run() {
+            	  GotText(text);
+            }
+    	});
+    } catch (FileNotFoundException e) {
+				form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+                          ErrorMessages.ERROR_CANNOT_FIND_FILE, filepath);
+	} catch (IOException e) {
+              form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+                      ErrorMessages.ERROR_CANNOT_READ_FILE, filepath);
+    }
+  }
+	
+  /**
+   * Event indicating that a request has finished.
+   *
+   * @param url the URL used for the request
+   * @param responseCode the response code from the server
+   * @param responseType the mime type of the response
+   * @param responseContent the response content from the server
+   */
+  @SimpleEvent
+  public void GotText(String text) {
+    // invoke the application's "GotText" event handler.
+    EventDispatcher.dispatchEvent(this, "GotText", text);
+  }
   /**
    * Returns absolute file path. By default, returns file path to the assets folder of AppInventor.
    * 
