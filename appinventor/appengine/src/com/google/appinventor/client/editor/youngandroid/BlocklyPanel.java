@@ -663,6 +663,10 @@ public class BlocklyPanel extends HTMLPanel {
     return YaVersion.BLOCKS_LANGUAGE_VERSION;
   }
 
+  public static String getQRCode(String inString) {
+    return doQRCode(currentForm, inString);
+  }
+
   // ------------ Native methods ------------
 
   /**
@@ -824,6 +828,10 @@ public class BlocklyPanel extends HTMLPanel {
       $wnd.ACCEPTABLE_COMPANIONS = [];
     }
     $wnd.ACCEPTABLE_COMPANIONS.push(comp);
+  }-*/;
+
+  static native String doQRCode(String formName, String inString) /*-{
+    return $wnd.Blocklies[formName].ReplMgr.makeqrcode(inString);
   }-*/;
 
 }

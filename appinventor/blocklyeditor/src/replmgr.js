@@ -846,6 +846,27 @@ Blockly.ReplMgr.hardreset = function(formName) {
     xhr.send();
 };
 
+// Make a QRCode in an image tag. This is currently used by the
+// Build->Show QR Code action. Frankly this code shouldn't be in
+// replmgr.js, but we don't have another convenient place for it so
+// here it is. This is called from Blockly Panel because we need to
+// know the current form in order to find the Blockly instance that is
+// live.
+
+Blockly.ReplMgr.makeqrcode = function(instring) {
+    var q = this.qrcode(4, 'L'); // First try a type 4 code
+    var retval;
+    q.addData(instring);
+    try {
+        q.make();
+    } catch (e) {
+        q = this.qrcode(5, 'L'); // OK, that failed try type 5
+        q.addData(instring);
+        q.make();
+    }
+    return q.createImgTag(4);
+};
+
 //---------------------------------------------------------------------
 //
 // QR Code Generator for JavaScript
