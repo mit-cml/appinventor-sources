@@ -243,6 +243,7 @@ public class YaVersion {
   // - CAMERA_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 86:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
+  // - The Sharing Component was added
 
     public static final int YOUNG_ANDROID_VERSION = 86;
 
@@ -568,6 +569,8 @@ public class YaVersion {
   // - The IsLooping property was renamed to Loop.
 
   public static final int PLAYER_COMPONENT_VERSION = 5;
+
+  public static final int SHARING_COMPONENT_VERSION = 1;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
