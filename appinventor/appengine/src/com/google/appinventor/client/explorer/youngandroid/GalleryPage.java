@@ -13,8 +13,10 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
@@ -23,10 +25,13 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.HasClickHandlers;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.http.client.RequestCallback;
@@ -39,6 +44,7 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -65,6 +71,7 @@ import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
+import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
@@ -139,9 +146,68 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadPrompt.addStyleName("gallery-editprompt");
       imageUploadBox.add(imageUploadPrompt);
       
-   // Create a FileUpload widget.
-      FileUpload upload = new FileUpload();
+      // Create a FileUpload widget.
+      // Create a FormPanel and point it at a service.
+      final FormPanel form = new FormPanel();
+      form.setAction("/myFormHandler");
+
+      // Because we're going to add a FileUpload widget, we'll need to set the
+      // form to use the POST method, and multipart MIME encoding.
+      form.setEncoding(FormPanel.ENCODING_MULTIPART);
+      form.setMethod(FormPanel.METHOD_POST);
+      
+      
+      final FileUpload upload = new FileUpload();
       upload.setName("uploadFormElement");
+      upload.addChangeHandler(new ChangeHandler() {
+        @Override
+        public void onChange(ChangeEvent event) {
+          Uploader.getInstance().upload(upload, "http://storage.googleapis.com/galleryai2/image.jpg",
+              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+            @Override
+            public void onSuccess(UploadResponse uploadResponse) {
+              switch (uploadResponse.getStatus()) {
+              case SUCCESS:
+                ErrorReporter.hide();
+//                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+//                    fileUploadedCallback);
+                break;
+              case FILE_TOO_LARGE:
+                // The user can resolve the problem by
+                // uploading a smaller file.
+                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                break;
+              default:
+                ErrorReporter.reportError(MESSAGES.fileUploadError());
+                break;
+              }
+            }
+          });
+        
+        } 
+      });
+      
+//      ((HasClickHandlers) upload).addClickHandler(new ClickHandler() {
+//        @Override
+//        public void onClick(ClickEvent event) {
+//          // Callback for when the server returns us the apps
+//          final Ode ode = Ode.getInstance();
+//          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+//             // failure message
+//             MESSAGES.galleryError()) {
+//             @Override
+//             public void onSuccess(Boolean flag) {
+//               OdeLog.log("################ SUCCESS");
+//             }  
+//          
+//          };
+//        // ok, this is below the call back, but of course it is done first 
+//        ode.getGalleryService().storeAIAtoCloud(1, callback);
+//        }
+//      });
+      
+      
+      
 //      upload.addClickHandler(new ClickHandler() {
 //        @Override
 //        public void onClick(ClickEvent event) {
@@ -169,22 +235,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     // App header - action button
     appHeader.add(appAction);
 
-    // SHOULD ONLY SHOW THIS IF WE ARE NOT IN EDIT MODE
-    Button actionButton = new Button("Try this app");
-    
-    actionButton.addClickHandler(new ClickHandler() {
-      // Open up source file if clicked the action button
-      public void onClick(ClickEvent event) {
-        OdeLog.log("######## I clicked on actionButton - ");
-        gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-      }
-    });
-    actionButton.addStyleName("app-action");
-    appAction.add(actionButton);     
+    if (!editable) {
+      Button actionButton = new Button("Try this app");    
+      actionButton.addClickHandler(new ClickHandler() {
+        // Open up source file if clicked the action button
+        public void onClick(ClickEvent event) {
+          gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+        }
+      });
+      actionButton.addStyleName("app-action");
+      appAction.add(actionButton);
+    }
 
-
-    Button publishButton = new Button("Publish");
-    publishButton.addClickHandler(new ClickHandler() {
+    if (editable) {
+      Button publishButton = new Button("Publish");
+      publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
           int STATUS_CODE_OK = 200;  
@@ -197,7 +262,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             public void onSuccess(Long galleryId) {
               // the server has returned us something
               OdeLog.log("we had a successful publish");
-              String s = String.valueOf(galleryId);
+              // String s = String.valueOf(galleryId);
               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
               // failure message
               MESSAGES.galleryError()) {
@@ -213,14 +278,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
         ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
         }
       });    
-    publishButton.addStyleName("app-action");
-    appAction.add(publishButton);    
-
+      publishButton.addStyleName("app-action");
+      appAction.add(publishButton);    
+    }
+    
     final Button cloudButton = new Button("Test GCS");
     cloudButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          int STATUS_CODE_OK = 200;  
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
