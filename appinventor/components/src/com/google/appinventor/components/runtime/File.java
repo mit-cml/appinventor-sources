@@ -37,10 +37,12 @@ import java.io.IOException;
 @SimpleObject
 public class File extends AndroidNonvisibleComponent implements Component {
 	private final Activity activity;
+  
   /**
    * Creates a new File component.
    *
    * @param container the Form that this component is contained in.
+   * @param activity The main activity that is run on the UI.
    */
   public File(ComponentContainer container) {
     super(container.$form());
@@ -50,18 +52,22 @@ public class File extends AndroidNonvisibleComponent implements Component {
   
   /**
    * Stores the text to a specified file on the phone.
+   * Calls the Write function to write to the file asynchronously to prevent
+   * the UI from hanging when there is a large write.
    *
    * @param text the text to be stored
    * @param fileName the file to which the text will be stored
    */
   @SimpleFunction
-  public void OverwriteFile(String text, String fileName) {
+  public void SaveFile(String text, String fileName) {
       FileUtil.checkExternalStorageWriteable();
       Write(fileName, text, false);
   }
   
   /**
    * Appends text to a specified file on the phone.
+   * Calls the Write function to write to the file asynchronously to prevent
+   * the UI from hanging when there is a large write.
    *
    * @param text the text to be stored
    * @param fileName the file to which the text will be stored
@@ -107,7 +113,8 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * 
    * @param fileName the file to write 
    * @param text to write to the file
-   * @param append determines whether text should be appended to the file, or overwrite the file
+   * @param append determines whether text should be appended to the file, 
+   * 	or overwrite the file
    */
   private void Write(final String filename, final String text, final boolean append) {
       AsynchUtil.runAsynchronously(new Runnable() {
@@ -147,8 +154,13 @@ public class File extends AndroidNonvisibleComponent implements Component {
 		}
 	}); 
   }
+  
   /**
-   * Stuff
+   * Asynchronously reads from the given file. Calls the main event thread
+   * when the function has completed reading from the file.
+   * @param fileName the file to read
+   * @throws FileNotFoundException
+   * @throws IOException when the system cannot read the file 
    */
   private void AsyncRead(final String filepath) {
     try {
@@ -179,24 +191,22 @@ public class File extends AndroidNonvisibleComponent implements Component {
   /**
    * Event indicating that a request has finished.
    *
-   * @param url the URL used for the request
-   * @param responseCode the response code from the server
-   * @param responseType the mime type of the response
-   * @param responseContent the response content from the server
+   * @param the text read from the file
    */
   @SimpleEvent
   public void GotText(String text) {
     // invoke the application's "GotText" event handler.
     EventDispatcher.dispatchEvent(this, "GotText", text);
   }
+  
   /**
-   * Returns absolute file path. By default, returns file path to the assets folder of AppInventor.
+   * Returns absolute file path. By default, returns file path to the folder AppInventor/assets.
    * 
    * @param fileName the file used to construct the file path 
    */
   private String AbsoluteFileName(String filename) {
-          if (filename.startsWith("//")) return filename;
-          else if (filename.startsWith("/")) return Environment.getExternalStorageDirectory().getPath() + filename;                  
-          else return Environment.getExternalStorageDirectory().getPath() + "/AppInventor/assets/" + filename;
+  	if (filename.startsWith("//")) return filename;
+  	else if (filename.startsWith("/")) return Environment.getExternalStorageDirectory().getPath() + filename;                  
+  	else return Environment.getExternalStorageDirectory().getPath() + "/AppInventor/assets/" + filename;
   }
 }
