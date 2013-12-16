@@ -9,18 +9,19 @@ public class GalleryApp implements IsSerializable {
    * Default constructor. This constructor is required by GWT.
    */
 
+  // Dave, are we still using this? -Vincent
   public GalleryApp() {
-    this.title="no title";
-    this.downloads=0;
-    this.views=0;
-    this.likes=0;
-    this.comments=0;
-    this.projectId=0L;
-    this.developerName="fred";
+    this.title = "no title";
+    this.downloads = 0;
+    this.views = 0;
+    this.likes = 0;
+    this.comments = 0;
+    this.projectId = 0L;
+    this.developerName = "fred";
     this.creationDate = 0L;
-    this.updateDate=0L;
-    this.imageBlobId="SFKJF";
-    this.imageURL="http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
+    this.updateDate = 0L;
+    this.imageBlobId = "SFKJF";
+    this.imageURL = "http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
   public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
@@ -56,21 +57,22 @@ public class GalleryApp implements IsSerializable {
     this.galleryAppId= galleryAppId;
     this.tags = tags;
   }
+  
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
-  public GalleryApp(String title, long projectId) {
+  public GalleryApp(String title, long projectId, long creationDate, long updateDate) {
 	super();
-    this.title=title;
-    this.downloads=0;
-    this.views=0;
-    this.likes=0;
-    this.comments=0;
-    this.projectId=projectId;
-    this.developerName="fred";
-    this.creationDate = 0L;
-    this.updateDate=0L;
-    this.imageBlobId="SFKJF";
-    this.imageURL="http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
+    this.title = title;
+    this.downloads = 0;
+    this.views = 0;
+    this.likes = 0;
+    this.comments = 0;
+    this.projectId = projectId;
+    this.developerName = "Test user";
+    this.creationDate = creationDate;
+    this.updateDate = updateDate;
+    this.imageBlobId = "SFKJF";
+    this.imageURL = "http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
   private String title;
