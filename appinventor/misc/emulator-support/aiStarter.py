@@ -8,7 +8,7 @@ import re
 #from cStringIO import StringIO
 #import memcache
 
-VERSION = "2.1"
+VERSION = "2.2"
 
 app = Bottle()
 default_app.push(app)
@@ -42,6 +42,13 @@ def utest():
 @route('/start/')
 def start():
     subprocess.call(PLATDIR + "commands-for-Appinventor/run-emulator ", shell=True, close_fds=True)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    return ''
+
+@route('/emulatorreset/')
+def emulatorreset():
+    subprocess.call(PLATDIR + "commands-for-Appinventor/reset-emulator ", shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -111,7 +118,10 @@ def killadb():
     sys.stdout.write("Killed emulator\n")
 
 def shutdown():
-    killadb()
+    try:                                # Be quiet...
+        killadb()
+    except:
+        pass
 
 if __name__ == '__main__':
     import atexit

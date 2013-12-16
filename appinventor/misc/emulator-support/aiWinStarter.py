@@ -12,7 +12,7 @@ import re
 app = Bottle()
 default_app.push(app)
 
-VERSION = "2.1"
+VERSION = "2.2"
 
 platforms = platform.uname()[0]
 print "Platform = %s" % platforms
@@ -44,6 +44,13 @@ def utest():
 @route('/start/')
 def start():
     subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\run-emulator ", shell=True)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    return ''
+
+@route('/emulatorreset/')
+def emulatorreset():
+    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\reset-emulator ", shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
