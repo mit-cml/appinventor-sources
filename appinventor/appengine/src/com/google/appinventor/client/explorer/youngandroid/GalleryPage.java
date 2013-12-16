@@ -162,29 +162,30 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       upload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {
-          Uploader.getInstance().upload(upload, "http://storage.googleapis.com/galleryai2/image.jpg",
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+          // Callback for when the server returns us the apps
+          final Ode ode = Ode.getInstance();
+          final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
+            // failure message
+            MESSAGES.galleryError()) {
             @Override
-            public void onSuccess(UploadResponse uploadResponse) {
-              switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-//                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-//                    fileUploadedCallback);
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
-              }
+            public void onSuccess(Long galleryId) {
+              // the server has returned us something
+              OdeLog.log("we had a successful publish");
+              // String s = String.valueOf(galleryId);
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void result) {
+          
+                }
+              };
+              ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
             }
-          });
-        
-        } 
+          };
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+        }
       });
       
 //      ((HasClickHandlers) upload).addClickHandler(new ClickHandler() {
@@ -252,7 +253,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          int STATUS_CODE_OK = 200;  
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
