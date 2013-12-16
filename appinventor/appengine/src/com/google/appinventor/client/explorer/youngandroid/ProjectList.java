@@ -235,40 +235,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
         editButton.setText("Update...");
       else
         editButton.setText("Publish...");
-    /*
-      editButton.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          int STATUS_CODE_OK = 200;  
-          // Callback for when the server returns us the apps
-          final Ode ode = Ode.getInstance();
-          final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
-             // failure message
-             MESSAGES.galleryError()) {
-             @Override
-             public void onSuccess(Long galleryId) {
-               // the server has returned us something
-             OdeLog.log("we had a successful publish");
-               String s = String.valueOf(galleryId);
-
-               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-               // failure message
-               MESSAGES.galleryError()) {
-               @Override
-               public void onSuccess(Void result) {
-        
-               }
-               };
-               ode.getProjectService().setGalleryId(project.getProjectId(),galleryId,projectCallback);
-             project.setGalleryId(galleryId);
-             }  
-          
-          };
-        // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().publishApp(project.getProjectId(),project.getProjectName(), "description", callback);
-        }
-      });
-    */
+   
     }
   }
 
