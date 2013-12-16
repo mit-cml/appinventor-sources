@@ -39,6 +39,18 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.RawFile;
+
+
 /**
  * The implementation of the RPC service which runs on the server.
  *
@@ -48,11 +60,13 @@ import java.util.logging.Logger;
  */
 public class GalleryServiceImpl extends OdeRemoteServiceServlet implements GalleryService {
 
-  private static final Logger LOG = Logger.getLogger(ProjectServiceImpl.class.getName());
+  private static final Logger LOG = Logger.getLogger(GalleryServiceImpl.class.getName());
 
   private static final long serialVersionUID = -8316312003804169166L;
 
-  private final transient GalleryStorageIo galleryStorageIo = GalleryStorageIoInstanceHolder.INSTANCE;
+  private final transient GalleryStorageIo galleryStorageIo = 
+      GalleryStorageIoInstanceHolder.INSTANCE;
+  private final FileExporter fileExporter = new FileExporterImpl();
 
   /**
    * Creates a new gallery app
@@ -67,7 +81,9 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public long publishApp(long projectId, String title, String description) {
     // use UserProject id to create .aia file and store to gcs
     // ...
-    return galleryStorageIo.createGalleryApp(title,description, projectId);
+    long galleryId = galleryStorageIo.createGalleryApp(title,description, projectId);
+    storeAIA(galleryId,projectId);
+    return galleryId;
   }
    /**
    * Returns an array of gallery Apps
@@ -95,6 +111,59 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public void deleteApp(long galleryId) {
   }
+
+  private void storeAIA(long galleryId, long projectId) {
+   
+    final String userId = userInfoProvider.getUserId();
+    String zipName="app.aia";   // we don't care what this thing is called
+        // because we'll load it in from the gallery to ai directly
+    RawFile aiaFile = null;
+    try {
+      ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
+            projectId, true, false, zipName);
+      aiaFile = zipFile.getRawFile();
+    }
+    catch (IOException e) {
+      LOG.log(Level.INFO, "Unable to get aia file");
+      e.printStackTrace();
+    }
+    try {
+      // convert galleryId to a string, we'll use this for the key in gcs
+      String galleryKey=String.valueOf(galleryId);
+      LOG.log(Level.SEVERE, "GALLERYKEY IS "+galleryKey);    
+      // set up the cloud file (options)
+      FileService fileService = FileServiceFactory.getFileService();
+      GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
+      .setBucket("galleryai2")
+      .setKey(galleryKey)
+      .setAcl("public-read")
+      // what should the mime type be?
+      .setMimeType("text/html")
+      // not sure if we're putting anything here for metadata
+      .addUserMetadata("title", "xyz");
+  
+      AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
+      // Open a channel to write to it
+      boolean lock = true;
+      FileWriteChannel writeChannel =
+          fileService.openWriteChannel(writableFile, lock);
+     
+      byte[] aiaBytes = aiaFile.getContent();
+      LOG.log(Level.INFO, "aiaFile numBytes:"+aiaBytes.length);
+      writeChannel.write(ByteBuffer.wrap(aiaBytes));
+    
+      // Now finalize
+      writeChannel.closeFinally();
+      
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      LOG.log(Level.INFO, "FAILED GCS");
+      e.printStackTrace();
+    }
+  }
+  
+  
+  
   @Override
   public Boolean storeAIAtoCloud(long projectId) {
     FileService fileService = FileServiceFactory.getFileService();
