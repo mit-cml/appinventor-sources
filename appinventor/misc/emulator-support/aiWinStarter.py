@@ -50,7 +50,7 @@ def start():
 
 @route('/emulatorreset/')
 def emulatorreset():
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\reset-emulator ", shell=True, close_fds=True)
+    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\reset-emulator ", shell=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -123,22 +123,27 @@ def checkrunning(emulator):
         return False
 
 def killadb():
-    """Time to nuke adb!"""
     try:
-        subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
-        sys.stdout.write("Killed adb\n")
+        subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\adb kill-server", shell=True)
+        print "Killed adb\n"
     except subprocess.CalledProcessError as e:
         print "Problem stopping adb : status %i\n" % e.returncode
         return ''
 
 def killemulator():
-    """Time to nuke emulator!"""
-    subprocess.call(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
-    print("Killed emulator\n")
+    try:
+        subprocess.check_output(PLATDIR + "\\AppInventor\\commands-for-Appinventor\\kill-emulator", shell=True)
+        print "Killed emulator\n"
+    except subprocess.CalledProcessError as e:
+        print "Problem stopping emulator : status %i\n" % e.returncode
+        return ''
 
 def shutdown():
-    killadb()
-    killemulator()
+    try:                                # Be quiet...
+        killadb()
+        killemulator()
+    except:
+        pass
 
 if __name__ == '__main__':
     import atexit
