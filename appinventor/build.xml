@@ -153,6 +153,7 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="common" target="clean"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="components" target="clean"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="blockslib" target="clean"/>
     <delete dir="build"/>
     <delete dir="reports"/>
   </target>
