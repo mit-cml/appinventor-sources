@@ -54,6 +54,8 @@ public class GalleryServlet extends OdeServlet {
       String uri = req.getRequestURI();
       // First, call split with no limit parameter.
       String[] uriComponents = uri.split("/");
+      
+      
       String uploadKind = uriComponents[UPLOAD_KIND_INDEX];
 
       if (uploadKind.equals(ServerLayout.UPLOAD_FILE)) {
