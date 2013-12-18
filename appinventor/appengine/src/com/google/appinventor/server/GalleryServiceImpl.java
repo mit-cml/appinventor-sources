@@ -81,8 +81,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public long publishApp(long projectId, String title, String description) {
     // use UserProject id to create .aia file and store to gcs
     // ...
-    long galleryId = galleryStorageIo.createGalleryApp(title,description, projectId);
-    storeAIA(galleryId,projectId);
+    long galleryId = galleryStorageIo.createGalleryApp(title, description, projectId);
+    storeAIA(galleryId, projectId);
     return galleryId;
   }
    /**

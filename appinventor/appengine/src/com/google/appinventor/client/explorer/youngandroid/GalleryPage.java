@@ -162,6 +162,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       upload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {
+          
+          String uploadFilename = upload.getFilename();
+          
+
+          /*
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
@@ -170,7 +175,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             @Override
             public void onSuccess(Long galleryId) {
               // the server has returned us something
-              OdeLog.log("we had a successful publish");
+              OdeLog.log("we had a successful image publish");
               // String s = String.valueOf(galleryId);
               final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
               // failure message
@@ -184,7 +189,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             }
           };
         // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback); 
+           */
+          
         }
       });
       
@@ -259,6 +266,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             // failure message
             MESSAGES.galleryError()) {
             @Override
+            // 2. When publish call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
               OdeLog.log("we had a successful publish");
@@ -267,15 +275,19 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               // failure message
               MESSAGES.galleryError()) {
                 @Override
+                //4. When setGalleryId call returns, which we don't need to do anything
                 public void onSuccess(Void result) {
           
                 }
               };
+              // 3. Set galleryId of the project once it's published
               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
             }
           };
-        // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+          // 1-2. First thing we do is publishing app metadata and AIA 
+          ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+          // 1. First thing we do is publishing 
+          ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
         }
       });    
       publishButton.addStyleName("app-action");

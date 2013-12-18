@@ -25,6 +25,12 @@ public interface GalleryServiceAsync {
       AsyncCallback<Long> callback);
 
   /**
+   * @see GalleryService#publishImage(String, String, NewProjectParameters)
+   */
+  void publishImage(long projectId, String title, String description,
+      AsyncCallback<Long> callback);
+
+  /**
    * @see GalleryService#deleteApp(long galleryId)
    */
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
