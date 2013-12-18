@@ -21,9 +21,9 @@ import javax.persistence.Id;
  */
  
 public class GalleryAppData {
-  // The Google Account userid
   @Id Long id;
-  String title;
+  String title;   // user entered, can have spaces
+  String projectName;  // we keep this as the .aia file name
   String description;
 
   // Date app published
@@ -35,6 +35,7 @@ public class GalleryAppData {
   @Indexed public int numDownloads;
   long projectId;
 
-  // need fields for image and source, or can we build from ids?
+  // image and source (.aia) are in cloud storage and we build URLS from ids
+  String userId;
 
 }

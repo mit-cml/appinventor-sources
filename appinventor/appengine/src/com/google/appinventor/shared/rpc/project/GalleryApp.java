@@ -17,7 +17,7 @@ public class GalleryApp implements IsSerializable {
     this.likes = 0;
     this.comments = 0;
     this.projectId = 0L;
-    this.developerName = "fred";
+    this.developerId = "fred";
     this.creationDate = 0L;
     this.updateDate = 0L;
     this.imageBlobId = "SFKJF";
@@ -25,15 +25,17 @@ public class GalleryApp implements IsSerializable {
   }
 
   public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
+
+  public static final String GALLERYBUCKET = "galleryai2";
 	
-  public GalleryApp(String title, String developerName, String description,
-      long creationDate, long updateDate, String imageURL, String sourceFileName,
+  public GalleryApp(String title, String developerId, String description,
+      long creationDate, long updateDate, String imageURL, String projectName,
       int downloads, int views, int likes, int comments, 
-      String imageBlobId, String sourceBlobId, String galleryAppId, 
+      String imageBlobId, String sourceBlobId, long galleryAppId, 
       ArrayList<String> tags) {
     super();
     this.title = title;
-    this.developerName = developerName;
+    this.developerId = developerId;
     this.description = description;
     this.creationDate = creationDate;
     this.updateDate = updateDate;
@@ -42,11 +44,11 @@ public class GalleryApp implements IsSerializable {
     // e.g., name  (2).zip. We need to cleanse this and probably deal with url as
     //   well.
 
-    if (sourceFileName.contains(".")) {
-      String[] splitName = sourceFileName.split("\\.");
+    if (projectName.contains(".")) {
+      String[] splitName = projectName.split("\\.");
       projectName = splitName[0];
     } else {
-      projectName = sourceFileName;
+      projectName = projectName;
     }
     this.downloads = downloads;
     this.views = views;
@@ -60,7 +62,7 @@ public class GalleryApp implements IsSerializable {
   
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
-  public GalleryApp(String title, long projectId, long creationDate, long updateDate) {
+  public GalleryApp(String title, long projectId, String projectName, long creationDate, long updateDate) {
 	super();
     this.title = title;
     this.downloads = 0;
@@ -68,7 +70,8 @@ public class GalleryApp implements IsSerializable {
     this.likes = 0;
     this.comments = 0;
     this.projectId = projectId;
-    this.developerName = "Test user";
+    this.projectName=projectName;
+    this.developerId = "Test user";
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageBlobId = "SFKJF";
@@ -76,7 +79,7 @@ public class GalleryApp implements IsSerializable {
   }
 
   private String title;
-  private String developerName;
+  private String developerId;
   private String description;
   private long creationDate;
   private long updateDate;
@@ -89,7 +92,7 @@ public class GalleryApp implements IsSerializable {
   private int comments;
   private String imageBlobId;
   private String sourceBlobId;
-  private String galleryAppId;
+  private long galleryAppId;
   private ArrayList<String> tags;
   private long projectId;  // when we edit a newly published app, we need the ai proj id.
 
@@ -106,11 +109,11 @@ public class GalleryApp implements IsSerializable {
   public void setTitle(String title) {
     this.title = title;
   }
-  public String getDeveloperName() {
-    return developerName;
+  public String getDeveloperId() {
+    return developerId;
   }
-  public void setDeveloperName(String developerName) {
-    this.developerName = developerName;
+  public void setDeveloperId(String developerId) {
+    this.developerId = developerId;
   }
   public String getDescription() {
     return description;
@@ -178,18 +181,25 @@ public class GalleryApp implements IsSerializable {
   public String getSourceBlobId() {
     return this.sourceBlobId;
   }
-  public void setGalleryAppId(String galleryAppId) {
+  public void setGalleryAppId(long galleryAppId) {
     this.galleryAppId = galleryAppId;
   }
-  public String getGalleryAppId() {
+  public long getGalleryAppId() {
     return this.galleryAppId;
   }
-  
-  // url is of form:
-  //   gallery.appinventor.mit.edu/rpc?getblob=<sourceBlob>:<appid>
-  // http://usf-appinventor-gallery.appspot.com/rpc?getblob=AMIfv96uvxoFUHj_Tsv671z66_Iu9HCsUgGad4_py4oWu2INlFgtvW6M5lUPKZwjBAT6Pi_-31MYIGF2aNji_qGZFxTwHH5ryPToMPumbajW0_I4Pf9XY2INsR-o7h_1z8jou1Ey9dS2ES1KjicqOebmCLMYKRrU5tAANrjTj1Bn3n0uipbWvsQ:48002
+  // developerId is the google account name. We need to send the name for the account
+  //   or if we add more user info send that...for testing, we're just sending id
+  public String getDeveloperName() {
+    return developerId;
+  }
+  /* URL is in GCS. Here is what GCS says:
+   *Your object is now visible to App Engine with the file name /gs/my_bucket/my_object. 
+   * If you set your object to be publicly accessible, your object can be accessed using the 
+   * URL http://storage.googleapis.com/my_bucket/my_object.  
+  */
   public String getSourceURL() {
-     return GALLERYURL+"getblob="+getSourceBlobId()+":"+getGalleryAppId();
+    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId();
+    return url;
   }
 
   public ArrayList<String> getTags() {

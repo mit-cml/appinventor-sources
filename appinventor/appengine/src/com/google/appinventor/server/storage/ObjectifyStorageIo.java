@@ -81,7 +81,8 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static final long MOTD_ID = 1;
 
   public static final long NOTPUBLISHED = -1;
-
+  public static final long FROMSCRATCH = -1;
+  
   // TODO(user): need a way to modify this. Also, what is really a good value?
   private static final int MAX_JOB_RETRIES = 10;
 
@@ -295,6 +296,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           pd.settings = projectSettings;
           pd.type = project.getProjectType();
           pd.galleryId = NOTPUBLISHED;
+          pd.attributionId = FROMSCRATCH;
           datastore.put(pd); // put the project in the db so that it gets assigned an id
 
           assert pd.id != null;
@@ -467,6 +469,23 @@ public class ObjectifyStorageIo implements  StorageIo {
        throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
+  @Override
+  public void setProjectAttributionId(final String userId, final long projectId,final long attributionId) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData projectData = datastore.find(projectKey(projectId));
+          if (projectData != null) {
+            projectData.attributionId = attributionId;
+            datastore.put(projectData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null,"error in setProjectAttributionId",  e);
+    }
+  }
 
   @Override
   public List<Long> getProjects(final String userId) {
@@ -600,7 +619,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return modDate.t;
   }
-  
+/*  
   @Override
   public long getGalleryId(final String userId, final long projectId) {
     final Result<Long> galleryId = new Result<Long>();
@@ -622,7 +641,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return galleryId.t;
   }
-
+*/
   @Override
   public String getProjectHistory(final String userId, final long projectId) {
     if (!getProjects(userId).contains(projectId)) {
@@ -673,7 +692,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public long getProjectGalleryId(final long projectId) {
+  public long getProjectGalleryId(String userId, final long projectId) {
     final Result<Long> galleryId = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -688,10 +707,31 @@ public class ObjectifyStorageIo implements  StorageIo {
         }
       });
     } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          "gallery error", e);
+      throw CrashReport.createAndLogError(LOG, 
+          null,"error in getProjectGalleryId", e);
     }
     return galleryId.t;
+  }
+  @Override
+  public long getProjectAttributionId(final long projectId) {
+    final Result<Long> attributionId = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            attributionId.t = pd.attributionId;
+          } else {
+            attributionId.t = Long.valueOf(FROMSCRATCH);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in getProjectAttributionId", e);
+    }
+    return attributionId.t;
   }
 
   @Override

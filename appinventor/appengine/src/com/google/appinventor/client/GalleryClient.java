@@ -109,7 +109,7 @@ public class GalleryClient {
   }
   
   public void GetMostDownloaded(int start, int count) {
-    //doesn't work, need Vince to add index
+    
     requestApps("http://gallery.appinventor.mit.edu/rpc?tag=all"+
        getStartCountString(start,count)+":desc:numDownloads",REQUEST_MOSTDOWNLOADED);
   }
@@ -147,6 +147,7 @@ public class GalleryClient {
 
 
   private void requestApps(String url, final int requestId)  {
+   /*
     int STATUS_CODE_OK = 200;  
 
     // Callback for when the server returns us the apps
@@ -167,9 +168,12 @@ public class GalleryClient {
     };
     // ok, this is below the call back, but of course it is done first 
     ode.getProjectService().getApps(url, callback);
+    */
   }
 
   private void requestComments(String url) {
+    /*
+    
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<List<GalleryComment>> callback = new OdeAsyncCallback<List<GalleryComment>>(
@@ -188,39 +192,45 @@ public class GalleryClient {
     // ok, this is below the call back, but of course it is done first 
     ode.getProjectService().getComments(url, callback);
 
-
+    */
   }	
-  public void loadSourceFile(final String projectName, String sourceURL) {
+ // public void loadSourceFile(final String projectName, String sourceURL, long galleryId) {
+  public void loadSourceFile(GalleryApp gApp) {
+    final String projectName=gApp.getProjectName();
+    final String sourceURL=gApp.getSourceURL();
+    final long galleryId = gApp.getGalleryAppId();
+    
     // first check name to see if valid and unique...
     if (!TextValidators.checkNewProjectName(projectName))
       return;  // the above function takes care of error messages
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
+
+    final OdeAsyncCallback<Void> galleryCallback = new OdeAsyncCallback<Void>(	      
+    // failure message
+    MESSAGES.createProjectError()) {
+      @Override
+      public void onSuccess(Void arg2) {
+      }
+    };
+    
     final OdeAsyncCallback<UserProject> callback = new OdeAsyncCallback<UserProject>(	      
     // failure message
     MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
-        // just relay the result back to UI client
+        // if we were able to create the new project, lets increment download count in gallery db
+        ode.getGalleryService().appWasDownloaded(galleryId,projectInfo.getProjectId(),galleryCallback);
+
+        // now relay the result back to UI client
         listener.onSourceLoadCompleted(projectInfo);    
       }
     };
     // this is really what's happening here, we call server to load project
-    ode.getProjectService().newProjectFromExternalTemplate(projectName, sourceURL,callback);
+    ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
   } 
-    
-  public List<GalleryApp> generateFakeApps()  {
-    GalleryApp app1 = new GalleryApp("Sports Analyzer", "Joe Smith", "a great game",0L,0L,
-        "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
-        "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
-        2,5,3,4,"","","", null);
-//    GalleryApp app2 = new GalleryApp("Basketball Quiz", "Bill Jones", "sports quiz","2/3/13","2/5/13", "http://lh5.ggpht.com/21QTcnF3vENnlyKiYbtxrcU0VlxNlJp1Ht79pZ_GU5z3gWPxdefa79DIqjI2FvDLNz4zieFeE15y00r4DJjHMix6DVQeu-X5o_xG1g=s100","http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",7,3,"","","");
-//    //app1.setName(requestApps( "http://app-inventor-gallery.appspot.com/rpc?tag=all:0:3:asc:uid" ));
-    ArrayList<GalleryApp> list = new ArrayList<GalleryApp>();
-    list.add(app1);
-//    list.add(app2);
-    return list;
-  }
+ 
+ 
 
   private String getStartCountString(int start, int count) {
     return ":"+String.valueOf(start)+":"+String.valueOf(count);  

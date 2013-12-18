@@ -120,7 +120,14 @@ public interface StorageIo {
    * @param galleryId gallery ID
    */
   void setProjectGalleryId(final String userId, final long projectId,final long galleryId); 
-  
+ 
+   /**
+   * sets a projects attribution id when it is opened from a gallery project
+   * @param userId a user Id (the request is made on behalf of this user)*
+   * @param projectId project ID
+   * @param attributionId attribution ID
+   */
+  void setProjectAttributionId(final String userId, final long projectId,final long attributionId);  
 
   /**
    * Returns a string with the project settings.
@@ -189,7 +196,7 @@ public interface StorageIo {
    *
    * @return long milliseconds
    */
-  long getGalleryId(String userId, long projectId);
+//  long getGalleryId(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -329,7 +336,15 @@ public interface StorageIo {
    *
    * @return  list of output file ID
    */
-  long getProjectGalleryId(final long projectId);
+  long getProjectGalleryId(String userId, final long projectId);
+
+   /**
+   * Returns the attribution id for a project-- the app it was copied/remixed from
+   * @param projectId  project ID
+   *
+   * @return galleryId 
+   */
+  long getProjectAttributionId(final long projectId);
 
   /**
    * Uploads a file.

@@ -50,6 +50,7 @@ import java.io.IOException;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 
+import com.google.appinventor.common.utils.StringUtils;
 
 /**
  * The implementation of the RPC service which runs on the server.
@@ -78,11 +79,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @return a {@link GalleryApp} for new galleryApp
    */
   @Override
-  public long publishApp(long projectId, String title, String description) {
-    // use UserProject id to create .aia file and store to gcs
-    // ...
-    long galleryId = galleryStorageIo.createGalleryApp(title,description, projectId);
-    storeAIA(galleryId,projectId);
+  public long publishApp(long projectId, String title, String projectName, String description) {
+    final String userId = userInfoProvider.getUserId();
+    long galleryId = galleryStorageIo.createGalleryApp(title, projectName, description, projectId,userId);
+    storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
    /**
@@ -106,27 +106,35 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
   @Override
   public List<GalleryApp> getMostDownloadedApps(int start, int count) {
-    return null;
+    return galleryStorageIo.getMostDownloadedApps(start,count);
   }
   @Override
   public void deleteApp(long galleryId) {
   }
+  
+  @Override
+  public void appWasDownloaded(long galleryId, long projectId) {
+    galleryStorageIo.incrementDownloads(galleryId);
+  }
 
-  private void storeAIA(long galleryId, long projectId) {
+  private void storeAIA(long galleryId, long projectId, String projectName) {
    
     final String userId = userInfoProvider.getUserId();
-    String zipName="app.aia";   // we don't care what this thing is called
-        // because we'll load it in from the gallery to ai directly
+    // build the aia file name using the ai project name and code stolen
+    // from DownloadServlet to normalize...
+    String aiaName= StringUtils.normalizeForFilename(projectName) + ".aia";
+    // grab the data for the aia file using code from DownloadServlet
     RawFile aiaFile = null;
     try {
       ProjectSourceZip zipFile = fileExporter.exportProjectSourceZip(userId,
-            projectId, true, false, zipName);
+            projectId, true, false, aiaName);
       aiaFile = zipFile.getRawFile();
     }
     catch (IOException e) {
       LOG.log(Level.INFO, "Unable to get aia file");
       e.printStackTrace();
     }
+    // now stick the aia file into the gcs
     try {
       // convert galleryId to a string, we'll use this for the key in gcs
       String galleryKey=String.valueOf(galleryId);
@@ -140,7 +148,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       // what should the mime type be?
       .setMimeType("text/html")
       // not sure if we're putting anything here for metadata
-      .addUserMetadata("title", "xyz");
+      .addUserMetadata("title", aiaName);
   
       AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
       // Open a channel to write to it

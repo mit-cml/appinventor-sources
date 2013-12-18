@@ -27,7 +27,7 @@ public interface GalleryService extends RemoteService {
    *
    * @return a {@link GalleryApp} for new galleryApp
    */
-  long publishApp(long projectId, String title,
+  long publishApp(long projectId, String projectName, String title,
                          String description);
 
   
@@ -62,6 +62,8 @@ public interface GalleryService extends RemoteService {
    * @return  root node of project
    */
   GalleryApp getApp(long galleryId);
+
+  void appWasDownloaded(long galleryId, long newProjectId);
 
   
 }
