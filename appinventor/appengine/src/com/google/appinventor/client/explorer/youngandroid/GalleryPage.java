@@ -110,8 +110,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appDescription;
   private final FlowPanel appComments;
   private final FlowPanel appCommentsList;
-  
   private String tagSelected;
+  
+  /* Publish & edit state components */
+  private CellList<String> titleCellList;
+  private CellList<String> descCellList;
   
   /**
    * Creates a new GalleryPage
@@ -159,12 +162,12 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           
           String uploadFilename = upload.getFilename();
           if (!uploadFilename.isEmpty()) {
-            
+            // Grab and validify the filename
             final String filename = makeValidFilename(uploadFilename);
 
             // Use the folderNode's project id and file id in the upload URL so that the file is
             // uploaded into that project and that folder in our back-end storage.
-            String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.UPLOAD_SERVLET + "/" + filename;
+            String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + "/" + filename;
             Uploader.getInstance().upload(upload, uploadUrl,
                 new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
               @Override
@@ -286,8 +289,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
             }
           };
+        app.setTitle(sanitizeEditedValue(titleCellList));
+        app.setDescription(sanitizeEditedValue(descCellList));
+        OdeLog.log("###############  ###############");
+        OdeLog.log(app.getTitle());
+        OdeLog.log(app.getDescription());
+        OdeLog.log("###############  ###############");
         // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+        ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
         }
       });    
       publishButton.addStyleName("app-action");
@@ -306,7 +315,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Create an editable text cell to render values
       EditTextCell titlePrompt = new EditTextCell();
       // Create a cell list that uses this cell
-      CellList<String> titleCellList = new CellList<String>(titlePrompt);
+      titleCellList = new CellList<String>(titlePrompt);
       
       // Forge the temporary prefilled title, place it in cell list
       String t = app.getTitle();
@@ -329,6 +338,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           });
       contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
       */
+      
+      
       
       titleCellList.addStyleName("app-titleprompt");
       titleCellList.addStyleName("gallery-editprompt");
@@ -390,7 +401,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Create an editable text cell to render values
       EditTextCell descPrompt = new EditTextCell();
       // Create a cell list that uses this cell
-      CellList<String> descCellList = new CellList<String>(descPrompt);
+      descCellList = new CellList<String>(descPrompt);
       // Forge the temporary prefilled description, place it in cell list
       String t = "Please describe your project here! \r\r " +
       		"Tell us what your project is about in a few sentences.";
@@ -541,6 +552,26 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
          }
        }
   	
+  }
+  
+  /*
+   * Helper method providing easier way to grab value from GWT's CellList,
+   * it also sanitizes the input in the process.
+   */
+  private String sanitizeEditedValue(CellList l) {
+    String text = l.getRowElement(0).getString();
+    int greaterThanCount = text.length() - text.replace(">", "").length();
+    int lessThanCount = text.length() - text.replace("<", "").length();
+    if (text.length() < 1) {
+      OdeLog.log("Sorry, your input is too short");
+    } else if (lessThanCount > 2 | greaterThanCount > 2) {
+      OdeLog.log("Sorry, contains illegal characters");
+    } else {
+      // Valid state, grab text value
+      text = text.substring(text.indexOf('>') + 1, text.indexOf('<', 2));
+      OdeLog.log(text);
+    }
+    return text;
   }
   
 
