@@ -85,6 +85,14 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
+  
+  @Override
+  public long updateApp(long galleryId, long projectId, String title, String projectName, String description) {
+    final String userId = userInfoProvider.getUserId();
+    galleryStorageIo.updateGalleryApp(galleryId, title, description,  userId);
+    //restoreAIA(galleryId,projectId, projectName);
+    return galleryId;
+  }
    /**
    * Returns an array of gallery Apps
    *

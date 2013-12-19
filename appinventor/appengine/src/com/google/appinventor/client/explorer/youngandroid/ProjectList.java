@@ -302,21 +302,20 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 //        ArrayList<String> tags);
     String dateCreated = String.valueOf(p.getDateCreated());
     String dateModified = String.valueOf(p.getDateModified());
-    ArrayList<String> tags = new ArrayList<String>();
-    tags.add("Education");
-    tags.add("testing");
-//    final GalleryApp appForPublish = new GalleryApp(p.getProjectName(), "Joe Hammons", "a great game",0L,0L,
-//        "http://lh3.ggpht.com/zyfGqqiN4P8GvXFVbVf-RLC--PrEDeRCu5jovFYD6l3TXYfU5pR70HXJ3yr-87p5FUGFSxeUgOMecodBOcTFYA7frUg6QTrS5ocMcNk=s100",
-//        "http://www.appinventor.org/apps2/ihaveadream/ihaveadream.aia",
-//        2,5,3,4,"","","", tags);
-    final GalleryApp appForPublish = new GalleryApp(p.getProjectName(), p.getProjectId(), p.getProjectName(), p.getDateCreated(), p.getDateModified());
+
+
+    final GalleryApp appForPublish = new GalleryApp(p.getProjectName(), p.getProjectId(), p.getProjectName(), p.getGalleryId(), p.getDateCreated(), p.getDateModified());
     OdeLog.log("############## ENTERED PREPARE STAGE" + appForPublish.getProjectName() + " <-|-> " + appForPublish.getTitle());
     
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
 //        appForPublish.setProjectId(p.getProjectId());
-        Ode.getInstance().switchToGalleryAppView(appForPublish, true); 
+        int editStatus = GalleryPage.NEWAPP;
+        if (p.isPublished())
+          editStatus=GalleryPage.UPDATEAPP;
+     
+        Ode.getInstance().switchToGalleryAppView(appForPublish, editStatus); 
       }
     });
   }

@@ -62,7 +62,7 @@ public class GalleryApp implements IsSerializable {
   
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
-  public GalleryApp(String title, long projectId, String projectName, long creationDate, long updateDate) {
+  public GalleryApp(String title, long projectId, String projectName, long galleryAppId,long creationDate, long updateDate) {
 	super();
     this.title = title;
     this.downloads = 0;
@@ -71,6 +71,7 @@ public class GalleryApp implements IsSerializable {
     this.comments = 0;
     this.projectId = projectId;
     this.projectName=projectName;
+    this.galleryAppId=galleryAppId;
     this.developerId = "Test user";
     this.creationDate = creationDate;
     this.updateDate = updateDate;
