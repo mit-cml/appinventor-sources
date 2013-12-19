@@ -50,6 +50,7 @@ public class GalleryServlet extends OdeServlet {
 
     UploadResponse uploadResponse;
 
+    /*
     try {
       String uri = req.getRequestURI();
       // First, call split with no limit parameter.
@@ -91,6 +92,7 @@ public class GalleryServlet extends OdeServlet {
     } catch (IOException e) {
       throw CrashReport.createAndLogError(LOG, req, null, e);
     }
+    */
 
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);

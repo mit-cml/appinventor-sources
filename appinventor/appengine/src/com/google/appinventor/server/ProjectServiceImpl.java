@@ -421,7 +421,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * This service is passed the URL for a source file in the gallery
    * It opens it and returns a userProject
-   *
+   * DAVE: I believe this has been replaced with newProjectFromGallery...need to
+   *  test and make sure, then remove
    */
   @Override
   public UserProject newProjectFromExternalTemplate(String appName,String sourceURL) {
@@ -455,7 +456,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 	  }
   }
   /**
-   * This service is passed a URL to an aia file in GCS
+   * This service is passed a URL to an aia file in GCS, of the form
+   *    /gs/bucket/gallerid
    * It converts it to a byte array and imports the project using FileImporter.
    * It also sets the attributionId of the project to point to the galleryID
    *  it is remixing.
@@ -475,6 +477,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);
       readChannel.close();
+      // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
       return userProject;
       } catch (FileNotFoundException e) {  // Create a new empty project if no Zip

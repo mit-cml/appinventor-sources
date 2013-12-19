@@ -5,13 +5,9 @@
 
 package com.google.appinventor.server.storage;
 
-/* can remove the following three 
-import com.google.appinventor.shared.rpc.project.Project;
-import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
-import com.google.appinventor.shared.rpc.user.User;
-*/
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import java.io.IOException;
 import java.util.List;
@@ -19,8 +15,10 @@ import java.util.NoSuchElementException;
 
 import javax.annotation.Nullable;
 
+
+
 /**
- * Interface of methods to simplify access to the storage systems.
+ * Interface of methods to simplify access to the gallery storage systems.
  *
  * In all of the methods below that take a user id, it should be a string
  * that uniquely identifies the logged-in user and will continue to do so
@@ -61,13 +59,10 @@ public interface GalleryStorageIo {
   List<GalleryApp> getMostDownloadedApps(int start, int count);
   
   void incrementDownloads(long galleryId);
-  
-  // need ...
-  // getRecentGalleryApps
-  // getMostViewedGalleryApps
-  // findGalleryApps
 
   // comment stuff
-  // studio stuff
+  void addComment(long galleryId,String userId, String comment);
+  List<GalleryComment> getComments(long galleryId);
+  // studio stuff... to come
   
 }

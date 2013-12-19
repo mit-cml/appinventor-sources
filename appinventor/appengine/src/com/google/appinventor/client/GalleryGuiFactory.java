@@ -170,11 +170,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       commentItem.add(commentPerson);
       
       // Add commentContent
-      Label cAuthor = new Label(c.getAuthor());
+      Label cAuthor = new Label(c.getUserId());
       cAuthor.addStyleName("comment-author");
       commentMeta.add(cAuthor);
 
-      Date commentDate = new Date(Long.parseLong(c.getTimeStamp()));
+      Date commentDate = new Date(c.getTimeStamp());
       DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
       Label cDate = new Label(" on " + dateFormat.format(commentDate));
       cDate.addStyleName("comment-date");
@@ -183,7 +183,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       commentMeta.addStyleName("comment-meta");
       commentContent.add(commentMeta);
 
-      Label cText = new Label(c.getText());
+      Label cText = new Label(c.getComment());
       cText.addStyleName("comment-text");
       commentContent.add(cText);
 
