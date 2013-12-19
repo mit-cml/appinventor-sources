@@ -291,10 +291,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           };
         app.setTitle(sanitizeEditedValue(titleCellList));
         app.setDescription(sanitizeEditedValue(descCellList));
-        OdeLog.log("###############  ###############");
-        OdeLog.log(app.getTitle());
-        OdeLog.log(app.getDescription());
-        OdeLog.log("###############  ###############");
         // ok, this is below the call back, but of course it is done first 
         ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
         }
@@ -569,7 +565,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     } else {
       // Valid state, grab text value
       text = text.substring(text.indexOf('>') + 1, text.indexOf('<', 2));
-      OdeLog.log(text);
+      // OdeLog.log(text);
     }
     return text;
   }

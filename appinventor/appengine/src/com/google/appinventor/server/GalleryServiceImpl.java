@@ -81,7 +81,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public long publishApp(long projectId, String title, String projectName, String description) {
     final String userId = userInfoProvider.getUserId();
-    long galleryId = galleryStorageIo.createGalleryApp(title, projectName, description, projectId,userId);
+    long galleryId = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
     storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
