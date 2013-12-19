@@ -9,6 +9,7 @@ import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
+import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 import org.apache.commons.fileupload.FileItemStream;
@@ -44,8 +45,8 @@ public class GalleryServlet extends OdeServlet {
 
   // Constants used when upload kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
-  private static final int GALLERY_ID_INDEX = 2;
-  private static final int FILE_PATH_INDEX = 3;
+  private static final int GALLERY_ID_INDEX = 3;
+  private static final int FILE_PATH_INDEX = 4;
   
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
@@ -80,6 +81,9 @@ public class GalleryServlet extends OdeServlet {
         LOG.info("################# TRYING UPLOAD STREAM ###############");
         LOG.info(readableStream);
         LOG.info("################# ENDING UPLOAD STREAM ###############");
+        
+//        storeImage(uploadedStream, galleryId);
+        
       } catch (Exception e) {
         throw CrashReport.createAndLogError(LOG, req, null, e);
       }

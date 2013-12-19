@@ -46,6 +46,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -117,6 +118,10 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     galleryStorageIo.incrementDownloads(galleryId);
   }
 
+  private void storeImage(InputStream is, long galleryId) {
+    
+  }
+  
   private void storeAIA(long galleryId, long projectId, String projectName) {
    
     final String userId = userInfoProvider.getUserId();

@@ -222,6 +222,51 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               // 3. Set galleryId of the project once it's published
               ode.getProjectService().setGalleryId(app.getProjectId(), 
                   galleryId, projectCallback);
+              app.setGalleryAppId(galleryId);
+              
+              // 4. Process the app image upload
+              String uploadFilename = upload.getFilename();
+              if (!uploadFilename.isEmpty()) {
+                // Grab and validify the filename
+                final String filename = makeValidFilename(uploadFilename);
+
+                OdeLog.log("############## GALLERYID BEGIN ############");
+                OdeLog.log(String.valueOf(app.getGalleryAppId()));
+                OdeLog.log("############## GALLERYID DONE ############");
+                // Forge the request URL for gallery servlet
+                String uploadUrl = GWT.getModuleBaseURL() + 
+                    ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
+                    + filename;
+                Uploader.getInstance().upload(upload, uploadUrl,
+                    new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+                  @Override
+                  public void onSuccess(UploadResponse uploadResponse) {
+                    switch (uploadResponse.getStatus()) {
+                    case SUCCESS:
+                      ErrorReporter.hide();
+                      // Vincent node: capture this later
+                      /*
+                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                          fileUploadedCallback);
+                      */
+                      break;
+                    case FILE_TOO_LARGE:
+                      // The user can resolve the problem by
+                      // uploading a smaller file.
+                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                      break;
+                    default:
+                      ErrorReporter.reportError(MESSAGES.fileUploadError());
+                      break;
+                    }
+                  }
+                });
+                
+              } else {
+                Window.alert(MESSAGES.noFileSelected());
+              }
+              
+              
             }
           };
         // Prepare the title and description from user inputs
@@ -230,47 +275,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
         // 1. Ok, this is below the call back, but of course it is done first 
         ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), 
             app.getProjectName(), app.getDescription(), callback);
-        
-
-        // Process the app image upload
-        String uploadFilename = upload.getFilename();
-        if (!uploadFilename.isEmpty()) {
-          // Grab and validify the filename
-          final String filename = makeValidFilename(uploadFilename);
-
-          // Forge the request URL for gallery servlet
-          String uploadUrl = GWT.getModuleBaseURL() + 
-              ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
-              + filename;
-          Uploader.getInstance().upload(upload, uploadUrl,
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-            @Override
-            public void onSuccess(UploadResponse uploadResponse) {
-              switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-                // Vincent node: capture this later
-                /*
-                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                    fileUploadedCallback);
-                */
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
-              }
-            }
-          });
-          
-        } else {
-          Window.alert(MESSAGES.noFileSelected());
-        }
-        
         
         }
       });    

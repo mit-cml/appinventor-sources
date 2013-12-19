@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -29,28 +30,40 @@ public interface GalleryService extends RemoteService {
    */
   long publishApp(long projectId, String projectName, String title,
                          String description);
-
   
+  void storeImage(InputStream is, long galleryId);
+  
+  /**
+   * Deletes a new gallery app
+   * @param title gallery title of app
+   * @return void
+   */
   void deleteApp(long galleryId);
 
   /**
    * Returns a list of galleryApps
+   * @param starting index
+   * @param number of apps to return
    * @return list of GalleryApps found by the back-end
    */
   List<GalleryApp> getRecentApps(int start, int count);
   
-
   /**
    * Returns a list of galleryApps
+   * @param starting index
+   * @param number of apps to return
    * @return list of GalleryApps found by the back-end
    */
   List<GalleryApp> getMostDownloadedApps(int start, int count);
   
   /**
    * Returns a list of galleryApps
+   * @param keyword to search for
+   * @param starting index
+   * @param number of apps to return
    * @return list of GalleryApps found by the back-end
    */
-  List<GalleryApp> findApps( String keywords, int start, int count);
+  List<GalleryApp> findApps(String keywords, int start, int count);
 
   /**
    * Returns a GalleryApp object for the given id
