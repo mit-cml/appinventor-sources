@@ -155,7 +155,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadBox.add(imageUploadPrompt);
       
       final FileUpload upload = new FileUpload();
-      upload.setName("uploadFormElement");
+      upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
       upload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {

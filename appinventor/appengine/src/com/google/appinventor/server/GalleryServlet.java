@@ -14,7 +14,6 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,7 +44,7 @@ public class GalleryServlet extends OdeServlet {
 
   // Constants used when upload kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
-  private static final int FILE_PATH_INDEX = 3;
+  private static final int FILE_PATH_INDEX = 2;
   
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
@@ -66,15 +65,15 @@ public class GalleryServlet extends OdeServlet {
     // First, call split with no limit parameter.
     String[] uriComponents = uri.split("/");
     
+    LOG.info("############# AT LEAST I GOT IN doPost ############");
+    
     if (true) {
 //        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
       String fileName = uriComponents[FILE_PATH_INDEX];
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-        StringWriter writer = new StringWriter();
-        IOUtils.copy(uploadedStream, writer, null);
-        String readableStream = writer.toString();
+        String readableStream = convertStreamToString(uploadedStream);
         LOG.info("################# TRYING UPLOAD STREAM ###############");
         LOG.info(readableStream);
         LOG.info("################# ENDING UPLOAD STREAM ###############");
@@ -98,6 +97,13 @@ public class GalleryServlet extends OdeServlet {
     resp.setStatus(HttpServletResponse.SC_OK);
   }
 
+  
+  // Helper method for InputStream
+  private static String convertStreamToString(InputStream is) {
+    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+    return s.hasNext() ? s.next() : "";
+  }
+  
   private InputStream getRequestStream(HttpServletRequest req, String expectedFieldName)
       throws Exception {
     ServletFileUpload upload = new ServletFileUpload();
