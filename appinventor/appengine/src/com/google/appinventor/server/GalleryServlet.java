@@ -14,10 +14,12 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,11 +31,22 @@ import javax.servlet.http.HttpServletResponse;
  */
 public class GalleryServlet extends OdeServlet {
 
+
   /*
    * URIs for upload requests are structured as follows:
-   *    /<baseurl>/publish/<projectId>/<filePath>
+   *    /<baseurl>/gallery_servlet/<filePath>
    */
 
+  // Constants for accessing split URI
+  /*
+   * Upload kind can be: "project", "file", or "userfile".
+   * Constants for these are defined in ServerLayout.
+   */
+
+  // Constants used when upload kind is "file".
+  // Since the file path may contain slashes, it must be the last component in the URI.
+  private static final int FILE_PATH_INDEX = 3;
+  
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
 
@@ -47,52 +60,39 @@ public class GalleryServlet extends OdeServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp) {
     setDefaultHeader(resp);
-
     UploadResponse uploadResponse;
-
-    /*
-    try {
-      String uri = req.getRequestURI();
-      // First, call split with no limit parameter.
-      String[] uriComponents = uri.split("/");
-      
-      
-      String uploadKind = uriComponents[UPLOAD_KIND_INDEX];
-
-      if (uploadKind.equals(ServerLayout.UPLOAD_FILE)) {
-        uriComponents = uri.split("/", SPLIT_LIMIT_FILE);
-        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
-        String fileName = uriComponents[FILE_PATH_INDEX];
-        InputStream uploadedStream;
-        try {
-          uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-        } catch (Exception e) {
-          throw CrashReport.createAndLogError(LOG, req, null, e);
-        }
-
-        try {
-          long modificationDate = fileImporter.importFile(userInfoProvider.getUserId(),
-              projectId, fileName, uploadedStream);
-          uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS, modificationDate);
-        } catch (FileImporterException e) {
-          uploadResponse = e.uploadResponse;
-        }
-      } else {
-        throw CrashReport.createAndLogError(LOG, req, null,
-            new IllegalArgumentException("Unknown upload kind: " + uploadKind));
+    
+    String uri = req.getRequestURI();
+    // First, call split with no limit parameter.
+    String[] uriComponents = uri.split("/");
+    
+    if (true) {
+//        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+      String fileName = uriComponents[FILE_PATH_INDEX];
+      InputStream uploadedStream;
+      try {
+        uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+        StringWriter writer = new StringWriter();
+        IOUtils.copy(uploadedStream, writer, null);
+        String readableStream = writer.toString();
+        LOG.info("################# TRYING UPLOAD STREAM ###############");
+        LOG.info(readableStream);
+        LOG.info("################# ENDING UPLOAD STREAM ###############");
+      } catch (Exception e) {
+        throw CrashReport.createAndLogError(LOG, req, null, e);
       }
 
-      // Now, get the PrintWriter for the servlet response and print the UploadResponse.
-      // On the client side, in the onSubmitComplete method in ode/client/utils/Uploader.java, the
-      // UploadResponse value will be retrieved as a String via the
-      // FormSubmitCompleteEvent.getResults() method.
-      PrintWriter out = resp.getWriter();
-      out.print(uploadResponse.formatAsHtml());
-
-    } catch (IOException e) {
-      throw CrashReport.createAndLogError(LOG, req, null, e);
+    } else {
+      throw CrashReport.createAndLogError(LOG, req, null,
+          new IllegalArgumentException("Unknown upload kind: "));
     }
-    */
+
+    // Now, get the PrintWriter for the servlet response and print the UploadResponse.
+    // On the client side, in the onSubmitComplete method in ode/client/utils/Uploader.java, the
+    // UploadResponse value will be retrieved as a String via the
+    // FormSubmitCompleteEvent.getResults() method.
+//    PrintWriter out = resp.getWriter();
+//    out.print(uploadResponse.formatAsHtml());
 
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);
