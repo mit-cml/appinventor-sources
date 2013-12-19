@@ -91,6 +91,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   GalleryClient gallery = new GalleryClient(this);
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
+  String projectName=null;
   Project project;
 
   private final FlowPanel galleryGUI;
@@ -115,10 +116,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   public GalleryPage(final GalleryApp app,Boolean editable) {
 
     this.app = app;
+    OdeLog.log("GALLERY PAGE CONSTRUCT, title is:"+app.getTitle());
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");
-    
+    panel.setWidth("100%");    
     galleryGUI = new FlowPanel();
     appSingle = new FlowPanel();
     appDetails = new FlowPanel();
@@ -137,6 +138,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // App header - image
     appHeader.addStyleName("app-header");
+    // If we're editing, add input form for image
     if (editable) {
       FlowPanel imageUploadBox = new FlowPanel();
       imageUploadBox.addStyleName("app-image-uploadbox");
@@ -244,15 +246,16 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appHeader.add(appAction);
 
     if (!editable) {
-      Button actionButton = new Button("Try this app");    
-      actionButton.addClickHandler(new ClickHandler() {
+      Button openAppButton = new Button("Try this app");    
+      openAppButton.addClickHandler(new ClickHandler() {
         // Open up source file if clicked the action button
         public void onClick(ClickEvent event) {
-          gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+          //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+          gallery.loadSourceFile(app);
         }
       });
-      actionButton.addStyleName("app-action");
-      appAction.add(actionButton);
+      openAppButton.addStyleName("app-action");
+      appAction.add(openAppButton);
     }
 
     if (editable) {
@@ -284,40 +287,15 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
             }
           };
-          // 1-2. First thing we do is publishing app metadata and AIA 
-          ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
-          // 1. First thing we do is publishing 
-          ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getDescription(), callback);
+        // ok, this is below the call back, but of course it is done first 
+        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getProjectName(), app.getDescription(), callback);
         }
       });    
       publishButton.addStyleName("app-action");
       appAction.add(publishButton);    
     }
     
-    final Button cloudButton = new Button("Test GCS");
-    cloudButton.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          // Callback for when the server returns us the apps
-          final Ode ode = Ode.getInstance();
-          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
-             // failure message
-             MESSAGES.galleryError()) {
-             @Override
-             public void onSuccess(Boolean flag) {  // this is for 
-               cloudButton.setText("Completed");
-               OdeLog.log("################ SUCCESS");
-             }  
-          
-          };
-        // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().storeAIAtoCloud(1, callback);
-        }
-      });
-
-    
-    cloudButton.addStyleName("app-action");
-    appAction.add(cloudButton);       
+     
     
     // App details - header title
     if (editable) {
@@ -332,7 +310,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       CellList<String> titleCellList = new CellList<String>(titlePrompt);
       
       // Forge the temporary prefilled title, place it in cell list
-      String t = app.getTitle() + " (ProjectId:" + app.getProjectId() + ")";
+      String t = app.getTitle();
       List<String> titleList = Arrays.asList(t);
       titleCellList.setRowData(0, titleList);
 
@@ -361,7 +339,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     } else {
       Label title = new Label(app.getTitle());
       appInfo.add(title);
-      title.addStyleName("app-title");      
+      title.addStyleName("app-title");   
     }
     
     Label devName = new Label("By " + app.getDeveloperName());
@@ -433,14 +411,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       appInfo.add(appDescription);
       Label description = new Label(app.getDescription());
       appDescription.add(description);
-      appDescription.addStyleName("app-description");      
+      appDescription.addStyleName("app-description");    
     }
 
     
     // Add app tags
     if (editable) {
       // Editable tag panel here
-    } else {
+    } /* TAG STUFF else {
       FlowPanel appTags = new FlowPanel();
       appInfo.add(appTags);
       for (String tag : app.getTags()) {
@@ -454,8 +432,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           }
         });
       }
-      appTags.addStyleName("app-tags");      
+      appTags.addStyleName("app-tags"); 
+      OdeLog.log("bottom of fifth non-editable:");     
     }
+    */
 
     appInfo.addStyleName("app-info-container");
 
@@ -475,16 +455,19 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appComments.add(commentsHeader);
 
     // Add list of comments
-    gallery.GetComments(app.getGalleryAppId(), 0, 100);
-    appComments.add(appCommentsList);
+    // gallery.GetComments(app.getGalleryAppId(), 0, 100);
+    // appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
  
     // Add sidebar stuff, only in public published state
     if (!editable) {
+      /*
       gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());      
       // By default, load the first tag's apps
       tagSelected = app.getTags().get(0);
       gallery.FindByTag(app.getTags().get(0), 0, 5, 0);
+      OdeLog.log("bottom of sixth non-editable:");
+      */
     }
 
     // Add everything to top-level containers
@@ -492,8 +475,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appDetails.addStyleName("gallery-container");
     appDetails.addStyleName("gallery-app-details");
     if (!editable) {
+    /*
       appSingle.add(appsByAuthor);
-      appSingle.add(appsByTags);      
+      appSingle.add(appsByTags);   
+    */   
     }
     galleryGUI.add(appSingle);
     appSingle.addStyleName("gallery-app-single");

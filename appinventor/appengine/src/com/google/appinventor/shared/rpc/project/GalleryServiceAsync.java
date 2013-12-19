@@ -21,7 +21,7 @@ public interface GalleryServiceAsync {
   /**
    * @see GalleryService#publishApp(String, String, NewProjectParameters)
    */
-  void publishApp(long projectId, String title, String description,
+  void publishApp(long projectId, String title, String projectName, String description,
       AsyncCallback<Long> callback);
 
   /**
@@ -34,6 +34,11 @@ public interface GalleryServiceAsync {
    * @see GalleryService#deleteApp(long galleryId)
    */
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
+  
+  /**
+   * @see GalleryService#appWasDownloaded(long galleryId, long projectId)
+   */
+  void appWasDownloaded(long galleryId, long projectId, AsyncCallback<java.lang.Void> arg2);
   
   /**
    * 

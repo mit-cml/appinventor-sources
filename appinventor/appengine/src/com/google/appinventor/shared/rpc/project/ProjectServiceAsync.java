@@ -122,7 +122,7 @@ public interface ProjectServiceAsync {
   void newProjectFromExternalTemplate(String appName, String sourceURL, AsyncCallback<UserProject>
   callback);
   
-  void getApps(String url,AsyncCallback<List<GalleryApp>> callback);
+  void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
+  
 
-  void getComments(String url,AsyncCallback<List<GalleryComment>> callback);
 }

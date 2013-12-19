@@ -143,7 +143,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   
 
   @Override
-  public long createGalleryApp(final String title,final String description, final long projectId) {
+  public long createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
 
     final Result<Long> galleryId = new Result<Long>();
     try {
@@ -159,8 +159,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.dateCreated = date;
           appData.dateModified = date;
           appData.title = title;
+          appData.projectName= projectName;
           appData.description = description;
           appData.projectId=projectId;
+          appData.userId=userId;
           datastore.put(appData); // put the appData in the db so that it gets assigned an id
 
           assert appData.id != null;
@@ -210,14 +212,59 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return apps;
   }
   /**
+   * Returns an array of most downloaded GalleryApps
+   *
+   * @return  list of gallery apps
+   */
+  @Override
+  public List<GalleryApp> getMostDownloadedApps(int start, final int count) {
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("numDownloads").limit(count)) {
+      
+      GalleryApp gApp = new GalleryApp();
+      makeGalleryApp(appData, gApp);
+      apps.add(gApp);
+    }
+    return apps;
+  }
+  
+  @Override
+  public void incrementDownloads(final long galleryId) {
+    
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData galleryAppData = datastore.find(galleryAppKey(galleryId));
+          if (galleryAppData != null) {
+            galleryAppData.numDownloads= galleryAppData.numDownloads+1;
+            datastore.put(galleryAppData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo", e);
+    }
+  }
+
+  
+  /**
    * Converts a db object GalleryAppData into a shared GalleryApp
    *
    * @return  list of gallery apps
    */
   private void makeGalleryApp(GalleryAppData appData, GalleryApp galleryApp) {
     galleryApp.setTitle (appData.title); 
+    galleryApp.setProjectName(appData.projectName);
+    galleryApp.setGalleryAppId(appData.id);
     galleryApp.setProjectId(appData.projectId);
     galleryApp.setDescription(appData.description);
+    galleryApp.setDeveloperId(appData.userId);
     galleryApp.setDownloads(appData.numDownloads);  
     galleryApp.setCreationDate(appData.dateCreated);
     galleryApp.setUpdateDate(appData.dateModified);

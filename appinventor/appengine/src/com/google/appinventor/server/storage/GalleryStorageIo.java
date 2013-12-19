@@ -43,7 +43,7 @@ public interface GalleryStorageIo {
    * @param userId unique user id
    * @return user data
    */
-  long createGalleryApp(String title, String description, long projectId);
+  long createGalleryApp(String title, String projectName, String description, long projectId, String userId);
 
 
   /**
@@ -52,7 +52,15 @@ public interface GalleryStorageIo {
    * @return  list of gallery app ids
    */
   List<GalleryApp> getRecentGalleryApps(int start, int count);
+   
+   /**
+   * Returns an array of most downloaded GalleryApps
+   *
+   * @return  list of gallery app ids
+   */
+  List<GalleryApp> getMostDownloadedApps(int start, int count);
   
+  void incrementDownloads(long galleryId);
   
   // need ...
   // getRecentGalleryApps

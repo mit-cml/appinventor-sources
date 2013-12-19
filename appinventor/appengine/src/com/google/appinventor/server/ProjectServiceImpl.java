@@ -50,6 +50,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileReadChannel;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import java.nio.channels.Channels;
+
 //import org.omg.CORBA_2_3.portable.InputStream;
 
 
@@ -378,7 +386,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                            storageIo.getProjectType(userId, projectId),
                            storageIo.getProjectDateCreated(userId, projectId),
                            storageIo.getProjectDateModified(userId, projectId),
-                           storageIo.getGalleryId(userId, projectId));
+                           storageIo.getProjectGalleryId(userId, projectId));
   }
 
   /*
@@ -446,148 +454,38 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
           return null;
 	  }
   }
-  
-  @Override
-  public List<GalleryApp> getApps(String url)
-  {
-	  final String galleryURL = url;
-	  try {
-	    URLConnection connection = new URL(galleryURL).openConnection();
-	    //connection.setRequestProperty("Accept-Charset", charset);
-	    
-	    InputStream response = connection.getInputStream();
-	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
-	    //return s.hasNext() ? s.next() : "";
-	    ArrayList<GalleryApp> list= parseAppList(s.next());
-	    //return list.get(0).getTitle();
-	    return list;
-	  }
-	  catch (IOException e)
-	  {
-		  //return "exception opening gallery";
-          return new ArrayList<GalleryApp>();
-	  }
-	  
-  }
-  
-  public ArrayList<GalleryApp> parseAppList(String jsonStr)
-  {
-    ArrayList<GalleryApp> appList = new ArrayList<GalleryApp>();
-    if (jsonStr == null || jsonStr.length() == 0)
-      return appList;
-    try {  
-      JSONObject o = new JSONObject(jsonStr);
-	  JSONArray results = (JSONArray) o.get("result");  
-	  for (int i = 0; i < results.length(); i++) {
-        JSONObject singleApp = results.getJSONObject(i);
-	    GalleryApp galleryApp = parseApp(singleApp);
-	    if (galleryApp != null)
-		  appList.add(galleryApp);	
-      } 
-    } catch (JSONException e) {
-			return appList;  //need to do something here
-	}
-	return appList;
-			
-  }
-  
-  public GalleryApp parseApp(JSONObject appJson)
-  {
-    try { 
-  	  String title = appJson.get("title").toString();
-      String description = appJson.get("description").toString();
-      String image1 = appJson.get("image1").toString();
-      String sourceFileName = appJson.get("sourceFileName").toString();
-      // for some reason source is a list of one item
-      JSONArray sourceArray = (JSONArray) appJson.get("source");
-      String sourceBlobId = sourceArray.get(0).toString();
-      String imageBlobId = appJson.get("image1blob").toString();
-      String galleryAppId = appJson.get("uid").toString();
-      String displayName = appJson.get("displayName").toString();
-      String creationTime = appJson.get("creationTime").toString();
-      String uploadTime = appJson.get("uploadTime").toString();
-      int numDownloads = Integer.parseInt(appJson.get("numDownloads").toString());
-      int numViewed = Integer.parseInt(appJson.get("numViewed").toString());
-      int numLikes = Integer.parseInt(appJson.get("numLikes").toString());
-      int numComments = Integer.parseInt(appJson.get("numComments").toString());
-      
-      JSONArray tagArray = appJson.getJSONArray("tags");
-      ArrayList<String> tags = new ArrayList<String>();
-      for (int i = 0; i < tagArray.length(); i++) {
-        tags.add(tagArray.getString(i));
-      }  
-      Long creationTimeLong = Long.parseLong(creationTime); 
-      Long uploadTimeLong = Long.parseLong(uploadTime);  
-      GalleryApp galleryApp = new GalleryApp(title, displayName, description,
-			  creationTimeLong, uploadTimeLong, image1, sourceFileName,
-			  numDownloads, numViewed, numLikes, numComments, 
-			  imageBlobId, sourceBlobId, galleryAppId, tags);
-	  
-      return galleryApp;
-      } catch (JSONException e) {
-			return null;  //need to do something here
+  /**
+   * This service is passed a URL to an aia file in GCS
+   * It converts it to a byte array and imports the project using FileImporter.
+   * It also sets the attributionId of the project to point to the galleryID
+   *  it is remixing.
+   */
+  @Override 
+  public UserProject newProjectFromGallery(String projectName, String aiaPath, 
+      long attributionId) {
+    boolean lockForRead = false;
+    try {
+      FileService fileService = FileServiceFactory.getFileService();
+      AppEngineFile readableFile = new AppEngineFile(aiaPath);
+      FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
+    
+      InputStream bais =Channels.newInputStream(readChannel);
+      FileImporter fileImporter = new FileImporterImpl();
+
+      UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
+        projectName, bais);
+      readChannel.close();
+      storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
+      return userProject;
+      } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      } catch (FileImporterException e) {
+        e.printStackTrace();
       }
+      return null;
+  
   }
 
-  @Override
-  public List<GalleryComment> getComments(String url)
-  {
-	  final String galleryURL=url;
-	  try {
-	    URLConnection connection = new URL(galleryURL).openConnection();
-	    //connection.setRequestProperty("Accept-Charset", charset);
-	    
-	    InputStream response = connection.getInputStream();
-	    java.util.Scanner s = new java.util.Scanner(response).useDelimiter("\\A");
-	    //return s.hasNext() ? s.next() : "";
-	    ArrayList<GalleryComment> list= parseCommentList(s.next());
-	    //return list.get(0).getTitle();
-	    return list;
-	  }
-	  catch (IOException e)
-	  {
-		  //return "exception opening gallery";
-          return new ArrayList<GalleryComment>();
-	  }
-	  
-  }
-  
-  public ArrayList<GalleryComment> parseCommentList(String jsonStr)
-  {
-    ArrayList<GalleryComment> commentList = new ArrayList<GalleryComment>();
-    if (jsonStr == null || jsonStr.length() == 0)
-      return commentList;
-    try {  
-      JSONObject o = new JSONObject(jsonStr);
-	  JSONArray results = (JSONArray) o.get("result");  
-	  for (int i = 0; i < results.length(); i++) {
-        JSONObject singleComment = results.getJSONObject(i);
-	    GalleryComment galleryComment = parseComment(singleComment);
-	    if (galleryComment != null)
-		  commentList.add(galleryComment);	
-      } 
-    } catch (JSONException e) {
-			return commentList;  //need to do something here
-	}
-	return commentList;
-			
-  }
-  
-  public GalleryComment parseComment(JSONObject appJson)
-  {
-    try { 
-  	  String appId = appJson.get("app").toString();
-	  String text = appJson.get("text").toString();
-	  String timeStamp= appJson.get("timestamp").toString();
-	  String treeId=appJson.get("treeId").toString();
-       int numCurFlags=appJson.getInt("numCurFlags");
-      int numChildren=appJson.getInt("numChildren");
-      String author=appJson.get("displayName").toString();
-	    
-	  GalleryComment galleryComment = new GalleryComment(appId, timeStamp, text,numCurFlags, author, treeId,numChildren);
-      return galleryComment;
-      } catch (JSONException e) {
-			return null;  //need to do something here
-      }
-  }
 }

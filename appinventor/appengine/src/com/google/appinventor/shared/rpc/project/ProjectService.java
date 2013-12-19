@@ -213,13 +213,6 @@ public interface ProjectService extends RemoteService {
    * @return a {@link String} or the template data
    */
  
-  List<GalleryApp> getApps(String url);
-  
-  /**
-   * gets apps from the gallery
 
-   *
-   * @return a {@link List} 
-   */
-   List<GalleryComment> getComments(String url);
+   UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
 }

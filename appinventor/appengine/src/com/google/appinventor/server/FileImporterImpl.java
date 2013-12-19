@@ -148,7 +148,7 @@ public final class FileImporterImpl implements FileImporter {
     return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
         storageIo.getProjectType(userId, projectId),
         storageIo.getProjectDateCreated(userId, projectId),
-        storageIo.getGalleryId(userId, projectId));
+        storageIo.getProjectGalleryId(userId,projectId));
   }
 
   @VisibleForTesting
