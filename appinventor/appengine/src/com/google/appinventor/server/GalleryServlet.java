@@ -44,7 +44,8 @@ public class GalleryServlet extends OdeServlet {
 
   // Constants used when upload kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
-  private static final int FILE_PATH_INDEX = 2;
+  private static final int GALLERY_ID_INDEX = 2;
+  private static final int FILE_PATH_INDEX = 3;
   
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
@@ -68,8 +69,10 @@ public class GalleryServlet extends OdeServlet {
     LOG.info("############# AT LEAST I GOT IN doPost ############");
     
     if (true) {
-//        long projectId = Long.parseLong(uriComponents[PROJECT_ID_INDEX]);
+      long galleryId = Long.parseLong(uriComponents[GALLERY_ID_INDEX]);
       String fileName = uriComponents[FILE_PATH_INDEX];
+      LOG.info(String.valueOf(galleryId));
+      LOG.info(fileName);
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);

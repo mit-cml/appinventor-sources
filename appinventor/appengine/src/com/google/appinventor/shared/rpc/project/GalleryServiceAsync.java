@@ -39,13 +39,6 @@ public interface GalleryServiceAsync {
    * @see GalleryService#appWasDownloaded(long galleryId, long projectId)
    */
   void appWasDownloaded(long galleryId, long projectId, AsyncCallback<java.lang.Void> arg2);
-  
-  /**
-   * 
-   * @param projectId
-   * @param callback
-   */
-  void storeAIAtoCloud(long projectId, AsyncCallback<java.lang.Boolean> callback);
 
   /**
    * @see GalleryService#getRecentApps(int start, int count)
