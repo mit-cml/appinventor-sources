@@ -25,6 +25,7 @@ import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 
 import com.google.appinventor.server.storage.GalleryAppData;
+import com.google.appinventor.server.storage.GalleryCommentData;
 
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -39,6 +40,7 @@ import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -66,7 +68,8 @@ import javax.annotation.Nullable;
 
 /**
  * Implements the GalleryStorageIo interface using Objectify as the underlying data
- * store.
+ * store. This class provides the db support for gallery data, and is modeled after
+ * StorageIo which handles the rest of the AI database.
  *
  * @author wolberd@gmail.com (David Wolber)
  *
@@ -109,6 +112,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   static {
     // Register the data object classes stored in the database
     ObjectifyService.register(GalleryAppData.class);
+    ObjectifyService.register(GalleryCommentData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -121,27 +125,14 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   }
 
-  /*
-   *
-   */
-  @Override
-  public GalleryApp getGalleryApp(final long galleryId) {
-    final GalleryApp gApp = new GalleryApp();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          GalleryAppData app = datastore.get(new Key<GalleryAppData>(GalleryAppData.class,galleryId));
-          makeGalleryApp(app,gApp);
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
-    }
-    return (gApp);
-  }
-  
 
+  
+  /**
+   * create a new gallery app in database. This doesn't deal with aia or image file
+   * which is put in gcs instead
+   * @return id of the gallery app
+   * 
+   */
   @Override
   public long createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
 
@@ -232,7 +223,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return apps;
   }
-  
+  /**
+   * when an gallery app is opened, this method is called to increment the #downloads
+   * 
+   */
   @Override
   public void incrementDownloads(final long galleryId) {
     
@@ -252,11 +246,78 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
+  /* Gets a gallery app given a galleryId
+   * NOTE: this is currently not being used and hasn't been tested
+   */
+  @Override
+  public GalleryApp getGalleryApp(final long galleryId) {
+    final GalleryApp gApp = new GalleryApp();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData app = datastore.get(new Key<GalleryAppData>(GalleryAppData.class,galleryId));
+          makeGalleryApp(app,gApp);
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
+    }
+    return (gApp);
+  }
+  /**
+   * add a comment to the comment list for a gallery app
+   * 
+   * 
+   */
+  @Override
+  public void addComment(final long galleryId,final String userId, final String comment) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryCommentData commentData = new GalleryCommentData();
+          commentData.comment = comment;
+          commentData.userId = userId;
+          commentData.galleryKey = galleryKey(galleryId);
+          datastore.put(commentData);
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.addComment", e);
+    }
+  }
+  /**
+   * get all the comments for a given galleryId
+   * @return list of GalleryComment
+   * 
+   */
+  @Override
+  public List<GalleryComment> getComments(final long galleryId) {
+   final List<GalleryComment> comments = new ArrayList<GalleryComment>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey)) {
+            GalleryComment galleryComment = new GalleryComment(galleryId,
+                commentData.userId,commentData.comment,commentData.dateCreated);
+            comments.add(galleryComment);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getComments", e);
+    }
+
+    return comments;
+  }
   
   /**
-   * Converts a db object GalleryAppData into a shared GalleryApp
-   *
-   * @return  list of gallery apps
+   * Converts a db object GalleryAppData into a shared GalleryApp that can be passed
+   * around in client. Create the galleryApp first then send it here to get its data
+   * 
    */
   private void makeGalleryApp(GalleryAppData appData, GalleryApp galleryApp) {
     galleryApp.setTitle (appData.title); 
@@ -318,4 +379,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       throw new ObjectifyException("Couldn't commit job after max retries.");
     }
   }
+
+  private Key<GalleryAppData> galleryKey(long galleryId) {
+    return new Key<GalleryAppData>(GalleryAppData.class, galleryId);
+  }
+
 }

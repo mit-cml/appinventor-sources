@@ -13,6 +13,7 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
@@ -23,6 +24,7 @@ import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 
 import com.google.gwt.cell.client.EditTextCell;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.HasClickHandlers;
@@ -72,6 +74,7 @@ import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
 
 import com.google.appinventor.client.utils.Uploader;
+import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
@@ -107,8 +110,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appDescription;
   private final FlowPanel appComments;
   private final FlowPanel appCommentsList;
-  
   private String tagSelected;
+  
+  /* Publish & edit state components */
+  private CellList<String> titleCellList;
+  private CellList<String> descCellList;
   
   /**
    * Creates a new GalleryPage
@@ -148,45 +154,49 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadPrompt.addStyleName("gallery-editprompt");
       imageUploadBox.add(imageUploadPrompt);
       
-      // Create a FileUpload widget.
-      // Create a FormPanel and point it at a service.
-      final FormPanel form = new FormPanel();
-      form.setAction("/myFormHandler");
-
-      // Because we're going to add a FileUpload widget, we'll need to set the
-      // form to use the POST method, and multipart MIME encoding.
-      form.setEncoding(FormPanel.ENCODING_MULTIPART);
-      form.setMethod(FormPanel.METHOD_POST);
-      
-      
       final FileUpload upload = new FileUpload();
       upload.setName("uploadFormElement");
       upload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {
-          Uploader.getInstance().upload(upload, "http://storage.googleapis.com/galleryai2/image.jpg",
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-            @Override
-            public void onSuccess(UploadResponse uploadResponse) {
-              switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-//                onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-//                    fileUploadedCallback);
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
+          
+          String uploadFilename = upload.getFilename();
+          if (!uploadFilename.isEmpty()) {
+            // Grab and validify the filename
+            final String filename = makeValidFilename(uploadFilename);
+
+            // Use the folderNode's project id and file id in the upload URL so that the file is
+            // uploaded into that project and that folder in our back-end storage.
+            String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + "/" + filename;
+            Uploader.getInstance().upload(upload, uploadUrl,
+                new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+              @Override
+              public void onSuccess(UploadResponse uploadResponse) {
+                switch (uploadResponse.getStatus()) {
+                case SUCCESS:
+                  ErrorReporter.hide();
+                  // Vincent node: capture this later
+                  /*
+                  onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                      fileUploadedCallback);
+                  */
+                  break;
+                case FILE_TOO_LARGE:
+                  // The user can resolve the problem by
+                  // uploading a smaller file.
+                  ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                  break;
+                default:
+                  ErrorReporter.reportError(MESSAGES.fileUploadError());
+                  break;
+                }
               }
-            }
-          });
-        
-        } 
+            });
+            
+          } else {
+            Window.alert(MESSAGES.noFileSelected());
+          }
+        }
       });
       
 //      ((HasClickHandlers) upload).addClickHandler(new ClickHandler() {
@@ -255,13 +265,13 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          int STATUS_CODE_OK = 200;  
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
             // failure message
             MESSAGES.galleryError()) {
             @Override
+            // 2. When publish call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
               OdeLog.log("we had a successful publish");
@@ -270,15 +280,19 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               // failure message
               MESSAGES.galleryError()) {
                 @Override
+                //4. When setGalleryId call returns, which we don't need to do anything
                 public void onSuccess(Void result) {
           
                 }
               };
+              // 3. Set galleryId of the project once it's published
               ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
             }
           };
+        app.setTitle(sanitizeEditedValue(titleCellList));
+        app.setDescription(sanitizeEditedValue(descCellList));
         // ok, this is below the call back, but of course it is done first 
-        ode.getGalleryService().publishApp(app.getProjectId(),app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+        ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
         }
       });    
       publishButton.addStyleName("app-action");
@@ -297,7 +311,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Create an editable text cell to render values
       EditTextCell titlePrompt = new EditTextCell();
       // Create a cell list that uses this cell
-      CellList<String> titleCellList = new CellList<String>(titlePrompt);
+      titleCellList = new CellList<String>(titlePrompt);
       
       // Forge the temporary prefilled title, place it in cell list
       String t = app.getTitle();
@@ -320,6 +334,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           });
       contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
       */
+      
+      
       
       titleCellList.addStyleName("app-titleprompt");
       titleCellList.addStyleName("gallery-editprompt");
@@ -381,7 +397,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Create an editable text cell to render values
       EditTextCell descPrompt = new EditTextCell();
       // Create a cell list that uses this cell
-      CellList<String> descCellList = new CellList<String>(descPrompt);
+      descCellList = new CellList<String>(descPrompt);
       // Forge the temporary prefilled description, place it in cell list
       String t = "Please describe your project here! \r\r " +
       		"Tell us what your project is about in a few sentences.";
@@ -532,6 +548,37 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
          }
        }
   	
+  }
+  
+  /*
+   * Helper method providing easier way to grab value from GWT's CellList,
+   * it also sanitizes the input in the process.
+   */
+  private String sanitizeEditedValue(CellList l) {
+    String text = l.getRowElement(0).getString();
+    int greaterThanCount = text.length() - text.replace(">", "").length();
+    int lessThanCount = text.length() - text.replace("<", "").length();
+    if (text.length() < 1) {
+      OdeLog.log("Sorry, your input is too short");
+    } else if (lessThanCount > 2 | greaterThanCount > 2) {
+      OdeLog.log("Sorry, contains illegal characters");
+    } else {
+      // Valid state, grab text value
+      text = text.substring(text.indexOf('>') + 1, text.indexOf('<', 2));
+      // OdeLog.log(text);
+    }
+    return text;
+  }
+  
+
+  private String makeValidFilename(String uploadFilename) {
+    // Strip leading path off filename.
+    // We need to support both Unix ('/') and Windows ('\\') separators.
+    String filename = uploadFilename.substring(
+        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    // We need to strip out whitespace from the filename.
+    filename = filename.replaceAll("\\s", "");
+    return filename;
   }
  
 }	
