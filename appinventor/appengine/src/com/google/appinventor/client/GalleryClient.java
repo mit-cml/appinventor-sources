@@ -72,7 +72,7 @@ public class GalleryClient {
     };
       
     // ok, this is below the call back, but of course it is done first 
-    ode.getGalleryService().getRecentApps(0,5,callback);
+    ode.getGalleryService().getRecentApps(start,count,callback);
   
   }
   
@@ -90,7 +90,7 @@ public class GalleryClient {
     };
       
     // ok, this is below the call back, but of course it is done first 
-    ode.getGalleryService().getMostDownloadedApps(0,5,callback);
+    ode.getGalleryService().getMostDownloadedApps(start,count,callback);
   
   }
 

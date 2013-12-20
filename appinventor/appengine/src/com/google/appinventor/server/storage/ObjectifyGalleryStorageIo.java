@@ -194,7 +194,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -215,7 +215,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("numDownloads").limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);

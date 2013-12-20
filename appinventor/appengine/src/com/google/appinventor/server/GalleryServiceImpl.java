@@ -91,7 +91,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public long updateApp(long galleryId, long projectId, String title, String projectName, String description) {
     final String userId = userInfoProvider.getUserId();
     galleryStorageIo.updateGalleryApp(galleryId, title, description,  userId);
-    //restoreAIA(galleryId,projectId, projectName);
+    storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
    /**
@@ -154,7 +154,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     //   for migration details
       // convert galleryId to a string, we'll use this for the key in gcs
       String galleryKey = String.valueOf(galleryId);
-      LOG.log(Level.SEVERE, "GALLERYKEY IS "+galleryKey);    
       // set up the cloud file (options)
       FileService fileService = FileServiceFactory.getFileService();
       GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
