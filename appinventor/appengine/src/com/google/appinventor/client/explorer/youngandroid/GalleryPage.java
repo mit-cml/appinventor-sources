@@ -83,6 +83,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private int editStatus;
 
   /* Publish & edit state components */
+  private Image image;
+  private FlowPanel imageUploadBox;
   private FileUpload upload;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
@@ -119,15 +121,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     // If we're editing, add input form for image
     if (newOrUpdateApp()) {
-      FlowPanel imageUploadBox = new FlowPanel();
+      imageUploadBox = new FlowPanel();
       imageUploadBox.addStyleName("app-image-uploadbox");
       imageUploadBox.addStyleName("gallery-editbox");
-      Label imageUploadPrompt = new Label("Upload your project image!");
-      imageUploadPrompt.addStyleName("app-image-uploadprompt");
-      imageUploadPrompt.addStyleName("gallery-editprompt");
-      imageUploadBox.add(imageUploadPrompt);
+      
+      if (editStatus == UPDATEAPP) {
+        updateAppImage(app.getCloudImageURL(), imageUploadBox);  
+      } else {
+        Label imageUploadPrompt = new Label("Upload your project image!");
+        imageUploadPrompt.addStyleName("app-image-uploadprompt");
+        imageUploadPrompt.addStyleName("gallery-editprompt");
+        imageUploadBox.add(imageUploadPrompt);        
+      }
       
       upload = new FileUpload();
+      upload.addStyleName("app-image-upload");
       upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
       upload.addChangeHandler(new ChangeHandler() {
         @Override
@@ -137,11 +145,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       });
 
       imageUploadBox.add(upload);
-      
-      
       appHeader.add(imageUploadBox);
+      
     } else  { // we are just viewing this page 
-      Image image = new Image();
+      image = new Image();
+      // Vincent note: some strange cache issue preventing newest from showing up
       image.setUrl(app.getCloudImageURL());
       image.addStyleName("app-image");
       appHeader.add(image);      
@@ -164,7 +172,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     } else {
     
       Button publishButton = null;
-      if (editStatus==NEWAPP)
+      if (editStatus == NEWAPP)
         publishButton = new Button("Publish");
       else // UPDATEAPP
         publishButton = new Button("Update");
@@ -218,7 +226,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     switch (uploadResponse.getStatus()) {
                     case SUCCESS:
                       ErrorReporter.hide();
-                      // Vincent node: capture this later
+                      updateAppImage(app.getCloudImageURL(), imageUploadBox);  
+
                       /*
                       onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
                           fileUploadedCallback);
@@ -525,6 +534,13 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       return true;
     else
       return false;
+  }
+  
+  private void updateAppImage(String url, FlowPanel container) {
+    image = new Image();
+    image.setUrl(url);
+    image.addStyleName("app-image");
+    container.add(image);   
   }
  
 }	
