@@ -5,6 +5,12 @@
 
 package com.google.appinventor.server;
 
+import com.google.appengine.api.files.AppEngineFile;
+import com.google.appengine.api.files.FileService;
+import com.google.appengine.api.files.FileServiceFactory;
+import com.google.appengine.api.files.FileWriteChannel;
+import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import com.google.appengine.repackaged.org.apache.commons.io.output.ByteArrayOutputStream;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -20,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.nio.ByteBuffer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -82,7 +90,38 @@ public class GalleryServlet extends OdeServlet {
         LOG.info(readableStream);
         LOG.info("################# ENDING UPLOAD STREAM ###############");
         
-//        storeImage(uploadedStream, galleryId);
+        // set up the cloud file (options)
+        String key = galleryId + "/image";
+        FileService fileService = FileServiceFactory.getFileService();
+        GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
+        .setBucket("galleryai2")
+        .setKey(key)
+        .setAcl("public-read")
+        // what should the mime type be?
+        .setMimeType("text/html");
+    
+        AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
+        // Open a channel to write to it
+        boolean lock = true;
+        FileWriteChannel writeChannel =
+            fileService.openWriteChannel(writableFile, lock);
+       
+        
+        byte[] imageBytes = new byte[8000];
+        int bytesReadPointer = 0;
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        while ((bytesReadPointer = uploadedStream.read(imageBytes)) != -1) {
+          bao.write(imageBytes, 0, bytesReadPointer);
+        }
+        bao.flush();
+
+        LOG.info("############# AT LEAST I GOT IN THE CLOUD ############");
+        LOG.log(Level.INFO, "imageFile numBytes:"+imageBytes.length);
+        writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+        
+        // Now finalize
+        writeChannel.closeFinally();
+        
         
       } catch (Exception e) {
         throw CrashReport.createAndLogError(LOG, req, null, e);

@@ -118,7 +118,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     galleryStorageIo.incrementDownloads(galleryId);
   }
 
-  private void storeImage(InputStream is, long galleryId) {
+  public void storeImage(InputStream is, long galleryId) {
     
   }
   
