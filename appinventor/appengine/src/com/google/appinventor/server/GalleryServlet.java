@@ -10,6 +10,12 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import com.google.appengine.tools.cloudstorage.GcsFileOptions;
+import com.google.appengine.tools.cloudstorage.GcsFilename;
+import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
+import com.google.appengine.tools.cloudstorage.GcsService;
+import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -17,6 +23,7 @@ import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
+import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -24,9 +31,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -38,6 +49,11 @@ import javax.servlet.http.HttpServletResponse;
  *
  */
 public class GalleryServlet extends OdeServlet {
+  
+  private static int BUFFER_SIZE = 1024 * 1024 * 10;
+  private final GcsService gcsService =  
+      GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
+
 
 
   /*
@@ -85,14 +101,28 @@ public class GalleryServlet extends OdeServlet {
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-        String readableStream = convertStreamToString(uploadedStream);
+//        String readableStream = convertStreamToString(uploadedStream);
         LOG.info("################# TRYING UPLOAD STREAM ###############");
-        LOG.info(readableStream);
+//        LOG.info(uploadedStream);
         LOG.info("################# ENDING UPLOAD STREAM ###############");
         
+        byte[] buffer = new byte[8000];
+        int bytesRead = 0;
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        
+        while ((bytesRead = uploadedStream.read(buffer)) != -1) {
+          bao.write(buffer, 0, bytesRead); 
+          LOG.info(String.valueOf(bytesRead));
+        }
+        LOG.info("################# BAO STREAM ###############");
+        LOG.info(String.valueOf(bao.toByteArray().length));
+        
+        
+        
         // set up the cloud file (options)
-        String key = galleryId + "/image";
+        String key = galleryId + "/image.png";
         FileService fileService = FileServiceFactory.getFileService();
+        
         GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
         .setBucket("galleryai2")
         .setKey(key)
@@ -105,19 +135,26 @@ public class GalleryServlet extends OdeServlet {
         boolean lock = true;
         FileWriteChannel writeChannel =
             fileService.openWriteChannel(writableFile, lock);
-       
         
-        byte[] imageBytes = new byte[8000];
-        int bytesReadPointer = 0;
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        while ((bytesReadPointer = uploadedStream.read(imageBytes)) != -1) {
-          bao.write(imageBytes, 0, bytesReadPointer);
-        }
-        bao.flush();
+        /* GCS alternative way of uploading
+        GcsFileOptions options = new GcsFileOptions.Builder()
+        .acl("public_read")
+        .build();
+        GcsFilename filename = new GcsFilename("galleryai2", key);
+        GcsOutputChannel outputChannel = 
+            gcsService.createOrReplace(filename, options);                 
 
-        LOG.info("############# AT LEAST I GOT IN THE CLOUD ############");
-        LOG.log(Level.INFO, "imageFile numBytes:"+imageBytes.length);
+        // Copying InputStream to GcsOutputChannel
+        try {
+            copy(uploadedStream, Channels.newOutputStream(outputChannel));
+        } finally {
+            outputChannel.close();
+            uploadedStream.close();
+        }    
+        */
+        
         writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+        bao.flush();
         
         // Now finalize
         writeChannel.closeFinally();
@@ -155,8 +192,14 @@ public class GalleryServlet extends OdeServlet {
     ServletFileUpload upload = new ServletFileUpload();
     FileItemIterator iterator = upload.getItemIterator(req);
     while (iterator.hasNext()) {
+//      FileItem i = (FileItem) iterator.next();
+//      LOG.log(Level.INFO, String.valueOf(i.getSize()));
       FileItemStream item = iterator.next();
+      LOG.log(Level.INFO, "GET IN 1ST *************");
+      LOG.info(item.getContentType());
       if (item.getFieldName().equals(expectedFieldName)) {
+          LOG.log(Level.INFO, "GET IN 2ND *************" + item.getFieldName());
+//        LOG.log(Level.INFO, String.valueOf(item.g));
         return item.openStream();
       }
     }
@@ -171,4 +214,14 @@ public class GalleryServlet extends OdeServlet {
     CACHE_HEADERS.setNotCacheable(resp);
     resp.setContentType(CONTENT_TYPE);
   }
+  
+  
+  private void copy(InputStream input, OutputStream output) throws IOException {
+    byte[] buffer = new byte[BUFFER_SIZE];
+    int bytesRead = input.read(buffer);
+    while (bytesRead != -1) {
+        output.write(buffer, 0, bytesRead);
+        bytesRead = input.read(buffer);
+    }
+}
 }
