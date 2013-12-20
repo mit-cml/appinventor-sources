@@ -1580,6 +1580,9 @@ textarea::-webkit-input-placeholder {
 .app-header .app-image-uploadprompt {
   margin: 30px auto;
 }
+.app-header .app-image-upload {
+  display: none;
+}
 .app-header .app-action {
   display: block;
   color: #fff;

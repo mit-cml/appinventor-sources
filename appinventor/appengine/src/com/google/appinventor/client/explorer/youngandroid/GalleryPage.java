@@ -33,6 +33,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
@@ -84,7 +85,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
   /* Publish & edit state components */
   private Image image;
-  private FlowPanel imageUploadBox;
+  private FlowPanel imageUploadBoxInner;
   private FileUpload upload;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
@@ -121,30 +122,35 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     // If we're editing, add input form for image
     if (newOrUpdateApp()) {
-      imageUploadBox = new FlowPanel();
+      FlowPanel imageUploadBox = new FlowPanel();
       imageUploadBox.addStyleName("app-image-uploadbox");
       imageUploadBox.addStyleName("gallery-editbox");
+      imageUploadBoxInner = new FlowPanel();
       
       if (editStatus == UPDATEAPP) {
-        updateAppImage(app.getCloudImageURL(), imageUploadBox);  
+        updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
       } else {
         Label imageUploadPrompt = new Label("Upload your project image!");
         imageUploadPrompt.addStyleName("app-image-uploadprompt");
         imageUploadPrompt.addStyleName("gallery-editprompt");
-        imageUploadBox.add(imageUploadPrompt);        
+        imageUploadBoxInner.add(imageUploadPrompt);        
       }
-      
       upload = new FileUpload();
       upload.addStyleName("app-image-upload");
+      // Set the correct handler for servlet side capture
       upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-      upload.addChangeHandler(new ChangeHandler() {
+      imageUploadBox.add(upload);
+      
+      FocusPanel wrapper = new FocusPanel();
+      wrapper.add(imageUploadBoxInner);
+      wrapper.addClickHandler(new ClickHandler() {
         @Override
-        public void onChange(ChangeEvent event) {
-          // Moved this to publish button
+        public void onClick(ClickEvent event) {
+          upload.fireEvent(new ClickEvent() {});
         }
       });
+      imageUploadBox.add(wrapper);
 
-      imageUploadBox.add(upload);
       appHeader.add(imageUploadBox);
       
     } else  { // we are just viewing this page 
@@ -226,7 +232,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     switch (uploadResponse.getStatus()) {
                     case SUCCESS:
                       ErrorReporter.hide();
-                      updateAppImage(app.getCloudImageURL(), imageUploadBox);  
+                      
+                      imageUploadBoxInner.clear();
+                      updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
 
                       /*
                       onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
@@ -536,6 +544,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       return false;
   }
   
+  /**
+   * Helper method to update the app image
+   * @param url  The URL of the image to show
+   * @param container  The container that image widget resides
+   */
   private void updateAppImage(String url, FlowPanel container) {
     image = new Image();
     image.setUrl(url);
