@@ -246,7 +246,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-    /**
+  /*
    * when an gallery app is updated, this method modifies title/description
    * 
    */

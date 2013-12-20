@@ -62,9 +62,10 @@ public class GalleryApp implements IsSerializable {
   
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
-  public GalleryApp(String title, long projectId, String projectName, long galleryAppId,long creationDate, long updateDate) {
+  public GalleryApp(String title, long projectId, String projectName, long galleryAppId) {
 	super();
     this.title = title;
+    this.description = projectName +" description";
     this.downloads = 0;
     this.views = 0;
     this.likes = 0;
@@ -200,6 +201,11 @@ public class GalleryApp implements IsSerializable {
   */
   public String getSourceURL() {
     String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId();
+    return url;
+  }
+
+  public String getCloudImageURL() {
+    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId()+"/image";
     return url;
   }
 

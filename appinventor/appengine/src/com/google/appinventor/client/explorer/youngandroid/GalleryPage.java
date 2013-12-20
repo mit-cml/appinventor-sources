@@ -149,6 +149,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // App header - image
     appHeader.addStyleName("app-header");
+    
     // If we're editing, add input form for image
     if (newOrUpdateApp()) {
       FlowPanel imageUploadBox = new FlowPanel();
@@ -380,11 +381,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       // Forge the temporary prefilled description, place it in cell list
       String t = "Please describe your project here! \r\r " +
       		"Tell us what your project is about in a few sentences.";
-//      if (app.getDescription().length() > 1) {
-//        t = "Please describe your project here! \r\r Tell us what your project is about in a few sentences.";
-//      } else {
-//        t = app.getDescription();
-//      }
+      if (app.getDescription().length() > 1) {
+        t = app.getDescription();
+      } else {
+        t = "Please describe your project here! \r\r Tell us what your project is about in a few sentences.";
+      }
       List<String> descList = Arrays.asList(t);
       descCellList.setRowData(0, descList);
       

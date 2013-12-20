@@ -144,6 +144,9 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     }
     // now stick the aia file into the gcs
     try {
+    // NOTE: WE NEED TO UPDATE THIS AS ITS USING A TOBEDEPRECATED VERSION OF GCS
+    //  see https://developers.google.com/appengine/docs/java/googlecloudstorageclient/migrate
+    //   for migration details
       // convert galleryId to a string, we'll use this for the key in gcs
       String galleryKey=String.valueOf(galleryId);
       LOG.log(Level.SEVERE, "GALLERYKEY IS "+galleryKey);    
