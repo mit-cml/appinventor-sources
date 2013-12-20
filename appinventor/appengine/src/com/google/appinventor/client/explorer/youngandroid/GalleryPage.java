@@ -219,6 +219,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     case SUCCESS:
                       ErrorReporter.hide();
                       // Vincent node: capture this later
+                      app.setImageURL(app.getCloudImageURL());
                       /*
                       onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
                           fileUploadedCallback);
