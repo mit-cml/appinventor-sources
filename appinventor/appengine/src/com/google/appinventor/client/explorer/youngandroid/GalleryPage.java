@@ -117,6 +117,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   public static final int UPDATEAPP=2;  
   private int editStatus;
   /* Publish & edit state components */
+  private FileUpload upload;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
   
@@ -160,51 +161,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadPrompt.addStyleName("gallery-editprompt");
       imageUploadBox.add(imageUploadPrompt);
       
-      final FileUpload upload = new FileUpload();
-      upload.setName("uploadFormElement");
+      upload = new FileUpload();
+      upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
       upload.addChangeHandler(new ChangeHandler() {
         @Override
         public void onChange(ChangeEvent event) {
-          
-          String uploadFilename = upload.getFilename();
-          if (!uploadFilename.isEmpty()) {
-            // Grab and validify the filename
-            final String filename = makeValidFilename(uploadFilename);
-
-            // Use the folderNode's project id and file id in the upload URL so that the file is
-            // uploaded into that project and that folder in our back-end storage.
-            String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + "/" + filename;
-            Uploader.getInstance().upload(upload, uploadUrl,
-                new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-              @Override
-              public void onSuccess(UploadResponse uploadResponse) {
-                switch (uploadResponse.getStatus()) {
-                case SUCCESS:
-                  ErrorReporter.hide();
-                  // Vincent node: capture this later
-                  /*
-                  onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                      fileUploadedCallback);
-                  */
-                  break;
-                case FILE_TOO_LARGE:
-                  // The user can resolve the problem by
-                  // uploading a smaller file.
-                  ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                  break;
-                default:
-                  ErrorReporter.reportError(MESSAGES.fileUploadError());
-                  break;
-                }
-              }
-            });
-            
-          } else {
-            Window.alert(MESSAGES.noFileSelected());
-          }
+          // Moved this to publish button
         }
       });
-      
 
       imageUploadBox.add(upload);
       
@@ -242,6 +206,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
+          
+          // Prepare temporary gallery ID (-1 indicates invalidity)
+          final String thisGalleryId = "-1";
+              
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
           final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
@@ -259,22 +227,73 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                 @Override
                 //4. When setGalleryId call returns, which we don't need to do anything
                 public void onSuccess(Void result) {
-          
+                  
                 }
               };
-              if (editStatus==NEWAPP)
-                ode.getProjectService().setGalleryId(app.getProjectId(),galleryId,projectCallback);
+
+              if (editStatus==NEWAPP) {
+              // 3. Set galleryId of the project once it's published
+              ode.getProjectService().setGalleryId(app.getProjectId(), 
+                  galleryId, projectCallback);
+              app.setGalleryAppId(galleryId);
+              } 
+              
+              // 4. Process the app image upload
+              String uploadFilename = upload.getFilename();
+              if (!uploadFilename.isEmpty()) {
+                // Grab and validify the filename
+                final String filename = makeValidFilename(uploadFilename);
+
+                // Forge the request URL for gallery servlet
+                String uploadUrl = GWT.getModuleBaseURL() + 
+                    ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
+                    + filename;
+                Uploader.getInstance().upload(upload, uploadUrl,
+                    new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+                  @Override
+                  public void onSuccess(UploadResponse uploadResponse) {
+                    switch (uploadResponse.getStatus()) {
+                    case SUCCESS:
+                      ErrorReporter.hide();
+                      // Vincent node: capture this later
+                      /*
+                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
+                          fileUploadedCallback);
+                      */
+                      break;
+                    case FILE_TOO_LARGE:
+                      // The user can resolve the problem by
+                      // uploading a smaller file.
+                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                      break;
+                    default:
+                      ErrorReporter.reportError(MESSAGES.fileUploadError());
+                      break;
+                    }
+                  }
+                });
+                
+              } else {
+                Window.alert(MESSAGES.noFileSelected());
+              }
             }
           };
+        // Prepare the title and description from user inputs
         app.setTitle(sanitizeEditedValue(titleCellList));
         app.setDescription(sanitizeEditedValue(descCellList));
+
         // ok, this is below the call back, but of course it is done first 
         if (editStatus==NEWAPP)
           ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
         else
           ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+
         }
       });    
+      
+      
+      
+      
       publishButton.addStyleName("app-action");
       appAction.add(publishButton);    
     }
