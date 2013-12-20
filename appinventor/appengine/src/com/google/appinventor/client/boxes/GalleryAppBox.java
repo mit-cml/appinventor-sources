@@ -9,9 +9,11 @@ package com.google.appinventor.client.boxes;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
+import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 
@@ -19,13 +21,15 @@ import com.google.appinventor.client.widgets.boxes.Box;
  * Box implementation for Gallery list.
  *
  */
-public final class GalleryAppBox extends Box {
+public final class GalleryAppBox extends FlowPanel {
 
   // Singleton Gallery explorer box instance (only one Gallery explorer allowed)
   private static final GalleryAppBox INSTANCE = new GalleryAppBox();
 
   // Gallery list for young android
   private static GalleryPage pPage;
+  
+  private static FlowPanel appContainer = new FlowPanel();
 
   /**
    * Returns the singleton GalleryAppBox.
@@ -36,23 +40,26 @@ public final class GalleryAppBox extends Box {
     return INSTANCE;
   }
   
-  public static void setApp(GalleryApp app,  int editStatus)
+  public static void setApp(GalleryApp app, int editStatus)
   {
 //	OdeLog.log("######### I got in setApp");
-    pPage = new GalleryPage(app,editStatus);
-    INSTANCE.setContent(pPage);
+    pPage = new GalleryPage(app, editStatus);
+    appContainer.add(pPage);
   }
   /**
    * Creates new Gallery list box.
    */
   private GalleryAppBox() {
+    /*
     super(MESSAGES.galleryAppBoxCaption(),
         300,    // height
         false,  // minimizable
         false); // removable
-
-    //pPage = new GalleryPage(app);
-    //setContent(pPage);
+    */
+    this.add(appContainer);
+    // Styling options
+    this.addStyleName("ode-galleryapp-wrapper");
+    
   }
 
   /**

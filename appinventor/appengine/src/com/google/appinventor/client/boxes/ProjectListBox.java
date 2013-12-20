@@ -13,10 +13,10 @@ import com.google.gwt.user.client.ui.TabPanel;
 
 
 /**
- * Box implementation for project list.
+ * TabPanel implementation for project list.
  *
  */
-public final class ProjectListBox extends TabPanel /* extends Box*/ {
+public final class ProjectListBox extends TabPanel {
 
   // Singleton project explorer box instance (only one project explorer allowed)
   private static final ProjectListBox INSTANCE = new ProjectListBox();
@@ -36,11 +36,11 @@ public final class ProjectListBox extends TabPanel /* extends Box*/ {
     //INSTANCE.setToolbar(pt);
     return INSTANCE;
   }
-
   
   private void setToolbar(ProjectToolbar pt) {
     
   }
+  
   /**
    * Creates new project list box.
    */

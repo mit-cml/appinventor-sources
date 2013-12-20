@@ -39,6 +39,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
 
@@ -120,6 +121,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appsByAuthor = new FlowPanel();
     appsByTags = new FlowPanel();
     tagSelected = "";
+    
+    creation = new Label();
+    update = new Label();
 
     // App header - image
     appHeader.addStyleName("app-header");
@@ -156,7 +160,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           upload.getElement().<InputElement>cast().click(); 
         }
       });
-
       appHeader.add(wrapper);
       
     } else  { // we are just viewing this page 
@@ -294,26 +297,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       String t = app.getTitle();
       List<String> titleList = Arrays.asList(t);
       titleCellList.setRowData(0, titleList);
-
-      /*
-      // EditTextCell, potential even handler sample
-      Column<ContactInfo, String> editTextColumn =
-          addColumn(new EditTextCell(), "EditText", new GetValue<String>() {
-            @Override
-            public String getValue(ContactInfo contact) {
-              return contact.getFirstName();
-            }
-          }, new FieldUpdater<ContactInfo, String>() {
-            @Override
-            public void update(int index, ContactInfo object, String value) {
-              pendingChanges.add(new FirstNameChange(object, value));
-            }
-          });
-      contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
-      */
-      
-      
-      
       titleCellList.addStyleName("app-titleprompt");
       titleCellList.addStyleName("gallery-editprompt");
       titleBox.add(titleCellList);
@@ -357,7 +340,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appInfo.add(appDates);
     if (editStatus == NEWAPP) {
       creation.setText("This app is not created in the Gallery yet.");
-      creation.setText("This app is not updated in the Gallery yet.");
+      update.setText("This app is not updated in the Gallery yet.");
     } else {
       updateAppDates();
     }
@@ -415,13 +398,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     Label commentsHeader = new Label("Comments and Reviews");
     commentsHeader.addStyleName("app-comments-header");
     appComments.add(commentsHeader);
+    TextArea commentTextArea = new TextArea();
+    commentTextArea.addStyleName("app-comments-textarea");
+    appComments.add(commentTextArea);
+    Button commentSubmit = new Button("Submit my comment");
+    commentSubmit.addStyleName("app-comments-submit");
+    appComments.add(commentSubmit);
+    
 
     // Add list of comments
     // gallery.GetComments(app.getGalleryAppId(), 0, 100);
     // appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
  
-    // Add sidebar stuff, only in public published state
+    // Add sidebar stuff, only in public state
     if (!newOrUpdateApp()) {
       /*
       gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());      
