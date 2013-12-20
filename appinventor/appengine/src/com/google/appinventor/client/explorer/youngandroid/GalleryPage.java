@@ -62,7 +62,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   GalleryClient gallery = new GalleryClient(this);
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
-  String projectName=null;
+  String projectName = null;
   Project project;
 
   private final FlowPanel galleryGUI;
@@ -87,8 +87,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
   /* Publish & edit state components */
   private Image image;
-  private FlowPanel imageUploadBoxInner;
   private FileUpload upload;
+  private FlowPanel imageUploadBoxInner;
+  private Label creation;
+  private Label update;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
   
@@ -150,8 +152,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       wrapper.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          OdeLog.log("####### I CLICKED!!!");
-          upload.getElement().<InputElement>cast().click();
+          // The correct way to trigger click event on FileUpload
+          upload.getElement().<InputElement>cast().click(); 
         }
       });
 
@@ -182,17 +184,15 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     } else {
     
       Button publishButton = null;
-      if (editStatus == NEWAPP)
+      if (editStatus == NEWAPP) {
         publishButton = new Button("Publish");
-      else // UPDATEAPP
+      } else {
         publishButton = new Button("Update");
+      }
 
       publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          
-          // Prepare temporary gallery ID (-1 indicates invalidity)
-          final String thisGalleryId = "-1";
               
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
@@ -203,6 +203,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             // 2. When publish call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
+              updateAppDates();
 
               if (editStatus == NEWAPP) {
                 final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
@@ -235,15 +236,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                   public void onSuccess(UploadResponse uploadResponse) {
                     switch (uploadResponse.getStatus()) {
                     case SUCCESS:
-                      ErrorReporter.hide();
-                      
+                      // Update the app image preview after a success upload
                       imageUploadBoxInner.clear();
                       updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
-
-                      /*
-                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                          fileUploadedCallback);
-                      */
+                      ErrorReporter.hide();
                       break;
                     case FILE_TOO_LARGE:
                       // The user can resolve the problem by
@@ -357,14 +353,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(numComments);
     appMeta.add(new Label(Integer.toString(app.getComments())));
 
-    // WHEN PUBLISHING/EDITING THESE NEED DEFAULT VALUES
     // Add app dates
     appInfo.add(appDates);
-    Date creationDate = new Date(app.getCreationDate());
-    Date updateDate = new Date(app.getUpdateDate());
-    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
-    Label creation = new Label("Created on " + dateFormat.format(creationDate));
-    Label update = new Label("Updated on " + dateFormat.format(updateDate));
+    if (editStatus == NEWAPP) {
+      creation.setText("This app is not created in the Gallery yet.");
+      creation.setText("This app is not updated in the Gallery yet.");
+    } else {
+      updateAppDates();
+    }
     appDates.add(creation);
     appDates.add(update);
     appDates.addStyleName("app-dates");
@@ -558,6 +554,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     image.setUrl(url);
     image.addStyleName("app-image");
     container.add(image);   
+  }
+  
+  private void updateAppDates() {
+    Date creationDate = new Date(app.getCreationDate());
+    Date updateDate = new Date(app.getUpdateDate());
+    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
+    creation.setText("Created on " + dateFormat.format(creationDate));
+    update.setText("Updated on " + dateFormat.format(updateDate));
   }
  
 }	
