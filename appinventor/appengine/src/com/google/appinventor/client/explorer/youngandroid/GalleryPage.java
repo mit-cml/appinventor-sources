@@ -9,8 +9,6 @@ import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -27,60 +25,27 @@ import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Window;
 
-import com.google.gwt.user.client.ui.Image;
-
-import com.google.appinventor.client.explorer.project.Project;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 
 import com.google.appinventor.client.utils.Uploader;
-import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
-
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.gwt.user.client.Window;
 
 /**
  * The gallery list shows apps from the gallery in a table.
@@ -112,10 +77,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appCommentsList;
   private String tagSelected;
 
-  public static final int VIEWAPP=0;
-  public static final int NEWAPP =1;
-  public static final int UPDATEAPP=2;  
+  public static final int VIEWAPP = 0;
+  public static final int NEWAPP = 1;
+  public static final int UPDATEAPP = 2;  
   private int editStatus;
+
   /* Publish & edit state components */
   private FileUpload upload;
   private CellList<String> titleCellList;
@@ -229,7 +195,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     public void onSuccess(Void result) {
                     }
                 };
-                OdeLog.log("######## DID I GET IN setgalleryid?");
                 // 3. Set galleryId of the project once it's published
                 ode.getProjectService().setGalleryId(app.getProjectId(), 
                     galleryId, projectCallback);
@@ -238,7 +203,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               
               // 4. Process the app image upload
               String uploadFilename = upload.getFilename();
-              OdeLog.log("######## DID I GET IN?" + uploadFilename);
               if (!uploadFilename.isEmpty()) {
                 // Grab and validify the filename
                 final String filename = makeValidFilename(uploadFilename);
@@ -247,8 +211,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                 String uploadUrl = GWT.getModuleBaseURL() + 
                     ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
                     + filename;
-
-                OdeLog.log("######## DID I GET IN? 03");
                 Uploader.getInstance().upload(upload, uploadUrl,
                     new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
                   @Override
@@ -284,22 +246,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
         app.setDescription(sanitizeEditedValue(descCellList));
 
         // ok, this is below the call back, but of course it is done first 
-        if (editStatus==NEWAPP)
-          ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-        else
-          ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-
+        if (editStatus == NEWAPP) {
+          ode.getGalleryService().publishApp(app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), 
+              callback);
+        } else {
+          ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), 
+              callback);
+        }
         }
       });    
-      
-      
-      
-      
       publishButton.addStyleName("app-action");
       appAction.add(publishButton);    
     }
-    
-     
     
     // App details - header title
     if (newOrUpdateApp()) {

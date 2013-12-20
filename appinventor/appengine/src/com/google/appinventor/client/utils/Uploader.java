@@ -96,7 +96,6 @@ public final class Uploader {
 
     form.setWidget(upload);
     form.setAction(uploadUrl);
-    OdeLog.log("########## GOT IN UPLOADER " + uploadUrl);
     form.submit();
   }
 }
