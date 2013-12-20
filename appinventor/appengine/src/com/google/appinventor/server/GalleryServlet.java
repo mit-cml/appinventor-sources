@@ -10,7 +10,6 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
-import com.google.appengine.repackaged.org.apache.commons.io.output.ByteArrayOutputStream;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -22,6 +21,7 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
