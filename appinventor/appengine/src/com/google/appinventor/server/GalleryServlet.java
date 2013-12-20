@@ -88,14 +88,10 @@ public class GalleryServlet extends OdeServlet {
     String uri = req.getRequestURI();
     // First, call split with no limit parameter.
     String[] uriComponents = uri.split("/");
-    
-    LOG.info("############# AT LEAST I GOT IN doPost ############");
-    
+        
     if (true) {
       long galleryId = Long.parseLong(uriComponents[GALLERY_ID_INDEX]);
       String fileName = uriComponents[FILE_PATH_INDEX];
-      LOG.info(String.valueOf(galleryId));
-      LOG.info(fileName);
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
@@ -103,14 +99,10 @@ public class GalleryServlet extends OdeServlet {
         // Converts the input stream to byte array
         byte[] buffer = new byte[8000];
         int bytesRead = 0;
-        ByteArrayOutputStream bao = new ByteArrayOutputStream();
-        
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();        
         while ((bytesRead = uploadedStream.read(buffer)) != -1) {
           bao.write(buffer, 0, bytesRead); 
-          LOG.info(String.valueOf(bytesRead));
         }
-        LOG.info("################# BAO STREAM ###############");
-        LOG.info(String.valueOf(bao.toByteArray().length));
         
         // Set up the cloud file (options)
         String key = galleryId + "/image";
@@ -129,7 +121,7 @@ public class GalleryServlet extends OdeServlet {
             fileService.openWriteChannel(writableFile, lock);
         writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
 
-        /* GCS alternative way of uploading
+        /* GCS alternative way of uploading (create or replace)
         GcsFileOptions options = new GcsFileOptions.Builder()
         .acl("public_read")
         .build();
@@ -161,7 +153,6 @@ public class GalleryServlet extends OdeServlet {
       } catch (Exception e) {
         throw CrashReport.createAndLogError(LOG, req, null, e);
       }
-
       // Set http response information
       resp.setStatus(HttpServletResponse.SC_OK);
       
@@ -180,31 +171,18 @@ public class GalleryServlet extends OdeServlet {
     // Set http response information
     resp.setStatus(HttpServletResponse.SC_OK);
   }
-
-  
-  // Helper method for InputStream
-  private static String convertStreamToString(InputStream is) {
-    java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
-    return s.hasNext() ? s.next() : "";
-  }
   
   private InputStream getRequestStream(HttpServletRequest req, String expectedFieldName)
       throws Exception {
     ServletFileUpload upload = new ServletFileUpload();
     FileItemIterator iterator = upload.getItemIterator(req);
     while (iterator.hasNext()) {
-//      FileItem i = (FileItem) iterator.next();
-//      LOG.log(Level.INFO, String.valueOf(i.getSize()));
       FileItemStream item = iterator.next();
-      LOG.log(Level.INFO, "GET IN 1ST *************");
       LOG.info(item.getContentType());
       if (item.getFieldName().equals(expectedFieldName)) {
-          LOG.log(Level.INFO, "GET IN 2ND *************" + item.getFieldName());
-//        LOG.log(Level.INFO, String.valueOf(item.g));
         return item.openStream();
       }
     }
-
     throw new IllegalArgumentException("Field " + expectedFieldName + " not found in upload");
   }
 
@@ -216,7 +194,12 @@ public class GalleryServlet extends OdeServlet {
     resp.setContentType(CONTENT_TYPE);
   }
   
-  
+  /**
+   * Helper method for converting input stream
+   * @param input
+   * @param output
+   * @throws IOException
+   */
   private void copy(InputStream input, OutputStream output) throws IOException {
     byte[] buffer = new byte[BUFFER_SIZE];
     int bytesRead = input.read(buffer);
