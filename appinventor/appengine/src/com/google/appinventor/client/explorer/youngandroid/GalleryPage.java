@@ -124,11 +124,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   /**
    * Creates a new GalleryPage
    */
-  public GalleryPage(final GalleryApp app,final int editStatus) {
+  public GalleryPage(final GalleryApp app, final int editStatus) {
 
     this.app = app;
-    this.editStatus=editStatus;
-    OdeLog.log("GALLERY PAGE CONSTRUCT, title is:"+app.getTitle());
+    this.editStatus = editStatus;
+
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");    
@@ -219,27 +219,26 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             // 2. When publish call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
-              OdeLog.log("we had a successful publish");
-              // String s = String.valueOf(galleryId);
-              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.galleryError()) {
-                @Override
-                //4. When setGalleryId call returns, which we don't need to do anything
-                public void onSuccess(Void result) {
-                  
-                }
-              };
 
-              if (editStatus==NEWAPP) {
-              // 3. Set galleryId of the project once it's published
-              ode.getProjectService().setGalleryId(app.getProjectId(), 
-                  galleryId, projectCallback);
-              app.setGalleryAppId(galleryId);
+              if (editStatus == NEWAPP) {
+                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  // failure message
+                  MESSAGES.galleryError()) {
+                    @Override
+                    //4. When setGalleryId call returns, which we don't need to do anything
+                    public void onSuccess(Void result) {
+                    }
+                };
+                OdeLog.log("######## DID I GET IN setgalleryid?");
+                // 3. Set galleryId of the project once it's published
+                ode.getProjectService().setGalleryId(app.getProjectId(), 
+                    galleryId, projectCallback);
+                app.setGalleryAppId(galleryId);
               } 
               
               // 4. Process the app image upload
               String uploadFilename = upload.getFilename();
+              OdeLog.log("######## DID I GET IN?" + uploadFilename);
               if (!uploadFilename.isEmpty()) {
                 // Grab and validify the filename
                 final String filename = makeValidFilename(uploadFilename);
@@ -248,6 +247,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                 String uploadUrl = GWT.getModuleBaseURL() + 
                     ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
                     + filename;
+
+                OdeLog.log("######## DID I GET IN? 03");
                 Uploader.getInstance().upload(upload, uploadUrl,
                     new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
                   @Override

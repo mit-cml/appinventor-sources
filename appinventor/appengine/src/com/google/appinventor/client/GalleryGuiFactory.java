@@ -50,8 +50,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       numViewsLabel = new Label(Integer.toString(app.getViews()));
       numCommentsLabel = new Label(Integer.toString(app.getComments()));
       image = new Image();
-      image.setUrl(app.getImageURL());
-      
+      image.setUrl(app.getCloudImageURL());
     }
   }
   

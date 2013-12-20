@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.utils;
 
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -95,6 +96,7 @@ public final class Uploader {
 
     form.setWidget(upload);
     form.setAction(uploadUrl);
+    OdeLog.log("########## GOT IN UPLOADER " + uploadUrl);
     form.submit();
   }
 }

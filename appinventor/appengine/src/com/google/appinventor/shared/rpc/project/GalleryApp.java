@@ -200,12 +200,13 @@ public class GalleryApp implements IsSerializable {
    * URL http://storage.googleapis.com/my_bucket/my_object.  
   */
   public String getSourceURL() {
-    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId();
+    String url = "/gs/" + this.GALLERYBUCKET + "/" + getGalleryAppId();
     return url;
   }
 
   public String getCloudImageURL() {
-    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId()+"/image";
+    
+    String url = "/gs/" + this.GALLERYBUCKET+"/" + getGalleryAppId()+"/image";
     return url;
   }
 
