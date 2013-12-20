@@ -23,6 +23,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
@@ -37,6 +38,7 @@ import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
 
@@ -139,19 +141,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       upload.addStyleName("app-image-upload");
       // Set the correct handler for servlet side capture
       upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-      imageUploadBox.add(upload);
+      imageUploadBoxInner.add(upload);
+      
+      imageUploadBox.add(imageUploadBoxInner);
       
       FocusPanel wrapper = new FocusPanel();
-      wrapper.add(imageUploadBoxInner);
+      wrapper.add(imageUploadBox);
       wrapper.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          upload.fireEvent(new ClickEvent() {});
+          OdeLog.log("####### I CLICKED!!!");
+          upload.getElement().<InputElement>cast().click();
         }
       });
-      imageUploadBox.add(wrapper);
 
-      appHeader.add(imageUploadBox);
+      appHeader.add(wrapper);
       
     } else  { // we are just viewing this page 
       image = new Image();
@@ -549,7 +553,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
    * @param url  The URL of the image to show
    * @param container  The container that image widget resides
    */
-  private void updateAppImage(String url, FlowPanel container) {
+  private void updateAppImage(String url, Panel container) {
     image = new Image();
     image.setUrl(url);
     image.addStyleName("app-image");
