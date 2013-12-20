@@ -54,11 +54,9 @@ public class GalleryServlet extends OdeServlet {
   private final GcsService gcsService =  
       GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 
-
-
   /*
    * URIs for upload requests are structured as follows:
-   *    /<baseurl>/gallery_servlet/<filePath>
+   *    /<baseurl>/gallery_servlet/galleryid/<filePath>
    */
 
   // Constants for accessing split URI
@@ -101,11 +99,8 @@ public class GalleryServlet extends OdeServlet {
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-//        String readableStream = convertStreamToString(uploadedStream);
-        LOG.info("################# TRYING UPLOAD STREAM ###############");
-//        LOG.info(uploadedStream);
-        LOG.info("################# ENDING UPLOAD STREAM ###############");
         
+        // Converts the input stream to byte array
         byte[] buffer = new byte[8000];
         int bytesRead = 0;
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
@@ -117,25 +112,23 @@ public class GalleryServlet extends OdeServlet {
         LOG.info("################# BAO STREAM ###############");
         LOG.info(String.valueOf(bao.toByteArray().length));
         
-        
-        
-        // set up the cloud file (options)
-        String key = galleryId + "/image.png";
+        // Set up the cloud file (options)
+        String key = galleryId + "/image";
         FileService fileService = FileServiceFactory.getFileService();
         
         GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
         .setBucket("galleryai2")
         .setKey(key)
         .setAcl("public-read")
-        // what should the mime type be?
-        .setMimeType("text/html");
-    
+        .setMimeType("image/jpeg");
         AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
+        
         // Open a channel to write to it
         boolean lock = true;
         FileWriteChannel writeChannel =
             fileService.openWriteChannel(writableFile, lock);
-        
+        writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+
         /* GCS alternative way of uploading
         GcsFileOptions options = new GcsFileOptions.Builder()
         .acl("public_read")
@@ -152,18 +145,26 @@ public class GalleryServlet extends OdeServlet {
             uploadedStream.close();
         }    
         */
-        
-        writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
-        bao.flush();
-        
+                       
         // Now finalize
+        bao.flush();
         writeChannel.closeFinally();
-        
+
+        uploadResponse = new UploadResponse(UploadResponse.Status.SUCCESS);
+        // Now, get the PrintWriter for the servlet response and print the UploadResponse.
+        // On the client side, in the onSubmitComplete method in ode/client/utils/Uploader.java, the
+        // UploadResponse value will be retrieved as a String via the
+        // FormSubmitCompleteEvent.getResults() method.
+        PrintWriter out = resp.getWriter();
+        out.print(uploadResponse.formatAsHtml());
         
       } catch (Exception e) {
         throw CrashReport.createAndLogError(LOG, req, null, e);
       }
 
+      // Set http response information
+      resp.setStatus(HttpServletResponse.SC_OK);
+      
     } else {
       throw CrashReport.createAndLogError(LOG, req, null,
           new IllegalArgumentException("Unknown upload kind: "));
