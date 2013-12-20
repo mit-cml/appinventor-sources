@@ -18,6 +18,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
+
 public class GalleryGuiFactory implements GalleryRequestListener {
 	GalleryClient gallery = null;
 
@@ -85,14 +87,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, false); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, false); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
         }
       });
 
@@ -236,14 +238,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       gaw.image.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, false); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
         }
       });
       
       appTitle.addClickHandler(new ClickHandler() {
       //  @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToGalleryAppView(app, false); 
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP); 
         }
       });
 

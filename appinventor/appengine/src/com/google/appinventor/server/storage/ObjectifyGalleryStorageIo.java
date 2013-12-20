@@ -246,6 +246,31 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
+  /*
+   * when an gallery app is updated, this method modifies title/description
+   * 
+   */
+  @Override
+  public void updateGalleryApp(final long galleryId, final String title,  final String description, 
+    final String userId) {
+    
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData galleryAppData = datastore.find(galleryAppKey(galleryId));
+          if (galleryAppData != null) {
+            galleryAppData.title= title;
+            galleryAppData.description=description;
+            datastore.put(galleryAppData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo", e);
+    }
+  }
+
   /* Gets a gallery app given a galleryId
    * NOTE: this is currently not being used and hasn't been tested
    */

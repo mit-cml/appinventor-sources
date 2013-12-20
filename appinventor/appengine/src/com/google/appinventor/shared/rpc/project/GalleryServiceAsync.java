@@ -19,10 +19,17 @@ import java.util.List;
 public interface GalleryServiceAsync {
 
   /**
-   * @see GalleryService#publishApp(String, String, NewProjectParameters)
+   * @see GalleryService#publishApp(long, String, String, String)
    */
   void publishApp(long projectId, String title, String projectName, String description,
       AsyncCallback<Long> callback);
+
+  /**
+   * @see GalleryService#updateApp(long, long, String, String, String)
+   */
+  void updateApp(long galleryId, long projectId, String title, String projectName, String description,
+      AsyncCallback<Long> callback);
+
 
   /**
    * @see GalleryService#publishImage(String, String, NewProjectParameters)

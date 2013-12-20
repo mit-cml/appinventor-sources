@@ -43,6 +43,13 @@ public interface GalleryStorageIo {
    */
   long createGalleryApp(String title, String projectName, String description, long projectId, String userId);
 
+    /**
+   * updates gallery app
+   *
+   * 
+   */
+  void updateGalleryApp(long galleryId, String title, String description, String userId);
+
 
   /**
    * Returns an array of recently published GalleryApps
