@@ -10,12 +10,6 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
-import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-import com.google.appengine.tools.cloudstorage.GcsFilename;
-import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-import com.google.appengine.tools.cloudstorage.GcsService;
-import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.server.util.CacheHeaders;
 import com.google.appinventor.server.util.CacheHeadersImpl;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -51,8 +45,6 @@ import javax.servlet.http.HttpServletResponse;
 public class GalleryServlet extends OdeServlet {
   
   private static int BUFFER_SIZE = 1024 * 1024 * 10;
-  private final GcsService gcsService =  
-      GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 
   /*
    * URIs for upload requests are structured as follows:
@@ -122,6 +114,7 @@ public class GalleryServlet extends OdeServlet {
         writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
 
         /* GCS alternative way of uploading (create or replace)
+        private final GcsService gcsService = GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
         GcsFileOptions options = new GcsFileOptions.Builder()
         .acl("public_read")
         .build();
