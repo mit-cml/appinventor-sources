@@ -73,5 +73,14 @@ public interface GalleryServiceAsync {
    */
   void getApp(long galleryId, AsyncCallback<GalleryApp> callback);
 
+  /**
+   * @see GalleryService#getComments(long galleryId)
+   */
+  void getComments(long galleryId, AsyncCallback<List<GalleryComment>> callback);
+  /**
+   * @see GalleryService#publishComment(long galleryId, String comment)
+   */
+  void publishComment(long galleryId, String comment, AsyncCallback<java.lang.Long> date);
+
   
 }

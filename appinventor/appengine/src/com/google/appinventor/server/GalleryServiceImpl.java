@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -135,6 +136,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public void appWasDownloaded(long galleryId, long projectId) {
     galleryStorageIo.incrementDownloads(galleryId);
+  }
+
+  @Override
+  public List<GalleryComment> getComments(long galleryId) {
+    return galleryStorageIo.getComments(galleryId);
+
+  }
+  @Override
+  public long publishComment(long galleryId, String comment) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.addComment(galleryId, userId, comment);
   }
 
 //  public void storeImage(InputStream is, long galleryId) {

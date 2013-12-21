@@ -319,21 +319,27 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * 
    */
   @Override
-  public void addComment(final long galleryId,final String userId, final String comment) {
+  public long addComment(final long galleryId,final String userId, final String comment) {
+    final Result<Long> theDate = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           GalleryCommentData commentData = new GalleryCommentData();
+          long date = System.currentTimeMillis();
           commentData.comment = comment;
           commentData.userId = userId;
           commentData.galleryKey = galleryKey(galleryId);
+          commentData.dateCreated=date;
+          theDate.t=date;
+          
           datastore.put(commentData);
         }
       });
     } catch (ObjectifyException e) {
        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.addComment", e);
     }
+    return theDate.t;
   }
   /**
    * get all the comments for a given galleryId
@@ -348,7 +354,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey)) {
+          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("dateCreated")) {
             GalleryComment galleryComment = new GalleryComment(galleryId,
                 commentData.userId,commentData.comment,commentData.dateCreated);
             comments.add(galleryComment);

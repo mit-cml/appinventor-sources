@@ -75,7 +75,8 @@ public interface GalleryStorageIo {
   void incrementDownloads(long galleryId);
 
   // comment stuff
-  void addComment(long galleryId,String userId, String comment);
+  long addComment(long galleryId,String userId, String comment);
+  
   List<GalleryComment> getComments(long galleryId);
   // studio stuff... to come
   
