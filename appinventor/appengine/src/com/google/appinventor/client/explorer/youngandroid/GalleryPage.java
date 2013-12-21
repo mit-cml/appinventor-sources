@@ -422,11 +422,27 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     Label commentsHeader = new Label("Comments and Reviews");
     commentsHeader.addStyleName("app-comments-header");
     appComments.add(commentsHeader);
-    TextArea commentTextArea = new TextArea();
+    final TextArea commentTextArea = new TextArea();
     commentTextArea.addStyleName("app-comments-textarea");
     appComments.add(commentTextArea);
     Button commentSubmit = new Button("Submit my comment");
     commentSubmit.addStyleName("app-comments-submit");
+    commentSubmit.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Long> commentPublishCallback = new OdeAsyncCallback<Long>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Long date) {
+                OdeLog.log("###### PUBLISHED COMMENT #########");
+              }
+          };
+        Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(), 
+            commentTextArea.getText(), commentPublishCallback);
+        
+      }
+    });
     appComments.add(commentSubmit);
     
 
