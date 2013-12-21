@@ -104,6 +104,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.getRecentGalleryApps(start,count);
  
   }
+
+  /**
+   * Returns an array of gallery Apps
+   *
+   * @return gallery apps found by the back-end
+   */
+  @Override
+  public List<GalleryApp> getDeveloperApps(String userId, int start,int count) {
+    return galleryStorageIo.getDeveloperApps(userId, start,count);
+ 
+  }
   @Override
   public GalleryApp getApp(long galleryId) {
     return galleryStorageIo.getGalleryApp(galleryId);

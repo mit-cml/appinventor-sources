@@ -57,6 +57,11 @@ public interface GalleryServiceAsync {
    * @see GalleryService#getMostDownloadedApps(int start, int count)
    */
   void getMostDownloadedApps(int start, int count, AsyncCallback<List<GalleryApp>> callback);
+
+  /**
+   * @see GalleryService#getDeveloperApps(String userId, int start, int count)
+   */
+  void getDeveloperApps(String userId, int start, int count, AsyncCallback<List<GalleryApp>> callback);
   
   /**
    * @see GalleryService#findApps(String keywords, int start, int count)

@@ -64,6 +64,13 @@ public interface GalleryStorageIo {
    * @return  list of gallery app ids
    */
   List<GalleryApp> getMostDownloadedApps(int start, int count);
+
+    /**
+   * Returns an array of a developer's GalleryApps
+   *
+   * @return  list of gallery app ids
+   */
+  List<GalleryApp> getDeveloperApps(String userId, int start, int count);
   
   void incrementDownloads(long galleryId);
 

@@ -223,6 +223,29 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return apps;
   }
+  
+   /**
+   * Returns an array of apps by a particular user
+   *
+   * @return  list of gallery apps
+   */
+  @Override
+  public List<GalleryApp> getDeveloperApps(String userId, int start, final int count) {
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).order("dateModified").offset(start).limit(count)) {
+      
+      GalleryApp gApp = new GalleryApp();
+      makeGalleryApp(appData, gApp);
+      apps.add(gApp);
+    }
+    return apps;
+  }
+  
   /**
    * when an gallery app is opened, this method is called to increment the #downloads
    * 

@@ -60,6 +60,15 @@ public interface GalleryService extends RemoteService {
    * @return list of GalleryApps found by the back-end
    */
   List<GalleryApp> getMostDownloadedApps(int start, int count);
+
+  /**
+   * Returns a list of galleryApps
+   * @param userId 
+   * @param starting index
+   * @param number of apps to return
+   * @return list of GalleryApps found by the back-end
+   */
+  List<GalleryApp> getDeveloperApps(String userId, int start, int count);
   
   /**
    * Returns a list of galleryApps

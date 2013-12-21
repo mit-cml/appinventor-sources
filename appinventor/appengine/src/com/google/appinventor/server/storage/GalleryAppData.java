@@ -35,7 +35,7 @@ public class GalleryAppData {
   @Indexed public int numDownloads;
   long projectId;
 
-  // image and source (.aia) are in cloud storage and we build URLS from ids
+  @Indexed
   String userId;
 
 }

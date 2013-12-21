@@ -445,13 +445,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
  
     // Add sidebar stuff, only in public published state
     if (!newOrUpdateApp()) {
-      /*
-      gallery.GetAppsByDeveloper(0, 5, app.getDeveloperName());      
+      
+      gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());      
       // By default, load the first tag's apps
-      tagSelected = app.getTags().get(0);
-      gallery.FindByTag(app.getTags().get(0), 0, 5, 0);
-      OdeLog.log("bottom of sixth non-editable:");
-      */
+    
     }
 
     // Add everything to top-level containers
@@ -459,10 +456,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appDetails.addStyleName("gallery-container");
     appDetails.addStyleName("gallery-app-details");
     if (!newOrUpdateApp()) {
-    /*
+    
       appSingle.add(appsByAuthor);
-      appSingle.add(appsByTags);   
-    */   
+    //  appSingle.add(appsByTags);   
+       
     }
     galleryGUI.add(appSingle);
     appSingle.addStyleName("gallery-app-single");
@@ -480,10 +477,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
    */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
-      case 7: 
+      case GalleryClient.REQUEST_BYDEVELOPER: 
         galleryGF.generateSidebar(apps, appsByAuthor, "By this developer", false); 
         break;
-      case 8: 
+      case GalleryClient.REQUEST_BYTAG: 
         String tagTitle = "Tagged with " + tagSelected;
         galleryGF.generateSidebar(apps, appsByTags, tagTitle, true); 
         break;
