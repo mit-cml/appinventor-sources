@@ -94,9 +94,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Label update;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
+  private TextArea desc;
   
   
-
+/*
   public GalleryPage() {
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
@@ -118,6 +119,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     creation = new Label();
     update = new Label();
   }
+  */
   
   /**
    * Creates a new GalleryPage
@@ -148,6 +150,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     creation = new Label();
     update = new Label();
+    desc = new TextArea();
 
     // App header - image
     appHeader.addStyleName("app-header");
@@ -287,7 +290,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           };
         // Prepare the title and description from user inputs
         app.setTitle(sanitizeEditedValue(titleCellList));
-        app.setDescription(sanitizeEditedValue(descCellList));
+//        app.setDescription(sanitizeEditedValue(descCellList));
+        OdeLog.log("########## DESC = " + desc.getText());
+        app.setDescription(desc.getText());
 
         // ok, this is below the call back, but of course it is done first 
         if (editStatus == NEWAPP) {
@@ -377,7 +382,12 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel descBox = new FlowPanel();
       descBox.addStyleName("app-descbox");
       descBox.addStyleName("gallery-editbox");
-
+      desc.setText("Please describe your project here! " +
+      		"Tell us what your project is about in a few sentences.");
+      desc.addStyleName("app-desc-textarea");
+      descBox.add(desc);
+      
+      /*
       // Create an editable text cell to render values
       EditTextCell descPrompt = new EditTextCell();
       // Create a cell list that uses this cell
@@ -388,7 +398,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       if (app.getDescription().length() > 1) {
         t = app.getDescription();
       } else {
-        t = "Please describe your project here! \r\r Tell us what your project is about in a few sentences.";
+        t = "Please describe your project here! Tell us what your project is about in a few sentences.";
       }
       List<String> descList = Arrays.asList(t);
       descCellList.setRowData(0, descList);
@@ -396,6 +406,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       descCellList.addStyleName("app-descprompt");
       descCellList.addStyleName("gallery-editprompt");
       descBox.add(descCellList);
+      */
+      
       appInfo.add(descBox);
     } else {
       appInfo.add(appDescription);
