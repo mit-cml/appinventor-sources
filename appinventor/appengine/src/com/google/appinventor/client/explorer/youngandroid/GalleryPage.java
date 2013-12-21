@@ -447,8 +447,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
 
     // Add list of comments
-    // gallery.GetComments(app.getGalleryAppId(), 0, 100);
-    // appComments.add(appCommentsList);
+    gallery.GetComments(String.valueOf(app.getGalleryAppId()), 0, 100);
+    appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
  
     // Add sidebar stuff, only in public state

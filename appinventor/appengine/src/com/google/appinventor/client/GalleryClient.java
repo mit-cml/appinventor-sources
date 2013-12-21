@@ -118,8 +118,7 @@ public class GalleryClient {
 
   }
 
-  public void GetComments(String appId,int start,int count)
-  {
+  public void GetComments(String appId, int start, int count) {
    
   }
   public void Publish(GalleryApp app) {
