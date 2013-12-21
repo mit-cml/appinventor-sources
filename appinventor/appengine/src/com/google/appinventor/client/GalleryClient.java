@@ -118,9 +118,18 @@ public class GalleryClient {
 
   }
 
-  public void GetComments(String appId,int start,int count)
-  {
-   
+  public void GetComments(long appId,int start,int count) {
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<List<GalleryComment>> galleryCallback = new OdeAsyncCallback<List<GalleryComment>>(	      
+    // failure message
+    MESSAGES.createProjectError()) {
+      @Override
+      public void onSuccess(List<GalleryComment> comments) {
+        // now relay the result back to UI client
+        listener.onCommentsRequestCompleted(comments); 
+      }
+    };
+    ode.getGalleryService().getComments(appId,galleryCallback);
   }
   public void Publish(GalleryApp app) {
     // TODO Auto-generated method stub
