@@ -9,11 +9,9 @@ package com.google.appinventor.client.boxes;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
-import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
-import com.google.gwt.user.client.ui.FlowPanel;
 
 
 
@@ -21,15 +19,13 @@ import com.google.gwt.user.client.ui.FlowPanel;
  * Box implementation for Gallery list.
  *
  */
-public final class GalleryAppBox extends FlowPanel {
+public final class GalleryAppBox extends Box {
 
   // Singleton Gallery explorer box instance (only one Gallery explorer allowed)
   private static final GalleryAppBox INSTANCE = new GalleryAppBox();
 
   // Gallery list for young android
-  private static GalleryPage pPage = new GalleryPage();
-  
-  private static FlowPanel appContainer = new FlowPanel();
+  private static GalleryPage pPage;
 
   /**
    * Returns the singleton GalleryAppBox.
@@ -40,30 +36,23 @@ public final class GalleryAppBox extends FlowPanel {
     return INSTANCE;
   }
   
-  public static void setApp(GalleryApp app, int editStatus)
+  public static void setApp(GalleryApp app,  int editStatus)
   {
-//	OdeLog.log("######### I got in setApp");
-    pPage = new GalleryPage(app, editStatus);
+//  OdeLog.log("######### I got in setApp");
+    pPage = new GalleryPage(app,editStatus);
+    INSTANCE.setContent(pPage);
   }
   /**
    * Creates new Gallery list box.
    */
   private GalleryAppBox() {
-    /*
     super(MESSAGES.galleryAppBoxCaption(),
         300,    // height
         false,  // minimizable
         false); // removable
-    */
-    /*
-    appContainer = new FlowPanel();
-    this.add(appContainer);
-    appContainer.add(pPage);
-    */
-    this.add(pPage);
-    // Styling options
-    this.addStyleName("ode-galleryapp-wrapper");
-    
+
+    //pPage = new GalleryPage(app);
+    //setContent(pPage);
   }
 
   /**

@@ -10,13 +10,14 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 /**
  * Box implementation for Gallery list.
  *
  */
-public final class GalleryListBox extends Box {
+public final class GalleryListBox extends FlowPanel {
 
   // Singleton Gallery explorer box instance (only one Gallery explorer allowed)
   private static final GalleryListBox INSTANCE = new GalleryListBox();
@@ -37,13 +38,16 @@ public final class GalleryListBox extends Box {
    * Creates new Gallery list box.
    */
   private GalleryListBox() {
+    /*
     super(MESSAGES.galleryListBoxCaption(),
         300,    // height
         false,  // minimizable
         false); // removable
-
+     */
     plist = new GalleryList();
-    setContent(plist);
+    FlowPanel pContainer = new FlowPanel();
+    pContainer.add(plist);
+    this.add(pContainer);
   }
 
   /**
