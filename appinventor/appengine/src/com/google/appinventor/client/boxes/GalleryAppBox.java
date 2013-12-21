@@ -27,7 +27,7 @@ public final class GalleryAppBox extends FlowPanel {
   private static final GalleryAppBox INSTANCE = new GalleryAppBox();
 
   // Gallery list for young android
-  private static GalleryPage pPage;
+  private static GalleryPage pPage = new GalleryPage();
   
   private static FlowPanel appContainer = new FlowPanel();
 
@@ -44,7 +44,6 @@ public final class GalleryAppBox extends FlowPanel {
   {
 //	OdeLog.log("######### I got in setApp");
     pPage = new GalleryPage(app, editStatus);
-    appContainer.add(pPage);
   }
   /**
    * Creates new Gallery list box.
@@ -56,7 +55,12 @@ public final class GalleryAppBox extends FlowPanel {
         false,  // minimizable
         false); // removable
     */
+    /*
+    appContainer = new FlowPanel();
     this.add(appContainer);
+    appContainer.add(pPage);
+    */
+    this.add(pPage);
     // Styling options
     this.addStyleName("ode-galleryapp-wrapper");
     

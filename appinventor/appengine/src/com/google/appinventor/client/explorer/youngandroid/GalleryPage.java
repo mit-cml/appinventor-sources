@@ -95,6 +95,30 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
   
+  
+
+  public GalleryPage() {
+    // Initialize UI
+    VerticalPanel panel = new VerticalPanel();
+    panel.setWidth("100%");    
+    galleryGUI = new FlowPanel();
+    appSingle = new FlowPanel();
+    appDetails = new FlowPanel();
+    appHeader = new FlowPanel();
+    appInfo = new FlowPanel();
+    appAction = new FlowPanel();
+    appMeta = new FlowPanel();
+    appDates = new FlowPanel();
+    appDescription = new FlowPanel();
+    appComments = new FlowPanel();
+    appCommentsList = new FlowPanel();
+    appsByAuthor = new FlowPanel();
+    appsByTags = new FlowPanel();
+    tagSelected = "";
+    creation = new Label();
+    update = new Label();
+  }
+  
   /**
    * Creates a new GalleryPage
    */
@@ -438,6 +462,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     galleryGUI.addStyleName("gallery");
     initWidget(panel);
   }
+
 
   /**
    * Loads the proper tab GUI with gallery's app data.
