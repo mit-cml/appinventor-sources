@@ -1574,13 +1574,14 @@ textarea::-webkit-input-placeholder {
 .app-header .app-image {
   width: 130px;
   height: 130px;
+  opacity: 0.1;
 }
 .app-header .app-image-uploadbox {
   width: 128px;
   height: 128px;
 }
 .app-header .app-image-uploadprompt {
-  margin: 30px auto;
+  margin: -90px 0;
 }
 .app-header .app-image-upload {
   display: none;
@@ -1617,7 +1618,7 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-details .app-comments-textarea,
 .app-desc-textarea {
-  height: 75px;
+  height: 50px;
   margin: 10px 0;
   padding: 10px;
   color: #bebebe;
