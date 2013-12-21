@@ -130,8 +130,10 @@ public class GalleryClient {
       }
     };
     ode.getGalleryService().getComments(appId,galleryCallback);
-  }
-    
+
+  }  
+
+
     
   public void Publish(GalleryApp app) {
     // TODO Auto-generated method stub

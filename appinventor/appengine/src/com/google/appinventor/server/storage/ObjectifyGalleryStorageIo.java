@@ -354,7 +354,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("dateCreated")) {
+          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("-dateCreated")) {
             GalleryComment galleryComment = new GalleryComment(galleryId,
                 commentData.userId,commentData.comment,commentData.dateCreated);
             comments.add(galleryComment);
