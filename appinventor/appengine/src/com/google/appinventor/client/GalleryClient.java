@@ -118,6 +118,7 @@ public class GalleryClient {
 
   }
 
+
   public void GetComments(long appId,int start,int count) {
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<List<GalleryComment>> galleryCallback = new OdeAsyncCallback<List<GalleryComment>>(	      
