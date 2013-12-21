@@ -77,7 +77,7 @@ public class GalleryApp implements IsSerializable {
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageBlobId = "SFKJF";
-    this.imageURL = "http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
+    this.imageURL = "http://galleryai2.appspot.com/images/logo.png";
   }
 
   private String title;
@@ -200,13 +200,14 @@ public class GalleryApp implements IsSerializable {
    * URL http://storage.googleapis.com/my_bucket/my_object.  
   */
   public String getSourceURL() {
-    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId();
+    String url = "/gs/" + this.GALLERYBUCKET + "/" + getGalleryAppId();
     return url;
   }
 
   public String getCloudImageURL() {
-    String url = "/gs/"+this.GALLERYBUCKET+"/"+getGalleryAppId()+"/image";
-    return url;
+    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/" + getGalleryAppId()+"/image";
+    String url = "/gs/" + this.GALLERYBUCKET + "/" + getGalleryAppId() + "/image";
+    return url2;
   }
 
   public ArrayList<String> getTags() {

@@ -38,7 +38,7 @@ public final class GalleryAppBox extends Box {
   
   public static void setApp(GalleryApp app,  int editStatus)
   {
-//	OdeLog.log("######### I got in setApp");
+//  OdeLog.log("######### I got in setApp");
     pPage = new GalleryPage(app,editStatus);
     INSTANCE.setContent(pPage);
   }

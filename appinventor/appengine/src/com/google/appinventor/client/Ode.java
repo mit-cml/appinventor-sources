@@ -275,7 +275,6 @@ public class Ode implements EntryPoint {
     deckPanel.showWidget(galleryTabIndex);
     
   }
-
   
   /**
    * Switch to the Gallery App 
@@ -284,8 +283,7 @@ public class Ode implements EntryPoint {
     currentView = GALLERYAPP;
 //    OdeLog.log("######### I got in switchToGalleryAppView");
     GalleryAppBox.setApp(app, editStatus);
-    deckPanel.showWidget(galleryAppTabIndex);
-    
+    deckPanel.showWidget(galleryAppTabIndex);    
   }
 
   /**

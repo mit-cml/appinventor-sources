@@ -171,7 +171,7 @@ public class GalleryServlet extends OdeServlet {
     FileItemIterator iterator = upload.getItemIterator(req);
     while (iterator.hasNext()) {
       FileItemStream item = iterator.next();
-      LOG.info(item.getContentType());
+//      LOG.info(item.getContentType());
       if (item.getFieldName().equals(expectedFieldName)) {
         return item.openStream();
       }

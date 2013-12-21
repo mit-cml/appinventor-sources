@@ -9,8 +9,6 @@ import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
-import com.google.appinventor.client.explorer.project.ProjectComparators;
-import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -25,62 +23,33 @@ import com.google.appinventor.client.OdeAsyncCallback;
 
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.dom.client.HasClickHandlers;
-import com.google.gwt.event.dom.client.MouseDownEvent;
-import com.google.gwt.event.dom.client.MouseDownHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
-import com.google.gwt.user.client.ui.Grid;
+import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.VerticalPanel;
-
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.Window;
 
-import com.google.appinventor.client.explorer.project.Project;
-
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.google.gwt.http.client.RequestBuilder;
-import com.google.gwt.http.client.Request;
-import com.google.gwt.http.client.RequestCallback;
-import com.google.gwt.http.client.RequestException;
-import com.google.gwt.http.client.Response;
 
 import com.google.appinventor.client.utils.Uploader;
-import com.google.appinventor.client.wizards.FileUploadWizard;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
-
-import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
-import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
-import com.google.gwt.user.client.Window;
 
 /**
  * The gallery list shows apps from the gallery in a table.
@@ -94,7 +63,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   GalleryClient gallery = new GalleryClient(this);
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
-  String projectName=null;
+  String projectName = null;
   Project project;
 
   private final FlowPanel galleryGUI;
@@ -112,23 +81,52 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private final FlowPanel appCommentsList;
   private String tagSelected;
 
-  public static final int VIEWAPP=0;
-  public static final int NEWAPP =1;
-  public static final int UPDATEAPP=2;  
+  public static final int VIEWAPP = 0;
+  public static final int NEWAPP = 1;
+  public static final int UPDATEAPP = 2;  
   private int editStatus;
+
   /* Publish & edit state components */
+  private Image image;
   private FileUpload upload;
+  private FlowPanel imageUploadBoxInner;
+  private Label creation;
+  private Label update;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
+  
+  
+
+  public GalleryPage() {
+    // Initialize UI
+    VerticalPanel panel = new VerticalPanel();
+    panel.setWidth("100%");    
+    galleryGUI = new FlowPanel();
+    appSingle = new FlowPanel();
+    appDetails = new FlowPanel();
+    appHeader = new FlowPanel();
+    appInfo = new FlowPanel();
+    appAction = new FlowPanel();
+    appMeta = new FlowPanel();
+    appDates = new FlowPanel();
+    appDescription = new FlowPanel();
+    appComments = new FlowPanel();
+    appCommentsList = new FlowPanel();
+    appsByAuthor = new FlowPanel();
+    appsByTags = new FlowPanel();
+    tagSelected = "";
+    creation = new Label();
+    update = new Label();
+  }
   
   /**
    * Creates a new GalleryPage
    */
-  public GalleryPage(final GalleryApp app,final int editStatus) {
+  public GalleryPage(final GalleryApp app, final int editStatus) {
 
     this.app = app;
-    this.editStatus=editStatus;
-    OdeLog.log("GALLERY PAGE CONSTRUCT, title is:"+app.getTitle());
+    this.editStatus = editStatus;
+
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");    
@@ -147,6 +145,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appsByAuthor = new FlowPanel();
     appsByTags = new FlowPanel();
     tagSelected = "";
+    
+    creation = new Label();
+    update = new Label();
 
     // App header - image
     appHeader.addStyleName("app-header");
@@ -156,27 +157,39 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       FlowPanel imageUploadBox = new FlowPanel();
       imageUploadBox.addStyleName("app-image-uploadbox");
       imageUploadBox.addStyleName("gallery-editbox");
-      Label imageUploadPrompt = new Label("Upload your project image!");
-      imageUploadPrompt.addStyleName("app-image-uploadprompt");
-      imageUploadPrompt.addStyleName("gallery-editprompt");
-      imageUploadBox.add(imageUploadPrompt);
+      imageUploadBoxInner = new FlowPanel();
       
+      if (editStatus == UPDATEAPP) {
+        updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+      } else {
+        Label imageUploadPrompt = new Label("Upload your project image!");
+        imageUploadPrompt.addStyleName("app-image-uploadprompt");
+        imageUploadPrompt.addStyleName("gallery-editprompt");
+        imageUploadBoxInner.add(imageUploadPrompt);        
+      }
       upload = new FileUpload();
+      upload.addStyleName("app-image-upload");
+      // Set the correct handler for servlet side capture
       upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-      upload.addChangeHandler(new ChangeHandler() {
+      imageUploadBoxInner.add(upload);
+      
+      imageUploadBox.add(imageUploadBoxInner);
+      
+      FocusPanel wrapper = new FocusPanel();
+      wrapper.add(imageUploadBox);
+      wrapper.addClickHandler(new ClickHandler() {
         @Override
-        public void onChange(ChangeEvent event) {
-          // Moved this to publish button
+        public void onClick(ClickEvent event) {
+          // The correct way to trigger click event on FileUpload
+          upload.getElement().<InputElement>cast().click(); 
         }
       });
-
-      imageUploadBox.add(upload);
+      appHeader.add(wrapper);
       
-      
-      appHeader.add(imageUploadBox);
     } else  { // we are just viewing this page 
-      Image image = new Image();
-      image.setUrl(app.getImageURL());
+      image = new Image();
+      // Vincent note: some strange cache issue preventing newest from showing up
+      image.setUrl(app.getCloudImageURL());
       image.addStyleName("app-image");
       appHeader.add(image);      
     }
@@ -198,17 +211,15 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     } else {
     
       Button publishButton = null;
-      if (editStatus==NEWAPP)
+      if (editStatus == NEWAPP) {
         publishButton = new Button("Publish");
-      else // UPDATEAPP
+      } else {
         publishButton = new Button("Update");
+      }
 
       publishButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          
-          // Prepare temporary gallery ID (-1 indicates invalidity)
-          final String thisGalleryId = "-1";
               
           // Callback for when the server returns us the apps
           final Ode ode = Ode.getInstance();
@@ -219,23 +230,21 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             // 2. When publish call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
-              OdeLog.log("we had a successful publish");
-              // String s = String.valueOf(galleryId);
-              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-              // failure message
-              MESSAGES.galleryError()) {
-                @Override
-                //4. When setGalleryId call returns, which we don't need to do anything
-                public void onSuccess(Void result) {
-                  
-                }
-              };
+              updateAppDates();
 
-              if (editStatus==NEWAPP) {
-              // 3. Set galleryId of the project once it's published
-              ode.getProjectService().setGalleryId(app.getProjectId(), 
-                  galleryId, projectCallback);
-              app.setGalleryAppId(galleryId);
+              if (editStatus == NEWAPP) {
+                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  // failure message
+                  MESSAGES.galleryError()) {
+                    @Override
+                    //4. When setGalleryId call returns, which we don't need to do anything
+                    public void onSuccess(Void result) {
+                    }
+                };
+                // 3. Set galleryId of the project once it's published
+                ode.getProjectService().setGalleryId(app.getProjectId(), 
+                    galleryId, projectCallback);
+                app.setGalleryAppId(galleryId);
               } 
               
               // 4. Process the app image upload
@@ -254,12 +263,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                   public void onSuccess(UploadResponse uploadResponse) {
                     switch (uploadResponse.getStatus()) {
                     case SUCCESS:
+                      // Update the app image preview after a success upload
+                      imageUploadBoxInner.clear();
+                      updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
                       ErrorReporter.hide();
-                      // Vincent node: capture this later
-                      /*
-                      onUploadSuccess(folderNode, filename, uploadResponse.getModificationDate(),
-                          fileUploadedCallback);
-                      */
                       break;
                     case FILE_TOO_LARGE:
                       // The user can resolve the problem by
@@ -283,22 +290,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
         app.setDescription(sanitizeEditedValue(descCellList));
 
         // ok, this is below the call back, but of course it is done first 
-        if (editStatus==NEWAPP)
-          ode.getGalleryService().publishApp(app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-        else
-          ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-
+        if (editStatus == NEWAPP) {
+          ode.getGalleryService().publishApp(app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), 
+              callback);
+        } else {
+          ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), 
+              callback);
+        }
         }
       });    
-      
-      
-      
-      
       publishButton.addStyleName("app-action");
       appAction.add(publishButton);    
     }
-    
-     
     
     // App details - header title
     if (newOrUpdateApp()) {
@@ -316,26 +321,6 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       String t = app.getTitle();
       List<String> titleList = Arrays.asList(t);
       titleCellList.setRowData(0, titleList);
-
-      /*
-      // EditTextCell, potential even handler sample
-      Column<ContactInfo, String> editTextColumn =
-          addColumn(new EditTextCell(), "EditText", new GetValue<String>() {
-            @Override
-            public String getValue(ContactInfo contact) {
-              return contact.getFirstName();
-            }
-          }, new FieldUpdater<ContactInfo, String>() {
-            @Override
-            public void update(int index, ContactInfo object, String value) {
-              pendingChanges.add(new FirstNameChange(object, value));
-            }
-          });
-      contactList.setColumnWidth(editTextColumn, 16.0, Unit.EM);
-      */
-      
-      
-      
       titleCellList.addStyleName("app-titleprompt");
       titleCellList.addStyleName("gallery-editprompt");
       titleBox.add(titleCellList);
@@ -375,14 +360,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     appMeta.add(numComments);
     appMeta.add(new Label(Integer.toString(app.getComments())));
 
-    // WHEN PUBLISHING/EDITING THESE NEED DEFAULT VALUES
     // Add app dates
     appInfo.add(appDates);
-    Date creationDate = new Date(app.getCreationDate());
-    Date updateDate = new Date(app.getUpdateDate());
-    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
-    Label creation = new Label("Created on " + dateFormat.format(creationDate));
-    Label update = new Label("Updated on " + dateFormat.format(updateDate));
+    if (editStatus == NEWAPP) {
+      creation.setText("This app is not created in the Gallery yet.");
+      update.setText("This app is not updated in the Gallery yet.");
+    } else {
+      updateAppDates();
+    }
     appDates.add(creation);
     appDates.add(update);
     appDates.addStyleName("app-dates");
@@ -437,13 +422,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     Label commentsHeader = new Label("Comments and Reviews");
     commentsHeader.addStyleName("app-comments-header");
     appComments.add(commentsHeader);
+    TextArea commentTextArea = new TextArea();
+    commentTextArea.addStyleName("app-comments-textarea");
+    appComments.add(commentTextArea);
+    Button commentSubmit = new Button("Submit my comment");
+    commentSubmit.addStyleName("app-comments-submit");
+    appComments.add(commentSubmit);
+    
 
     // Add list of comments
     // gallery.GetComments(app.getGalleryAppId(), 0, 100);
     // appComments.add(appCommentsList);
     appCommentsList.addStyleName("app-comments");
  
-    // Add sidebar stuff, only in public published state
+    // Add sidebar stuff, only in public state
     if (!newOrUpdateApp()) {
       
       gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());      
@@ -467,6 +459,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     galleryGUI.addStyleName("gallery");
     initWidget(panel);
   }
+
 
   /**
    * Loads the proper tab GUI with gallery's app data.
@@ -561,6 +554,26 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       return true;
     else
       return false;
+  }
+  
+  /**
+   * Helper method to update the app image
+   * @param url  The URL of the image to show
+   * @param container  The container that image widget resides
+   */
+  private void updateAppImage(String url, Panel container) {
+    image = new Image();
+    image.setUrl(url);
+    image.addStyleName("app-image");
+    container.add(image);   
+  }
+  
+  private void updateAppDates() {
+    Date creationDate = new Date(app.getCreationDate());
+    Date updateDate = new Date(app.getUpdateDate());
+    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
+    creation.setText("Created on " + dateFormat.format(creationDate));
+    update.setText("Updated on " + dateFormat.format(updateDate));
   }
  
 }	
