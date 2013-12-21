@@ -1624,7 +1624,6 @@ textarea::-webkit-input-placeholder {
   font-size: 16px;
   border: 1px dashed;
 }
-
 .gallery-app-details .app-comments-textarea {
   width: 580px; /* 600-10-10 */	
 }

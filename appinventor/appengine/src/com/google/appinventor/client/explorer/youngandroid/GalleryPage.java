@@ -161,15 +161,17 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadBox.addStyleName("app-image-uploadbox");
       imageUploadBox.addStyleName("gallery-editbox");
       imageUploadBoxInner = new FlowPanel();
+
+      Label imageUploadPrompt = new Label("Upload your project image!");
+      imageUploadPrompt.addStyleName("app-image-uploadprompt");
+      imageUploadPrompt.addStyleName("gallery-editprompt");
       
       if (editStatus == UPDATEAPP) {
         updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
       } else {
-        Label imageUploadPrompt = new Label("Upload your project image!");
-        imageUploadPrompt.addStyleName("app-image-uploadprompt");
-        imageUploadPrompt.addStyleName("gallery-editprompt");
-        imageUploadBoxInner.add(imageUploadPrompt);        
       }
+      imageUploadBoxInner.add(imageUploadPrompt);        
+
       upload = new FileUpload();
       upload.addStyleName("app-image-upload");
       // Set the correct handler for servlet side capture
@@ -284,7 +286,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                 });
                 
               } else {
-                Window.alert(MESSAGES.noFileSelected());
+                if (editStatus == NEWAPP) {
+                  Window.alert(MESSAGES.noFileSelected());                  
+                }
               }
             }
           };
@@ -299,7 +303,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
           ode.getGalleryService().publishApp(app.getProjectId(), 
               app.getTitle(), app.getProjectName(), app.getDescription(), 
               callback);
-        } else {
+        } else if (editStatus == UPDATEAPP) {
           ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), 
               app.getTitle(), app.getProjectName(), app.getDescription(), 
               callback);
@@ -380,10 +384,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     // App details - description
     if (newOrUpdateApp()) {
       FlowPanel descBox = new FlowPanel();
-      descBox.addStyleName("app-descbox");
-      descBox.addStyleName("gallery-editbox");
-      desc.setText("Please describe your project here! " +
-      		"Tell us what your project is about in a few sentences.");
+//      descBox.addStyleName("app-descbox");
+//      descBox.addStyleName("gallery-editbox");
+      if (editStatus == NEWAPP) {
+        desc.setText("Please describe your project here! " +
+            "Tell us what your project is about in a few sentences.");        
+      } else if (editStatus == UPDATEAPP) {
+        desc.setText(app.getDescription());
+      }
       desc.addStyleName("app-desc-textarea");
       descBox.add(desc);
       
@@ -451,8 +459,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               }
           };
         Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(), 
-            commentTextArea.getText(), commentPublishCallback);
-        
+            commentTextArea.getText(), commentPublishCallback); 
       }
     });
     appComments.add(commentSubmit);
