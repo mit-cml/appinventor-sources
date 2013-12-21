@@ -13,7 +13,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.io.InputStream;
 import java.util.List;
 
-import com.google.appinventor.shared.rpc.project.GalleryComment;
+	
 
 /**
  * Interface for the service providing project information.
