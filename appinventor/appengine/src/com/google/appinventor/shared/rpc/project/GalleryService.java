@@ -13,6 +13,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.io.InputStream;
 import java.util.List;
 
+import com.google.appinventor.shared.rpc.project.GalleryComment;
+
 /**
  * Interface for the service providing project information.
  *
@@ -60,6 +62,15 @@ public interface GalleryService extends RemoteService {
    * @return list of GalleryApps found by the back-end
    */
   List<GalleryApp> getMostDownloadedApps(int start, int count);
+
+  /**
+   * Returns a list of galleryApps
+   * @param userId 
+   * @param starting index
+   * @param number of apps to return
+   * @return list of GalleryApps found by the back-end
+   */
+  List<GalleryApp> getDeveloperApps(String userId, int start, int count);
   
   /**
    * Returns a list of galleryApps
@@ -81,5 +92,16 @@ public interface GalleryService extends RemoteService {
 
   void appWasDownloaded(long galleryId, long newProjectId);
 
+  
+   /**
+   * Returns the comments for an app
+   * @param galleryId  gallery ID as received by
+   *                   {@link #getRecentGalleryApps()}
+   *
+   * @return  a list of comments
+   */
+  List<GalleryComment> getComments(long galleryId);
+
+  long publishComment(long galleryId, String comment);
   
 }

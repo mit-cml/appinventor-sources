@@ -194,7 +194,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("dateModified").offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -215,7 +215,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("numDownloads").limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -223,6 +223,29 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return apps;
   }
+  
+   /**
+   * Returns an array of apps by a particular user
+   *
+   * @return  list of gallery apps
+   */
+  @Override
+  public List<GalleryApp> getDeveloperApps(String userId, int start, final int count) {
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).order("dateModified").offset(start).limit(count)) {
+      
+      GalleryApp gApp = new GalleryApp();
+      makeGalleryApp(appData, gApp);
+      apps.add(gApp);
+    }
+    return apps;
+  }
+  
   /**
    * when an gallery app is opened, this method is called to increment the #downloads
    * 
@@ -296,21 +319,27 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * 
    */
   @Override
-  public void addComment(final long galleryId,final String userId, final String comment) {
+  public long addComment(final long galleryId,final String userId, final String comment) {
+    final Result<Long> theDate = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           GalleryCommentData commentData = new GalleryCommentData();
+          long date = System.currentTimeMillis();
           commentData.comment = comment;
           commentData.userId = userId;
           commentData.galleryKey = galleryKey(galleryId);
+          commentData.dateCreated=date;
+          theDate.t=date;
+          
           datastore.put(commentData);
         }
       });
     } catch (ObjectifyException e) {
        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.addComment", e);
     }
+    return theDate.t;
   }
   /**
    * get all the comments for a given galleryId
@@ -325,7 +354,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey)) {
+          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("dateCreated")) {
             GalleryComment galleryComment = new GalleryComment(galleryId,
                 commentData.userId,commentData.comment,commentData.dateCreated);
             comments.add(galleryComment);

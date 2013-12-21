@@ -30,6 +30,7 @@ import com.google.common.collect.Lists;
 
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -91,7 +92,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public long updateApp(long galleryId, long projectId, String title, String projectName, String description) {
     final String userId = userInfoProvider.getUserId();
     galleryStorageIo.updateGalleryApp(galleryId, title, description,  userId);
-    //restoreAIA(galleryId,projectId, projectName);
+    storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
    /**
@@ -102,6 +103,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public List<GalleryApp> getRecentApps(int start,int count) {
     return galleryStorageIo.getRecentGalleryApps(start,count);
+ 
+  }
+
+  /**
+   * Returns an array of gallery Apps
+   *
+   * @return gallery apps found by the back-end
+   */
+  @Override
+  public List<GalleryApp> getDeveloperApps(String userId, int start,int count) {
+    return galleryStorageIo.getDeveloperApps(userId, start,count);
  
   }
   @Override
@@ -124,6 +136,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public void appWasDownloaded(long galleryId, long projectId) {
     galleryStorageIo.incrementDownloads(galleryId);
+  }
+
+  @Override
+  public List<GalleryComment> getComments(long galleryId) {
+    return galleryStorageIo.getComments(galleryId);
+
+  }
+  @Override
+  public long publishComment(long galleryId, String comment) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.addComment(galleryId, userId, comment);
   }
 
 //  public void storeImage(InputStream is, long galleryId) {
@@ -154,7 +177,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     //   for migration details
       // convert galleryId to a string, we'll use this for the key in gcs
       String galleryKey = String.valueOf(galleryId);
-      LOG.log(Level.SEVERE, "GALLERYKEY IS "+galleryKey);    
       // set up the cloud file (options)
       FileService fileService = FileServiceFactory.getFileService();
       GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()

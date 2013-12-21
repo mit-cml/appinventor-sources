@@ -51,7 +51,23 @@ public class GalleryClient {
  
   }
 
-  public void GetAppsByDeveloper(int start, int count, String developerName) {
+  public void GetAppsByDeveloper(int start, int count, String developerId) {
+    // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    // failure message
+    MESSAGES.galleryError()) {
+    @Override
+    public void onSuccess(List<GalleryApp> apps) {
+      // the server has returned us something
+      listener.onAppListRequestCompleted(apps, REQUEST_BYDEVELOPER); 
+    }
+    };
+      
+    // ok, this is below the call back, but of course it is done first 
+    ode.getGalleryService().getDeveloperApps(developerId, start,count,callback);
+
+
   }
 
   public void GetFeatured(int start, int count, int sortOrder) {
@@ -72,7 +88,7 @@ public class GalleryClient {
     };
       
     // ok, this is below the call back, but of course it is done first 
-    ode.getGalleryService().getRecentApps(0,5,callback);
+    ode.getGalleryService().getRecentApps(start,count,callback);
   
   }
   
@@ -90,7 +106,7 @@ public class GalleryClient {
     };
       
     // ok, this is below the call back, but of course it is done first 
-    ode.getGalleryService().getMostDownloadedApps(0,5,callback);
+    ode.getGalleryService().getMostDownloadedApps(start,count,callback);
   
   }
 
