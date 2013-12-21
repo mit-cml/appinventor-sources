@@ -54,13 +54,18 @@ public final class ProjectListBox extends TabPanel {
     plist = new ProjectList();
     
 //    projectToolbar = new ProjectToolbar();
-    FlowPanel pContainer = new FlowPanel();
-//    pContainer.add(projectToolbar);
-    pContainer.add(plist);
-    FlowPanel sContainer = new FlowPanel();
+    FlowPanel projectsContainer = new FlowPanel();
+    FlowPanel studiosContainer = new FlowPanel();
+    FlowPanel profileContainer = new FlowPanel();
+
+//  pContainer.add(projectToolbar);
+    projectsContainer.add(plist);
     
-    this.add(pContainer, MESSAGES.projectListBoxCaption());
-    this.add(sContainer, "My Studios");
+  
+    
+    this.add(projectsContainer, MESSAGES.projectListBoxCaption());
+    this.add(studiosContainer, "My Studios");
+    this.add(profileContainer, "My Profile");
     this.selectTab(0);
     
     // Styling options

@@ -163,11 +163,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadBoxInner = new FlowPanel();
 
       Label imageUploadPrompt = new Label("Upload your project image!");
-      imageUploadPrompt.addStyleName("app-image-uploadprompt");
       imageUploadPrompt.addStyleName("gallery-editprompt");
       
       if (editStatus == UPDATEAPP) {
         updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+        imageUploadPrompt.addStyleName("app-image-uploadprompt");
       } else {
       }
       imageUploadBoxInner.add(imageUploadPrompt);        

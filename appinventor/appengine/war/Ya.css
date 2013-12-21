@@ -1511,7 +1511,7 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery individual app page styles */
 .gallery {
-  width: 65%;
+  width: 950px;
   margin: 0 auto;
 }
 .gallery-app-single {
@@ -1542,6 +1542,7 @@ textarea::-webkit-input-placeholder {
   text-align: center;
   color: #bebebe;
   font-size: 16px;	
+  padding: 40px 0;
 }
 .app-info-container .gallery-editbox {
   width: 100%;
@@ -1582,6 +1583,7 @@ textarea::-webkit-input-placeholder {
 }
 .app-header .app-image-uploadprompt {
   margin: -90px 0;
+  padding: 0;
 }
 .app-header .app-image-upload {
   display: none;
