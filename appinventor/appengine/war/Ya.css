@@ -1574,13 +1574,14 @@ textarea::-webkit-input-placeholder {
 .app-header .app-image {
   width: 130px;
   height: 130px;
+  opacity: 0.1;
 }
 .app-header .app-image-uploadbox {
   width: 128px;
   height: 128px;
 }
 .app-header .app-image-uploadprompt {
-  margin: 30px auto;
+  margin: -90px 0;
 }
 .app-header .app-image-upload {
   display: none;
@@ -1615,19 +1616,23 @@ textarea::-webkit-input-placeholder {
   font-weight: 300;
   margin-bottom: 5px;
 }
-.gallery-app-details .app-comments-textarea {
-  width: 580px ; /* 600-10-10 */
-  height: 75px;
+.gallery-app-details .app-comments-textarea,
+.app-desc-textarea {
+  height: 50px;
   margin: 10px 0;
   padding: 10px;
   color: #bebebe;
   font-size: 16px;
   border: 1px dashed;
-  background-image: url(bg.gif);
-  background-position: bottom right;
-  background-repeat: no-repeat;
 }
-.gallery-app-details .app-comments-textarea:focus {
+.gallery-app-details .app-comments-textarea {
+  width: 580px; /* 600-10-10 */	
+}
+.app-desc-textarea {
+  width: 410px; /* 430-10-10 */
+}
+.gallery-app-details .app-comments-textarea:focus,
+.app-desc-textarea:focus {
   border: 1px solid;
   color: #444;
   font-size: 14px;

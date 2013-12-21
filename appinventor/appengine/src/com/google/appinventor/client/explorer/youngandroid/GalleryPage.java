@@ -94,9 +94,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Label update;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
+  private TextArea desc;
   
   
-
+/*
   public GalleryPage() {
     // Initialize UI
     VerticalPanel panel = new VerticalPanel();
@@ -118,6 +119,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     creation = new Label();
     update = new Label();
   }
+  */
   
   /**
    * Creates a new GalleryPage
@@ -148,6 +150,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     
     creation = new Label();
     update = new Label();
+    desc = new TextArea();
 
     // App header - image
     appHeader.addStyleName("app-header");
@@ -158,15 +161,17 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       imageUploadBox.addStyleName("app-image-uploadbox");
       imageUploadBox.addStyleName("gallery-editbox");
       imageUploadBoxInner = new FlowPanel();
+
+      Label imageUploadPrompt = new Label("Upload your project image!");
+      imageUploadPrompt.addStyleName("app-image-uploadprompt");
+      imageUploadPrompt.addStyleName("gallery-editprompt");
       
       if (editStatus == UPDATEAPP) {
         updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
       } else {
-        Label imageUploadPrompt = new Label("Upload your project image!");
-        imageUploadPrompt.addStyleName("app-image-uploadprompt");
-        imageUploadPrompt.addStyleName("gallery-editprompt");
-        imageUploadBoxInner.add(imageUploadPrompt);        
       }
+      imageUploadBoxInner.add(imageUploadPrompt);        
+
       upload = new FileUpload();
       upload.addStyleName("app-image-upload");
       // Set the correct handler for servlet side capture
@@ -281,20 +286,24 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                 });
                 
               } else {
-                Window.alert(MESSAGES.noFileSelected());
+                if (editStatus == NEWAPP) {
+                  Window.alert(MESSAGES.noFileSelected());                  
+                }
               }
             }
           };
         // Prepare the title and description from user inputs
         app.setTitle(sanitizeEditedValue(titleCellList));
-        app.setDescription(sanitizeEditedValue(descCellList));
+//        app.setDescription(sanitizeEditedValue(descCellList));
+        OdeLog.log("########## DESC = " + desc.getText());
+        app.setDescription(desc.getText());
 
         // ok, this is below the call back, but of course it is done first 
         if (editStatus == NEWAPP) {
           ode.getGalleryService().publishApp(app.getProjectId(), 
               app.getTitle(), app.getProjectName(), app.getDescription(), 
               callback);
-        } else {
+        } else if (editStatus == UPDATEAPP) {
           ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), 
               app.getTitle(), app.getProjectName(), app.getDescription(), 
               callback);
@@ -375,9 +384,18 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     // App details - description
     if (newOrUpdateApp()) {
       FlowPanel descBox = new FlowPanel();
-      descBox.addStyleName("app-descbox");
-      descBox.addStyleName("gallery-editbox");
-
+//      descBox.addStyleName("app-descbox");
+//      descBox.addStyleName("gallery-editbox");
+      if (editStatus == NEWAPP) {
+        desc.setText("Please describe your project here! " +
+            "Tell us what your project is about in a few sentences.");        
+      } else if (editStatus == UPDATEAPP) {
+        desc.setText(app.getDescription());
+      }
+      desc.addStyleName("app-desc-textarea");
+      descBox.add(desc);
+      
+      /*
       // Create an editable text cell to render values
       EditTextCell descPrompt = new EditTextCell();
       // Create a cell list that uses this cell
@@ -388,7 +406,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       if (app.getDescription().length() > 1) {
         t = app.getDescription();
       } else {
-        t = "Please describe your project here! \r\r Tell us what your project is about in a few sentences.";
+        t = "Please describe your project here! Tell us what your project is about in a few sentences.";
       }
       List<String> descList = Arrays.asList(t);
       descCellList.setRowData(0, descList);
@@ -396,6 +414,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       descCellList.addStyleName("app-descprompt");
       descCellList.addStyleName("gallery-editprompt");
       descBox.add(descCellList);
+      */
+      
       appInfo.add(descBox);
     } else {
       appInfo.add(appDescription);
@@ -439,8 +459,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               }
           };
         Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(), 
-            commentTextArea.getText(), commentPublishCallback);
-        
+            commentTextArea.getText(), commentPublishCallback); 
       }
     });
     appComments.add(commentSubmit);
