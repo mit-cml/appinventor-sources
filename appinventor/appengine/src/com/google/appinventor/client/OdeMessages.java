@@ -1180,6 +1180,15 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Import Project...")
   @Description("Caption for project upload wizard.")
   String projectUploadWizardCaption();
+
+  // used in gallerypage.java
+  @DefaultMessage("Server error: could not retrieve comments")
+  @Description("Error message reported when can't get gallery app comments on server.")
+  String galleryCommentError();
+
+  @DefaultMessage("Server error: could not retrieve developer gallery apps from gallery")
+  @Description("Error message reported when can't get developer gallery apps on server.")
+  String galleryDeveloperAppError();
   
   // Used in gallerylist.java
 

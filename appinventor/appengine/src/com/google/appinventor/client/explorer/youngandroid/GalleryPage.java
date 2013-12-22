@@ -60,7 +60,7 @@ import com.google.appinventor.shared.rpc.project.UserProject;
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
   
-  GalleryClient gallery = new GalleryClient(this);
+  GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
   String projectName = null;
@@ -126,6 +126,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
    */
   public GalleryPage(final GalleryApp app, final int editStatus) {
 
+    gallery = GalleryClient.getInstance();
+    gallery.addListener(this);
     this.app = app;
     this.editStatus = editStatus;
 
@@ -232,12 +234,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             // failure message
             MESSAGES.galleryError()) {
             @Override
-            // 2. When publish call returns
+            // 2. When publish or update call returns
             public void onSuccess(Long galleryId) {
               // the server has returned us something
               updateAppDates();
 
               if (editStatus == NEWAPP) {
+                // we only set the projectId to the gallery app if new app. If we
+                // are updating its already set
                 final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
                   // failure message
                   MESSAGES.galleryError()) {
@@ -251,8 +255,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     galleryId, projectCallback);
                 app.setGalleryAppId(galleryId);
               } 
-              
-              // 4. Process the app image upload
+              // for new or update
+              // 4. see if a new image has been uploaded and if so get it in the cloud
               String uploadFilename = upload.getFilename();
               if (!uploadFilename.isEmpty()) {
                 // Grab and validify the filename
@@ -270,7 +274,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                     case SUCCESS:
                       // Update the app image preview after a success upload
                       imageUploadBoxInner.clear();
-                      updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+                      updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);
+                      
                       ErrorReporter.hide();
                       break;
                     case FILE_TOO_LARGE:
@@ -290,7 +295,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
                   Window.alert(MESSAGES.noFileSelected());                  
                 }
               }
+              // tell the galleryclient to modify its list of most recent apps.
+              // galleryPage listens, so it will update
+              OdeLog.log("#### we published and are calling gallery client to update");
+              gallery.GetMostRecent(0,5);
+              // tell the project list to change project's button to "Update"
+              Ode.getInstance().getProjectManager().publishProject();
             }
+            
           };
         // Prepare the title and description from user inputs
         app.setTitle(sanitizeEditedValue(titleCellList));
@@ -298,7 +310,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
         OdeLog.log("########## DESC = " + desc.getText());
         app.setDescription(desc.getText());
 
-        // ok, this is below the call back, but of course it is done first 
+        // 1. this is below the call backs, but it is done first 
         if (editStatus == NEWAPP) {
           ode.getGalleryService().publishApp(app.getProjectId(), 
               app.getTitle(), app.getProjectName(), app.getDescription(), 
@@ -455,7 +467,10 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
             MESSAGES.galleryError()) {
               @Override
               public void onSuccess(Long date) {
-                OdeLog.log("###### PUBLISHED COMMENT #########");
+                // get the new comment list so gui updates
+                //   note: we might modify the call to publishComment so it returns
+                //   the list instead, this would save one server call
+                gallery.GetComments(app.getGalleryAppId(), 0, 100);
               }
           };
         Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(), 

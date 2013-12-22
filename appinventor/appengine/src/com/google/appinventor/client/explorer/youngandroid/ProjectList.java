@@ -231,10 +231,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
       
       editButton = new Button("---");
-      if (project.isPublished())
-        editButton.setText("Update...");
-      else
-        editButton.setText("Publish...");
+     
    
     }
   }
@@ -296,6 +293,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * If it has been published, we get the gallery app and send it
    */
   private void preparePublishApp(final Project p, ProjectWidgets pw) {    
+    if (p.isPublished())
+      pw.editButton.setText("Update...");
+    else
+      pw.editButton.setText("Publish...");
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -378,5 +379,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
+  }
+  @Override
+  public void onProjectPublished() {
+    refreshTable(false);
   }
 }

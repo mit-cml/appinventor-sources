@@ -45,6 +45,8 @@ public class StoredData {
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
+    public String name;
+
   }
 
   // Project properties

@@ -28,7 +28,7 @@ import java.io.IOException;
 
 public class GalleryClient {
 
-  private GalleryRequestListener listener;
+  private List<GalleryRequestListener> listeners;
   public static final int REQUEST_FEATURED=1;
   public static final int REQUEST_RECENT=2;
   public static final int REQUEST_SEARCH=3;
@@ -39,14 +39,31 @@ public class GalleryClient {
   public static final int REQUEST_BYTAG=8;
   public static final int REQUEST_ALL=9;
 
+  private static volatile GalleryClient  instance= null;
+  private GalleryClient () {
+    listeners = new ArrayList<GalleryRequestListener>();
+  }
+  public static GalleryClient getInstance () {
+    if (instance == null) {
+      synchronized (GalleryClient.class) {
+        instance = new GalleryClient();
+      }
+    }
+    return instance;
+  }
+
+  public void addListener(GalleryRequestListener listener) {
+    listeners.add(listener);
+  }
+  
   /*
    * Create a client and set the listener so when client ops complete they
    * can tell the view that cares
-   */
+
   public GalleryClient(GalleryRequestListener listener) {
     this.listener=listener;
   }
-  
+    */ 
   public void FindApps(String keywords, int start, int count, int sortOrder) {
  
   }
@@ -56,11 +73,13 @@ public class GalleryClient {
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
     // failure message
-    MESSAGES.galleryError()) {
+    MESSAGES.galleryDeveloperAppError()) {
     @Override
     public void onSuccess(List<GalleryApp> apps) {
       // the server has returned us something
-      listener.onAppListRequestCompleted(apps, REQUEST_BYDEVELOPER); 
+      for (GalleryRequestListener listener:listeners) {
+        listener.onAppListRequestCompleted(apps, REQUEST_BYDEVELOPER); 
+      }
     }
     };
       
@@ -83,7 +102,9 @@ public class GalleryClient {
     @Override
     public void onSuccess(List<GalleryApp> apps) {
       // the server has returned us something
-      listener.onAppListRequestCompleted(apps, REQUEST_RECENT); 
+      for (GalleryRequestListener listener:listeners) {
+        listener.onAppListRequestCompleted(apps, REQUEST_RECENT);
+      } 
     }
     };
       
@@ -101,7 +122,9 @@ public class GalleryClient {
     @Override
     public void onSuccess(List<GalleryApp> apps) {
       // the server has returned us something
-      listener.onAppListRequestCompleted(apps, REQUEST_MOSTDOWNLOADED); 
+      for (GalleryRequestListener listener:listeners) {
+        listener.onAppListRequestCompleted(apps, REQUEST_MOSTDOWNLOADED);
+      } 
     }
     };
       
@@ -122,11 +145,13 @@ public class GalleryClient {
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<List<GalleryComment>> galleryCallback = new OdeAsyncCallback<List<GalleryComment>>(	      
     // failure message
-    MESSAGES.createProjectError()) {
+    MESSAGES.galleryCommentError()) {
       @Override
       public void onSuccess(List<GalleryComment> comments) {
         // now relay the result back to UI client
-        listener.onCommentsRequestCompleted(comments); 
+        for (GalleryRequestListener listener:listeners) {
+          listener.onCommentsRequestCompleted(comments); 
+        }
       }
     };
     ode.getGalleryService().getComments(appId,galleryCallback);
@@ -171,7 +196,9 @@ public class GalleryClient {
         ode.getGalleryService().appWasDownloaded(galleryId,projectInfo.getProjectId(),galleryCallback);
 
         // now relay the result back to UI client
-        listener.onSourceLoadCompleted(projectInfo);    
+        for (GalleryRequestListener listener:listeners) {
+          listener.onSourceLoadCompleted(projectInfo);
+        }    
       }
     };
     // this is really what's happening here, we call server to load project

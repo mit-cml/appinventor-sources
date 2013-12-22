@@ -27,7 +27,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 	 * Generates a new GalleryGuiFactory instance.
 	 */
 	public GalleryGuiFactory() {
-		gallery = new GalleryClient(this);
+      gallery = GalleryClient.getInstance();
+      gallery.addListener(this);
 	}
 
 	/*
@@ -151,10 +152,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
    * 
    */
   public void generateAppPageComments(List<GalleryComment> comments, FlowPanel container) {
+    container.clear();  // so don't show previous listing
     if (comments == null) {
-      Label noCommnets = new Label("This app has no comments just yet.");
-      noCommnets.addStyleName("comment-nope");
-      container.add(noCommnets);
+      Label noComments = new Label("This app does not have any comments yet.");
+      noComments.addStyleName("comment-nope");
+      container.add(noComments);
     }
 
     for ( GalleryComment c : comments) {
