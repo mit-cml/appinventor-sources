@@ -53,8 +53,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     // Display a barcode for an url pointing at our server's download servlet
-    String barcodeUrl = GWT.getModuleBaseURL()
-        + ServerLayout.genRelativeDownloadPath(node.getProjectId(), target);
+    String barcodeUrl = GWT.getHostPageBaseURL()
+      + "b/" + Ode.getInstance().getNonce();
     OdeLog.log("Barcode url is: " + barcodeUrl);
     new BarcodeDialogBox(node.getName(), barcodeUrl).center();
   }
@@ -81,7 +81,6 @@ public class ShowBarcodeCommand extends ChainableCommand {
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
-          Ode.getInstance().getUser().getUserEmail(),
           "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
           "\" target=\"_blank\">",
           "</a>"));

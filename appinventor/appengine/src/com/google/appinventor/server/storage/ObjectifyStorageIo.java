@@ -22,6 +22,7 @@ import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
+import com.google.appinventor.server.storage.StoredData.NonceData;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
 import com.google.appinventor.server.storage.StoredData.UserData;
 import com.google.appinventor.server.storage.StoredData.UserFileData;
@@ -29,6 +30,7 @@ import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.Motd;
+import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -121,6 +123,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(RendezvousData.class);
     ObjectifyService.register(WhiteListData.class);
     ObjectifyService.register(FeedbackData.class);
+    ObjectifyService.register(NonceData.class);
   }
 
   ObjectifyStorageIo() {
@@ -1493,6 +1496,74 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, "Initing MOTD", e);
     }
+  }
+
+  // Nonce Management Routines.
+  // The Nonce is used to map to userId and ProjectId and is used
+  // for non-authenticated access to a built APK file.
+
+  public void storeNonce(final String nonceValue, final String userId, final long projectId) {
+    Objectify datastore = ObjectifyService.begin();
+    final NonceData data  = datastore.query(NonceData.class).filter("nonce", nonceValue).get();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            NonceData new_data = null;
+            if (data == null) {
+              new_data = new NonceData();
+              new_data.id = null;
+              new_data.nonce = nonceValue;
+              new_data.userId = userId;
+              new_data.projectId = projectId;
+              new_data.timestamp = new Date();
+              datastore.put(new_data);
+            } else {
+              new_data = data;
+              new_data.userId = userId;
+              new_data.projectId = projectId;
+              new_data.timestamp = new Date();
+              datastore.put(new_data);
+          }
+          }
+        });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
+    }
+  }
+
+  public Nonce getNoncebyValue(String nonceValue) {
+    Objectify datastore = ObjectifyService.begin();
+    NonceData data  = datastore.query(NonceData.class).filter("nonce", nonceValue).get();
+    if (data == null) {
+      return null;
+    } else {
+      return (new Nonce(nonceValue, data.userId, data.projectId, data.timestamp));
+    }
+  }
+
+  // Cleanup expired nonces which are older then 3 hours. Normal Nonce lifetime
+  // is 2 hours. So for one hour they persist and return "link expired" instead of
+  // "link not found" (after the object itself is removed).
+  //
+  // Note: We only process up to 10 here to limit the amount of processing time
+  // we spend here. If we remove up to 10 for each call, we should keep ahead
+  // of the growing garbage.
+  //
+  // Also note that we are not running in a transaction, there is no need
+  public void cleanupNonces() {
+    Objectify datastore = ObjectifyService.begin();
+    // We do not use runJobWithRetries because if we fail here, we will be
+    // called again the next time someone attempts to download a built APK
+    // via a QR Code.
+    try {
+      datastore.delete(datastore.query(NonceData.class)
+        .filter("timestamp <", new Date((new Date()).getTime() - 3600*3*1000L))
+        .limit(10).fetchKeys());
+    } catch (Exception ex) {
+        LOG.log(Level.WARNING, "Exception during cleanupNonces", ex);
+    }
+
   }
 
   // Create a name for a blob from a project id and file name. This is mostly

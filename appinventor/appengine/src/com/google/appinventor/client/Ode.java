@@ -88,6 +88,8 @@ import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
+import java.util.Random;
+
 /**
  * Main entry point for Ode. Defines the startup UI elements in
  * {@link #onModuleLoad()}.
@@ -121,6 +123,11 @@ public class Ode implements EntryPoint {
 
   // User information
   private User user;
+
+  // Nonce Information
+  private String nonce;
+
+  private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -1174,6 +1181,28 @@ public class Ode implements EntryPoint {
     if (showSplash) {
       maybeShowSplash();
     }
+  }
+
+  /**
+   * generateNonce() -- Generate a unique String value
+   * this value is used to reference a built APK without
+   * requiring explicit authentication.
+   *
+   * @return nonce
+   */
+  public String generateNonce() {
+    int v = random.nextInt(1000000);
+    nonce = Integer.toString(v, 36); // Base 36 string
+    return nonce;
+  }
+
+  /*
+   * getNonce() -- return a previously generated nonce.
+   *
+   * @return nonce
+   */
+  public String getNonce() {
+    return nonce;
   }
 
   // Native code to open a new window (or tab) to display the

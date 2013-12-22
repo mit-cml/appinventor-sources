@@ -200,4 +200,19 @@ public class StoredData {
     public String projectId;
   }
 
+  // NonceData -- A unique (and obscure) nonce is used to map between
+  // the nonce string and a userId and projectId. This is used to provide
+  // for unauthenticated download of an APK file. Nonces are timestamped
+  // both to provide a way to clean them up and to expire the APK downloads.
+
+  @Unindexed
+  static final class NonceData {
+    @Id Long id;
+    @Indexed public String nonce;
+    public String userId;
+    public long projectId;
+    @Indexed
+    public Date timestamp;
+  }
+
 }

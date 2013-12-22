@@ -494,15 +494,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
+   * @param nonce random string used to find resulting APK from unauth context
    * @param target  build target (optional, implementation dependent)
    *
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
+
+    // Store the userId and projectId based on the nonce
+
+    storageIo.storeNonce(nonce, userId, projectId);
+
     // Delete the existing build output files, if any, so that future attempts to get it won't get
     // old versions.
     List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);

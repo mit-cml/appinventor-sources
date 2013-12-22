@@ -289,11 +289,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String target) {
+  public RpcResult build(long projectId, String nonce, String target) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-        userInfoProvider.getUser(), projectId, target);
+      userInfoProvider.getUser(), projectId, nonce, target);
   }
 
   /**

@@ -854,10 +854,10 @@ public interface OdeMessages extends Messages {
   @Description("Title of barcode dialog.")
   String barcodeTitle(String projectName);
 
-  @DefaultMessage("Note: this barcode will only work for user {0}. See {1} the FAQ {2} for info " +
+  @DefaultMessage("Note: this barcode is only valid for 2 hours. See {0} the FAQ {1} for info " +
       "on how to share your app with others.")
   @Description("Warning in barcode dialog.")
-  String barcodeWarning(String userEmail, String aTagStart, String aTagEnd);
+  String barcodeWarning(String aTagStart, String aTagEnd);
 
   // Used in explorer/project/Project.java
 

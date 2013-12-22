@@ -109,6 +109,7 @@ public class BuildCommand extends ChainableCommand {
       }
     };
 
-    ode.getProjectService().build(node.getProjectId(), target, callback);
+    String nonce = ode.generateNonce();
+    ode.getProjectService().build(node.getProjectId(), nonce, target, callback);
   }
 }
