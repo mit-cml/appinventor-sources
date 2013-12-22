@@ -167,9 +167,9 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
       
       if (editStatus == UPDATEAPP) {
         updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+        image.addStyleName("status-updating");
         imageUploadPrompt.addStyleName("app-image-uploadprompt");
-      } else {
-      }
+      } 
       imageUploadBoxInner.add(imageUploadPrompt);        
 
       upload = new FileUpload();
