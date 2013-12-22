@@ -312,6 +312,27 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
+  
+
+  @Override
+  public void storeName(final String userId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.name = name;
+            userData.visited = new Date(); // Indicate that this person was active now
+            datastore.put(userData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+  
 
   @Override
   public long createProject(final String userId, final Project project,
@@ -1752,5 +1773,6 @@ public class ObjectifyStorageIo implements  StorageIo {
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
   }
+
 
 }

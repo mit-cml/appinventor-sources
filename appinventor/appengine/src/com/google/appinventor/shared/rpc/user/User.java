@@ -46,7 +46,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.email = email;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
-    this.name=getDefaultName();
+    this.name = getDefaultName();
   }
 
   /**

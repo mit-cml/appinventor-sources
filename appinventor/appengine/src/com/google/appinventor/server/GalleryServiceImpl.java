@@ -158,7 +158,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     final String userId = userInfoProvider.getUserId();
     // build the aia file name using the ai project name and code stolen
     // from DownloadServlet to normalize...
-    String aiaName= StringUtils.normalizeForFilename(projectName) + ".aia";
+    String aiaName = StringUtils.normalizeForFilename(projectName) + ".aia";
     // grab the data for the aia file using code from DownloadServlet
     RawFile aiaFile = null;
     try {

@@ -96,6 +96,14 @@ public interface StorageIo {
    */
   void storeSettings(String userId, String settings);
 
+  /**
+   * Stores a string with the user's name.
+   *
+   * @param userId user ID
+   * @param name user's name
+   */
+  void storeName(String userId, String name);
+
   // Project management
 
   /**
