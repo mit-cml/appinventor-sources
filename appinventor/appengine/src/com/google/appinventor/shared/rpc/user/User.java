@@ -19,6 +19,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user email address
   private String email;
 
+  private String name;
+
   // whether user has accepted terms of service
   private boolean tosAccepted;
   
@@ -44,6 +46,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.email = email;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
+    this.name=getDefaultName();
   }
 
   /**
@@ -78,6 +81,23 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    */
   public void setUserEmail(String email) {
     this.email = email;
+  }
+
+  /**
+   * Returns the user's name.
+   *
+   * @return user name
+   */
+  @Override
+  public String getUserName() {
+    return name;
+  }
+
+  /**
+   * Sets the user's name.
+   */
+  public void setUserName(String name) {
+    this.name = name;
   }
 
   /**
@@ -139,5 +159,14 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   public User copy() {
     return new User(id, email, tosAccepted, isAdmin);
+  }
+
+  private String getDefaultName() {
+    String[] parts = this.email.split("@");
+    if (parts.length>1) {
+      return parts[0];
+    } else {
+      return this.email;
+    } 
   }
 }

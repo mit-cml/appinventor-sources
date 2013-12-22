@@ -25,6 +25,13 @@ public interface UserInfoProvider {
   String getUserEmail();
 
   /**
+   * Returns the user's name.
+   *
+   * @return user email name
+   */
+  String getUserName();
+
+  /**
    * Returns the user object.
    *
    * @return user object

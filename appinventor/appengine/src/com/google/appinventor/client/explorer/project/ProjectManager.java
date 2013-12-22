@@ -142,6 +142,15 @@ public final class ProjectManager {
   }
 
   /**
+   * Handles situation when a project has been published
+   *
+   * @param projectId project ID
+   */
+  public void publishProject (){
+    fireProjectPublished();
+  }
+
+  /**
    * Adds a {@link ProjectManagerEventListener} to the listener list.
    *
    * @param listener  the {@code ProjectManagerEventListener} to be added
@@ -178,6 +187,12 @@ public final class ProjectManager {
   private void fireProjectRemoved(Project project) {
     for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
       listener.onProjectRemoved(project);
+    }
+  }
+
+  private void fireProjectPublished() {
+    for (ProjectManagerEventListener listener : copyProjectManagerEventListeners()) {
+      listener.onProjectPublished();
     }
   }
 }

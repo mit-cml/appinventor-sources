@@ -19,4 +19,8 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   @Override
   public void onProjectRemoved(Project project) {
   }
+
+  @Override
+  public void onProjectPublished() {
+  }
 }

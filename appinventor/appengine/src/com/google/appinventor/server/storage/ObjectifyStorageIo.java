@@ -234,6 +234,24 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public void setUserName(final String userId, final String name) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.name = name;
+            datastore.put(userData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+  }
+
+  @Override
   public String loadSettings(final String userId) {
     final Result<String> settings = new Result<String>();
     try {
@@ -253,6 +271,28 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return settings.t;
   }
+
+  @Override
+  public String getUserName(final String userId) {
+    final Result<String> name = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(UserData.class, userId);
+          if (userData != null) {
+            name.t = userData.name;
+          } else {
+            name.t = "unknown";
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return name.t;
+  }
+
 
   @Override
   public void storeSettings(final String userId, final String settings) {

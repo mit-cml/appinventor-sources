@@ -118,7 +118,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * Creates a new GalleryList
    */
   public GalleryList() {
-	  gallery = new GalleryClient(this);
+	  gallery = GalleryClient.getInstance();
+      gallery.addListener(this);
 	  galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
@@ -370,6 +371,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * @param requestId: determines the specific type of app data.
    */
   private void refreshApps(List<GalleryApp> apps, int requestId) {
+    OdeLog.log("#### we are now refreshing app list"+apps.size());
     switch (requestId) {
       case 1: 
         if (apps.size() < offset) {
@@ -387,6 +389,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         } else {
           appRecentExhausted = false;
         }
+        OdeLog.log("#### we are now calling generateHoriz for recent");
         galleryGF.generateHorizontalAppList(apps, appRecentContent, true); 
         break;    
       case 3: 
