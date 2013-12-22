@@ -106,6 +106,31 @@ public class CsvUtilTest extends TestCase {
     }
   }
   
+// Check that the elements are trimmed
+  public void testFromCSVRowForTrimming() throws Exception {
+   String testString =
+     "  hello   ,   there     ,    sailor     ";
+   YailList ylist = CsvUtil.fromCsvRow(testString);
+   // for a Yail list accessed at this level, the 0th element is *list* 
+   assertEquals(ylist.get(1), "hello");
+   assertEquals(ylist.get(2), "there");
+   assertEquals(ylist.get(3), "sailor");
+  }
+
+// check that all the elements of all the table rows are trimmed
+
+  public void testFromCSVTableForTrimming() throws Exception {
+   String testString =
+     "  hello   ,   there     ,    sailor  \n  got  ,  a  , match    ";
+   YailList ylist = CsvUtil.fromCsvTable(testString);
+   // check rows at the string level rather than twists java's arm into
+   // converting each row string into a list of words
+   String row1 = ylist.get(1).toString();
+   String row2 = ylist.get(2).toString();
+   assertEquals(row1, "(hello there sailor)");
+   assertEquals(row2, "(got a match)");
+  }
+
   public void testToCSVTableBasic() {
     ArrayList<YailList> list = new ArrayList<YailList>();
     for (int i = 0; i < 5; ++i) {
