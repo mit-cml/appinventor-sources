@@ -58,7 +58,6 @@ public final class ProjectListBox extends TabPanel {
     projects = new ProjectList();
     profile = new ProfilePage();
     
-//    projectToolbar = new ProjectToolbar();
     FlowPanel projectsContainer = new FlowPanel();
     FlowPanel studiosContainer = new FlowPanel();
     FlowPanel profileContainer = new FlowPanel();
@@ -70,12 +69,13 @@ public final class ProjectListBox extends TabPanel {
   
     
     this.add(projectsContainer, MESSAGES.projectListBoxCaption());
-    this.add(studiosContainer, "My Studios");
-    this.add(profileContainer, "My Profile");
+    this.add(studiosContainer, MESSAGES.studioListBoxCaption());
+    this.add(profileContainer, MESSAGES.profilePageBoxCaption());
     this.selectTab(0);
     
     // Styling options
-    this.addStyleName("ode-MyTabs");
+    this.addStyleName("gallery");
+//    this.addStyleName("ode-MyTabs");
   }
 
   /**

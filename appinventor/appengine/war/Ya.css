@@ -1285,6 +1285,7 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery-specific styles */
 /* "My Stuff" page GUI */
+/*
 .ode-MyTabs {
   width: 100%;
 }
@@ -1307,6 +1308,7 @@ textarea::-webkit-input-placeholder {
     background-color: #f7f9f2;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
+*/
 
 
 /* Gallery app collections, or app cards related styles */
@@ -1591,7 +1593,8 @@ textarea::-webkit-input-placeholder {
   display: none;
 }
 .app-header .app-action,
-.gallery-app-details .app-comments-submit {
+.gallery-app-details .app-comments-submit,
+.ode-UserProfileWrapper .profile-submit {
   display: block;
   color: #fff;
   line-height: 36px;
