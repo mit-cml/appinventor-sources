@@ -1310,11 +1310,12 @@ textarea::-webkit-input-placeholder {
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 */
-.gallery-content-card {
+
+.ode-UserProfileWrapper .gallery-content-card {
   width: 50%;
   padding: 15px;
 }
-.gallery-content-card .app-title {
+.ode-UserProfileWrapper .gallery-content-card .app-title {
   margin-bottom: 15px;
 }
 .ode-UserProfileWrapper .gallery-card {
@@ -1323,10 +1324,25 @@ textarea::-webkit-input-placeholder {
 .ode-UserProfileWrapper .gallery-card .gallery-editprompt {
   margin: -150px 0;
 }
-.ode-UserProfileWrapper .gallery-card .gallery-card-cover {
+.ode-UserProfileWrapper .gallery-card-cover {
   opacity: 0.1;
 }
-
+.ode-UserProfileWrapper .profile-textlabel {
+  width: 30%;
+  color: #999;
+  font-size: 14px;
+  display: inline-block;
+}
+.ode-UserProfileWrapper .profile-textbox {
+  display: inline-block;
+  width: 50%;
+  height: 22px;
+  font-size: 12px;
+  line-height: 100%;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+}
 
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
@@ -1607,7 +1623,7 @@ textarea::-webkit-input-placeholder {
   margin: -90px 0;
   padding: 0;
 }
-.app-header .app-image-upload {
+.app-image-upload {
   display: none;
 }
 .app-header .app-action,
