@@ -332,6 +332,18 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("My Projects")
   @Description("Caption for project list box.")
   String projectListBoxCaption();
+
+  // Used in boxes/ProjectListBox.java
+
+  @DefaultMessage("My Studios")
+  @Description("Caption for studio list box.")
+  String studioListBoxCaption();
+
+  // Used in boxes/ProjectListBox.java
+
+  @DefaultMessage("My Profile")
+  @Description("Caption for profile page box.")
+  String profilePageBoxCaption();
   
   // Used in boxes/GalleryListBox.java
 

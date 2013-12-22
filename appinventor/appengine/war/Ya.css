@@ -1285,6 +1285,7 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery-specific styles */
 /* "My Stuff" page GUI */
+/*
 .ode-MyTabs {
   width: 100%;
 }
@@ -1302,12 +1303,46 @@ textarea::-webkit-input-placeholder {
 .ode-MyTabs .gwt-TabBar .gwt-TabBarItem-selected {
   background-color: #f7f9f2;	
 }
-.ode-MyTabs .gwt-TabPanelBottom { /* GWT wrapper for the selected tab content */
+/* GWT wrapper for the selected tab content 
+.ode-MyTabs .gwt-TabPanelBottom { 
     border: 1px solid #d2d2d2;
     background-color: #f7f9f2;
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
+*/
 
+.ode-UserProfileWrapper .gallery-content-card {
+  width: 50%;
+  padding: 15px;
+}
+.ode-UserProfileWrapper .gallery-content-card .app-title {
+  margin-bottom: 15px;
+}
+.ode-UserProfileWrapper .gallery-card {
+  height: 160px;
+}
+.ode-UserProfileWrapper .gallery-card .gallery-editprompt {
+  margin: -150px 0;
+}
+.ode-UserProfileWrapper .gallery-card-cover {
+  opacity: 0.1;
+}
+.ode-UserProfileWrapper .profile-textlabel {
+  width: 30%;
+  color: #999;
+  font-size: 14px;
+  display: inline-block;
+}
+.ode-UserProfileWrapper .profile-textbox {
+  display: inline-block;
+  width: 50%;
+  height: 22px;
+  font-size: 12px;
+  line-height: 100%;
+  -webkit-border-radius: 0px;
+  -moz-border-radius: 0px;
+  border-radius: 0px;
+}
 
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
@@ -1371,10 +1406,11 @@ textarea::-webkit-input-placeholder {
   
 }
 .gallery-card {
-}
-.gallery-app-collection .gallery-card {
-  margin: 5px;
   width: 160px;
+}
+.gallery-app-collection .gallery-card,
+.gallery-content-card {
+  margin: 5px;
   float: left;
   position: relative;
   text-decoration: none;
@@ -1511,7 +1547,7 @@ textarea::-webkit-input-placeholder {
 
 /* Gallery individual app page styles */
 .gallery {
-  width: 65%;
+  width: 950px;
   margin: 0 auto;
 }
 .gallery-app-single {
@@ -1541,7 +1577,8 @@ textarea::-webkit-input-placeholder {
 .gallery-editprompt {
   text-align: center;
   color: #bebebe;
-  font-size: 16px;	
+  font-size: 16px;
+  padding: 40px 20px;
 }
 .app-info-container .gallery-editbox {
   width: 100%;
@@ -1574,6 +1611,8 @@ textarea::-webkit-input-placeholder {
 .app-header .app-image {
   width: 130px;
   height: 130px;
+}
+.app-header .status-updating {
   opacity: 0.1;
 }
 .app-header .app-image-uploadbox {
@@ -1582,12 +1621,14 @@ textarea::-webkit-input-placeholder {
 }
 .app-header .app-image-uploadprompt {
   margin: -90px 0;
+  padding: 0;
 }
-.app-header .app-image-upload {
+.app-image-upload {
   display: none;
 }
 .app-header .app-action,
-.gallery-app-details .app-comments-submit {
+.gallery-app-details .app-comments-submit,
+.ode-UserProfileWrapper .profile-submit {
   display: block;
   color: #fff;
   line-height: 36px;

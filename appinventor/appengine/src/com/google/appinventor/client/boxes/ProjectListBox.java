@@ -6,6 +6,8 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.explorer.youngandroid.ProfilePage;
 import com.google.appinventor.client.explorer.youngandroid.ProjectList;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -22,9 +24,11 @@ public final class ProjectListBox extends TabPanel {
   private static final ProjectListBox INSTANCE = new ProjectListBox();
   
   // Project list for young android
-  private final ProjectList plist;
+  private final ProjectList projects;
   
-  private ProjectToolbar projectToolbar;
+//  private ProjectToolbar projectToolbar;
+  
+  private static ProfilePage profile;
   
 
   /**
@@ -51,20 +55,27 @@ public final class ProjectListBox extends TabPanel {
         false,  // minimizable
         false); // removable
     */
-    plist = new ProjectList();
+    projects = new ProjectList();
+    profile = new ProfilePage();
     
-//    projectToolbar = new ProjectToolbar();
-    FlowPanel pContainer = new FlowPanel();
-//    pContainer.add(projectToolbar);
-    pContainer.add(plist);
-    FlowPanel sContainer = new FlowPanel();
+    FlowPanel projectsContainer = new FlowPanel();
+    FlowPanel studiosContainer = new FlowPanel();
+    FlowPanel profileContainer = new FlowPanel();
+
+//  pContainer.add(projectToolbar);
+    projectsContainer.add(projects);
+    profileContainer.add(profile);
     
-    this.add(pContainer, MESSAGES.projectListBoxCaption());
-    this.add(sContainer, "My Studios");
+  
+    
+    this.add(projectsContainer, MESSAGES.projectListBoxCaption());
+    this.add(studiosContainer, MESSAGES.studioListBoxCaption());
+    this.add(profileContainer, MESSAGES.profilePageBoxCaption());
     this.selectTab(0);
     
     // Styling options
-    this.addStyleName("ode-MyTabs");
+    this.addStyleName("gallery");
+//    this.addStyleName("ode-MyTabs");
   }
 
   /**
@@ -73,6 +84,6 @@ public final class ProjectListBox extends TabPanel {
    * @return  project list
    */
   public ProjectList getProjectList() {
-     return plist;
+     return projects;
   }
 }
