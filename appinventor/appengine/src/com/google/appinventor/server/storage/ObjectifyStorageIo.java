@@ -171,6 +171,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
           user.setUserEmail(userData.email);
+          user.setUserName(userData.name);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
         }
       });
