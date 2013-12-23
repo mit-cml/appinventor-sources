@@ -5,8 +5,14 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import java.io.IOException;
 import java.util.List;
 
+//import com.google.appengine.api.memcache.*;
+//import com.google.appengine.tools.cloudstorage.GcsFilename;
+//import com.google.appengine.tools.cloudstorage.GcsService;
+//import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
+//import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -40,7 +46,11 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ProfilePage extends Composite implements GalleryRequestListener {
+
+  
+  String GALLERYBUCKET = "galleryai2";
   String userId = "-1";  
+  
   
   public ProfilePage() {
     VerticalPanel panel = new VerticalPanel();
@@ -51,7 +61,7 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     FlowPanel appCard = new FlowPanel();
     FlowPanel majorContentCard = new FlowPanel();
     
-    Image userAvatar = new Image();
+    final Image userAvatar = new Image();
     userAvatar.setUrl("http://storage.googleapis.com/galleryai2/5201690726760448/image");
     Label imageUploadPrompt = new Label();
     imageUploadPrompt.setText("Upload your profile image!");
@@ -119,15 +129,33 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     panel.add(cardContainer);
     initWidget(panel);
     
-    
+    // Retrieve user info right after GUI is initialized
     final Ode ode = Ode.getInstance();
     final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
         // failure message
         MESSAGES.galleryError()) {
           @Override
           public void onSuccess(User user) {
+            // Set associate GUI components
             usernameBox.setText(user.getUserName());
             userId = user.getUserId();
+            /*
+            String objectName = "/user/" + userId + "/image";
+            GcsFilename filename = new GcsFilename("galleryai2", objectName);
+            try {
+              if (gcsService.getMetadata(filename) != null) {
+                // User already has an avatar image in cloud
+                userAvatar.setUrl(getCloudImageURL(userId));
+              } else {
+                // User doesn't have an avatar image in cloud
+                userAvatar.setUrl("http://galleryai2.appspot.com/images/logo.png");
+              }
+            } catch (IOException e) {
+              // TODO Auto-generated catch block
+              e.printStackTrace();
+            }
+            */
+            
           }
       };
     ode.getUserInfoService().getUserInformation(userInformationCallback);
@@ -160,7 +188,6 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
             public void onSuccess(UploadResponse uploadResponse) {
               switch (uploadResponse.getStatus()) {
               case SUCCESS:
-                OdeLog.log("SUCCESS!!! #########");
                 ErrorReporter.hide();
                 break;
               case FILE_TOO_LARGE:
@@ -210,4 +237,10 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     filename = filename.replaceAll("\\s", "");
     return filename;
   }
+  
+  public String getCloudImageURL(String userid) {
+    String url2 = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" + userid + "/image";
+    return url2;
+  }
+  
 }
