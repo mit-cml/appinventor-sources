@@ -264,7 +264,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
                 // Forge the request URL for gallery servlet
                 String uploadUrl = GWT.getModuleBaseURL() + 
-                    ServerLayout.GALLERY_SERVLET + "/" + String.valueOf(app.getGalleryAppId()) + "/"
+                    ServerLayout.GALLERY_SERVLET + "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"
                     + filename;
                 Uploader.getInstance().upload(upload, uploadUrl,
                     new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {

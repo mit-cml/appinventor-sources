@@ -19,6 +19,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user email address
   private String email;
 
+  // user display name
   private String name;
 
   // whether user has accepted terms of service

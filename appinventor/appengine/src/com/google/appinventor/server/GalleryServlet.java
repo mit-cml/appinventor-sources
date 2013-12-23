@@ -48,7 +48,8 @@ public class GalleryServlet extends OdeServlet {
 
   /*
    * URIs for upload requests are structured as follows:
-   *    /<baseurl>/gallery_servlet/galleryid/<filePath>
+   *    /<baseurl>/gallery_servlet/apps/galleryid/<filePath>
+   *    /<baseurl>/gallery_servlet/user/userid/<filePath>
    */
 
   // Constants for accessing split URI
@@ -59,8 +60,9 @@ public class GalleryServlet extends OdeServlet {
 
   // Constants used when upload kind is "file".
   // Since the file path may contain slashes, it must be the last component in the URI.
-  private static final int GALLERY_ID_INDEX = 3;
-  private static final int FILE_PATH_INDEX = 4;
+  private static final int REQUEST_TYPE_INDEX = 3;
+  private static final int GALLERY_OR_USER_ID_INDEX = 4;
+  private static final int FILE_PATH_INDEX = 5;
   
   // Logging support
   private static final Logger LOG = Logger.getLogger(UploadServlet.class.getName());
@@ -82,8 +84,18 @@ public class GalleryServlet extends OdeServlet {
     String[] uriComponents = uri.split("/");
         
     if (true) {
-      long galleryId = Long.parseLong(uriComponents[GALLERY_ID_INDEX]);
-      String fileName = uriComponents[FILE_PATH_INDEX];
+      String requestType = uriComponents[REQUEST_TYPE_INDEX];
+      LOG.info("######### GOT IN URI");
+      LOG.info(requestType);
+
+      long gallery_Id = -1;
+      String user_Id = "-1";
+      if (requestType.equalsIgnoreCase("apps")) {
+        gallery_Id = Long.parseLong(uriComponents[GALLERY_OR_USER_ID_INDEX]);
+      } else if (requestType.equalsIgnoreCase("user")) {
+        user_Id = uriComponents[GALLERY_OR_USER_ID_INDEX];
+      }
+//      String fileName = uriComponents[FILE_PATH_INDEX];
       InputStream uploadedStream;
       try {
         uploadedStream = getRequestStream(req, ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
@@ -97,7 +109,15 @@ public class GalleryServlet extends OdeServlet {
         }
         
         // Set up the cloud file (options)
-        String key = galleryId + "/image";
+        String key = "";
+        if (requestType.equalsIgnoreCase("apps")) {
+          key = "gallery/apps/" + gallery_Id + "/image";
+          LOG.info("######## THIS IS A GALLERY REQUEST");
+        } else if (requestType.equalsIgnoreCase("user")) {
+          key =  "user/" + user_Id + "/image";
+          LOG.info("######## THIS IS A USER REQUEST");
+        }
+        
         FileService fileService = FileServiceFactory.getFileService();
         
         GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
