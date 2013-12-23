@@ -59,7 +59,7 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    */
   @Override
   public void storeUserName(String name) {
-    storageIo.storeName(userInfoProvider.getUserId(), name);
+    storageIo.setUserName(userInfoProvider.getUserId(), name);
   }
 
   /**

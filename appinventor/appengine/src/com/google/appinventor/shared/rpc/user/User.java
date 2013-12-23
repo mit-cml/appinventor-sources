@@ -41,13 +41,15 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, /* String name,*/ boolean tosAccepted, boolean isAdmin) {
+  public User(String id, String email, String name, boolean tosAccepted, boolean isAdmin) {
     this.id = id;
     this.email = email;
-//    this.name = name;
+    if (name==null)
+      this.name=getDefaultName();
+    else
+      this.name=name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
-    this.name = getDefaultName();
   }
 
   /**
@@ -159,7 +161,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    return new User(id, email, tosAccepted, isAdmin);
+    return new User(id, email, name, tosAccepted, isAdmin);
   }
 
   private String getDefaultName() {

@@ -156,7 +156,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, false, false);
+      tuser = new User(userId, email, null,false, false);
     }
     final User user = tuser;
     try {
@@ -226,12 +226,14 @@ public class ObjectifyStorageIo implements  StorageIo {
           if (userData != null) {
             userData.email = email;
             datastore.put(userData);
+            
           }
         }
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+    
   }
 
   @Override
@@ -245,11 +247,18 @@ public class ObjectifyStorageIo implements  StorageIo {
             userData.name = name;
             datastore.put(userData);
           }
+          // we need to change the memcache version of user
+          User user = new User(userData.id,userData.email,name,userData.tosAccepted,
+             false);
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+
+    
   }
 
   @Override
@@ -313,28 +322,6 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
   }
-  
-
-  @Override
-  public void storeName(final String userId, final String name) {
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          UserData userData = datastore.find(userKey(userId));
-          if (userData != null) {
-            userData.name = name;
-            userData.visited = new Date(); // Indicate that this person was active now
-            datastore.put(userData);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
-    }
-  }
-  
-
   @Override
   public long createProject(final String userId, final Project project,
       final String projectSettings) {

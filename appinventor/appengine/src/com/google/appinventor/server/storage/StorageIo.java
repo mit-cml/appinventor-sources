@@ -59,11 +59,6 @@ public interface StorageIo {
    */
   void setUserEmail(String userId, String email);
 
-   /**
-   * Sets the stored name for user with id userId
-   *
-   */
-  void setUserName(String userId, String name);
 
   /**
    * Sets that the user has accepted the terms of service.
@@ -79,6 +74,14 @@ public interface StorageIo {
    * @return settings
    */
   String loadSettings(String userId);
+
+  
+
+  /**
+   * Sets the stored name for user with id userId
+   *
+   */
+  void setUserName(String userId, String name);
 
    /**
    * Returns a string with the user's name.
@@ -96,13 +99,7 @@ public interface StorageIo {
    */
   void storeSettings(String userId, String settings);
 
-  /**
-   * Stores a string with the user's name.
-   *
-   * @param userId user ID
-   * @param name user's name
-   */
-  void storeName(String userId, String name);
+ 
 
   // Project management
 
