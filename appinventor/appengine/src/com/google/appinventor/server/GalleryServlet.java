@@ -87,7 +87,14 @@ public class GalleryServlet extends OdeServlet {
       String requestType = uriComponents[REQUEST_TYPE_INDEX];
       LOG.info("######### GOT IN URI");
       LOG.info(requestType);
-      long gallery_or_user_Id = Long.parseLong(uriComponents[GALLERY_OR_USER_ID_INDEX]);
+
+      long gallery_Id = -1;
+      String user_Id = "-1";
+      if (requestType.equalsIgnoreCase("apps")) {
+        gallery_Id = Long.parseLong(uriComponents[GALLERY_OR_USER_ID_INDEX]);
+      } else if (requestType.equalsIgnoreCase("user")) {
+        user_Id = uriComponents[GALLERY_OR_USER_ID_INDEX];
+      }
 //      String fileName = uriComponents[FILE_PATH_INDEX];
       InputStream uploadedStream;
       try {
@@ -104,10 +111,10 @@ public class GalleryServlet extends OdeServlet {
         // Set up the cloud file (options)
         String key = "";
         if (requestType.equalsIgnoreCase("apps")) {
-          key = "gallery/apps/" + gallery_or_user_Id + "/image";
+          key = "gallery/apps/" + gallery_Id + "/image";
           LOG.info("######## THIS IS A GALLERY REQUEST");
         } else if (requestType.equalsIgnoreCase("user")) {
-          key =  "user/" + gallery_or_user_Id + "/image";
+          key =  "user/" + user_Id + "/image";
           LOG.info("######## THIS IS A USER REQUEST");
         }
         

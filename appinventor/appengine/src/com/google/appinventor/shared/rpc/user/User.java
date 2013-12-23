@@ -20,6 +20,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   private String email;
 
   private String name;
+  
+  private boolean hasUpdatedAvatar;
 
   // whether user has accepted terms of service
   private boolean tosAccepted;
@@ -41,10 +43,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, /* String name,*/ boolean tosAccepted, boolean isAdmin) {
+  public User(String id, String email, /* String name,*/ 
+      boolean hasUpdatedAvatar, boolean tosAccepted, boolean isAdmin) {
     this.id = id;
     this.email = email;
 //    this.name = name;
+    this.hasUpdatedAvatar = false;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
     this.name = getDefaultName();

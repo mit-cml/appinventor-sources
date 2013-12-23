@@ -57,6 +57,8 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     imageUploadPrompt.setText("Upload your profile image!");
     final FileUpload upload = new FileUpload();
     upload.addStyleName("app-image-upload");
+    // Set the correct handler for servlet side capture
+    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
     
     FocusPanel appCardWrapper = new FocusPanel();
     appCardWrapper.addClickHandler(new ClickHandler() {
@@ -148,9 +150,10 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
         // 4. see if a new image has been uploaded and if so get it in the cloud
         String uploadFilename = upload.getFilename();
         if (!uploadFilename.isEmpty()) {
+          String filename = makeValidFilename(uploadFilename);
        // Forge the request URL for gallery servlet
           String uploadUrl = GWT.getModuleBaseURL() + 
-              ServerLayout.GALLERY_SERVLET + "/apps/" + userId + "/" + uploadFilename;
+              ServerLayout.GALLERY_SERVLET + "/user/" + userId + "/" + filename;
           Uploader.getInstance().upload(upload, uploadUrl,
               new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
             @Override
@@ -197,5 +200,14 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     // TODO Auto-generated method stub
     
   }
-
+  
+  private String makeValidFilename(String uploadFilename) {
+    // Strip leading path off filename.
+    // We need to support both Unix ('/') and Windows ('\\') separators.
+    String filename = uploadFilename.substring(
+        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    // We need to strip out whitespace from the filename.
+    filename = filename.replaceAll("\\s", "");
+    return filename;
+  }
 }
