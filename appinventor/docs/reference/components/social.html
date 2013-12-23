@@ -1,3 +1,4 @@
+
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab"><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta charset="utf-8">
     <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
@@ -704,48 +705,20 @@
                       EmailPicker
                     </h2>
                     <img alt="" src="images/emailpicker.png" />
-                    <p>
-                      Use an email picker component to let the user enter a user's email address from the
-                      Android contact list.
-                    </p>
-                    <p>
-                      An email picker is a text box in which a user can begin entering an email address
-                      of a contact and be offered auto-completion. The initial value of the box and the
-                      value after user entry is in the
-                      <code>
-                        Text
-                      </code>
-                      property. If the
-                      <code>
-                        Text
-                      </code>
-                      property is initially empty, the contents of the
-                      <code>
-                        Hint
-                      </code>
-                      property will be faintly shown in the text box as a hint to the
-                      user.
-                    </p>
-                    <p>
-                      Other properties affect the appearance of the email picker (including
-                      <code>
-                        TextAlignment
-                      </code>
-                      and
-                      <code>
-                        BackgroundColor
-                      </code>
-                      ) and whether it can be
-                      used (
-                      <code>
-                        Enabled
-                      </code>
-                      ).
-                    </p>
-                    <p>
-                      Email pickers are usually used with a button. The user taps the button when text
-                      entry is complete.
-                    </p>
+                    <p>An EmailPicker is a kind of text box.  If the user begins entering the name
+                   or email address of a contact, the phone will show a dropdown menu of choices
+                   that complete the entry.  If there are
+                   many contacts, the dropdown can take several seconds to appear, and
+                   can show intermediate results while the matches are being
+                   computed.<p>The initial contents of the text box and the contents after user
+                   entry is in the <code>Text</code> property.  If the <code>Text</code>
+                   property is initially empty, the contents of the <code>Hint</code>
+                   property will be faintly shown in the text box as a hint to the
+                   user.</p> <p>Other properties affect the appearance of the text box
+                   (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and
+                   whether it can be used (<code>Enabled</code>).</p><p>Text boxes like
+                   this are usually used with <code>Button</code> components, with the
+                   user clicking on the button when text entry is complete.</p></p>
                     <h3>
                       Properties
                     </h3>

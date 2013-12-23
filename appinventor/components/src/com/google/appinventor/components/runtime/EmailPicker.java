@@ -22,14 +22,15 @@ import android.widget.AutoCompleteTextView;
  * @author sharon@google.com (Sharon Perl)
  */
 
+
 @DesignerComponent(version = YaVersion.EMAILPICKER_COMPONENT_VERSION,
-    description = "<p>A text box in which a user can begin entering a name or email " +
-    "address of a contact and be offered auto-completion in the form of a dropdown of " +
-    "choices from the which to select a result.  If there are many contacts, the " +
+    description = "<p>An EmailPicker is a kind of text box.  " +
+    "If the user begins entering the name " +
+    "or email address of a contact, the phone will show a dropdown menu of " +
+    "choices that complete the entry.  If there are many contacts, the " +
     "dropdown can take several seconds to appear, and can show intermediate results " +
-    "while the matching contacts are being computed." +
-    "<p>The initial value " +
-    "of the text box and the value after user entry is in the <code>Text</code> " +
+    "while the matches are being computed. <p>The initial contents " +
+    "of the text box and the contents< after user entry is in the <code>Text</code> " +
     "property.  If the <code>Text</code> property is initially empty, " +
     "the contents of the <code>Hint</code> property will be faintly shown " +
     "in the text box as a hint to the user.</p> " +
