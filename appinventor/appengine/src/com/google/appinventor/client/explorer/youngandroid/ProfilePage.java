@@ -18,6 +18,7 @@ import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
@@ -67,11 +68,11 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     userContentTitle.setText("Edit your profile");
     Label usernameLabel = new Label();
     usernameLabel.setText("Your display name");
-    TextBox usernameBox = new TextBox();
+    final TextBox usernameBox = new TextBox();
 
     Label userLocationLabel = new Label();
-    userLocationLabel.setText("Your another datafield");
-    TextBox userLocationBox = new TextBox();
+    userLocationLabel.setText("Your another data");
+    final TextBox userLocationBox = new TextBox();
 
     
     Button userProfileEditSubmit = new Button();
@@ -112,6 +113,38 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     
     panel.add(cardContainer);
     initWidget(panel);
+    
+    
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(User user) {
+            usernameBox.setText(user.getUserName());
+          }
+      };
+    ode.getUserInfoService().getUserInformation(userInformationCallback);
+    
+    
+    
+    
+    
+    userProfileEditSubmit.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {  
+        final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void arg0) {
+                userLocationBox.setText("YOU CHANGED THE NAME");
+              }
+          };
+        ode.getUserInfoService().storeUserName(usernameBox.getText(), userUpdateCallback);
+      }
+    });
+    
   }
   
   

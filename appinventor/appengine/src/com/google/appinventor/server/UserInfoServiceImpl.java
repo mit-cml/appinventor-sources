@@ -54,6 +54,15 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
+   * Stores the user's name.
+   * @param name  user's name
+   */
+  @Override
+  public void storeUserName(String name) {
+    storageIo.storeName(userInfoProvider.getUserId(), name);
+  }
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   @Override

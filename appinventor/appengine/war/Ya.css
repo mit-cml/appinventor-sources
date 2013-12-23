@@ -1331,6 +1331,7 @@ textarea::-webkit-input-placeholder {
   width: 30%;
   color: #999;
   font-size: 14px;
+  margin-bottom: 20px;
   display: inline-block;
 }
 .ode-UserProfileWrapper .profile-textbox {

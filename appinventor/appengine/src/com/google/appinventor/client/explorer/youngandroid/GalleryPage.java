@@ -297,7 +297,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
               }
               // tell the galleryclient to modify its list of most recent apps.
               // galleryPage listens, so it will update
-              OdeLog.log("#### we published and are calling gallery client to update");
+//              OdeLog.log("#### we published and are calling gallery client to update");
               gallery.GetMostRecent(0,5);
               // tell the project list to change project's button to "Update"
               Ode.getInstance().getProjectManager().publishProject();
