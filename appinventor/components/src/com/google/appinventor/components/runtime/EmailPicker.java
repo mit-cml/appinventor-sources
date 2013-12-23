@@ -23,17 +23,21 @@ import android.widget.AutoCompleteTextView;
  */
 
 @DesignerComponent(version = YaVersion.EMAILPICKER_COMPONENT_VERSION,
-    description = "<p>A text box in which a user can begin entering an email " +
-    "address of a contact and be offered auto-completion.  The initial value " +
-    "of the box and the value after user entry is in the <code>Text</code> " +
+    description = "<p>A text box in which a user can begin entering a name or email " +
+    "address of a contact and be offered auto-completion in the form of a dropdown of " +
+    "choices from the which to select a result.  If there are many contacts, the " +
+    "dropdown can take several seconds to appear, and can show intermediate results " +
+    "while the matching contacts are being computed." +
+    "<p>The initial value " +
+    "of the text box and the value after user entry is in the <code>Text</code> " +
     "property.  If the <code>Text</code> property is initially empty, " +
     "the contents of the <code>Hint</code> property will be faintly shown " +
     "in the text box as a hint to the user.</p> " +
     "<p>Other properties affect the appearance of the text box " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
     "whether it can be used (<code>Enabled</code>).</p>" +
-    "<p>Text boxes are usually used with the <code>Button</code> " +
-    "component, with the user clicking on the button when text entry is " +
+    "<p>Text boxes like this are usually used with <code>Button</code> " +
+    "components, with the user clicking on the button when text entry is " +
     "complete.</p>",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
@@ -60,10 +64,17 @@ public class EmailPicker extends TextBoxBase {
   @SimpleEvent
   @Override
   public void GotFocus() {
-    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
-      container.$form().dispatchErrorOccurredEvent(this, "GotFocus",
-          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER);
-    }
+
+//     Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
+//     deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
+//     If there's a phone where it does not work, we'll get the error at PuntContactSelection
+//     Note that there is still a general problem with contact picking on Motoblur.
+//
+//    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
+//      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
+//          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER);
+//    }
+
     EventDispatcher.dispatchEvent(this, "GotFocus");
   }
 }

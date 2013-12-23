@@ -102,14 +102,17 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public String EmailAddress() {
-    // Note(halabelson):  I am commenting out this error message.   Email picking seems to
-    // work on newer versions of the SDK. If we do have a phone where email picking fails, then
-    // in this version of the picker, we'll just go to PuntContactSelection.  Note that there
-    // is still a general problem with contact picking on Motoblur.
-//    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
-//      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
-//          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL);
-//    }
+    // TODO(halabelson): Update this code to stop using android.provider.contacts and swith
+    // to android.provider.ContactContracts
+
+    // Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
+    // deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
+    // If there's a phone where it does not work, we'll get the error at PuntContactSelection
+    // Note that there is still a general problem with contact picking on Motoblur.
+    //    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
+    //      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
+    //          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL);
+    //    }
     return ensureNotNull(emailAddress);
   }
 
