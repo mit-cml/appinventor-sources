@@ -13,6 +13,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
@@ -24,6 +25,7 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -38,7 +40,8 @@ import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public class ProfilePage extends Composite implements GalleryRequestListener {
-
+  String userId = "-1";  
+  
   public ProfilePage() {
     VerticalPanel panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -122,10 +125,10 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
           @Override
           public void onSuccess(User user) {
             usernameBox.setText(user.getUserName());
+            userId = user.getUserId();
           }
       };
     ode.getUserInfoService().getUserInformation(userInformationCallback);
-    
     
     
     
@@ -138,10 +141,39 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
             MESSAGES.galleryError()) {
               @Override
               public void onSuccess(Void arg0) {
-                userLocationBox.setText("YOU CHANGED THE NAME");
               }
           };
         ode.getUserInfoService().storeUserName(usernameBox.getText(), userUpdateCallback);
+        
+        // 4. see if a new image has been uploaded and if so get it in the cloud
+        String uploadFilename = upload.getFilename();
+        if (!uploadFilename.isEmpty()) {
+       // Forge the request URL for gallery servlet
+          String uploadUrl = GWT.getModuleBaseURL() + 
+              ServerLayout.GALLERY_SERVLET + "/apps/" + userId + "/" + uploadFilename;
+          Uploader.getInstance().upload(upload, uploadUrl,
+              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+            @Override
+            public void onSuccess(UploadResponse uploadResponse) {
+              switch (uploadResponse.getStatus()) {
+              case SUCCESS:
+                OdeLog.log("SUCCESS!!! #########");
+                ErrorReporter.hide();
+                break;
+              case FILE_TOO_LARGE:
+                // The user can resolve the problem by
+                // uploading a smaller file.
+                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+                break;
+              default:
+                ErrorReporter.reportError(MESSAGES.fileUploadError());
+                break;
+              }
+            }
+          });
+          
+        }
+        
       }
     });
     
