@@ -24,7 +24,7 @@ import android.widget.AutoCompleteTextView;
 
 
 @DesignerComponent(version = YaVersion.EMAILPICKER_COMPONENT_VERSION,
-    description = "<p>An EmailPicker is a kind of text box.  " +
+    description = "An EmailPicker is a kind of text box.  " +
     "If the user begins entering the name " +
     "or email address of a contact, the phone will show a dropdown menu of " +
     "choices that complete the entry.  If there are many contacts, the " +
@@ -33,13 +33,13 @@ import android.widget.AutoCompleteTextView;
     "of the text box and the contents< after user entry is in the <code>Text</code> " +
     "property.  If the <code>Text</code> property is initially empty, " +
     "the contents of the <code>Hint</code> property will be faintly shown " +
-    "in the text box as a hint to the user.</p> " +
+    "in the text box as a hint to the user.</p>\n " +
     "<p>Other properties affect the appearance of the text box " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-    "whether it can be used (<code>Enabled</code>).</p>" +
+    "whether it can be used (<code>Enabled</code>).</p>\n" +
     "<p>Text boxes like this are usually used with <code>Button</code> " +
     "components, with the user clicking on the button when text entry is " +
-    "complete.</p>",
+    "complete.",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")

@@ -46,22 +46,22 @@ import java.util.Queue;
  */
 // TODO(user): ideas - event for knocking
 @DesignerComponent(version = YaVersion.ACCELEROMETERSENSOR_COMPONENT_VERSION,
-    description = "<p>Non-visible component that can detect shaking and " +
+    description = "Non-visible component that can detect shaking and " +
     "measure acceleration approximately in three dimensions using SI units " +
-    "(m/s<sup>2</sup>).  The components are: <ul>" +
+    "(m/s<sup>2</sup>).  The components are: <ul>\n" +
     "<li> <strong>xAccel</strong>: 0 when the phone is at rest on a flat " +
     "     surface, positive when the phone is tilted to the right (i.e., " +
     "     its left side is raised), and negative when the phone is tilted " +
-    "     to the left (i.e., its right size is raised).</li> " +
+    "     to the left (i.e., its right size is raised).</li>\n " +
     "<li> <strong>yAccel</strong>: 0 when the phone is at rest on a flat " +
     "     surface, positive when its bottom is raised, and negative when " +
-    "     its top is raised. </li> " +
+    "     its top is raised. </li>\n " +
     "<li> <strong>zAccel</strong>: Equal to -9.8 (earth's gravity in meters per " +
     "     second per second when the device is at rest parallel to the ground " +
     "     with the display facing up, " +
     "     0 when perpindicular to the ground, and +9.8 when facing down.  " +
     "     The value can also be affected by accelerating it with or against " +
-    "     gravity. </li></ul></p> ",
+    "     gravity. </li></ul>",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/accelerometersensor.png")
@@ -69,7 +69,7 @@ import java.util.Queue;
 public class AccelerometerSensor extends AndroidNonvisibleComponent
     implements OnStopListener, OnResumeListener, SensorComponent, SensorEventListener, Deleteable {
 
-  // Shake thresholds - derived by trial 
+  // Shake thresholds - derived by trial
   private static final double weakShakeThreshold = 5.0;
   private static final double moderateShakeThreshold = 13.0;
   private static final double strongShakeThreshold = 20.0;
@@ -94,10 +94,10 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
 
   // Indicates whether the accelerometer should generate events
   private boolean enabled;
-  
+
   //Specifies the minimum time interval between calls to Shaking()
   private int minimumInterval;
-  
+
   //Specifies the time when Shaking() was last called
   private long timeLastShook;
 
@@ -135,7 +135,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
   public int MinimumInterval() {
     return minimumInterval;
   }
-  
+
   /**
    * Specifies the minimum interval required between calls to Shaking(),
    * in milliseconds.
@@ -200,7 +200,7 @@ public class AccelerometerSensor extends AndroidNonvisibleComponent
     addToSensorCache(X_CACHE, xAccel);
     addToSensorCache(Y_CACHE, yAccel);
     addToSensorCache(Z_CACHE, zAccel);
-    
+
     long currentTime = System.currentTimeMillis();
 
     //Checks whether the phone is shaking and the minimum interval

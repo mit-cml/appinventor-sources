@@ -28,21 +28,21 @@ import android.util.Log;
  * @author markf@google.com (Mark Friedman)
  */
 @DesignerComponent(version = YaVersion.CONTACTPICKER_COMPONENT_VERSION,
-    description = "<p>A button that, when clicked on, displays a list of " +
+    description = "A button that, when clicked on, displays a list of " +
     "the contacts to choose among. After the user has made a " +
     "selection, the following properties will be set to information about " +
-    "the chosen contact: <ul>" +
-    "<li> <code>ContactName</code>: the contact's name </li> "  +
-    "<li> <code>EmailAddress</code>: the contact's primary email address </li> " +
+    "the chosen contact: <ul>\n" +
+    "<li> <code>ContactName</code>: the contact's name </li>\n "  +
+    "<li> <code>EmailAddress</code>: the contact's primary email address </li>\n " +
     "<li> <code>Picture</code>: the name of the file containing the contact's " +
     "image, which can be used as a <code>Picture</code> property value for " +
-    "the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>" +
+    "the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n" +
     "</p><p>Other properties affect the appearance of the button " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-    "whether it can be clicked on (<code>Enabled</code>).</p>" +
+    "whether it can be clicked on (<code>Enabled</code>).\n</p>" +
     "<p>Picking is not supported on all phones.  If it fails, this component will " +
     "show a notification.  The error behavior can be overridden with the " +
-    "Screen.ErrorOccurred event handler.</p>",
+    "Screen.ErrorOccurred event handler.",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")

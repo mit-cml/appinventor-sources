@@ -1,26 +1,26 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:dc="http://purl.org/dc/terms/" xmlns:foaf="http://xmlns.com/foaf/0.1/" xmlns:og="http://ogp.me/ns#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:sioc="http://rdfs.org/sioc/ns#" xmlns:sioct="http://rdfs.org/sioc/types#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" class="js"><head profile="http://www.w3.org/1999/xhtml/vocab">
-  
+
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  
+
   <meta charset="utf-8">
 
-  
+
   <meta about="/front_page" property="sioc:num_replies" content="0" datatype="xsd:integer">
 
-  
+
   <meta content="Front Page" about="/front_page" property="dc:title">
 
-  
+
   <meta name="Generator" content="Drupal 7 (http://drupal.org)">
 
 <!-- Title ----------------------- -->
   <title>Storage - App Inventor for Android</title>
 
-  
+
 <!-- Title ----------------------- -->
-  
+
   <style>
       body{
       background: url("http://ai2.appinventor.mit.edu/images/squairy_light.png") repeat scroll center top;
@@ -549,60 +549,32 @@ csv table" or "list from csv row" blocks. </dd>
   <dd> Discards the user's account name, forcing them to
 re-authenticate when accessing a Fusion Table. </dd>
 </dl>
-<h2 id="TinyDB"> TinyDB </h2>
-<img alt="Picture of TinyDB component" src="images/tinydb.png">
-<p> Use a TinyDB component to store data that will be available each
-time the app runs. </p>
-<p> TinyDB is a non-visible component. </p>
-<p> Apps created with App Inventor are initialized each time they run.
-If an app sets the value of a variable and the user then quits the app,
-the value of that variable will not be remembered the next time the app
-is run. TinyDB is a <em> persistent </em> data store for the app,
-that is, the data stored there will be available each time the app is
-run. An example might be a game that saved the high score, and
-retrieved it each time the game is played. </p>
-<p> Data items are stored under <em> tags </em> . To store a data
-item, you specify the tag it should be stored under. Subsequently, you
-can retrieve the data item that was stored under a given tag. If there
-is no value stored under a tag, then the value returned is the empty
-text. Consequently, to see if a tag has a value stored under it, test
-whether the return value is equal to the empty text (i.e., a text box
-with no text filled in). </p>
-<p> There is only one data store per app. If you have multiple TinyDB
-components, they will use the same data store. To get the effect of
-separate stores, use different keys. Also each app has its own data
-store. You cannot use TinyDB to pass data between two different apps on
-the phone. </p>
-<h3> Properties </h3>
+
+<h2 id="TinyDB">TinyDB</h2>
+
+<p>TinyDB is a non-visible component that stores data for an app. <p> Apps created with App Inventor are initialized each time they run: If an app sets the value of a variable and the user then quits the app, the value of that variable will not be remembered the next time the app is run. In contrast, TinyDB is a <em> persistent </em> data store for the app, that is, the data stored there will be available each time the app is run. An example might be a game that saves the high score and retrieves it each time the game is played. </<p> <p> Data items are strings stored under <em>tags</em> . To store a data item, you specify the tag it should be stored under.  Subsequently, you can retrieve the data that was stored under a given tag. </p><p> There is only one data store per app. Even if you have multiple TinyDB components, they will use the same data store. To get the effect of separate stores, use different keys. Also each app has its own data store. You cannot use TinyDB to pass data between two different apps on the phone, although you <em>can</em> use TinyDb to shares data between the different screens of a multi-screen app. </p> <p>When you are developing apps using the AI Companion, all the apps using that companion will share the same TinyDb.  That sharing will disappear once the apps are packaged.  But, during development, you should be careful to clear the TinyDb each time you start working on a new app.</p></p>
+
+<h3>Properties</h3>
 none
-<h3> Events </h3>
+
+<h3>Events</h3>
 none
-<h3> Methods </h3>
+
+<h3>Methods</h3>
 <dl>
   <dt><code>ClearAll()</code></dt>
   <dd>Clear the entire data store</dd>
   <dt><code>ClearTag(text tag)</code></dt>
-  <dd>Clear entry with given tag</dd>
+  <dd>Clear the entry with the given tag</dd>
   <dt><code>any GetTags()</code></dt>
-  <dd>Get all the tags in the data store</dd>
-  <dt> <code> GetValue(text tag) </code> </dt>
-  <dd> Gets the value that was stored under the given tag. If no value
-  <dt> <code> StoreValue(text tag, valueToStore) </code> </dt>
-  <dd> Store the value under the given tag. The <code> tag </code>
-must be a text string; the value can be a string or a list. </dd>
-was stored, returns the empty text. </dd>
+  <dd>Return a list of all the tags in the data store</dd>
+  <dt><code>any GetValue(text tag, any valueIfTagNotThere)</code></dt>
+  <dd>Retrieve the value stored under the given tag.  If there's no such tag, then return valueIfTagNotThere.</dd>
+  <dt><code>StoreValue(text tag, any valueToStore)</code></dt>
+  <dd>Store the given value under the given tag.  The storage persists on the
+ phone when the app is restarted.</dd>
 </dl>
-<blockquote class="notice">
-  <p> To clear out the data base for an app, go on the phone under
-Settings &rarr; Applications &rarr; Manage Applications, the pick the
-app, and press "Clear Data". </p>
-  <p> The data in TinyDB is persistent only when you have packaged and
-downloading your app. If you are developing connected to the phone, and
-you restart the Appinventor application, or if you disconnect and
-reconnect the phone, then the data base will start fresh. This is a
-case where the application is not merely being stopped and restarted;
-it is being removed from the phone and then reloaded. </p>
-</blockquote>
+
 <h2 id="TinyWebDB"> TinyWebDB </h2>
 <img alt="Picture of Tiny Web Database component" src="images/tinywebdb.png">
 <p> Non-visible component that communicates with a Web service to store
