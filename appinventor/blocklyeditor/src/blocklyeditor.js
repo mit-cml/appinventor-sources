@@ -132,6 +132,9 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
         if (window.parent.BlocklyPanel_blocklyWorkspaceChanged){
           window.parent.BlocklyPanel_blocklyWorkspaceChanged(Blockly.BlocklyEditor.formName);
         }
+        // [lyn 12/31/2103] Check for duplicate component event handlers before
+        // running any error handlers to avoid quadratic time behavior.
+        Blockly.WarningHandler.determineDuplicateComponentEventHandlers();
   });
 };
 
