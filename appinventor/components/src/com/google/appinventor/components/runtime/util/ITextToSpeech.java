@@ -50,4 +50,11 @@ public interface ITextToSpeech {
    */
   public void onResume();
 
+
+  /**
+   * This will be called when the Activity is destroyed, to give us a chance to cleanup resources,
+   * if necessary.
+   */
+  public void onDestroy();
+
 }
