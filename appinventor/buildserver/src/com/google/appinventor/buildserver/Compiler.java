@@ -790,7 +790,7 @@ public final class Compiler {
       long start = System.currentTimeMillis();
       // Capture Kawa compiler stderr. The ODE server parses out the warnings and errors and adds
       // them to the protocol buffer for logging purposes. (See
-      // YoungAndroidProjectBuilder.processCompilerOutout.
+      // buildserver/ProjectBuilder.processCompilerOutout.
       ByteArrayOutputStream kawaOutputStream = new ByteArrayOutputStream();
       boolean kawaSuccess;
       synchronized (SYNC_KAWA_OR_DX) {

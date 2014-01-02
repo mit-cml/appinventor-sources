@@ -1254,4 +1254,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reset Connection")
   @Description("Reset all connections.")
   String resetConnections();
+
+  // This error message is displayed as HTML
+  @DefaultMessage("App Inventor is unable to compile this project.  " +
+  "<br /> The compiler error output was <br /> {0}.")
+  @Description("Compilation error, with error message.")
+  String unableToCompile(String errorMesssage);
+
 }
