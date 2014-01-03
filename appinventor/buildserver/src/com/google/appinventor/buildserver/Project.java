@@ -66,6 +66,7 @@ public final class Project {
    *    icon - application icon
    *    versioncode - version code
    *    versionname - version name
+   *    theme - app theme
    *    source - comma separated list of source root directories
    *    assets - assets directory (for image and data files bundled with the application)
    *    build - output directory for the compiler
@@ -76,6 +77,7 @@ public final class Project {
   private static final String SOURCETAG = "source";
   private static final String VCODETAG = "versioncode";
   private static final String VNAMETAG = "versionname";
+  private static final String THEMETAG = "theme";
   private static final String ASSETSTAG = "assets";
   private static final String BUILDTAG = "build";
   private static final String USESLOCATIONTAG = "useslocation";
@@ -229,7 +231,25 @@ public final class Project {
   }
 
   /**
-   * gets the useslocation property
+   * Returns the app theme.
+   *
+   * @return  app theme
+   */
+  public String getTheme() {
+    return properties.getProperty(THEMETAG);
+  }
+
+  /**
+   * Sets the app theme.
+   *
+   * @param theme app theme
+   */
+  public void setTheme(String theme) {
+    properties.setProperty(THEMETAG, theme);
+  }
+
+  /**
+   * Returns the useslocation property
    *
    * @return useslocation property
    */

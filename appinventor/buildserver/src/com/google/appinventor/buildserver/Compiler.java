@@ -92,6 +92,7 @@ public final class Compiler {
 
   private static final String DEFAULT_VERSION_CODE = "1";
   private static final String DEFAULT_VERSION_NAME = "1.0";
+  private static final String DEFAULT_THEME = "Theme";
 
   private static final String COMPONENT_BUILD_INFO =
       RUNTIME_FILES_DIR + "simple_components_build_info.json";
@@ -304,22 +305,19 @@ public final class Compiler {
     String projectName = project.getProjectName();
     String vCode = (project.getVCode() == null) ? DEFAULT_VERSION_CODE : project.getVCode();
     String vName = (project.getVName() == null) ? DEFAULT_VERSION_NAME : project.getVName();
+    String theme = (project.getTheme() == null) ? DEFAULT_THEME : project.getTheme();
     LOG.log(Level.INFO, "VCode: " + project.getVCode());
     LOG.log(Level.INFO, "VName: " + project.getVName());
+    LOG.log(Level.INFO, "Theme: " + project.getTheme());
 
     // TODO(user): Use com.google.common.xml.XmlWriter
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-      // TODO(markf) Allow users to set versionCode and versionName attributes.
-      // See http://developer.android.com/guide/publishing/publishing.html for
-      // more info.
       out.write("<manifest " +
           "xmlns:android=\"http://schemas.android.com/apk/res/android\" " +
           "package=\"" + packageName + "\" " +
-          // TODO(markf): uncomment the following line when we're ready to enable publishing to the
-          // Android Market.
-         "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
+          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
 
       // If we are building the Wireless Debugger (AppInventorDebugger) add the uses-feature tag which
@@ -369,6 +367,7 @@ public final class Compiler {
       out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
+      out.write("android:theme=\"@android:style/\"" + theme + "\" ");
       if (isForWireless) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       }

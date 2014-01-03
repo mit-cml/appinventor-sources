@@ -170,6 +170,12 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_VISIBILITY = "visibility";
 
   /**
+   * Choices of app theme offered by {@link
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidThemeChoicePropertyEditor}.
+   */
+  public static final String PROPERTY_TYPE_THEME = "theme";
+
+  /**
    * Choices of Text Receiving options. {@link
    * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor}.
    */

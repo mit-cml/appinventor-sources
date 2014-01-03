@@ -728,6 +728,20 @@ public interface OdeMessages extends Messages {
   @Description("Show toast for a Toast_Long of time")
   String longToastLength();
 
+  // Used in editor/youngandroid/properties/YoungAndroidThemeChoicePropertyEditor.java
+
+  @DefaultMessage("Theme")
+  @Description("Text for theme choice 'Theme '")
+  String defaultTheme();
+
+  @DefaultMessage("Theme.NoTitleBar")
+  @Description("Text for theme choice 'Theme.NoTitleBar '")
+  String noTitleBarTheme();
+
+  @DefaultMessage("Theme.NoTitleBar.Fullscreen")
+  @Description("Text for theme choice 'Theme.NoTitleBar.Fullscreen '")
+  String fullscreenTheme();
+
   // Used in explorer/SourceStructureExplorer.java
 
   @DefaultMessage("Rename")

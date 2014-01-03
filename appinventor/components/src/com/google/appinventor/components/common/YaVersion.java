@@ -235,8 +235,10 @@ public class YaVersion {
   // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 82:
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3;
+  // For YOUNG_ANDROID_VERSION 83:
+  // - FORM_COMPONENT_VERSION was incremented to 12;
 
-    public static final int YOUNG_ANDROID_VERSION = 82;
+    public static final int YOUNG_ANDROID_VERSION = 83;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -429,7 +431,9 @@ public class YaVersion {
   // - The BackPressed event was added.
   // For FORM_COMPONENT_VERSION 11:
   // - OpenScreenAnimation and CloseScreenAnimation are now properties.
-  public static final int FORM_COMPONENT_VERSION = 11;
+  // For FORM_COMPONENT_VERSION 12:
+  // - The Theme property was added
+  public static final int FORM_COMPONENT_VERSION = 12;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
