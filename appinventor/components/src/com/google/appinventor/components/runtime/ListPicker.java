@@ -47,12 +47,15 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_RESULT_INDEX = LIST_ACTIVITY_CLASS + ".index";
   static final String LIST_ACTIVITY_ANIM_TYPE = LIST_ACTIVITY_CLASS + ".anim";
   static final String LIST_ACTIVITY_SHOW_SEARCH_BAR = LIST_ACTIVITY_CLASS + ".search";
+  static final String LIST_ACTIVITY_TITLE = LIST_ACTIVITY_CLASS + ".title";
 
   private YailList items;
   private String selection;
   private int selectionIndex;
   private boolean showFilter =false;
   private static final boolean DEFAULT_ENABLED = false;
+  private String title = "";    // The Title to display the List Picker with
+                                // if left blank, the App Name is used instead
 
   /**
    * Create a new ListPicker component.
@@ -192,12 +195,38 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     }
   }
 
+  /**
+   * Title property getter method.
+   *
+   * @return  list picker caption
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  public String Title() {
+    return title;
+  }
+
+  /**
+   * Title property setter method: sets a new caption for the list picker in the
+   * list picker activity's title bar.
+   *
+   * @param title  new list picker caption
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty
+  public void Title(String title) {
+    this.title = title;
+  }
+
   @Override
   public Intent getIntent() {
     Intent intent = new Intent();
     intent.setClassName(container.$context(), LIST_ACTIVITY_CLASS);
     intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toStringArray());
     intent.putExtra(LIST_ACTIVITY_SHOW_SEARCH_BAR, String.valueOf(showFilter)); //convert to string
+    if (!title.equals("")) {
+      intent.putExtra(LIST_ACTIVITY_TITLE, title);
+    }
     // Get the current Form's opening transition anim type,
     // and pass it to the list picker activity. For consistency,
     // the closing animation will be the same (but in reverse)

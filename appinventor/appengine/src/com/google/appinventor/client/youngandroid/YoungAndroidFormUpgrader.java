@@ -767,6 +767,10 @@ public final class YoungAndroidFormUpgrader {
       //  Added ShowFilterBar property
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      //  Added title property
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 

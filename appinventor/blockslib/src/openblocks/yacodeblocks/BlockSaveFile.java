@@ -957,6 +957,10 @@ public class BlockSaveFile {
       // Added ShowFilterBar property
       blkCompVersion = 7;
     }
+    if (blkCompVersion < 8) {
+      // Added title property
+      blkCompVersion = 8;
+    }
     return blkCompVersion;
   }
 
