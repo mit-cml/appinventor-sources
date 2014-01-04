@@ -16,9 +16,9 @@ import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
   // Theme choices
   private static final Choice[] themes = new Choice[] {
-    new Choice(MESSAGES.defaultTheme(), "default"),
-    new Choice(MESSAGES.noTitleBarTheme() , "notitlebar"),
-    new Choice(MESSAGES.fullscreenTheme(), "fullscreen"),
+    new Choice(MESSAGES.defaultTheme(), "Theme"),
+    new Choice(MESSAGES.noTitleBarTheme() , "Theme.NoTitleBar"),
+    new Choice(MESSAGES.fullscreenTheme(), "Theme.NoTitleBar.Fullscreen"),
   };
 
   public YoungAndroidThemeChoicePropertyEditor() {

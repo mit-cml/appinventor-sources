@@ -367,7 +367,7 @@ public final class Compiler {
       out.write("android:debuggable=\"false\" ");
       out.write("android:label=\"" + projectName + "\" ");
       out.write("android:icon=\"@drawable/ya\" ");
-      out.write("android:theme=\"@android:style/\"" + theme + "\" ");
+      out.write("android:theme=\"@android:style/" + theme + "\" ");
       if (isForWireless) {              // This is to hook into ACRA
         out.write("android:name=\"com.google.appinventor.components.runtime.ReplApplication\" ");
       }
