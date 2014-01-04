@@ -835,6 +835,11 @@ public class BlockSaveFile {
       }
       blkCompVersion = 11;
     }
+    if (blkCompVersion < 12) {
+      // The Theme property was added. No properties need to be modified
+      // to update to version 12.
+      blkCompVersion = 12;
+    }
     return blkCompVersion;
   }
 
@@ -956,6 +961,10 @@ public class BlockSaveFile {
     if (blkCompVersion < 7) {
       // Added ShowFilterBar property
       blkCompVersion = 7;
+    }
+    if (blkCompVersion < 8) {
+      // Added title property
+      blkCompVersion = 8;
     }
     return blkCompVersion;
   }

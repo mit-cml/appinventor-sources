@@ -630,7 +630,6 @@ public final class YoungAndroidFormUpgrader {
       // to update to version 7.
       srcCompVersion = 7;
     }
-
     if (srcCompVersion < 8) {
       // The AlignHorizontal and AlignVertical properties were added. No blocks need to be modified
       // to upgrade to version 8.
@@ -649,6 +648,12 @@ public final class YoungAndroidFormUpgrader {
       // OpenScreenAnimation and CloseScreenAnimation are now properties.
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // The Theme property was added. No properties need to be modified
+      // to update to version 12.
+      srcCompVersion = 12;
+    }
+
     return srcCompVersion;
   }
 
@@ -766,6 +771,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 7) {
       //  Added ShowFilterBar property
       srcCompVersion = 7;
+    }
+    if (srcCompVersion < 8) {
+      //  Added title property
+      srcCompVersion = 8;
     }
     return srcCompVersion;
   }

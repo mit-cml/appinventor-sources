@@ -970,6 +970,18 @@ public class Form extends Activity
   }
 
   /**
+   * Specifies the Theme.
+   *
+   * @param theme the theme of the application
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_THEME,
+      defaultValue = "Theme")
+  @SimpleProperty(userVisible = false)
+  public void Theme(String theme) {
+    // We don't actually need to do anything.
+  }
+
+  /**
    * Width property getter method.
    *
    * @return  width property used by the layout
