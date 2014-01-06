@@ -2092,26 +2092,33 @@ list, use the make-yail-list constructor with no arguments.
      (bitwise-arithmetic-shift-left (bitwise-and blue *max-color-component*)
                                     *color-blue-position*))))
 
-(define (split-color color)
+(define (split-color-red color)
   (let ((intcolor (make-exact-yail-integer color)))
-  (kawa-list->yail-list
-   (list
     ;; red
     (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-red-position*)
-                 *max-color-component*)
+                 *max-color-component*)))
+
+(define (split-color-green color)
+  (let ((intcolor (make-exact-yail-integer color)))
     ;; green
     (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-green-position*)
-                 *max-color-component*)
+                 *max-color-component*)))
+
+(define (split-color-blue color)
+  (let ((intcolor (make-exact-yail-integer color)))
     ;; blue
     (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-blue-position*)
-                 *max-color-component*)
+                 *max-color-component*)))
+
+(define (split-color-opacity color)
+  (let ((intcolor (make-exact-yail-integer color)))
     ;; alpha
     (bitwise-and (bitwise-arithmetic-shift-right intcolor
                                                  *color-alpha-position*)
-                 *max-color-component*)))))
+                 *max-color-component*)))
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

@@ -364,26 +364,24 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
   '</xml>' },
 
-   math_random_int : {xmlString:
+  math_random_int : {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
     '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
     '<value name="TO"><block type="math_number"><title name="NUM">100</title></block></value>' +
     '</block>' +
   '</xml>'},
+
   color_make_color: {xmlString:
   '<xml>' +
     '<block type="color_make_color">' +
-      '<value name="COLORLIST">' +
-        '<block type="lists_create_with" inline="false">' +
-          '<mutation items="3"></mutation>' +
-          '<value name="ADD0"><block type="math_number"><title name="NUM">255</title></block></value>' +
-          '<value name="ADD1"><block type="math_number"><title name="NUM">0</title></block></value>' +
-          '<value name="ADD2"><block type="math_number"><title name="NUM">0</title></block></value>' +
-        '</block>' +
-      '</value>' +
+      '<value name="RED"><block type="math_number"><title name="NUM">255</title></block></value>' +
+      '<value name="GREEN"><block type="math_number"><title name="NUM">0</title></block></value>' +
+      '<value name="BLUE"><block type="math_number"><title name="NUM">0</title></block></value>' +
+      '<value name="OPACITY"><block type="math_number"><title name="NUM">255</title></block></value>' +
     '</block>' +
   '</xml>'},
+
   lists_create_with:{xmlString:
   '<xml>' +
     '<block type="lists_create_with">' +
