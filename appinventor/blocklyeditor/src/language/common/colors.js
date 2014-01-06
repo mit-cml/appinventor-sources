@@ -211,33 +211,84 @@ Blockly.Language.color_dark_gray = {
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_DARK_GRAY }]
 };
 
+
 Blockly.Language.color_make_color = {
-  category: "Colors",
-  helpUrl: Blockly.LANG_COLOUR_MAKE_COLOUR_HELPURL,
-  init: function() {
-    this.setColour(Blockly.COLOR_CATEGORY_HUE);
-    this.appendValueInput('COLORLIST').appendTitle("make color").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
-    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
-    this.setTooltip(Blockly.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
-    this.appendCollapsedInput().appendTitle(Blockly.LANG_COLOUR_MAKE_COLOUR, 'COLLAPSED_TEXT');
-  },
-  onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAKE_COLOUR }]
+    //Make RGB colour
+    category: "Colors",
+    helpUrl: Blockly.LANG_COLOUR_MAKE_COLOUR_HELPURL,
+    init: function() {
+      this.setColour(Blockly.COLOR_CATEGORY_HUE);
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
+      this.appendValueInput('RED')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle('make color')
+        .appendTitle('Red')
+        .setAlign(Blockly.ALIGN_RIGHT);
+      this.appendValueInput('GREEN')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle('Green')
+        .setAlign(Blockly.ALIGN_RIGHT);
+      this.appendValueInput('BLUE')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle('Blue')
+        .setAlign(Blockly.ALIGN_RIGHT);
+      this.appendValueInput('OPACITY')
+        .setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT))
+        .appendTitle('Opacity')
+        .setAlign(Blockly.ALIGN_RIGHT);
+      this.setTooltip(Blockly.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
+      this.appendCollapsedInput().appendTitle(Blockly.LANG_COLOUR_MAKE_COLOUR, 'COLLAPSED_TEXT');
+    },
+    onchange: Blockly.WarningHandler.checkErrors,
+    typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAKE_COLOUR }]
 };
 
+
 Blockly.Language.color_split_color = {
-  category: "Colors",
-  helpUrl: Blockly.LANG_COLOUR_SPLIT_COLOUR_HELPURL,
-  init: function() {
-    this.setColour(Blockly.COLOR_CATEGORY_HUE);
-    this.appendValueInput('COLOR').appendTitle("split color").setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT));
-    this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.OUTPUT));
-    this.setTooltip(Blockly.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP);
-    this.appendCollapsedInput().appendTitle(Blockly.LANG_COLOUR_SPLIT_COLOUR, 'COLLAPSED_TEXT');
-  },
-  onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_COLOUR_SPLIT_COLOUR }]
+    category: "Colors",
+    helpUrl: Blockly.LANG_COLOUR_SPLIT_COLOUR_HELPURL,
+    init: function() {
+      this.setColour(Blockly.COLOR_CATEGORY_HUE);
+      this.appendValueInput('COLOR').setCheck(Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.INPUT)).appendTitle('split color').appendTitle(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType("number",Blockly.Language.OUTPUT));
+   // Assign 'this' to a variable for use in the closures below.
+      var thisBlock = this;
+      this.setTooltip(Blockly.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP);
+      this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
+    },
+    onchange: Blockly.WarningHandler.checkErrors,
+    typeblock: [{
+      dropDown: {
+        titleName: 'OP',
+        value: 'RED'
+      }
+    },{
+      dropDown: {
+        titleName: 'OP',
+        value: 'GREEN'
+      }
+    },{
+      dropDown: {
+        titleName: 'OP',
+        value: 'BLUE'
+      }
+    },{
+      dropDown: {
+        titleName: 'OP',
+        value: 'OPACITY'
+      }
+    }],
+    prepareCollapsedText: function(){
+      var titleFromOperator = Blockly.FieldDropdown.lookupOperator(this.OPERATORS, this.getTitleValue('OP'));
+      this.getTitle_('COLLAPSED_TEXT').setText(titleFromOperator, 'COLLAPSED_TEXT');
+    }
 };
+
+Blockly.Language.color_split_color.OPERATORS =
+[['red', 'RED'],
+ ['green', 'GREEN'],
+ ['blue', 'BLUE'],
+ ['opacity', 'OPACITY']];
 
 
 
