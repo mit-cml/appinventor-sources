@@ -171,6 +171,7 @@ public class GalleryClient {
   public void loadSourceFile(GalleryApp gApp) {
     final String projectName=gApp.getProjectName();
     final String sourceURL=gApp.getSourceURL();
+    OdeLog.log("***** in galleryClient.loadSourceFile, sourceURL is:" + sourceURL);
     final long galleryId = gApp.getGalleryAppId();
     
     // first check name to see if valid and unique...
@@ -192,6 +193,10 @@ public class GalleryClient {
     MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
+        if (projectInfo==null)
+          OdeLog.log("***** in galleryClient.loadSourceFile callback, projectInfo is null");
+        else
+          OdeLog.log("***** in galleryClient.loadSourceFile callback, projectId is:"+projectInfo.getProjectId());
         // if we were able to create the new project, lets increment download count in gallery db
         ode.getGalleryService().appWasDownloaded(galleryId,projectInfo.getProjectId(),galleryCallback);
 
@@ -204,8 +209,12 @@ public class GalleryClient {
     // this is really what's happening here, we call server to load project
     ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
   } 
- 
- 
+  // GalleryApp (and possibly others) call this to tell galleryList (and possibly others)
+  // to update
+  public void appWasChanged() {
+    // for now, let's update the recent list
+    GetMostRecent(0,5);
+  }
 
   private String getStartCountString(int start, int count) {
     return ":"+String.valueOf(start)+":"+String.valueOf(count);  

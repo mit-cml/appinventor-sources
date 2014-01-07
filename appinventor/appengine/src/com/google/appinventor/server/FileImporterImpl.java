@@ -36,6 +36,9 @@ import java.util.zip.ZipInputStream;
 
 import javax.annotation.Nullable;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Implementation of {@link FileImporter} based on {@link StorageIo}
  *
@@ -47,6 +50,8 @@ public final class FileImporterImpl implements FileImporter {
   private static final Flag<Float> maxAssetSizeMegs = Flag.createFlag("max.asset.size.megs", 9f);
 
   private final StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
+
+  private static final Logger LOG = Logger.getLogger(ProjectServiceImpl.class.getName());
 
   @Override
   public UserProject importProject(String userId, String projectName,
@@ -73,6 +78,7 @@ public final class FileImporterImpl implements FileImporter {
     String srcDirectory = YoungAndroidProjectService.getSourceDirectory(qualifiedFormName);
 
     ZipInputStream zin = new ZipInputStream(uploadedFileStream);
+    LOG.log(Level.INFO, "#### in importProject, zin is"+zin.toString());
     boolean isProjectArchive = false;  // have we found at least one project properties file?
     try {
       // Extract files
@@ -90,7 +96,7 @@ public final class FileImporterImpl implements FileImporter {
 
         if (!entry.isDirectory()) {
           String fileName = entry.getName();
-
+          LOG.log(Level.INFO, "#### in importProject,fileName is:"+fileName);
           if (fileName.equals(YoungAndroidProjectService.PROJECT_PROPERTIES_FILE_NAME)) {
             // The content for the youngandroidproject/project.properties file must be regenerated
             // so that it contains the correct entries for "main" and "name", which are dependent on
@@ -111,6 +117,7 @@ public final class FileImporterImpl implements FileImporter {
             // we don't have per-project keystores. The only way to get such a
             // source zip at the moment is using the admin functionality to
             // download another user's project source.
+            LOG.log(Level.INFO, "#### in importProject, remix area, fileName:"+fileName);
             continue;
 
           } else {
@@ -126,6 +133,7 @@ public final class FileImporterImpl implements FileImporter {
             ByteStreams.copy(zin, contentStream);
 
             project.addRawFile(new RawFile(fileName, contentStream.toByteArray()));
+            LOG.log(Level.INFO, "#### in importProject, bottom else, fileName:"+fileName);
           }
         }
       }
@@ -170,6 +178,7 @@ public final class FileImporterImpl implements FileImporter {
       bos.write(buffer, 0, bytes);
       fileLength += bytes;
     }
+    
     bos.flush();
 
     // First check the file length, to avoid loading the file into memory if it is too large anyhow.

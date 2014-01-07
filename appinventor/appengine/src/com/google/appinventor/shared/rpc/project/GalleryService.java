@@ -30,11 +30,11 @@ public interface GalleryService extends RemoteService {
    *
    * @return a {@link GalleryApp} for new galleryApp
    */
-  long publishApp(long projectId, String projectName, String title,
+  GalleryApp publishApp(long projectId, String projectName, String title,
                          String description);
 
-  long updateApp(long galleryId, long projectId, String projectName, String title,
-                         String description);
+  void updateAppSource (long galleryId, long projectId, String projectName);
+  void updateAppMetadata(GalleryApp app);
 
 
   

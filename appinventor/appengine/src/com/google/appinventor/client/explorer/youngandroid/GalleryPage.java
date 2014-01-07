@@ -43,6 +43,11 @@ import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
 
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -52,11 +57,12 @@ import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 /**
- * The gallery list shows apps from the gallery in a table.
+ * The gallery page shows a single app from the gallery 
  *
- * <p> The project name and date created will be shown in the table.
+ * It has different modes for public viewing or when user is editing metadata or 
  *
- * @author wolberd@google.com (Dave Wolber)
+ * @author wolberd@gmail.com (Dave Wolber)
+ * @author vincentaths@gmail.com(Vincent Zhang)
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
   
@@ -66,19 +72,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
-  private final FlowPanel galleryGUI;
-  private final FlowPanel appSingle;
-  private final FlowPanel appsByAuthor;
-  private final FlowPanel appsByTags;
-  private final FlowPanel appDetails;
-  private final FlowPanel appHeader;
-  private final FlowPanel appInfo;
-  private final FlowPanel appAction;
-  private final FlowPanel appMeta;
-  private final FlowPanel appDates;
-  private final FlowPanel appDescription;
-  private final FlowPanel appComments;
-  private final FlowPanel appCommentsList;
+  private VerticalPanel panel;  // the main panel
+  private FlowPanel galleryGUI;
+  private FlowPanel appSingle;
+  private FlowPanel appsByAuthor;
+  private FlowPanel appsByTags;
+  private FlowPanel appDetails;
+  private FlowPanel appHeader;
+  private FlowPanel appInfo;
+  private FlowPanel appAction;
+  private FlowPanel appMeta;
+  private FlowPanel appDates;
+  private FlowPanel appDescription;
+  private FlowPanel appComments;
+  private FlowPanel appCommentsList;
   private String tagSelected;
 
   public static final int VIEWAPP = 0;
@@ -87,266 +94,107 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private int editStatus;
 
   /* Publish & edit state components */
+  private FlowPanel imageUploadBox;
+  private Label imageUploadPrompt;
   private Image image;
   private FileUpload upload;
   private FlowPanel imageUploadBoxInner;
+  private FocusPanel wrapper;
   private Label creation;
   private Label update;
   private CellList<String> titleCellList;
   private CellList<String> descCellList;
+  private TextArea titleText;
   private TextArea desc;
-  
-  
-/*
-  public GalleryPage() {
-    // Initialize UI
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");    
-    galleryGUI = new FlowPanel();
-    appSingle = new FlowPanel();
-    appDetails = new FlowPanel();
-    appHeader = new FlowPanel();
-    appInfo = new FlowPanel();
-    appAction = new FlowPanel();
-    appMeta = new FlowPanel();
-    appDates = new FlowPanel();
-    appDescription = new FlowPanel();
-    appComments = new FlowPanel();
-    appCommentsList = new FlowPanel();
-    appsByAuthor = new FlowPanel();
-    appsByTags = new FlowPanel();
-    tagSelected = "";
-    creation = new Label();
-    update = new Label();
-  }
-  */
-  
+  private FlowPanel descBox;
+  private FlowPanel titleBox;
+
+  private Button openAppButton;
+  private Button publishButton;
+
+/* 
+panel
+ galleryGUI
+  appSingle
+   appDetails
+    appClear
+      appHeader
+        wrapper (focus panel)
+         imageUploadBox (flow)
+          imageUploadBoxInner (flow)
+           imageUploadPRompt (label)
+           upload
+           image (this is put in dynamically)
+        appAction (button)
+     appInfo
+       title or titlebox
+       devName
+       appMeta
+       appDates 
+       desc/descbox
+    appComments
+   appsByDev
+  	 
+  divider
+*/
+
+    
   /**
    * Creates a new GalleryPage
+   *
    */
   public GalleryPage(final GalleryApp app, final int editStatus) {
-
+    // get a reference to the Gallery Client which handles the communication to
+    //   server to get gallery data
     gallery = GalleryClient.getInstance();
     gallery.addListener(this);
+    // We are either publishing a new app, updating, or just reading. If we are publishing
+    //   a new app, app has some partial info to be published. Otherwise, it has all
+    //   the info for the already published app
     this.app = app;
     this.editStatus = editStatus;
-
-    // Initialize UI
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");    
-    galleryGUI = new FlowPanel();
-    appSingle = new FlowPanel();
-    appDetails = new FlowPanel();
-    appHeader = new FlowPanel();
-    appInfo = new FlowPanel();
-    appAction = new FlowPanel();
-    appMeta = new FlowPanel();
-    appDates = new FlowPanel();
-    appDescription = new FlowPanel();
-    appComments = new FlowPanel();
-    appCommentsList = new FlowPanel();
-
-    appsByAuthor = new FlowPanel();
-    appsByTags = new FlowPanel();
-    tagSelected = "";
+    initComponents();
     
-    creation = new Label();
-    update = new Label();
-    desc = new TextArea();
-
-    // App header - image
-    appHeader.addStyleName("app-header");
-    
-    // If we're editing, add input form for image
+    // If we're editing or updating, add input form for image
     if (newOrUpdateApp()) {
-      FlowPanel imageUploadBox = new FlowPanel();
-      imageUploadBox.addStyleName("app-image-uploadbox");
-      imageUploadBox.addStyleName("gallery-editbox");
-      imageUploadBoxInner = new FlowPanel();
-
-      Label imageUploadPrompt = new Label("Upload your project image!");
-      imageUploadPrompt.addStyleName("gallery-editprompt");
-      
-      if (editStatus == UPDATEAPP) {
-        updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
-        image.addStyleName("status-updating");
-        imageUploadPrompt.addStyleName("app-image-uploadprompt");
-      } 
-      imageUploadBoxInner.add(imageUploadPrompt);        
-
-      upload = new FileUpload();
-      upload.addStyleName("app-image-upload");
-      // Set the correct handler for servlet side capture
-      upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-      imageUploadBoxInner.add(upload);
-      
-      imageUploadBox.add(imageUploadBoxInner);
-      
-      FocusPanel wrapper = new FocusPanel();
-      wrapper.add(imageUploadBox);
-      wrapper.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          // The correct way to trigger click event on FileUpload
-          upload.getElement().<InputElement>cast().click(); 
-        }
-      });
-      appHeader.add(wrapper);
-      
-    } else  { // we are just viewing this page 
-      image = new Image();
-      // Vincent note: some strange cache issue preventing newest from showing up
-      image.setUrl(app.getCloudImageURL());
-      image.addStyleName("app-image");
-      appHeader.add(image);      
+      initEditComponents();
+    } else  { // we are just viewing this page so setup the image
+      initReadOnlyImage();   
     }
 
-    // App header - action button
+    // Now let's add the button for publishing, updating, or trying
     appHeader.add(appAction);
-
     if (!newOrUpdateApp()) {
-      Button openAppButton = new Button("Try this app");    
-      openAppButton.addClickHandler(new ClickHandler() {
-        // Open up source file if clicked the action button
-        public void onClick(ClickEvent event) {
-          //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-          gallery.loadSourceFile(app);
-        }
-      });
-      openAppButton.addStyleName("app-action");
-      appAction.add(openAppButton);
+      initTryitButton();
     } else {
     
-      Button publishButton = null;
-      if (editStatus == NEWAPP) {
-        publishButton = new Button("Publish");
-      } else {
-        publishButton = new Button("Update");
-      }
-
-      publishButton.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-              
-          // Callback for when the server returns us the apps
-          final Ode ode = Ode.getInstance();
-          final OdeAsyncCallback<Long> callback = new OdeAsyncCallback<Long>(
-            // failure message
-            MESSAGES.galleryError()) {
-            @Override
-            // 2. When publish or update call returns
-            public void onSuccess(Long galleryId) {
-              // the server has returned us something
-              updateAppDates();
-
-              if (editStatus == NEWAPP) {
-                // we only set the projectId to the gallery app if new app. If we
-                // are updating its already set
-                final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-                  // failure message
-                  MESSAGES.galleryError()) {
-                    @Override
-                    //4. When setGalleryId call returns, which we don't need to do anything
-                    public void onSuccess(Void result) {
-                    }
-                };
-                // 3. Set galleryId of the project once it's published
-                ode.getProjectService().setGalleryId(app.getProjectId(), 
-                    galleryId, projectCallback);
-                app.setGalleryAppId(galleryId);
-              } 
-              // for new or update
-              // 4. see if a new image has been uploaded and if so get it in the cloud
-              String uploadFilename = upload.getFilename();
-              if (!uploadFilename.isEmpty()) {
-                // Grab and validify the filename
-                final String filename = makeValidFilename(uploadFilename);
-
-                // Forge the request URL for gallery servlet
-                String uploadUrl = GWT.getModuleBaseURL() + 
-                    ServerLayout.GALLERY_SERVLET + "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"
-                    + filename;
-                Uploader.getInstance().upload(upload, uploadUrl,
-                    new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-                  @Override
-                  public void onSuccess(UploadResponse uploadResponse) {
-                    switch (uploadResponse.getStatus()) {
-                    case SUCCESS:
-                      // Update the app image preview after a success upload
-                      imageUploadBoxInner.clear();
-                      updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);
-                      
-                      ErrorReporter.hide();
-                      break;
-                    case FILE_TOO_LARGE:
-                      // The user can resolve the problem by
-                      // uploading a smaller file.
-                      ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                      break;
-                    default:
-                      ErrorReporter.reportError(MESSAGES.fileUploadError());
-                      break;
-                    }
-                  }
-                });
-                
-              } else {
-                if (editStatus == NEWAPP) {
-                  Window.alert(MESSAGES.noFileSelected());                  
-                }
-              }
-              // tell the galleryclient to modify its list of most recent apps.
-              // galleryPage listens, so it will update
-//              OdeLog.log("#### we published and are calling gallery client to update");
-              gallery.GetMostRecent(0,5);
-              // tell the project list to change project's button to "Update"
-              Ode.getInstance().getProjectManager().publishProject();
-            }
-            
-          };
-        // Prepare the title and description from user inputs
-        app.setTitle(sanitizeEditedValue(titleCellList));
-//        app.setDescription(sanitizeEditedValue(descCellList));
-        OdeLog.log("########## DESC = " + desc.getText());
-        app.setDescription(desc.getText());
-
-        // 1. this is below the call backs, but it is done first 
-        if (editStatus == NEWAPP) {
-          ode.getGalleryService().publishApp(app.getProjectId(), 
-              app.getTitle(), app.getProjectName(), app.getDescription(), 
-              callback);
-        } else if (editStatus == UPDATEAPP) {
-          ode.getGalleryService().updateApp(app.getGalleryAppId(), app.getProjectId(), 
-              app.getTitle(), app.getProjectName(), app.getDescription(), 
-              callback);
-        }
-        }
-      });    
-      publishButton.addStyleName("app-action");
-      appAction.add(publishButton);    
+      initPublishButton();  
     }
     
     // App details - header title
     if (newOrUpdateApp()) {
       // GUI for editable title container
-      FlowPanel titleBox = new FlowPanel();
-      titleBox.addStyleName("app-titlebox");
-      titleBox.addStyleName("gallery-editbox");
+      titleText.setText(app.getTitle());
+      titleText.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          app.setTitle(titleText.getText());   
+          Ode.getInstance().getGalleryService().updateAppMetadata(app,
+            new OdeAsyncCallback<Void>( MESSAGES.galleryError()) {
+            @Override 
+            public void onSuccess(Void result) {
+              gallery.appWasChanged();
+            }
+          });
+        }
+
+      });
       
-      // Create an editable text cell to render values
-      EditTextCell titlePrompt = new EditTextCell();
-      // Create a cell list that uses this cell
-      titleCellList = new CellList<String>(titlePrompt);
+      titleText.addStyleName("app-desc-textarea");
+      titleBox.add(titleText);
       
-      // Forge the temporary prefilled title, place it in cell list
-      String t = app.getTitle();
-      List<String> titleList = Arrays.asList(t);
-      titleCellList.setRowData(0, titleList);
-      titleCellList.addStyleName("app-titleprompt");
-      titleCellList.addStyleName("gallery-editprompt");
-      titleBox.add(titleCellList);
       appInfo.add(titleBox);
-      // Event handler for editing
+      
     } else {
       Label title = new Label(app.getTitle());
       appInfo.add(title);
@@ -383,50 +231,33 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
     // Add app dates
     appInfo.add(appDates);
-    if (editStatus == NEWAPP) {
-      creation.setText("This app is not created in the Gallery yet.");
-      update.setText("This app is not updated in the Gallery yet.");
-    } else {
-      updateAppDates();
-    }
+    updateAppDates();
+    
     appDates.add(creation);
     appDates.add(update);
     appDates.addStyleName("app-dates");
 
     // App details - description
     if (newOrUpdateApp()) {
-      FlowPanel descBox = new FlowPanel();
-//      descBox.addStyleName("app-descbox");
-//      descBox.addStyleName("gallery-editbox");
-      if (editStatus == NEWAPP) {
-        desc.setText("Please describe your project here! " +
-            "Tell us what your project is about in a few sentences.");        
-      } else if (editStatus == UPDATEAPP) {
-        desc.setText(app.getDescription());
-      }
+      
+      desc.setText(app.getDescription());
+      desc.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          app.setDescription(desc.getText());   
+          Ode.getInstance().getGalleryService().updateAppMetadata(app,
+            new OdeAsyncCallback<Void>( MESSAGES.galleryError()) {
+            @Override 
+            public void onSuccess(Void result) {
+              gallery.appWasChanged();
+            }
+          });
+        }
+
+      });
+      
       desc.addStyleName("app-desc-textarea");
       descBox.add(desc);
-      
-      /*
-      // Create an editable text cell to render values
-      EditTextCell descPrompt = new EditTextCell();
-      // Create a cell list that uses this cell
-      descCellList = new CellList<String>(descPrompt);
-      // Forge the temporary prefilled description, place it in cell list
-      String t = "Please describe your project here! \r\r " +
-      		"Tell us what your project is about in a few sentences.";
-      if (app.getDescription().length() > 1) {
-        t = app.getDescription();
-      } else {
-        t = "Please describe your project here! Tell us what your project is about in a few sentences.";
-      }
-      List<String> descList = Arrays.asList(t);
-      descCellList.setRowData(0, descList);
-      
-      descCellList.addStyleName("app-descprompt");
-      descCellList.addStyleName("gallery-editprompt");
-      descBox.add(descCellList);
-      */
       
       appInfo.add(descBox);
     } else {
@@ -510,6 +341,107 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     initWidget(panel);
   }
 
+   /**
+   * Helper method called by constructor to initialize ui components
+   */
+  private void initComponents() {
+    // Initialize UI
+    panel = new VerticalPanel();
+    panel.setWidth("100%");    
+    galleryGUI = new FlowPanel();
+    appSingle = new FlowPanel();
+    appDetails = new FlowPanel();
+    appHeader = new FlowPanel();
+    appInfo = new FlowPanel();
+    appAction = new FlowPanel();
+    appMeta = new FlowPanel();
+    appDates = new FlowPanel();
+    appDescription = new FlowPanel();
+    appComments = new FlowPanel();
+    appCommentsList = new FlowPanel();
+    appsByAuthor = new FlowPanel();
+    appsByTags = new FlowPanel();
+    tagSelected = "";
+    
+    creation = new Label();
+    update = new Label();
+    descBox = new FlowPanel();
+    titleBox = new FlowPanel();
+    desc = new TextArea();
+    titleText = new TextArea();
+
+    // App header - image
+    appHeader.addStyleName("app-header");
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize editing components
+   */
+  private void initEditComponents() {
+    imageUploadBox = new FlowPanel();
+    imageUploadBox.addStyleName("app-image-uploadbox");
+    imageUploadBox.addStyleName("gallery-editbox");
+    imageUploadBoxInner = new FlowPanel();
+    imageUploadPrompt = new Label("Upload your project image!");
+    imageUploadPrompt.addStyleName("gallery-editprompt");
+    
+    updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+    image.addStyleName("status-updating");
+    imageUploadPrompt.addStyleName("app-image-uploadprompt"); 
+    imageUploadBoxInner.add(imageUploadPrompt);        
+
+    upload = new FileUpload();
+    upload.addStyleName("app-image-upload");
+    // Set the correct handler for servlet side capture
+    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+    upload.addChangeHandler(new ChangeHandler (){
+      public void onChange(ChangeEvent event) {
+        uploadImage();
+      }
+    });
+    imageUploadBoxInner.add(upload);
+    imageUploadBox.add(imageUploadBoxInner);  
+    wrapper = new FocusPanel();
+    wrapper.add(imageUploadBox);
+    wrapper.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // The correct way to trigger click event on FileUpload
+        upload.getElement().<InputElement>cast().click(); 
+      }
+    });
+    appHeader.add(wrapper);
+  }
+    /**
+   * Helper method called by constructor to create the app image for display
+   */
+  private void initReadOnlyImage() {
+    updateAppImage(app.getCloudImageURL(), appHeader);   
+  }
+
+  /**
+   * Helper method called by constructor to initialize the try it button
+   */
+  private void initTryitButton() {
+    openAppButton = new Button("Try this app");    
+    openAppButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+        //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+        gallery.loadSourceFile(app);
+      }
+    });
+    openAppButton.addStyleName("app-action");
+    appAction.add(openAppButton);  
+  }
+  /**
+   * Helper method called by constructor to initialize the publish button
+   */
+  private void initPublishButton() {
+    
+
+  }
 
   /**
    * Loads the proper tab GUI with gallery's app data.
@@ -532,10 +464,11 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   
   @Override
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)   {
-    if (apps != null)
+   if (apps != null)
       refreshApps(apps, requestId);
     else
       Window.alert("apps was null");
+
   }
   
   
@@ -548,29 +481,17 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
-      final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
-          @Override
-          public void execute(Project project) {
-               Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-          }
-       };
-       // Update project explorer -- i.e., display in project view
-       final Ode ode = Ode.getInstance();
-       if (projectInfo == null) {
-         Window.alert("Unable to create project from Gallery source"); 
-       }
-       else {
-         Project project = ode.getProjectManager().addProject(projectInfo);
-         if (onSuccessCommand != null) {
-           onSuccessCommand.execute(project);
-         }
-       }
-  	
+    final Ode ode = Ode.getInstance();
+    Project project = ode.getProjectManager().addProject(projectInfo);
+    Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+  
   }
   
   /*
    * Helper method providing easier way to grab value from GWT's CellList,
    * it also sanitizes the input in the process.
+   * NOTE: not currently being used, title can be anything, but need to 
+   * figure out how projectName and title relate to each other
    */
   private String sanitizeEditedValue(CellList l) {
     String text = l.getRowElement(0).getString();
@@ -605,6 +526,45 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     else
       return false;
   }
+
+  private void uploadImage () {
+    String uploadFilename = upload.getFilename();
+    if (!uploadFilename.isEmpty()) {
+      // Grab and validify the filename
+      final String filename = makeValidFilename(uploadFilename);
+      // Forge the request URL for gallery servlet
+      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
+          "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"+ filename;
+      Uploader.getInstance().upload(upload, uploadUrl,
+          new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+          @Override
+          public void onSuccess(UploadResponse uploadResponse) {
+            switch (uploadResponse.getStatus()) {
+            case SUCCESS:
+              // Update the app image preview after a success upload
+              imageUploadBoxInner.clear();
+              updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+              gallery.appWasChanged();  // to update the gallery list and page
+              ErrorReporter.hide();
+              break;
+            case FILE_TOO_LARGE:
+              // The user can resolve the problem by uploading a smaller file.
+              ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+              break;
+            default:
+              ErrorReporter.reportError(MESSAGES.fileUploadError());
+              break;
+            }
+          }
+       });
+                
+    } else {
+      if (editStatus == NEWAPP) {
+        Window.alert(MESSAGES.noFileSelected());                  
+      }
+    }
+
+  }
   
   /**
    * Helper method to update the app image
@@ -615,6 +575,13 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
     image = new Image();
     image.setUrl(url);
     image.addStyleName("app-image");
+    // if the user has provided a gallery app image, we'll load it. But if not
+    // the error will occur and we'll load default image
+    image.addErrorHandler(new ErrorHandler() {
+      public void onError(ErrorEvent event) {
+        image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+      }
+    });
     container.add(image);   
   }
   

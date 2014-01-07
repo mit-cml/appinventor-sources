@@ -20,13 +20,12 @@ public class GalleryApp implements IsSerializable {
     this.developerId = "fred";
     this.creationDate = 0L;
     this.updateDate = 0L;
-    this.imageBlobId = "SFKJF";
-    this.imageURL = "http://smalltowngeeks.net/wp-content/uploads/2011/02/appInv1-300x227.png";
   }
 
-  public static final String GALLERYURL = "http://gallery.appinventor.mit.edu/rpc?";
 
   public static final String GALLERYBUCKET = "galleryai2";
+  public static final String DEFAULTGALLERYIMAGE="/static/images/genericApp.png";
+  public static final String DEFAULTUSERIMAGE="/static/images/android_icon_.png";
 	
   public GalleryApp(String title, String developerId, String description,
       long creationDate, long updateDate, String imageURL, String projectName,
@@ -73,15 +72,16 @@ public class GalleryApp implements IsSerializable {
     this.projectId = projectId;
     this.projectName=projectName;
     this.galleryAppId=galleryAppId;
-    this.developerId = "Test user";
+    this.developerId = "unknown";
+    this.developerName="name";
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageBlobId = "SFKJF";
-    this.imageURL = "http://galleryai2.appspot.com/images/logo.png";
   }
 
   private String title;
   private String developerId;
+  private String developerName;
   private String description;
   private long creationDate;
   private long updateDate;
@@ -189,24 +189,40 @@ public class GalleryApp implements IsSerializable {
   public long getGalleryAppId() {
     return this.galleryAppId;
   }
-  // developerId is the google account name. We need to send the name for the account
-  //   or if we add more user info send that...for testing, we're just sending id
   public String getDeveloperName() {
-    return developerId;
+    return developerName;
+  }
+  public void setDeveloperName(String name) {
+    this.developerName=name;
   }
   /* URL is in GCS. Here is what GCS says:
+  /gs/galleryai2/gallery/apps/6046115656892416/aia
    *Your object is now visible to App Engine with the file name /gs/my_bucket/my_object. 
    * If you set your object to be publicly accessible, your object can be accessed using the 
    * URL http://storage.googleapis.com/my_bucket/my_object.  
   */
   public String getSourceURL() {
-    String url = "/gs/" + this.GALLERYBUCKET + "/" + getGalleryAppId();
+    String url = "/gs/" + this.GALLERYBUCKET + "/" +getSourceKey();
     return url;
+  }
+  public String getSourceKey () {
+    String key = "gallery/apps/" + getGalleryAppId()+"/aia";
+    return key;
+  }
+  // this static one is called by galleryService when an app is first published
+  static public String getSourceKey (long galleryId) {
+    String key = "gallery/apps/" + galleryId+"/aia";
+    return key;
   }
 
   public String getCloudImageURL() {
-    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/" + getGalleryAppId()+"/image";
-    String url = "/gs/" + this.GALLERYBUCKET + "/" + getGalleryAppId() + "/image";
+    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/apps/"
+       + getGalleryAppId()+"/image";
+    return url2;
+  }
+
+  static public String getUserImageUrl(String userid) {
+    String url2 = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" + userid + "/image";
     return url2;
   }
 

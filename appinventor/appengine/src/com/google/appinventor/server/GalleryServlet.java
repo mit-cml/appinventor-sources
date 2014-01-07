@@ -124,7 +124,8 @@ public class GalleryServlet extends OdeServlet {
         .setBucket("galleryai2")
         .setKey(key)
         .setAcl("public-read")
-        .setMimeType("image/jpeg");
+        .setMimeType("image/jpeg")
+        .setCacheControl("no-cache");
         AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
         
         // Open a channel to write to it

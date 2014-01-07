@@ -58,6 +58,8 @@ import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
 import java.nio.channels.Channels;
 
+import java.util.logging.Level;
+
 //import org.omg.CORBA_2_3.portable.InputStream;
 
 
@@ -457,7 +459,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
   /**
    * This service is passed a URL to an aia file in GCS, of the form
-   *    /gs/bucket/gallerid
+   *    /gs/bucket/gallery/apps/<galleryid>/aia
    * It converts it to a byte array and imports the project using FileImporter.
    * It also sets the attributionId of the project to point to the galleryID
    *  it is remixing.
@@ -470,24 +472,35 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       FileService fileService = FileServiceFactory.getFileService();
       AppEngineFile readableFile = new AppEngineFile(aiaPath);
       FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
-    
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
       InputStream bais =Channels.newInputStream(readChannel);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
       FileImporter fileImporter = new FileImporterImpl();
 
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
       readChannel.close();
       // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
       return userProject;
-      } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
+      } catch (FileNotFoundException e) {  
         e.printStackTrace();
+         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+          e);
       } catch (IOException e) {
         e.printStackTrace();
+        
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath+":"+projectName,
+          e);
       } catch (FileImporterException e) {
         e.printStackTrace();
+        
+        throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
+          e);
       }
-      return null;
+      
+    
   
   }
 

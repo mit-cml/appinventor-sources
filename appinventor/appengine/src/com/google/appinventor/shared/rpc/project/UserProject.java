@@ -128,10 +128,8 @@ public class UserProject implements IsSerializable {
       this.modificationDate = modificationDate;
     }
   }
-  public void setGalleryId(long id) {
-    if (id != 0) {
-      this.galleryId = galleryId;
-    }
+  public void setGalleryId(long galleryId) {
+    this.galleryId = galleryId;
   }
 
   @Override
@@ -172,6 +170,7 @@ public class UserProject implements IsSerializable {
     userProject.projectType = parts[2];
     userProject.creationDate = Long.parseLong(parts[3]);
     userProject.modificationDate = Long.parseLong(parts[4]);
+    userProject.galleryId= -1;  // should be a constant, there is one in ObjectifyStorage
     return userProject;
   }
 }

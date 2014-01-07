@@ -38,10 +38,10 @@ public interface GalleryStorageIo {
   /**
    * creates a new gallery app
    *
-   * @param userId unique user id
-   * @return user data
+   * 
+   *
    */
-  long createGalleryApp(String title, String projectName, String description, long projectId, String userId);
+  GalleryApp createGalleryApp(String title, String projectName, String description, long projectId, String userId);
 
     /**
    * updates gallery app

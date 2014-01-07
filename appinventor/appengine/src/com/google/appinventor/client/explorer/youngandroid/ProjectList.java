@@ -10,7 +10,10 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
+
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.client.GalleryClient;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -66,6 +69,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private final Label dateCreatedSortIndicator;
   private final Label dateModifiedSortIndicator;
 
+  GalleryClient gallery = null;
+
   /**
    * Creates a new ProjectList
    */
@@ -96,6 +101,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
     // It is important to listen to project manager events as soon as possible.
     Ode.getInstance().getProjectManager().addProjectManagerEventListener(this);
+
+    gallery = GalleryClient.getInstance();
   }
 
   /**
@@ -292,19 +299,31 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * been published, we create a gallery app with default title
    * If it has been published, we get the gallery app and send it
    */
-  private void preparePublishApp(final Project p, ProjectWidgets pw) {    
-    if (p.isPublished())
-      pw.editButton.setText("Update...");
-    else
-      pw.editButton.setText("Publish...");
+  private void preparePublishApp(final Project p, final ProjectWidgets pw) {    
+    if (p.isPublished()) {
+      pw.editButton.setText("Update Gallery version");
+      pw.editButton.setTitle("publish your latest source code changes to the gallery and open an editor to modify app metadata");
+    }
+    else {
+      pw.editButton.setText("Publish to Gallery");
+      pw.editButton.setTitle("Publish your app to the gallery and open an editor to modify app metadata"); 
+    }
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+        final Ode ode = Ode.getInstance();
         if (p.isPublished()) {
-          // app is already published, call gallery service to get it and open
-          // galleryPage in OnSuccess
-          // Callback for when the server returns us the apps
-    	  final Ode ode = Ode.getInstance();
+          // app is already published, just update the aia and call gallery service 
+          // to get it and open it
+          //  first, here is the callback for after we update source
+
+          final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryError()) {
+            @Override 
+            public void onSuccess(Void result) {
+            }
+          };
+          // now setup what happens when we load the app in
           final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
           // failure message
           MESSAGES.galleryError()) {
@@ -315,18 +334,55 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
             Ode.getInstance().switchToGalleryAppView(app, editStatus);
           }
           };
-      
+          // here is what we actually do, updateSource then load for editing
+          ode.getGalleryService().updateAppSource(p.getGalleryId(),p.getProjectId(), p.getProjectName(),updateSourceCallback);
           // ok, this is below the call back, but of course it is done first 
           ode.getGalleryService().getApp(p.getGalleryId(),callback);
  
         } else {
-          // app is not yet published, so create a gallery app with default values
-          // and then open galleryPage  
-          GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
+          // app is not yet published, so publish it and open editor
+          // first create an app object with default data
+          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
               p.getProjectName(), p.getGalleryId());
-          int editStatus=GalleryPage.NEWAPP;
-          Ode.getInstance().switchToGalleryAppView(app, editStatus);
-        }     
+          
+          
+          // here is the callback:
+          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+            @Override
+            // When publish or update call returns
+            public void onSuccess(final GalleryApp gApp) {
+              // we only set the projectId to the gallery app if new app. If we
+              // are updating its already set
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.galleryError()) {
+                @Override 
+                public void onSuccess(Void result) {
+                  // we get here when app is published and project gId set, so switch
+                  // to editor so user can modify title/desc/pic
+                  p.setGalleryId(gApp.getGalleryAppId());
+                  preparePublishApp(p,pw);  // make it so its ready to update instead of pub next time
+                  Ode.getInstance().switchToGalleryAppView(gApp, GalleryPage.NEWAPP);
+                }
+              };
+            
+              ode.getProjectService().setGalleryId(gApp.getProjectId(), gApp.getGalleryAppId(), 
+                 projectCallback);
+              //app.setGalleryAppId(galleryId);
+               
+          
+              gallery.GetMostRecent(0,5);
+              // tell the project list to change project's button to "Update"
+              Ode.getInstance().getProjectManager().publishProject();
+            }
+            
+          };
+          // call publish with the default app data...
+          ode.getGalleryService().publishApp(app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+          
+          
+        }  // end, publish an app     
          
       }
     });

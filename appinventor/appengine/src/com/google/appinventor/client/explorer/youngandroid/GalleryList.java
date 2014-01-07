@@ -450,27 +450,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
   public void onCommentsRequestCompleted(List<GalleryComment> comments)
   {
-      // Window.alert("comments returned:"+comments.size());
+      
   }
   
+  // the gallery page is the listener that should deal with this
+  //    really, projectlist should be a listener
   public void onSourceLoadCompleted(UserProject projectInfo) {
-    final NewProjectCommand onSuccessCommand = new NewProjectCommand() {
-       @Override
-       public void execute(Project project) {
-            Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-       }
-    };
-    // Update project explorer -- i.e., display in project view
-    final Ode ode = Ode.getInstance();
-    if (projectInfo == null) {
-      Window.alert("Unable to create project from Gallery source"); 
-    }
-    else {
-      Project project = ode.getProjectManager().addProject(projectInfo);
-      if (onSuccessCommand != null) {
-        onSuccessCommand.execute(project);
-      }
-    }
+    
   }
 }	  
   

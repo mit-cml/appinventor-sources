@@ -124,8 +124,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     this.fileService = fileService;
 
   }
-
-
+  // we'll need to talk to the StorageIo to get developer names, so...
+  private final transient StorageIo storageIo = 
+      StorageIoInstanceHolder.INSTANCE;
   
   /**
    * create a new gallery app in database. This doesn't deal with aia or image file
@@ -134,9 +135,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * 
    */
   @Override
-  public long createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
+  public GalleryApp createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
 
-    final Result<Long> galleryId = new Result<Long>();
+    final Result<GalleryAppData> galleryAppData = new Result<GalleryAppData>();
     try {
       // first job is on the gallery entity, creating the GalleryAppData object
       // and the associated files.
@@ -157,7 +158,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           datastore.put(appData); // put the appData in the db so that it gets assigned an id
 
           assert appData.id != null;
-          galleryId.t = appData.id;
+          galleryAppData.t = appData;
           // remember id in some way, as in below?
           // projectId.t = pd.id;
           // After the job commits projectId.t should end up with the last value
@@ -178,7 +179,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           "gallery error", e);
     } 
-    return galleryId.t;
+    GalleryApp gApp = new GalleryApp();
+    makeGalleryApp(galleryAppData.t, gApp);
+    return gApp;
   }
 
   /**
@@ -237,7 +240,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).order("-dateModified").offset(start).limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -379,6 +382,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     galleryApp.setGalleryAppId(appData.id);
     galleryApp.setProjectId(appData.projectId);
     galleryApp.setDescription(appData.description);
+
+    User developer = storageIo.getUser(appData.userId);
+    galleryApp.setDeveloperName(developer.getUserName());
     galleryApp.setDeveloperId(appData.userId);
     galleryApp.setDownloads(appData.numDownloads);  
     galleryApp.setCreationDate(appData.dateCreated);

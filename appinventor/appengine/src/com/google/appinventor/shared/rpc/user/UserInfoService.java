@@ -51,4 +51,6 @@ public interface UserInfoService extends RemoteService {
    * Deletes the user file with the given file name
    */
   void deleteUserFile(String fileName);
+
+
 }

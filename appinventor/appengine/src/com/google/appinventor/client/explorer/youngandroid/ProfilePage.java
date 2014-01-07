@@ -23,7 +23,6 @@ import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.client.ErrorReporter;
@@ -39,38 +38,79 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
-public class ProfilePage extends Composite implements GalleryRequestListener {
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+
+import com.google.gwt.event.dom.client.ChangeEvent;
+import com.google.gwt.event.dom.client.ChangeHandler;
+
+/* panel has:
+   
+  cardContainer  -- like App Header, make it like appClear
+   majorContentCard -- like app Info
+     userContentTitle
+     userNameLabel
+     userNameBox
+     
+   appCardWrapper
+     imageUploadBox
+       imageUploadBoxInner
+         userAvatar
+         imageUploadPrompt
+         upload
+
+
+*/
+public class ProfilePage extends Composite {
+
+  String userId = "-1";  
+  final FileUpload upload= new FileUpload();
+  // Create GUI wrappers and components
+  // the main panel and its container
+  VerticalPanel panel = new VerticalPanel();
+  FlowPanel cardContainer = new FlowPanel();
+  // cardContainer contains a card for picture (appCardWrapper) and info (majorContentCard)
+  FocusPanel appCardWrapper = new FocusPanel();
+
+  FlowPanel majorContentCard = new FlowPanel();
+  FlowPanel imageUploadBox = new FlowPanel();
+  FlowPanel imageUploadBoxInner = new FlowPanel();  
+  Image userAvatar = new Image(); 
+  Label imageUploadPrompt = new Label();
+  
+  
 
   
-  String GALLERYBUCKET = "galleryai2";
-  String userId = "-1";  
-  
+  // the majorContentCard has a label and namebox
+  Label usernameLabel = new Label();
+  Label userContentTitle = new Label();
+  final TextBox userNameBox = new TextBox();
   
   public ProfilePage() {
-    VerticalPanel panel = new VerticalPanel();
+    // setup panel
     panel.setWidth("100%");
+    panel.addStyleName("ode-UserProfileWrapper");
     
-    // Create necessary GUI wrappers and components
-    FlowPanel cardContainer = new FlowPanel();
-    FlowPanel appCard = new FlowPanel();
-    FlowPanel majorContentCard = new FlowPanel();
-    
-    final Image userAvatar = new Image();
-    userAvatar.setUrl("http://storage.googleapis.com/galleryai2/5201690726760448/image");
-    Label imageUploadPrompt = new Label();
+
+    // setup upload stuff    
     imageUploadPrompt.setText("Upload your profile image!");
-    final FileUpload upload = new FileUpload();
     upload.addStyleName("app-image-upload");
     // Set the correct handler for servlet side capture
     upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-    
-    FocusPanel appCardWrapper = new FocusPanel();
+    upload.addChangeHandler(new ChangeHandler (){
+      public void onChange(ChangeEvent event) {
+        uploadImage();
+      }
+    });
     appCardWrapper.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -78,154 +118,112 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
         upload.getElement().<InputElement>cast().click(); 
       }
     });
-    
-    Label userContentTitle = new Label();
+    // set up the user info stuff
     userContentTitle.setText("Edit your profile");
-    Label usernameLabel = new Label();
     usernameLabel.setText("Your display name");
-    final TextBox usernameBox = new TextBox();
-
-    Label userLocationLabel = new Label();
-    userLocationLabel.setText("Your another data");
-    final TextBox userLocationBox = new TextBox();
-
-    
-    Button userProfileEditSubmit = new Button();
-    userProfileEditSubmit.setText("Update");
-    
-    // Add associated styling
-    panel.addStyleName("ode-UserProfileWrapper");
-    cardContainer.addStyleName("gallery-app-collection");
-    
-    appCard.addStyleName("gallery-card");
-    userAvatar.addStyleName("gallery-card-cover");
-    userAvatar.addStyleName("status-updating");
-    imageUploadPrompt.addStyleName("gallery-editprompt");
-    
-    majorContentCard.addStyleName("gallery-content-card");
-    userContentTitle.addStyleName("app-title");
-    usernameLabel.addStyleName("profile-textlabel");
-    usernameBox.addStyleName("profile-textbox");
-    userLocationLabel.addStyleName("profile-textlabel");
-    userLocationBox.addStyleName("profile-textbox");
-    userProfileEditSubmit.addStyleName("profile-submit");
-    
-    
-    // Add all the GUI layers up at the end
-    appCard.add(userAvatar);
-    appCard.add(imageUploadPrompt);
-    appCard.add(upload);
-    appCardWrapper.add(appCard);
-    cardContainer.add(appCardWrapper);
-    
-    majorContentCard.add(userContentTitle);
-    majorContentCard.add(usernameLabel);
-    majorContentCard.add(usernameBox);
-    majorContentCard.add(userLocationLabel);
-    majorContentCard.add(userLocationBox);
-    majorContentCard.add(userProfileEditSubmit);
-    cardContainer.add(majorContentCard);
-    
-    panel.add(cardContainer);
-    initWidget(panel);
-    
-    // Retrieve user info right after GUI is initialized
+    // set up the code to modify database when user changes his display name 
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(User user) {
-            // Set associate GUI components
-            usernameBox.setText(user.getUserName());
-            userId = user.getUserId();
-            /*
-            String objectName = "/user/" + userId + "/image";
-            GcsFilename filename = new GcsFilename("galleryai2", objectName);
-            try {
-              if (gcsService.getMetadata(filename) != null) {
-                // User already has an avatar image in cloud
-                userAvatar.setUrl(getCloudImageURL(userId));
-              } else {
-                // User doesn't have an avatar image in cloud
-                userAvatar.setUrl("http://galleryai2.appspot.com/images/logo.png");
-              }
-            } catch (IOException e) {
-              // TODO Auto-generated catch block
-              e.printStackTrace();
-            }
-            */
-            
-          }
-      };
-    ode.getUserInfoService().getUserInformation(userInformationCallback);
-    
-    
-    
-    
-    userProfileEditSubmit.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {  
-        final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
+    userNameBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
             // failure message
             MESSAGES.galleryError()) {
               @Override
               public void onSuccess(Void arg0) {
               }
           };
-        ode.getUserInfoService().storeUserName(usernameBox.getText(), userUpdateCallback);
-        
-        // 4. see if a new image has been uploaded and if so get it in the cloud
-        String uploadFilename = upload.getFilename();
-        if (!uploadFilename.isEmpty()) {
-          String filename = makeValidFilename(uploadFilename);
-       // Forge the request URL for gallery servlet
-          String uploadUrl = GWT.getModuleBaseURL() + 
-              ServerLayout.GALLERY_SERVLET + "/user/" + userId + "/" + filename;
-          Uploader.getInstance().upload(upload, uploadUrl,
-              new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
-            @Override
-            public void onSuccess(UploadResponse uploadResponse) {
-              switch (uploadResponse.getStatus()) {
-              case SUCCESS:
-                ErrorReporter.hide();
-                break;
-              case FILE_TOO_LARGE:
-                // The user can resolve the problem by
-                // uploading a smaller file.
-                ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
-                break;
-              default:
-                ErrorReporter.reportError(MESSAGES.fileUploadError());
-                break;
-              }
-            }
-          });
-          
+         ode.getUserInfoService().storeUserName(userNameBox.getText(), userUpdateCallback);
         }
+
+      });
+    
+    // Add styling
+    cardContainer.addStyleName("gallery-app-collection");
+    imageUploadBox.addStyleName("gallery-card");
+
+    // userAvatar.addStyleName("gallery-card-cover");
+    userAvatar.addStyleName("gallery-card-cover");
+    userAvatar.addStyleName("status-updating");
+    imageUploadPrompt.addStyleName("gallery-editprompt");
+
+    // add styling for user info stuff
+    majorContentCard.addStyleName("gallery-content-card");
+    userContentTitle.addStyleName("app-title");
+    usernameLabel.addStyleName("profile-textlabel");
+    userNameBox.addStyleName("profile-textbox");
+
+    upload.addStyleName("app-image-upload");
+ 
+    
+    // Add all the GUI layers up at the end
+    panel.add(cardContainer);
+    
+    cardContainer.add(appCardWrapper);
+    appCardWrapper.add(imageUploadBox);
+    imageUploadBox.add(imageUploadBoxInner);
+
+    imageUploadBoxInner.add(imageUploadPrompt);
+    imageUploadBoxInner.add(upload);
+    imageUploadBoxInner.add(userAvatar);
+    
+    cardContainer.add(majorContentCard);
+    majorContentCard.add(userContentTitle);
+    majorContentCard.add(usernameLabel);
+    majorContentCard.add(userNameBox);
+
+    initWidget(panel);
+    
+    // Retrieve user info right after GUI is initialized
+    final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(User user) {
+            // Set associate GUI components
+            userNameBox.setText(user.getUserName());
+            userId = user.getUserId();
+            // once we get the user info and id we can show the right image
+            updateUserImage(GalleryApp.getUserImageUrl(userId),imageUploadBoxInner);
+         }
+    };
+    ode.getUserInfoService().getUserInformation(userInformationCallback);
+      
+  } 
+
+    
+  private void uploadImage() {
         
-      }
-    });
-    
-  }
-  
-  
-  @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-    // TODO Auto-generated method stub
-    
+    String uploadFilename = upload.getFilename();
+    if (!uploadFilename.isEmpty()) {
+      String filename = makeValidFilename(uploadFilename);
+      // Forge the request URL for gallery servlet
+      String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
+          "/user/" + userId + "/" + filename;
+      Uploader.getInstance().upload(upload, uploadUrl,
+          new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
+        @Override
+        public void onSuccess(UploadResponse uploadResponse) {
+          switch (uploadResponse.getStatus()) {
+            case SUCCESS:
+              ErrorReporter.hide();
+              imageUploadBoxInner.clear();
+              updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+              break;
+            case FILE_TOO_LARGE:
+              // The user can resolve the problem by
+              // uploading a smaller file.
+              ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
+              break;
+            default:
+              ErrorReporter.reportError(MESSAGES.fileUploadError());
+              break;
+          }
+        }
+      });
+          
+    }
+        
   }
   
   private String makeValidFilename(String uploadFilename) {
@@ -237,10 +235,21 @@ public class ProfilePage extends Composite implements GalleryRequestListener {
     filename = filename.replaceAll("\\s", "");
     return filename;
   }
-  
-  public String getCloudImageURL(String userid) {
-    String url2 = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" + userid + "/image";
-    return url2;
+
+  private void updateUserImage(String url, Panel container) {
+    userAvatar = new Image();
+    userAvatar.setUrl(url);
+    userAvatar.addStyleName("app-image");
+    // if the user has provided a gallery app image, we'll load it. But if not
+    // the error will occur and we'll load default image
+    userAvatar.addErrorHandler(new ErrorHandler() {
+      public void onError(ErrorEvent event) {
+        userAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+      }
+    });
+    container.add(userAvatar);   
   }
+  
+  
   
 }

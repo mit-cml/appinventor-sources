@@ -22,14 +22,18 @@ public interface GalleryServiceAsync {
    * @see GalleryService#publishApp(long, String, String, String)
    */
   void publishApp(long projectId, String title, String projectName, String description,
-      AsyncCallback<Long> callback);
+      AsyncCallback<GalleryApp> callback);
 
   /**
-   * @see GalleryService#updateApp(long, long, String, String, String)
+   * @see GalleryService#updateApp(GalleryApp)
    */
-  void updateApp(long galleryId, long projectId, String title, String projectName, String description,
-      AsyncCallback<Long> callback);
+  void updateAppMetadata(GalleryApp app,AsyncCallback<Void> callback);
 
+  /**
+   * @see GalleryService#updateAppSource(long, long, String, String, String)
+   */
+  void updateAppSource(long galleryId, long projectId, String projectName, 
+      AsyncCallback<Void> callback);
 
   /**
    * @see GalleryService#publishImage(String, String, NewProjectParameters)

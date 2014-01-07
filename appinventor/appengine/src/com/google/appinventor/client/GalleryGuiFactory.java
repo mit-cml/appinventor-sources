@@ -18,6 +18,9 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 
 public class GalleryGuiFactory implements GalleryRequestListener {
@@ -51,6 +54,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       numViewsLabel = new Label(Integer.toString(app.getViews()));
       numCommentsLabel = new Label(Integer.toString(app.getComments()));
       image = new Image();
+      image.addErrorHandler(new ErrorHandler() {
+        public void onError(ErrorEvent event) {
+          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+        }
+      });
       image.setUrl(app.getCloudImageURL());
     }
   }

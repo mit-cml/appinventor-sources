@@ -81,13 +81,24 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @return a {@link GalleryApp} for new galleryApp
    */
   @Override
-  public long publishApp(long projectId, String title, String projectName, String description) {
+  public GalleryApp publishApp(long projectId, String title, String projectName, String description) {
     final String userId = userInfoProvider.getUserId();
-    long galleryId = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
-    storeAIA(galleryId,projectId, projectName);
-    return galleryId;
+    GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
+    storeAIA(app.getGalleryAppId(),projectId, projectName);
+    return app;
   }
-  
+  @Override
+  public void updateAppMetadata(GalleryApp app) {
+    final String userId = userInfoProvider.getUserId();
+    galleryStorageIo.updateGalleryApp(app.getGalleryAppId(), app.getTitle(), app.getDescription(),  userId);
+  }
+  @Override
+  public void updateAppSource (long galleryId, long projectId, String projectName) {
+     storeAIA(galleryId,projectId, projectName);
+  }
+
+
+/*
   @Override
   public long updateApp(long galleryId, long projectId, String title, String projectName, String description) {
     final String userId = userInfoProvider.getUserId();
@@ -95,6 +106,9 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     storeAIA(galleryId,projectId, projectName);
     return galleryId;
   }
+
+*/
+
    /**
    * Returns an array of gallery Apps
    *
@@ -176,15 +190,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     //  see https://developers.google.com/appengine/docs/java/googlecloudstorageclient/migrate
     //   for migration details
       // convert galleryId to a string, we'll use this for the key in gcs
-      String galleryKey = String.valueOf(galleryId);
+      String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);
       // set up the cloud file (options)
       FileService fileService = FileServiceFactory.getFileService();
       GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
       .setBucket("galleryai2")
       .setKey(galleryKey)
       .setAcl("public-read")
-      // what should the mime type be?
-      .setMimeType("text/html")
+      // what should the mime type be?  it was .setMimeType("text/html")
+      .setMimeType("application/zip")
+      .setCacheControl("no-cache")
       // not sure if we're putting anything here for metadata
       .addUserMetadata("title", aiaName);
   

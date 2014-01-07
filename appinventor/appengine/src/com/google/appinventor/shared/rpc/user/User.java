@@ -166,6 +166,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   private String getDefaultName() {
+    if (this.email==null)
+      return "unknown user";
     String[] parts = this.email.split("@");
     if (parts.length>1) {
       return parts[0];
