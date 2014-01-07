@@ -98,25 +98,13 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 	public void Login() {
 		boolean login = api.createSession(UserName, Password);
 		if (login == true) {
-			LoginSuccess();
+			LoginSucceeded();
 		} else {
-			LoginFailure();
+			LoginFailed();
 		}
 	}
 
-	@SimpleEvent(description = "iSENSE Login Successful")
-	public void LoginSuccess() {
-		Log.i("iSENSE", "login success");
-		EventDispatcher.dispatchEvent(this, "LoginSuccess");
-	}
-
-	@SimpleEvent(description = "iSENSE Login Failed")
-	public void LoginFailure() {
-		Log.i("iSENSE", "login failure");
-		EventDispatcher.dispatchEvent(this, "LoginFailure");
-	}
-
-	// upload option a
+	// upload dataset
 	@SimpleFunction(description = "Upload Data Set to iSENSE")
 	public void UploadDataSet(String DataSetName, YailList ListOfFields,
 			YailList ListOfData) throws JSONException {
@@ -134,6 +122,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 		}
 	}
 
+	// upload photos to dataset
 	@SimpleFunction(description = "Upload Photos to iSENSE")
 	public void UploadPhotosToDataSet(int DataSetID, String Photo) {
 		String path = Photo.substring(7);
@@ -156,6 +145,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 					new JSONArray().put(ListOfData.get(i + 1)));
 		}
 		Log.i("iSENSE", "json data: " + jdata.toString());
+		Log.i("iSENSE", "dataset id:" + Integer.toString(DataSetID));
 		api.appendDataSetData(DataSetID, jdata);
 		AppendDataSetSucceeded(DataSetID);
 	}
@@ -206,4 +196,13 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 		EventDispatcher.dispatchEvent(this, "UploadPhotoToDataSetFailed");
 	}
 
+	@SimpleEvent(description = "iSENSE Login Succeeded")
+	public void LoginSucceeded() {
+		EventDispatcher.dispatchEvent(this, "LoginSucceeded");
+	}
+
+	@SimpleEvent(description = "iSENSE Login Failed")
+	public void LoginFailed() {
+		EventDispatcher.dispatchEvent(this, "LoginFailed");
+	}
 }
