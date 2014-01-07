@@ -41,6 +41,7 @@ import java.util.logging.Logger;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -473,14 +474,29 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
       AppEngineFile readableFile = new AppEngineFile(aiaPath);
       FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past readChannel");
-      InputStream bais =Channels.newInputStream(readChannel);
-      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
-      FileImporter fileImporter = new FileImporterImpl();
+      InputStream gcsis =Channels.newInputStream(readChannel);
+      // ok, we don't want to send the gcs stream because it can time out as we
+      // process the zip. We need to copy to a byte buffer first, then send a bytestream
 
+      byte[] buffer = new byte[8000];
+      int bytesRead = 0;
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();   
+           
+      while ((bytesRead = gcsis.read(buffer)) != -1) {
+        bao.write(buffer, 0, bytesRead); 
+      }
+
+      InputStream bais = new ByteArrayInputStream(bao.toByteArray());
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+      
+      // close the gcs
+      readChannel.close();
+      // now use byte stream to process aia file
+      FileImporter fileImporter = new FileImporterImpl(); 
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
-      readChannel.close();
+     
       // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
       return userProject;

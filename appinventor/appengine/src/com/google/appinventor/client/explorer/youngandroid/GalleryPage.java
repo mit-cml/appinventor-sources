@@ -481,10 +481,12 @@ panel
   
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
+    /*
+    OdeLog.log("### in GalleryPage onSourceLoadCompleted");
     final Ode ode = Ode.getInstance();
     Project project = ode.getProjectManager().addProject(projectInfo);
     Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-  
+    */
   }
   
   /*

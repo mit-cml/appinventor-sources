@@ -25,6 +25,8 @@ import java.io.IOException;
 //import java.net.URLEncoder;
 // import java.io.UnsupportedEncodingException;
 
+import com.google.appinventor.client.explorer.project.Project;
+
 
 public class GalleryClient {
 
@@ -193,17 +195,24 @@ public class GalleryClient {
     MESSAGES.createProjectError()) {
       @Override
       public void onSuccess(UserProject projectInfo) {
-        if (projectInfo==null)
+        Project project = ode.getProjectManager().addProject(projectInfo);
+        Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+      /*
+        if (projectInfo==null) {
           OdeLog.log("***** in galleryClient.loadSourceFile callback, projectInfo is null");
-        else
+        } else {
           OdeLog.log("***** in galleryClient.loadSourceFile callback, projectId is:"+projectInfo.getProjectId());
-        // if we were able to create the new project, lets increment download count in gallery db
-        ode.getGalleryService().appWasDownloaded(galleryId,projectInfo.getProjectId(),galleryCallback);
+          // if we were able to create the new project, lets increment download count in gallery db
+          ode.getGalleryService().appWasDownloaded(galleryId,projectInfo.getProjectId(),galleryCallback);
 
-        // now relay the result back to UI client
-        for (GalleryRequestListener listener:listeners) {
-          listener.onSourceLoadCompleted(projectInfo);
-        }    
+          // now relay the result back to UI client
+          OdeLog.log("***** in galleryClient.loadSourceFile num listeners is:"+String.valueOf(listeners.size()));
+          for (GalleryRequestListener listener:listeners) {
+            OdeLog.log("***** in galleryClient.loadSourceFile listener is"+listener.getClass());
+            listener.onSourceLoadCompleted(projectInfo);
+          }
+        } 
+       */   
       }
     };
     // this is really what's happening here, we call server to load project

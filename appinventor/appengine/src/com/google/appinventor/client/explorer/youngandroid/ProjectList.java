@@ -421,6 +421,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
 
   @Override
   public void onProjectAdded(Project project) {
+    OdeLog.log("#### in ProjectList.onProjectAdded");
     projects.add(project);
     projectWidgets.put(project, new ProjectWidgets(project));
     refreshTable(true);
