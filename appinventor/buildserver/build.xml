@@ -226,6 +226,8 @@
       <arg value="--isForStemCellApp" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
     </java>
   </target>
 
@@ -275,6 +277,8 @@
       <arg value="--isForWirelessRepl" />
       <arg value="--outputDir" />
       <arg value="${public.build.dir}" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
     </java>
   </target>
 
@@ -302,6 +306,8 @@
         <fileset dir="${run.lib.dir}" includes="*.jar" />
       </classpath>
       <sysproperty key="file.encoding" value="UTF-8" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
     </java>
   </target>
 
@@ -324,6 +330,8 @@
       <arg value="${user.name}" />
       <arg value="--outputDir" />
       <arg value="${output.dir}" />
+      <arg value="--dexCacheDir" />
+      <arg value="${public.build.dir}/dexCache" />
     </java>
   </target>
 
