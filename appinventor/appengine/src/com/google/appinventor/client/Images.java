@@ -308,6 +308,12 @@ public interface Images extends Resources {
   ImageResource twitterComponent();
 
   /**
+   * Designer palette item: iSENSE Component
+   */
+  @Source("com/google/appinventor/images/isense.png")
+  ImageResource iSENSEComponent();
+
+  /**
    * Designer palette item: TinyDB Component
    */
   @Source("com/google/appinventor/images/tinyDB.png")

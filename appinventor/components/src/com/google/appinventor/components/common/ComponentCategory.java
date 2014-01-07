@@ -24,7 +24,6 @@ public enum ComponentCategory {
   LEGOMINDSTORMS("LEGO\u00AE MINDSTORMS\u00AE"),
   //EXPERIMENTAL("Experimental"),
   INTERNAL("For internal use only"),
-  ISENSE("iSENSE Project"),
   // UNINITIALIZED is used as a default value so Swing libraries can still compile
   UNINITIALIZED("Uninitialized");
 

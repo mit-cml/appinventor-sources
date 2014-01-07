@@ -132,7 +132,8 @@
         <pathelement location="${lib.dir}/oauth/google-http-client-android3-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
         <!-- iSENSE -->
-        <pathelement location="${lib.dir}/isense/isenseimports.jar" />
+        <pathelement location="${lib.dir}/isense/isenseimports-v3-1c.jar" />
+        <pathelement location="${lib.dir}/isense/httpmime-4.2.5.jar" />
       
       </classpath>
     </ai.javac5>
@@ -233,7 +234,8 @@
           <pathelement location="${lib.dir}/oauth/google-oauth-client-1.10.1-beta.jar" />
           <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
           <!-- iSENSE -->
-          <pathelement location="${lib.dir}/isense/isenseimports.jar" />
+          <pathelement location="${lib.dir}/isense/isenseimports-v3-1c.jar" />
+          <pathelement location="${lib.dir}/isense/httpmime-4.2.5.jar" />
           
         </classpath>
         <compilerarg line="-processorpath ${local.build.dir}/AnnotationProcessors.jar"/>
