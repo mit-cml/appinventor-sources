@@ -419,7 +419,7 @@
                 <li><a href="http://appinventor.mit.edu">Home</a></li>
                 <li><a href="http://appinventor.mit.edu/explore/news-events">Blog
                     ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+                <li><a href="http://appinventor.mit.edu/explore/library">Support
                     ▾</a></li>
               </ul>
             </nav>
@@ -495,146 +495,113 @@
                         <code> image </code> is the path that can be used to
                         locate the image on the phone. </dd>
                     </dl>
-                    <h2 id="ImagePicker"> ImagePicker </h2>
-                    <img alt="" src="images/imagepicker.png">
-                    <p> Use an image picker component to choose an image from
-                      your image gallery. </p>
-                    <p> An image picker is a kind of button. When the user taps
-                      an image picker, the device's image gallery appears, and
-                      the user can choose an image. After the user picks an
-                      image, the property <code> ImagePath </code> is set to a
-                      text string that represents that image. You can then use
-                      that result, for example, to set the image of a button. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code class="c2"> ImagePath </code> </dt>
-                      <dd> The image the user chose, represented as a text
-                        string that gives the location of the images. </dd>
-                      <dt> <code> Enabled </code> </dt>
-                      <dd> If true, image picker can be used. </dd>
-                      <dt> <code> BackgroundColor </code> </dt>
-                      <dd> Color for image picker background. </dd>
-                      <dt> <code> Enabled </code> </dt>
-                      <dd> If set, user can tap image picker to cause action. </dd>
-                      <dt> <code> FontBold </code> </dt>
-                      <dd> If set, image picker button text is displayed in
-                        bold. </dd>
-                      <dt> <code> FontItalic </code> </dt>
-                      <dd> If set, image picker button text is displayed in
-                        italics. </dd>
-                      <dt> <code> FontSize </code> </dt>
-                      <dd> Point size for image picker button text. </dd>
-                      <dt> <code> FontTypeface </code> </dt>
-                      <dd> Font family for image picker button text. </dd>
-                      <dt> <code> Height </code> </dt>
-                      <dd> image picker button height (y-size). </dd>
-                      <dt> <code> Width </code> </dt>
-                      <dd> image picker button width (x-size). </dd>
-                      <dt> <code> Image </code> </dt>
-                      <dd> Image to display on image picker button. </dd>
-                      <dt> <code> Text </code> </dt>
-                      <dd> Text to display on image picker button. </dd>
-                      <dt> <code> TextAlignment </code> </dt>
-                      <dd> Left, center, or right. </dd>
-                      <dt> <code> TextColor </code> </dt>
-                      <dd> Color for image picker button text. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> AfterPicking() </code> </dt>
-                      <dd> User selected an item from the image picker. </dd>
-                      <dt> <code> BeforePicking() </code> </dt>
-                      <dd> User has tapped the image picker but hasn't yet
-                        selected an item. </dd>
-                      <dt> <code> GotFocus() </code> </dt>
-                      <dd> Image picker became the focused component. </dd>
-                      <dt> <code> LostFocus() </code> </dt>
-                      <dd> Image picker is no longer the focused component. </dd>
-                    </dl>
-                    <h2 id="Player"> Player </h2>
-                    <img alt="" src="images/player.png">
-                    <p> Use a player component to play an audio or video file,
-                      or to vibrate the phone. </p>
-                    <p> Player is a non-visible component that plays audio or
-                      video and controls phone vibration. The name of a media
-                      file is specified in the <code> Source </code> property,
-                      which can be set in the Designer or in the Blocks Editor.
-                      To use a Player for streaming, set the <code> Source </code>
-                      inside the Blocks Editor to a text block with the URL. The
-                      length of time for a vibration is specified in the Blocks
-                      Editor in milliseconds (thousandths of a second). The
-                      volume should be an integer between 0 and 100. </p>
-                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
-                        Android Supported Media Formats </a> for more
-                      information on which types of files you can use. </p>
-                    <p> Use a player component for playing long sound files,
-                      video files, and vibrating the phone. For playing short
-                      sound files, such as sound effects, use a <code> Sound </code>
-                      component instead. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> IsLooping </code> </dt>
-                      <dd> If set, the media is looping. </dd>
-                      <dt> <code> IsPlaying </code> </dt>
-                      <dd> Whether the media is playing. </dd>
-                      <dt> <code> Source </code> </dt>
-                      <dd> Audio or video file associated with this player. </dd>
-                      <dt> <code> Volume </code> </dt>
-                      <dd> A number between 0 and 100. </dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Pause() </code> </dt>
-                      <dd> Pauses playing the audio or video file. </dd>
-                      <dt> <code> Start() </code> </dt>
-                      <dd> Starts playing the audio or video file. </dd>
-                      <dt> <code> Stop() </code> </dt>
-                      <dd> Stops playing the audio or video file. </dd>
-                      <dt> <code> Vibrate(number milliseconds) </code> </dt>
-                      <dd> Activate the phone's vibration motor for the given
-                        number of milliseconds. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> Completed() </code> </dt>
-                      <dd> Media has finished playing. </dd>
-                    </dl>
-                    <h2 id="Sound"> Sound </h2>
-                    <img alt="" src="images/sound.png">
-                    <p> Use a sound component to play an audio file, or to
-                      vibrate the phone. </p>
-                    <p> Sound is a non-visible component that plays sound files
-                      and vibrates for the number of milliseconds (thousandths
-                      of a second) specified in the Blocks Editor. The name of
-                      the sound file to play can be specified either in the
-                      Designer or in the Blocks Editor. </p>
-                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
-                        Android Supported Media Formats </a> for more
-                      information on which types of files you can use. </p>
-                    <p> This component is best for short sound files, such as
-                      sound effects, while the <code> Player </code> component
-                      is more efficient for longer sounds, such as songs. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> Source </code> </dt>
-                      <dd> Audio file associated with this sound. </dd>
-                      <dt> <code> MinimumInterval </code> </dt>
-                      <dd> Minimum time before sound is repeated. </dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Pause() </code> </dt>
-                      <dd> Pauses playing the audio file. </dd>
-                      <dt> <code> Play() </code> </dt>
-                      <dd> Starts playing the audio file. </dd>
-                      <dt> <code> Resume() </code> </dt>
-                      <dd> Resumes playing a paused audio file. </dd>
-                      <dt> <code> Stop() </code> </dt>
-                      <dd> Stops playing the audio file. </dd>
-                      <dt> <code> Vibrate(number millisecs) </code> </dt>
-                      <dd> Activate the phone's vibration motor for the given
-                        number of milliseconds. </dd>
-                    </dl>
+
+
+<h2 id="ImagePicker">ImagePicker</h2>
+
+<p>A special-purpose button. When the user taps an image picker, the
+device's image gallery appears, and the user can choose an
+image. After an image is picked, it is saved on the SD card and
+the <code>ImageFile</code> property will be the name of the file where
+the image is stored. In order to not fill up storage, a maximum of 10
+images will be stored.  Picking more images will delete previous
+images, in order from oldest to newest.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code><em>Selection</em></code></dt>
+  <dd>Path to the file containing the image that was selected.</dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>Text</code></dt>
+  <dd></dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>TextColor</code></dt>
+  <dd></dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="Player">Player</h2>
+
+<p>Multimedia component that plays audio or video and controls phone vibration.  The name of a multimedia field is specified in the <code>Source</code> property, which can be set in the Designer or in the Blocks Editor.  The length of time for a vibration is specified in the Blocks Editor in milliseconds (thousandths of a second).
+<p>For supported sound and video formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p>
+<p>If you will only be playing sound files and vibrating, not using video, this component is best for long sound files, such as songs, while the <code>Sound</code> component is more efficient for short files, such as sound effects.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>IsPlaying</em></code></dt>
+  <dd>Reports whether the media is playing</dd>
+  <dt><code>Loop</code></dt>
+  <dd>If true, the player will loop when it plays. Setting Loop while the player is playing will affect the current playing.</dd>
+  <dt><code>Source</code></dt>
+  <dd></dd>
+  <dt><code>Volume</code></dt>
+  <dd>Sets the volume to a number between 0 and 100</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>Completed()</code></dt>
+  <dd>Indicates that the media has reached the end</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Pause()</code></dt>
+  <dd>Suspends playing the media if it is playing.</dd>
+  <dt><code>Start()</code></dt>
+  <dd>Plays the media.  If it was previously paused, the playing is resumed.
+ If it was previously stopped, it starts from the beginning.</dd>
+  <dt><code>Stop()</code></dt>
+  <dd>Stops playing the media and seeks to the beginning of the song.</dd>
+  <dt><code>Vibrate(number milliseconds)</code></dt>
+  <dd>Vibrates for specified number of milliseconds.</dd>
+</dl>
+
                     <h2 id="SoundRecorder"> SoundRecorder </h2>
                     <img src="images/soundRecorder.png" alt="Picture of Sound Recorder component">
                     <p> Multimedia component that records audio. </p>
@@ -873,7 +840,7 @@
                 <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/"
                     class="ext" target="_blank">Massachusetts Institute of
                     Technology</a><span class="ext"></span></p>
-                <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact
                     Us</a></p>
               </div>
             </div>

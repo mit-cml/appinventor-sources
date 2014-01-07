@@ -19,6 +19,11 @@ import java.util.Locale;
  *
  * @author markf@google.com (Mark Friedman)
  */
+
+// Note(Hal): I have not looked at making the changes for retries, similar to the ones in
+// InternalTextToSpeech.   The use of ExternalTTS is for pre-1.6 systems only, so is obsolete.
+// And I don't have an old external TTS library to use in testing, anyway.
+
 public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListener {
 
   private static final String TTS_INTENT = "com.google.tts.makeBagel";
@@ -50,6 +55,11 @@ public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListen
       requestCode = container.$form().registerForActivityResult(this);
     }
     container.$context().startActivityForResult(intent, requestCode);
+  }
+
+  @Override
+  public void onDestroy() {
+    // nothing to do
   }
 
   @Override

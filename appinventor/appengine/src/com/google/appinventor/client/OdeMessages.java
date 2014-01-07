@@ -70,16 +70,6 @@ public interface OdeMessages extends Messages {
   @Description("Header for date modified column of project table.")
   String projectDateModifiedHeader();
 
-  // Used in DesignToolbar.java
-
-  @DefaultMessage("Save")
-  @Description("Label of the button for save")
-  String saveButton();
-
-  @DefaultMessage("Save As...")
-  @Description("Label of the button for save as")
-  String saveAsButton();
-
   @DefaultMessage("Checkpoint ...")
   @Description("Label of the button for checkpoint")
   String checkpointButton();
@@ -169,7 +159,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("An internal error has occurred. Go look in the Debugging view.")
   @Description("Alert after an internal error")
   String internalErrorSeeDebuggingView();
-  
+
   @DefaultMessage("An internal error has occurred. Click 'ok' for more information.")
   @Description("Confirm alert after an internal error")
   String internalErrorClickOkDebuggingView();
@@ -232,15 +222,23 @@ public interface OdeMessages extends Messages {
 
   // Used in TopPanel.java
 
-  @DefaultMessage("Import ...")
+  @DefaultMessage("Save project")
+  @Description("Name of Save menuitem")
+  String saveMenuItem();
+
+  @DefaultMessage("Save project as ...")
+  @Description("Name of Save as ... menuitem")
+  String saveAsMenuItem();
+
+  @DefaultMessage("Import project to App Inventor server")
   @Description("Name of Import Project menuitem")
   String importProjectButton();
 
-  @DefaultMessage("Export")
+  @DefaultMessage("Export project to local computer")
   @Description("Name of Export Project menuitem")
   String exportProjectButton();
 
-  @DefaultMessage("Export all")
+  @DefaultMessage("Export all projects")
   @Description("Name of Export all Project menuitem")
   String exportAllProjectsButton();
 
@@ -854,10 +852,10 @@ public interface OdeMessages extends Messages {
   @Description("Title of barcode dialog.")
   String barcodeTitle(String projectName);
 
-  @DefaultMessage("Note: this barcode will only work for user {0}. See {1} the FAQ {2} for info " +
+  @DefaultMessage("Note: this barcode is only valid for 2 hours. See {0} the FAQ {1} for info " +
       "on how to share your app with others.")
   @Description("Warning in barcode dialog.")
-  String barcodeWarning(String userEmail, String aTagStart, String aTagEnd);
+  String barcodeWarning(String aTagStart, String aTagEnd);
 
   // Used in explorer/project/Project.java
 
@@ -878,39 +876,27 @@ public interface OdeMessages extends Messages {
   @Description("Label for the Project Button")
   String projectButton();
 
-  @DefaultMessage("New ...")
-  @Description("Label of the button for creating a new project")
+  @DefaultMessage("Start new project")
+  @Description("Label of the menu item for creating a new project")
   String newMenuItemButton();
 
-  @DefaultMessage("Delete")
-  @Description("Label of the button for creating a new project")
+  @DefaultMessage("Delete project")
+  @Description("Label of the menu item for deleting a project")
   String deleteMenuItemButton();
 
-  @DefaultMessage("New Project ...")
+  @DefaultMessage("New Project")
   @Description("Label of the button for creating a new project")
-  String newButton();
+    String newButton();
 
-  @DefaultMessage("Download Source")
-  @Description("Label of the button for downloading source")
-  String downloadSourceButton();
-
-  @DefaultMessage("Upload Source")
-  @Description("Label of the button for uploading source")
-  String uploadSourceButton();
-
-  @DefaultMessage("Download All Projects")
-  @Description("Label of the button to download all projects' source code")
-  String downloadAllButton();
-
-  @DefaultMessage("Export Keystore")
+  @DefaultMessage("Export keystore")
   @Description("Label of the button for export keystore")
   String downloadKeystoreButton();
 
-  @DefaultMessage("Import Keystore")
+  @DefaultMessage("Import keystore")
   @Description("Label of the button for import keystore")
   String uploadKeystoreButton();
 
-  @DefaultMessage("Delete Keystore")
+  @DefaultMessage("Delete keystore")
   @Description("Label of the button for delete keystore")
   String deleteKeystoreButton();
 
@@ -1268,4 +1254,11 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reset Connection")
   @Description("Reset all connections.")
   String resetConnections();
+
+  // This error message is displayed as HTML
+  @DefaultMessage("App Inventor is unable to compile this project.  " +
+  "<br /> The compiler error output was <br /> {0}.")
+  @Description("Compilation error, with error message.")
+  String unableToCompile(String errorMesssage);
+
 }

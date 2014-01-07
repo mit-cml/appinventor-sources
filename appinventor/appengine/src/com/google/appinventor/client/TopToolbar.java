@@ -135,9 +135,9 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteMenuItemButton(),
         new DeleteAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
         new SaveAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
         new SaveAsAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
         new CheckpointAction()));
@@ -591,7 +591,6 @@ public class TopToolbar extends Composite {
           MESSAGES.gitBuildId(GitBuildId.getDate(), GitBuildId.getVersion()) +
               "<BR/>Use Companion: " + BlocklyPanel.getCompVersion() +
               "<BR/><BR/>Please see " + RELEASE_NOTES_LINK_AND_TEXT +
-              " and " + KNOWN_ISSUES_LINK_AND_TEXT  + "." +
               "<BR/><BR/>" + termsOfServiceText
       );
 
@@ -614,28 +613,28 @@ public class TopToolbar extends Composite {
   private static class LibraryAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "");
     }
   }
 
   private static class GetStartedAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/get-started", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/get-started", "_ai2", "");
     }
   }
 
   private static class TutorialsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/tutorials", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/ai2/tutorials", "_ai2", "");
     }
   }
 
   private static class TroubleShootingAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/ai2/support/troubleshooting", "_ai2",
+      Window.open("http://appinventor.mit.edu/explore/ai2/support/troubleshooting", "_ai2",
           "");
     }
   }
@@ -643,7 +642,7 @@ public class TopToolbar extends Composite {
   private static class ForumsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://dev-explore.appinventor.mit.edu/forums", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/forums", "_ai2", "");
     }
   }
 
@@ -722,8 +721,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), false);
@@ -731,8 +730,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), true);

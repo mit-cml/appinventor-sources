@@ -8,6 +8,8 @@ import re
 #from cStringIO import StringIO
 #import memcache
 
+VERSION = "2.2"
+
 app = Bottle()
 default_app.push(app)
 
@@ -23,11 +25,30 @@ else:                                   # Need to add Windows
 def ping():
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
-    return 'running'
+    response.headers['Content-Type'] = 'application/json'
+    return '{ "status" : "OK", "version" : "%s" }' % VERSION
+
+@route('/utest/')
+def utest():
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    response.headers['Content-Type'] = 'application/json'
+    device = checkrunning(False)
+    if device:
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s" }' % (device, VERSION)
+    else:
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/start/')
 def start():
     subprocess.call(PLATDIR + "commands-for-Appinventor/run-emulator ", shell=True, close_fds=True)
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
+    return ''
+
+@route('/emulatorreset/')
+def emulatorreset():
+    subprocess.call(PLATDIR + "commands-for-Appinventor/reset-emulator ", shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -39,9 +60,9 @@ def echeck():
     response.headers['Content-Type'] = 'application/json'
     device = checkrunning(True)
     if device:
-        return '{ "status" : "OK", "device" : "%s"}' % device
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s"}' % (device, VERSION)
     else:
-        return '{ "status" : "NO" }'
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/ucheck/')
 def ucheck():
@@ -50,9 +71,9 @@ def ucheck():
     response.headers['Content-Type'] = 'application/json'
     device = checkrunning(False)
     if device:
-        return '{ "status" : "OK", "device" : "%s"}' % device
+        return '{ "status" : "OK", "device" : "%s", "version" : "%s"}' % (device, VERSION)
     else:
-        return '{ "status" : "NO" }'
+        return '{ "status" : "NO", "version" : "%s" }' % VERSION
 
 @route('/reset/')
 def reset():
@@ -60,15 +81,15 @@ def reset():
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     response.headers['Content-Type'] = 'application/json'
     killadb()
-    return '{ "status" : "OK" }'
+    return '{ "status" : "OK", "version" : "%s" }' % VERSION
 
 @route('/replstart/:device')
 def replstart(device=None):
     print "Device = %s" % device
-    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s forward tcp:8001 tcp:8001") % device, shell=True, close_fds=True)
+    subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s forward tcp:8001 tcp:8001") % device, shell=True, close_fds=True)
     if re.match('.*emulat.*', device): #  Only fake the menu key for the emulator
-        subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell input keyevent 82") % device, shell=True, close_fds=True)
-    subprocess.call((PLATDIR + "commands-for-Appinventor/adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True, close_fds=True)
+        subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s shell input keyevent 82") % device, shell=True, close_fds=True)
+    subprocess.check_output((PLATDIR + "commands-for-Appinventor/adb -s %s shell am start -a android.intent.action.VIEW -n edu.mit.appinventor.aicompanion3/.Screen1 --ez rundirect true") % device, shell=True, close_fds=True)
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'origin, content-type'
     return ''
@@ -91,13 +112,16 @@ def checkrunning(emulator):
 
 def killadb():
     """Time to nuke adb!"""
-    subprocess.call(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
+    subprocess.check_output(PLATDIR + "commands-for-Appinventor/adb kill-server", shell=True, close_fds=True)
     sys.stdout.write("Killed adb\n")
-    subprocess.call(PLATDIR + "commands-for-Appinventor/kill-emulator", shell=True, close_fds=True)
+    subprocess.check_output(PLATDIR + "commands-for-Appinventor/kill-emulator", shell=True, close_fds=True)
     sys.stdout.write("Killed emulator\n")
 
 def shutdown():
-    killadb()
+    try:                                # Be quiet...
+        killadb()
+    except:
+        pass
 
 if __name__ == '__main__':
     import atexit

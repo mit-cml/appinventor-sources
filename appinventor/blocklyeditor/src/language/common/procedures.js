@@ -65,6 +65,8 @@
  *   + no variables can be captured by renaming; alpha-renaming prevents this.
  */
 
+goog.require('goog.dom');
+
 Blockly.Language.procedures_defnoreturn = {
   // Define a procedure with no return value.
   category: 'Procedures',  // Procedures are handled specially.
@@ -292,7 +294,8 @@ Blockly.Language.procedures_defnoreturn = {
   },
   domToMutation: function(xmlElement) {
     this.arguments_ = [];
-    for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
+    var children = goog.dom.getChildren(xmlElement);
+    for (var x = 0, childNode; childNode = children[x]; x++) {
       if (childNode.nodeName.toLowerCase() == 'arg') {
         this.arguments_.push(childNode.getAttribute('name'));
       }
@@ -862,7 +865,8 @@ Blockly.Language.procedures_callnoreturn = {
     // [lyn, 10/27/13] Significantly cleaned up this code. Always take arg names from xmlElement.
     // Do not attempt to find definition.
     this.arguments_ = [];
-    for (var x = 0, childNode; childNode = xmlElement.childNodes[x]; x++) {
+    var children = goog.dom.getChildren(xmlElement);
+    for (var x = 0, childNode; childNode = children[x]; x++) {
       if (childNode.nodeName.toLowerCase() == 'arg') {
         this.arguments_.push(childNode.getAttribute('name'));
       }

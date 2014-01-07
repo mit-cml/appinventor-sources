@@ -420,7 +420,7 @@
           <ul>
             <li><a href="http://appinventor.mit.edu">Home</a></li>
             <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+            <li><a href="http://appinventor.mit.edu/explore/library">Support
                 ▾</a></li>
           </ul>
         </div>
@@ -643,27 +643,41 @@
                     <dt> <code> FormatTime(Calendar instant) </code> </dt>
                     <dd> Text describing time time of an instant </dd>
                   </dl>
-                  <h2 id="Image"> Image </h2>
-                  <img width="100" src="images/image.png" alt="" />
-                  <p> You use image components to represent images that users
-                    select and
-                    manipulate. </p>
-                  <p> An image component displays an image. You can specify the
-                    picture
-                    to display and other aspects of the image's appearance in
-                    the Designer
-                    or in the Blocks Editor. </p>
-                  <h3> Properties </h3>
-                  <dl>
-                    <dt> <code> Picture </code> </dt>
-                    <dd> Picture displayed by this image. </dd>
-                    <dt> <code> Visible </code> </dt>
-                    <dd> If true, image is displayed. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dd> Image height (y-size). </dd>
-                    <dt> <code> Width </code> </dt>
-                    <dd> Image width (x-size). </dd>
-                  </dl>
+
+
+                 <h2 id="Image">Image</h2>
+
+                 <p>Component for displaying images.  The picture to
+                 display, and other aspects of the Image's appearance,
+                 can be specified in the Designer or in the Blocks
+                 Editor.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>Animation</code></dt>
+                   <dd>This is a limited form of animation that can
+                   attach a small number of motion types to images.
+                   The allowable motions are ScrollRightSlow,
+                   ScrollRight, ScrollRightFast, ScrollLeftSlow,
+                   ScrollLeft, ScrollLeftFast, and Stop</dd>
+                   <dt><code>Height</code></dt>
+                   <dd></dd>
+                   <dt><code>Picture</code></dt>
+                   <dd></dd>
+                   <dt><code>Visible</code></dt>
+                   <dd>Specifies whether the component should be
+                   visible on the screen. Value is true if the
+                   component is showing and false if hidden.</dd>
+                   <dt><code>Width</code></dt>
+                   <dd></dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 none
+
+                 <h3>Methods</h3>
+                 none
+
                   <h2 id="Label"> Label </h2>
                   <img src="images/label.png" alt="" />
                   <p> Labels are components used to show text. </p>
@@ -758,73 +772,73 @@
                     <dt> <code> LostFocus() </code> </dt>
                     <dd> List picker is no longer the focused component. </dd>
                   </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt><code>Open()</code></dt>
+                   <dd>Opens the picker, as though the user clicked on it.</dd>
+                 </dl>
+
                   <h2 id="Notifier"> Notifier </h2>
                   <img src="images/notifier.png" alt="Picture of Notifier component" />
-                  <p> A notifier is a non-visible component that can show
-                    verious kinds
-                    of alerts and can log information. Use a notifier to display
-                    notices
-                    and alerts to users of your app, and also to log
-                    information that can
-                    help you debug your app. </p>
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> ShowMessageDialog(Text message, Text title,
-                        Text
-                        buttonText) </code> </dt>
-                    <dd> Pops up a notice that remains until the user taps a
-                      button with
-                      the given text. The arguments are the message to be shown,
-                      the title of
-                      the notice, and the label on the button. </dd>
-                    <dt> <code> ShowChooseDialog(Text message, Text title, Text
-                        button1Text, Text button2Text) </code> </dt>
-                    <dd> Pops up a notice the user must respond to by tapping
-                      one of two
-                      buttons with the given text. The arguments are the message
-                      to be shown,
-                      the title of the notice, and the labels on the left and
-                      right buttons,
-                      respectively. The <code> AfterChoosing </code> event is
-                      signalled
-                      after the user taps one of the buttons. </dd>
-                    <dt> <code> ShowTextDialog(Text message, Text title) </code>
-                    </dt>
-                    <dd> Pops up a notice which the user must respond to by
-                      entering some
-                      text. The arguments are the message to be shown and the
-                      title of the
-                      notice. The <code> AfterTextInput </code> event is
-                      signalled after
-                      the user enters the text. </dd>
-                    <dt> <code> ShowAlert(Text message </code> </dt>
-                    <dd> Pops up a temporary notice, which vanishes after a few
-                      seconds.
-                      The argument is the text of the notice. </dd>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dd> These methods are for use in debugging. They write
-                      messages to
-                      the various logs on the Android device. The logs can be
-                      read with the
-                      use of Android debugging tools, like the Android Debug
-                      Bridge (ADB). </dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                    <dt> <code> AfterChoosing(Text choice) </code> </dt>
-                    <dd> Signaled after the user has made a choice in response
-                      to <code>
-                        ShowChooseDialog </code> . The argument is the text on
-                      the button that
-                      the user tapped. </dd>
-                    <dt> <code> AfterTextInput(Text response) </code> </dt>
-                    <dd> Signaled after the user has responded to <code>
-                        ShowTextDialog </code>
-                      . The argument is the text on the button that the user
-                      entered. </dd>
-                  </dl>
+                 <h2 id="Notifier">Notifier</h2>
+
+                 <p>The Notifier component displays alert messages and
+                 creates Android log entries through the following
+                 methods: <ul><li> ShowMessageDialog: user must
+                 dismiss the message by pressing a button.</li><li>
+                 ShowChooseDialog: displays two buttons to let the
+                 user choose one of two responses, for example, yes or
+                 no, after which the AfterChoosing event is
+                 raised.</li><li> ShowTextDialog: lets the user enter
+                 text in response to the message, after which the
+                 AfterTextInput event is raised. <li> ShowAlert:
+                 displays an alert that goes away by itself after a
+                 short time.</li><li> LogError: logs an error message
+                 to the Android log. </li><li> LogInfo: logs an info
+                 message to the Android log.</li><li> LogWarning: logs
+                 a warning message to the Android log.</li></ul></p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>BackgroundColor</code></dt>
+                   <dd>Specifies the alert's background color.</dd>
+                   <dt><code>NotifierLength</code> (designer only)</dt>
+                   <dd>specifies the length of time that the alert is shown -- either "short" or "long".</dd>
+                   <dt><code>TextColor</code></dt>
+                   <dd>Specifies the alert's text color.</dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 <dl>
+                   <dt><code>AfterChoosing(text choice)</code></dt>
+                   <dd>Event after the user has made a selection for ShowChooseDialog.</dd>
+                   <dt><code>AfterTextInput(text response)</code></dt>
+                   <dd>Event raised after the user has responded to ShowTextDialog.</dd>
+                 </dl>
+
+                 <h3>Methods</h3>
+                 <dl>
+                   <dt><code>LogError(text message)</code></dt>
+                   <dd>Writes an error message to the Android log.</dd>
+                   <dt><code>LogInfo(text message)</code></dt>
+                   <dd>Writes an information message to the Android log.</dd>
+                   <dt><code>LogWarning(text message)</code></dt>
+                   <dd>Writes a warning message to the Android log.</dd>
+                   <dt><code>ShowAlert(text notice)</code></dt>
+                   <dd>Display a temporary notification</dd>
+                   <dt><code>ShowChooseDialog(text message, text title, text button1Text, text button2Text, boolean cancelable)</code></dt>
+                   <dd>Displays an alert with two buttons that have specified text, and additional button
+                  marked CANCEL if cancelable is set.
+                  Raises the AfterChoosing event when the choice has been made, and returns the text of
+                  the button that was pressed.</dd>
+                   <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
+                   <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
+                   <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
+                   <dd>Shows a dialog box in which the user can enter text, after which the
+                  AfterTextInput event is raised.</dd>
+                 </dl>
+
                   <h2 id="PasswordTextBox"> PasswordTextBox </h2>
                   <img src="images/passwordtextbox.png" alt="" />
                   <p> Users enter passwords in a password text box component,
@@ -1123,10 +1137,10 @@
                       to access the geolocation API. If False, then assume
                       permission is
                       granted. </dd>
-                    <dt> <code> UsesLocation </code> </dt>
-                    <dd> Whether or not to give the application permission to
-                      use the
-                      Javascript geolocation API. </dd>
+                    <dt><code>UsesLocation</code> (designer only)</dt>
+                    <dd>Whether or not to give the application permission to use the
+                      Javascript geolocation API. This property is available only in the
+                      designer.</dd>
                     <dt> <code> Visible </code> </dt>
                     <dd> Whether the component is visible </dd>
                     <dt> <code> Width </code> </dt>
@@ -1180,7 +1194,7 @@
               <p style="text-align: center;">© 2012-2013 <a target="_blank" class="ext"
                   href="http://web.mit.edu/">Massachusetts
                   Institute of Technology</a><span class="ext"></span></p>
-              <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+              <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact
                   Us</a></p>
             </div>
           </div>

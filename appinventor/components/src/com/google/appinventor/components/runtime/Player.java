@@ -49,15 +49,15 @@ import java.io.IOException;
  * @author halabelson@google.com (Hal Abelson)
  */
 @DesignerComponent(version = YaVersion.PLAYER_COMPONENT_VERSION,
-    description = "<p>Multimedia component that plays audio or video and " +
+    description = "Multimedia component that plays audio or video and " +
     "controls phone vibration.  The name of a multimedia field is " +
     "specified in the <code>Source</code> property, which can be set in " +
     "the Designer or in the Blocks Editor.  The length of time for a " +
     "vibration is specified in the Blocks Editor in milliseconds " +
-    "(thousandths of a second).</p>" +
-    "<p>For legal sound and video formats, see " +
+    "(thousandths of a second).\n" +
+    "<p>For supported sound and video formats, see " +
     "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
-    " target=\"_blank\">Android Supported Media Formats</a>.</p>" +
+    " target=\"_blank\">Android Supported Media Formats</a>.</p>\n" +
     "<p>If you will only be playing sound files and vibrating, not using " +
     "video, this component is best for long sound files, such as songs, " +
     "while the <code>Sound</code> component is more efficient for short " +
@@ -75,7 +75,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   private int playerState;
   private String sourcePath;
-  
+
   // determines if playing should loop
   private boolean loop;
 
@@ -167,7 +167,7 @@ public final class Player extends AndroidNonvisibleComponent
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
     }
   }
-  
+
   /**
    * Reports whether the media is playing.
    */
@@ -185,7 +185,7 @@ public final class Player extends AndroidNonvisibleComponent
    * Reports whether the playing should loop.
    */
   @SimpleProperty(
-      description = 
+      description =
       "If true, the player will loop when it plays. Setting Loop while the player " +
       "is playing will affect the current playing.",
       category = PropertyCategory.BEHAVIOR)
@@ -303,7 +303,7 @@ public final class Player extends AndroidNonvisibleComponent
           ErrorMessages.ERROR_UNABLE_TO_PREPARE_MEDIA, sourcePath);
     }
   }
- 
+
   // OnCompletionListener implementation
   @Override
   public void onCompletion(MediaPlayer m) {
@@ -343,7 +343,7 @@ public final class Player extends AndroidNonvisibleComponent
       Pause();
     }
   }
-  
+
   // OnDestroyListener implementation
   @Override
   public void onDestroy() {

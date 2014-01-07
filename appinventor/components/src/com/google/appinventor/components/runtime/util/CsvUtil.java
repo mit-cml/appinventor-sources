@@ -174,10 +174,12 @@ public final class CsvUtil {
         // Invariant: pos < limit && lookingAtCell() from hasNext() or previous
         // iteration
         if (buf[pos] != '"') {
-          result.add(new String(buf, pos, cellLength));
+          // trim the string tokens we pull from the CSV entries, since it's common to include
+          // leading an trailing spaces here
+          result.add(new String(buf, pos, cellLength).trim());
         } else {
           String cell = new String(buf, pos + 1, cellLength - 2);
-          result.add(ESCAPED_QUOTE_PATTERN.matcher(cell).replaceAll("\""));
+          result.add(ESCAPED_QUOTE_PATTERN.matcher(cell).replaceAll("\"").trim());
         }
         trailingComma = delimitedCellLength > 0 && buf[pos + delimitedCellLength - 1] == ',';
         pos += delimitedCellLength;

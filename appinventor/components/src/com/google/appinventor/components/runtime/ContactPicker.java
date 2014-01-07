@@ -28,21 +28,21 @@ import android.util.Log;
  * @author markf@google.com (Mark Friedman)
  */
 @DesignerComponent(version = YaVersion.CONTACTPICKER_COMPONENT_VERSION,
-    description = "<p>A button that, when clicked on, displays a list of " +
+    description = "A button that, when clicked on, displays a list of " +
     "the contacts to choose among. After the user has made a " +
     "selection, the following properties will be set to information about " +
-    "the chosen contact: <ul>" +
-    "<li> <code>ContactName</code>: the contact's name </li> "  +
-    "<li> <code>EmailAddress</code>: the contact's primary email address </li> " +
+    "the chosen contact: <ul>\n" +
+    "<li> <code>ContactName</code>: the contact's name </li>\n "  +
+    "<li> <code>EmailAddress</code>: the contact's primary email address </li>\n " +
     "<li> <code>Picture</code>: the name of the file containing the contact's " +
     "image, which can be used as a <code>Picture</code> property value for " +
-    "the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>" +
+    "the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n" +
     "</p><p>Other properties affect the appearance of the button " +
     "(<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and " +
-    "whether it can be clicked on (<code>Enabled</code>).</p>" +
+    "whether it can be clicked on (<code>Enabled</code>).\n</p>" +
     "<p>Picking is not supported on all phones.  If it fails, this component will " +
     "show a notification.  The error behavior can be overridden with the " +
-    "Screen.ErrorOccurred event handler.</p>",
+    "Screen.ErrorOccurred event handler.",
     category = ComponentCategory.SOCIAL)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
@@ -102,14 +102,17 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public String EmailAddress() {
-    // Note(halabelson):  I am commenting out this error message.   Email picking seems to
-    // work on newer versions of the SDK. If we do have a phone where email picking fails, then
-    // in this version of the picker, we'll just go to PuntContactSelection.  Note that there
-    // is still a general problem with contact picking on Motoblur.
-//    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
-//      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
-//          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL);
-//    }
+    // TODO(halabelson): Update this code to stop using android.provider.contacts and swith
+    // to android.provider.ContactContracts
+
+    // Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
+    // deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
+    // If there's a phone where it does not work, we'll get the error at PuntContactSelection
+    // Note that there is still a general problem with contact picking on Motoblur.
+    //    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
+    //      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
+    //          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_CONTACT_EMAIL);
+    //    }
     return ensureNotNull(emailAddress);
   }
 

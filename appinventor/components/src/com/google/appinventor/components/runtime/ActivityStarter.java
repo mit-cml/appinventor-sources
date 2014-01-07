@@ -32,64 +32,63 @@ import android.util.Log;
  * @author markf@google.com (Mark Friedman)
  */
 @DesignerComponent(version = YaVersion.ACTIVITYSTARTER_COMPONENT_VERSION,
-    designerHelpDescription = "<p>A component that can launch an activity " +
-    "using the <code>StartActivity</code> method.</p>" +
-    "<p>Activities that can be launched include:<ul> " +
-    "<li> starting other App Inventor for Android apps </li> " +
-    "<li> starting the camera application </li> " +
-    "<li> performing web search </li> " +
-    "<li> opening a browser to a specified web page</li> " +
-    "<li> opening the map application to a specified location</li></ul> " +
+    designerHelpDescription = "A component that can launch an activity " +
+    "using the <code>StartActivity</code> method." +
+    "<p>Activities that can be launched include: <ul> \n" +
+    "<li> starting other App Inventor for Android apps </li> \n" +
+    "<li> starting the camera application </li> \n" +
+    "<li> performing web search </li> \n" +
+    "<li> opening a browser to a specified web page</li> \n" +
+    "<li> opening the map application to a specified location</li></ul> \n" +
     "You can also launch activities that return text data.  See the " +
-    "documentation on using the Activity Starter for examples." +
-    "</p>",
+    "documentation on using the Activity Starter for examples.</p>",
+
 
     // TODO(user): Add more information about bringing up maps when
     // the issues with html quoting (bug 2386151) are fixed.
-    description = "<p>A component that can launch an activity using " +
-    "the <code>StartActivity</code> method.</p>" +
+    description = "A component that can launch an activity using " +
+    "the <code>StartActivity</code> method. \n" +
     "<p>Activities that can be launched include:<ul> " +
-    "<li> Starting another App Inventor for Android app.  To do so, first " +
+    "<li> Starting another App Inventor for Android app. \n To do so, first " +
     "     find out the <em>class</em> of the other application by " +
     "     downloading the source code and using a file explorer or unzip " +
     "     utility to find a file named " +
-    "     \"youngandroidproject/project.properties\".  The first line of " +
+    "     \"youngandroidproject/project.properties\".  \n The first line of " +
     "     the file will start with \"main=\" and be followed by the class " +
     "     name; for example, " +
     "     <code>main=com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>.  " +
     "     (The first components indicate that it was created by " +
-    "     Ben.Bitdiddle@gmail.com.)  To make your " +
+    "     Ben.Bitdiddle@gmail.com.)  \n To make your " +
     "     <code>ActivityStarter</code> launch this application, set the " +
-    "     following properties: <ul> " +
+    "     following properties: <ul>\n " +
     "     <li> <code>ActivityPackage</code> to the class name, dropping the " +
     "          last component (for example, " +
-    "          <code>com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li> " +
+    "          <code>com.gmail.Bitdiddle.Ben.HelloPurr</code>)</li>\n " +
     "     <li> <code>ActivityClass</code> to the entire class name (for " +
     "          example, " +
     "          <code>com.gmail.Bitdiddle.Ben.HelloPurr.Screen1</code>)</li> " +
-    "     </ul></li>" +
+    "     </ul></li> \n" +
     "<li> Starting the camera application by setting the following " +
-    "     properties:<ul> " +
-    "     <li> <code>Action: android.intent.action.MAIN</code> </li> " +
-    "     <li> <code>ActivityPackage: com.android.camera</code> </li> " +
-    "     <li> <code>ActivityClass: com.android.camera.Camera</code></li> " +
-    "     </ul></li>" +
+    "     properties:<ul> \n" +
+    "     <li> <code>Action: android.intent.action.MAIN</code> </li> \n" +
+    "     <li> <code>ActivityPackage: com.android.camera</code> </li> \n" +
+    "     <li> <code>ActivityClass: com.android.camera.Camera</code></li>\n " +
+    "     </ul></li>\n" +
     "<li> Performing web search.  Assuming the term you want to search " +
-    "     for is \"vampire\" (feel free to substitute your own choice), " +
-    "     set the properties to:<blockquote><code> " +
-    "     Action: android.intent.action.WEB_SEARCH<br/> " +
-    "     ExtraKey: query<br/> " +
-    "     ExtraValue: vampire<br/> " +
-    "     ActivityPackage: com.google.android.providers.enhancedgooglesearch<br/>" +
-    "     ActivityClass: com.google.android.providers.enhancedgooglesearch.Launcher<br/> " +
-    "     </code></blockquote></li> " +
+    "     for is \"vampire\" (feel free to substitute your own choice), \n" +
+    "     set the properties to:\n<ul><code>" +
+    "     <li>Action: android.intent.action.WEB_SEARCH</li> " +
+    "     <li>ExtraKey: query</li> " +
+    "     <li>ExtraValue: vampire</li> " +
+    "     <li>ActivityPackage: com.google.android.providers.enhancedgooglesearch</li>" +
+    "     <li>ActivityClass: com.google.android.providers.enhancedgooglesearch.Launcher</li> " +
+    "     </code></ul></li> \n" +
     "<li> Opening a browser to a specified web page.  Assuming the page you " +
     "     want to go to is \"www.facebook.com\" (feel free to substitute " +
-    "     your own choice), set the properties to: <blockquote><code> " +
-    "     Action: android.intent.action.VIEW <br/> " +
-    "     DataUri: http://www.facebook.com </code> </blockquote> </li> " +
-    "</ul>" +
-    "</p>",
+    "     your own choice), set the properties to:\n<ul><code> " +
+    "     <li>Action: android.intent.action.VIEW</li> " +
+    "     <li>DataUri: http://www.facebook.com</li> </code> </ul> </li> " +
+    "</ul></p>",
     category = ComponentCategory.CONNECTIVITY,
     nonVisible = true,
     iconName = "images/activityStarter.png")

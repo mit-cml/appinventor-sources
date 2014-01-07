@@ -78,6 +78,7 @@ function myStringify (obj) {
 
 
 if (!Blockly.Language) Blockly.Language = {};
+goog.require('goog.dom');
 
 /**
  * Prototype bindings for a global variable declaration block
@@ -263,10 +264,11 @@ Blockly.Language.local_declaration_statement = {
   },
   domToMutation: function(xmlElement) { // Retrieve local names from mutation element of XML for block
                                         // and replace existing declarations
-    if (Object.keys(xmlElement).length > 0) { // Ensure xml element is nonempty
+    var children = goog.dom.getChildren(xmlElement);
+    if (children.length > 0) { // Ensure xml element is nonempty
       // Else we'll overwrite initial list with "name" for new block
       this.localNames_ = [];
-      for (var i = 0, childNode; childNode = xmlElement.childNodes[i]; i++) {
+      for (var i = 0, childNode; childNode = children[i]; i++) {
         if (childNode.nodeName.toLowerCase() == 'localname') {
           this.localNames_.push(childNode.getAttribute('name'));
         }

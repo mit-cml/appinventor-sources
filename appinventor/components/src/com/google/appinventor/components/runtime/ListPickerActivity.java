@@ -53,6 +53,10 @@ public class ListPickerActivity extends Activity implements AdapterView.OnItemCl
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ANIM_TYPE)) {
       closeAnim = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_ANIM_TYPE);
     }
+    if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_TITLE)) {
+      String title = myIntent.getStringExtra(ListPicker.LIST_ACTIVITY_TITLE);
+      setTitle(title);
+    }
     if (myIntent.hasExtra(ListPicker.LIST_ACTIVITY_ARG_NAME)) {
       String items[] = getIntent().getStringArrayExtra(ListPicker.LIST_ACTIVITY_ARG_NAME);
       listView = new ListView(this);

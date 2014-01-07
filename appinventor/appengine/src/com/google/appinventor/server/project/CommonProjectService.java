@@ -195,11 +195,12 @@ public abstract class CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
+   * @param nonce -- random string used to find finished APK
    * @param target  build target (optional, implementation dependent)
    *
    * @return  build results
    */
-  public abstract RpcResult build(User user, long projectId, String target);
+  public abstract RpcResult build(User user, long projectId, String nonce, String target);
 
   /**
    * Gets the result of a build command for the project.
