@@ -86,6 +86,9 @@ public class BuildServer {
     @Option(name = "--debug",
       usage = "Turn on debugging, which enables the non-async calls of the buildserver.")
     boolean debug = false;
+    @Option(name = "--dexCacheDir",
+            usage = "the directory to cache the pre-dexed libraries")
+    String dexCacheDir = null;
 
   }
 
@@ -489,7 +492,7 @@ public class BuildServer {
     // is happening, so we should be careful about that.
     outputDir.deleteOnExit();
     Result buildResult = projectBuilder.build(userName, new ZipFile(zipFile), outputDir, false, false,
-      commandLineOptions.childProcessRamMb);
+      commandLineOptions.childProcessRamMb, commandLineOptions.dexCacheDir);
     String buildOutput = buildResult.getOutput();
     LOG.info("Build output: " + buildOutput);
     String buildError = buildResult.getError();
