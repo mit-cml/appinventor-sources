@@ -393,13 +393,50 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '<mutation items="2"></mutation>' +
     '</block>' +
   '</xml>'},
-  component_method: [{matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
-    mutatorXMLStringFunction: function(mutatorAttributes) { return '' +
-    '<xml>' +
-      '<block type="component_method">' +
-      //mutator generator
-      Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
-      '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
-    '</block>' +
-  '</xml>';}}]
-};
+  component_method:
+    [{matchingMutatorAttributes:{component_type:"TinyDB", method_name:"GetValue"},
+      mutatorXMLStringFunction: function(mutatorAttributes) { return '' +
+      '<xml>' +
+        '<block type="component_method">' +
+          //mutator generator
+          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          '<value name="ARG1"><block type="text"><title name="TEXT"></title></block></value>' +
+        '</block>' +
+      '</xml>';}},
+    {matchingMutatorAttributes:{component_type:"iSENSE", method_name:"UploadDataSet"},
+      mutatorXMLStringFunction: function(mutatorAttributes) { return '' +
+      '<xml>' +
+        '<block type="component_method">' +
+          //mutator generator
+          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          '<value name="ARG1">' +
+            '<block type="lists_create_with" inline="false">' +
+              '<mutation items="3"></mutation>' +
+            '</block>' +
+          '</value>' +
+          '<value name="ARG2">' +
+            '<block type="lists_create_with" inline="false">' +
+              '<mutation items="3"></mutation>' +
+            '</block>' +
+          '</value>' +
+        '</block>' +
+      '</xml>';}},
+    {matchingMutatorAttributes:{component_type:"iSENSE", method_name:"AppendDataSet"},
+      mutatorXMLStringFunction: function(mutatorAttributes) { return '' +
+      '<xml>' +
+        '<block type="component_method">' +
+          //mutator generator
+          Blockly.Drawer.mutatorAttributesToXMLString(mutatorAttributes) +
+          '<value name="ARG1">' +
+            '<block type="lists_create_with" inline="false">' +
+              '<mutation items="3"></mutation>' +
+            '</block>' +
+          '</value>' +
+          '<value name="ARG2">' +
+            '<block type="lists_create_with" inline="false">' +
+              '<mutation items="3"></mutation>' +
+            '</block>' +
+          '</value>' +
+        '</block>' +
+      '</xml>';}}]
+  };
