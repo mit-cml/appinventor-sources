@@ -234,7 +234,7 @@ public interface OdeMessages extends Messages {
   @Description("Name of Import Project menuitem")
   String importProjectButton();
 
-  @DefaultMessage("Export project (.aia) to my computer")
+  @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectButton();
 
