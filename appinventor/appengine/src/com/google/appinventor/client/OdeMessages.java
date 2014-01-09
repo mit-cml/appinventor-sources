@@ -108,11 +108,11 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
 
-  @DefaultMessage("App ( provide QR code )")
+  @DefaultMessage("App ( provide QR code for .apk )")
   @Description("Label of item for building a project and show barcode")
   String showBarcodeButton();
 
-  @DefaultMessage("App ( save to my computer )")
+  @DefaultMessage("App ( save .apk to my computer )")
   @Description("Label of item for building a project and downloading")
   String downloadToComputerButton();
 
@@ -230,11 +230,11 @@ public interface OdeMessages extends Messages {
   @Description("Name of Save as ... menuitem")
   String saveAsMenuItem();
 
-  @DefaultMessage("Import project to App Inventor server")
+  @DefaultMessage("Import project (.aia) from my computer ...")
   @Description("Name of Import Project menuitem")
   String importProjectButton();
 
-  @DefaultMessage("Export project to local computer")
+  @DefaultMessage("Export project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
   String exportProjectButton();
 
@@ -876,7 +876,7 @@ public interface OdeMessages extends Messages {
   @Description("Label for the Project Button")
   String projectButton();
 
-  @DefaultMessage("Start new project")
+  @DefaultMessage("Start new project ...")
   @Description("Label of the menu item for creating a new project")
   String newMenuItemButton();
 
