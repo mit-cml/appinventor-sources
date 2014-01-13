@@ -124,7 +124,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	// upload photos to dataset
 	@SimpleFunction(description = "Upload Photos to iSENSE")
-	public void UploadPhotosToDataSet(int DataSetID, String Photo) {
+	public void UploadPhotoToDataSet(int DataSetID, String Photo) {
 		String path = Photo.substring(7);
 		File tmp = new File(path);
 		int mediaid = api.uploadDataSetMedia(DataSetID, tmp);
@@ -158,10 +158,10 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 		return sdf.format(cal.getTime()).toString();
 	}
 
-	@SimpleFunction(description = "logcat")
-	public void TestLogCat(String str) {
-		Log.i("iSENSE", str);
-	}
+	// @SimpleFunction(description = "logcat")
+	// public void TestLogCat(String str) {
+	// Log.i("iSENSE", str);
+	// }
 
 	@SimpleEvent(description = "iSENSE Upload DataSet Succeeded")
 	public void UploadDataSetSucceeded(int DataSetID) {
