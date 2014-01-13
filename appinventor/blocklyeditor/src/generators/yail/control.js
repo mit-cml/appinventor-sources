@@ -64,19 +64,36 @@ Blockly.Yail.controls_if = function() {
 //ADDED
 Blockly.Yail.controls_if_aaron = function() {
 
+  // var test = Blockly.Yail.valueToCode(this, 'IF0', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
+  // var thenReturn = Blockly.Yail.valueToCode(this, 'DO0', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  // var elseReturn = Blockly.Yail.valueToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
+  // var code = Blockly.Yail.YAIL_IF + test
+  //            + Blockly.Yail.YAIL_SPACER +  thenReturn 
+  //            + Blockly.Yail.YAIL_SPACER +  elseReturn 
+  //            + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  // return [code,Blockly.Yail.ORDER_ATOMIC];
+
+
   var code = "";
   for(var i=0;i<this.elseifCount_ + 1;i++){
     var argument = Blockly.Yail.valueToCode(this, 'IF'+ i, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
     var branch = Blockly.Yail.statementToCode(this, 'DO'+ i) || Blockly.Yail.YAIL_FALSE;
     if(i != 0) {
-      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
+      // code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
+      code += Blockly.Yail.YAIL_SPACER;
     }
-    code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
-      + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    // code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
+    //   + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+
+    code += Blockly.Yail.YAIL_IF + argument 
+	  + Blockly.Yail.YAIL_SPACER + branch
+
   }
   if(this.elseCount_ == 1){
     var branch = Blockly.Yail.statementToCode(this, 'ELSE') || Blockly.Yail.YAIL_FALSE;
-    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    // code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    code += Blockly.Yail.YAIL_SPACER + branch;
+
   }
   
   for(var i=0;i<this.elseifCount_;i++){
