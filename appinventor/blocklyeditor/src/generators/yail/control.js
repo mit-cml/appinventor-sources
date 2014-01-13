@@ -60,6 +60,33 @@ Blockly.Yail.controls_if = function() {
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
+//----------------------------------------
+//ADDED
+Blockly.Yail.controls_if_aaron = function() {
+
+  var code = "";
+  for(var i=0;i<this.elseifCount_ + 1;i++){
+    var argument = Blockly.Yail.valueToCode(this, 'IF'+ i, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+    var branch = Blockly.Yail.statementToCode(this, 'DO'+ i) || Blockly.Yail.YAIL_FALSE;
+    if(i != 0) {
+      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
+    }
+    code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
+      + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+  if(this.elseCount_ == 1){
+    var branch = Blockly.Yail.statementToCode(this, 'ELSE') || Blockly.Yail.YAIL_FALSE;
+    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+  
+  for(var i=0;i<this.elseifCount_;i++){
+    code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  }
+  code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return [code,Blockly.Yail.ORDER_ATOMIC];
+};
+//----------------------------------------
+
 
 // [lyn, 01/15/2013] Edited to make consistent with removal of "THEN-DO" and "ELSE-DO"
 Blockly.Yail.controls_choose = function() {
