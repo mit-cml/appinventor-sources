@@ -153,6 +153,10 @@ public class ObjectifyStorageIo implements  StorageIo {
     String cachekey = User.usercachekey + "|" + userId;
     User tuser = (User) memcache.get(cachekey);
     if (tuser != null && tuser.getUserTosAccepted() && ((email == null) || (tuser.getUserEmail().equals(email)))) {
+      if (tuser.getUserName()==null) {
+        setUserName(userId,tuser.getDefaultName());
+        tuser.setUserName(tuser.getDefaultName());
+      }
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
@@ -171,7 +175,12 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
           user.setUserEmail(userData.email);
-          user.setUserName(userData.name);
+          if (userData.name==null) {
+            setUserName(userId,user.getDefaultName());
+            user.setUserName(user.getDefaultName());
+          } else {
+            user.setUserName(userData.name);
+          }
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
         }
       });
@@ -194,6 +203,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.tosAccepted = false;
     userData.settings = "";
     userData.email = email == null ? "" : email;
+    
     datastore.put(userData);
     return userData;
   }

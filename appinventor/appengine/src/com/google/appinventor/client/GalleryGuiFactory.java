@@ -181,7 +181,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       commentItem.add(commentPerson);
       
       // Add commentContent
-      Label cAuthor = new Label(c.getUserId());
+      Label cAuthor = new Label(c.getUserName());
       cAuthor.addStyleName("comment-author");
       commentMeta.add(cAuthor);
 

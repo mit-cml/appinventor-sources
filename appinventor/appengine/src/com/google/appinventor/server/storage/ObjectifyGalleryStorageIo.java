@@ -358,8 +358,14 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
           for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("-dateCreated")) {
+            User commenter = storageIo.getUser(commentData.userId);
+            String name="unknown";
+            if (commenter!= null) {
+               name = commenter.getUserName();
+            }
             GalleryComment galleryComment = new GalleryComment(galleryId,
                 commentData.userId,commentData.comment,commentData.dateCreated);
+            galleryComment.setUserName(name);
             comments.add(galleryComment);
           }
         }

@@ -71,6 +71,14 @@ public class GalleryComment implements IsSerializable{
     this.userId = userId;
   }
 
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String name) {
+    this.userName = name;
+  }
+
 
   public int getNumCurFlags() {
     return numCurFlags;
@@ -104,6 +112,7 @@ public class GalleryComment implements IsSerializable{
   private long timeStamp;
   private String comment;
   private String userId;
+  private String userName;
   private int numCurFlags;
 
   private String treeId;

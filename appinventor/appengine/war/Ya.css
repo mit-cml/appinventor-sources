@@ -1310,7 +1310,6 @@ textarea::-webkit-input-placeholder {
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 */
-
 .ode-UserProfileWrapper .gallery-content-card {
   width: 50%;
   padding: 15px;
@@ -1319,8 +1318,17 @@ textarea::-webkit-input-placeholder {
   margin-bottom: 15px;
 }
 .ode-UserProfileWrapper .gallery-card {
-  height: 160px;
+  height: 140px;
 }
+
+.ode-UserProfileWrapper .app-image {
+  margin-top:5px;
+  margin-left: 15px;
+  
+  width: 130px;
+  height: 130px;
+}
+
 .ode-UserProfileWrapper .gallery-card .gallery-editprompt {
   margin: -150px 0;
 }
@@ -1344,7 +1352,6 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0px;
   border-radius: 0px;
 }
-
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
   border: none;
