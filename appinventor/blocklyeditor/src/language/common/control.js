@@ -224,8 +224,15 @@ Blockly.Language.controls_if_aaron = {
         .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF);
     this.appendValueInput('DO0') //ADDED
         .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
-    this.setMutator(new Blockly.Mutator(['controls_if_elseif',
-                                         'controls_if_else']));
+
+      this.appendValueInput('ELSE') //ADDED
+          .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+
+    // this.setMutator(new Blockly.Mutator(['controls_if_elseif',
+    //                                      'controls_if_else']));
+    this.setMutator(new Blockly.Mutator(['controls_if_elseif']));
+
+
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
@@ -298,9 +305,9 @@ Blockly.Language.controls_if_aaron = {
   },
   compose: function(containerBlock) {
     // Disconnect the else input blocks and destroy the inputs.
-    if (this.elseCount_) {
+    // if (this.elseCount_) {
       this.removeInput('ELSE');
-    }
+    // }
     this.elseCount_ = 0;
     // Disconnect all the elseif input blocks and destroy the inputs.
     for (var x = this.elseifCount_; x > 0; x--) {
@@ -342,6 +349,12 @@ Blockly.Language.controls_if_aaron = {
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
+      var elseInput = this.appendValueInput('ELSE');
+      elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+      // Reconnect any child blocks.
+      if (clauseBlock.statementConnection_) {
+          elseInput.connection.connect(clauseBlock.statementConnection_);
+      }
   },
   saveConnections: function(containerBlock) {
     // Store a pointer to any connected child blocks.
