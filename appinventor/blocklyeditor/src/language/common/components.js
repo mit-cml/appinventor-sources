@@ -316,7 +316,6 @@ Blockly.Language.component_method = {
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     if(!this.isGeneric) {
       this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getMethodTypeObject().name, 'COLLAPSED_TEXT');
@@ -519,7 +518,6 @@ Blockly.Language.component_set_get = {
         this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle( (this.isGeneric ? this.typeName : this.instanceName) + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
 
@@ -686,7 +684,6 @@ Blockly.Language.component_component_block = {
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle(this.instanceName, 'COLLAPSED_TEXT');
   },

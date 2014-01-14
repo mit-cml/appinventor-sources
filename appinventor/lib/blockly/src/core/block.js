@@ -528,6 +528,8 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
     Blockly.highlightedConnection_.unhighlight();
     Blockly.highlightedConnection_ = null;
   }
+  Blockly.mainWorkspace.render();
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 };
 
 /**

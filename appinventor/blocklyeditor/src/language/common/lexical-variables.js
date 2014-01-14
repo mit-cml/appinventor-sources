@@ -100,7 +100,6 @@ Blockly.Language.global_declaration = {
         .appendTitle(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT + " " + this.getTitleValue('NAME'),
                      'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
     return [this.getTitleValue('NAME')];
   },
@@ -162,7 +161,6 @@ Blockly.Language.lexical_variable_get = {
          }
        }
     }
-    Blockly.WarningHandler.checkErrors.call(this);
   },
   renameLexicalVar: function(oldName, newName) {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
@@ -251,7 +249,6 @@ Blockly.Language.local_declaration_statement = {
   },
   onchange: function () {
      this.localNames_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
-     Blockly.WarningHandler.checkErrors.call(this); // handle any new errors.
    },
   mutationToDom: function() { // Store local names in mutation element of XML for block
     var container = document.createElement('mutation');
@@ -496,7 +493,6 @@ Blockly.Language.local_declaration_expression = {
         .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT + ' '  + this.localNames_.join(', '),
                      'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.Language.local_declaration_statement.mutationToDom,
   domToMutation: Blockly.Language.local_declaration_statement.domToMutation,
   addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,
