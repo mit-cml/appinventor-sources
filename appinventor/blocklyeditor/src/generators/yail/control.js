@@ -77,22 +77,22 @@ Blockly.Yail.controls_if_aaron = function() {
   var code = "";
   for(var i=0;i<this.elseifCount_ + 1;i++){
     var argument = Blockly.Yail.valueToCode(this, 'IF'+ i, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-    var branch = Blockly.Yail.statementToCode(this, 'DO'+ i) || Blockly.Yail.YAIL_FALSE;
+    var branch = Blockly.Yail.valueToCode(this, 'DO'+ i, Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
     if(i != 0) {
-      // code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
-      code += Blockly.Yail.YAIL_SPACER;
+      code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN;
+      // code += Blockly.Yail.YAIL_SPACER;
     }
-    // code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
-    //   + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    code += Blockly.Yail.YAIL_IF + argument + Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN
+      + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 
-    code += Blockly.Yail.YAIL_IF + argument 
-	  + Blockly.Yail.YAIL_SPACER + branch
+    // code += Blockly.Yail.YAIL_IF + argument 
+    // 	  + Blockly.Yail.YAIL_SPACER + branch
 
   }
   if(this.elseCount_ == 1){
-    var branch = Blockly.Yail.statementToCode(this, 'ELSE') || Blockly.Yail.YAIL_FALSE;
-    // code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-    code += Blockly.Yail.YAIL_SPACER + branch;
+    var branch = Blockly.Yail.valueToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+    // code += Blockly.Yail.YAIL_SPACER + branch;
 
   }
   
