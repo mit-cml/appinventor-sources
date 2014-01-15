@@ -281,10 +281,14 @@ Blockly.Language.controls_if_aaron = {
       this.appendValueInput('DO' + x) //ADDED
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
     }
-    if (this.elseCount_) {
-      this.appendValueInput('ELSE') //ADDED
+
+    this.removeInput('ELSE'); //ADDED
+    // if (this.elseCount_) {
+    //   this.appendValueInput('ELSE') //ADDED
+    //       .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    // }
+    this.appendValueInput('ELSE') //ADDED
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
-    }
   },
   decompose: function(workspace) {
     var containerBlock = new Blockly.Block(workspace, 'controls_if_if');
@@ -306,8 +310,10 @@ Blockly.Language.controls_if_aaron = {
   compose: function(containerBlock) {
     // Disconnect the else input blocks and destroy the inputs.
     // if (this.elseCount_) {
-      this.removeInput('ELSE');
+    //   this.removeInput('ELSE');
     // }
+    this.removeInput('ELSE');
+
     this.elseCount_ = 0;
     // Disconnect all the elseif input blocks and destroy the inputs.
     for (var x = this.elseifCount_; x > 0; x--) {
@@ -349,12 +355,13 @@ Blockly.Language.controls_if_aaron = {
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
-      var elseInput = this.appendValueInput('ELSE');
-      elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
-      // Reconnect any child blocks.
-      if (clauseBlock.statementConnection_) {
-          elseInput.connection.connect(clauseBlock.statementConnection_);
-      }
+    var elseInput = this.appendValueInput('ELSE');
+    elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    // Reconnect any child blocks.
+    // if (clauseBlock.statementConnection_) {
+    // 	elseInput.connection.connect(clauseBlock.statementConnection_);
+    // }
+
   },
   saveConnections: function(containerBlock) {
     // Store a pointer to any connected child blocks.
