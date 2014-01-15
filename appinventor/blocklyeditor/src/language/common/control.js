@@ -248,7 +248,7 @@ Blockly.Language.controls_if_aaron = {
       return '';
     });
     this.elseifCount_ = 0;
-    this.elseCount_ = 0;
+    this.elseCount_ = 1;
     this.warnings = [{name:"checkEmptySockets",sockets:[{baseName:"IF"},{baseName:"DO"}]}];
     this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF, 'COLLAPSED_TEXT');
   },
@@ -283,12 +283,12 @@ Blockly.Language.controls_if_aaron = {
     }
 
     this.removeInput('ELSE'); //ADDED
-    // if (this.elseCount_) {
-    //   this.appendValueInput('ELSE') //ADDED
-    //       .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
-    // }
-    this.appendValueInput('ELSE') //ADDED
+    if (this.elseCount_) {
+      this.appendValueInput('ELSE') //ADDED
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    }
+    // this.appendValueInput('ELSE') ADDED
+    //       .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
   },
   decompose: function(workspace) {
     var containerBlock = new Blockly.Block(workspace, 'controls_if_if');
@@ -303,16 +303,17 @@ Blockly.Language.controls_if_aaron = {
     if (this.elseCount_) {
       var elseBlock = new Blockly.Block(workspace, 'controls_if_else');
       elseBlock.initSvg();
+      elseBlock.deletable_ = false;
       connection.connect(elseBlock.previousConnection);
     }
     return containerBlock;
   },
   compose: function(containerBlock) {
     // Disconnect the else input blocks and destroy the inputs.
-    // if (this.elseCount_) {
-    //   this.removeInput('ELSE');
-    // }
-    this.removeInput('ELSE');
+    if (this.elseCount_) {
+      this.removeInput('ELSE');
+    }
+    // this.removeInput('ELSE');
 
     this.elseCount_ = 0;
     // Disconnect all the elseif input blocks and destroy the inputs.
@@ -355,12 +356,6 @@ Blockly.Language.controls_if_aaron = {
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
-    var elseInput = this.appendValueInput('ELSE');
-    elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
-    // Reconnect any child blocks.
-    // if (clauseBlock.statementConnection_) {
-    // 	elseInput.connection.connect(clauseBlock.statementConnection_);
-    // }
 
   },
   saveConnections: function(containerBlock) {
