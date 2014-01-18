@@ -212,8 +212,8 @@ Blockly.Language.controls_if = {
 
 //ADDED
 //----------------------------------------
-Blockly.Language.controls_if_aaron = {
-  // If/elseif/else condition.
+Blockly.Language.controls_choose = {
+  // choose condition.
   category: Blockly.LANG_CATEGORY_CONTROLS,
   helpUrl: Blockly.LANG_CONTROLS_IF_HELPURL,
   init: function() {
@@ -228,41 +228,32 @@ Blockly.Language.controls_if_aaron = {
       this.appendValueInput('ELSE') //ADDED
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
 
-    // this.setMutator(new Blockly.Mutator(['controls_if_elseif',
-    //                                      'controls_if_else']));
     this.setMutator(new Blockly.Mutator(['controls_if_elseif']));
 
 
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
     this.setTooltip(function() {
-      if (!thisBlock.elseifCount_ && !thisBlock.elseCount_) {
+      if (!thisBlock.elseifCount_) {
         return Blockly.LANG_CONTROLS_IF_TOOLTIP_1;
-      } else if (!thisBlock.elseifCount_ && thisBlock.elseCount_) {
+      } else if (thisBlock.elseifCount_) {
         return Blockly.LANG_CONTROLS_IF_TOOLTIP_2;
-      } else if (thisBlock.elseifCount_ && !thisBlock.elseCount_) {
-        return Blockly.LANG_CONTROLS_IF_TOOLTIP_3;
-      } else if (thisBlock.elseifCount_ && thisBlock.elseCount_) {
-        return Blockly.LANG_CONTROLS_IF_TOOLTIP_4;
       }
       return '';
     });
     this.elseifCount_ = 0;
-    this.elseCount_ = 1;
+    // this.elseCount_ = 1;
     this.warnings = [{name:"checkEmptySockets",sockets:[{baseName:"IF"},{baseName:"DO"}]}];
     this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: function() {
-    if (!this.elseifCount_ && !this.elseCount_) {
+    if (!this.elseifCount_) {
       return null;
     }
     var container = document.createElement('mutation');
     if (this.elseifCount_) {
       container.setAttribute('elseif', this.elseifCount_);
-    }
-    if (this.elseCount_) {
-      container.setAttribute('else', 1);
     }
     return container;
   },
@@ -273,7 +264,6 @@ Blockly.Language.controls_if_aaron = {
       this.elseifCount_ = window.parseInt(xmlElement.getAttribute('elseif'), 10);
     }
 
-    this.elseCount_ = window.parseInt(xmlElement.getAttribute('else'), 10);
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
           .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
@@ -282,13 +272,14 @@ Blockly.Language.controls_if_aaron = {
           .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
     }
 
-    this.removeInput('ELSE'); //ADDED
-    if (this.elseCount_) {
-      this.appendValueInput('ELSE') //ADDED
-          .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    try
+    {
+      this.removeInput('ELSE');
     }
-    // this.appendValueInput('ELSE') ADDED
-    //       .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    catch(err){}
+    this.removeInput('ELSE'); //ADDED
+    this.appendValueInput('ELSE') //ADDED
+        .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
   },
   decompose: function(workspace) {
     var containerBlock = new Blockly.Block(workspace, 'controls_if_if');
@@ -300,22 +291,21 @@ Blockly.Language.controls_if_aaron = {
       connection.connect(elseifBlock.previousConnection);
       connection = elseifBlock.nextConnection;
     }
-    if (this.elseCount_) {
-      var elseBlock = new Blockly.Block(workspace, 'controls_if_else');
-      elseBlock.initSvg();
-      elseBlock.deletable_ = false;
-      connection.connect(elseBlock.previousConnection);
-    }
+    var elseBlock = new Blockly.Block(workspace, 'controls_if_else');
+    elseBlock.initSvg();
+    elseBlock.setDeletable(false);
+    elseBlock.setMovable(false);
+    connection.connect(elseBlock.previousConnection);
     return containerBlock;
   },
   compose: function(containerBlock) {
     // Disconnect the else input blocks and destroy the inputs.
-    if (this.elseCount_) {
+    try
+    {
       this.removeInput('ELSE');
     }
-    // this.removeInput('ELSE');
+  catch(err){}
 
-    this.elseCount_ = 0;
     // Disconnect all the elseif input blocks and destroy the inputs.
     for (var x = this.elseifCount_; x > 0; x--) {
       this.removeInput('IF' + x);
@@ -324,6 +314,7 @@ Blockly.Language.controls_if_aaron = {
     this.elseifCount_ = 0;
     // Rebuild the block's optional inputs.
     var clauseBlock = containerBlock.getInputTargetBlock('STACK');
+    var wasElse = false;
     while (clauseBlock) {
       switch (clauseBlock.type) {
         case 'controls_if_elseif':
@@ -342,7 +333,7 @@ Blockly.Language.controls_if_aaron = {
           }
           break;
         case 'controls_if_else':
-          this.elseCount_++;
+	  wasElse = true;
           var elseInput = this.appendValueInput('ELSE');
           elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
           // Reconnect any child blocks.
@@ -356,7 +347,10 @@ Blockly.Language.controls_if_aaron = {
       clauseBlock = clauseBlock.nextConnection &&
           clauseBlock.nextConnection.targetBlock();
     }
-
+    if (!wasElse){
+        var elseInput = this.appendValueInput('ELSE');
+        elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+    }
   },
   saveConnections: function(containerBlock) {
     // Store a pointer to any connected child blocks.
@@ -635,42 +629,6 @@ Blockly.Language.controls_while = {
   },
   onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_WHILE_TITLE }]
-};
-
-// [lyn, 01/15/2013] Remove DO C-sockets because now handled more modularly by DO-THEN-RETURN block.
-Blockly.Language.controls_choose = {
-  // Choose.
-  category : Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl : Blockly.LANG_CONTROLS_CHOOSE_HELPURL,
-  init : function() {
-    this.setColour(Blockly.CONTROL_CATEGORY_HUE);
-    this.setOutput(true, null);
-    this.appendValueInput('TEST')
-        .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
-        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_TITLE)
-        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendStatementInput('DO0').appendTitle('then-do').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('THENRETURN')
-        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    // this.appendStatementInput('ELSE').appendTitle('else-do').setAlign(Blockly.ALIGN_RIGHT);
-    this.appendValueInput('ELSERETURN')
-        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN)
-        .setAlign(Blockly.ALIGN_RIGHT);
-    /* Blockly.Language.setTooltip(this, 'If the condition being tested is true, the agent will '
-       + 'run all the blocks attached to the \'then-do\' section and return the value attached '
-       + 'to the \'then-return\'slot. Otherwise, the agent will run all blocks attached to '
-       + 'the \'else-do\' section and return the value in the \'else-return\' slot.');
-       */
-    // [lyn, 01/15/2013] Edit description to be consistent with changes to slots. 
-    Blockly.Language.setTooltip(this, Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP);
-    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT, 'COLLAPSED_TEXT');
-  },
-  onchange: Blockly.WarningHandler.checkErrors,
-  typeblock: [{ translatedName: Blockly.LANG_CONTROLS_CHOOSE_TITLE + ' ' +
-      Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN + ' ' +
-      Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN}]
 };
 
 // [lyn, 10/10/13] This used to be in the control drawer as well as the procedure drawer

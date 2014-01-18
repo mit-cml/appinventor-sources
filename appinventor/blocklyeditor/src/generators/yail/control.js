@@ -60,19 +60,8 @@ Blockly.Yail.controls_if = function() {
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return code;
 };
-//----------------------------------------
-//ADDED
-Blockly.Yail.controls_if_aaron = function() {
 
-  // var test = Blockly.Yail.valueToCode(this, 'IF0', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
-  // var thenReturn = Blockly.Yail.valueToCode(this, 'DO0', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  // var elseReturn = Blockly.Yail.valueToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
-  // var code = Blockly.Yail.YAIL_IF + test
-  //            + Blockly.Yail.YAIL_SPACER +  thenReturn 
-  //            + Blockly.Yail.YAIL_SPACER +  elseReturn 
-  //            + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  // return [code,Blockly.Yail.ORDER_ATOMIC];
-
+Blockly.Yail.controls_choose = function() {
 
   var code = "";
   for(var i=0;i<this.elseifCount_ + 1;i++){
@@ -102,21 +91,7 @@ Blockly.Yail.controls_if_aaron = function() {
   code += Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [code,Blockly.Yail.ORDER_ATOMIC];
 };
-//----------------------------------------
 
-
-// [lyn, 01/15/2013] Edited to make consistent with removal of "THEN-DO" and "ELSE-DO"
-Blockly.Yail.controls_choose = function() {
-  // Choose.
-  var test = Blockly.Yail.valueToCode(this, 'TEST', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
-  var thenReturn = Blockly.Yail.valueToCode(this, 'THENRETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  var elseReturn = Blockly.Yail.valueToCode(this, 'ELSERETURN', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
-  var code = Blockly.Yail.YAIL_IF + test
-             + Blockly.Yail.YAIL_SPACER +  thenReturn 
-             + Blockly.Yail.YAIL_SPACER +  elseReturn 
-             + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-  return [code,Blockly.Yail.ORDER_ATOMIC];
-};
 
 // [lyn, 12/27/2012]
 Blockly.Yail.controls_forEach = function() {
