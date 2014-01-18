@@ -497,7 +497,8 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
 Blockly.Block.prototype.onMouseUp_ = function(e) {
   Blockly.resetWorkspaceArrangements();
   Blockly.terminateDrag_();
-  if (Blockly.selected && Blockly.highlightedConnection_) {
+  if (Blockly.selected && Blockly.highlightedConnection_
+      && !Blockly.highlightedConnection_.sourceBlock_.getRootBlock().collapsed) {
     // Connect two blocks together.
     Blockly.localConnection_.connect(Blockly.highlightedConnection_);
     if (this.svg_) {
