@@ -37,19 +37,6 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	private API api;
 
-	// @DesignerProperty(editorType =
-	// PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "AppInventor")
-	// @SimpleProperty
-	// public void UserName(String user) {
-	// user_name = user;
-	// }
-	//
-	// @SimpleProperty(description = "TEST1", category =
-	// PropertyCategory.BEHAVIOR, userVisible = false)
-	// public String UserName() {
-	// return user_name;
-	// }
-
 	public iSENSE(ComponentContainer container) {
 		super(container.$form());
 		Log.i("iSENSE", "Starting? " + container.toString());
@@ -106,12 +93,11 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	// upload dataset
 	@SimpleFunction(description = "Upload Data Set to iSENSE")
-	public void UploadDataSet(String DataSetName, YailList ListOfFields,
-			YailList ListOfData) throws JSONException {
+	public void UploadDataSet(String DataSetName, YailList Fields, YailList Data)
+			throws JSONException {
 		JSONObject jdata = new JSONObject();
-		for (int i = 0; i < ListOfData.size(); i++) {
-			jdata.put(Integer.toString(i),
-					new JSONArray().put(ListOfData.get(i + 1)));
+		for (int i = 0; i < Data.size(); i++) {
+			jdata.put(Integer.toString(i), new JSONArray().put(Data.get(i + 1)));
 		}
 		Log.i("iSENSE", "json data: " + jdata.toString());
 		int dataset = api.uploadDataSet(ProjectID, jdata, DataSetName);
