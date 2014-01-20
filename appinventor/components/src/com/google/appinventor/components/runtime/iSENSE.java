@@ -2,6 +2,7 @@ package com.google.appinventor.components.runtime;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 import org.json.JSONArray;
@@ -25,6 +26,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import edu.uml.cs.isense.comm.API;
+import edu.uml.cs.isense.objects.RProjectField;
 
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "isense.jar, httpmime.jar")
@@ -36,19 +38,6 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 	private String Password;
 
 	private API api;
-
-	// @DesignerProperty(editorType =
-	// PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "AppInventor")
-	// @SimpleProperty
-	// public void UserName(String user) {
-	// user_name = user;
-	// }
-	//
-	// @SimpleProperty(description = "TEST1", category =
-	// PropertyCategory.BEHAVIOR, userVisible = false)
-	// public String UserName() {
-	// return user_name;
-	// }
 
 	public iSENSE(ComponentContainer container) {
 		super(container.$form());
@@ -106,15 +95,21 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	// upload dataset
 	@SimpleFunction(description = "Upload Data Set to iSENSE")
-	public void UploadDataSet(String DataSetName, YailList ListOfFields,
-			YailList ListOfData) throws JSONException {
-		JSONObject jdata = new JSONObject();
-		for (int i = 0; i < ListOfData.size(); i++) {
-			jdata.put(Integer.toString(i),
-					new JSONArray().put(ListOfData.get(i + 1)));
+	public void UploadDataSet(String DataSetName, YailList Fields, YailList Data)
+			throws JSONException {
+		ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
+		JSONObject jData = new JSONObject();
+		for (int i = 0;i < Fields.size();i++) {
+			for (int j = 0; j < projectFields.size(); j++)
+			{
+				if (Fields.get(i+1).equals(projectFields.get(j).name))
+				{
+					jData.put(""+projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+				}
+			}
 		}
-		Log.i("iSENSE", "json data: " + jdata.toString());
-		int dataset = api.uploadDataSet(ProjectID, jdata, DataSetName);
+		Log.i("iSENSE",jData.toString());
+		int dataset = api.jsonDataUpload(ProjectID, jData, DataSetName);
 		if (dataset == -1) {
 			UploadDataSetFailed();
 		} else {
@@ -124,7 +119,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	// upload photos to dataset
 	@SimpleFunction(description = "Upload Photos to iSENSE")
-	public void UploadPhotosToDataSet(int DataSetID, String Photo) {
+	public void UploadPhotoToDataSet(int DataSetID, String Photo) {
 		String path = Photo.substring(7);
 		File tmp = new File(path);
 		int mediaid = api.uploadDataSetMedia(DataSetID, tmp);
@@ -137,16 +132,21 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 
 	// append to a data set
 	@SimpleFunction(description = "Append to a preexisting Data Set")
-	public void AppendDataSet(int DataSetID, YailList ListOfFields,
-			YailList ListOfData) throws JSONException {
-		JSONObject jdata = new JSONObject();
-		for (int i = 0; i < ListOfData.size(); i++) {
-			jdata.put(Integer.toString(i),
-					new JSONArray().put(ListOfData.get(i + 1)));
+	public void AppendDataSet(int DataSetID, YailList Fields,
+			YailList Data) throws JSONException {
+		ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
+		JSONObject jData = new JSONObject();
+		for (int i = 0;i < Fields.size();i++) {
+			for (int j = 0; j < projectFields.size(); j++)
+			{
+				if (Fields.get(i+1).equals(projectFields.get(j).name))
+				{
+					jData.put(""+projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+				}
+			}
 		}
-		Log.i("iSENSE", "json data: " + jdata.toString());
-		Log.i("iSENSE", "dataset id:" + Integer.toString(DataSetID));
-		api.appendDataSetData(DataSetID, jdata);
+		Log.i("iSENSE",jData.toString());
+		api.appendDataSetData(DataSetID, jData);
 		AppendDataSetSucceeded(DataSetID);
 	}
 
@@ -158,10 +158,10 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 		return sdf.format(cal.getTime()).toString();
 	}
 
-	@SimpleFunction(description = "logcat")
-	public void TestLogCat(String str) {
-		Log.i("iSENSE", str);
-	}
+	// @SimpleFunction(description = "logcat")
+	// public void TestLogCat(String str) {
+	// Log.i("iSENSE", str);
+	// }
 
 	@SimpleEvent(description = "iSENSE Upload DataSet Succeeded")
 	public void UploadDataSetSucceeded(int DataSetID) {
