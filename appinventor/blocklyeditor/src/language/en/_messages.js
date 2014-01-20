@@ -158,15 +158,17 @@ Blockly.LANG_CONTROLS_WHILE_TOOLTIP = 'Runs the blocks in the \'do\' section whi
   + 'true.';
 
 Blockly.LANG_CONTROLS_CHOOSE_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#choose';
-Blockly.LANG_CONTROLS_CHOOSE_TITLE = 'if'
+Blockly.LANG_CONTROLS_CHOOSE_MSG_IF = 'if'
 Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST = '';
-Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then';
-Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else';
+Blockly.LANG_CONTROLS_CHOOSE_MSG_THEN = 'then';
+Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSEIF = 'else if';
+Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSE = 'else';
 Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'if'; 
-Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
-  + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
-  + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
-  + 'at most one of the return slot expressions will be evaluated.';
+Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP_1 = 'If a value is true, then return the attached value.\n' +
+  'Otherwise, return the \'else\' value.';
+Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP_2 = 'If a value is true, then return the attached value.\n' +
+  'Otherwise, if the \'else if\' value is true, return that attached value.\n' +
+  'Otherwise, return the \'else\' value.';
 
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#doreturn';
 Blockly.LANG_CONTROLS_DO_THEN_RETURN_INPUT_DO = 'do';

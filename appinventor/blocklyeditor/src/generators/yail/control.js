@@ -78,12 +78,9 @@ Blockly.Yail.controls_choose = function() {
     // 	  + Blockly.Yail.YAIL_SPACER + branch
 
   }
-  if(this.elseCount_ == 1){
-    var branch = Blockly.Yail.valueToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-    code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  var branch = Blockly.Yail.valueToCode(this, 'ELSE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
     // code += Blockly.Yail.YAIL_SPACER + branch;
-
-  }
   
   for(var i=0;i<this.elseifCount_;i++){
     code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;

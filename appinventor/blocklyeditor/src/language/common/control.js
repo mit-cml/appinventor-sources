@@ -210,23 +210,21 @@ Blockly.Language.controls_if = {
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_IF_IF_TITLE_IF }]
 };
 
-//ADDED
-//----------------------------------------
 Blockly.Language.controls_choose = {
   // choose condition.
   category: Blockly.LANG_CATEGORY_CONTROLS,
-  helpUrl: Blockly.LANG_CONTROLS_IF_HELPURL,
+  helpUrl: Blockly.LANG_CONTROLS_CHOOSE_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, null); //ADDED
     this.appendValueInput('IF0')
         .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
-        .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF);
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_IF);
     this.appendValueInput('DO0') //ADDED
-        .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_THEN);
 
       this.appendValueInput('ELSE') //ADDED
-          .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+          .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSE);
 
     this.setMutator(new Blockly.Mutator(['controls_if_elseif']));
 
@@ -235,16 +233,16 @@ Blockly.Language.controls_choose = {
     var thisBlock = this;
     this.setTooltip(function() {
       if (!thisBlock.elseifCount_) {
-        return Blockly.LANG_CONTROLS_IF_TOOLTIP_1;
+        return Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP_1;
       } else if (thisBlock.elseifCount_) {
-        return Blockly.LANG_CONTROLS_IF_TOOLTIP_2;
+        return Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP_2;
       }
       return '';
     });
     this.elseifCount_ = 0;
     // this.elseCount_ = 1;
     this.warnings = [{name:"checkEmptySockets",sockets:[{baseName:"IF"},{baseName:"DO"}]}];
-    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_IF_MSG_IF, 'COLLAPSED_TEXT');
+    this.appendCollapsedInput().appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_IF, 'COLLAPSED_TEXT');
   },
   onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: function() {
@@ -267,9 +265,9 @@ Blockly.Language.controls_choose = {
     for (var x = 1; x <= this.elseifCount_; x++) {
       this.appendValueInput('IF' + x)
           .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
-          .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSEIF);
+          .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSEIF);
       this.appendValueInput('DO' + x) //ADDED
-          .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
+          .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_THEN);
     }
 
     try
@@ -279,7 +277,7 @@ Blockly.Language.controls_choose = {
     catch(err){}
     this.removeInput('ELSE'); //ADDED
     this.appendValueInput('ELSE') //ADDED
-        .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+        .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSE);
   },
   decompose: function(workspace) {
     var containerBlock = new Blockly.Block(workspace, 'controls_if_if');
@@ -321,9 +319,9 @@ Blockly.Language.controls_choose = {
           this.elseifCount_++;
           var ifInput = this.appendValueInput('IF' + this.elseifCount_)
               .setCheck(Blockly.Language.YailTypeToBlocklyType("boolean",Blockly.Language.INPUT))
-              .appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSEIF);
+              .appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSEIF);
           var doInput = this.appendValueInput('DO' + this.elseifCount_);
-          doInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_THEN);
+          doInput.appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_THEN);
           // Reconnect any child blocks.
           if (clauseBlock.valueConnection_) {
             ifInput.connection.connect(clauseBlock.valueConnection_);
@@ -335,7 +333,7 @@ Blockly.Language.controls_choose = {
         case 'controls_if_else':
 	  wasElse = true;
           var elseInput = this.appendValueInput('ELSE');
-          elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+          elseInput.appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSE);
           // Reconnect any child blocks.
           if (clauseBlock.statementConnection_) {
             elseInput.connection.connect(clauseBlock.statementConnection_);
@@ -349,7 +347,7 @@ Blockly.Language.controls_choose = {
     }
     if (!wasElse){
         var elseInput = this.appendValueInput('ELSE');
-        elseInput.appendTitle(Blockly.LANG_CONTROLS_IF_MSG_ELSE);
+        elseInput.appendTitle(Blockly.LANG_CONTROLS_CHOOSE_MSG_ELSE);
     }
   },
   saveConnections: function(containerBlock) {
@@ -382,7 +380,6 @@ Blockly.Language.controls_choose = {
   },
   typeblock: [{ translatedName: Blockly.LANG_CONTROLS_IF_IF_TITLE_IF }]
 };
-//----------------------------------------
 
 Blockly.Language.controls_if_if = {
   // If condition.
