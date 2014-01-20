@@ -34,7 +34,7 @@ import edu.uml.cs.isense.objects.RProjectField;
 @SimpleObject
 public class iSENSE extends AndroidNonvisibleComponent implements Component {
 	private int ProjectID;
-	private String UserName;
+	private String Email;
 	private String Password;
 
 	private API api;
@@ -59,15 +59,15 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 	}
 
 	// UserName
-	@SimpleProperty(description = "iSENSE UserName", category = PropertyCategory.BEHAVIOR)
-	public String UserName() {
-		return UserName;
+	@SimpleProperty(description = "iSENSE Email", category = PropertyCategory.BEHAVIOR)
+	public String Email() {
+		return Email;
 	}
 
 	@DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
 	@SimpleProperty
-	public void UserName(String UserName) {
-		this.UserName = UserName;
+	public void Email(String Email) {
+		this.Email = Email;
 	}
 
 	// Password
@@ -85,7 +85,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
 	// Login
 	@SimpleFunction(description = "Log into iSENSE")
 	public void Login() {
-		boolean login = api.createSession(UserName, Password);
+		boolean login = api.createSession(Email, Password);
 		if (login == true) {
 			LoginSucceeded();
 		} else {
