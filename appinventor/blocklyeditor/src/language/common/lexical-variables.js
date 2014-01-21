@@ -25,6 +25,9 @@
 
 /**
  * Lyn's History:
+ * [lyn, 01/18/13] Remove onchange from lexical_variable_get and lexical_variable_set.
+ *    This fixes issue 667 (Variable getter/setter names deleted in copied blocks)
+ *    and improves laggy drag problem.
  * [lyn, 10/27/13]
  *   + Modified local declaration parameter flydowns so editing the name changes corresponding name in an open mutator.
  *   + Changed local declaration compose() to rebuild inputs only if local names have changed.
@@ -137,31 +140,6 @@ Blockly.Language.lexical_variable_get = {
   getVars: function() {
     return [this.getTitleValue('VAR')];
   },
-  onchange: function() {
-     // [lyn, 11/10/12] Checks if parent has changed. If so, checks if current variable name
-     //    is still in scope. If so, keeps it as is; if not, changes to ???
-     //    *** NEED TO MAKE THIS BEHAVIOR BETTER!
-    if (this.fieldVar_) {
-       var currentName = this.fieldVar_.getText();
-       var nameList = this.fieldVar_.getNamesInScope();
-       var cachedParent = this.fieldVar_.getCachedParent();
-       var currentParent = this.fieldVar_.getBlock().getParent();
-       // [lyn, 11/10/12] Allow current name to stay if block moved to workspace in "untethered" way.
-       //   Only changed to ??? if tether an untethered block.
-       if (currentParent != cachedParent) {
-         this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent !== null) {
-           for (var i = 0; i < nameList.length; i++ ) {
-             if (nameList[i] === currentName) {
-               return; // no change
-             }
-           }
-           // Only get here if name not in list
-           this.fieldVar_.setText(" ");
-         }
-       }
-    }
-  },
   renameLexicalVar: function(oldName, newName) {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
     if (oldName === this.getTitleValue('VAR')) {
@@ -201,7 +179,6 @@ Blockly.Language.lexical_variable_set = {
   getVars: function() {
     return [this.getTitleValue('VAR')];
   },
-  onchange: Blockly.Language.lexical_variable_get.onchange,
   renameLexicalVar: Blockly.Language.lexical_variable_get.renameLexicalVar,
   typeblock: [{ translatedName: Blockly.LANG_VARIABLES_SET_TITLE_SET + ' variable' }],
   prepareCollapsedText: function(){
