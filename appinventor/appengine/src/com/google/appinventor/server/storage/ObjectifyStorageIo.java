@@ -1331,7 +1331,11 @@ public class ObjectifyStorageIo implements  StorageIo {
               collectProjectErrorInfo(userId, projectId, fileName), e);
         }
       } else {
-        result.t = fileData.content;
+        if (fileData.content == null) {
+          result.t = new byte[0];
+        } else {
+          result.t = fileData.content;
+        }
       }
     } else {
       throw CrashReport.createAndLogError(LOG, null,
@@ -1447,6 +1451,9 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
         } else {
           data = fd.content;
+        }
+        if (data == null) {     // This happens if file creation is interrupted
+          data = new byte[0];
         }
         out.putNextEntry(new ZipEntry(fileName));
         out.write(data, 0, data.length);
