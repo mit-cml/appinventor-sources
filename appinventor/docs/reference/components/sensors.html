@@ -482,6 +482,27 @@
 <h3>Methods</h3>
 none
 
+<h2 id="BarcodeScanner">BarcodeScanner</h2>
+
+<p>Component for using the Barcode Scanner to read a barcode</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>Result</em></code></dt>
+  <dd>Text result of the previous scan.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterScan(text result)</code></dt>
+  <dd>Indicates that the scanner has read a (text) result and provides the result</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DoScan()</code></dt>
+  <dd>Begins a barcode scan, using the camera. When the scan is complete, the AfterScan event will be raised.</dd>
+</dl>
 
 <h2 id="LocationSensor">LocationSensor</h2>
 
