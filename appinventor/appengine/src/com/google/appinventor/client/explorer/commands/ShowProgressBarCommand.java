@@ -142,7 +142,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
       //warning label
       warningLabel = new HTML("");
       warningLabel.setWordWrap(true);
-      warningLabel.setWidth("200px");  // set width to get the text to wrap
+      warningLabel.setWidth("60em");  // set width to get the text to wrap
 
       //warning panel
       warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
@@ -204,9 +204,10 @@ public class ShowProgressBarCommand extends ChainableCommand {
             }
           }
         } catch (NumberFormatException e) {
+          // If the result is an error message, then the number parse will fail,
+          // so we pick up the case of a compilation failure here.
           mpb.setProgress(0);
-          warningLabel.setHTML("<br />Error occured."
-                               + "<br />Check the debugging messages.");
+          warningLabel.setHTML(MESSAGES.unableToCompile(result.getOutput()));
         }
       }
     }

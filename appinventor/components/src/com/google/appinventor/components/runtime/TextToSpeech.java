@@ -42,7 +42,7 @@ import java.util.MissingResourceException;
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener {
+    implements Component, OnStopListener, OnResumeListener, OnDestroyListener {
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
@@ -114,6 +114,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     // Set up listeners
     form.registerForOnStop(this);
     form.registerForOnResume(this);
+    form.registerForOnDestroy(this);
 
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -256,6 +257,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
 
   @Override
   public void onStop() {
+    // tts.onStop in fact does nothing, but we'll keep this onStop here for flexibility
     tts.onStop();
   }
 
@@ -263,4 +265,10 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   public void onResume() {
     tts.onResume();
   }
+
+  @Override
+  public void onDestroy() {
+    tts.onDestroy();
+  }
+
 }

@@ -135,9 +135,9 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteMenuItemButton(),
         new DeleteAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
         new SaveAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
         new SaveAsAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
         new CheckpointAction()));
@@ -721,8 +721,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), false);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), false);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), false);
@@ -730,8 +730,8 @@ public class TopToolbar extends Composite {
       fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), false);
       fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.saveButton(), true);
-      fileDropDown.setItemEnabled(MESSAGES.saveAsButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
+      fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), true);
       buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), true);
       buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), true);

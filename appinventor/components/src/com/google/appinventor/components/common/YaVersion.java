@@ -234,9 +234,11 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 81:
   // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 82:
-  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3;
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 83:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
 
-    public static final int YOUNG_ANDROID_VERSION = 82;
+    public static final int YOUNG_ANDROID_VERSION = 83;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -500,7 +502,10 @@ public class YaVersion {
   //   with the parent Form's open screen animation.
   // For LISTPICKER_COMPONENT_VERSION 7:
   // - Added ShowFilterBar property
-  public static final int LISTPICKER_COMPONENT_VERSION = 7;
+  // For LISTPICKER_COMPONENT_VERSION 8:
+  // - Added title property
+
+  public static final int LISTPICKER_COMPONENT_VERSION = 8;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -667,9 +672,9 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.10ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.12ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.08ai2", "2.07nb9zx1", "2.07nb9", "2.08ai2zx1", "2.09ai2", "2.09ai2zx1", "2.10ai2", "2.10ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.08ai2", "2.07nb9zx1", "2.07nb9", "2.08ai2zx1", "2.09ai2", "2.09ai2zx1", "2.10ai2", "2.10ai2zx1", "2.11ai2", "2.11ai2zx1", "2.12ai2", "2.12ai2zx1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

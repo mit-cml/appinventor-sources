@@ -468,7 +468,6 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
           xmlString += '</mutation></block></xml>';
           var xml = Blockly.Xml.textToDom(xmlString);
           block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
-
         } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
@@ -490,7 +489,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       } else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
-
+      Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
       block.render();
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;

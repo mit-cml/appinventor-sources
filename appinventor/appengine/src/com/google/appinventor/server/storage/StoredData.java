@@ -150,6 +150,13 @@ public class StoredData {
     // The Blobstore path to use to get the data from Blobstore
     String blobstorePath;
 
+    // Is this file stored in the Google Cloud Store (GCS). If it is the gcsName will contain the
+    // GCS file name (sans bucket).
+    boolean isGCS;
+
+    // The GCS filename, sans bucket name
+    String gcsName;
+
     // File settings
     String settings;
   }

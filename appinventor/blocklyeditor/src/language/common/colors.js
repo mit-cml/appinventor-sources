@@ -13,7 +13,6 @@ Blockly.Language.color_black = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_BLACK }]
 };
 
@@ -29,7 +28,6 @@ Blockly.Language.color_white = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_WHITE }]
 };
 
@@ -45,7 +43,6 @@ Blockly.Language.color_red = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_RED }]
 };
 
@@ -61,7 +58,6 @@ Blockly.Language.color_pink = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_PINK }]
 };
 
@@ -77,7 +73,6 @@ Blockly.Language.color_orange = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_ORANGE }]
 };
 
@@ -93,7 +88,6 @@ Blockly.Language.color_yellow = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_YELLOW }]
 };
 
@@ -109,7 +103,6 @@ Blockly.Language.color_green = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_GREEN }]
 };
 
@@ -125,7 +118,6 @@ Blockly.Language.color_cyan = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_CYAN }]
 };
 
@@ -142,7 +134,6 @@ Blockly.Language.color_blue = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_BLUE }]
 };
 
@@ -158,7 +149,6 @@ Blockly.Language.color_magenta = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAGENTA }]
 };
 
@@ -174,7 +164,6 @@ Blockly.Language.color_light_gray = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_LIGHT_GRAY }]
 };
 
@@ -190,7 +179,6 @@ Blockly.Language.color_gray = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_GRAY }]
 };
 
@@ -207,7 +195,6 @@ Blockly.Language.color_dark_gray = {
     this.setTooltip("Click the square to pick a color.");
     this.appendCollapsedInput().appendTitle(' ', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_DARK_GRAY }]
 };
 
@@ -221,7 +208,6 @@ Blockly.Language.color_make_color = {
     this.setTooltip(Blockly.LANG_COLOUR_MAKE_COLOUR_TOOLTIP);
     this.appendCollapsedInput().appendTitle(Blockly.LANG_COLOUR_MAKE_COLOUR, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_MAKE_COLOUR }]
 };
 
@@ -235,7 +221,6 @@ Blockly.Language.color_split_color = {
     this.setTooltip(Blockly.LANG_COLOUR_SPLIT_COLOUR_TOOLTIP);
     this.appendCollapsedInput().appendTitle(Blockly.LANG_COLOUR_SPLIT_COLOUR, 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_COLOUR_SPLIT_COLOUR }]
 };
 

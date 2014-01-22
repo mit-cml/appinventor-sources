@@ -1,4 +1,6 @@
-// Copyright 2012 MIT All rights reserved
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -181,7 +183,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
 
   public void onPause() {
     Log.d(TAG, "OnPause method started.");
-    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD){
+    if (nfcAdapter != null) {
       GingerbreadUtil.disableNFCAdapter(activity, nfcAdapter);
     }
     //nfcAdapter.disableForegroundDispatch(activity);

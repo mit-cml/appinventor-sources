@@ -48,7 +48,7 @@ $Source $Yail
 ;;; Label5
 
 (add-component EmulatorPanel Label Label5 
-(set-and-coerce-property! 'Label5 'Text "Running in the emulator, waiting to get blocks..." 'text)
+(set-and-coerce-property! 'Label5 'Text "Running using the emulator or USB,\nwaiting to get blocks..." 'text)
 
 )
 

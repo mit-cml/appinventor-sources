@@ -175,6 +175,7 @@ public final class Compiler {
   private Set<String> nativeLibrariesNeeded; // Set of component native libraries
   private Set<String> assetsNeeded; // Set of component assets
   private File libsDir; // The directory that will contain any native libraries for packaging
+  private String dexCacheDir;
 
   /*
    * Generate the set of Android permissions needed by this project.
@@ -484,12 +485,12 @@ public final class Compiler {
   public static boolean compile(Project project, Set<String> componentTypes,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForRepl, boolean isForWireless, String keystoreFilePath,
-                                int childProcessRam) throws IOException, JSONException {
+                                int childProcessRam, String dexCacheDir) throws IOException, JSONException {
     long start = System.currentTimeMillis();
 
     // Create a new compiler instance for the compilation
     Compiler compiler = new Compiler(project, componentTypes, out, err, userErrors, isForRepl, isForWireless,
-                                     childProcessRam);
+                                     childProcessRam, dexCacheDir);
 
     // Get names of component-required libraries and assets.
     compiler.generateLibraryNames();
@@ -562,6 +563,12 @@ public final class Compiler {
     // Android guy suggested an alternate approach of shipping the kawa runtime .dex file as
     // data with the application and then creating a new DexClassLoader using that .dex file
     // and with the original app class loader as the parent of the new one.
+    // TODONE(zhuowei): Now using the new Android DX tool to merge dex files
+    // Needs to specify a writable cache dir on the command line that persists after shutdown
+    // Each pre-dexed file is identified via its MD5 hash (since the standard Android SDK's
+    // method of identifying via a hash of the path won't work when files
+    // are copied into temporary storage) and processed via a hacked up version of
+    // Android SDK's Dex Ant task
     File tmpDir = createDirectory(buildDir, "tmp");
     String dexedClasses = tmpDir.getAbsolutePath() + File.separator + "classes.dex";
     if (!compiler.runDx(classesDir, dexedClasses)) {
@@ -690,7 +697,7 @@ public final class Compiler {
   @VisibleForTesting
   Compiler(Project project, Set<String> componentTypes, PrintStream out, PrintStream err,
            PrintStream userErrors, boolean isForRepl, boolean isForWireless,
-           int childProcessMaxRam) {
+           int childProcessMaxRam, String dexCacheDir) {
     this.project = project;
     this.componentTypes = componentTypes;
     this.out = out;
@@ -699,6 +706,7 @@ public final class Compiler {
     this.isForRepl = isForRepl;
     this.isForWireless = isForWireless;
     this.childProcessRamMb = childProcessMaxRam;
+    this.dexCacheDir = dexCacheDir;
   }
 
   /*
@@ -790,7 +798,7 @@ public final class Compiler {
       long start = System.currentTimeMillis();
       // Capture Kawa compiler stderr. The ODE server parses out the warnings and errors and adds
       // them to the protocol buffer for logging purposes. (See
-      // YoungAndroidProjectBuilder.processCompilerOutout.
+      // buildserver/ProjectBuilder.processCompilerOutout.
       ByteArrayOutputStream kawaOutputStream = new ByteArrayOutputStream();
       boolean kawaSuccess;
       synchronized (SYNC_KAWA_OR_DX) {
@@ -954,40 +962,36 @@ public final class Compiler {
   }
 
   private boolean runDx(File classesDir, String dexedClasses) {
-    int mx = childProcessRamMb - 200;
-
-    List<String> commandLineList = new ArrayList<String>();
-    commandLineList.add(System.getProperty("java.home") + "/bin/java");
-    commandLineList.add("-mx" + mx + "M");
-    commandLineList.add("-jar");
-    commandLineList.add(getResource(DX_JAR));
-    commandLineList.add("--dex");
-    commandLineList.add("--positions=lines");
-    commandLineList.add("--output=" + dexedClasses);
-    commandLineList.add(classesDir.getAbsolutePath());
-    commandLineList.add(getResource(SIMPLE_ANDROID_RUNTIME_JAR));
-    commandLineList.add(getResource(KAWA_RUNTIME));
-    commandLineList.add(getResource(ACRA_RUNTIME));
+    List<File> inputList = new ArrayList<File>();
+    inputList.add(classesDir); //this is a directory, and won't be cached into the dex cache
+    inputList.add(new File(getResource(SIMPLE_ANDROID_RUNTIME_JAR)));
+    inputList.add(new File(getResource(KAWA_RUNTIME)));
+    inputList.add(new File(getResource(ACRA_RUNTIME)));
 
     // Add libraries to command line arguments
     System.out.println("Libraries needed command line n = " + librariesNeeded.size());
     for (String library : librariesNeeded) {
-      commandLineList.add(getResource(RUNTIME_FILES_DIR + library));
+      inputList.add(new File(getResource(RUNTIME_FILES_DIR + library)));
     }
 
-    System.out.println("Libraries command line = " + commandLineList);
+    DexExecTask dexTask = new DexExecTask();
+    dexTask.setExecutable(getResource(DX_JAR));
+    dexTask.setOutput(dexedClasses);
+    dexTask.setChildProcessRamMb(childProcessRamMb);
+    if (dexCacheDir == null) {
+      dexTask.setDisableDexMerger(true);
+    } else {
+      createDirectory(new File(dexCacheDir));
+      dexTask.setDexedLibs(dexCacheDir);
+    }
 
-    // Convert command line to an array
-    String[] dxCommandLine = new String[commandLineList.size()];
-    commandLineList.toArray(dxCommandLine);
-
-   long startDx = System.currentTimeMillis();
+    long startDx = System.currentTimeMillis();
     // Using System.err and System.out on purpose. Don't want to pollute build messages with
     // tools output
     boolean dxSuccess;
     synchronized (SYNC_KAWA_OR_DX) {
       setProgress(50);
-      dxSuccess = Execution.execute(null, dxCommandLine, System.out, System.err);
+      dxSuccess = dexTask.execute(inputList);
       setProgress(75);
     }
     if (!dxSuccess) {

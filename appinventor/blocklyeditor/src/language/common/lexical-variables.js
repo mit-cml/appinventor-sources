@@ -25,6 +25,9 @@
 
 /**
  * Lyn's History:
+ * [lyn, 01/18/13] Remove onchange from lexical_variable_get and lexical_variable_set.
+ *    This fixes issue 667 (Variable getter/setter names deleted in copied blocks)
+ *    and improves laggy drag problem.
  * [lyn, 10/27/13]
  *   + Modified local declaration parameter flydowns so editing the name changes corresponding name in an open mutator.
  *   + Changed local declaration compose() to rebuild inputs only if local names have changed.
@@ -78,6 +81,7 @@ function myStringify (obj) {
 
 
 if (!Blockly.Language) Blockly.Language = {};
+goog.require('goog.dom');
 
 /**
  * Prototype bindings for a global variable declaration block
@@ -99,7 +103,6 @@ Blockly.Language.global_declaration = {
         .appendTitle(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT + " " + this.getTitleValue('NAME'),
                      'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   getVars: function() {
     return [this.getTitleValue('NAME')];
   },
@@ -136,32 +139,6 @@ Blockly.Language.lexical_variable_get = {
   },
   getVars: function() {
     return [this.getTitleValue('VAR')];
-  },
-  onchange: function() {
-     // [lyn, 11/10/12] Checks if parent has changed. If so, checks if current variable name
-     //    is still in scope. If so, keeps it as is; if not, changes to ???
-     //    *** NEED TO MAKE THIS BEHAVIOR BETTER!
-    if (this.fieldVar_) {
-       var currentName = this.fieldVar_.getText();
-       var nameList = this.fieldVar_.getNamesInScope();
-       var cachedParent = this.fieldVar_.getCachedParent();
-       var currentParent = this.fieldVar_.getBlock().getParent();
-       // [lyn, 11/10/12] Allow current name to stay if block moved to workspace in "untethered" way.
-       //   Only changed to ??? if tether an untethered block.
-       if (currentParent != cachedParent) {
-         this.fieldVar_.setCachedParent(currentParent);
-         if  (currentParent !== null) {
-           for (var i = 0; i < nameList.length; i++ ) {
-             if (nameList[i] === currentName) {
-               return; // no change
-             }
-           }
-           // Only get here if name not in list
-           this.fieldVar_.setText(" ");
-         }
-       }
-    }
-    Blockly.WarningHandler.checkErrors.call(this);
   },
   renameLexicalVar: function(oldName, newName) {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
@@ -202,7 +179,6 @@ Blockly.Language.lexical_variable_set = {
   getVars: function() {
     return [this.getTitleValue('VAR')];
   },
-  onchange: Blockly.Language.lexical_variable_get.onchange,
   renameLexicalVar: Blockly.Language.lexical_variable_get.renameLexicalVar,
   typeblock: [{ translatedName: Blockly.LANG_VARIABLES_SET_TITLE_SET + ' variable' }],
   prepareCollapsedText: function(){
@@ -250,7 +226,6 @@ Blockly.Language.local_declaration_statement = {
   },
   onchange: function () {
      this.localNames_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
-     Blockly.WarningHandler.checkErrors.call(this); // handle any new errors.
    },
   mutationToDom: function() { // Store local names in mutation element of XML for block
     var container = document.createElement('mutation');
@@ -263,10 +238,11 @@ Blockly.Language.local_declaration_statement = {
   },
   domToMutation: function(xmlElement) { // Retrieve local names from mutation element of XML for block
                                         // and replace existing declarations
-    if (Object.keys(xmlElement).length > 0) { // Ensure xml element is nonempty
+    var children = goog.dom.getChildren(xmlElement);
+    if (children.length > 0) { // Ensure xml element is nonempty
       // Else we'll overwrite initial list with "name" for new block
       this.localNames_ = [];
-      for (var i = 0, childNode; childNode = xmlElement.childNodes[i]; i++) {
+      for (var i = 0, childNode; childNode = children[i]; i++) {
         if (childNode.nodeName.toLowerCase() == 'localname') {
           this.localNames_.push(childNode.getAttribute('name'));
         }
@@ -494,7 +470,6 @@ Blockly.Language.local_declaration_expression = {
         .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT + ' '  + this.localNames_.join(', '),
                      'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.Language.local_declaration_statement.mutationToDom,
   domToMutation: Blockly.Language.local_declaration_statement.domToMutation,
   addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,
