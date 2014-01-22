@@ -175,12 +175,7 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
           user.setUserEmail(userData.email);
-          if (userData.name==null) {
-            setUserName(userId,user.getDefaultName());
-            user.setUserName(user.getDefaultName());
-          } else {
-            user.setUserName(userData.name);
-          }
+          user.setUserName(userData.name);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
         }
       });
@@ -203,6 +198,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     userData.tosAccepted = false;
     userData.settings = "";
     userData.email = email == null ? "" : email;
+    userData.name = User.getDefaultName(email);
     
     datastore.put(userData);
     return userData;

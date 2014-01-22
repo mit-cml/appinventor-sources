@@ -165,14 +165,19 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return new User(id, email, name, tosAccepted, isAdmin);
   }
 
-  public String getDefaultName() {
-    if (this.email==null)
-      return "default user";
-    String[] parts = this.email.split("@");
+  public static String getDefaultName(String email)
+  {
+    if (email==null)
+      return "user";
+    String[] parts = email.split("@");
     if (parts.length>1) {
       return parts[0];
     } else {
-      return this.email;
+      return email;
     } 
+  }
+    
+  public String getDefaultName() {
+    return getDefaultName(this.email);
   }
 }

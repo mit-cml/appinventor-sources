@@ -147,7 +147,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     addGalleryAppTab(appRecent, appRecentContent, 2);
     addGalleryAppTab(appSearch, appSearchContent, 3);
     addGalleryAppTab(appPopular, appPopularContent, 5);
-//    addGallerySearchTab(appSearch);
+
+    // addGallerySearchTab(appSearch);  don't think we need because in regular addgallerytab below
 
     // Add panels to main tabPanel
     appTabs.add(appRecent, "Recent");

@@ -85,12 +85,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     final String userId = userInfoProvider.getUserId();
     GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
     storeAIA(app.getGalleryAppId(),projectId, projectName);
+
+    // put meta data in search index
+    GallerySearchIndex.getInstance().indexApp(app);
     return app;
   }
   @Override
   public void updateAppMetadata(GalleryApp app) {
     final String userId = userInfoProvider.getUserId();
     galleryStorageIo.updateGalleryApp(app.getGalleryAppId(), app.getTitle(), app.getDescription(),  userId);
+    // put meta data in search index
+    GallerySearchIndex.getInstance().indexApp(app);
   }
   @Override
   public void updateAppSource (long galleryId, long projectId, String projectName) {
@@ -137,7 +142,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
   @Override
   public List<GalleryApp> findApps(String keywords, int start, int count) {
-    return null;
+    
+    return GallerySearchIndex.getInstance().find(keywords);
   }
   @Override
   public List<GalleryApp> getMostDownloadedApps(int start, int count) {

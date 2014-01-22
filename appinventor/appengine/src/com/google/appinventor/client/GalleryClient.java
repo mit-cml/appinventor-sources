@@ -67,7 +67,22 @@ public class GalleryClient {
   }
     */ 
   public void FindApps(String keywords, int start, int count, int sortOrder) {
- 
+     // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    // failure message
+    MESSAGES.galleryDeveloperAppError()) {
+    @Override
+    public void onSuccess(List<GalleryApp> apps) {
+      // the server has returned us something
+      for (GalleryRequestListener listener:listeners) {
+        listener.onAppListRequestCompleted(apps, REQUEST_SEARCH); 
+      }
+    }
+    };
+      
+    // ok, this is below the call back, but of course it is done first 
+    ode.getGalleryService().findApps(keywords, start,count,callback);
   }
 
   public void GetAppsByDeveloper(int start, int count, String developerId) {
