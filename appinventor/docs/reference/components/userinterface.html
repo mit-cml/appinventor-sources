@@ -779,65 +779,46 @@
                    <dd>Opens the picker, as though the user clicked on it.</dd>
                  </dl>
 
-                  <h2 id="Notifier"> Notifier </h2>
-                  <img src="images/notifier.png" alt="Picture of Notifier component" />
-                 <h2 id="Notifier">Notifier</h2>
+<h2 id="Notifier">Notifier</h2>
 
-                 <p>The Notifier component displays alert messages and
-                 creates Android log entries through the following
-                 methods: <ul><li> ShowMessageDialog: user must
-                 dismiss the message by pressing a button.</li><li>
-                 ShowChooseDialog: displays two buttons to let the
-                 user choose one of two responses, for example, yes or
-                 no, after which the AfterChoosing event is
-                 raised.</li><li> ShowTextDialog: lets the user enter
-                 text in response to the message, after which the
-                 AfterTextInput event is raised. <li> ShowAlert:
-                 displays an alert that goes away by itself after a
-                 short time.</li><li> LogError: logs an error message
-                 to the Android log. </li><li> LogInfo: logs an info
-                 message to the Android log.</li><li> LogWarning: logs
-                 a warning message to the Android log.</li></ul></p>
+<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li></ul></p>
 
-                 <h3>Properties</h3>
-                 <dl>
-                   <dt><code>BackgroundColor</code></dt>
-                   <dd>Specifies the alert's background color.</dd>
-                   <dt><code>NotifierLength</code> (designer only)</dt>
-                   <dd>specifies the length of time that the alert is shown -- either "short" or "long".</dd>
-                   <dt><code>TextColor</code></dt>
-                   <dd>Specifies the alert's text color.</dd>
-                 </dl>
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Specifies the alert's background color.</dd>
+  <dt><code>NotifierLength</code> (designer only)</dt>
+  <dd>specifies the length of time that the alert is shown -- either "short" or "long".</dd>
+  <dt><code>TextColor</code></dt>
+  <dd>Specifies the alert's text color.</dd>
+</dl>
 
-                 <h3>Events</h3>
-                 <dl>
-                   <dt><code>AfterChoosing(text choice)</code></dt>
-                   <dd>Event after the user has made a selection for ShowChooseDialog.</dd>
-                   <dt><code>AfterTextInput(text response)</code></dt>
-                   <dd>Event raised after the user has responded to ShowTextDialog.</dd>
-                 </dl>
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterChoosing(text choice)</code></dt>
+  <dd>Event after the user has made a selection for ShowChooseDialog.</dd>
+  <dt><code>AfterTextInput(text response)</code></dt>
+  <dd>Event raised after the user has responded to ShowTextDialog.</dd>
+</dl>
 
-                 <h3>Methods</h3>
-                 <dl>
-                   <dt><code>LogError(text message)</code></dt>
-                   <dd>Writes an error message to the Android log.</dd>
-                   <dt><code>LogInfo(text message)</code></dt>
-                   <dd>Writes an information message to the Android log.</dd>
-                   <dt><code>LogWarning(text message)</code></dt>
-                   <dd>Writes a warning message to the Android log.</dd>
-                   <dt><code>ShowAlert(text notice)</code></dt>
-                   <dd>Display a temporary notification</dd>
-                   <dt><code>ShowChooseDialog(text message, text title, text button1Text, text button2Text, boolean cancelable)</code></dt>
-                   <dd>Displays an alert with two buttons that have specified text, and additional button
-                  marked CANCEL if cancelable is set.
-                  Raises the AfterChoosing event when the choice has been made, and returns the text of
-                  the button that was pressed.</dd>
-                   <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
-                   <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
-                   <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
-                   <dd>Shows a dialog box in which the user can enter text, after which the
-                  AfterTextInput event is raised.</dd>
-                 </dl>
+<h3>Methods</h3>
+<dl>
+  <dt><code>LogError(text message)</code></dt>
+  <dd>Writes an error message to the Android system log. See the Google Android documentation for how to access the log.</dd>
+  <dt><code>LogInfo(text message)</code></dt>
+  <dd>Writes an information message to the Android log.</dd>
+  <dt><code>LogWarning(text message)</code></dt>
+  <dd>Writes a warning message to the Android log. See the Google Android documentation for how to access the log.</dd>
+  <dt><code>ShowAlert(text notice)</code></dt>
+  <dd>Display a temporary notification</dd>
+  <dt><code>ShowChooseDialog(text message, text title, text button1Text, text button2Text, boolean cancelable)</code></dt>
+  <dd>Displays an alert with two buttons that have the specified text. If cancelable is true, there is an additional button marked CANCEL.
+When one of the buttons is pressed, the AfterChoosing event will be raised, where the value of "choice" will be the text of the buttom that was pressed, or "Cancel") if the CANCEL button was pressed.</dd>
+  <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
+  <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
+  <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
+  <dd>Shows a dialog box where the user can enter text, after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering text will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the text that was entered, or "Cancel" if the CANCEL button was pressed.</dd>
+</dl>
 
                   <h2 id="PasswordTextBox"> PasswordTextBox </h2>
                   <img src="images/passwordtextbox.png" alt="" />
