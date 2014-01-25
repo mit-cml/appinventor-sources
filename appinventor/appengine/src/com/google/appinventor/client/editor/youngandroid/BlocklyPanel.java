@@ -195,6 +195,7 @@ public class BlocklyPanel extends HTMLPanel {
       return;
     }
     if (loadStat.error) {
+      YaBlocksEditor.setBlocksDamaged(formName);
       ErrorReporter.reportError(MESSAGES.blocksNotSaved(formName));
     } else {
       YaBlocksEditor.onBlocksAreaChanged(formName);
