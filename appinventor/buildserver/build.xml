@@ -19,7 +19,7 @@
   </target>
 
   <target name="tests"
-          depends="BuildServerTests,YailGeneratorTests">
+          depends="BuildServerTests">
 
   </target>
 
@@ -32,7 +32,6 @@
        Define base package path.
        ===================================================================== -->
   <property name="buildserver.pkg" value="com/google/appinventor/buildserver" />
-  <property name="yailgenerator.pkg" value="com/google/appinventor/yailgenerator" />
 
   <property name="local.lib.dir" location="lib" />
   <property name="run.dir" location="${local.build.dir}/run" />
@@ -43,72 +42,12 @@
        ===================================================================== -->
 
   <!-- =====================================================================
-       YailGenerator: produces build/YailGenerator.jar
-       YailGenerator.jar contains all needed dependencies to run the YAIL
-       generator and the main class is set in the manifest.
-       It can be run with a "java -jar" command.
-       ===================================================================== -->
-  <target name="YailGenerator"
-          depends="init,common_CommonVersion,blockslib_OpenBlocks">
-    <property name="YailGenerator-class.dir" location="${class.dir}/YailGenerator" />
-    <mkdir dir="${YailGenerator-class.dir}" />
-
-    <ai.javac encoding="utf-8" destdir="${YailGenerator-class.dir}" debug="on">
-      <include name="${yailgenerator.pkg}/**/*.java" />
-      <classpath>
-        <pathelement location="${build.dir}/blockslib/OpenBlocks.jar" />
-        <pathelement location="${build.dir}/common/CommonVersion.jar" />
-        <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
-        <pathelement location="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
-        <pathelement location="${lib.dir}/json/json.jar" />
-        <pathelement location="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-      </classpath>
-    </ai.javac>
-    <jar destfile="${local.build.dir}/YailGenerator.jar">
-      <manifest>
-        <attribute name="Main-Class"
-                   value="com.google.appinventor.yailgenerator.YailGenerator" />
-      </manifest>
-      <fileset dir="${YailGenerator-class.dir}" />
-      <zipfileset src="${build.dir}/blockslib/OpenBlocks.jar"/>
-      <zipfileset src="${build.dir}/common/CommonVersion.jar"/>
-      <zipfileset src="${lib.dir}/guava/guava-14.0.1.jar" />
-      <zipfileset src="${lib.dir}/commons-io/commons-io-2.0.1.jar" />
-      <zipfileset src="${lib.dir}/json/json.jar"/>
-      <zipfileset src="${lib.dir}/tablelayout/TableLayout-jdk1.5-2007-04-21.jar"/>
-    </jar>
-  </target>
-
-  <!-- =====================================================================
-       YailGeneratorTests: build and run the YailGenerator tests and generate the output results
-       ===================================================================== -->
-
-  <path id="libsForYailGeneratorTests.path">
-    <pathelement location="${local.build.dir}/YailGenerator.jar" />
-    <pathelement location="${build.dir}/common/CommonTestUtils.jar" />
-    <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
-  </path>
-
-  <path id="YailGeneratorTests.path">
-    <path refid="libsForYailGeneratorTests.path"/>
-    <pathelement location="${local.build.dir}/YailGeneratorTests.jar" />
-  </path>
-
-  <target name="YailGeneratorTests"
-          depends="common_CommonTestUtils"
-          description="build and run the test suite" >
-    <ai.dojunit aij-testingtarget="YailGeneratorTests"
-                aij-dir="${yailgenerator.pkg}/" >
-    </ai.dojunit>
-  </target>
-
-  <!-- =====================================================================
        BuildServer: produces build/run/lib/BuildServer.jar
        Note that BuildServer depends on CopyToRunLibDir, which copies all
        the jars needed to compile the build server classes.
        ===================================================================== -->
   <target name="BuildServer"
-          depends="init,CopyToRunLibDir,YailGenerator,components_AndroidRuntime,components_ComponentList">
+          depends="init,CopyToRunLibDir,components_AndroidRuntime,components_ComponentList">
     <property name="BuildServer-class.dir" location="${class.dir}/BuildServer" />
     <mkdir dir="${BuildServer-class.dir}" />
 
@@ -126,7 +65,6 @@
       <fileset dir="${build.dir}/components"
                includes="AndroidRuntime.jar,simple_components.txt,simple_components_build_info.json"/>
     </copy>
-    <copy toFile="${classes.files.dir}/YailGenerator.jar" file="${local.build.dir}/YailGenerator.jar" />
     <copy toFile="${classes.files.dir}/kawa.jar" file="${lib.dir}/kawa/kawa-1.11-modified.jar" />
     <copy toFile="${classes.files.dir}/acra-4.4.0.jar" file="${lib.dir}/acra/acra-4.4.0.jar" />
     <copy toFile="${classes.files.dir}/twitter4j.jar" file="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
