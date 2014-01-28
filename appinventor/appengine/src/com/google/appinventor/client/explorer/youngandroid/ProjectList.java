@@ -57,6 +57,12 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     ASCENDING,
     DESCENDING,
   }
+
+  private static final String PUBLISHBUTTONTEXT = "Publish to Gallery...";
+  private static final String UPDATEBUTTONTEXT = "Update Gallery app...";
+  private static final String PUBLISHBUTTONTITLE = "open a dialog to publish your app to the gallery";
+  private static final String UPDATEBUTTONTITLE = "open a dialog to publish your newest version in the gallery";
+
   private final List<Project> projects;
   private final List<Project> selectedProjects;
   private final Map<Project, ProjectWidgets> projectWidgets;
@@ -301,94 +307,41 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    */
   private void preparePublishApp(final Project p, final ProjectWidgets pw) {    
     if (p.isPublished()) {
-      pw.editButton.setText("Update Gallery version");
-      pw.editButton.setTitle("publish your latest source code changes to the gallery and open an editor to modify app metadata");
+      pw.editButton.setText(UPDATEBUTTONTEXT);
+      pw.editButton.setTitle(UPDATEBUTTONTITLE);
     }
     else {
-      pw.editButton.setText("Publish to Gallery");
-      pw.editButton.setTitle("Publish your app to the gallery and open an editor to modify app metadata"); 
+      pw.editButton.setText(PUBLISHBUTTONTEXT);
+      pw.editButton.setTitle(PUBLISHBUTTONTITLE); 
     }
     pw.editButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         final Ode ode = Ode.getInstance();
         if (p.isPublished()) {
-          // app is already published, just update the aia and call gallery service 
-          // to get it and open it
-          //  first, here is the callback for after we update source
-
-          final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
-            MESSAGES.galleryError()) {
-            @Override 
-            public void onSuccess(Void result) {
-            }
-          };
-          // now setup what happens when we load the app in
-          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-          // failure message
-          MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(GalleryApp app) {
-            // the server has returned us something
-            int editStatus=GalleryPage.UPDATEAPP; 
-            Ode.getInstance().switchToGalleryAppView(app, editStatus);
-          }
-          };
-          // here is what we actually do, updateSource then load for editing
-          ode.getGalleryService().updateAppSource(p.getGalleryId(),p.getProjectId(), p.getProjectName(),updateSourceCallback);
-          // ok, this is below the call back, but of course it is done first 
-          ode.getGalleryService().getApp(p.getGalleryId(),callback);
- 
-        } else {
-          // app is not yet published, so publish it and open editor
-          // first create an app object with default data
-          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
-              p.getProjectName(), p.getGalleryId());
-          
-          
-          // here is the callback:
+          // setup what happens when we load the app in
           final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
               MESSAGES.galleryError()) {
             @Override
-            // When publish or update call returns
-            public void onSuccess(final GalleryApp gApp) {
-              // we only set the projectId to the gallery app if new app. If we
-              // are updating its already set
-              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-                  MESSAGES.galleryError()) {
-                @Override 
-                public void onSuccess(Void result) {
-                  // we get here when app is published and project gId set, so switch
-                  // to editor so user can modify title/desc/pic
-                  p.setGalleryId(gApp.getGalleryAppId());
-                  preparePublishApp(p,pw);  // make it so its ready to update instead of pub next time
-                  Ode.getInstance().switchToGalleryAppView(gApp, GalleryPage.NEWAPP);
-                }
-              };
-            
-              ode.getProjectService().setGalleryId(gApp.getProjectId(), gApp.getGalleryAppId(), 
-                 projectCallback);
-              //app.setGalleryAppId(galleryId);
-               
-          
-              gallery.GetMostRecent(0,5);
-              // tell the project list to change project's button to "Update"
-              Ode.getInstance().getProjectManager().publishProject();
+            public void onSuccess(GalleryApp app) {
+              // the server has returned us something
+              int editStatus=GalleryPage.UPDATEAPP; 
+              Ode.getInstance().switchToGalleryAppView(app, editStatus);
             }
-            
           };
-          // call publish with the default app data...
-          ode.getGalleryService().publishApp(app.getProjectId(), 
-              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-          
-          
-        }  // end, publish an app     
-         
-      }
+          // ok, this is below the call back, but of course it is done first 
+          ode.getGalleryService().getApp(p.getGalleryId(),callback);
+        }
+        else {
+          // app is not yet published
+          // first create an app object with default data
+          final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
+              p.getProjectName(), p.getGalleryId());
+          Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
+        }      
+      }   
     });
   }
-
- 
    
   /**
    * Gets the number of projects

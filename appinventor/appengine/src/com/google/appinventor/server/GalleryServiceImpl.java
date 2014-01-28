@@ -42,6 +42,7 @@ import java.util.logging.Logger;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -85,11 +86,21 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     final String userId = userInfoProvider.getUserId();
     GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
     storeAIA(app.getGalleryAppId(),projectId, projectName);
+    // see if there is a new image for the app. If so, its in cloud using projectId, need to move
+    // to cloud using gallery id
+    setGalleryAppImage(app);
 
     // put meta data in search index
     GallerySearchIndex.getInstance().indexApp(app);
     return app;
   }
+  @Override 
+  public void updateApp(GalleryApp app, boolean newImage) {
+    updateAppMetadata(app);
+    updateAppSource(app.getGalleryAppId(),app.getProjectId(),app.getProjectName());
+    if (newImage)
+      setGalleryAppImage(app);
+  } 
   @Override
   public void updateAppMetadata(GalleryApp app) {
     final String userId = userInfoProvider.getUserId();
@@ -228,7 +239,71 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       e.printStackTrace();
     }
   }
-  
-  
 
+  /* when an app is published/updated, we need to move the image
+   * that was temporarily uploaded into projects/projectid/image
+   * into the gallery image
+   */
+  private void setGalleryAppImage(GalleryApp app) {
+	// best thing would be if GCS has a mv op, we can just do that.
+    // don't think that is there, though, so for now read one and write to other
+    // First, read the file from projects name
+    boolean lockForRead = false;
+    String projectImagePath = app.getProjectImagePath();
+    try {
+      FileService fileService = FileServiceFactory.getFileService();
+      AppEngineFile readableFile = new AppEngineFile(projectImagePath);
+      FileReadChannel readChannel = fileService.openReadChannel(readableFile, false);
+      LOG.log(Level.INFO, "#### in setGalleryAppImage, past readChannel");
+      InputStream gcsis =Channels.newInputStream(readChannel);
+      // ok, we don't want to send the gcs stream because it can time out as we
+      // process the zip. We need to copy to a byte buffer first, then send a bytestream
+
+      byte[] buffer = new byte[8000];
+      int bytesRead = 0;
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();   
+           
+      while ((bytesRead = gcsis.read(buffer)) != -1) {
+        bao.write(buffer, 0, bytesRead); 
+      }
+      // now we want to write to the gallery image
+      //InputStream bais = new ByteArrayInputStream(bao.toByteArray());
+      LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
+      
+      // close the project image file
+      readChannel.close();
+
+  
+      String galleryKey = app.getImageKey();
+      // set up the cloud file (options)
+
+      GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
+      .setBucket("galleryai2")
+      .setKey(galleryKey)
+      .setAcl("public-read")
+      // what should the mime type be?  it was .setMimeType("text/html")
+      .setMimeType("image/jpeg")
+      .setCacheControl("no-cache");
+      // not sure if we're putting anything here for metadata
+  
+      AppEngineFile writableFile = fileService.createNewGSFile(optionsBuilder.build());
+      // Open a channel to write to it
+      boolean lock = true;
+      FileWriteChannel writeChannel =
+          fileService.openWriteChannel(writableFile, lock);
+     
+     
+      writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+    
+      // Now finalize
+      writeChannel.closeFinally();
+      
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      LOG.log(Level.INFO, "FAILED WRITING IMAGE TO GCS");
+      e.printStackTrace();
+    }
+      
+
+  }
 }

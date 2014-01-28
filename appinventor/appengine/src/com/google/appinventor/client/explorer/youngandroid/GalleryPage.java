@@ -72,6 +72,12 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   String projectName = null;
   Project project;
 
+  private static final String TRYITBUTTONTEXT="Open the App";
+  private static final String PUBLISHBUTTONTEXT="Publish";
+  private static final String UPDATEBUTTONTEXT="Update";
+
+  private boolean imageUploaded = false;
+
   private VerticalPanel panel;  // the main panel
   private FlowPanel galleryGUI;
   private FlowPanel appSingle;
@@ -109,7 +115,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel descBox;
   private FlowPanel titleBox;
 
-  private Button openAppButton;
+  private Button actionButton;
   private Button publishButton;
 
 /* 
@@ -164,12 +170,7 @@ panel
 
     // Now let's add the button for publishing, updating, or trying
     appHeader.add(appAction);
-    if (!newOrUpdateApp()) {
-      initTryitButton();
-    } else {
-    
-      initPublishButton();  
-    }
+    initActionButton();
     
     // App details - header title
     if (newOrUpdateApp()) {
@@ -179,13 +180,7 @@ panel
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
           app.setTitle(titleText.getText());   
-          Ode.getInstance().getGalleryService().updateAppMetadata(app,
-            new OdeAsyncCallback<Void>( MESSAGES.galleryError()) {
-            @Override 
-            public void onSuccess(Void result) {
-              gallery.appWasChanged();
-            }
-          });
+          
         }
 
       });
@@ -201,43 +196,47 @@ panel
       title.addStyleName("app-title");   
     }
     
-    Label devName = new Label("By " + app.getDeveloperName());
-    appInfo.add(devName);
-    devName.addStyleName("app-subtitle");
+   
+    // if we are publishing no app name  
+    if (editStatus!=NEWAPP) {
+      Label devName = new Label("By " + app.getDeveloperName());
+      appInfo.add(devName);
+      devName.addStyleName("app-subtitle");
     
-    // App details - meta
-    appInfo.add(appMeta);
-    appMeta.addStyleName("app-meta");
+      // App details - meta
+      appInfo.add(appMeta);
+      appMeta.addStyleName("app-meta");
     
-    // Images for meta data
-    Image numViews = new Image();
-    numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
-    Image numDownloads = new Image();
-    numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
-    Image numLikes = new Image();
-    numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
-    Image numComments = new Image();
-    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+      // Images for meta data
+      Image numViews = new Image();
+      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+      Image numDownloads = new Image();
+      numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+      Image numLikes = new Image();
+      numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+      Image numComments = new Image();
+      numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
     
-    // Add meta data
-    appMeta.add(numViews);
-    appMeta.add(new Label(Integer.toString(app.getViews())));
-    appMeta.add(numDownloads);
-    appMeta.add(new Label(Integer.toString(app.getDownloads())));
-    appMeta.add(numLikes);
-    appMeta.add(new Label(Integer.toString(app.getLikes())));
-    appMeta.add(numComments);
-    appMeta.add(new Label(Integer.toString(app.getComments())));
+      // Add meta data
+      appMeta.add(numViews);
+      appMeta.add(new Label(Integer.toString(app.getViews())));
+      appMeta.add(numDownloads);
+      appMeta.add(new Label(Integer.toString(app.getDownloads())));
+      appMeta.add(numLikes);
+      appMeta.add(new Label(Integer.toString(app.getLikes())));
+      appMeta.add(numComments);
+      appMeta.add(new Label(Integer.toString(app.getComments())));
 
-    // Add app dates
-    appInfo.add(appDates);
-    updateAppDates();
+      // Add app dates
+      appInfo.add(appDates);
+      updateAppDates();
     
-    appDates.add(creation);
-    appDates.add(update);
-    appDates.addStyleName("app-dates");
+      appDates.add(creation);
+      appDates.add(update);
+      appDates.addStyleName("app-dates");
+    }
 
-    // App details - description
+     // App description
     if (newOrUpdateApp()) {
       
       desc.setText(app.getDescription());
@@ -245,17 +244,9 @@ panel
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
           app.setDescription(desc.getText());   
-          Ode.getInstance().getGalleryService().updateAppMetadata(app,
-            new OdeAsyncCallback<Void>( MESSAGES.galleryError()) {
-            @Override 
-            public void onSuccess(Void result) {
-              gallery.appWasChanged();
-            }
-          });
         }
 
       });
-      
       desc.addStyleName("app-desc-textarea");
       descBox.add(desc);
       
@@ -266,9 +257,7 @@ panel
       appDescription.add(description);
       appDescription.addStyleName("app-description");    
     }
-
     
-
     appInfo.addStyleName("app-info-container");
 
     FlowPanel appClear = new FlowPanel();
@@ -419,28 +408,98 @@ panel
   private void initReadOnlyImage() {
     updateAppImage(app.getCloudImageURL(), appHeader);   
   }
+  private void initActionButton () {
+    if (editStatus==NEWAPP)
+      initPublishButton();
+    else 
+    if (editStatus == UPDATEAPP)
+      initUpdateButton();
+    else
+      initTryitButton(); 
+  }
 
   /**
    * Helper method called by constructor to initialize the try it button
    */
   private void initTryitButton() {
-    openAppButton = new Button("Try this app");    
-    openAppButton.addClickHandler(new ClickHandler() {
+    actionButton = new Button(TRYITBUTTONTEXT);    
+    actionButton.addClickHandler(new ClickHandler() {
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
         //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
         gallery.loadSourceFile(app);
       }
     });
-    openAppButton.addStyleName("app-action");
-    appAction.add(openAppButton);  
+    actionButton.addStyleName("app-action");
+    appAction.add(actionButton);  
   }
   /**
    * Helper method called by constructor to initialize the publish button
    */
   private void initPublishButton() {
-    
+    actionButton = new Button(PUBLISHBUTTONTEXT);    
+    actionButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+            @Override
+            // When publish or update call returns
+            public void onSuccess(final GalleryApp gApp) {
+              // we only set the projectId to the gallery app if new app. If we
+              // are updating its already set
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.galleryError()) {
+                @Override 
+                public void onSuccess(Void result) {
+                  // this is called after published and after we've set the galleryid
+                  // tell the project list to change project's button to "Update"
+                  Ode.getInstance().getProjectManager().publishProject();
+                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+                }
+              };
+            
+              Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(), 
+                  gApp.getGalleryAppId(), projectCallback);
+              // we need to update the app object for this gallery page
+              //
+              gallery.appWasChanged();
+             
+            }
+            
+          };
+          // call publish with the default app data...
+          Ode.getInstance().getGalleryService().publishApp(app.getProjectId(), 
+              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+        
+      }
+    });
+    actionButton.addStyleName("app-action");
+    appAction.add(actionButton);  
+  }
+   /**
+   * Helper method called by constructor to initialize the publish button
+   */
+  private void initUpdateButton() {
+    actionButton = new Button(UPDATEBUTTONTEXT);    
+    actionButton.addClickHandler(new ClickHandler() {
 
+      public void onClick(ClickEvent event) {
+         final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryError()) {
+            @Override 
+            public void onSuccess(Void result) {
+              gallery.appWasChanged();  // to update the gallery list and page
+              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+            }
+          };
+          
+          Ode.getInstance().getGalleryService().updateApp(app,imageUploaded,updateSourceCallback);
+          
+      }
+    });
+    actionButton.addStyleName("app-action");
+    appAction.add(actionButton);  
   }
 
   /**
@@ -535,8 +594,13 @@ panel
       // Grab and validify the filename
       final String filename = makeValidFilename(uploadFilename);
       // Forge the request URL for gallery servlet
+      // we used to send the gallery id to the servlet, now the project id as
+      // the servlet just stores image temporarily before publish
+      /* String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
+          "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"+ filename; */
+      // send the project id as the id, to store image temporarily until published
       String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
-          "/apps/" + String.valueOf(app.getGalleryAppId()) + "/"+ filename;
+          "/apps/" + String.valueOf(app.getProjectId()) + "/"+ filename;   
       Uploader.getInstance().upload(upload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
           @Override
@@ -545,8 +609,9 @@ panel
             case SUCCESS:
               // Update the app image preview after a success upload
               imageUploadBoxInner.clear();
-              updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
-              gallery.appWasChanged();  // to update the gallery list and page
+              // updateAppImage(app.getCloudImageURL(), imageUploadBoxInner); 
+              updateAppImage(app.getProjectImageURL(),imageUploadBoxInner); 
+              imageUploaded=true;
               ErrorReporter.hide();
               break;
             case FILE_TOO_LARGE:

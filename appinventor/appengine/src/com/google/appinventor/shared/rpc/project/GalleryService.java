@@ -33,6 +33,7 @@ public interface GalleryService extends RemoteService {
   GalleryApp publishApp(long projectId, String projectName, String title,
                          String description);
 
+  void updateApp(GalleryApp app, boolean newImage);
   void updateAppSource (long galleryId, long projectId, String projectName);
   void updateAppMetadata(GalleryApp app);
 

@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
+
 public class GalleryApp implements IsSerializable {
   /**
    * Default constructor. This constructor is required by GWT.
@@ -72,8 +73,9 @@ public class GalleryApp implements IsSerializable {
     this.projectId = projectId;
     this.projectName=projectName;
     this.galleryAppId=galleryAppId;
-    this.developerId = "unknown";
-    this.developerName="name";
+
+    this.developerId = "none";
+    this.developerName= "none";
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageBlobId = "SFKJF";
@@ -218,6 +220,20 @@ public class GalleryApp implements IsSerializable {
   public String getCloudImageURL() {
     String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/apps/"
        + getGalleryAppId()+"/image";
+    return url2;
+  }
+
+  public String getImageKey () {
+    return "gallery/apps/" + getGalleryAppId() + "/image";
+  } 
+  public String getProjectImageURL() {
+    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/projects/"
+       + getProjectId()+"/image";
+    return url2;
+  }
+  public String getProjectImagePath() {
+    String url2 = "/gs/" + this.GALLERYBUCKET + "/gallery/projects/"
+       + getProjectId()+"/image";
     return url2;
   }
 

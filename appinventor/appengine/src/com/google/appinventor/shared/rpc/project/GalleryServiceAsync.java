@@ -23,9 +23,13 @@ public interface GalleryServiceAsync {
    */
   void publishApp(long projectId, String title, String projectName, String description,
       AsyncCallback<GalleryApp> callback);
+   /**
+   * @see GalleryService#updateApp(GalleryApp)
+   */
+  void updateApp(GalleryApp app, boolean newImage, AsyncCallback<Void> callback);
 
   /**
-   * @see GalleryService#updateApp(GalleryApp)
+   * @see GalleryService#updateAppMetadata(GalleryApp)
    */
   void updateAppMetadata(GalleryApp app,AsyncCallback<Void> callback);
 
