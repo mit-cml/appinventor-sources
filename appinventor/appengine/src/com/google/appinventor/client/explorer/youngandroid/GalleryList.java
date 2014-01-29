@@ -118,9 +118,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    * Creates a new GalleryList
    */
   public GalleryList() {
-	  gallery = GalleryClient.getInstance();
-      gallery.addListener(this);
-	  galleryGF = new GalleryGuiFactory();
+	
+	gallery = GalleryClient.getInstance();
+    gallery.addListener(this);
+	galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
     

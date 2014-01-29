@@ -65,7 +65,8 @@ import com.google.appinventor.shared.rpc.project.UserProject;
  * @author vincentaths@gmail.com(Vincent Zhang)
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
-  
+
+
   GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
   GalleryApp app = null;
@@ -118,7 +119,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Button actionButton;
   private Button publishButton;
 
-/* 
+/* Here is the organization of this page:
 panel
  galleryGUI
   appSingle
@@ -150,6 +151,8 @@ panel
    *
    */
   public GalleryPage(final GalleryApp app, final int editStatus) {
+  
+   
     // get a reference to the Gallery Client which handles the communication to
     //   server to get gallery data
     gallery = GalleryClient.getInstance();
@@ -659,5 +662,19 @@ panel
     creation.setText("Created on " + dateFormat.format(creationDate));
     update.setText("Updated on " + dateFormat.format(updateDate));
   }
+ 
+   /* this is admin code that was used to temporarily to get all old apps indexed ...
+    final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void x) {
+                
+              }
+          };
+    Ode.getInstance().getGalleryService().indexAll(100,callback);
+    ** end temporary code */
+ 
+ 
  
 }	

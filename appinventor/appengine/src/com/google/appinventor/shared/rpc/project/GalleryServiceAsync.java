@@ -39,6 +39,12 @@ public interface GalleryServiceAsync {
   void updateAppSource(long galleryId, long projectId, String projectName, 
       AsyncCallback<Void> callback);
 
+   /**
+   * @see GalleryService#indexAll(int)
+   */
+  void indexAll(int count, 
+      AsyncCallback<Void> callback);
+
   /**
    * @see GalleryService#publishImage(String, String, NewProjectParameters)
    */

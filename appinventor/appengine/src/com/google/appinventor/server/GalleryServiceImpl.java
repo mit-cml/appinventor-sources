@@ -112,18 +112,17 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public void updateAppSource (long galleryId, long projectId, String projectName) {
      storeAIA(galleryId,projectId, projectName);
   }
-
-
-/*
+  /**
+  * This is an admin function to (re-) index all gallery apps. 
+  */ 
   @Override
-  public long updateApp(long galleryId, long projectId, String title, String projectName, String description) {
-    final String userId = userInfoProvider.getUserId();
-    galleryStorageIo.updateGalleryApp(galleryId, title, description,  userId);
-    storeAIA(galleryId,projectId, projectName);
-    return galleryId;
+  public void indexAll(int count) {
+    List<GalleryApp> apps= getRecentApps(1,count);
+    for (GalleryApp app:apps) {
+      GallerySearchIndex.getInstance().indexApp(app);
+    }
   }
 
-*/
 
    /**
    * Returns an array of gallery Apps

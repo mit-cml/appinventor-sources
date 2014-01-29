@@ -37,6 +37,7 @@ public interface GalleryService extends RemoteService {
   void updateAppSource (long galleryId, long projectId, String projectName);
   void updateAppMetadata(GalleryApp app);
 
+  void indexAll(int count);
 
   
 //  void storeImage(InputStream is, long galleryId);
