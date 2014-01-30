@@ -142,8 +142,11 @@ public class PropertyTypeConstants {
   * is preferred everywhere except as the default value for {@link
   * com.google.appinventor.components.annotations.DesignerProperty#editorType}.
   * @see com.google.appinventor.client.widgets.properties.TextPropertyEditor
+  * @see com.google.appinventor.client.widgets.properties.TextAreaPropertyEditor
   */
   public static final String PROPERTY_TYPE_TEXT = "text";
+
+  public static final String PROPERTY_TYPE_TEXTAREA = "textArea";
 
   /**
    * Choices of text alignment (left, center, right) offered by {@link

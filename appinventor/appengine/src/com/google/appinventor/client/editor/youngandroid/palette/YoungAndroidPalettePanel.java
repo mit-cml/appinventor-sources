@@ -41,6 +41,7 @@ import com.google.appinventor.client.widgets.properties.NonNegativeIntegerProper
 import com.google.appinventor.client.widgets.properties.PropertyEditor;
 import com.google.appinventor.client.widgets.properties.StringPropertyEditor;
 import com.google.appinventor.client.widgets.properties.TextPropertyEditor;
+import com.google.appinventor.client.widgets.properties.TextAreaPropertyEditor;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
@@ -193,6 +194,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
       return new StringPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXTALIGNMENT)) {
       return new YoungAndroidAlignmentChoicePropertyEditor();
+    } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA)) {
+      return new TextAreaPropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TOAST_LENGTH)) {
       return new YoungAndroidToastLengthChoicePropertyEditor();
     } else if (editorType.equals(PropertyTypeConstants.PROPERTY_TYPE_TYPEFACE)) {

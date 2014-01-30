@@ -1,4 +1,4 @@
-// -*- mode: java; c-basic-offset: 2; -*-
+ // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2012 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
@@ -19,10 +19,8 @@ import java.util.Set;
 import org.json.JSONException;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -43,7 +41,6 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -111,6 +108,10 @@ public class Form extends Activity
 
   // Backing for background color
   private int backgroundColor;
+
+  // Information string the app creator can set.  It will be shown when
+  // "about this application" menu item is selected.
+  private String aboutScreen;
 
   private String backgroundImagePath = "";
   private Drawable backgroundDrawable;
@@ -198,6 +199,7 @@ public class Form extends Activity
   private void defaultPropertyValues() {
     Scrollable(true); // frameLayout is created in Scrollable()
     BackgroundImage("");
+    AboutScreen("");
     BackgroundColor(Component.COLOR_WHITE);
     AlignHorizontal(ComponentConstants.GRAVITY_LEFT);
     AlignVertical(ComponentConstants.GRAVITY_TOP);
@@ -588,8 +590,8 @@ public class Form extends Activity
 
     frameLayout = scrollable ? new ScrollView(this) : new FrameLayout(this);
     frameLayout.addView(viewLayout.getLayoutManager(), new ViewGroup.LayoutParams(
-        ViewGroup.LayoutParams.FILL_PARENT,
-        ViewGroup.LayoutParams.FILL_PARENT));
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT));
 
     frameLayout.setBackgroundColor(backgroundColor);
     if (backgroundDrawable != null) {
@@ -676,7 +678,8 @@ public class Form extends Activity
    *
    * @return  form caption
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "The caption for the form, which apears in the title bar")
   public String Title() {
     return getTitle().toString();
   }
@@ -692,6 +695,33 @@ public class Form extends Activity
   @SimpleProperty
   public void Title(String title) {
     setTitle(title);
+  }
+
+
+  /**
+   * AboutScreen property getter method.
+   *
+   * @return  AboutScreen string
+   */
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+      description = "Information about the screen.  It appears when \"About this Application\" "
+      + "is selected from the system menu. Use it to tell users about your app.  In multiple "
+      + "screen apps, each screen has its own AboutScreen info.")
+  public String AboutScreen() {
+    return aboutScreen;
+  }
+
+  /**
+   * AboutScreen property setter method: sets a new aboutApp string for the form in the
+   * form's "About this application" menu.
+   *
+   * @param title  new form caption
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXTAREA,
+      defaultValue = "")
+  @SimpleProperty
+  public void AboutScreen(String aboutScreen) {
+    this.aboutScreen = aboutScreen;
   }
 
   /**
@@ -1240,7 +1270,8 @@ public class Form extends Activity
     }
   }
 
-  // Configure the system menu to include a button to kill the application
+  // Configure the system menu to include items to kill the application and to show "about"
+  // information
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
@@ -1250,6 +1281,7 @@ public class Form extends Activity
     // add the menu items
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
+    addAboutInfoToMenu(menu);
     return true;
   }
 
@@ -1262,30 +1294,48 @@ public class Form extends Activity
         return true;
       }
     });
-    stopApplicationItem.setIcon(android.R.drawable.ic_menu_close_clear_cancel);
+    stopApplicationItem.setIcon(android.R.drawable.ic_notification_clear_all);
+  }
+
+  public void addAboutInfoToMenu(Menu menu) {
+    MenuItem aboutAppItem = menu.add(Menu.NONE, Menu.NONE, 2,
+    "About this application")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        showAboutApplicationNotification();
+        return true;
+      }
+    });
+    aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
   private void showExitApplicationNotification() {
-    AlertDialog alertDialog = new AlertDialog.Builder(this).create();
-    alertDialog.setTitle("Stop application?");
-    // prevents the user from escaping the dialog by hitting the Back button
-    alertDialog.setCancelable(false);
-    alertDialog.setMessage("Stop this application and exit? You'll need to relaunch " +
-    "the application to use it again.");
-    alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "Stop and exit",
-        new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // We call closeApplication here, not finishApplication which is a static method and
-        // assumes that activeForm is the foreground activity.
-        closeApplicationFromMenu();
-      }});
-    alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "Don't stop",
-        new DialogInterface.OnClickListener() {
-      public void onClick(DialogInterface dialog, int which) {
-        // nothing to do here
-      }
-    });
-    alertDialog.show();
+    String title = "Stop application?";
+    String message = "Stop this application and exit? You'll need to relaunch " +
+        "the application to use it again.";
+    String positiveButton = "Stop and exit";
+    String negativeButton = "Don't stop";
+    // These runnables are passed to twoButtonAlert.  They perform the corresponding actions
+    // when the button is pressed.   Here there's nothing to do for "don't stop" and cancel
+    Runnable stopApplication = new Runnable() {public void run () {closeApplicationFromMenu();}};
+    Runnable doNothing = new Runnable () {public void run() {}};
+    Notifier.twoButtonDialog(
+        this,
+        message,
+        title,
+        positiveButton,
+        negativeButton,
+        false, // cancelable is false
+        stopApplication,
+        doNothing,
+        doNothing);
+  }
+
+  private void showAboutApplicationNotification() {
+    String title = "Invented with App Inventor\n http://appinventor.mit.edu";
+    String message = aboutScreen;
+    String buttonText ="Got it";
+    Notifier.oneButtonAlert(this, message, title, buttonText);
   }
 
   // This is called from clear-current-form in runtime.scm.
