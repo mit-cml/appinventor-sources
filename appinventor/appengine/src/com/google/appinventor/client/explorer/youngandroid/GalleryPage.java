@@ -76,7 +76,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private static final String TRYITBUTTONTEXT="Open the App";
   private static final String PUBLISHBUTTONTEXT="Publish";
   private static final String UPDATEBUTTONTEXT="Update";
-
+  private static final String REMOVEBUTTONTEXT="Remove";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -118,6 +118,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
 
   private Button actionButton;
   private Button publishButton;
+  private Button removeButton;
 
 /* Here is the organization of this page:
 panel
@@ -174,7 +175,9 @@ panel
     // Now let's add the button for publishing, updating, or trying
     appHeader.add(appAction);
     initActionButton();
-    
+    if (editStatus==UPDATEAPP) {
+      initRemoveButton();
+    }
     // App details - header title
     if (newOrUpdateApp()) {
       // GUI for editable title container
@@ -457,7 +460,7 @@ panel
                 public void onSuccess(Void result) {
                   // this is called after published and after we've set the galleryid
                   // tell the project list to change project's button to "Update"
-                  Ode.getInstance().getProjectManager().publishProject();
+                  Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),gApp.getGalleryAppId());
                   Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
                 }
               };
@@ -503,6 +506,40 @@ panel
     });
     actionButton.addStyleName("app-action");
     appAction.add(actionButton);  
+  }
+  private void initRemoveButton() {
+    removeButton = new Button(REMOVEBUTTONTEXT);    
+    removeButton.addClickHandler(new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+         // need a are you sure dialog
+         final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryDeleteError()) {
+            @Override 
+            public void onSuccess(Void result) {
+              // once we have deleted, set the project id back to -1
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.gallerySetProjectIdError()) {
+                @Override 
+                public void onSuccess(Void result) {
+                  // this is called after deleted and after we've set the galleryid
+                  Ode.getInstance().getProjectManager().UnpublishProject(app.getProjectId());
+                  Ode.getInstance().switchToProjectsView();
+                }
+              };
+              GalleryClient client = GalleryClient.getInstance();
+              client.appWasChanged();  // tell views to update
+              Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(), 
+                  -1, projectCallback);
+            }
+          };
+          
+          Ode.getInstance().getGalleryService().deleteApp(app.getGalleryAppId(),callback);
+          
+      }
+    });
+    removeButton.addStyleName("app-action");
+    appAction.add(removeButton);  
   }
 
   /**

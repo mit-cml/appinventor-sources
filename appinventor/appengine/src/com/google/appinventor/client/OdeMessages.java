@@ -988,7 +988,14 @@ public interface OdeMessages extends Messages {
   @Description("Confirmation message for selecting a single project and clicking delete")
   String confirmDeleteSingleProject(String projectName);
 
-  @DefaultMessage("Are you really sure you want to delete these projects: {0}")
+  @DefaultMessage("Are you really sure you want to delete this project: {0}?"+
+      " Note that the published copy of this project will be removed from the gallery as well")
+  @Description("Confirmation message for selecting a single project and clicking delete")
+  String confirmDeleteSinglePublishedProject(String projectName);
+
+  @DefaultMessage("Are you really sure you want to delete these projects: {0}?"+
+      " Note that  if any of the projects have been published, the published version in"+
+      " the gallery will be removed as well.")
   @Description("Confirmation message for selecting multiple projects and clicking delete")
   String confirmDeleteManyProjects(String projectNames);
 
@@ -1190,11 +1197,22 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when can't get developer gallery apps on server.")
   String galleryDeveloperAppError();
   
+  
+  
   // Used in gallerylist.java
 
   @DefaultMessage("Server error: gallery cannot be accessed")
   @Description("Error message reported when the gallery cannot be accessed.")
   String galleryError();
+
+  // Used in galleryPage.java
+  @DefaultMessage("Server error: gallery deletion error")
+  @Description("Error message reported when the gallery delete breaks")
+  String galleryDeleteError(); 
+
+  @DefaultMessage("Server error: gallery error when setting project gallery id")
+  @Description("Error message reported when the gallery trying to set project gallery id")
+  String gallerySetProjectIdError(); 
 
   @DefaultMessage("Server error: could not upload project. Please try again later!")
   @Description("Error message reported when a project couldn't be uploaded to the server.")

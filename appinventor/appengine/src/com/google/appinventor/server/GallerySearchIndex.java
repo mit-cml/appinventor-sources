@@ -16,6 +16,7 @@ import com.google.appengine.api.search.QueryOptions;
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
+import com.google.appengine.api.search.DeleteException;
 
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
@@ -68,6 +69,16 @@ public class GallerySearchIndex {
         if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {
             // retry putting the document
         }
+    }
+
+  }
+
+  public void unIndexApp(long galleryId) {
+    Index index = getIndex();
+    try {
+      index.delete(String.valueOf(galleryId));
+    } catch (DeleteException e) {
+      LOG.info("error deleting index entry");
     }
 
   }

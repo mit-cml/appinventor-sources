@@ -379,7 +379,6 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     projectWidgets.put(project, new ProjectWidgets(project));
     refreshTable(true);
   }
-
   @Override
   public void onProjectRemoved(Project project) {
     projects.remove(project);
@@ -390,8 +389,9 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     selectedProjects.remove(project);
     Ode.getInstance().getProjectToolbar().updateButtons();
   }
+
   @Override
-  public void onProjectPublished() {
+  public void onProjectPublishedOrUnpublished() {
     refreshTable(false);
   }
 }

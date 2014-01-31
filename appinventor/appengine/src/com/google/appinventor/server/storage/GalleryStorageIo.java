@@ -74,6 +74,8 @@ public interface GalleryStorageIo {
   
   void incrementDownloads(long galleryId);
 
+  void deleteApp(long galleryId);
+
   // comment stuff
   long addComment(long galleryId,String userId, String comment);
   

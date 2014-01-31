@@ -316,6 +316,40 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return (gApp);
   }
+
+  /* remove a gallery app
+   *
+  */
+  public void deleteApp(final long galleryId) {
+
+    try {
+      // first job deletes the UserProjectData in the user's entity group
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          // delete the GalleryApp
+          datastore.delete(galleryAppKey(galleryId));
+        }
+      });
+      // second job deletes the comments from this app
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryCommentData commentData : datastore.query(GalleryCommentData.class).ancestor(galleryKey).order("-dateCreated")) {
+            datastore.delete(commentData);
+          }
+          
+        }
+      });
+      //note that in the gallery service we'll change the associated project's gallery id back to -1
+      //  and we'll remove the aia and image file
+     } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,"gallery remove error", e);
+    }
+  }
+
+
   /**
    * add a comment to the comment list for a gallery app
    * 

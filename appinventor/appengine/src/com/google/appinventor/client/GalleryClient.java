@@ -234,10 +234,11 @@ public class GalleryClient {
     ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
   } 
   // GalleryApp (and possibly others) call this to tell galleryList (and possibly others)
-  // to update
+  // to update after some app was changed or removed
   public void appWasChanged() {
-    // for now, let's update the recent list
+    // for now, let's update the recent list and the popular list (in case one was deleted)
     GetMostRecent(0,5);
+    GetMostDownloaded(0,5);
   }
 
   private String getStartCountString(int start, int count) {

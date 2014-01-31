@@ -161,6 +161,15 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
   @Override
   public void deleteApp(long galleryId) {
+    // get rid of comments and app from database
+    galleryStorageIo.deleteApp(galleryId);
+    // remove the search index entry
+    GallerySearchIndex.getInstance().unIndexApp(galleryId);
+    // remove its image/aia from cloud
+    deleteAIA(galleryId);
+    deleteImage(galleryId);
+    // change its associated AI project so that its galleryId is reset to -1
+
   }
   
   @Override
@@ -210,7 +219,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       // set up the cloud file (options)
       FileService fileService = FileServiceFactory.getFileService();
       GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
-      .setBucket("galleryai2")
+      .setBucket(GalleryApp.GALLERYBUCKET)
       .setKey(galleryKey)
       .setAcl("public-read")
       // what should the mime type be?  it was .setMimeType("text/html")
@@ -239,6 +248,30 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     }
   }
 
+  private void deleteAIA(long galleryId) {
+    try {
+      FileService fileService = FileServiceFactory.getFileService();
+      AppEngineFile file = new AppEngineFile(GalleryApp.getSourceURL(galleryId));
+      // set up the cloud file (options)
+      fileService.delete(file);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      LOG.log(Level.INFO, "FAILED GCS delete");
+      e.printStackTrace();
+    }
+  }
+  private void deleteImage(long galleryId) {
+    try {
+      FileService fileService = FileServiceFactory.getFileService();
+      AppEngineFile file = new AppEngineFile(GalleryApp.getImageURL(galleryId));
+      // set up the cloud file (options)
+      fileService.delete(file);
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      LOG.log(Level.INFO, "FAILED GCS delete");
+      e.printStackTrace();
+    }
+  }
   /* when an app is published/updated, we need to move the image
    * that was temporarily uploaded into projects/projectid/image
    * into the gallery image
@@ -277,7 +310,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       // set up the cloud file (options)
 
       GSFileOptionsBuilder optionsBuilder = new GSFileOptionsBuilder()
-      .setBucket("galleryai2")
+      .setBucket(GalleryApp.GALLERYBUCKET)
       .setKey(galleryKey)
       .setAcl("public-read")
       // what should the mime type be?  it was .setMimeType("text/html")

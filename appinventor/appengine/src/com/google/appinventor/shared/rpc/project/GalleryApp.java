@@ -25,8 +25,8 @@ public class GalleryApp implements IsSerializable {
 
 
   public static final String GALLERYBUCKET = "galleryai2";
-  public static final String DEFAULTGALLERYIMAGE="/static/images/genericApp.png";
-  public static final String DEFAULTUSERIMAGE="/static/images/android_icon_.png";
+  public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
+  public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
 	
   public GalleryApp(String title, String developerId, String description,
       long creationDate, long updateDate, String imageURL, String projectName,
@@ -207,6 +207,10 @@ public class GalleryApp implements IsSerializable {
     String url = "/gs/" + this.GALLERYBUCKET + "/" +getSourceKey();
     return url;
   }
+  public static String getSourceURL(long galleryId) {
+    String url = "/gs/" + GALLERYBUCKET + "/" +getSourceKey(galleryId);
+    return url;
+  }
   public String getSourceKey () {
     String key = "gallery/apps/" + getGalleryAppId()+"/aia";
     return key;
@@ -222,9 +226,17 @@ public class GalleryApp implements IsSerializable {
        + getGalleryAppId()+"/image";
     return url2;
   }
+  public static String getImageURL(long galleryId) {
+    String url = "/gs/" + GALLERYBUCKET + "/" +getImageKey(galleryId);
+    return url;
+  }
 
   public String getImageKey () {
     return "gallery/apps/" + getGalleryAppId() + "/image";
+  } 
+
+  public static String getImageKey (long galleryId) {
+    return "gallery/apps/" + galleryId + "/image";
   } 
   public String getProjectImageURL() {
     String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/projects/"

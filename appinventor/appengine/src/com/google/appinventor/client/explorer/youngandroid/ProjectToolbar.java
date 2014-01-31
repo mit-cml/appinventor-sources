@@ -22,19 +22,7 @@ import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-
-//import com.google.appengine.tools.cloudstorage.GcsFileOptions;
-//import com.google.appengine.tools.cloudstorage.GcsFilename;
-//import com.google.appengine.tools.cloudstorage.GcsInputChannel;
-//import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-//import com.google.appengine.tools.cloudstorage.GcsService;
-//import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
-//import com.google.appengine.tools.cloudstorage.RetryParams;
-//import com.google.appengine.tools.development.testing.LocalBlobstoreServiceTestConfig;
-//import com.google.appengine.tools.development.testing.LocalDatastoreServiceTestConfig;
-//import com.google.appengine.tools.development.testing.LocalServiceTestHelper;
-
-
+import com.google.appinventor.client.GalleryClient;
 
 
 
@@ -78,7 +66,7 @@ public class ProjectToolbar extends Toolbar {
     @Override
     public void execute() {
       List<Project> selectedProjects =
-        ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
+          ProjectListBox.getProjectListBox().getProjectList().getSelectedProjects();
       if (selectedProjects.size() > 0) {
         // Show one confirmation window for selected projects.
         if (deleteConfirmation(selectedProjects)) {
@@ -86,6 +74,7 @@ public class ProjectToolbar extends Toolbar {
             deleteProject(project);
           }
         }
+
       } else {
         // The user can select a project to resolve the
         // error.
@@ -96,7 +85,10 @@ public class ProjectToolbar extends Toolbar {
     private boolean deleteConfirmation(List<Project> projects) {
       String message;
       if (projects.size() == 1) {
-        message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
+        if (projects.get(0).isPublished())
+          message = MESSAGES.confirmDeleteSinglePublishedProject(projects.get(0).getProjectName());
+        else
+          message = MESSAGES.confirmDeleteSingleProject(projects.get(0).getProjectName());
       } else {
         StringBuilder sb = new StringBuilder();
         String separator = "";
@@ -124,6 +116,11 @@ public class ProjectToolbar extends Toolbar {
         // need to clear the ViewerBox first.
         ViewerBox.getViewerBox().clear();
       }
+      if (project.isPublished()) {
+        doDeleteGalleryApp(project.getGalleryId());
+        GalleryClient gallery = GalleryClient.getInstance();
+        gallery.appWasChanged();
+      }
       // Make sure that we delete projects even if they are not open.
       doDeleteProject(projectId);
     }
@@ -133,18 +130,28 @@ public class ProjectToolbar extends Toolbar {
           new OdeAsyncCallback<Void>(
               // failure message
               MESSAGES.deleteProjectError()) {
-        @Override
-        public void onSuccess(Void result) {
-          Ode.getInstance().getProjectManager().removeProject(projectId);
-          // Show a welcome dialog in case there are no
-          // projects saved.
-          if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
-            Ode.getInstance().createWelcomeDialog(false);
-          }
-        }
-      });
+            @Override
+            public void onSuccess(Void result) {
+              Ode.getInstance().getProjectManager().removeProject(projectId);
+              // Show a welcome dialog in case there are no
+              // projects saved.
+              if (Ode.getInstance().getProjectManager().getProjects().size() == 0) {
+                Ode.getInstance().createNoProjectsDialog(true);
+              }
+            }
+          });
     }
-
+    private void doDeleteGalleryApp(final long galleryId) {
+      Ode.getInstance().getGalleryService().deleteApp(galleryId,
+          new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryDeleteError()) {
+            @Override
+            public void onSuccess(Void result) {
+              // need to update gallery list
+            }
+          });
+    }
   }
 
   /**

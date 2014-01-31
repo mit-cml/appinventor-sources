@@ -21,6 +21,6 @@ public class ProjectManagerEventAdapter implements ProjectManagerEventListener {
   }
 
   @Override
-  public void onProjectPublished() {
+  public void onProjectPublishedOrUnpublished() {
   }
 }
