@@ -1310,11 +1310,17 @@ public class ObjectifyStorageIo implements  StorageIo {
       if (fileData.isGCS) {     // It's in the Cloud Store
         try {
           GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fileData.gcsName);
+          int bytesRead = 0;
           int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
           ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
           GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
           try {
-            readChannel.read(resultBuffer);
+            while (bytesRead < fileSize) {
+              bytesRead += readChannel.read(resultBuffer);
+              if (bytesRead < fileSize) {
+                LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+              }
+            }
           } finally {
             readChannel.close();
           }
@@ -1436,11 +1442,17 @@ public class ObjectifyStorageIo implements  StorageIo {
         } else if (fd.isGCS) {
           try {
             GcsFilename gcsFileName = new GcsFilename(GCS_BUCKET_NAME, fd.gcsName);
+            int bytesRead = 0;
             int fileSize = (int) gcsService.getMetadata(gcsFileName).getLength();
             ByteBuffer resultBuffer = ByteBuffer.allocate(fileSize);
             GcsInputChannel readChannel = gcsService.openReadChannel(gcsFileName, 0);
             try {
-              readChannel.read(resultBuffer);
+              while (bytesRead < fileSize) {
+                bytesRead += readChannel.read(resultBuffer);
+                if (bytesRead < fileSize) {
+                  LOG.log(Level.INFO, "readChannel: bytesRead = " + bytesRead + " fileSize = " + fileSize);
+                }
+              }
             } finally {
               readChannel.close();
             }
