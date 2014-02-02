@@ -8,6 +8,8 @@ package com.google.appinventor.server.storage;
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.GalleryAppReport;
+import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
 
 import java.io.IOException;
 import java.util.List;
@@ -81,5 +83,19 @@ public interface GalleryStorageIo {
   
   List<GalleryComment> getComments(long galleryId);
   // studio stuff... to come
+
+  // flag stuff
+  long addAppReport(long galleryId,String userId, String comment);
+
+  List<GalleryAppReport> getAppReports(long galleryId);
+
+  List<GalleryAppReport> getAppReports();
+
+  long addCommentReport(long commentId,String userId, String comment);
+
+  List<GalleryCommentReport> getCommentReports(long commentId);
+
+  List<GalleryCommentReport> getCommentReports();
+
   
 }

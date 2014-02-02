@@ -41,6 +41,8 @@ import com.google.common.io.ByteStreams;
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.GalleryAppReport;
+import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
@@ -167,7 +169,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           // Note that while we cannot expect to read back a value that we've
           // written in this job, reading the assigned id from pd should work.
 
-          Key<GalleryAppData> galleryKey = galleryAppKey(appData.id);
+          Key<GalleryAppData> galleryKey = galleryKey(appData.id);
           
         }
  
@@ -260,7 +262,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          GalleryAppData galleryAppData = datastore.find(galleryAppKey(galleryId));
+          GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
             galleryAppData.numDownloads= galleryAppData.numDownloads+1;
             datastore.put(galleryAppData);
@@ -284,7 +286,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          GalleryAppData galleryAppData = datastore.find(galleryAppKey(galleryId));
+          GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
             galleryAppData.title= title;
             galleryAppData.description=description;
@@ -328,7 +330,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           // delete the GalleryApp
-          datastore.delete(galleryAppKey(galleryId));
+          datastore.delete(galleryKey(galleryId));
         }
       });
       // second job deletes the comments from this app
@@ -410,6 +412,192 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
     return comments;
   }
+
+   /**
+   * add a report (flag) for a gallery app
+   *
+   *
+   */
+  @Override
+  public long addAppReport(final long galleryId,final String userId, final String report) {
+    final Result<Long> theDate = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppReportData reportData = new GalleryAppReportData();
+          long date = System.currentTimeMillis();
+          reportData.report = report;
+          reportData.userId = userId;
+          reportData.galleryKey = galleryKey(galleryId);
+          reportData.dateCreated=date;
+          theDate.t=date;
+          datastore.put(reportData);
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.addAppReport", e);
+    }
+    return theDate.t;
+  }
+  /**
+   * get all the reports for a given galleryId
+   * @return list of GalleryAppReport
+   *
+   */
+  @Override
+  public List<GalleryAppReport> getAppReports(final long galleryId) {
+   final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey).order("-dateCreated")) {
+            User commenter = storageIo.getUser(reportData.userId);
+            String name="unknown";
+            if (commenter!= null) {
+               name = commenter.getUserName();
+            }
+            GalleryAppReport galleryReport = new GalleryAppReport(galleryId,
+                reportData.userId,reportData.report,reportData.dateCreated);
+            galleryReport.setUserName(name);
+            reports.add(galleryReport);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getAppReports", e);
+    }
+
+    return reports;
+  }
+
+    /**
+   * get all the reports
+   * @return list of GalleryAppReport
+   *
+   */
+  @Override
+  public List<GalleryAppReport> getAppReports() {
+   final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).order("-dateCreated")) {
+            User commenter = storageIo.getUser(reportData.userId);
+            String name="unknown";
+            if (commenter!= null) {
+               name = commenter.getUserName();
+            }
+            GalleryAppReport galleryReport = new GalleryAppReport(reportData.galleryKey.getId(),
+                reportData.userId,reportData.report,reportData.dateCreated);
+            galleryReport.setUserName(name);
+            reports.add(galleryReport);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getAppReports (all)", e);
+    }
+
+    return reports;
+  }
+
+
+     /**
+   * add a report (flag) for a gallery app
+   *
+   *
+   */
+  @Override
+  public long addCommentReport(final long commentId, final String userId, final String report) {
+    final Result<Long> theDate = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryCommentReportData reportData = new GalleryCommentReportData();
+          long date = System.currentTimeMillis();
+          reportData.report = report;
+          reportData.userId = userId;
+          reportData.galleryCommentKey = galleryCommentKey(commentId);
+          reportData.dateCreated=date;
+          theDate.t=date;
+          datastore.put(reportData);
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.addCommentReport", e);
+    }
+    return theDate.t;
+  }
+  /**
+   * get all the reports for a given comment
+   * @return list of GalleryCommentReport
+   *
+   */
+  @Override
+  public List<GalleryCommentReport> getCommentReports(final long commentId) {
+   final List<GalleryCommentReport> reports = new ArrayList<GalleryCommentReport>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryCommentData> galleryCommentKey = galleryCommentKey(commentId);
+          for (GalleryCommentReportData reportData : datastore.query(GalleryCommentReportData.class).ancestor(galleryCommentKey).order("-dateCreated")) {
+            User commenter = storageIo.getUser(reportData.userId);
+            String name="unknown";
+            if (commenter!= null) {
+               name = commenter.getUserName();
+            }
+            GalleryCommentReport galleryCommentReport = new GalleryCommentReport(commentId,
+                reportData.userId,reportData.report,reportData.dateCreated);
+            galleryCommentReport.setUserName(name);
+            reports.add(galleryCommentReport);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getCommentReports", e);
+    }
+
+    return reports;
+  }
+
+   /**
+   * get all the reports for all comments
+   * @return list of GalleryCommentReport
+   * 
+   */
+  @Override
+  public List<GalleryCommentReport> getCommentReports() {
+   final List<GalleryCommentReport> reports = new ArrayList<GalleryCommentReport>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          for (GalleryCommentReportData reportData : datastore.query(GalleryCommentReportData.class).order("-dateCreated")) {
+            User commenter = storageIo.getUser(reportData.userId);
+            String name="unknown";
+            if (commenter!= null) {
+               name = commenter.getUserName();
+            }
+            GalleryCommentReport galleryCommentReport = new GalleryCommentReport(reportData.galleryCommentKey.getId(),
+                reportData.userId,reportData.report,reportData.dateCreated);
+            galleryCommentReport.setUserName(name);
+            reports.add(galleryCommentReport);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getCommentReports (all)", e);
+    }
+
+    return reports;
+  }
+
   
   /**
    * Converts a db object GalleryAppData into a shared GalleryApp that can be passed
@@ -436,8 +624,13 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return "galleryApp=" + galleryAppId;
   }
 
-  private Key<GalleryAppData> galleryAppKey(long galleryAppId) {
-    return new Key<GalleryAppData>(GalleryAppData.class, galleryAppId);
+   private Key<GalleryAppData> galleryKey(long galleryId) {
+    return new Key<GalleryAppData>(GalleryAppData.class, galleryId);
+  }
+
+
+  private Key<GalleryCommentData> galleryCommentKey(long commentId) {
+    return new Key<GalleryCommentData>(GalleryCommentData.class, commentId);
   }
   /**
    * Call job.run() in a transaction and commit the transaction if no exceptions
@@ -479,9 +672,4 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       throw new ObjectifyException("Couldn't commit job after max retries.");
     }
   }
-
-  private Key<GalleryAppData> galleryKey(long galleryId) {
-    return new Key<GalleryAppData>(GalleryAppData.class, galleryId);
-  }
-
 }
