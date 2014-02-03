@@ -4,13 +4,17 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
-
+/**
+ * GalleryApp is the shared class holding app info. It is used by server to
+ * hold apps returned from database, and its also used to hold default info
+ * for an app before its published.
+ */
 public class GalleryApp implements IsSerializable {
+
   /**
    * Default constructor. This constructor is required by GWT.
+   * note: don't think this is being used, can remove code within?
    */
-
-  // Dave, are we still using this? -Vincent
   public GalleryApp() {
     this.title = "no title";
     this.downloads = 0;
@@ -43,7 +47,8 @@ public class GalleryApp implements IsSerializable {
     // the source file name we get from gallery can have some bad characters in it...
     // e.g., name  (2).zip. We need to cleanse this and probably deal with url as
     //   well.
-
+    // NOTE: i think the following was for old gallery and we can eliminate? Maybe
+    // even this entire constructor?
     if (projectName.contains(".")) {
       String[] splitName = projectName.split("\\.");
       projectName = splitName[0];
@@ -173,6 +178,7 @@ public class GalleryApp implements IsSerializable {
   public void setComments(int comments) {
     this.comments = comments;
   }
+  // I believe we can eliminate the following until next comment
   public void setImageBlobId(String imageBlobId) {
     this.imageBlobId = imageBlobId;
   }
@@ -185,6 +191,8 @@ public class GalleryApp implements IsSerializable {
   public String getSourceBlobId() {
     return this.sourceBlobId;
   }
+  // end of eliminate stuff
+
   public void setGalleryAppId(long galleryAppId) {
     this.galleryAppId = galleryAppId;
   }
@@ -197,9 +205,9 @@ public class GalleryApp implements IsSerializable {
   public void setDeveloperName(String name) {
     this.developerName=name;
   }
-  /* URL is in GCS. Here is what GCS says:
-  /gs/galleryai2/gallery/apps/6046115656892416/aia
-   *Your object is now visible to App Engine with the file name /gs/my_bucket/my_object. 
+  /* URL is in GCS, of form: /gs/galleryai2/gallery/apps/6046115656892416/aia
+   * Here is what is in gcs docs:
+   * Your object is now visible to App Engine with the file name /gs/my_bucket/my_object. 
    * If you set your object to be publicly accessible, your object can be accessed using the 
    * URL http://storage.googleapis.com/my_bucket/my_object.  
   */

@@ -421,49 +421,13 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
   
-  /**
-   * This service is passed the URL for a source file in the gallery
-   * It opens it and returns a userProject
-   * DAVE: I believe this has been replaced with newProjectFromGallery...need to
-   *  test and make sure, then remove
-   */
-  @Override
-  public UserProject newProjectFromExternalTemplate(String appName,String sourceURL) {
 
-    UserProject userProject = null;
-    
-	try {
-	    URLConnection connection = new URL(sourceURL).openConnection();
-	    // get the text from the uploaded source file
-	   InputStream response = connection.getInputStream();
-	   
-        ByteArrayInputStream bais = null;
-        FileImporter fileImporter = new FileImporterImpl();
-        try {
-          bais = (ByteArrayInputStream) response;
-          userProject = fileImporter.importProject(userInfoProvider.getUserId(),
-          appName, bais);
-        } catch (FileNotFoundException e) {  // Create a new empty project if no Zip
-          e.printStackTrace();
-        } catch (IOException e) {
-          e.printStackTrace();
-        } catch (FileImporterException e) {
-          e.printStackTrace();
-        }
-        return userProject; 
-	    
-	  }
-	  catch (IOException e)
-	  {	
-          return null;
-	  }
-  }
   /**
    * This service is passed a URL to an aia file in GCS, of the form
    *    /gs/bucket/gallery/apps/<galleryid>/aia
    * It converts it to a byte array and imports the project using FileImporter.
    * It also sets the attributionId of the project to point to the galleryID
-   *  it is remixing.
+   * it is remixing.
    */
   @Override 
   public UserProject newProjectFromGallery(String projectName, String aiaPath, 

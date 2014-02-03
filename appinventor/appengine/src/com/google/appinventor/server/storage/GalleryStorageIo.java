@@ -31,70 +31,123 @@ public interface GalleryStorageIo {
   
   /**
    * Returns a gallery app
-   *
-   * @param userId unique user id
-   * @return user data
+   * @param galleryId id of gallery app you want
+   * @return a {@link GalleryApp} for gallery App
    */
   GalleryApp getGalleryApp(long galleryId);
 
   /**
    * creates a new gallery app
-   *
-   * 
-   *
+   * @param title title of new app
+   * @param projectName name of new app's aia file
+   * @param description description of new app
+   * @param projectId id of the project being published to gallery
+   * @param userId if of user publishing this app
+   * @return a {@link GalleryApp} for gallery App
    */
   GalleryApp createGalleryApp(String title, String projectName, String description, long projectId, String userId);
 
-    /**
+  /**
    * updates gallery app
-   *
-   * 
+   * @param galleryId id of app being updated
+   * @param title new title of  app
+   * @param description new description of app
+   * @param userId if of user publishing this app
    */
   void updateGalleryApp(long galleryId, String title, String description, String userId);
 
 
   /**
    * Returns an array of recently published GalleryApps
-   *
-   * @return  list of gallery app ids
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
    */
   List<GalleryApp> getRecentGalleryApps(int start, int count);
    
-   /**
+  /**
    * Returns an array of most downloaded GalleryApps
-   *
-   * @return  list of gallery app ids
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
    */
   List<GalleryApp> getMostDownloadedApps(int start, int count);
 
-    /**
-   * Returns an array of a developer's GalleryApps
-   *
-   * @return  list of gallery app ids
+  /**
+   * Returns a list of apps created by a particular developer
+   * @param userId id of developer
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
    */
   List<GalleryApp> getDeveloperApps(String userId, int start, int count);
-  
+
+  /**
+   * records that an app has been downloaded
+   * @param galleryId the id of gallery app that was downloaded
+   */
   void incrementDownloads(long galleryId);
 
+  /**
+   * deletes an app
+   * @param galleryId the id of gallery app to be deleted
+   */
   void deleteApp(long galleryId);
 
-  // comment stuff
+  /**
+   * adds a comment to a gallery app
+   * @param galleryId id of gallery app that was commented on
+   * @param userId id of user who commented
+   * @param comment comment
+   * @return the id of the new comment
+   */
   long addComment(long galleryId,String userId, String comment);
-  
+
+  /**
+   * Returns a list of comments for an app
+   * @param galleryId id of gallery app
+   * @return list of {@link GalleryComment}
+   */
   List<GalleryComment> getComments(long galleryId);
-  // studio stuff... to come
 
-  // flag stuff
-  long addAppReport(long galleryId,String userId, String comment);
-
+  /**
+   * adds a report (flag) to a gallery app
+   * @param galleryId id of gallery app that was commented on
+   * @param userId id of user who commented
+   * @param report report
+   * @return the id of the new report
+   */
+  long addAppReport(long galleryId,String userId, String report);
+  /**
+   * Returns a list of reports (flags) for an app
+   * @param galleryId id of gallery app
+   * @return list of {@link GalleryAppReport}
+   */
   List<GalleryAppReport> getAppReports(long galleryId);
 
+  /**
+   * Returns a list of reports (flags) for all app
+   * @return list of {@link GalleryAppReport}
+   */
   List<GalleryAppReport> getAppReports();
-
-  long addCommentReport(long commentId,String userId, String comment);
-
+  /**
+   * adds a report (flag) to a gallery app comment
+   * @param commentId id of comment that was reported
+   * @param userId id of user who commented
+   * @param report report
+   * @return the id of the new report
+   */
+  long addCommentReport(long commentId,String userId, String report);
+  /**
+   * Returns a list of reports (flags) for a comment
+   * @param commentId id of comment
+   * @return list of {@link GalleryCommentReport}
+   */
   List<GalleryCommentReport> getCommentReports(long commentId);
-
+  /**
+   * Returns a list of reports (flags) for all comments
+   * @return list of {@link GalleryCommentReport}
+   */
   List<GalleryCommentReport> getCommentReports();
 
   

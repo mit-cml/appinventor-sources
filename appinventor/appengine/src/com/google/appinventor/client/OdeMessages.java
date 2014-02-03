@@ -1197,8 +1197,21 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when can't get developer gallery apps on server.")
   String galleryDeveloperAppError();
   
-  
-  
+  @DefaultMessage("Server error: could not retrieve featured apps from gallery")
+  @Description("Error message reported when can't get featured on server.")
+  String galleryFeaturedAppError();
+
+  @DefaultMessage("Server error: could not complete a search of gallery")
+  @Description("Error message reported when can't search on server.")
+  String gallerySearchError();
+
+  @DefaultMessage("Server error: could not get recent apps from gallery")
+  @Description("Error message reported when can't get recent apps server.")
+  String galleryRecentAppsError();
+
+  @DefaultMessage("Server error: could not get most downloaded apps from gallery")
+  @Description("Error message reported when can't get most downloaded apps server.")
+  String galleryDownloadedAppsError();
   // Used in gallerylist.java
 
   @DefaultMessage("Server error: gallery cannot be accessed")

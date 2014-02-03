@@ -70,15 +70,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
   private final transient GalleryStorageIo galleryStorageIo = 
       GalleryStorageIoInstanceHolder.INSTANCE;
+
+  // fileExporter used to get the source code from project being published
   private final FileExporter fileExporter = new FileExporterImpl();
 
   /**
-   * Creates a new gallery app
-   * UserProject is the AI Project
-   * @param title gallery title of app
-   * @param description description of app
-   * NEED TO DEAL WITH IMAGE
-   *
+   * Publishes a gallery app
+   * @param projectId id of the project being published
+   * @param projectName name of project
+   * @param title title of new gallery app
+   * @param description description of new gallery app
    * @return a {@link GalleryApp} for new galleryApp
    */
   @Override
@@ -94,13 +95,23 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     GallerySearchIndex.getInstance().indexApp(app);
     return app;
   }
+  /**
+   * update a gallery app
+   * @param app info about app being updated
+   * @param newImage  true if the user has submitted a new image
+   */
   @Override 
   public void updateApp(GalleryApp app, boolean newImage) {
     updateAppMetadata(app);
     updateAppSource(app.getGalleryAppId(),app.getProjectId(),app.getProjectName());
     if (newImage)
       setGalleryAppImage(app);
-  } 
+  }
+  /**
+   * update a gallery app's meta data
+   * @param app info about app being updated
+   *
+   */
   @Override
   public void updateAppMetadata(GalleryApp app) {
     final String userId = userInfoProvider.getUserId();
@@ -108,13 +119,22 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // put meta data in search index
     GallerySearchIndex.getInstance().indexApp(app);
   }
+
+  /**
+   * update a gallery app's source (aia)
+   * @param galleryId id of gallery app to be updated
+   * @param projectId id of project so we can grab source
+   * @param projectName name of project, this is name in new aia
+   */
   @Override
   public void updateAppSource (long galleryId, long projectId, String projectName) {
      storeAIA(galleryId,projectId, projectName);
   }
+
   /**
-  * This is an admin function to (re-) index all gallery apps. 
-  */ 
+   * index all gallery apps (admin method)
+   * @param count the max number of apps to index
+   */
   @Override
   public void indexAll(int count) {
     List<GalleryApp> apps= getRecentApps(1,count);
@@ -124,10 +144,11 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
 
-   /**
-   * Returns an array of gallery Apps
-   *
-   * @return gallery apps found by the back-end
+  /**
+   * Returns a list of most recently updated galleryApps
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
    */
   @Override
   public List<GalleryApp> getRecentApps(int start,int count) {
@@ -136,29 +157,57 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Returns an array of gallery Apps
-   *
-   * @return gallery apps found by the back-end
+   * Returns a list of galleryApps by a particular developer
+   * @param userId id of the developer
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
    */
   @Override
   public List<GalleryApp> getDeveloperApps(String userId, int start,int count) {
     return galleryStorageIo.getDeveloperApps(userId, start,count);
  
   }
+
+  /**
+   * Returns a GalleryApp object for the given id
+   * @param galleryId  gallery ID as received by
+   *                   {@link #getRecentGalleryApps()}
+   *
+   * @return  gallery app object
+   */
   @Override
   public GalleryApp getApp(long galleryId) {
     return galleryStorageIo.getGalleryApp(galleryId);
   }
-
+  /**
+   * Returns a list of galleryApps
+   * @param keywords keywords to search for
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
   @Override
   public List<GalleryApp> findApps(String keywords, int start, int count) {
     
     return GallerySearchIndex.getInstance().find(keywords);
   }
+
+  /**
+   * Returns a list of most downloaded gallery apps
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
   @Override
   public List<GalleryApp> getMostDownloadedApps(int start, int count) {
     return galleryStorageIo.getMostDownloadedApps(start,count);
   }
+
+  /**
+   * Deletes a new gallery app
+   * @param galleryId id of app to delete
+   */
   @Override
   public void deleteApp(long galleryId) {
     // get rid of comments and app from database
@@ -171,17 +220,32 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // change its associated AI project so that its galleryId is reset to -1
 
   }
-  
+  /**
+   * record fact that app was downloaded
+   * @param galleryId id of app that was downloaded
+   * @param newProjectId id of newly created project
+   */
   @Override
   public void appWasDownloaded(long galleryId, long projectId) {
     galleryStorageIo.incrementDownloads(galleryId);
   }
+  /**
+   * Returns the comments for an app
+   * @param galleryId  gallery ID as received by
+   *                   {@link #getRecentGalleryApps()}
+   * @return  a list of comments
+   */
 
   @Override
   public List<GalleryComment> getComments(long galleryId) {
     return galleryStorageIo.getComments(galleryId);
-
   }
+
+  /**
+   * publish a comment for a gallery app
+   * @param galleryId the id of the app
+   * @param comment the comment
+   */
   @Override
   public long publishComment(long galleryId, String comment) {
     final String userId = userInfoProvider.getUserId();

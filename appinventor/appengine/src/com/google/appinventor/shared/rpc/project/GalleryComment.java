@@ -2,7 +2,10 @@ package com.google.appinventor.shared.rpc.project;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.logging.Logger;
-
+/**
+ * GalleryComment is a shared object. The db puts comments in it and slings it back
+ * to the view
+ */
 public class GalleryComment implements IsSerializable{
 	
   /**

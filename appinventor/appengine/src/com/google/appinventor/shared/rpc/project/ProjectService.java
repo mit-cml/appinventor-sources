@@ -201,18 +201,15 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
-  
-  UserProject newProjectFromExternalTemplate(String appName, String sourceURL);
-  
+
   /**
-   * Reads the template data from a JSON File
-   * @param pathToTemplatesDir pathname of the templates directory which may contain
-   *  0 or more template instances, each of which consists of a JSON file describing
-   *  the template, plus a zip file and image files.
+   * creates a new project from a gallery app
+   * @param appName name of the app to open
+   * @param aiaPath the url of the aia file in cloud
+   * @param attributionId id of the gallery app that is being remixed
    *
-   * @return a {@link String} or the template data
+   * @return {@link UserProject} info for new project
    */
- 
 
    UserProject newProjectFromGallery(String appName, String aiaPath, long attributionId);
 }

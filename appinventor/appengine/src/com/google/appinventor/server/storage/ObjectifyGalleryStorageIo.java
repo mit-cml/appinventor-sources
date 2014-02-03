@@ -110,7 +110,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   private FileService fileService;
-
   static {
     // Register the data object classes stored in the database
     ObjectifyService.register(GalleryAppData.class);
@@ -129,12 +128,15 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   // we'll need to talk to the StorageIo to get developer names, so...
   private final transient StorageIo storageIo = 
       StorageIoInstanceHolder.INSTANCE;
-  
+
   /**
-   * create a new gallery app in database. This doesn't deal with aia or image file
-   * which is put in gcs instead
-   * @return id of the gallery app
-   * 
+   * creates a new gallery app
+   * @param title title of new app
+   * @param projectName name of new app's aia file
+   * @param description description of new app
+   * @param projectId id of the project being published to gallery
+   * @param userId if of user publishing this app
+   * @return a {@link GalleryApp} for gallery App
    */
   @Override
   public GalleryApp createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
@@ -188,8 +190,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   /**
    * Returns an array of recently published GalleryApps
-   *
-   * @return  list of gallery apps
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
    */
   @Override
   public List<GalleryApp> getRecentGalleryApps(int start, final int count) {
@@ -209,8 +212,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
   /**
    * Returns an array of most downloaded GalleryApps
-   *
-   * @return  list of gallery apps
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
    */
   @Override
   public List<GalleryApp> getMostDownloadedApps(int start, final int count) {
@@ -229,12 +233,13 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return apps;
   }
   
-   /**
-   * Returns an array of apps by a particular user
-   *
-   * @return  list of gallery apps
-   */
-  @Override
+  /**
+   * Returns a list of apps created by a particular developer
+   * @param userId id of developer
+   * @param start starting index of apps you want
+   * @param count number of apps you want
+   * @return list of {@link GalleryApp}
+   */  @Override
   public List<GalleryApp> getDeveloperApps(String userId, int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     // if i try to run this in runjobwithretries it tells me can't run
@@ -251,9 +256,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return apps;
   }
   
-  /**
-   * when an gallery app is opened, this method is called to increment the #downloads
-   * 
+ /**
+   * records that an app has been downloaded
+   * @param galleryId the id of gallery app that was downloaded
    */
   @Override
   public void incrementDownloads(final long galleryId) {
@@ -274,9 +279,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-  /*
-   * when an gallery app is updated, this method modifies title/description
-   * 
+  /**
+   * updates gallery app
+   * @param galleryId id of app being updated
+   * @param title new title of app
+   * @param description new description of app
+   * @param userId if of user publishing this app
    */
   @Override
   public void updateGalleryApp(final long galleryId, final String title,  final String description, 
@@ -299,8 +307,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-  /* Gets a gallery app given a galleryId
-   * NOTE: this is currently not being used and hasn't been tested
+  /**
+   * Returns a gallery app
+   * @param galleryId id of gallery app you want
+   * @return a {@link GalleryApp} for gallery App
    */
   @Override
   public GalleryApp getGalleryApp(final long galleryId) {
@@ -319,9 +329,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return (gApp);
   }
 
-  /* remove a gallery app
-   *
-  */
+  /**
+   * deletes an app
+   * @param galleryId the id of gallery app to be deleted
+   */
   public void deleteApp(final long galleryId) {
 
     try {
@@ -353,9 +364,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
 
   /**
-   * add a comment to the comment list for a gallery app
-   * 
-   * 
+   * adds a comment to a gallery app
+   * @param galleryId id of gallery app that was commented on
+   * @param userId id of user who commented
+   * @param comment comment
+   * @return the id of the new comment
    */
   @Override
   public long addComment(final long galleryId,final String userId, final String comment) {
@@ -380,10 +393,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return theDate.t;
   }
-  /**
-   * get all the comments for a given galleryId
-   * @return list of GalleryComment
-   * 
+ /**
+   * Returns a list of comments for an app
+   * @param galleryId id of gallery app
+   * @return list of {@link GalleryComment}
    */
   @Override
   public List<GalleryComment> getComments(final long galleryId) {
@@ -412,11 +425,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
     return comments;
   }
-
-   /**
-   * add a report (flag) for a gallery app
-   *
-   *
+  /**
+   * adds a report (flag) to a gallery app
+   * @param galleryId id of gallery app that was commented on
+   * @param userId id of user who commented
+   * @param report report
+   * @return the id of the new report
    */
   @Override
   public long addAppReport(final long galleryId,final String userId, final String report) {
@@ -441,9 +455,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return theDate.t;
   }
   /**
-   * get all the reports for a given galleryId
-   * @return list of GalleryAppReport
-   *
+   * Returns a list of reports (flags) for an app
+   * @param galleryId id of gallery app
+   * @return list of {@link GalleryAppReport}
    */
   @Override
   public List<GalleryAppReport> getAppReports(final long galleryId) {
@@ -473,10 +487,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return reports;
   }
 
-    /**
-   * get all the reports
-   * @return list of GalleryAppReport
-   *
+  /**
+   * Returns a list of reports (flags) for all app
+   * @return list of {@link GalleryAppReport}
    */
   @Override
   public List<GalleryAppReport> getAppReports() {
@@ -505,11 +518,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return reports;
   }
 
-
-     /**
-   * add a report (flag) for a gallery app
-   *
-   *
+  /**
+   * adds a report (flag) to a gallery app comment
+   * @param commentId id of comment that was reported
+   * @param userId id of user who commented
+   * @param report report
+   * @return the id of the new report
    */
   @Override
   public long addCommentReport(final long commentId, final String userId, final String report) {
@@ -533,10 +547,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return theDate.t;
   }
-  /**
-   * get all the reports for a given comment
-   * @return list of GalleryCommentReport
-   *
+ /**
+   * Returns a list of reports (flags) for a comment
+   * @param commentId id of comment
+   * @return list of {@link GalleryCommentReport}
    */
   @Override
   public List<GalleryCommentReport> getCommentReports(final long commentId) {
@@ -566,10 +580,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return reports;
   }
 
-   /**
-   * get all the reports for all comments
-   * @return list of GalleryCommentReport
-   * 
+  /**
+   * Returns a list of reports (flags) for all comments
+   * @return list of {@link GalleryCommentReport}
    */
   @Override
   public List<GalleryCommentReport> getCommentReports() {

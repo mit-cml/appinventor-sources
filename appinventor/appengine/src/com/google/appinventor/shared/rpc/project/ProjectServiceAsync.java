@@ -119,9 +119,6 @@ public interface ProjectServiceAsync {
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
   
-  void newProjectFromExternalTemplate(String appName, String sourceURL, AsyncCallback<UserProject>
-  callback);
-  
   void newProjectFromGallery(String appName, String aiaPath, long attributionId, AsyncCallback<UserProject> callback);
   
 

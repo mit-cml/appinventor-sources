@@ -59,7 +59,8 @@ import com.google.appinventor.shared.rpc.project.UserProject;
 /**
  * The gallery page shows a single app from the gallery 
  *
- * It has different modes for public viewing or when user is editing metadata or 
+ * It has different modes for public viewing or when user is publishing for first time
+ * or updating a previously published app
  *
  * @author wolberd@gmail.com (Dave Wolber)
  * @author vincentaths@gmail.com(Vincent Zhang)
@@ -408,7 +409,7 @@ panel
     });
     appHeader.add(wrapper);
   }
-    /**
+  /**
    * Helper method called by constructor to create the app image for display
    */
   private void initReadOnlyImage() {
@@ -460,7 +461,8 @@ panel
                 public void onSuccess(Void result) {
                   // this is called after published and after we've set the galleryid
                   // tell the project list to change project's button to "Update"
-                  Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),gApp.getGalleryAppId());
+                  Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
+                      gApp.getGalleryAppId());
                   Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
                 }
               };
@@ -468,7 +470,6 @@ panel
               Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(), 
                   gApp.getGalleryAppId(), projectCallback);
               // we need to update the app object for this gallery page
-              //
               gallery.appWasChanged();
              
             }
@@ -483,7 +484,7 @@ panel
     actionButton.addStyleName("app-action");
     appAction.add(actionButton);  
   }
-   /**
+  /**
    * Helper method called by constructor to initialize the publish button
    */
   private void initUpdateButton() {
@@ -507,6 +508,9 @@ panel
     actionButton.addStyleName("app-action");
     appAction.add(actionButton);  
   }
+  /**
+   * Helper method called by constructor to initialize the remove button
+   */
   private void initRemoveButton() {
     removeButton = new Button(REMOVEBUTTONTEXT);    
     removeButton.addClickHandler(new ClickHandler() {
@@ -560,7 +564,10 @@ panel
         break;
     } 
   }
-  
+  /**
+   * when the gallery client gets some apps it produces this callback for
+   * gallery page to listen to
+   */
   @Override
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)   {
    if (apps != null)
@@ -570,7 +577,10 @@ panel
 
   }
   
-  
+  /**
+   * When the gallery client gets some comments it fires this callback for
+   * gallery page to listen to
+   */
   @Override
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
       galleryGF.generateAppPageComments(comments, appCommentsList);
@@ -580,12 +590,6 @@ panel
   
   @Override
   public void onSourceLoadCompleted(UserProject projectInfo) {
-    /*
-    OdeLog.log("### in GalleryPage onSourceLoadCompleted");
-    final Ode ode = Ode.getInstance();
-    Project project = ode.getProjectManager().addProject(projectInfo);
-    Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-    */
   }
   
   /*
