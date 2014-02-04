@@ -5,10 +5,12 @@ $Source $Yail
 (define-repl-form edu.mit.appinventor.aicompanion3.Screen1 Screen1)
 (require <com.google.youngandroid.runtime>)
 
-(def (startdirectconnect )  (let ( (ignore "")  )   (set-lexical! ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator"    ) '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t    ) '(boolean)))
-(def (badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
-(def (doconnect x)  ((get-var callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value x)    ) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f    ) '(boolean)))
-(def (callrendezvous code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*   ) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")    ) '(list))    ) '(text)))
+(def (p$badversion )  (set-and-coerce-property! 'ErrorLabel 'Text "The version of App Inventor you are using is not compatible with this Companion app. " 'text))
+(def (p$callrendezvous $code)  (call-component-method 'Web1 'PostText (*list-for-runtime* (call-component-method 'Web1 'BuildRequestData (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* (call-yail-primitive make-yail-list (*list-for-runtime* "key" (lexical-value $code) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "ipaddr" (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) ) '(any any ) "make a list") (call-yail-primitive make-yail-list (*list-for-runtime* "port" "9987" ) '(any any ) "make a list") ) '(any any any ) "make a list")) '(list))) '(text)))
+(def (p$isAPK $input) (call-yail-primitive yail-equal? (*list-for-runtime* (call-yail-primitive string-starts-at (*list-for-runtime* (lexical-value $input) "http://") '(text text) "starts at") 1) '(any any) "="))
+(def (p$processcode $x)  (if ((get-var p$isAPK) (lexical-value $x)) (begin   (call-component-method 'PhoneStatus1 'installURL (*list-for-runtime* (lexical-value $x)) '(text))) (begin   ((get-var p$callrendezvous) (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* (lexical-value $x)) '(text)))(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #f) '(boolean)))))
+(def (p$startdirectconnect )  (let ( ($ignore "")  )   (set-lexical! $ignore (call-component-method 'PhoneStatus1 'setHmacSeedReturnCode (*list-for-runtime* "emulator") '(text))) )(call-component-method 'PhoneStatus1 'startHTTPD (*list-for-runtime* #t) '(boolean)))
+(def (p$checkWiFi )  (if (call-yail-primitive yail-equal? (*list-for-runtime* 1 (call-yail-primitive string-starts-at (*list-for-runtime* (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) "Error") '(text text) "starts at")) '(any any) "=") (begin   (call-component-method 'Notifier1 'ShowChooseDialog (*list-for-runtime* "Your Device does not appear to have a WiFi Connection"  "No WiFi"  "OK"  "Exit"  #f) '(text text text text boolean)))))
 ;;; Screen1
 
 (do-after-form-creation (set-and-coerce-property! 'Screen1 'AlignHorizontal 3 'number)
@@ -19,7 +21,7 @@ $Source $Yail
 )
 
 (define-event Screen1 Initialize()(set-this-form)
-    (set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*   ) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*   ) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*   ) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*   ) '()) 'text))
+    (set-and-coerce-property! 'ScanButton 'BackgroundColor -16738048 'number)(set-and-coerce-property! 'ConnectButton 'BackgroundColor -13312 'number)(if (call-component-method 'PhoneStatus1 'isDirect (*list-for-runtime*) '()) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #f 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #t 'boolean)(set-and-coerce-property! 'IPContainer 'Visible #f 'boolean)((get-var p$startdirectconnect) )) (begin   (set-and-coerce-property! 'PhonePanel 'Visible #t 'boolean)(set-and-coerce-property! 'EmulatorPanel 'Visible #f 'boolean)(set-and-coerce-property! 'ipaddrlabel 'Text (call-component-method 'PhoneStatus1 'GetWifiIpAddress (*list-for-runtime*) '()) 'text)(set-and-coerce-property! 'IPContainer 'Visible #t 'boolean)((get-var p$checkWiFi) )))(call-component-method 'PhoneStatus1 'setAssetsLoaded (*list-for-runtime*) '())(set-and-coerce-property! 'versionlabel 'Text (call-component-method 'PhoneStatus1 'getVersionName (*list-for-runtime*) '()) 'text))
 ;;; Header
 
 (add-component Screen1 HorizontalArrangement Header 
@@ -177,7 +179,7 @@ $Source $Yail
 )
 
 (define-event ConnectButton Click()(set-this-form)
-    (call-component-method 'CodeBox 'HideKeyboard (*list-for-runtime*   ) '())((get-var doconnect) (get-property 'CodeBox 'Text)))
+    (call-component-method 'CodeBox 'HideKeyboard (*list-for-runtime*) '())((get-var p$processcode) (get-property 'CodeBox 'Text)))
 ;;; Spacer
 
 (add-component PhonePanel Label Spacer 
@@ -199,7 +201,7 @@ $Source $Yail
 )
 
 (define-event ScanButton Click()(set-this-form)
-    (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*   ) '()))
+    (call-component-method 'BarcodeScanner1 'DoScan (*list-for-runtime*) '()))
 ;;; IPContainer
 
 (add-component Screen1 HorizontalArrangement IPContainer 
@@ -263,6 +265,13 @@ $Source $Yail
 (add-component Screen1 BarcodeScanner BarcodeScanner1 
 )
 
-(define-event BarcodeScanner1 AfterScan(result)(set-this-form)
-    (set-and-coerce-property! 'CodeBox 'Text (lexical-value result) 'text)((get-var doconnect) (lexical-value result)))
+(define-event BarcodeScanner1 AfterScan($result)(set-this-form)
+    (set-and-coerce-property! 'CodeBox 'Text (lexical-value $result) 'text)((get-var p$processcode) (lexical-value $result)))
+;;; Notifier1
+
+(add-component Screen1 Notifier Notifier1 
+)
+
+(define-event Notifier1 AfterChoosing($choice)(set-this-form)
+    (call-component-method 'PhoneStatus1 'shutdown (*list-for-runtime*) '()))
 (init-runtime)

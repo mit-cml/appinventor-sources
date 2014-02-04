@@ -24,6 +24,7 @@ import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.AppInvHTTPD;
+import com.google.appinventor.components.runtime.util.PackageInstaller;
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
 
@@ -144,6 +145,17 @@ public class PhoneStatus extends AndroidNonvisibleComponent implements Component
       Log.e(LOG_TAG, "Exception fetching package name.", e);
       return ("");
     }
+  }
+
+  @SimpleFunction(description = "Downloads the URL and installs it as an Android Package")
+  public void installURL(String url) {
+    PackageInstaller.doPackageInstall(form, url);
+  }
+
+  @SimpleFunction(description = "Really Exit the Application")
+  public void shutdown() {
+    form.finish();
+    System.exit(0);             // We cannot be restarted, so we better kill the process
   }
 
   public static String intToIp(int i) {

@@ -225,7 +225,7 @@ public class AppInvHTTPD extends NanoHTTPD {
       res.addHeader("Access-Control-Allow-Methods", "POST,OPTIONS,GET,HEAD,PUT");
       res.addHeader("Allow", "POST,OPTIONS,GET,HEAD,PUT");
       return (res);
-    } else if (uri.equals("/_update")) { // Companion! Update Thyself!
+    } else if (uri.equals("/_update") || uri.equals("/_install")) { // Install a package, including a new companion
       String url = parms.getProperty("url", "");
       String inMac = parms.getProperty("mac", "");
       String compMac;
@@ -416,34 +416,7 @@ public class AppInvHTTPD extends NanoHTTPD {
   }
 
   private void doPackageUpdate(final String inurl) {
-    AsynchUtil.runAsynchronously(new Runnable() {
-        @Override
-        public void run() {
-          try {
-            URL url = new URL(inurl);
-            URLConnection conn = url.openConnection();
-            InputStream instream = new BufferedInputStream(conn.getInputStream());
-            File apkfile = new File(rootDir + "/update.apk");
-            FileOutputStream apkOut = new FileOutputStream(apkfile);
-            byte [] buffer = new byte[32768];
-            int len;
-            while ((len = instream.read(buffer, 0, 32768)) > 0) {
-              apkOut.write(buffer, 0, len);
-            }
-            instream.close();
-            apkOut.close();
-            // Call Package Manager Here
-            Log.d(LOG_TAG, "About to Install " + rootDir + "/update.apk");
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            Uri packageuri = Uri.fromFile(new File(rootDir + "/update.apk"));
-            intent.setDataAndType(packageuri, "application/vnd.android.package-archive");
-            form.startActivity(intent);
-          } catch (Exception e) {
-          form.dispatchErrorOccurredEvent(form, "AppInvHTTPD",
-            ErrorMessages.ERROR_WEB_UNABLE_TO_GET, inurl);
-          }
-        }
-      });
+    PackageInstaller.doPackageInstall(form, inurl);
   }
 
 }
