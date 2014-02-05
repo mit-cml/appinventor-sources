@@ -135,24 +135,24 @@ public class File extends AndroidNonvisibleComponent implements Component {
             }
           }
         }
-      	try {
-	      FileOutputStream fileWriter = new FileOutputStream(file, append);
-		  OutputStreamWriter out = new OutputStreamWriter(fileWriter);
-		  out.write(text);
-		  out.flush();
-	  	  out.close();
-	  	  fileWriter.close();
-	  	} catch (IOException e) {
-	  	  if (append) {
-	  	    form.dispatchErrorOccurredEvent(File.this, "AppendTo",
-	  		    ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
-	  	  } else {
-	  	    form.dispatchErrorOccurredEvent(File.this, "SaveFile",
-	  		    ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
-	  	  }			      	
-      	}
-	  }
-	}); 
+        try {
+          FileOutputStream fileWriter = new FileOutputStream(file, append);
+          OutputStreamWriter out = new OutputStreamWriter(fileWriter);
+          out.write(text);
+          out.flush();
+          out.close();
+          fileWriter.close();
+        } catch (IOException e) {
+          if (append) {
+            form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+                ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+          } else {
+            form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+                ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+          }
+        }
+      }
+    });
   }
   
   /**
