@@ -1441,6 +1441,7 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-showcase .gallery-card {
   clear: both;
+  width: 100%;
 }
 .gallery-card-cover {
   height: 130px;
