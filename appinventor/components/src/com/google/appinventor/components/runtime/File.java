@@ -164,25 +164,25 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   private void AsyncRead(final String filepath) {
     try {
-	  java.io.File file = new java.io.File(filepath);
-	  StringBuilder sb = new StringBuilder();
-      BufferedReader bufferedReader = new BufferedReader(new FileReader(file)); 
-  	  String line;
-  	  while ((line = bufferedReader.readLine()) != null) {
-  	    sb.append(line);
-		sb.append(System.getProperty("line.separator"));
-	  }
-	  final String text = sb.toString();
-	  activity.runOnUiThread(new Runnable() {
-      @Override
+      java.io.File file = new java.io.File(filepath);
+      StringBuilder sb = new StringBuilder();
+      BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+      String line;
+      while ((line = bufferedReader.readLine()) != null) {
+        sb.append(line);
+        sb.append(System.getProperty("line.separator"));
+      }
+      final String text = sb.toString();
+      activity.runOnUiThread(new Runnable() {
+        @Override
         public void run() {
           GotText(text);
         }
       });
     } catch (FileNotFoundException e) {
-	  form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
           ErrorMessages.ERROR_CANNOT_FIND_FILE, filepath);
-	} catch (IOException e) {
+    } catch (IOException e) {
       form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
           ErrorMessages.ERROR_CANNOT_READ_FILE, filepath);
     }
