@@ -94,6 +94,7 @@ public class ProfilePage extends Composite {
   Label usernameLabel = new Label();
   Label userContentTitle = new Label();
   final TextBox userNameBox = new TextBox();
+  final Button updateButton = new Button("Update Profile");
   
   public ProfilePage() {
     // setup panel
@@ -142,7 +143,6 @@ public class ProfilePage extends Composite {
     cardContainer.addStyleName("gallery-app-collection");
     imageUploadBox.addStyleName("gallery-card");
 
-    // userAvatar.addStyleName("gallery-card-cover");
     userAvatar.addStyleName("gallery-card-cover");
     userAvatar.addStyleName("status-updating");
     imageUploadPrompt.addStyleName("gallery-editprompt");
@@ -171,6 +171,7 @@ public class ProfilePage extends Composite {
     majorContentCard.add(userContentTitle);
     majorContentCard.add(usernameLabel);
     majorContentCard.add(userNameBox);
+    majorContentCard.add(updateButton);
 
     initWidget(panel);
     
