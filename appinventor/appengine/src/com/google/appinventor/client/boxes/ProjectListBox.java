@@ -56,7 +56,7 @@ public final class ProjectListBox extends TabPanel {
         false); // removable
     */
     projects = new ProjectList();
-    profile = new ProfilePage();
+    profile = new ProfilePage("-1",  0);
     
     FlowPanel projectsContainer = new FlowPanel();
     FlowPanel studiosContainer = new FlowPanel();

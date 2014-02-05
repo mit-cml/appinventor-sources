@@ -357,6 +357,12 @@ public interface OdeMessages extends Messages {
   @Description("Caption for gallery app box.")
   String galleryAppBoxCaption();
 
+  // Used in boxes/UserProfileBox.java
+
+  @DefaultMessage("User Profile")
+  @Description("Caption for user profile box.")
+  String userProfileBoxCaption();
+
   // Used in boxes/PropertiesBox.java
 
   @DefaultMessage("Properties")

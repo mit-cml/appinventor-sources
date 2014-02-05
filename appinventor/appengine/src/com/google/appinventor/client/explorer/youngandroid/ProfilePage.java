@@ -5,8 +5,8 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
-import java.io.IOException;
-import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import com.google.appengine.api.memcache.*;
 //import com.google.appengine.tools.cloudstorage.GcsFilename;
@@ -14,26 +14,19 @@ import java.util.List;
 //import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 //import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.client.Ode;
-
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.explorer.project.Project;
-
-import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
-import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.client.ErrorReporter;
-import com.google.appinventor.client.GalleryClient;
-import com.google.appinventor.client.GalleryGuiFactory;
-import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
@@ -47,8 +40,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
-import com.google.gwt.event.logical.shared.ValueChangeHandler;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -70,12 +61,16 @@ import com.google.gwt.event.dom.client.ChangeHandler;
          imageUploadPrompt
          upload
 
-
 */
+
 public class ProfilePage extends Composite {
 
+  public static final int PRIVATE = 0;
+  public static final int PUBLIC = 1;
+
   String userId = "-1";  
-  final FileUpload upload= new FileUpload();
+
+  final FileUpload imageUpload = new FileUpload();
   // Create GUI wrappers and components
   // the main panel and its container
   VerticalPanel panel = new VerticalPanel();
@@ -89,80 +84,118 @@ public class ProfilePage extends Composite {
   Image userAvatar = new Image(); 
   Label imageUploadPrompt = new Label();
   
-  
-
-  
   // the majorContentCard has a label and namebox
+  Label userContentHeader = new Label();
   Label usernameLabel = new Label();
   Label userLinkLabel = new Label();
-  //Label httpLinkLabel = new Label();
-  Label userContentTitle = new Label();
   final TextBox userNameBox = new TextBox();
-  final Button updateButton = new Button("Update Profile");
   final TextBox userLinkBox = new TextBox();
+  final Label userNameDisplay = new Label();
+  Anchor userLinkDisplay = new Anchor();
+  final Button profileSummit = new Button("Update Profile");
 
-  
-  public ProfilePage() {
+
+  private static final Logger LOG = Logger.getLogger(ProfilePage.class.getName());
+
+  /**
+   * Creates a new GalleryPage, must take in parameters
+   *
+   * @param user  the string ID of user that we are about to render
+   * @param editStatus  the edit status (0 is private, 1 is public)
+   *
+   */
+  public ProfilePage(String user, final int editStatus) {
+    LOG.log(Level.WARNING, "#### userid of profile page " + user);
+    LOG.log(Level.WARNING, "#### editstatus of profile page " + editStatus);
+
+    // Replace the global variable
+    userId = user;
+
     // setup panel
     panel.setWidth("100%");
     panel.addStyleName("ode-UserProfileWrapper");
     
-
-    // setup upload stuff    
-    imageUploadPrompt.setText("Upload your profile image!");
-    upload.addStyleName("app-image-upload");
-    // Set the correct handler for servlet side capture
-    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-    upload.addChangeHandler(new ChangeHandler (){
-      public void onChange(ChangeEvent event) {
-        uploadImage();
-      }
-    });
-    appCardWrapper.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        // The correct way to trigger click event on FileUpload
-        upload.getElement().<InputElement>cast().click(); 
-      }
-    });
-    // set up the user info stuff
-    userContentTitle.setText("Edit your profile");
-    usernameLabel.setText("Display name");
-    // set up the code to modify database when user changes his display name 
-    final Ode ode = Ode.getInstance();
-    userNameBox.addValueChangeHandler(new ValueChangeHandler<String>() {
-        @Override
-        public void onValueChange(ValueChangeEvent<String> event) {
-          final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void arg0) {
-              }
-          };
-         ode.getUserInfoService().storeUserName(userNameBox.getText(), userUpdateCallback);
+    if (editStatus == PRIVATE) {
+      // USER PROFILE IN PRIVATE (EDITABLE) STATE
+      // setup upload stuff
+      imageUploadPrompt.setText("Upload your profile image!");
+      // Set the correct handler for servlet side capture
+      imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+      imageUpload.addChangeHandler(new ChangeHandler (){
+        public void onChange(ChangeEvent event) {
+          uploadImage();
         }
-
       });
-    
-    // set up the user link
-    userLinkLabel.setText("More info link");
-    //httpLinkLabel.setText("http://");
-    // set up the code to modify database when user changes his introduction link
-    userLinkBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+      appCardWrapper.addClickHandler(new ClickHandler() {
         @Override
-        public void onValueChange(ValueChangeEvent<String> event) {
-          final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void arg0) {
-              }
-          };
-         ode.getUserInfoService().storeUserLink(userLinkBox.getText(), userUpdateCallback);
+        public void onClick(ClickEvent event) {
+          // The correct way to trigger click event on FileUpload
+          imageUpload.getElement().<InputElement>cast().click();
         }
-
       });
+      imageUploadBoxInner.add(imageUploadPrompt);
+      imageUploadBoxInner.add(imageUpload);
+      imageUploadBoxInner.add(userAvatar);
+
+      // set up the user info stuff
+      userContentHeader.setText("Edit your profile");
+      usernameLabel.setText("Your display name");
+      userLinkLabel.setText("More info link");
+
+      final Ode ode = Ode.getInstance();
+      profileSummit.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+
+          // Store the name value of user, modify database
+          final OdeAsyncCallback<Void> userNameUpdateCallback = new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void arg0) {
+                }
+            };
+           ode.getUserInfoService().storeUserName(userNameBox.getText(), userNameUpdateCallback);
+
+          // Store the link value of user, modify database
+          final OdeAsyncCallback<Void> userLinkUpdateCallback = new OdeAsyncCallback<Void>(
+              // failure message
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void arg0) {
+                }
+            };
+          if (userLinkBox.getText().isEmpty()) {
+            Ode.getInstance().getUserInfoService().storeUserLink(
+                "", userLinkUpdateCallback);
+          } else {
+            Ode.getInstance().getUserInfoService().storeUserLink(
+                userLinkBox.getText(), userLinkUpdateCallback);
+          }
+
+        }
+      });
+
+      majorContentCard.add(userContentHeader);
+      majorContentCard.add(usernameLabel);
+      majorContentCard.add(userNameBox);
+      majorContentCard.add(userLinkLabel);
+      majorContentCard.add(userLinkBox);
+      majorContentCard.add(profileSummit);
+
+    } else {
+      panel.addStyleName("ode-Public");
+      // USER PROFILE IN PUBLIC (NON-EDITABLE) STATE
+      // set up the user info stuff
+      imageUploadBoxInner.clear();
+
+      // set up the user link
+      userLinkLabel.setText("More info link:");
+
+      majorContentCard.add(userContentHeader);
+      majorContentCard.add(userLinkLabel);
+      majorContentCard.add(userLinkDisplay);
+    }
 
     // Add styling
     cardContainer.addStyleName("gallery-app-collection");
@@ -170,38 +203,30 @@ public class ProfilePage extends Composite {
 
     userAvatar.addStyleName("gallery-card-cover");
     userAvatar.addStyleName("status-updating");
+    imageUpload.addStyleName("app-image-upload");
     imageUploadPrompt.addStyleName("gallery-editprompt");
 
     // add styling for user info stuff
     majorContentCard.addStyleName("gallery-content-card");
-    userContentTitle.addStyleName("app-title");
+    userContentHeader.addStyleName("app-title");
     usernameLabel.addStyleName("profile-textlabel");
     userNameBox.addStyleName("profile-textbox");
+    userNameDisplay.addStyleName("profile-textdisplay");
     userLinkLabel.addStyleName("profile-textlabel");
     userLinkBox.addStyleName("profile-textbox");
+    userLinkDisplay.addStyleName("profile-textdisplay");
 
-    upload.addStyleName("app-image-upload");
- 
-    
+    profileSummit.addStyleName("profile-submit");
+    imageUpload.addStyleName("app-image-upload");
+
+
     // Add all the GUI layers up at the end
     panel.add(cardContainer);
-    
+
     cardContainer.add(appCardWrapper);
     appCardWrapper.add(imageUploadBox);
     imageUploadBox.add(imageUploadBoxInner);
-
-    imageUploadBoxInner.add(imageUploadPrompt);
-    imageUploadBoxInner.add(upload);
-    imageUploadBoxInner.add(userAvatar);
-    
     cardContainer.add(majorContentCard);
-    majorContentCard.add(userContentTitle);
-    majorContentCard.add(usernameLabel);
-    majorContentCard.add(userNameBox);
-    majorContentCard.add(userLinkLabel);
-    //majorContentCard.add(httpLinkLabel);
-    majorContentCard.add(userLinkBox);
-    majorContentCard.add(updateButton);
 
     initWidget(panel);
     
@@ -212,27 +237,54 @@ public class ProfilePage extends Composite {
           @Override
           public void onSuccess(User user) {
             // Set associate GUI components
-            userNameBox.setText(user.getUserName());
-            userLinkBox.setText(user.getUserLink());
-            userId = user.getUserId();
+            if (editStatus == PRIVATE) {
+              // In this case it'll return the current user
+              userId = user.getUserId();
+              userNameBox.setText(user.getUserName());
+              userLinkBox.setText(user.getUserLink());
+            } else {
+              // In this case it'll return the user of [userId]
+              userContentHeader.setText("Public Profile of " + user.getUserName());
+              String link = user.getUserLink();
+              if (link == null) {
+                userLinkDisplay.setText("N/A");
+              } else {
+                if (link.isEmpty()) {
+                  userLinkDisplay.setText("N/A");
+                } else {
+                  link = link.toLowerCase();
+                  // Validate link format, fill in http part
+                  if (!link.startsWith("http")) {
+                    link = "http://" + link;
+                  }
+                  userLinkDisplay.setText(link);
+                  userLinkDisplay.setHref(link);
+                }
+              }
+            }
             // once we get the user info and id we can show the right image
-            updateUserImage(GalleryApp.getUserImageUrl(userId),imageUploadBoxInner);
+            updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+
          }
     };
-    ode.getUserInfoService().getUserInformation(userInformationCallback);
-      
+    if (editStatus == PRIVATE) {
+      Ode.getInstance().getUserInfoService().getUserInformation(userInformationCallback);
+    } else {
+      Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
+    }
+
   } 
 
     
   private void uploadImage() {
         
-    String uploadFilename = upload.getFilename();
+    String uploadFilename = imageUpload.getFilename();
     if (!uploadFilename.isEmpty()) {
       String filename = makeValidFilename(uploadFilename);
       // Forge the request URL for gallery servlet
       String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
           "/user/" + userId + "/" + filename;
-      Uploader.getInstance().upload(upload, uploadUrl,
+      Uploader.getInstance().upload(imageUpload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
         @Override
         public void onSuccess(UploadResponse uploadResponse) {

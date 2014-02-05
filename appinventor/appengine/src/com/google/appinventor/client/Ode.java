@@ -15,6 +15,7 @@ import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
+import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
@@ -143,6 +144,7 @@ public class Ode implements EntryPoint {
   private static final int PROJECTS = 1;
   private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
+  private static final int USERPROFILE = 4;
   private static int currentView = DESIGNER;
 
   /*
@@ -166,6 +168,7 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private int galleryTabIndex;
   private int galleryAppTabIndex;
+  private int userProfileTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -284,6 +287,16 @@ public class Ode implements EntryPoint {
 //    OdeLog.log("######### I got in switchToGalleryAppView");
     GalleryAppBox.setApp(app, editStatus);
     deckPanel.showWidget(galleryAppTabIndex);    
+  }
+
+  /**
+   * Switch to the user profile
+   * TODO: change string parameter
+   */
+  public void switchToUserProfileView(String userId, int editStatus) {
+    currentView = USERPROFILE;
+    ProfileBox.setProfile(userId, editStatus);
+    deckPanel.showWidget(userProfileTabIndex);
   }
 
   /**
@@ -623,33 +636,43 @@ public class Ode implements EntryPoint {
     designTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(dVertPanel);
 
-    // Gallery tab
+    // Gallery list tab
     VerticalPanel gVertPanel = new VerticalPanel();
     gVertPanel.setWidth("100%");
     gVertPanel.setSpacing(0);
     HorizontalPanel appListPanel = new HorizontalPanel();
     appListPanel.setWidth("100%");
-    
     appListPanel.add(GalleryListBox.getGalleryListBox());
     
     gVertPanel.add(appListPanel);
     galleryTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gVertPanel);
     
-     // Gallery app
+     // Gallery app tab
     VerticalPanel aVertPanel = new VerticalPanel();
     aVertPanel.setWidth("100%");
     aVertPanel.setSpacing(0);
     HorizontalPanel appPanel = new HorizontalPanel();
     appPanel.setWidth("100%");
-    
     appPanel.add(GalleryAppBox.getGalleryAppBox());
-  
     
     aVertPanel.add(appPanel);
     galleryAppTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(aVertPanel);
     
+    // KM: DEBUGGING BEGIN
+    // User profile tab
+    VerticalPanel uVertPanel = new VerticalPanel();
+    uVertPanel.setWidth("100%");
+    uVertPanel.setSpacing(0);
+    HorizontalPanel userProfilePanel = new HorizontalPanel();
+    userProfilePanel.setWidth("100%");
+    userProfilePanel.add(ProfileBox.getUserProfileBox());
+
+    uVertPanel.add(userProfilePanel);
+    userProfileTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(uVertPanel);
+    // KM: DEBUGGING END
     
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {

@@ -96,6 +96,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     storeAIA(app.getGalleryAppId(),projectId, projectName);
     // see if there is a new image for the app. If so, its in cloud using projectId, need to move
     // to cloud using gallery id
+
 //    Logger.getAnonymousLogger().info("#######################");
 //    Logger.getAnonymousLogger().info("This is URL for /gallery/app/#/aia:" + String.valueOf(app.getGalleryAppId()));
 //    Logger.getAnonymousLogger().info("This is URL for /gallery/project/#/image:" + String.valueOf(projectId));

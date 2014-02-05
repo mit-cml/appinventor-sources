@@ -16,6 +16,11 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface UserInfoServiceAsync {
 
   /**
+   * @see UserInfoService#getUserInformation(String)
+   */
+  void getUserInformation(String userId, AsyncCallback<User> callback);
+
+  /**
    * @see UserInfoService#getUserInformation()
    */
   void getUserInformation(AsyncCallback<User> callback);

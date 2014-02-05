@@ -8,7 +8,7 @@ package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
-import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
+import com.google.appinventor.client.explorer.youngandroid.ProfilePage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
@@ -16,37 +16,39 @@ import com.google.appinventor.client.widgets.boxes.Box;
 
 
 /**
- * Box implementation for Gallery app.
+ * Box implementation for user profile.
  *
  */
-public final class GalleryAppBox extends Box {
+public final class ProfileBox extends Box {
 
   // Singleton Gallery explorer box instance (only one Gallery explorer allowed)
-  private static final GalleryAppBox INSTANCE = new GalleryAppBox();
+  private static final ProfileBox INSTANCE = new ProfileBox();
 
   // Gallery list for young android
-  private static GalleryPage pPage;
+  private static ProfilePage pPage;
 
   /**
    * Returns the singleton GalleryAppBox.
    *
-   * @return  Gallery app box
+   * @return  Gallery list box
    */
-  public static GalleryAppBox getGalleryAppBox() {
+  public static ProfileBox getUserProfileBox() {
     return INSTANCE;
   }
-  
-  public static void setApp(GalleryApp app, int editStatus)
+
+  public static void setProfile(String userId, int editStatus)
   {
-//  OdeLog.log("######### I got in setApp");
-    pPage = new GalleryPage(app, editStatus);
+//    OdeLog.log("######### I got in setApp");
+//    OdeLog.log("######### I got in setApp user " + userId);
+//    OdeLog.log("######### I got in setApp edit " + editStatus);
+    pPage = new ProfilePage(userId, editStatus);
     INSTANCE.setContent(pPage);
   }
   /**
-   * Creates new Gallery app box.
+   * Creates new user profile box.
    */
-  private GalleryAppBox() {
-    super(MESSAGES.galleryAppBoxCaption(),
+  private ProfileBox() {
+    super(MESSAGES.userProfileBoxCaption(),
         300,    // height
         false,  // minimizable
         false); // removable
@@ -56,11 +58,11 @@ public final class GalleryAppBox extends Box {
   }
 
   /**
-   * Returns Gallery page associated with Gallerys explorer box.
+   * Returns user profile page.
    *
-   * @return  Gallery app page
+   * @return  User profile page.
    */
-  public GalleryPage getGalleryPage() {
+  public ProfilePage getUserProfilePage() {
      return pPage;
   }
 }

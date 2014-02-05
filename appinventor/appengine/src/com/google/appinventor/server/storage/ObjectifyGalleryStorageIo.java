@@ -141,7 +141,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @return a {@link GalleryApp} for gallery App
    */
   @Override
-  public GalleryApp createGalleryApp(final String title, final String projectName, final String description, final long projectId, final String userId) {
+  public GalleryApp createGalleryApp(final String title, 
+      final String projectName, final String description, final long projectId,
+      final String userId) {
 
     final Result<GalleryAppData> galleryAppData = new Result<GalleryAppData>();
     try {
@@ -159,8 +161,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.title = title;
           appData.projectName= projectName;
           appData.description = description;
-          appData.projectId=projectId;
-          appData.userId=userId;
+          appData.projectId = projectId;
+          appData.userId = userId;
           datastore.put(appData); // put the appData in the db so that it gets assigned an id
 
           assert appData.id != null;

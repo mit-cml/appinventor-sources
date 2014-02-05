@@ -151,10 +151,10 @@ panel
 
     
   /**
-   * Creates a new GalleryPage
+   * Creates a new GalleryPage, must take in parameters
    *
    */
-  public GalleryPage(final GalleryApp app, final int editStatus) {
+  public GalleryPage (final GalleryApp app, final int editStatus) {
   
    
     // get a reference to the Gallery Client which handles the communication to
@@ -208,10 +208,40 @@ panel
    
     // if we are publishing no app name  
     if (editStatus!=NEWAPP) {
-      Label devName = new Label("By " + app.getDeveloperName());
-      appInfo.add(devName);
-      devName.addStyleName("app-subtitle");
-    
+      Label authorPrefix = new Label("By ");
+      appInfo.add(authorPrefix);
+      authorPrefix.addStyleName("app-subtitle");
+
+      final Image authorAvatar = new Image();
+      authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
+      // if the user has provided a gallery app image, we'll load it. But if not
+      // the error will occur and we'll load default image
+      authorAvatar.addErrorHandler(new ErrorHandler() {
+        public void onError(ErrorEvent event) {
+          authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+        }
+      });
+      authorAvatar.addErrorHandler(new ErrorHandler() {
+        public void onError(ErrorEvent event) {
+          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+        }
+      });
+
+      appInfo.add(authorAvatar);
+      authorAvatar.addStyleName("app-userimage");
+
+      Label authorName = new Label(app.getDeveloperName());      
+      appInfo.add(authorName);
+      authorName.addStyleName("app-username");
+      authorName.addStyleName("app-subtitle");
+
+      authorName.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToUserProfileView(
+              app.getDeveloperId(), 1 /* 1 for public view*/ );
+        }
+      });
+
       // App details - meta
       appInfo.add(appMeta);
       appMeta.addStyleName("app-meta");
@@ -316,7 +346,6 @@ panel
  
     // Add sidebar stuff, only in public state
     if (!newOrUpdateApp()) {
-      
       gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());      
       // By default, load the first tag's apps
     

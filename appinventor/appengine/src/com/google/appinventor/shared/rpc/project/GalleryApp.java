@@ -52,16 +52,14 @@ public class GalleryApp implements IsSerializable {
     if (projectName.contains(".")) {
       String[] splitName = projectName.split("\\.");
       projectName = splitName[0];
-    } else {
-      projectName = projectName;
     }
     this.downloads = downloads;
     this.views = views;
     this.likes = likes;
     this.comments = comments;
-    this.imageBlobId= imageBlobId;
-    this.sourceBlobId= sourceBlobId;
-    this.galleryAppId= galleryAppId;
+    this.imageBlobId = imageBlobId;
+    this.sourceBlobId = sourceBlobId;
+    this.galleryAppId = galleryAppId;
     this.tags = tags;
   }
   
@@ -254,6 +252,7 @@ public class GalleryApp implements IsSerializable {
     return url;
   }
 
+
   public String getProjectImagePath() {
     String url = "/gs/" + this.GALLERYBUCKET + "/gallery/projects/"
        + getProjectId() + "/image";
@@ -261,7 +260,7 @@ public class GalleryApp implements IsSerializable {
   }
 
   public String getProjectImageKey() {
-    String url = "/gallery/projects/" + getProjectId() + "/image";
+    String url = "gallery/projects/" + getProjectId() + "/image";
     return url;
   }
 
