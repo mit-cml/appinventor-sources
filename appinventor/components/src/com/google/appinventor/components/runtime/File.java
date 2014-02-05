@@ -36,7 +36,7 @@ import java.io.IOException;
     iconName = "images/file.png")
 @SimpleObject
 public class File extends AndroidNonvisibleComponent implements Component {
-	private final Activity activity;
+  private final Activity activity;
   
   /**
    * Creates a new File component.
@@ -60,8 +60,8 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void SaveFile(String text, String fileName) {
-      FileUtil.checkExternalStorageWriteable();
-      Write(fileName, text, false);
+    FileUtil.checkExternalStorageWriteable();
+    Write(fileName, text, false);
   }
   
   /**
@@ -74,8 +74,8 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void AppendToFile(String text, String fileName) {
-  	  FileUtil.checkExternalStorageWriteable();
-      Write(fileName, text, true);
+  	FileUtil.checkExternalStorageWriteable();
+    Write(fileName, text, true);
   }
 
   /**
@@ -87,12 +87,12 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void ReadFrom(String fileName) {
-      final String filepath = AbsoluteFileName(fileName);
-      AsynchUtil.runAsynchronously(new Runnable() {
+    final String filepath = AbsoluteFileName(fileName);
+    AsynchUtil.runAsynchronously(new Runnable() {
       @Override
-      	public void run() {
-      		AsyncRead(filepath);
-        }
+      public void run() {
+        AsyncRead(filepath);
+      }
     });
   }
   
@@ -103,9 +103,9 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   @SimpleFunction
   public void Delete(String fileName) {
-	  String filepath = AbsoluteFileName(fileName);
-	  java.io.File file = new java.io.File(filepath);
-	  file.delete();
+    String filepath = AbsoluteFileName(fileName);
+	java.io.File file = new java.io.File(filepath);
+	file.delete();
   }
   
   /**
@@ -117,41 +117,41 @@ public class File extends AndroidNonvisibleComponent implements Component {
    * 	or overwrite the file
    */
   private void Write(final String filename, final String text, final boolean append) {
-      AsynchUtil.runAsynchronously(new Runnable() {
-      @Override
-      	public void run() {
-      		final String filepath = AbsoluteFileName(filename);
-  	  		final java.io.File file = new java.io.File(filepath);
-			if(!file.exists()){
-      			try {
-      				file.createNewFile();
-        		} catch (IOException e) {
-                  	if (append) {
-	  					form.dispatchErrorOccurredEvent(File.this, "AppendTo",
-	  						ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
-	  				} else {
-	  					form.dispatchErrorOccurredEvent(File.this, "SaveFile",
-	  						ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
-	  				}
-        		}
-      		}
-      		try {
-	    		FileOutputStream fileWriter = new FileOutputStream(file, append);
-				OutputStreamWriter out = new OutputStreamWriter(fileWriter);
-			  	out.write(text);
-			  	out.flush();
-	  	  		out.close();
-	  	  		fileWriter.close();
-	  		} catch (IOException e) {
-	  			if (append) {
-	  				form.dispatchErrorOccurredEvent(File.this, "AppendTo",
-	  					ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
-	  			} else {
-	  				form.dispatchErrorOccurredEvent(File.this, "SaveFile",
-	  					ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
-	  			}			      	
-      		}
-		}
+    AsynchUtil.runAsynchronously(new Runnable() {
+    @Override
+      public void run() {
+        final String filepath = AbsoluteFileName(filename);
+  	  	final java.io.File file = new java.io.File(filepath);
+		if(!file.exists()){
+      	  try {
+      	    file.createNewFile();
+          } catch (IOException e) {
+            if (append) {
+			  form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+			      ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+	  		} else {
+	  		  form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+				  ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+	  		}
+          }
+      	}
+      	try {
+	      FileOutputStream fileWriter = new FileOutputStream(file, append);
+		  OutputStreamWriter out = new OutputStreamWriter(fileWriter);
+		  out.write(text);
+		  out.flush();
+	  	  out.close();
+	  	  fileWriter.close();
+	  	} catch (IOException e) {
+	  	  if (append) {
+	  	    form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+	  		    ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+	  	  } else {
+	  	    form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+	  		    ErrorMessages.ERROR_CANNOT_WRITE_TO_FILE, filepath);
+	  	  }			      	
+      	}
+	  }
 	}); 
   }
   
@@ -164,27 +164,27 @@ public class File extends AndroidNonvisibleComponent implements Component {
    */
   private void AsyncRead(final String filepath) {
     try {
-	 	java.io.File file = new java.io.File(filepath);
-  		StringBuilder sb = new StringBuilder();
-  		BufferedReader bufferedReader = new BufferedReader(new FileReader(file)); 
-  		String line;
-  		while ((line = bufferedReader.readLine()) != null) {
-  			sb.append(line);
-			sb.append(System.getProperty("line.separator"));
-		}
-		final String text = sb.toString();
-		activity.runOnUiThread(new Runnable() {
-    	@Override
-        	public void run() {
-            	  GotText(text);
-            }
-    	});
+	  java.io.File file = new java.io.File(filepath);
+	  StringBuilder sb = new StringBuilder();
+      BufferedReader bufferedReader = new BufferedReader(new FileReader(file)); 
+  	  String line;
+  	  while ((line = bufferedReader.readLine()) != null) {
+  	    sb.append(line);
+		sb.append(System.getProperty("line.separator"));
+	  }
+	  final String text = sb.toString();
+	  activity.runOnUiThread(new Runnable() {
+      @Override
+        public void run() {
+          GotText(text);
+        }
+      });
     } catch (FileNotFoundException e) {
-				form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                          ErrorMessages.ERROR_CANNOT_FIND_FILE, filepath);
+	  form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+          ErrorMessages.ERROR_CANNOT_FIND_FILE, filepath);
 	} catch (IOException e) {
-              form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
-                      ErrorMessages.ERROR_CANNOT_READ_FILE, filepath);
+      form.dispatchErrorOccurredEvent(File.this, "ReadFrom",
+          ErrorMessages.ERROR_CANNOT_READ_FILE, filepath);
     }
   }
 	
