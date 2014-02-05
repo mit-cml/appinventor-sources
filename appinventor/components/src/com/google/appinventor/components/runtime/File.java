@@ -123,18 +123,18 @@ public class File extends AndroidNonvisibleComponent implements Component {
         final String filepath = AbsoluteFileName(filename);
         final java.io.File file = new java.io.File(filepath);
         if(!file.exists()){
-      	  try {
-      	    file.createNewFile();
+          try {
+            file.createNewFile();
           } catch (IOException e) {
             if (append) {
-			  form.dispatchErrorOccurredEvent(File.this, "AppendTo",
-			      ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
-	  		} else {
-	  		  form.dispatchErrorOccurredEvent(File.this, "SaveFile",
-				  ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
-	  		}
+              form.dispatchErrorOccurredEvent(File.this, "AppendTo",
+                  ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+            } else {
+              form.dispatchErrorOccurredEvent(File.this, "SaveFile",
+                  ErrorMessages.ERROR_CANNOT_CREATE_FILE, filepath);
+            }
           }
-      	}
+        }
       	try {
 	      FileOutputStream fileWriter = new FileOutputStream(file, append);
 		  OutputStreamWriter out = new OutputStreamWriter(fileWriter);
