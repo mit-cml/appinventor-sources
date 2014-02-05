@@ -121,8 +121,8 @@ public class File extends AndroidNonvisibleComponent implements Component {
     @Override
       public void run() {
         final String filepath = AbsoluteFileName(filename);
-  	  	final java.io.File file = new java.io.File(filepath);
-		if(!file.exists()){
+        final java.io.File file = new java.io.File(filepath);
+        if(!file.exists()){
       	  try {
       	    file.createNewFile();
           } catch (IOException e) {
