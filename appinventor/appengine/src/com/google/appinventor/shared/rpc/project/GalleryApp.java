@@ -31,7 +31,7 @@ public class GalleryApp implements IsSerializable {
   public static final String GALLERYBUCKET = "galleryai2";
   public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
   public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
-	
+
   public GalleryApp(String title, String developerId, String description,
       long creationDate, long updateDate, String imageURL, String projectName,
       int downloads, int views, int likes, int comments, 
@@ -68,7 +68,7 @@ public class GalleryApp implements IsSerializable {
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
   public GalleryApp(String title, long projectId, String projectName, long galleryAppId) {
-	super();
+  super();
     this.title = title;
     this.description = projectName +" description";
     this.downloads = 0;
@@ -203,68 +203,78 @@ public class GalleryApp implements IsSerializable {
     return developerName;
   }
   public void setDeveloperName(String name) {
-    this.developerName=name;
+    this.developerName = name;
   }
+
   /* URL is in GCS, of form: /gs/galleryai2/gallery/apps/6046115656892416/aia
    * Here is what is in gcs docs:
-   * Your object is now visible to App Engine with the file name /gs/my_bucket/my_object. 
-   * If you set your object to be publicly accessible, your object can be accessed using the 
-   * URL http://storage.googleapis.com/my_bucket/my_object.  
+   * Your object is now visible to App Engine with the file name 
+   * /gs/my_bucket/my_object.
+   * If you set your object to be publicly accessible, your object can be 
+   * accessed using the URL http://storage.googleapis.com/my_bucket/my_object.
   */
   public String getSourceURL() {
-    String url = "/gs/" + this.GALLERYBUCKET + "/" +getSourceKey();
+    String url = "/gs/" + this.GALLERYBUCKET + "/" + getSourceKey();
     return url;
   }
   public static String getSourceURL(long galleryId) {
-    String url = "/gs/" + GALLERYBUCKET + "/" +getSourceKey(galleryId);
+    String url = "/gs/" + GALLERYBUCKET + "/" + getSourceKey(galleryId);
     return url;
   }
-  public String getSourceKey () {
-    String key = "gallery/apps/" + getGalleryAppId()+"/aia";
+  public String getSourceKey() {
+    String key = "gallery/apps/" + getGalleryAppId() + "/aia";
     return key;
   }
   // this static one is called by galleryService when an app is first published
-  static public String getSourceKey (long galleryId) {
-    String key = "gallery/apps/" + galleryId+"/aia";
+  static public String getSourceKey(long galleryId) {
+    String key = "gallery/apps/" + galleryId + "/aia";
     return key;
   }
 
   public String getCloudImageURL() {
-    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/apps/"
-       + getGalleryAppId()+"/image";
-    return url2;
-  }
-  public static String getImageURL(long galleryId) {
-    String url = "/gs/" + GALLERYBUCKET + "/" +getImageKey(galleryId);
+    String url = "http://storage.googleapis.com/" + this.GALLERYBUCKET + 
+        "/gallery/apps/" + getGalleryAppId() + "/image";
     return url;
   }
+  public static String getImageURL(long galleryId) {
+    return "/gs/" + GALLERYBUCKET + "/" +getImageKey(galleryId);
+  }
 
-  public String getImageKey () {
+  public String getImageKey() {
     return "gallery/apps/" + getGalleryAppId() + "/image";
   } 
 
-  public static String getImageKey (long galleryId) {
+  public static String getImageKey(long galleryId) {
     return "gallery/apps/" + galleryId + "/image";
   } 
+
   public String getProjectImageURL() {
-    String url2 = "http://storage.googleapis.com/" + this.GALLERYBUCKET + "/gallery/projects/"
-       + getProjectId()+"/image";
-    return url2;
+    String url = "http://storage.googleapis.com/" + this.GALLERYBUCKET + 
+        "/gallery/projects/" + getProjectId() + "/image";
+    return url;
   }
+
   public String getProjectImagePath() {
-    String url2 = "/gs/" + this.GALLERYBUCKET + "/gallery/projects/"
-       + getProjectId()+"/image";
-    return url2;
+    String url = "/gs/" + this.GALLERYBUCKET + "/gallery/projects/"
+       + getProjectId() + "/image";
+    return url;
+  }
+
+  public String getProjectImageKey() {
+    String url = "/gallery/projects/" + getProjectId() + "/image";
+    return url;
   }
 
   static public String getUserImageUrl(String userid) {
-    String url2 = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" + userid + "/image";
-    return url2;
+    String url = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" +
+          userid + "/image";
+    return url;
   }
 
   public ArrayList<String> getTags() {
     return this.tags;
   }
+
   public void setTags(ArrayList<String> tags) {
     this.tags = tags;
   }

@@ -108,7 +108,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
-  private final int offset = 5;
+  private final int offset = 10;
   private final String activeNext = "http://i.imgur.com/PC2RTC5.png";
   private final String activePrev = "http://i.imgur.com/K8aiGBZ.png";
   private final String disabledNext = "http://i.imgur.com/UYeELMN.png";
@@ -119,9 +119,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    */
   public GalleryList() {
 	
-	gallery = GalleryClient.getInstance();
+	  gallery = GalleryClient.getInstance();
     gallery.addListener(this);
-	galleryGF = new GalleryGuiFactory();
+	  galleryGF = new GalleryGuiFactory();
 
     selectedApps = new ArrayList<GalleryApp>();
     
@@ -216,7 +216,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     prev.addStyleName("gallery-nav-prev");
     container.add(prev);
     
-    gallery.GetMostRecent(appRecentCounter, 5);
+    gallery.GetMostRecent(appRecentCounter, offset);
     container.add(content);
 
     final Image buttonNext = new Image();

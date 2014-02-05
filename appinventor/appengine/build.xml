@@ -126,6 +126,8 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar --> 
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
+	<!-- GCS Libs -->
+	<copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
     <!-- gwt libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${gwt.sdk}/gwt-servlet-deps.jar" />
@@ -177,6 +179,7 @@
     <pathelement location="${build.dir}/common/CommonVersion.jar" />
     <pathelement location="${build.dir}/components/CommonConstants.jar"/>
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
+    <pathelement location="${lib.dir}/joda-time/joda-time-2.3.jar" />
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
     <pathelement location="${lib.dir}/junit-addons/junit-addons-1.4.jar" />
@@ -188,12 +191,14 @@
     <pathelement location="${lib.dir}/powermock/objenesis-1.2.jar" />
     <pathelement location="${lib.dir}/powermock/powermock-easymock-1.4.10-full.jar" />
     <pathelement location="${lib.dir}/responder-iq/responderiq-test.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar"/>
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
     <pathelement location="${gwt.sdk}/gwt-user.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api-labs.jar"/>
     <pathelement location="${appengine.sdk}/lib/impl/appengine-api-stubs.jar"/>
     <pathelement location="${appengine.sdk}/lib/testing/appengine-testing.jar" />
+	
     <pathelement location="${appengine.sdk}/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar" />
   </path>
 
@@ -246,6 +251,7 @@
     <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
     <pathelement location="${lib.dir}/json/json.jar" />
     <pathelement location="${lib.dir}/junit/junit-4.8.2.jar" />
+    <pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar"/>
     <pathelement location="${gwt.sdk}/gwt-servlet.jar" />
   </path>
 
@@ -309,7 +315,7 @@
         <pathelement location="${build.dir}/common/CommonVersion.jar" />
         <pathelement location="${build.dir}/components/CommonConstants.jar" />
         <!-- external libs -->
-		<pathelement location="${lib.dir}/appengine/appengine-gcs-client-0.3.jar"/>
+		<pathelement location="${lib.dir}/gcs/appengine-gcs-client-0.3.jar"/>
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" /> 
         <pathelement location="${lib.dir}/gwt_dragdrop/gwt-dnd-3.2.3.jar" />
         <pathelement location="${lib.dir}/gwt_incubator/gwt-incubator-20101117-r1766.jar" />
@@ -362,7 +368,7 @@
         <pathelement location="${build.dir}/common/CommonVersion-gwt.jar" />
         <pathelement location="${build.dir}/components/CommonConstants-gwt.jar" />
         <!-- external libs -->
-		<pathelement location="${lib.dir}/appengine/appengine-gcs-client.jar"/>
+		<pathelement location="${lib.dir}/gcs/appengine-gcs-client.jar"/>
 		<pathelement location="{lib.dir}/appengine/appengine-java-sdk-1.7.6/lib/user/appengine-api-1.0-sdk-1.7.6.jar"/>
         <pathelement location="${lib.dir}/findbugs/jsr305.jar" />
         <pathelement location="${lib.dir}/guava/guava-14.0.1.jar" />
