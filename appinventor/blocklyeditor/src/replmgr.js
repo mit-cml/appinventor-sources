@@ -788,7 +788,7 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
     qr.addData(code);
     qr.make();
     var img = qr.createImgTag(6);
-    retval = '<table><tr><td>' + img + '</td><td>Your code is:<br /><br /><b>' + code + '</b></td></tr></table>';
+    retval = '<table><tr><td>' + img + '</td><td><font size="+1">Your code is:<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
     return retval;
 };
 
