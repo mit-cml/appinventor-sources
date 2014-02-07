@@ -46,6 +46,7 @@ public class StoredData {
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
     public String name;
+    public String link;
 
   }
 
@@ -58,6 +59,9 @@ public class StoredData {
 
     // Verbose project name
     String name;
+
+    //introduction link
+    String link;
 
     // Project type. Currently Simple and YoungAndroid
     // TODO(user): convert to enum

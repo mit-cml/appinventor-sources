@@ -32,6 +32,13 @@ public interface UserInfoProvider {
   String getUserName();
 
   /**
+   * Returns the user's link.
+   *
+   * @return user link
+   */
+  String getUserLink();
+
+  /**
    * Returns the user object.
    *
    * @return user object

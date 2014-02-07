@@ -78,6 +78,16 @@ public class LocalUser implements UserInfoProvider {
   }
 
   @Override
+  public String getUserLink() throws UnsupportedOperationException {
+    try {
+      return user.get().getUserLink();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
   public boolean getUserTosAccepted() throws UnsupportedOperationException {
     try {
       return user.get().getUserTosAccepted();

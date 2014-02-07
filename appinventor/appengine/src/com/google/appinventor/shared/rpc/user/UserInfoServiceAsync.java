@@ -36,6 +36,11 @@ public interface UserInfoServiceAsync {
   void storeUserName(String name, AsyncCallback<Void> callback);
 
   /**
+   * @see UserInfoService#storeNameLink(String)
+   */
+  void storeUserLink(String link, AsyncCallback<Void> callback);
+
+  /**
    * @see UserInfoService#hasUserFile(String)
    */
   void hasUserFile(String fileName, AsyncCallback<Boolean> callback);

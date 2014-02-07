@@ -160,7 +160,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, null,false, false);
+      tuser = new User(userId, email, null, null, false, false);
     }
     final User user = tuser;
     try {
@@ -176,6 +176,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           user.setUserEmail(userData.email);
           user.setUserName(userData.name);
+          user.setUserLink(userData.link);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
         }
       });
@@ -254,7 +255,31 @@ public class ObjectifyStorageIo implements  StorageIo {
             datastore.put(userData);
           }
           // we need to change the memcache version of user
-          User user = new User(userData.id,userData.email,name,userData.tosAccepted,
+          User user = new User(userData.id,userData.email,name, userData.link, userData.tosAccepted,
+             false);
+          String cachekey = User.usercachekey + "|" + userId;
+          memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+
+  }
+
+  @Override
+  public void setUserLink(final String userId, final String link) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.link = link;
+            datastore.put(userData);
+          }
+          // we need to change the memcache version of user
+          User user = new User(userData.id,userData.email,userData.name,link,userData.tosAccepted,
              false);
           String cachekey = User.usercachekey + "|" + userId;
           memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
@@ -308,6 +333,28 @@ public class ObjectifyStorageIo implements  StorageIo {
     }
     return name.t;
   }
+
+  @Override
+  public String getUserLink(final String userId) {
+    final Result<String> link = new Result<String>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(UserData.class, userId);
+          if (userData != null) {
+            link.t = userData.link;
+          } else {
+            link.t = "unknown";
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    return link.t;
+  }
+
 
 
   @Override

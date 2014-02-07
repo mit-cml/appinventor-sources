@@ -89,6 +89,20 @@ public interface StorageIo {
    * @param userId user id
    * @return name
    */
+  String getUserLink(String userId);
+
+  /**
+   * Sets the stored link for user with id userId
+   *
+   */
+  void setUserLink(String userId, String link);
+
+   /**
+   * Returns a string with the user's name.
+   *
+   * @param userId user id
+   * @return name
+   */
   String getUserName(String userId);
 
   /**

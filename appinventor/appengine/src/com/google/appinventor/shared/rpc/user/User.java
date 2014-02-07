@@ -22,6 +22,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // user display name
   private String name;
 
+  // user introduction link
+  private String link;
+
   // whether user has accepted terms of service
   private boolean tosAccepted;
   
@@ -42,7 +45,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, String name, boolean tosAccepted, boolean isAdmin) {
+  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin) {
     this.id = id;
     this.email = email;
     if (name==null)
@@ -51,6 +54,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
       this.name=name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
+    this.link = link;
   }
 
   /**
@@ -102,6 +106,23 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    */
   public void setUserName(String name) {
     this.name = name;
+  }
+
+  /**
+   * Returns the user's link.
+   *
+   * @return user link
+   */
+  @Override
+  public String getUserLink() {
+    return link;
+  }
+
+  /**
+   * Sets the user's link.
+   */
+  public void setUserLink(String link) {
+    this.link = link;
   }
 
   /**
@@ -162,7 +183,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    return new User(id, email, name, tosAccepted, isAdmin);
+    return new User(id, email, name, link, tosAccepted, isAdmin);
   }
 
   public static String getDefaultName(String email)

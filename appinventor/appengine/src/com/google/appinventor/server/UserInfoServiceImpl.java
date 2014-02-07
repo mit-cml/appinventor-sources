@@ -63,6 +63,15 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
   }
 
   /**
+   * Stores the user's link.
+   * @param name  user's link
+   */
+  @Override
+  public void storeUserLink(String link) {
+    storageIo.setUserLink(userInfoProvider.getUserId(), link);
+  }
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   @Override

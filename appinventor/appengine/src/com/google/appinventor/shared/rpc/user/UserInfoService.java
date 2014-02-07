@@ -43,6 +43,12 @@ public interface UserInfoService extends RemoteService {
   void storeUserName(String name);
 
   /**
+   * Stores the user's settings.
+   * @param name  user's settings
+   */
+  void storeUserLink(String link);
+
+  /**
    * Returns true if the current user has a user file with the given file name
    */
   boolean hasUserFile(String fileName);

@@ -60,6 +60,8 @@ import com.google.gwt.event.dom.client.ChangeHandler;
      userContentTitle
      userNameLabel
      userNameBox
+     userLinkLabel
+     userLinkBox
      
    appCardWrapper
      imageUploadBox
@@ -92,9 +94,13 @@ public class ProfilePage extends Composite {
   
   // the majorContentCard has a label and namebox
   Label usernameLabel = new Label();
+  Label userLinkLabel = new Label();
+  //Label httpLinkLabel = new Label();
   Label userContentTitle = new Label();
   final TextBox userNameBox = new TextBox();
   final Button updateButton = new Button("Update Profile");
+  final TextBox userLinkBox = new TextBox();
+
   
   public ProfilePage() {
     // setup panel
@@ -121,7 +127,7 @@ public class ProfilePage extends Composite {
     });
     // set up the user info stuff
     userContentTitle.setText("Edit your profile");
-    usernameLabel.setText("Your display name");
+    usernameLabel.setText("Display name");
     // set up the code to modify database when user changes his display name 
     final Ode ode = Ode.getInstance();
     userNameBox.addValueChangeHandler(new ValueChangeHandler<String>() {
@@ -139,6 +145,25 @@ public class ProfilePage extends Composite {
 
       });
     
+    // set up the user link
+    userLinkLabel.setText("More info link");
+    //httpLinkLabel.setText("http://");
+    // set up the code to modify database when user changes his introduction link
+    userLinkBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          final OdeAsyncCallback<Void> userUpdateCallback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void arg0) {
+              }
+          };
+         ode.getUserInfoService().storeUserLink(userLinkBox.getText(), userUpdateCallback);
+        }
+
+      });
+
     // Add styling
     cardContainer.addStyleName("gallery-app-collection");
     imageUploadBox.addStyleName("gallery-card");
@@ -152,6 +177,8 @@ public class ProfilePage extends Composite {
     userContentTitle.addStyleName("app-title");
     usernameLabel.addStyleName("profile-textlabel");
     userNameBox.addStyleName("profile-textbox");
+    userLinkLabel.addStyleName("profile-textlabel");
+    userLinkBox.addStyleName("profile-textbox");
 
     upload.addStyleName("app-image-upload");
  
@@ -172,6 +199,9 @@ public class ProfilePage extends Composite {
     majorContentCard.add(usernameLabel);
     majorContentCard.add(userNameBox);
     majorContentCard.add(updateButton);
+    majorContentCard.add(userLinkLabel);
+    //majorContentCard.add(httpLinkLabel);
+    majorContentCard.add(userLinkBox);
 
     initWidget(panel);
     
@@ -183,6 +213,7 @@ public class ProfilePage extends Composite {
           public void onSuccess(User user) {
             // Set associate GUI components
             userNameBox.setText(user.getUserName());
+            userLinkBox.setText(user.getUserLink());
             userId = user.getUserId();
             // once we get the user info and id we can show the right image
             updateUserImage(GalleryApp.getUserImageUrl(userId),imageUploadBoxInner);
