@@ -563,7 +563,11 @@ public class Form extends Activity
    *
    * @return  true if the screen is vertically scrollable
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "When checked, there will be a vertical scrollbar on the "
+    + "screen, and the height of the application can exceed the physical "
+    + "height of the device. When unchecked, the application height is "
+    + "constrained to the height of the device.")
   public boolean Scrollable() {
     return scrollable;
   }
@@ -574,7 +578,7 @@ public class Form extends Activity
    * @param scrollable  true if the screen should be vertically scrollable
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+    defaultValue = "True")
   @SimpleProperty
   public void Scrollable(boolean scrollable) {
     if (this.scrollable == scrollable && frameLayout != null) {
@@ -981,8 +985,10 @@ public class Form extends Activity
    * @param vCode the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_INTEGER,
-      defaultValue = "1")
-  @SimpleProperty(userVisible = false)
+    defaultValue = "1")
+  @SimpleProperty(userVisible = false,
+    description = "An integer value which must be incremented each time a new Android "
+    +  "Application Package File (APK) is created for the Google Play Store.")
   public void VersionCode(int vCode) {
     // We don't actually need to do anything.
   }
@@ -993,8 +999,10 @@ public class Form extends Activity
    * @param vName the version name of the application
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
-      defaultValue = "1.0")
-  @SimpleProperty(userVisible = false)
+    defaultValue = "1.0")
+  @SimpleProperty(userVisible = false,
+    description = "A string which can be changed to allow Google Play "
+    + "Store users to distinguish between different versions of the App.")
   public void VersionName(String vName) {
     // We don't actually need to do anything.
   }
@@ -1004,7 +1012,8 @@ public class Form extends Activity
    *
    * @return  width property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "Screen width (x-size).")
   public int Width() {
     return frameLayout.getWidth();
   }
@@ -1014,7 +1023,8 @@ public class Form extends Activity
    *
    * @return  height property used by the layout
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+  @SimpleProperty(category = PropertyCategory.APPEARANCE,
+    description = "Screen height (y-size).")
   public int Height() {
     return frameLayout.getHeight();
   }
