@@ -1318,15 +1318,16 @@ textarea::-webkit-input-placeholder {
   margin-bottom: 15px;
 }
 .ode-UserProfileWrapper .gallery-card {
-  height: 140px;
+  height: 160px;
 }
 
 .ode-UserProfileWrapper .app-image {
-  margin-top:5px;
+  margin-top: 15px;
   margin-left: 15px;
   
   width: 130px;
   height: 130px;
+  background: red;
 }
 
 .ode-UserProfileWrapper .gallery-card .gallery-editprompt {
@@ -1440,6 +1441,7 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-showcase .gallery-card {
   clear: both;
+  width: 100%;
 }
 .gallery-card-cover {
   height: 130px;
@@ -1584,7 +1586,8 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-editprompt {
   text-align: center;
-  color: #bebebe;
+  color: #333;
+  font-weight: normal;
   font-size: 16px;
   padding: 40px 20px;
 }
@@ -1621,7 +1624,7 @@ textarea::-webkit-input-placeholder {
   height: 130px;
 }
 .app-header .status-updating {
-  opacity: 0.1;
+  opacity: 0.5;
 }
 .app-header .app-image-uploadbox {
   width: 128px;
