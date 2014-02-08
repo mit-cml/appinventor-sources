@@ -53,7 +53,7 @@ Blockly.Yail.controls_if = function() {
     var branch = Blockly.Yail.statementToCode(this, 'ELSE') || Blockly.Yail.YAIL_FALSE;
     code += Blockly.Yail.YAIL_SPACER + Blockly.Yail.YAIL_BEGIN + branch + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   }
-  
+
   for(var i=0;i<this.elseifCount_;i++){
     code += Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   }
@@ -68,8 +68,8 @@ Blockly.Yail.controls_choose = function() {
   var thenReturn = Blockly.Yail.valueToCode(this, 'THENRETURN', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var elseReturn = Blockly.Yail.valueToCode(this, 'ELSERETURN', Blockly.Yail.ORDER_NONE)  || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_IF + test
-             + Blockly.Yail.YAIL_SPACER +  thenReturn 
-             + Blockly.Yail.YAIL_SPACER +  elseReturn 
+             + Blockly.Yail.YAIL_SPACER +  thenReturn
+             + Blockly.Yail.YAIL_SPACER +  elseReturn
              + Blockly.Yail.YAIL_CLOSE_COMBINATION;
   return [code,Blockly.Yail.ORDER_ATOMIC];
 };
@@ -89,7 +89,7 @@ Blockly.Yail.controls_forEach = function() {
   var listCode = Blockly.Yail.valueToCode(this, 'LIST', Blockly.Yail.ORDER_NONE) || emptyListCode;
   var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) ||  Blockly.Yail.YAIL_FALSE;
   return Blockly.Yail.YAIL_FOREACH + loopIndexName + Blockly.Yail.YAIL_SPACER
-         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER 
+         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
          + listCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
@@ -102,9 +102,9 @@ Blockly.Yail.controls_forRange = function() {
   var stepCode = Blockly.Yail.valueToCode(this, 'STEP', Blockly.Yail.ORDER_NONE) || 0;
   var bodyCode = Blockly.Yail.statementToCode(this, 'DO', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   return Blockly.Yail.YAIL_FORRANGE + loopIndexName + Blockly.Yail.YAIL_SPACER
-         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER 
-         + startCode + Blockly.Yail.YAIL_SPACER 
-         + endCode + Blockly.Yail.YAIL_SPACER 
+         + Blockly.Yail.YAIL_BEGIN + bodyCode + Blockly.Yail.YAIL_CLOSE_COMBINATION + Blockly.Yail.YAIL_SPACER
+         + startCode + Blockly.Yail.YAIL_SPACER
+         + endCode + Blockly.Yail.YAIL_SPACER
          + stepCode + Blockly.Yail.YAIL_CLOSE_COMBINATION;
 };
 
@@ -120,7 +120,7 @@ Blockly.Yail.controls_while = function() {
   return code;
 };
 
-// [lyn, 01/15/2013] Added 
+// [lyn, 01/15/2013] Added
 Blockly.Yail.controls_do_then_return = function() {
   var stm = Blockly.Yail.statementToCode(this, 'STM', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var value = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
@@ -128,16 +128,19 @@ Blockly.Yail.controls_do_then_return = function() {
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
-// [lyn, 01/15/2013] Added 
+ // [lyn, 01/15/2013] Added
+// adding 'ignored' here is only for the printout in Do-It.  The value will be ignored because the block shape
+// has no output
 Blockly.Yail.controls_eval_but_ignore = function() {
-  var value = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
-  return Blockly.Yail.YAIL_BEGIN + value + Blockly.Yail.YAIL_SPACER + 'null' + Blockly.Yail.YAIL_CLOSE_COMBINATION;
-}
+  var toEval = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
+  var code = Blockly.Yail.YAIL_BEGIN + toEval + Blockly.Yail.YAIL_SPACER + '"ignored"' + Blockly.Yail.YAIL_CLOSE_COMBINATION;
+  return code;
+};
 
-// [lyn, 01/15/2013] Added 
+// [lyn, 01/15/2013] Added
 Blockly.Yail.controls_nothing = function() {
   return ['*the-null-value*', Blockly.Yail.ORDER_NONE];
-}
+};
 
 Blockly.Yail.controls_openAnotherScreen = function() {
   // Open another screen
