@@ -561,7 +561,7 @@ public class YaVersion {
 
   public static final int PLAYER_COMPONENT_VERSION = 5;
 
-  public static final int SHARER_COMPONENT_VERSION = 1;
+  public static final int SHARING_COMPONENT_VERSION = 1;
 
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
