@@ -7,7 +7,11 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.errors.RuntimeError;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -57,6 +61,34 @@ public class FileUtil {
     return file.toURI().toString();
   }
 
+  /**
+   * Gets file path from a Uri (file, content)
+   * @param context Activity
+   * @param uriString the Uri string of file
+   * @return the absolute file path
+   */
+  public static String getFilePathByUri(Context context, String uriString) throws IOException
+  {
+      if(!uriString.contains("://")) return uriString;
+      String filePath="";
+      Uri uri = Uri.parse(uriString);
+      Uri filePathUri = uri;
+      if (uri.getScheme().toString().compareTo("content")==0) // Video clip (content)
+      {      
+          Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+          if (cursor.moveToFirst())
+          {
+              int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);//Instead of "MediaStore.Images.Media.DATA" can be used "_data"
+              filePathUri = Uri.parse(cursor.getString(column_index));
+              filePath = new File(filePathUri.toString()).getAbsolutePath();
+          }
+      }
+      else if (uri.getScheme().compareTo("file")==0) // file (file)
+      {
+        filePath = uriString.replace("file://", "");
+      }
+      return filePath;
+  }
   /**
    * Reads the given local file and returns the contents as a byte array.
    *
