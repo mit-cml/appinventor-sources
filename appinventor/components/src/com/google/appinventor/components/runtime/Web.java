@@ -29,7 +29,10 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
+import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -49,6 +52,7 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -689,6 +693,114 @@ public class Web extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+  /**
+   * Encodes the given file to Base64 string.
+   *
+   * @param path the file path to encode
+   * @return the encoded text
+   */
+  @SimpleFunction
+  public String Base64EncodeFile(String path) {
+    String sourcePath = (path == null) ? "" : path;
+    if (sourcePath.isEmpty()) return "";
+    try {
+      sourcePath = FileUtil.getFilePathByUri(activity, sourcePath);
+      Log.d(LOG_TAG, "Base64EncodeToText sourcePath: " + sourcePath);
+    } catch (IOException ioe) {
+      Log.e(LOG_TAG, "File uri error", ioe);
+      form.dispatchErrorOccurredEvent(this, "Base64EncodeFile",
+          ErrorMessages.ERROR_WEB_BASE64_ENCODE_FAILED, sourcePath);
+    }
+    
+    try {
+      byte[] dataIn = FileUtil.readFile(sourcePath);
+      return Base64.encodeToString(dataIn, Base64.DEFAULT);
+    } catch (IOException ioe) {
+      Log.e(LOG_TAG, "Unable to load file for base64 encoding", ioe);
+      form.dispatchErrorOccurredEvent(this, "Base64EncodeFile",
+          ErrorMessages.ERROR_WEB_BASE64_ENCODE_FAILED, sourcePath);
+      return "";
+    }
+  }
+  
+  /**
+   * Encodes the string to Base64 string.
+   *
+   * @param text text
+   * @return the encoded text
+   */
+  @SimpleFunction
+  public String Base64EncodeText(String text) {
+    byte[] data = null;
+    try {
+      data = text.getBytes("UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "Base64EncodeText",
+          ErrorMessages.ERROR_WEB_BASE64_ENCODE_FAILED, text);
+    }
+    String base64 = Base64.encodeToString(data, Base64.DEFAULT);
+    return base64;
+  }
+  
+  /**
+   * Decodes the Base64 text to binary file.
+   *
+   * @param base64Text the base64 string to decode
+   * @return the decoded file path
+   */
+  @SimpleFunction
+  public String Base64DecodeToFile(String base64Text) {
+    
+    try {
+      byte[] data = Base64.decode(base64Text, Base64.DEFAULT);
+      
+      String state = Environment.getExternalStorageState();
+      if (Environment.MEDIA_MOUNTED.equals(state)) {
+        File cacheDir = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/cache");
+        if(!cacheDir.exists()){
+          cacheDir.mkdir();
+        }
+        String filePath = cacheDir.getAbsolutePath().concat("/app_inventor_" + (new Date()).getTime() +".bin");
+        try {
+          FileUtil.writeFile(data, filePath);
+        } catch (IOException ioe) {
+          Log.e(LOG_TAG, "Unable to write file for base64 decoding", ioe);
+          form.dispatchErrorOccurredEvent(this, "Base64DecodeToFile",
+              ErrorMessages.ERROR_WEB_BASE64_DECODE_FAILED, base64Text);
+          return "";
+        }
+        return Uri.fromFile(new File(filePath)).toString();
+        
+      } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+        form.dispatchErrorOccurredEvent(this, "Base64DecodeToFile",
+            ErrorMessages.ERROR_MEDIA_EXTERNAL_STORAGE_READONLY);
+      }
+      return "";
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "Base64DecodeToFile",
+          ErrorMessages.ERROR_WEB_BASE64_DECODE_FAILED, base64Text);
+      return "";
+    }
+  }
+  
+  /**
+   * Decodes the Base64 text to text.
+   *
+   * @param text the base64 encoded text
+   * @return the decoded text
+   */
+  @SimpleFunction
+  public String Base64DecodeToText(String base64Text) {
+    byte[] data = Base64.decode(base64Text, Base64.DEFAULT);
+    String decoded = "";
+    try {
+      decoded = new String(data, "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "Base64DecodeToText",
+          ErrorMessages.ERROR_WEB_BASE64_DECODE_FAILED, base64Text);
+    }
+    return decoded;
+  }
   /**
    * Decodes the given JSON encoded value to produce a corresponding AppInventor value.
    * A JSON list [x, y, z] decodes to a list (x y z),  A JSON object with name A and value B,
