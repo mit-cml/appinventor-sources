@@ -24,6 +24,11 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.text.Html;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.inputmethod.InputMethodManager;
@@ -64,6 +69,12 @@ import android.widget.Toast;
         "<li> LogError: logs an error message to the Android log. </li>" +
         "<li> LogInfo: logs an info message to the Android log.</li>" +
         "<li> LogWarning: logs a warning message to the Android log.</li>" +
+        "<li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:" +
+        "&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, " +
+        "&lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li>" +
+        "<li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the " +
+        "available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, " +
+        "red, silver, teal, white, and yellow</li>" +
         "</ul>",
     nonVisible = true,
     iconName = "images/notifier.png")
@@ -107,7 +118,6 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     oneButtonAlert(activity, message, title, buttonText);
   }
 
-
   // This method is declared static, with an explicit activity input, so that other
   // components can use it
   public static void oneButtonAlert(Activity activity,String message, String title, String buttonText) {
@@ -116,7 +126,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setTitle(title);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setMessage(message);
+    alertDialog.setMessage(stringToHTML(message));
     alertDialog.setButton(DialogInterface.BUTTON_NEUTRAL,
         buttonText, new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
@@ -124,6 +134,11 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.show();
   }
 
+  // converts a string that includes HTML tags to a spannable string that can
+  // be included in an alert
+  private static SpannableString stringToHTML(String message) {
+    return new SpannableString(Html.fromHtml(message));
+  }
 
   /**
    * Displays an alert with two buttons that have specified text.  If cancelable is true,
@@ -167,7 +182,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
     alertDialog.setTitle(title);
     // prevents the user from escaping the dialog by hitting the Back button
     alertDialog.setCancelable(false);
-    alertDialog.setMessage(message);
+    alertDialog.setMessage(stringToHTML(message));
     alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, button1Text,
         new DialogInterface.OnClickListener() {
       public void onClick(DialogInterface dialog, int which) {
@@ -234,13 +249,13 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *                   When true, an additional CANCEL button will be added allowing user to cancel
    *                   out of dialog. On selection, will raise AfterTextInput with text of CANCEL.
    */
-  // TODO(hal):  It would be cleaner to define this in terms of oneButtonDialog and generalize
-  // oneButtonDilog so it can be used both for messages and text input.  We could have merged
+  // TODO(hal):  It would be cleaner to define this in terms of oneButtonAlert and generalize
+  // oneButtonAlert so it can be used both for messages and text input.  We could have merged
   // this method into ShowTextDialog, but that would make it harder to do the generalization.
   private void textInputDialog(String message, String title, boolean cancelable) {
     final AlertDialog alertDialog = new AlertDialog.Builder(activity).create();
     alertDialog.setTitle(title);
-    alertDialog.setMessage(message);
+    alertDialog.setMessage(stringToHTML(message));
     // Set an EditText view to get user input
     final EditText input = new EditText(activity);
     alertDialog.setView(input);
@@ -322,7 +337,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_COLOR,
       defaultValue = Component.DEFAULT_VALUE_COLOR_DKGRAY)
-  @SimpleProperty(description="Specifies the alert's background color.")
+  @SimpleProperty(description="Specifies the background color for alerts (not dialogs).")
   public void BackgroundColor(int argb) {
     backgroundColor = argb;
   }
@@ -332,7 +347,7 @@ public final class Notifier extends AndroidNonvisibleComponent implements Compon
    *
    * @return  text RGB color with alpha
    */
-  @SimpleProperty(description = "Specifies the alert's text color.",
+  @SimpleProperty(description = "Specifies the text color for alerts (not dialogs).",
       category = PropertyCategory.APPEARANCE)
   public int TextColor() {
     return textColor;

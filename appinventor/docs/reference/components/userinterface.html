@@ -782,16 +782,16 @@
 
 <h2 id="Notifier">Notifier</h2>
 
-<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li></ul></p>
+<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
 
 <h3>Properties</h3>
 <dl>
   <dt><code>BackgroundColor</code></dt>
-  <dd>Specifies the alert's background color.</dd>
+  <dd>Specifies the background color for alerts (not dialogs).</dd>
   <dt><code>NotifierLength</code> (designer only)</dt>
   <dd>specifies the length of time that the alert is shown -- either "short" or "long".</dd>
   <dt><code>TextColor</code></dt>
-  <dd>Specifies the alert's text color.</dd>
+  <dd>Specifies the text color for alerts (not dialogs).</dd>
 </dl>
 
 <h3>Events</h3>
@@ -813,7 +813,7 @@
   <dt><code>ShowAlert(text notice)</code></dt>
   <dd>Display a temporary notification</dd>
   <dt><code>ShowChooseDialog(text message, text title, text button1Text, text button2Text, boolean cancelable)</code></dt>
-  <dd>Shows a dialog box with two buttons, form which the user can choose.  If cancelable is true there will be an additional CANCEL button. Pressing a button will raise the AfterChoosing event.  The "choice" parameter to AfterChoosing will be the text on the button that was pressed, or "Cancel" if the  CANCEL button was pressed.</dd>
+  <dd>Shows a dialog box with two buttons, from which the user can choose.  If cancelable is true there will be an additional CANCEL button. Pressing a button will raise the AfterChoosing event.  The "choice" parameter to AfterChoosing will be the text on the button that was pressed, or "Cancel" if the  CANCEL button was pressed.</dd>
   <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
   <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
   <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>

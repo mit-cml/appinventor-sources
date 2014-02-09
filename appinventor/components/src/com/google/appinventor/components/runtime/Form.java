@@ -27,6 +27,7 @@ import android.content.res.Configuration;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.Html;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -709,7 +710,7 @@ public class Form extends Activity
    */
   @SimpleProperty(category = PropertyCategory.APPEARANCE,
       description = "Information about the screen.  It appears when \"About this Application\" "
-      + "is selected from the system menu. Use it to tell users about your app.  In multiple "
+      + "is selected from the system menu. Use it to inform people about your app.  In multiple "
       + "screen apps, each screen has its own AboutScreen info.")
   public String AboutScreen() {
     return aboutScreen;
@@ -1342,8 +1343,9 @@ public class Form extends Activity
   }
 
   private void showAboutApplicationNotification() {
-    String title = "Invented with App Inventor\n http://appinventor.mit.edu";
-    String message = aboutScreen;
+    String title = "About This App";
+    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
+    String message = aboutScreen + tagline;
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
