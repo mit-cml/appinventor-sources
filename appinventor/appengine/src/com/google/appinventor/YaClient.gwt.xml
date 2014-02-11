@@ -3,7 +3,7 @@
 <module rename-to='ode'>
   <entry-point class="com.google.appinventor.client.Ode" />
 
-  <!-- speed up compilation for testing. comment out the next two lines to compile 
+  <!-- speed up compilation for testing. comment out the next two lines to compile
        all permutations -->
   <!--
   <inherits name='com.google.gwt.user.UserAgent'/>
@@ -15,6 +15,7 @@
 
   <!-- inherits -->
   <inherits name="com.google.gwt.user.User" />
+  <inherits name="com.google.gwt.i18n.I18N"/>
   <inherits name="com.google.gwt.json.JSON" />
   <inherits name="com.google.gwt.libideas.ImmutableResources" />
   <inherits name="com.google.gwt.resources.Resources" />
@@ -38,8 +39,8 @@
   <servlet path="/upload" class="com.google.appinventor.server.UploadServlet" />
   <servlet path="/userinfo" class="com.google.appinventor.server.UserInfoServiceImpl" />
   <servlet path="/webstartfile" class="com.google.appinventor.server.WebStartFileServlet" />
-  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" /> 
-  
+  <servlet path="/webstartjnlp" class="com.google.appinventor.server.WebStartJnlpServlet" />
+
   <!-- srcs -->
   <source path="client"/>
   <source path="client/boxes"/>
@@ -100,5 +101,10 @@
     <when-type-assignable class="com.google.gwt.user.client.rpc.RemoteService" />
   </generate-with>
 
-  <extend-property name="locale" values="de"/>
+  <!-- English language, independent of country -->
+  <extend-property name="locale" values="en"/>
+
+  <!-- Chinese in Taiwan -->
+  <extend-property name="locale" values="zh_TW"/>
+
 </module>

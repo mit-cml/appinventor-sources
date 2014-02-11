@@ -19,7 +19,8 @@ Blockly.Blocks['logic_boolean'] = {
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendDummyInput().appendField(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'BOOL');
     var thisBlock = this;
     this.setTooltip(function() {
       var op = thisBlock.getFieldValue('BOOL');
@@ -64,7 +65,8 @@ Blockly.Blocks['logic_false'] = {
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendDummyInput().appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_boolean.OPERATORS), 'BOOL');
+    this.appendDummyInput()
+      .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_boolean.OPERATORS), 'BOOL');
     this.setFieldValue('FALSE','BOOL');
     var thisBlock = this;
     this.setTooltip(function() {
@@ -84,7 +86,9 @@ Blockly.Blocks['logic_negate'] = {
   init : function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('BOOL').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT)).appendField('not');
+    this.appendValueInput('BOOL')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT);
     this.setTooltip(Blockly.Msg.LANG_LOGIC_NEGATE_TOOLTIP);
   },
   typeblock: [{ translatedName:Blockly.Msg.LANG_LOGIC_NEGATE_INPUT_NOT }]
@@ -101,7 +105,8 @@ Blockly.Blocks['logic_compare'] = {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('A');
-    this.appendValueInput('B').appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('B')
+      .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -110,16 +115,13 @@ Blockly.Blocks['logic_compare'] = {
       return Blockly.Blocks.logic_compare.TOOLTIPS[mode];
     });
   },
-  //TODO (user) compare has not been internationalized yet
   // Potential clash with Math =, so using 'logic equal' for now
-  typeblock: [{ translatedName: 'logic equal' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_LOGIC_COMPARE_TRANSLATED_NAME }]
 };
 
 Blockly.Blocks.logic_compare.TOOLTIPS = {
-  EQ: 'Tests whether two things are equal. \n' +
-        'The things being compared can be any thing, not only numbers.',
-  NEQ: 'Tests whether two things are not equal. \n' +
-        'The things being compared can be any thing, not only numbers.'
+  EQ: Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_EQ,
+  NEQ: Blockly.Msg.LANG_LOGIC_COMPARE_TOOLTIP_NEQ
 };
 
 Blockly.Blocks.logic_compare.HELPURLS = {
@@ -128,8 +130,8 @@ Blockly.Blocks.logic_compare.HELPURLS = {
 };
 
 Blockly.Blocks.logic_compare.OPERATORS =
-  [['=', 'EQ'],
-   ['\u2260', 'NEQ']];
+  [[Blockly.Msg.LANG_LOGIC_COMPARE_EQ, 'EQ'],
+   [Blockly.Msg.LANG_LOGIC_COMPARE_NEQ, 'NEQ']];
 
 Blockly.Blocks['logic_operation'] = {
   // Logical operations: 'and', 'or'.
@@ -137,8 +139,11 @@ Blockly.Blocks['logic_operation'] = {
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT)).appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
+    this.appendValueInput('A')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT));
+    this.appendValueInput('B')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+      .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.
     var thisBlock = this;
@@ -185,8 +190,11 @@ Blockly.Blocks['logic_or'] = {
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('A').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT));
-    this.appendValueInput('B').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT)).appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_operation.OPERATORS), 'OP');
+    this.appendValueInput('A')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT));
+    this.appendValueInput('B')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.INPUT))
+      .appendField(new Blockly.FieldDropdown(Blockly.Blocks.logic_operation.OPERATORS), 'OP');
     this.setFieldValue('OR','OP');
     this.setInputsInline(true);
     // Assign 'this' to a variable for use in the tooltip closure below.

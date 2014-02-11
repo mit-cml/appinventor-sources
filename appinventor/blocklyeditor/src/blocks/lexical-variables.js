@@ -405,8 +405,7 @@ Blockly.Blocks['local_declaration_statement'] = {
     }
         */
   },
-  //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in do' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TRANSLATED_NAME }]
 };
 
 
@@ -439,8 +438,8 @@ Blockly.Blocks['local_declaration_expression'] = {
   getVars: Blockly.Blocks.local_declaration_statement.getVars,
   declaredNames: Blockly.Blocks.local_declaration_statement.declaredNames,
   renameVar: Blockly.Blocks.local_declaration_statement.renameVar,
-  //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in return' }]
+
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TRANSLATED_NAME }]
 };
 
 Blockly.Blocks['local_mutatorcontainer'] = {
@@ -450,7 +449,7 @@ Blockly.Blocks['local_mutatorcontainer'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES);
     this.appendStatementInput('STACK');
-    this.setTooltip('');
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TOOLTIP);
     this.contextMenu = false;
   },
   // [lyn. 11/24/12] Set procBlock associated with this container.

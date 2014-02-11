@@ -401,10 +401,10 @@ Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MEDIAN = 'median';
 Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MODE = 'modes';
 Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_STD_DEV = 'standard deviation';
 Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_RANDOM = 'random item';
-Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Return the sum of all the numbers in the list.';
+Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_SUM = 'Return the sum of all the numbers in the list.';*/
 Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN = 'Return the smallest of its arguments..';
 Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX = 'Return the largest of its arguments..';
-Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Return the arithmetic mean of the list.';
+/*Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_AVERAGE = 'Return the arithmetic mean of the list.';
 Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MEDIAN = 'Return the median number in the list.';
 Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MODE = 'Return a list of the most common item(s) in the list.';
 Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_STD_DEV = 'Return the standard deviation of the list.';
@@ -431,6 +431,7 @@ Blockly.Msg.LANG_MATH_RANDOM_INT_HELPURL = 'http://appinventor.mit.edu/explore/a
 Blockly.Msg.LANG_MATH_RANDOM_INT_TITLE_RANDOM = 'random integer';
 Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_FROM = 'from';
 Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT_TO = 'to';
+Blockly.Msg.LANG_MATH_RANDOM_INT_INPUT = 'random integer from %1 to %2';
 Blockly.Msg.LANG_MATH_RANDOM_INT_TOOLTIP = 'Returns a random integer between the upper bound\n' +
   'and the lower bound. The bounds will be clipped to be smaller\n' +
   'than 2**30.';

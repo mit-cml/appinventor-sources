@@ -308,9 +308,9 @@ Blockly.Msg.MATH_ADDITION_SYMBOL = '+';
 Blockly.Msg.MATH_SUBTRACTION_SYMBOL = '-';
 /// math - The binary operation indicating that the left operand should be divided by
 /// the right operand.
-Blockly.Msg.MATH_DIVISION_SYMBOL = '÷';
+Blockly.Msg.MATH_DIVISION_SYMBOL = '��';
 /// math - The symbol for the binary operation multiplication.
-Blockly.Msg.MATH_MULTIPLICATION_SYMBOL = '×';
+Blockly.Msg.MATH_MULTIPLICATION_SYMBOL = '��';
 /// math - The symbol for the binary operation exponentiation.  Specifically, if the
 /// value of the left operand is L and the value of the right operand (the exponent) is
 /// R, multiply L by itself R times.  (Fractional and negative exponents are also legal.)
@@ -388,7 +388,7 @@ Blockly.Msg.MATH_TRIG_TOOLTIP_ATAN = 'Return the arctangent of a number.';
 /// url - Information about the mathematical constants \u0026pi;, e, the golden ratio (\u0026phi;), \u0026radic; 2, \u0026radic; 1/2, and infinity (\u0026infin;).
 Blockly.Msg.MATH_CONSTANT_HELPURL = 'https://en.wikipedia.org/wiki/Mathematical_constant';
 /// tooltip - Provides the specified [https://en.wikipedia.org/wiki/Mathematical_constant mathematical constant].
-Blockly.Msg.MATH_CONSTANT_TOOLTIP = 'Return one of the common constants: π (3.141…), e (2.718…), φ (1.618…), sqrt(2) (1.414…), sqrt(½) (0.707…), or ∞ (infinity).';
+Blockly.Msg.MATH_CONSTANT_TOOLTIP = 'Return one of the common constants: �� (3.141���), e (2.718���), �� (1.618���), sqrt(2) (1.414���), sqrt(��) (0.707���), or ��� (infinity).';
 /// dropdown - A number is '''even''' if it is a multiple of 2.  For example, 4 is even (yielding true), but 3 is not (false).
 Blockly.Msg.MATH_IS_EVEN = 'is even';
 /// dropdown - A number is '''odd''' if it is not a multiple of 2.  For example, 3 is odd (yielding true), but 4 is not (false).  The opposite of "odd" is "even".
@@ -467,7 +467,7 @@ Blockly.Msg.MATH_ONLIST_TOOLTIP_RANDOM = 'Return a random element from the list.
 /// url - information about the modulo (remainder) operation.
 Blockly.Msg.MATH_MODULO_HELPURL = 'https://en.wikipedia.org/wiki/Modulo_operation';
 /// block text - Title of block providing the remainder when dividing the first numerical input by the second.  For example, the remainder of 10 divided by 3 is 1.\n\nParameters:\n* %1 - the dividend (10, in our example)\n* %2 - the divisor (3 in our example).
-Blockly.Msg.MATH_MODULO_TITLE = 'remainder of %1 ÷ %2';
+Blockly.Msg.MATH_MODULO_TITLE = 'remainder of %1 �� %2';
 /// tooltip - For example, the remainder of 10 divided by 3 is 1.
 Blockly.Msg.MATH_MODULO_TOOLTIP = 'Return the remainder from dividing the two numbers.';
 

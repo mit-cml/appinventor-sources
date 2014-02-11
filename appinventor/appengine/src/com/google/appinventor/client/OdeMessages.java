@@ -11,6 +11,9 @@ import com.google.gwt.i18n.client.Messages;
  * I18n strings for {@link Ode}.
  *
  */
+//@LocalizableResource.Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
+//@LocalizableResource.DefaultLocale("en_US")
+
 public interface OdeMessages extends Messages {
   // Used in multiple files
 
@@ -69,6 +72,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Date Modified")
   @Description("Header for date modified column of project table.")
   String projectDateModifiedHeader();
+
+  @DefaultMessage("Save")
+  @Description("Label of the button for save")
+  String saveButton();
+
+  @DefaultMessage("Save As")
+  @Description("Label of the button for save as")
+  String saveAsButton();
 
   @DefaultMessage("Checkpoint ...")
   @Description("Label of the button for checkpoint")
@@ -136,6 +147,27 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor when the it is already open")
   String blocksEditorIsOpenButton();
 
+  // Switch Language Buttons
+  @DefaultMessage("Language")
+  @Description("Label of the button for switching language")
+  String switchLanguageButton();
+
+  @DefaultMessage("English")
+  @Description("Label of the button for switching language to English")
+  String switchLanguageEnglishButton();
+
+  @DefaultMessage("Chinese TW")
+  @Description("Label of the button for switching language to Chinese TW")
+  String switchLanguageChineseTWButton();
+
+  @DefaultMessage("German")
+  @Description("Label of the button for switching language to German")
+  String switchLanguageGermanButton();
+
+  @DefaultMessage("Vietnamese")
+  @Description("Label of the button for switching language to Vietnamese")
+  String switchLanguageVietnameseButton();
+
   // Used in MotdFetcher.java
 
   @DefaultMessage("Failed to contact server to get the MOTD.")
@@ -144,6 +176,7 @@ public interface OdeMessages extends Messages {
 
   // Used in Ode.java
 
+  // TODO(user): Replace with commented version once we're ready
   @DefaultMessage("MIT App Inventor 2")
   @Description("Title for App Inventor")
   String titleYoungAndroid();
@@ -352,7 +385,44 @@ public interface OdeMessages extends Messages {
   @Description("Label on built-in-blocks branch of block selector tree")
   String builtinBlocksLabel();
 
+  @DefaultMessage("Control")
+  @Description("Label on built-in-Control-blocks branch of block selector tree")
+  String builtinControlLabel();
+  
+  @DefaultMessage("Logic")
+  @Description("Label on built-in-Logic-blocks branch of block selector tree")
+  String builtinLogicLabel();
+  
+  @DefaultMessage("Text")
+  @Description("Label on built-in-Text-blocks branch of block selector tree")
+  String builtinTextLabel();
+  
+  @DefaultMessage("Lists")
+  @Description("Label on built-in-Lists-blocks branch of block selector tree")
+  String builtinListsLabel();
+  
+  @DefaultMessage("Colors")
+  @Description("Label on built-in-Colors-blocks branch of block selector tree")
+  String builtinColorsLabel();
+  
+  @DefaultMessage("Variables")
+  @Description("Label on built-in-Variables-blocks branch of block selector tree")
+  String builtinVariablesLabel();
+  
+  @DefaultMessage("Procedures")
+  @Description("Label on built-in-Procedures-blocks branch of block selector tree")
+  String builtinProceduresLabel();
+  
+  @DefaultMessage("Any component")
+  @Description("Label on any-component branch of block selector tree")
+  String anyComponentLabel();
+  
+  @DefaultMessage("Any ")
+  @Description("None")
+  String textAnyComponentLabel();
+
   // Used in boxes/ViewerBox.java
+
   @DefaultMessage("Viewer")
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
@@ -901,7 +971,7 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("New Project")
   @Description("Label of the button for creating a new project")
-    String newButton();
+  String newButton();
 
   @DefaultMessage("Export keystore")
   @Description("Label of the button for export keystore")
@@ -1021,8 +1091,6 @@ public interface OdeMessages extends Messages {
   @Description("Confirmation message for delete keystore")
   String confirmDeleteKeystore();
 
-
-
   // Used in output/OdeLog.java
 
   @DefaultMessage("Clear")
@@ -1099,7 +1167,7 @@ public interface OdeMessages extends Messages {
   String fileUploadWizardCaption();
 
   @DefaultMessage("File names can contain only unaccented letters, numbers, and the characters " +
-                  "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
+      "\"-\", \"_\", \".\", \"!\", \"~\", \"*\", \"(\", and \")\"")
   @Description("Error message when file name contains characters that would require URL encoding.")
   String malformedFilename();
 
@@ -1262,6 +1330,8 @@ public interface OdeMessages extends Messages {
   @Description("Message providing details about starting the emulator connection.")
   String emulatorButton();
 
+  // Use in component pallette
+  // Palette components name
   @DefaultMessage("USB")
   @Description("Message providing details about starting a USB connection.")
   String usbButton();
@@ -1276,8 +1346,699 @@ public interface OdeMessages extends Messages {
 
   // This error message is displayed as HTML
   @DefaultMessage("App Inventor is unable to compile this project.  " +
-  "<br /> The compiler error output was <br /> {0}.")
+      "<br /> The compiler error output was <br /> {0}.")
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  // This error message is displayed as HTML
+
+  @DefaultMessage("User Interface")
+  @Description("")
+  String UIComponentPallette();
+
+  @DefaultMessage("Layout")
+  @Description("")
+  String layoutComponentPallette();
+
+  @DefaultMessage("Media")
+  @Description("")
+  String mediaComponentPallette();
+
+  @DefaultMessage("Drawing and Animation")
+  @Description("")
+  String drawanimationComponentPallette();
+
+  @DefaultMessage("Sensors")
+  @Description("")
+  String sensorsComponentPallette();
+  
+  @DefaultMessage("Social")
+  @Description("")
+  String socialComponentPallette();
+
+  @DefaultMessage("Storage")
+  @Description("")
+  String storageComponentPallette();
+
+  @DefaultMessage("Math")
+  @Description("Label on built-in-Math-blocks branch of block selector tree")
+  String builtinMathLabel();
+
+  @DefaultMessage("Connectivity")
+  @Description("")
+  String connectivityComponentPallette();
+  
+  @DefaultMessage("LEGO\u00AE MINDSTORMS\u00AE")
+  @Description("")
+  String legoComponentPallette();
+
+  @DefaultMessage("Experimental")
+  @Description("")
+  String experimentalComponentPallette();
+
+  @DefaultMessage("For internal use only")
+  @Description("")
+  String internalUseComponentPallette();
+
+  @DefaultMessage("Uninitialized")
+  @Description("")
+  String uninitializedComponentPallette();
+
+  // UI Pallette
+  @DefaultMessage("Button")
+  @Description("")
+  String buttonComponentPallette();
+  
+  @DefaultMessage("Canvas")
+  @Description("")
+  String canvasComponentPallette();
+  
+  @DefaultMessage("CheckBox")
+  @Description("")
+  String checkBoxComponentPallette();
+  
+  @DefaultMessage("Clock")
+  @Description("")
+  String clockComponentPallette();
+  
+  @DefaultMessage("Image")
+  @Description("")
+  String imageComponentPallette();
+  
+  @DefaultMessage("Label")
+  @Description("")
+  String labelComponentPallette();
+  
+  @DefaultMessage("ListPicker")
+  @Description("")
+  String listPickerComponentPallette();
+  
+  @DefaultMessage("PasswordTextBox")
+  @Description("")
+  String passwordTextBoxComponentPallette();
+  
+  @DefaultMessage("TextBox")
+  @Description("")
+  String textBoxComponentPallette();
+  
+  @DefaultMessage("TinyDB")
+  @Description("")
+  String tinyDBComponentPallette();
+  
+  // Media Pallette
+  @DefaultMessage("Camcorder")
+  @Description("")
+  String camcorderComponentPallette();
+  
+  @DefaultMessage("Camera")
+  @Description("")
+  String cameraComponentPallette();
+  
+  @DefaultMessage("ImagePicker")
+  @Description("")
+  String imagePickerComponentPallette();
+  
+  @DefaultMessage("Player")
+  @Description("")
+  String playerComponentPallette();
+  
+  @DefaultMessage("Sound")
+  @Description("")
+  String soundComponentPallette();
+  
+  @DefaultMessage("VideoPlayer")
+  @Description("")
+  String videoPlayerComponentPallette();
+  
+  // Animation
+  @DefaultMessage("Ball")
+  @Description("")
+  String ballComponentPallette();
+  
+  @DefaultMessage("ImageSprite")
+  @Description("")
+  String imageSpriteComponentPallette();
+  
+  // Social
+  @DefaultMessage("ContactPicker")
+  @Description("")
+  String contactPickerComponentPallette();
+  
+  @DefaultMessage("EmailPicker")
+  @Description("")
+  String emailPickerComponentPallette();
+  
+  @DefaultMessage("PhoneCall")
+  @Description("")
+  String phoneCallComponentPallette();
+  
+  @DefaultMessage("PhoneNumberPicker")
+  @Description("")
+  String phoneNumberPickerComponentPallette();
+  
+  @DefaultMessage("Texting")
+  @Description("")
+  String textingComponentPallette();
+  
+  @DefaultMessage("Twitter")
+  @Description("")
+  String twitterComponentPallette();
+  
+  // Sensor
+  @DefaultMessage("AccelerometerSensor")
+  @Description("")
+  String accelerometerSensorComponentPallette();
+  
+  @DefaultMessage("LocationSensor")
+  @Description("")
+  String locationSensorComponentPallette();
+  
+  @DefaultMessage("OrientationSensor")
+  @Description("")
+  String orientationSensorComponentPallette();
+ 
+  // Screen Arrangement
+  @DefaultMessage("HorizontalArrangement")
+  @Description("")
+  String horizontalArrangementComponentPallette();
+  
+  @DefaultMessage("TableArrangement")
+  @Description("")
+  String tableArrangementComponentPallette();
+  
+  @DefaultMessage("VerticalArrangement")
+  @Description("")
+  String verticalArrangementComponentPallette();
+  
+  // Lego Mindstorms
+  @DefaultMessage("NxtColorSensor")
+  @Description("")
+  String nxtColorSensorComponentPallette();
+  
+  @DefaultMessage("NxtDirectCommands")
+  @Description("")
+  String nxtDirectCommandsComponentPallette();
+  
+  @DefaultMessage("NxtDrive")
+  @Description("")
+  String nxtDriveComponentPallette();
+ 
+  @DefaultMessage("NxtLightSensor")
+  @Description("")
+  String nxtLightSensorComponentPallette();
+  
+  @DefaultMessage("NxtSoundSensor")
+  @Description("")
+  String nxtSoundSensorComponentPallette();
+  
+  @DefaultMessage("NxtTouchSensor")
+  @Description("")
+  String nxtTouchSensorComponentPallette();
+  
+  @DefaultMessage("NxtUltrasonicSensor")
+  @Description("")
+  String nxtUltrasonicSensorComponentPallette();
+  
+  // Other stuff
+  @DefaultMessage("ActivityStarter")
+  @Description("")
+  String activityStarterComponentPallette();
+  
+  @DefaultMessage("BarcodeScanner")
+  @Description("")
+  String barcodeScannerComponentPallette();
+  
+  @DefaultMessage("BluetoothClient")
+  @Description("")
+  String bluetoothClientComponentPallette();
+ 
+  @DefaultMessage("BluetoothServer")
+  @Description("")
+  String bluetoothServerComponentPallette();
+  
+  @DefaultMessage("Notifier")
+  @Description("")
+  String notifierComponentPallette();
+  
+  @DefaultMessage("SpeechRecognizer")
+  @Description("")
+  String speechRecognizerComponentPallette();
+  
+  @DefaultMessage("TextToSpeech")
+  @Description("")
+  String textToSpeechComponentPallette();
+  
+  @DefaultMessage("TinyWebDB")
+  @Description("")
+  String tinyWebDBComponentPallette();
+  
+  @DefaultMessage("Web")
+  @Description("")
+  String webComponentPallette();
+  
+  // Not ready for prime time
+  @DefaultMessage("FusiontablesControl")
+  @Description("")
+  String fusiontablesControlComponentPallette();
+  
+  @DefaultMessage("GameClient")
+  @Description("")
+  String gameClientComponentPallette();
+  
+  @DefaultMessage("SoundRecorder")
+  @Description("")
+  String soundRecorderComponentPallette();
+ 
+  @DefaultMessage("Voting")
+  @Description("")
+  String votingComponentPallette();
+  
+  @DefaultMessage("WebViewer")
+  @Description("")
+  String webViewerComponentPallette();
+  
+  // Component Properties 
+  @DefaultMessage("AboveRangeEventEnabled")
+  @Description("")
+  String AboveRangeEventEnabledProperties();
+  
+  @DefaultMessage("Action")
+  @Description("")
+  String ActionProperties();
+  
+  @DefaultMessage("ActivityClass")
+  @Description("")
+  String ActivityClassProperties();
+ 
+  @DefaultMessage("ActivityPackage")
+  @Description("")
+  String ActivityPackageProperties();
+  
+  @DefaultMessage("AlignHorizontal")
+  @Description("")
+  String AlignHorizontalProperties();
+  
+  @DefaultMessage("AlignVertical")
+  @Description("")
+  String AlignVerticalProperties();
+  
+  @DefaultMessage("AllowCookies")
+  @Description("")
+  String AllowCookiesProperties();
+  
+  @DefaultMessage("ApiKey")
+  @Description("")
+  String ApiKeyProperties();
+ 
+  @DefaultMessage("BackgroundColor")
+  @Description("")
+  String BackgroundColorProperties();
+  
+  @DefaultMessage("BackgroundImage")
+  @Description("")
+  String BackgroundImageProperties();
+  
+  @DefaultMessage("BelowRangeEventEnabled")
+  @Description("")
+  String BelowRangeEventEnabledProperties();
+  
+  @DefaultMessage("BluetoothClient")
+  @Description("")
+  String BluetoothClientProperties();
+  
+  @DefaultMessage("BottomOfRange")
+  @Description("")
+  String BottomOfRangeProperties();
+ 
+  @DefaultMessage("CalibrateStrideLength")
+  @Description("")
+  String CalibrateStrideLengthProperties();
+  
+  @DefaultMessage("CharacterEncoding")
+  @Description("")
+  String CharacterEncodingProperties();
+  
+  @DefaultMessage("Checked")
+  @Description("")
+  String CheckedProperties();
+  
+  @DefaultMessage("CloseScreenAnimation")
+  @Description("")
+  String CloseScreenAnimationProperties();
+  
+  @DefaultMessage("ColorChangedEventEnabled")
+  @Description("")
+  String ColorChangedEventEnabledProperties();
+ 
+  @DefaultMessage("Columns")
+  @Description("")
+  String ColumnsProperties();
+  
+  @DefaultMessage("ConsumerKey")
+  @Description("")
+  String ConsumerKeyProperties();
+  
+  @DefaultMessage("ConsumerSecret")
+  @Description("")
+  String ConsumerSecretProperties();
+  
+  @DefaultMessage("Country")
+  @Description("")
+  String CountryProperties();
+  
+  @DefaultMessage("DataType")
+  @Description("")
+  String DataTypeProperties();
+  
+  @DefaultMessage("DataUri")
+  @Description("")
+  String DataUriProperties();
+ 
+  @DefaultMessage("DelimiterByte")
+  @Description("")
+  String DelimiterByteProperties();
+  
+  @DefaultMessage("DetectColor")
+  @Description("")
+  String DetectColorProperties();
+  
+  @DefaultMessage("DistanceInterval")
+  @Description("")
+  String DistanceIntervalProperties();
+  
+  @DefaultMessage("DriveMotors")
+  @Description("")
+  String DriveMotorsProperties();
+  
+  @DefaultMessage("Enabled")
+  @Description("")
+  String EnabledProperties();
+ 
+  @DefaultMessage("ExtraKey")
+  @Description("")
+  String ExtraKeyProperties();
+  
+  @DefaultMessage("ExtraValue")
+  @Description("")
+  String ExtraValueProperties();
+  
+  @DefaultMessage("FollowLinks")
+  @Description("")
+  String FollowLinksProperties();
+  
+  @DefaultMessage("FontBold")
+  @Description("")
+  String FontBoldProperties();
+  
+  @DefaultMessage("FontItalic")
+  @Description("")
+  String FontItalicProperties();
+  
+  @DefaultMessage("FontSize")
+  @Description("")
+  String FontSizeProperties();
+ 
+  @DefaultMessage("FontTypeface")
+  @Description("")
+  String FontTypefaceProperties();
+  
+  @DefaultMessage("GameId")
+  @Description("")
+  String GameIdProperties();
+  
+  @DefaultMessage("GenerateColor")
+  @Description("")
+  String GenerateColorProperties();
+  
+  @DefaultMessage("GenerateLight")
+  @Description("")
+  String GenerateLightProperties();
+  
+  @DefaultMessage("GoogleVoiceEnabled")
+  @Description("")
+  String GoogleVoiceEnabledProperties();
+  
+  @DefaultMessage("Heading")
+  @Description("")
+  String HeadingProperties();
+ 
+  @DefaultMessage("HighByteFirst")
+  @Description("")
+  String HighByteFirstProperties();
+  
+  @DefaultMessage("Hint")
+  @Description("")
+  String HintProperties();
+  
+  @DefaultMessage("HomeUrl")
+  @Description("")
+  String HomeUrlProperties();
+  
+  @DefaultMessage("Icon")
+  @Description("")
+  String IconProperties();
+  
+  @DefaultMessage("Image")
+  @Description("")
+  String ImageProperties();
+ 
+  @DefaultMessage("Interval")
+  @Description("")
+  String IntervalProperties();
+  
+  @DefaultMessage("IsLooping")
+  @Description("")
+  String IsLoopingProperties();
+  
+  @DefaultMessage("Language")
+  @Description("")
+  String LanguageProperties();
+  
+  @DefaultMessage("LineWidth")
+  @Description("")
+  String LineWidthProperties();
+  
+  @DefaultMessage("Message")
+  @Description("")
+  String MessageProperties();
+  
+  @DefaultMessage("MinimumInterval")
+  @Description("")
+  String MinimumIntervalProperties();
+ 
+  @DefaultMessage("MultiLine")
+  @Description("")
+  String MultiLineProperties();
+  
+  @DefaultMessage("NumbersOnly")
+  @Description("")
+  String NumbersOnlyProperties();
+  
+  @DefaultMessage("OpenScreenAnimation")
+  @Description("")
+  String OpenScreenAnimationProperties();
+  
+  @DefaultMessage("PaintColor")
+  @Description("")
+  String PaintColorProperties();
+  
+  @DefaultMessage("PhoneNumber")
+  @Description("")
+  String PhoneNumberProperties();
+  
+  @DefaultMessage("Picture")
+  @Description("")
+  String PictureProperties();
+ 
+  @DefaultMessage("PressedEventEnabled")
+  @Description("")
+  String PressedEventEnabledProperties();
+  
+  @DefaultMessage("PromptforPermission")
+  @Description("")
+  String PromptforPermissionProperties();
+  
+  @DefaultMessage("Query")
+  @Description("")
+  String QueryProperties();
+  
+  @DefaultMessage("Radius")
+  @Description("")
+  String RadiusProperties();
+  
+  @DefaultMessage("ReceivingEnabled")
+  @Description("")
+  String ReceivingEnabledProperties();
+ 
+  @DefaultMessage("ReleasedEventEnabled")
+  @Description("")
+  String ReleasedEventEnabledProperties();
+  
+  @DefaultMessage("ResponseFileName")
+  @Description("")
+  String ResponseFileNameProperties();
+  
+  @DefaultMessage("ResultName")
+  @Description("")
+  String ResultNameProperties();
+  
+  @DefaultMessage("Rows")
+  @Description("")
+  String RowsProperties();
+  
+  @DefaultMessage("SaveResponse")
+  @Description("")
+  String SaveResponseProperties();
+  
+  @DefaultMessage("SensorPort")
+  @Description("")
+  String SensorPortProperties();
+  
+  @DefaultMessage("ScreenOrientation")
+  @Description("")
+  String ScreenOrientationProperties();
+  
+  @DefaultMessage("Secure")
+  @Description("")
+  String SecureProperties();
+ 
+  @DefaultMessage("ServiceURL")
+  @Description("")
+  String ServiceURLProperties();
+  
+  @DefaultMessage("Scrollable")
+  @Description("")
+  String ScrollableProperties();
+  
+  @DefaultMessage("Shape")
+  @Description("")
+  String ShapeProperties();
+  
+  @DefaultMessage("Source")
+  @Description("")
+  String SourceProperties();
+  
+  @DefaultMessage("Speed")
+  @Description("")
+  String SpeedProperties();
+  
+  @DefaultMessage("StopBeforeDisconnect")
+  @Description("")
+  String StopBeforeDisconnectProperties();
+ 
+  @DefaultMessage("StopDetectionTimeout")
+  @Description("")
+  String StopDetectionTimeoutProperties();
+  
+  @DefaultMessage("StrideLength")
+  @Description("")
+  String StrideLengthProperties();
+  
+  @DefaultMessage("Text")
+  @Description("")
+  String TextProperties();
+  
+  @DefaultMessage("TextAlignment")
+  @Description("")
+  String TextAlignmentProperties();
+  
+  @DefaultMessage("TextColor")
+  @Description("")
+  String TextColorProperties();
+ 
+  @DefaultMessage("TimerAlwaysFires")
+  @Description("")
+  String TimerAlwaysFiresProperties();
+  
+  @DefaultMessage("TimerEnabled")
+  @Description("")
+  String TimerEnabledProperties();
+  
+  @DefaultMessage("TimerInterval")
+  @Description("")
+  String TimerIntervalProperties();
+  
+  @DefaultMessage("Title")
+  @Description("")
+  String TitleProperties();
+  
+  @DefaultMessage("TopOfRange")
+  @Description("")
+  String TopOfRangeProperties();
+  
+  @DefaultMessage("Url")
+  @Description("")
+  String UrlProperties();
+  
+  @DefaultMessage("UseGPS")
+  @Description("")
+  String UseGPSProperties();
+  
+  @DefaultMessage("UsesLocationVisible")
+  @Description("")
+  String UsesLocationVisibleProperties();
+ 
+  @DefaultMessage("VersionCode")
+  @Description("")
+  String VersionCodeProperties();
+  
+  @DefaultMessage("VersionName")
+  @Description("")
+  String VersionNameProperties();
+  
+  @DefaultMessage("Visible")
+  @Description("")
+  String VisibleProperties();
+  
+  @DefaultMessage("Volume")
+  @Description("")
+  String VolumeProperties();
+  
+  @DefaultMessage("WheelDiameter")
+  @Description("")
+  String WheelDiameterProperties();
+  
+  @DefaultMessage("WithinRangeEventEnabled")
+  @Description("")
+  String WithinRangeEventEnabledProperties();
+ 
+  @DefaultMessage("X")
+  @Description("")
+  String XProperties();
+  
+  @DefaultMessage("Y")
+  @Description("")
+  String YProperties();
+  
+  @DefaultMessage("Z")
+  @Description("")
+  String ZProperties();
+
+  @DefaultMessage("showing")
+  @Description("")
+  String visibilityShowing();
+
+  @DefaultMessage("hidden")
+  @Description("")
+  String visibilityHiddenProperties();
+  
+  @DefaultMessage("ElementsFromString")
+  @Description("")
+  String ElementsFromStringProperties();
+  
+  @DefaultMessage("Rotates")
+  @Description("")
+  String RotatesProperties();
+
+  @DefaultMessage("Selection")
+  @Description("")
+  String SelectionProperties();
+  
+  @DefaultMessage("TimeInterval")
+  @Description("")
+  String TimeIntervalProperties();
+  
+  @DefaultMessage("UsesLocation")
+  @Description("")
+  String UsesLocationProperties();
 }

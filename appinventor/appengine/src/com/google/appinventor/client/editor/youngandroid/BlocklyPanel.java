@@ -5,32 +5,41 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import static com.google.appinventor.client.Ode.MESSAGES;
-
 import com.google.appinventor.client.DesignToolbar;
-import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.TopToolbar;
+import com.google.appinventor.client.TranslationComponentEvents;
+import com.google.appinventor.client.TranslationComponentMethods;
+import com.google.appinventor.client.TranslationComponentParams;
+import com.google.appinventor.client.TranslationComponentProperty;
+import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.output.OdeLog;
-import com.google.common.collect.Maps;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.BlockPropertyDefinition;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.EventDefinition;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.MethodDefinition;
+import com.google.appinventor.shared.simple.ComponentDatabaseInterface.ParameterDefinition;
+import com.google.common.collect.Maps;
 import com.google.gwt.core.client.JavaScriptException;
 import com.google.gwt.core.client.JavaScriptObject;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DialogBox;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-import com.google.appinventor.components.common.YaVersion;
-
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 /**
  * Blocks editor panel.
@@ -47,6 +56,7 @@ public class BlocklyPanel extends HTMLPanel {
 
   // The currently displayed form (project/screen)
   private static String currentForm;
+  private static String languageSetting;
 
   private static class ComponentOp {
     public OpType op;
@@ -61,6 +71,9 @@ public class BlocklyPanel extends HTMLPanel {
     public boolean complete = false; // true if loading blocks completed
     public boolean error = false;     // true if got an error loading blocks
   }
+
+  private static final SimpleComponentDatabase COMPONENT_DATABASE =
+      SimpleComponentDatabase.getInstance();
 
   private static final String EDITOR_HTML =
       "<style>\n" +
@@ -117,6 +130,8 @@ public class BlocklyPanel extends HTMLPanel {
     // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
     currentComponents.put(formName, new HashMap<String, ComponentOp>());
     initJS();
+    // Switch to current language setting as defined in BlocklyPanel.languageSetting
+    //updateLanguage();
     OdeLog.log("Created BlocklyPanel for " + formName);
   }
 
@@ -683,6 +698,90 @@ public class BlocklyPanel extends HTMLPanel {
     return doQRCode(currentForm, inString);
   }
 
+  /**
+   * Update the language setting within BlocklyPanel.java and switch to the
+   * desired language.
+   *
+   * @param newLanguage
+   *          The desired new language setting
+   */
+  public void switchLanguage(String newLanguage) {
+    languageSetting = newLanguage;
+    updateLanguage(formName);
+  }
+
+  /**
+   * Update the language setting within BlocklyPanel.java and switch to the
+   * desired language.
+   *
+   * @param newLanguage
+   *          The desired new language setting
+   * @param formName
+   */
+  public static void switchLanguage(String formName, String newLanguage) {
+    languageSetting = newLanguage;
+    updateLanguage(formName);
+  }
+
+  /**
+   * Update displayed language on the screen to reflect current language setting
+   * within BlocklyPanel.java
+   */
+  public static void updateLanguage(String formName) {
+    TranslationComponentProperty.updateMap(languageSetting);
+    TranslationComponentEvents.updateMap(languageSetting);
+    TranslationComponentMethods.updateMap(languageSetting);
+    TranslationComponentParams.updateMap(languageSetting);
+
+    Map<String, ComponentOp> components = currentComponents.get(formName);
+    Map<String, List<String>> map = new HashMap<String, List<String>>();
+    List<String> eventList = new ArrayList<String>();
+    List<String> methodList = new ArrayList<String>();
+    Set<String> paramSet = new HashSet<String>();
+
+    for (ComponentOp component : components.values()) {
+      // Iterate over block properties
+      List<String> propertyList = new ArrayList<String>();
+      List<BlockPropertyDefinition> properties = COMPONENT_DATABASE.getBlockPropertyDefinitions(component.typeName);
+      for (BlockPropertyDefinition property : properties) {
+        propertyList.add(property.getName());
+      }
+      map.put(component.typeName, propertyList);
+
+      // Iterate over events
+      List<EventDefinition> events = COMPONENT_DATABASE.getEventDefinitions(component.typeName);
+      for (EventDefinition event : events) {
+        eventList.add(event.getName());
+        // Iterate over method's parameters
+        for (ParameterDefinition param: event.getParam()) {
+          paramSet.add(param.getName());
+          OdeLog.log("Event Param name: " + param.getName());
+        }
+        //OdeLog.log("Event name: " + event.getName());
+      }
+
+      // Iterate over methods
+      List<MethodDefinition> methods = COMPONENT_DATABASE.getMethodDefinitions(component.typeName);
+      for (MethodDefinition method : methods) {
+        methodList.add(method.getName());
+        // Iterate over method's parameters
+        for (ParameterDefinition param: method.getParam()) {
+          paramSet.add(param.getName());
+          OdeLog.log("Method Param name: " + param.getName());
+        }
+        //OdeLog.log("Method name: " + method.getName());
+      }
+    }
+
+    List<String> paramList = new ArrayList<String>(paramSet);
+
+    doUpdateTranslationPropertiesMap(formName, TranslationComponentProperty.getMapJSON(map));
+    doUpdateTranslationEventsMap(formName, TranslationComponentEvents.getMapJSON(eventList));
+    doUpdateTranslationMethodsMap(formName, TranslationComponentMethods.getMapJSON(methodList));
+    doUpdateTranslationParamsMap(formName, TranslationComponentParams.getMapJSON(paramList));
+    doSwitchLanguage(formName, languageSetting);
+  }
+
   // ------------ Native methods ------------
 
   /**
@@ -699,6 +798,10 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
     $wnd.BlocklyPanel_blocklyWorkspaceChanged =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
+    $wnd.BlocklyPanel_updateLanguage =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::updateLanguage(Ljava/lang/String;));
+    $wnd.BlocklyPanel_switchLanguage =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchLanguage(Ljava/lang/String;Ljava/lang/String;));
     $wnd.BlocklyPanel_checkWarningState =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::checkWarningState(Ljava/lang/String;));
     $wnd.BlocklyPanel_callToggleWarning =
@@ -854,4 +957,51 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.Blocklies[formName].ReplMgr.makeqrcode(inString);
   }-*/;
 
+  /*
+   * Switch the Blockly's language setting to "language" as specified in the
+   * parameter argument.
+   */
+  public static native void doSwitchLanguage(String formName, String language) /*-{
+    $wnd.Blocklies[formName].language_switch.switchLanguage(language);
+    }-*/;
+
+  /*
+   * Update the blockly's translation map for custom components' properties.
+   * Important: This method has to be called before calling
+   *            doSwitchLanguage(String formName, String language)
+   */
+  public static native void doUpdateTranslationPropertiesMap(String formName, String typeDescription) /*-{
+    $wnd.Blocklies[formName].TranslationProperties.updateMap(typeDescription);
+  }-*/;
+
+  /*
+   * Update the blockly's translation map for custom components' events.
+   * Important: This method has to be called before calling
+   *            doSwitchLanguage(String formName, String language)
+   */
+  public static native void doUpdateTranslationEventsMap(String formName, String typeDescription) /*-{
+    $wnd.Blocklies[formName].TranslationEvents.updateMap(typeDescription);
+  }-*/;
+
+  /*
+   * Update the blockly's translation map for custom components' methods.
+   * Important: This method has to be called before calling
+   *            doSwitchLanguage(String formName, String language)
+   */
+  public static native void doUpdateTranslationMethodsMap(String formName, String typeDescription) /*-{
+    $wnd.Blocklies[formName].TranslationMethods.updateMap(typeDescription);
+  }-*/;
+
+  /*
+   * Update the blockly's translation map for custom components' parameters.
+   * Important: This method has to be called before calling
+   *            doSwitchLanguage(String formName, String language)
+   */
+  public static native void doUpdateTranslationParamsMap(String formName, String typeDescription) /*-{
+    $wnd.Blocklies[formName].TranslationParams.updateMap(typeDescription);
+  }-*/;
+
+  public static native String getURL() /*-{
+    return $wnd.location.href;
+  }-*/;
 }

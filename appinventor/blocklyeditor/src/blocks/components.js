@@ -71,7 +71,7 @@ Blockly.Blocks.component_event = {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput('WHENTITLE').appendField('when ')
+    this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
         .appendField('.' + this.eventName);
     this.componentDropDown.setValue(this.instanceName);
@@ -121,7 +121,8 @@ Blockly.Blocks.component_event = {
           }
         }
 
-        var newDoInput = this.appendStatementInput("DO").appendField('do'); // Hey, I like your new do!
+        var newDoInput = this.appendStatementInput("DO")
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO); // Hey, I like your new do!
         if (bodyConnection) {
           newDoInput.connection.connect(bodyConnection);
         }
@@ -143,7 +144,8 @@ Blockly.Blocks.component_event = {
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
-        var newDoInput = this.appendStatementInput("DO").appendField('do');
+        var newDoInput = this.appendStatementInput("DO")
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_DO);
         if (bodyConnection) {
           newDoInput.connection.connect(bodyConnection);
         }
@@ -223,7 +225,7 @@ Blockly.Blocks.component_event = {
       eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
       for(var k=0;k<eventObjects.length;k++) {
         tb.push({
-          translatedName: 'when ' + instanceNames[i] + '.' + eventObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instanceNames[i] + '.' + eventObjects[k].name,
           mutatorAttributes: {
             component_type: typeName,
             instance_name: instanceNames[i],
@@ -290,13 +292,17 @@ Blockly.Blocks.component_method = {
     }
 
     if(!this.isGeneric) {
-      this.appendDummyInput().appendField('call ')
+      this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
         .appendField('.' + this.getMethodTypeObject().name);
       this.componentDropDown.setValue(this.instanceName);
     } else {
-      this.appendDummyInput().appendField('call ' + this.typeName + '.' + this.getMethodTypeObject().name);
-      var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendField('for component').setAlign(Blockly.ALIGN_RIGHT);;
+      this.appendDummyInput()
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + this.getMethodTypeObject().name);
+      var compInput = this.appendValueInput("COMPONENT")
+        .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
+        .setAlign(Blockly.ALIGN_RIGHT);
     }
     this.setTooltip(this.getMethodTypeObject().description);
     for (var i = 0, param; param = this.getMethodTypeObject().params[i]; i++) {
@@ -343,7 +349,7 @@ Blockly.Blocks.component_method = {
       methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
       for(var k=0;k<methodObjects.length;k++) {
         tb.push({
-          translatedName: 'call ' + instanceNames[i] + '.' + methodObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instanceNames[i] + '.' + methodObjects[k].name,
           mutatorAttributes: {
             component_type: typeName,
             instance_name: instanceNames[i],
@@ -358,7 +364,7 @@ Blockly.Blocks.component_method = {
       methodObjects = Blockly.ComponentTypes[componentType].componentInfo.methods;
       for(var k=0;k<methodObjects.length;k++) {
         tb.push({
-          translatedName: 'call ' + componentType + '.' + methodObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentType + '.' + methodObjects[k].name,
           mutatorAttributes: {
             component_type: componentType,
             method_name: methodObjects[k].name,
@@ -455,7 +461,7 @@ Blockly.Blocks.component_set_get = {
 
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
-          .appendField('of component')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT)
           .setAlign(Blockly.ALIGN_RIGHT);
       }
     } else { //this.setOrGet == "set"
@@ -464,24 +470,24 @@ Blockly.Blocks.component_set_get = {
       this.setNextStatement(true);
       if(!this.isGeneric) {
         this.appendValueInput("VALUE")
-          .appendField('set ')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET)
           .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
           .appendField('.')
           .appendField(dropdown, "PROP")
-          .appendField(' to');
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO);
       } else {
         //generic set
         this.appendDummyInput()
-          .appendField('set ' +  this.typeName + '.')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET +  this.typeName + '.')
           .appendField(dropdown, "PROP");
 
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
-          .appendField('of component')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT)
           .setAlign(Blockly.ALIGN_RIGHT);
 
         this.appendValueInput("VALUE")
-          .appendField('to')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO)
           .setAlign(Blockly.ALIGN_RIGHT);
       }
     }

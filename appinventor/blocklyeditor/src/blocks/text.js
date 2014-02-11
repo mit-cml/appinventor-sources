@@ -19,9 +19,9 @@ Blockly.Blocks['text'] = {
   helpUrl : Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
-    this.appendDummyInput().appendField('\u201C').appendField(
+    this.appendDummyInput().appendField(Blockly.Msg.LANG_TEXT_TEXT_LEFT_QUOTE).appendField(
         new Blockly.FieldTextBlockInput(''),
-        'TEXT').appendField('\u201D');
+        'TEXT').appendField(Blockly.Msg.LANG_TEXT_TEXT_RIGHT_QUOTE);
     this.setOutput(true, [Blockly.Blocks.text.connectionCheck]);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TEXT_TOOLTIP);
   },
@@ -49,7 +49,8 @@ Blockly.Blocks['text_join'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('ADD0').appendField('join');
+    this.appendValueInput('ADD0')
+      .appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
     this.appendValueInput('ADD1');
     this.setTooltip(Blockly.Msg.LANG_TEXT_JOIN_TOOLTIP);
     this.setMutator(new Blockly.Mutator(['text_join_item']));
@@ -66,17 +67,17 @@ Blockly.Blocks['text_join'] = {
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     this.appendDummyInput(this.emptyInputName)
-      .appendField('join');
+      .appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
   },
   addInput: function(inputNum){
     var input = this.appendValueInput(this.repeatingInputName + inputNum).setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT));
     if(inputNum === 0){
-      input.appendField('join');
+      input.appendField(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
     }
     return input;
   },
   updateContainerBlock: function(containerBlock) {
-    containerBlock.inputList[0].fieldRow[0].setText("join");
+    containerBlock.inputList[0].fieldRow[0].setText(Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_JOIN_TITLE_JOIN }]
 
@@ -87,10 +88,10 @@ Blockly.Blocks['text_join_item'] = {
   init: function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.appendDummyInput()
-        .appendField("string");
+        .appendField(Blockly.Msg.LANG_TEXT_JOIN_ITEM_TITLE_ITEM);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip("");
+    this.setTooltip(Blockly.Msg.LANG_TEXT_JOIN_ITEM_TOOLTIP);
     this.contextMenu = false;
   }
 };
@@ -104,7 +105,7 @@ Blockly.Blocks['text_length'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('VALUE')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('length');
+      .appendField(Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH);
     this.setTooltip(Blockly.Msg.LANG_TEXT_LENGTH_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_LENGTH_INPUT_LENGTH }]
@@ -119,7 +120,7 @@ Blockly.Blocks['text_isEmpty'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('VALUE')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('is empty');
+      .appendField(Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY);
     this.setTooltip(Blockly.Msg.LANG_TEXT_ISEMPTY_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_ISEMPTY_INPUT_ISEMPTY }]
@@ -134,7 +135,7 @@ Blockly.Blocks['text_compare'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('TEXT1')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('compare texts');
+      .appendField(Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE);
     this.appendValueInput('TEXT2')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField(new Blockly.FieldDropdown(this.OPERATORS), 'OP');
@@ -146,19 +147,19 @@ Blockly.Blocks['text_compare'] = {
     });
   },
   typeblock: [{
-    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + ' <',
+    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + Blockly.Msg.LANG_TEXT_COMPARE_LT,
     dropDown: {
       titleName: 'OP',
       value: 'LT'
     }
   },{
-    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE  + ' =',
+    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE  + Blockly.Msg.LANG_TEXT_COMPARE_EQUAL,
     dropDown: {
       titleName: 'OP',
       value: 'EQUAL'
     }
   },{
-    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + ' >',
+    translatedName: Blockly.Msg.LANG_TEXT_COMPARE_INPUT_COMPARE + Blockly.Msg.LANG_TEXT_COMPARE_GT,
     dropDown: {
       titleName: 'OP',
       value: 'GT'
@@ -166,18 +167,14 @@ Blockly.Blocks['text_compare'] = {
   }]
 };
 
-Blockly.Blocks.text_compare.OPERATORS = [ [ '<', 'LT' ], [ '=', 'EQUAL' ], [ '>', 'GT' ] ];
+Blockly.Blocks.text_compare.OPERATORS = [ [ Blockly.Msg.LANG_TEXT_COMPARE_LT, 'LT' ]
+										, [ Blockly.Msg.LANG_TEXT_COMPARE_EQUAL, 'EQUAL' ]
+										, [ Blockly.Msg.LANG_TEXT_COMPARE_GT, 'GT' ] ];
 
 Blockly.Blocks.text_compare.TOOLTIPS = {
-  LT : 'Tests whether text1 is lexicographically less than text2.\n'
-      + 'if one text is the prefix of the other, the shorter text is\n'
-      + 'considered smaller. Uppercase characters precede lowercase characters.',
-  EQUAL : 'Tests whether text strings are identical, ie., have the same\n'
-      + 'characters in the same order. This is different from ordinary =\n'
-      + 'in the case where the text strings are numbers: 123 and 0123 are =\n' + 'but not text =.',
-  GT : 'Reports whether text1 is lexicographically greater than text2.\n'
-      + 'if one text is the prefix of the other, the shorter text is considered smaller.\n'
-      + 'Uppercase characters precede lowercase characters.'
+  LT : Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_LT,
+  EQUAL : Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_EQUAL,
+  GT : Blockly.Msg.LANG_TEXT_COMPARE_TOOLTIP_GT
 };
 
 Blockly.Blocks['text_trim'] = {
@@ -189,7 +186,7 @@ Blockly.Blocks['text_trim'] = {
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
     this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
-      .appendField('trim');
+      .appendField(Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM);
     this.setTooltip(Blockly.Msg.LANG_TEXT_TRIM_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_TRIM_TITLE_TRIM }]
@@ -229,7 +226,8 @@ Blockly.Blocks['text_changeCase'] = {
   }]
 };
 
-Blockly.Blocks.text_changeCase.OPERATORS = [ [ 'upcase', 'UPCASE' ], [ 'downcase', 'DOWNCASE' ] ];
+Blockly.Blocks.text_changeCase.OPERATORS = [ [ Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_UPPERCASE, 'UPCASE' ]
+										   , [ Blockly.Msg.LANG_TEXT_CHANGECASE_OPERATOR_DOWNCASE, 'DOWNCASE' ] ];
 
 Blockly.Blocks.text_changeCase.TOOLTIPS = {
   UPCASE : Blockly.Msg.LANG_TEXT_CHANGECASE_TOOLTIP_UPPERCASE,
@@ -248,15 +246,21 @@ Blockly.Blocks['text_starts_at'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('TEXT')
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT,
+            ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT);
+    /*this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('starts at')
       .appendField('text');
     this.appendValueInput('PIECE')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('piece')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_STARTS_AT_TOOLTIP);
+    this.setInputsInline(false);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_STARTS_AT_INPUT_STARTS_AT }]
 };
@@ -268,15 +272,21 @@ Blockly.Blocks['text_contains'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('TEXT')
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_TEXT_CONTAINS_INPUT,
+            ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['PIECE', checkTypeText, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT);
+    /*this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('contains')
       .appendField('text');
     this.appendValueInput('PIECE')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('piece')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_CONTAINS_TOOLTIP);
+    this.setInputsInline(false);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_CONTAINS_INPUT_CONTAINS }]
 };
@@ -295,7 +305,7 @@ Blockly.Blocks['text_split'] = {
     this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
       .appendField(new Blockly.FieldDropdown(this.OPERATORS, Blockly.Blocks.text_split.dropdown_onchange), 'OP')
-      .appendField('text');
+      .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_TEXT);
     this.appendValueInput('AT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text", Blockly.Blocks.Utilities.INPUT))
       .appendField(Blockly.Msg.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME')
@@ -362,10 +372,10 @@ Blockly.Blocks.text_split.dropdown_onchange = function(mode) {
 
 // The order here determines the order in the dropdown
 Blockly.Blocks.text_split.OPERATORS = [
-  [ 'split', 'SPLIT' ],
-  [ 'split at first', 'SPLITATFIRST' ],
-  [ 'split at any', 'SPLITATANY' ],
-  [ 'split at first of any', 'SPLITATFIRSTOFANY' ]
+  [ Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT, 'SPLIT' ],
+  [ Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST, 'SPLITATFIRST' ],
+  [ Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY, 'SPLITATANY' ],
+  [ Blockly.Msg.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY, 'SPLITATFIRSTOFANY' ]
 ];
 
 Blockly.Blocks.text_split.TOOLTIPS = {
@@ -389,7 +399,9 @@ Blockly.Blocks['text_split_at_spaces'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('TEXT').setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT)).appendField('split at spaces');
+    this.appendValueInput('TEXT')
+      .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
+      .appendField(Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE);
     this.setTooltip(Blockly.Msg.LANG_TEXT_SPLIT_AT_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_TITLE }]
@@ -402,7 +414,14 @@ Blockly.Blocks['text_segment'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('TEXT')
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
+    var checkTypeNumber = Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_TEXT_SEGMENT_INPUT,
+            ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['START', checkTypeNumber, Blockly.ALIGN_RIGHT],
+            ['LENGTH', checkTypeNumber, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT);
+    /*this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('segment')
       .appendField('text');
@@ -413,8 +432,9 @@ Blockly.Blocks['text_segment'] = {
     this.appendValueInput('LENGTH')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("number",Blockly.Blocks.Utilities.INPUT))
       .appendField('length')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_SEGMENT_AT_TOOLTIP);
+    this.setInputsInline(false);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_SEGMENT_TITLE_SEGMENT }]
 };
@@ -426,7 +446,13 @@ Blockly.Blocks['text_replace_all'] = {
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendValueInput('TEXT')
+    var checkTypeText = Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT);
+    this.interpolateMsg(Blockly.Msg.LANG_TEXT_REPLACE_ALL_INPUT,
+            ['TEXT', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['SEGMENT', checkTypeText, Blockly.ALIGN_RIGHT],
+            ['REPLACEMENT', checkTypeText, Blockly.ALIGN_RIGHT],
+            Blockly.ALIGN_RIGHT);
+    /*this.appendValueInput('TEXT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('replace all')
       .appendField('text');
@@ -437,8 +463,9 @@ Blockly.Blocks['text_replace_all'] = {
     this.appendValueInput('REPLACEMENT')
       .setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT))
       .appendField('replacement')
-      .setAlign(Blockly.ALIGN_RIGHT);
+      .setAlign(Blockly.ALIGN_RIGHT);*/
     this.setTooltip(Blockly.Msg.LANG_TEXT_REPLACE_ALL_TOOLTIP);
+    this.setInputsInline(false);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_TEXT_REPLACE_ALL_TITLE_REPLACE_ALL }]
 };

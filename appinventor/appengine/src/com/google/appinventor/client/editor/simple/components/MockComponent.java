@@ -11,6 +11,7 @@ import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleEditor;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
@@ -375,7 +376,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
    * Returns a unique default component name.
    */
   private String componentName() {
-    return getType() + getNextComponentIndex();
+    return TranslationDesignerPallete.getCorrespondingString(getType()) + getNextComponentIndex();
   }
 
   /**
@@ -386,7 +387,7 @@ public abstract class MockComponent extends Composite implements PropertyChangeL
   private int getNextComponentIndex() {
     int highIndex = 0;
     if (editor != null) {
-      final String typeName = getType();
+      final String typeName = TranslationDesignerPallete.getCorrespondingString(getType());
       final int nameLength = typeName.length();
       for (String cName : editor.getComponentNames()) {
         try {

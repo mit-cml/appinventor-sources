@@ -61,6 +61,24 @@
   </target>
 
   <!-- =====================================================================
+       CommonTranslations: library containing translation classes.
+       ===================================================================== -->
+  <target name="CommonTranslations"
+          description="Generate library containing translation classes"
+          depends="init">
+    <property name="CommonTranslations-class.dir" location="${class.dir}/CommonTranslations" />
+    <mkdir dir="${CommonTranslations-class.dir}" />
+
+    <ai.javac destdir="${CommonTranslations-class.dir}">
+      <include name="${common.pkg}/translations/*.java" />
+    </ai.javac>
+
+    <jar destfile="${public.build.dir}/CommonTranslations.jar">
+      <fileset dir="${CommonTranslations-class.dir}"/>
+    </jar>
+  </target>
+  
+  <!-- =====================================================================
        CommonUtilsTests: build and run the CommonUtils tests and generate the output results
        ===================================================================== -->
 

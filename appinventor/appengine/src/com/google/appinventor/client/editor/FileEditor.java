@@ -153,4 +153,15 @@ public abstract class FileEditor extends Composite {
     return damaged;
   }
 
+  /**
+   * Update the language setting within BlocklyPanel.java and switch to
+   * the desired language.
+   *
+   * @param newLanguage
+   *          The desired new language setting
+//   * @param formName
+   */
+  public void switchLanguage(String newLanguage) {
+  }
+
 }

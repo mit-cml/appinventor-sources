@@ -465,7 +465,7 @@ Blockly.Blocks['procedures_mutatorcontainer'] = {
     this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TITLE);
     this.appendStatementInput('STACK');
-    this.setTooltip('');
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORCONTAINER_TOOLTIP);
     this.contextMenu = false;
   },
   // [lyn. 11/24/12] Set procBlock associated with this container.
@@ -508,7 +508,7 @@ Blockly.Blocks['procedures_mutatorarg'] = {
         .appendField(new Blockly.FieldTextInput('x',Blockly.LexicalVariable.renameParam), 'NAME');
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip('');
+    this.setTooltip(Blockly.Msg.LANG_PROCEDURES_MUTATORARG_TOOLTIP);
     this.contextMenu = false;
   },
   // [lyn, 11/24/12] Return the container this mutator arg is in, or null if it's not in one.
@@ -692,7 +692,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
-        .appendField("call ")
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL)
         .appendField(this.procDropDown,"PROCNAME");
     this.setPreviousStatement(true);
     this.setNextStatement(true);
@@ -869,7 +869,7 @@ Blockly.Blocks['procedures_callnoreturn'] = {
   // This generates a single generic call to 'call no return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + ' no return' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_TRANSLATED_NAME}]
 };
 
 
@@ -884,7 +884,7 @@ Blockly.Blocks['procedures_callreturn'] = {
     this.procDropDown = new Blockly.FieldDropdown(this.procNamesFxn,Blockly.FieldProcedure.onChange);
     this.procDropDown.block = this;
     this.appendDummyInput()
-        .appendField("call ")
+        .appendField(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_CALL)
         .appendField(this.procDropDown,"PROCNAME");
     this.setOutput(true, null);
     this.setTooltip(Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TOOLTIP);
@@ -907,6 +907,6 @@ Blockly.Blocks['procedures_callreturn'] = {
   // This generates a single generic call to 'call return' defaulting its value
   // to the first procedure in the list. Calls for each procedure cannot be done here because the
   // blocks have not been loaded yet (they are loaded in typeblock.js)
-  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLNORETURN_CALL + ' return' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_PROCEDURES_CALLRETURN_TRANSLATED_NAME}]
 };
 

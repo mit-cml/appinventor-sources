@@ -598,7 +598,8 @@ Blockly.Blocks['controls_getPlainStartText'] = {
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.OUTPUT));
-    this.appendDummyInput().appendField('get plain start text');
+    this.appendDummyInput()
+      .appendField(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE);
     this.setTooltip(Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TOOLTIP);
   },
   typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_TITLE }]

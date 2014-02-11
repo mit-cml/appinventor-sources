@@ -5,10 +5,7 @@
 
 package com.google.appinventor.client.editor.youngandroid.palette;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.google.appinventor.client.TranslationDesignerProperties;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
@@ -49,6 +46,10 @@ import com.google.appinventor.shared.simple.ComponentDatabaseInterface.PropertyD
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.StackPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Panel showing Simple components which can be dropped onto the Young Android
@@ -142,7 +143,10 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
     // Configure properties
     for (PropertyDefinition property : COMPONENT_DATABASE.getPropertyDefinitions(componentType)) {
       mockComponent.addProperty(property.getName(), property.getDefaultValue(),
-          property.getCaption(), createPropertyEditor(property.getEditorType()));
+          TranslationDesignerProperties.getCorrespondingString(property.getCaption()),
+          createPropertyEditor(property.getEditorType()));
+      /*OdeLog.log("Property Caption: " + property.getCaption() + ", "
+          + TranslationComponentProperty.getName(property.getCaption()));*/
     }
   }
 

@@ -17,6 +17,10 @@ goog.provide('Blockly.ComponentTypes');
 goog.provide('Blockly.ComponentInstances');
 
 goog.require('Blockly.TypeBlock');
+goog.require('Blockly.TranslationProperties');
+goog.require('Blockly.TranslationEvents');
+goog.require('Blockly.TranslationMethods');
+goog.require('Blockly.TranslationParams');
 
 Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
