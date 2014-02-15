@@ -7,6 +7,7 @@ package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.DesignToolbar.View;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
@@ -144,6 +145,12 @@ public class Ode implements EntryPoint {
   private static final int DESIGNER = 0;
   private static final int PROJECTS = 1;
   private static int currentView = DESIGNER;
+  
+  // Remembers the current Editor.
+  private View currentEditorView = View.FORM;
+  
+  // Set the minimum width of DeckPanel to 512 px. 
+  private static final int MIN_DECKPANEL_WIDTH = 512;
 
   /*
    * The following fields define the general layout of the UI as seen in the following diagram:
@@ -171,6 +178,15 @@ public class Ode implements EntryPoint {
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
+  // The following fields define the tabs on the deckPanel.
+  private Box palleteBox;
+  private Box viewerBox;
+  private Box sourceStructureBox;
+  private Box blockSelectorBox;
+  private Box assetListBox;
+  private Box propertiesBox;
+  
+  
   // Popup that indicates that an asynchronous request is pending. It is visible
   // initially, and will be hidden automatically after the first RPC completes.
   private static RpcStatusPopup rpcStatusPopup;
@@ -288,6 +304,27 @@ public class Ode implements EntryPoint {
     // boxes from overlapping each other.
     resizeWorkArea((WorkAreaPanel) deckPanel.getWidget(debuggingTabIndex));
   }
+  
+  /**
+   * Switch to the form editor.
+   */
+  public void SwitchToFormEditor() {
+    if (currentEditorView != View.FORM) {
+      currentEditorView = View.FORM;
+      resizeTabsWidthForFormEditor(Window.getClientWidth());
+    }
+  }
+  
+  /**
+   * Switch to the blocks editor.
+   */
+  public void SwitchToBlocksEditor() {
+    if (currentEditorView !=  View.BLOCKS) {
+      currentEditorView = View.BLOCKS;
+      resizeTabsWidthForBlocksEditor(Window.getClientWidth());
+    }
+  }
+  
 
   public void openPreviousProject() {
     if (userSettings == null) {
@@ -577,28 +614,30 @@ public class Ode implements EntryPoint {
 
     //workColumns.add(switchToDesignerButton);
 
-    Box palletebox = PaletteBox.getPaletteBox();
-    palletebox.setWidth("222px");
-    workColumns.add(palletebox);
+    palleteBox = PaletteBox.getPaletteBox();
+    workColumns.add(palleteBox);
 
-    Box viewerbox = ViewerBox.getViewerBox();
-    workColumns.add(viewerbox);
-    workColumns.setCellWidth(viewerbox, "97%");
-    workColumns.setCellHeight(viewerbox, "97%");
+    viewerBox = ViewerBox.getViewerBox();
+    workColumns.add(viewerBox);
+    workColumns.setCellHeight(viewerBox, "97%");
 
     structureAndAssets = new VerticalPanel();
     structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
     // Only one of the SourceStructureBox and the BlockSelectorBox is visible
     // at any given time, according to whether we are showing the form editor
     // or the blocks editor. They share the same screen real estate.
-    structureAndAssets.add(SourceStructureBox.getSourceStructureBox());
-    structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
-    structureAndAssets.add(AssetListBox.getAssetListBox());
+    sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    blockSelectorBox = BlockSelectorBox.getBlockSelectorBox();
+    assetListBox = AssetListBox.getAssetListBox();
+    structureAndAssets.add(sourceStructureBox);
+    structureAndAssets.add(blockSelectorBox);  // initially not visible
+    structureAndAssets.add(assetListBox);
     workColumns.add(structureAndAssets);
 
-    Box propertiesbox = PropertiesBox.getPropertiesBox();
-    propertiesbox.setWidth("222px");
-    workColumns.add(propertiesbox);
+    propertiesBox = PropertiesBox.getPropertiesBox();
+    workColumns.add(propertiesBox);
+    // Initialize the tabs's size in the deckPanel.
+    resizeTabs(Window.getClientWidth(), Window.getClientHeight());
     //switchToBlocksButton.setHeight("650px");
     //workColumns.add(switchToBlocksButton);
     dVertPanel.add(workColumns);
@@ -635,7 +674,8 @@ public class Ode implements EntryPoint {
         @Override
         public void onResize(ResizeEvent event) {
           resizeWorkArea(debuggingTab);
-        }
+          resizeTabs(event.getWidth(), event.getHeight());
+        }        
       });
 
       // Call the window resized handler to get the initial sizes setup. Doing this in a deferred
@@ -931,6 +971,54 @@ public class Ode implements EntryPoint {
   private void resizeWorkArea(WorkAreaPanel workArea) {
     // Subtract 16px from width to account for vertical scrollbar FF3 likes to add
     workArea.onResize(Window.getClientWidth() - 16, Window.getClientHeight());
+  }
+  
+  private void resizeTabs(int windowWidth, int windowHeight) {
+    if (currentEditorView == View.FORM) {
+      // Doesn't need to resize the tabs' height.
+      resizeTabsWidthForFormEditor(windowWidth);
+    }
+    else {
+      resizeTabsWidthForBlocksEditor(windowWidth);
+    }
+  }
+
+  private void resizeTabsWidthForFormEditor(int windowWidth) {
+    // Set the tabs' width proportionally.
+    if (windowWidth > MIN_DECKPANEL_WIDTH) {
+      deckPanel.setWidth((windowWidth - 16) + "px");
+      palleteBox.setWidth((windowWidth - 16) * 0.2 + "px");
+      viewerBox.setWidth((windowWidth - 16) * 0.4 + "px");
+      sourceStructureBox.setWidth((windowWidth - 16) * 0.2 + "px");
+      assetListBox.setWidth((windowWidth - 16) * 0.2 + "px");
+      propertiesBox.setWidth((windowWidth - 16) * 0.2 + "px");
+    }
+    else { // When the window is extremely narrow.
+      deckPanel.setWidth((MIN_DECKPANEL_WIDTH - 16)  + "px");
+      palleteBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+      viewerBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.4 + "px");
+      sourceStructureBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+      assetListBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+      propertiesBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+    }
+  }
+
+  private void resizeTabsWidthForBlocksEditor(int windowWidth) {
+    palleteBox.setWidth("0px");
+    propertiesBox.setWidth("0px");
+    
+    if (windowWidth > MIN_DECKPANEL_WIDTH) {
+      deckPanel.setWidth((windowWidth - 16) + "px");
+      blockSelectorBox.setWidth((windowWidth - 16) * 0.2 + "px");
+      assetListBox.setWidth((windowWidth - 16) * 0.2 + "px");
+      viewerBox.setWidth((windowWidth - 16) * 0.8 + "px");
+    }
+    else {
+      deckPanel.setWidth((MIN_DECKPANEL_WIDTH - 16) + "px");
+      blockSelectorBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+      assetListBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.2 + "px");
+      viewerBox.setWidth((MIN_DECKPANEL_WIDTH - 16) * 0.8 + "px");
+    }
   }
 
   private void onClosing() {
