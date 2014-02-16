@@ -104,6 +104,34 @@ public interface GalleryStorageIo {
   long addComment(long galleryId,String userId, String comment);
 
   /**
+   * increase likes to a gallery app
+   * @param galleryId id of gallery app that was like
+   * @param userId id of user who likes it
+   * @return the id of the new like
+   */
+  int increaseLikes(long galleryId,String userId);
+
+  /**
+   * decrease likes to a gallery app
+   * @param galleryId id of gallery app that was like
+   * @param userId id of user who likes it
+   * @return the id of the new like
+   */
+  int decreaseLikes(long galleryId,String userId);
+  /**
+   * Returns the num of likes for an app
+   * @param galleryId id of gallery app
+   * @return num like of a gallery app
+   */
+  int getNumLikes(long galleryId);
+  /**
+   * check if an app is liked by a user
+   * @param galleryId id of gallery app that was like
+   * @param userId id of user who likes it
+   * @return true if relation exists
+   */
+  boolean isLikedByUser(long galleryId,String userId);
+  /**
    * Returns a list of comments for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryComment}

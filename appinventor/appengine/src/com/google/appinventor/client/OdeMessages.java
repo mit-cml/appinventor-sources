@@ -1193,6 +1193,10 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when can't get gallery app comments on server.")
   String galleryCommentError();
 
+  @DefaultMessage("Server error: could not retrieve num of like")
+  @Description("Error message reported when can't get gallery app like on server.")
+  String galleryAppLikeError();
+
   @DefaultMessage("Server error: could not retrieve developer gallery apps from gallery")
   @Description("Error message reported when can't get developer gallery apps on server.")
   String galleryDeveloperAppError();

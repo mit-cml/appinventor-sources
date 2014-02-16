@@ -26,6 +26,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 
 import com.google.appinventor.server.storage.GalleryAppData;
 import com.google.appinventor.server.storage.GalleryCommentData;
+import com.google.appinventor.server.storage.GalleryAppLikeData;
 
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -114,6 +115,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // Register the data object classes stored in the database
     ObjectifyService.register(GalleryAppData.class);
     ObjectifyService.register(GalleryCommentData.class);
+    ObjectifyService.register(GalleryAppLikeData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -425,6 +427,141 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
     return comments;
   }
+
+  /**
+   * increase likes to a gallery app
+   *
+   * @param galleryId
+   *          id of gallery app that was like on
+   * @param userId
+   *          id of user who liked
+   * @return the number of the new like
+   */
+  @Override
+  public int increaseLikes(final long galleryId,final String userId) {
+    final Result<Integer> numLikes = new Result<Integer>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+          if (galleryAppData != null) {
+            Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+            GalleryAppLikeData likeData = new GalleryAppLikeData();
+            likeData.galleryKey = galleryKey(galleryId);
+            likeData.userId = userId;
+            datastore.put(likeData);
+            numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.increaseLike", e);
+    }
+    return numLikes.t;
+  }
+
+  /**
+   * decrease likes to a gallery app
+   *
+   * @param galleryId
+   *          id of gallery app that was unlike on
+   * @param userId
+   *          id of user who unliked
+   * @return the number of the new like
+   */
+  @Override
+  public int decreaseLikes(final long galleryId, final String userId) {
+    final Result<Integer> numLikes = new Result<Integer>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+          if (galleryAppData != null) {
+            boolean find = false;
+            int count = 0;
+            Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+            for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
+              if(likeData.userId.equals(userId)){
+                find = true;
+                datastore.delete(likeData);
+                break;
+              }
+            }
+            numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.decreaseLike", e);
+    }
+    return numLikes.t;
+  }
+
+  /**
+   * get num likes of a gallery app
+   *
+   * @param galleryId
+   *          id of gallery app
+   * @return the num of like
+   */
+  public int getNumLikes(final long galleryId) {
+    final Result<Integer> num = new Result<Integer>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          int count = 0;
+            num.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.getNumLike", e);
+    }
+    return num.t;
+  }
+
+  /**
+   * check if an app is liked by a user
+   *
+   * @param galleryId
+   *          id of gallery app that was unlike on
+   * @param userId
+   *          id of user who unliked
+   * @return true if relation exists
+   */
+  @Override
+  public boolean isLikedByUser(final long galleryId, final String userId) {
+    final Result<Boolean> bool = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          boolean find = false;
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
+            if(likeData.userId.equals(userId)){
+              find = true;
+              bool.t = true;
+              break;
+            }
+          }
+          if(!find){
+            bool.t = false;
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.isLikedByUser", e);
+    }
+    return bool.t;
+  }
+
   /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on

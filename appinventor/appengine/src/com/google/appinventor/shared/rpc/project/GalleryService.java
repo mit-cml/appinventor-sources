@@ -13,7 +13,7 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.io.InputStream;
 import java.util.List;
 
-	
+
 
 /**
  * Interface for the service providing gallery information.
@@ -130,5 +130,28 @@ public interface GalleryService extends RemoteService {
    * @param comment the comment
    */
   long publishComment(long galleryId, String comment);
-  
+
+  /**
+   * increase likes for a gallery app by 1
+   * @param galleryId the id of the app
+   */
+  int increaseLikes(long galleryId);
+
+  /**
+   * decrease likes for a gallery app by 1
+   * @param galleryId the id of the app
+   */
+  int decreaseLikes(long galleryId);
+
+  /**
+   * get num of likes of a gallery app
+   * @param galleryId the id of the app
+   */
+  int getNumLikes(long galleryId);
+
+  /**
+   * check if an app is liked by a user
+   * @param galleryId the id of the app
+   */
+  boolean isLikedByUser(long galleryId);
 }

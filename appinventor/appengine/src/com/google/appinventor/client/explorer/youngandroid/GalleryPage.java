@@ -116,6 +116,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private TextArea desc;
   private FlowPanel descBox;
   private FlowPanel titleBox;
+  private Label likeLabel;
+  private Image likeButton;
 
   private Button actionButton;
   private Button publishButton;
@@ -143,7 +145,7 @@ panel
        desc/descbox
     appComments
    appsByDev
-  	 
+
   divider
 */
 
@@ -423,8 +425,75 @@ panel
       initUpdateButton();
     else
       initTryitButton(); 
+      initLikeitButton();
   }
+  /**
+   * Helper method called by constructor to initialize the like area
+   */
+  private void initLikeitButton() {
+    final Image likeButton = new Image();
+    likeButton.setUrl("http://i.imgur.com/jyTeyCJ.png");
+    likeButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Integer> changeLikeCallback = new OdeAsyncCallback<Integer>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Integer num) {
+                 //TODO deal with/discuss server data sync later; now is updating locally.
+              }
+          };
+        final OdeAsyncCallback<Boolean> isLikedByUserCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean bool) {
+                if(bool){//already liked
+                  Ode.getInstance().getGalleryService().decreaseLikes(app.getGalleryAppId(),
+                      changeLikeCallback);
+                  likeLabel.setText(String.valueOf(Integer.valueOf(likeLabel.getText()) - 1));
+                  likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
+                }else{
+                  Ode.getInstance().getGalleryService().increaseLikes(app.getGalleryAppId(),
+                      changeLikeCallback);
+                  likeLabel.setText(String.valueOf(Integer.valueOf(likeLabel.getText()) + 1));
+                  likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
+                }
+              }
+          };
+        Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
+            isLikedByUserCallback);
+      }
+    });
+    appAction.add(likeButton);
+    likeLabel = new Label("");
+    appAction.add(likeLabel);
+    final OdeAsyncCallback<Integer> likeNumCallback = new OdeAsyncCallback<Integer>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Integer num) {
+            likeLabel.setText(String.valueOf(num));
+          }
+      };
+    Ode.getInstance().getGalleryService().getNumLikes(app.getGalleryAppId(),
+        likeNumCallback);
 
+    final OdeAsyncCallback<Boolean> isLikedCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if(!bool){
+              likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
+            }else{
+              likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
+        isLikedCallback); 
+  }
   /**
    * Helper method called by constructor to initialize the try it button
    */
@@ -438,7 +507,7 @@ panel
       }
     });
     actionButton.addStyleName("app-action");
-    appAction.add(actionButton);  
+    appAction.add(actionButton);
   }
   /**
    * Helper method called by constructor to initialize the publish button
@@ -585,7 +654,7 @@ panel
   public void onCommentsRequestCompleted(List<GalleryComment> comments) {
       galleryGF.generateAppPageComments(comments, appCommentsList);
       if (comments == null) 
-        Window.alert("comment list was null");    	
+        Window.alert("comment list was null");
   }
   
   @Override
@@ -718,4 +787,4 @@ panel
  
  
  
-}	
+}

@@ -96,5 +96,23 @@ public interface GalleryServiceAsync {
    */
   void publishComment(long galleryId, String comment, AsyncCallback<java.lang.Long> date);
 
-  
+  /**
+   * @see GalleryService#increaseLikes(long galleryId)
+   */
+  void increaseLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
+
+  /**
+   * @see GalleryService#decreaseLikes(long galleryId)
+   */
+  void decreaseLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
+
+  /**
+   * @see GalleryService#getNumLikes(long galleryId)
+   */
+  void getNumLikes(long galleryId, AsyncCallback<java.lang.Integer> num);
+
+  /**
+   * @see GalleryService#isLikedByUser(long galleryId)
+   */
+  void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
 }

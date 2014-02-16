@@ -202,6 +202,7 @@ public class ProfilePage extends Composite {
     //majorContentCard.add(httpLinkLabel);
     majorContentCard.add(userLinkBox);
     majorContentCard.add(updateButton);
+
     initWidget(panel);
     
     // Retrieve user info right after GUI is initialized

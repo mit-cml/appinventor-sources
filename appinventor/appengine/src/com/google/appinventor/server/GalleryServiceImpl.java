@@ -252,6 +252,47 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.addComment(galleryId, userId, comment);
   }
 
+  /**
+   * increase likes for a gallery app
+   * @param galleryId the id of the app
+   * @return num of like
+   */
+  @Override
+  public int increaseLikes(long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.increaseLikes(galleryId, userId);
+  }
+
+  /**
+   * decrease likes for a gallery app
+   * @param galleryId the id of the app
+   * @return num of like
+   */
+  @Override
+  public int decreaseLikes(long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.decreaseLikes(galleryId, userId);
+  }
+
+  /**
+   * get num of likes for a gallery app
+   * @param galleryId the id of the app
+   */
+  @Override
+  public int getNumLikes(long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.getNumLikes(galleryId);
+  }
+
+  /**
+   * check if an app is liked by a user
+   * @param galleryId the id of the app
+   */
+  @Override
+  public boolean isLikedByUser(long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.isLikedByUser(galleryId, userId);
+  }
 //  public void storeImage(InputStream is, long galleryId) {
 //    
 //  }
@@ -341,7 +382,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * into the gallery image
    */
   private void setGalleryAppImage(GalleryApp app) {
-	// best thing would be if GCS has a mv op, we can just do that.
+  // best thing would be if GCS has a mv op, we can just do that.
     // don't think that is there, though, so for now read one and write to other
     // First, read the file from projects name
     boolean lockForRead = false;
