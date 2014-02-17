@@ -121,6 +121,9 @@ Blockly.ReplMgr.buildYail = function() {
         if (!block.category || (block.hasError && !block.replError)) { // Don't send blocks with
             continue;           // Errors, unless they were errors signaled by the repl
         }
+        if (block.disabled) {   // Don't send disabled blocks
+            continue;
+        }
         if (block.blockType != "event" &&
             block.type != "global_declaration" &&
             block.type != "procedures_defnoreturn" &&
