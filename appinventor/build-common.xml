@@ -275,16 +275,6 @@
   </target>
 
   <!-- ====================================================================
-       blockslib_OpenBlocks builds:
-       - build/blockslib/OpenBlocks.jar
-       ==================================================================== -->
-  
-  <target name="blockslib_OpenBlocks">
-    <ant inheritAll="false" useNativeBasedir="true" dir="${appinventor.dir}/blockslib"
-         target="OpenBlocks"/>
-  </target>
-
-  <!-- ====================================================================
        blocklyeditor_BlocklyCompile builds:
        - build/blockly-all.js
        ==================================================================== -->

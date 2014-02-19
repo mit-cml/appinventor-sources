@@ -13,6 +13,7 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
@@ -173,7 +174,11 @@ public final class EditorManager {
    */
   public void scheduleAutoSave(FileEditor fileEditor) {
     // Add the file editor to the dirtyFileEditors list.
-    dirtyFileEditors.add(fileEditor);
+    if (!fileEditor.isDamaged()) { // Don't save damaged files
+      dirtyFileEditors.add(fileEditor);
+    } else {
+      OdeLog.log("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
+    }
     scheduleAutoSaveTimer();
   }
 

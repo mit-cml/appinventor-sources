@@ -649,6 +649,10 @@ public final class YoungAndroidFormUpgrader {
       // OpenScreenAnimation and CloseScreenAnimation are now properties.
       srcCompVersion = 11;
     }
+    if (srcCompVersion < 12) {
+      // The AboutScreen property was added.
+      srcCompVersion = 12;
+    }
     return srcCompVersion;
   }
 

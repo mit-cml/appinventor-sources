@@ -11,7 +11,7 @@
   -->
 
   <inherits name='com.google.gwt.user.UserAgent'/>
-  <set-property name="user.agent" value="safari,gecko1_8,ie9" />
+  <set-property name="user.agent" value="safari,gecko1_8" />
 
   <!-- inherits -->
   <inherits name="com.google.gwt.user.User" />

@@ -94,7 +94,6 @@ Blockly.Language.procedures_defnoreturn = {
   },
   onchange: function () {
     this.arguments_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
-    Blockly.WarningHandler.checkErrors.call(this); // handle any new errors
   },
   updateParams_: function() {  // make rendered block reflect the parameter names currently in this.arguments_
     // Check for duplicated arguments.
@@ -738,7 +737,6 @@ Blockly.Language.procedures_callnoreturn = {
         .appendTitle(Blockly.LANG_PROCEDURES_CALLNORETURN_COLLAPSED_PREFIX + this.getTitleValue('PROCNAME'),
                      'COLLAPSED_TEXT'); // Note: this will be overwritten by prepareCollapsedText if name changes.
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: function() {
     return this.getTitleValue('PROCNAME');
   },
@@ -937,7 +935,6 @@ Blockly.Language.procedures_callreturn = {
         .appendTitle(Blockly.LANG_PROCEDURES_CALLRETURN_COLLAPSED_PREFIX + this.getTitleValue('PROCNAME'),
             'COLLAPSED_TEXT'); // Note: this will be overwritten by prepareCollapsedText if name changes.
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   getProcedureCall: Blockly.Language.procedures_callnoreturn.getProcedureCall,
   renameProcedure: Blockly.Language.procedures_callnoreturn.renameProcedure,
   setProcedureParameters:

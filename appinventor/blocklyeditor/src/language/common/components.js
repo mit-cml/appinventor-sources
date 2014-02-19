@@ -79,8 +79,11 @@ Blockly.Language.component_event = {
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
-    this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
+    // [lyn, 12/23/2013] checkIsInDefinition is bogus check that can never happen!
+    // this.errors = [{name:"checkIsInDefinition"}];
+
+    // [lyn, 12/23/2013] Move this out of domToMutation into top-level component_event
+    // this.onchange = Blockly.WarningHandler.checkErrors;
 
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
@@ -238,7 +241,10 @@ Blockly.Language.component_event = {
   },
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
-  }
+  },
+  // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
+  errors: [{name:"checkIfIAmADuplicateEventHandler"}],
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 /**
@@ -310,7 +316,6 @@ Blockly.Language.component_method = {
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     if(!this.isGeneric) {
       this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getMethodTypeObject().name, 'COLLAPSED_TEXT');
@@ -513,7 +518,6 @@ Blockly.Language.component_set_get = {
         this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle( (this.isGeneric ? this.typeName : this.instanceName) + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
 
@@ -680,7 +684,6 @@ Blockly.Language.component_component_block = {
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle(this.instanceName, 'COLLAPSED_TEXT');
   },

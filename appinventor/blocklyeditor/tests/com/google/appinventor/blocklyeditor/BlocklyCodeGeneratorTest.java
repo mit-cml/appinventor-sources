@@ -67,6 +67,12 @@ public class BlocklyCodeGeneratorTest extends TestCase {
     assertEquals("true", result.toString());
   }
 
+  public void testControlsEvalButIgnore() throws Exception {
+    String result = BlocklyTestUtils.generatorTest(
+        testpath + "/tests/com/google/appinventor/generators_unit/controlsEvalButIgnoreTest.js");
+    assertEquals("true", result.toString());
+  }
+
 
 
     // add more unit tests here

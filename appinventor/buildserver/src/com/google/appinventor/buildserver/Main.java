@@ -44,6 +44,10 @@ public final class Main {
     @Option(name = "--childProcessRamMb",
             usage = "Maximum ram that can be used by a child processes, in MB.")
     int childProcessRamMb = 2048;
+
+    @Option(name = "--dexCacheDir",
+            usage = "the directory to cache the pre-dexed libraries")
+    String dexCacheDir = null;
   }
 
   private static CommandLineOptions commandLineOptions = new CommandLineOptions();
@@ -83,7 +87,8 @@ public final class Main {
                                          commandLineOptions.outputDir,
                                          commandLineOptions.isForStemCellApp,
                                          commandLineOptions.isForWireless,
-                                         commandLineOptions.childProcessRamMb);
+                                         commandLineOptions.childProcessRamMb,
+                                         commandLineOptions.dexCacheDir);
     System.exit(result.getResult());
   }
 

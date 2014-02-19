@@ -5,15 +5,15 @@
 
 package com.google.appinventor.client.widgets.properties;
 
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.TextArea;
 
 /**
- * Property editor for short text.  Appears as a one-line box.
+ * Property editor for long text.  Appears as a scrollable, resizable area.
  *
  */
-public class TextPropertyEditor extends TextPropertyEditorBase{
+public class TextAreaPropertyEditor extends TextPropertyEditorBase{
 
-  public TextPropertyEditor() {
-   super(new TextBox());
+  public TextAreaPropertyEditor() {
+   super(new TextArea());
   }
 }

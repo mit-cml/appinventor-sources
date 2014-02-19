@@ -154,7 +154,7 @@ public class TopToolbar extends Composite {
     fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreButton(),
         new DeleteKeystoreAction()));
 
-    // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB}
+    // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
         MESSAGES.wirelessButton(), new WirelessAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
@@ -231,7 +231,6 @@ public class TopToolbar extends Composite {
 
     initWidget(toolbar);
 
-    connectDropDown.setItemEnabled(MESSAGES.resetConnections(), false);
   }
 
   // -----------------------------
@@ -658,12 +657,10 @@ public class TopToolbar extends Composite {
       connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), true);
       connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), true);
       connectDropDown.setItemEnabled(MESSAGES.usbButton(), true);
-      connectDropDown.setItemEnabled(MESSAGES.resetConnections(), false);
     } else {
       connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), false);
       connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), false);
       connectDropDown.setItemEnabled(MESSAGES.usbButton(), false);
-      connectDropDown.setItemEnabled(MESSAGES.resetConnections(), true);
     }
   }
 
