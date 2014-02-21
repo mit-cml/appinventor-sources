@@ -174,7 +174,9 @@ Blockly.ReplMgr.pollYail = function() {
         } catch (err) {
         }
     }
-    this.RefreshAssets(this.formName);
+    if (window.parent.ReplState.state == this.rsState.CONNECTED) {
+        this.RefreshAssets(this.formName);
+    }
 };
 
 Blockly.ReplMgr.resetYail = function(code) {
