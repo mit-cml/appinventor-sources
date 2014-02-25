@@ -615,12 +615,15 @@ public class BlocklyPanel extends HTMLPanel {
     HTML message = new HTML(mess);
     message.setStyleName("DialogBox-message");
     HorizontalPanel holder = new HorizontalPanel();
-    Button ok = new Button(buttonName);
-    ok.addClickListener(new ClickListener() {
-        public void onClick(Widget sender) {
-          doCallBack(callback, buttonName);
-        }
-      });
+    if (buttonName != null) {           // If buttonName and cancelButtonName are null
+      Button ok = new Button(buttonName); // We won't have any buttons and other
+      ok.addClickListener(new ClickListener() { // code is needed to dismiss us
+          public void onClick(Widget sender) {
+            doCallBack(callback, buttonName);
+          }
+        });
+      holder.add(ok);
+    }
     if (cancelButtonName != null) {
       Button cancel = new Button(cancelButtonName);
       cancel.addClickListener(new ClickListener() {
@@ -630,7 +633,6 @@ public class BlocklyPanel extends HTMLPanel {
         });
       holder.add(cancel);
     }
-    holder.add(ok);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);
