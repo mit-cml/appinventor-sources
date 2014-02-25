@@ -26,6 +26,7 @@ import com.google.appinventor.components.runtime.util.GingerbreadUtil;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.SdkLevel;
+import com.google.appinventor.components.runtime.util.XmlUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
@@ -33,6 +34,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import org.json.JSONException;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -730,6 +732,47 @@ public class Web extends AndroidNonvisibleComponent implements Component {
       return JsonUtil.getObjectFromJson(jsonText);
     } catch (JSONException e) {
       throw new IllegalArgumentException("jsonText is not a legal JSON value");
+    }
+  }
+  
+  /**
+   * Parse the given Xml encoded text to produce a corresponding AppInventor value.
+   * A XML tag list [x, y, z] decodes to a list (x y z),  A XML tag with name A and value B,
+   * (denoted as A:B enclosed in curly braces) decodes to a list
+   * ((A B)), that is, a list containing the two-element list (A B).
+   * Note: the value enclosed in a tag is defaultly keyed with "content", and all attributes
+   * are considered as child tags.
+   * 
+   * 
+   * @param xmlText the XML text to parse
+   * @return the parsed text
+   */
+  @SimpleFunction
+  public Object XmlParseText(String xmlText) {
+    try {
+      return parseXmlText(xmlText);
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "XmlParseText",
+          ErrorMessages.ERROR_WEB_XML_TEXT_PARSE_FAILED, xmlText);
+      return "";
+    }
+  }
+  
+  /**
+   * Parses the given XML encoded value.
+   *
+   * @param xmlText the XML text to parse
+   * @return the parsed object
+   * @throws IllegalArgumentException if the XML text can't be legally parsed
+   */
+  // VisibleForTesting
+  static Object parseXmlText(String xmlText) throws IllegalArgumentException {
+    try {
+      return XmlUtil.getObjectFromXml(xmlText);
+    } catch (XmlPullParserException e) {
+      throw new IllegalArgumentException("xmlText is not a legal XML value");
+    } catch (IOException e) {
+      throw new IllegalArgumentException("xmlText is not a legal XML value");
     }
   }
 
