@@ -1070,6 +1070,13 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws ObjectifyException {
           fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
+
+          // <Screen>.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a <Screen>.yail file
+          if (fd == null && fileName.endsWith(".yail")){
+            fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
+          }
+
           Preconditions.checkState(fd != null);
           if (fd.isBlob) {
             // mark the old blobstore blob for deletion
