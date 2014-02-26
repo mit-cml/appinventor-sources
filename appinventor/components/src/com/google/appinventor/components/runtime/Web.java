@@ -736,7 +736,7 @@ public class Web extends AndroidNonvisibleComponent implements Component {
   }
   
   /**
-   * Parse the given Xml encoded text to produce a corresponding AppInventor value.
+   * Decodes the given Xml encoded text to produce a corresponding AppInventor value.
    * A XML tag list [x, y, z] decodes to a list (x y z),  A XML tag with name A and value B,
    * (denoted as A:B enclosed in curly braces) decodes to a list
    * ((A B)), that is, a list containing the two-element list (A B).
@@ -744,29 +744,29 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * are considered as child tags.
    * 
    * 
-   * @param xmlText the XML text to parse
-   * @return the parsed text
+   * @param xmlText the XML text to decode
+   * @return the decoded text
    */
   @SimpleFunction
-  public Object XmlParseText(String xmlText) {
+  public Object XmlTextDecode(String xmlText) {
     try {
-      return parseXmlText(xmlText);
+      return decodeXmlText(xmlText);
     } catch (IllegalArgumentException e) {
-      form.dispatchErrorOccurredEvent(this, "XmlParseText",
-          ErrorMessages.ERROR_WEB_XML_TEXT_PARSE_FAILED, xmlText);
+      form.dispatchErrorOccurredEvent(this, "XmlTextDecode",
+          ErrorMessages.ERROR_WEB_XML_TEXT_DECODE_FAILED, xmlText);
       return "";
     }
   }
   
   /**
-   * Parses the given XML encoded value.
+   * Decodes the given XML encoded value.
    *
-   * @param xmlText the XML text to parse
-   * @return the parsed object
+   * @param xmlText the XML text to decode
+   * @return the decoded object
    * @throws IllegalArgumentException if the XML text can't be legally parsed
    */
   // VisibleForTesting
-  static Object parseXmlText(String xmlText) throws IllegalArgumentException {
+  static Object decodeXmlText(String xmlText) throws IllegalArgumentException {
     try {
       return XmlUtil.getObjectFromXml(xmlText);
     } catch (XmlPullParserException e) {
