@@ -1,4 +1,0 @@
-#|
-$JSON
-{"YaVersion":"41","Source":"Form","Properties":{"$Name":"PersianCat","$Type":"Form","$Version":"6","Uuid":"0","Title":"Persian Cat","$Components":[{"$Name":"Label1","$Type":"Label","$Version":"2","Uuid":"-579999654","FontSize":"30.0","Text":"Do you like this cat?"},{"$Name":"Image1","$Type":"Image","$Version":"1","Uuid":"-103035776","Picture":"PersianCat.jpg"},{"$Name":"HorizontalArrangement1","$Type":"HorizontalArrangement","$Version":"1","Uuid":"1075107705","Width":"-2","$Components":[{"$Name":"ButtonYes","$Type":"Button","$Version":"3","Uuid":"-270651173","Text":"Yes","Width":"-2"},{"$Name":"ButtonNo","$Type":"Button","$Version":"3","Uuid":"1221772364","Text":"No","Width":"-2"},{"$Name":"ButtonNoComment","$Type":"Button","$Version":"3","Uuid":"-1403705601","Text":"No Comment","Width":"-2"}]}]}}
-|#
