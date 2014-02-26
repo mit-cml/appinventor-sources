@@ -35,6 +35,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
@@ -558,24 +559,25 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String getProjectType(final String userId, final long projectId) {
-    final Result<String> projectType = new Result<String>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            projectType.t = pd.type;
-          } else {
-            projectType.t = "";
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return projectType.t;
+//    final Result<String> projectType = new Result<String>();
+//    try {
+//      runJobWithRetries(new JobRetryHelper() {
+//        @Override
+//        public void run(Objectify datastore) {
+//          ProjectData pd = datastore.find(projectKey(projectId));
+//          if (pd != null) {
+//            projectType.t = pd.type;
+//          } else {
+//            projectType.t = "";
+//          }
+//        }
+//      });
+//    } catch (ObjectifyException e) {
+//      throw CrashReport.createAndLogError(LOG, null,
+//          collectUserProjectErrorInfo(userId, projectId), e);
+//    }
+    // We only have one project type, no need to ask about it
+    return YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE;
   }
 
   @Override
