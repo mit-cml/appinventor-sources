@@ -371,7 +371,13 @@ Blockly.ReplMgr.putYail = (function() {
                 installer = "com.android.vending"; // Temp kludge: Treat old Companions as un-updateable (as they are)
             if (installer != "com.android.vending" && window.parent.COMPANION_UPDATE_URL) {
                 var emulator = (rs.replcode == 'emulator'); // Kludgey way to tell
-                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check", "We need to update " + (emulator?"the Companion App installed in your emulator":"your AI2 Companion App") + " when you click \"OK\" below we will attempt this process. You will be required to approve the update and afterwards you will need to reconnect.", "OK", cancelButton, 0, function(response) {
+
+
+
+
+                dialog = new Blockly.ReplMgr.Dialog("Companion Version Check",
+                                                    'Your Companion App is out of date. Click "OK" to start the update. ' +
+"Watch your " + (emulator?"emulator's":"device's") + ' screen because you will be asked to approve the update.', "OK", cancelButton, 0, function(response) {
                     dialog.hide();
                     if (response != "Not Now") {
                         context.triggerUpdate();
@@ -456,7 +462,7 @@ Blockly.ReplMgr.triggerUpdate = function() {
     fetchconn.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             try {
-                showdialog("Got It", "We are now sending the update to your device (or the emulator) look at your device (or emulator) you should be prompted to approve the software installation. When finished you will see a dialog with both \"Done\" and \"Open\" buttons. Select the \"Done\" button.<br /><br />Once Done, you should select Connect->Reset Connection and then retry.");
+                showdialog("Got It", 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".');
                 Blockly.ReplMgr.putAsset("update.apk", goog.crypt.base64.decodeStringToByteArray(this.response),
                                          function() {
                                              // Trigger Update Here
