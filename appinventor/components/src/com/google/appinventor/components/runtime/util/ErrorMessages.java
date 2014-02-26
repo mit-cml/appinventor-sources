@@ -110,7 +110,7 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE = 1104;
   public static final int ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105;
   public static final int ERROR_WEB_HTML_TEXT_DECODE_FAILED = 1106;
-  public static final int ERROR_WEB_XML_TEXT_PARSE_FAILED = 1120;
+  public static final int ERROR_WEB_XML_TEXT_DECODE_FAILED = 1120;
   // There is a gap here because two ContactPicker errors below use the numbers 1107 and 1108.
   public static final int ERROR_WEB_MALFORMED_URL = 1109;
   public static final int ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110;
@@ -329,7 +329,7 @@ public final class ErrorMessages {
         "Unable to post or put the file \"%s\" with the specified URL %s.");
     errorMessages.put(ERROR_WEB_JSON_TEXT_DECODE_FAILED,
         "Unable to decode the JSON text: %s");
-    errorMessages.put(ERROR_WEB_XML_TEXT_PARSE_FAILED,
+    errorMessages.put(ERROR_WEB_XML_TEXT_DECODE_FAILED,
         "Unable to parse the XML text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,
         "Unable to decode the HTML text: %s");
