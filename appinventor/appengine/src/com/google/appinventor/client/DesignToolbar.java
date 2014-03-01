@@ -245,10 +245,12 @@ public class DesignToolbar extends Toolbar {
       projectEditor.selectFileEditor(screen.formEditor);
       toggleEditor(false);
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().SwitchToFormEditor();
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
       Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().SwitchToBlocksEditor();
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
