@@ -43,23 +43,22 @@ import java.io.IOException;
 // if the state restrictions are adequate given the API, and prove that
 // there can't be deadlock or starvation.
 /**
- * Multimedia component that plays audio or video and optionally
+ * Multimedia component that plays audio and optionally
  * vibrates.  It is built on top of {@link android.media.MediaPlayer}.
  *
  * @author halabelson@google.com (Hal Abelson)
  */
 @DesignerComponent(version = YaVersion.PLAYER_COMPONENT_VERSION,
-    description = "Multimedia component that plays audio or video and " +
+    description = "Multimedia component that plays audio and " +
     "controls phone vibration.  The name of a multimedia field is " +
     "specified in the <code>Source</code> property, which can be set in " +
     "the Designer or in the Blocks Editor.  The length of time for a " +
     "vibration is specified in the Blocks Editor in milliseconds " +
     "(thousandths of a second).\n" +
-    "<p>For supported sound and video formats, see " +
+    "<p>For supported audio formats, see " +
     "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
     " target=\"_blank\">Android Supported Media Formats</a>.</p>\n" +
-    "<p>If you will only be playing sound files and vibrating, not using " +
-    "video, this component is best for long sound files, such as songs, " +
+    "<p>This component is best for long sound files, such as songs, " +
     "while the <code>Sound</code> component is more efficient for short " +
     "files, such as sound effects.</p>",
     category = ComponentCategory.MEDIA,
@@ -113,7 +112,7 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Returns the path to the audio or video source
+   * Returns the path to the audio source
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
@@ -122,12 +121,12 @@ public final class Player extends AndroidNonvisibleComponent
   }
 
   /**
-   * Sets the audio or video source.
+   * Sets the audio source.
    *
    * <p/>See {@link MediaUtil#determineMediaSource} for information about what
    * a path can be.
    *
-   * @param path  the path to the audio or video source
+   * @param path  the path to the audio source
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ASSET,
       defaultValue = "")

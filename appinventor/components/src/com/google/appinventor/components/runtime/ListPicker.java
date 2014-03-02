@@ -73,10 +73,10 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * Selection property getter method.
    */
   @SimpleProperty(
-      description = "<p>The selected item.  When directly changed by the " +
+      description = "The selected item.  When directly changed by the " +
       "programmer, the SelectionIndex property is also changed to the first " +
       "item in the ListPicker with the given value.  If the value does not " +
-      "appear, SelectionIndex will be set to 0.</p>",
+      "appear, SelectionIndex will be set to 0.",
       category = PropertyCategory.BEHAVIOR)
   public String Selection() {
     return selection;
@@ -198,9 +198,10 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   /**
    * Title property getter method.
    *
-   * @return  list picker caption
+   * @return  list picker title
    */
-  @SimpleProperty(category = PropertyCategory.APPEARANCE)
+    @SimpleProperty(category = PropertyCategory.APPEARANCE,
+                    description = "Optional title displayed at the top of the list of choices.")
   public String Title() {
     return title;
   }
