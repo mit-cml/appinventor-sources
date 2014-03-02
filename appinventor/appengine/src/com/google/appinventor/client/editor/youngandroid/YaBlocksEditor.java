@@ -223,7 +223,7 @@ public final class YaBlocksEditor extends FileEditor
 
       Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
           .getWidget(2));
-      Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
+      //Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
@@ -273,7 +273,7 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.setVisible(true);
 
     Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
-    Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
+    //Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
     Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     AssetListBox.getAssetListBox().setVisible(true);
