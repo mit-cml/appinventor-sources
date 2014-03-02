@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -196,6 +197,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
     locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     locationCriteria = new Criteria();
     myLocationListener = new MyLocationListener();
+    allProviders = new ArrayList<String>();
 
   }
 
