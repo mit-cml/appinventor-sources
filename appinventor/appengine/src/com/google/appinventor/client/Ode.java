@@ -595,20 +595,20 @@ public class Ode implements EntryPoint {
     // or the blocks editor. They share the same screen real estate.
     SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
     sourceStructureBox.setWidth("100%");
-    //structureAndAssets.add(sourceStructureBox);
+    structureAndAssets.add(sourceStructureBox);
     BlockSelectorBox blockSelectorBox = BlockSelectorBox.getBlockSelectorBox();
     blockSelectorBox.setWidth("100%");
-    //structureAndAssets.add(blockSelectorBox);  // initially not visible
+    structureAndAssets.add(blockSelectorBox);  // initially not visible
     AssetListBox assetListBox = AssetListBox.getAssetListBox();
     assetListBox.setWidth("100%");
-    //structureAndAssets.add(assetListBox);
-    //structureAndAssets.setWidth("100%");
+    structureAndAssets.add(assetListBox);
+    structureAndAssets.setWidth("100%");
     
-    SplitLayoutPanel componentsAndMedia = new SplitLayoutPanel();
-    componentsAndMedia.addNorth(sourceStructureBox, 600);
-    componentsAndMedia.add(assetListBox);
+    //SplitLayoutPanel componentsAndMedia = new SplitLayoutPanel();
+    //componentsAndMedia.addNorth(sourceStructureBox, 600);
+    //componentsAndMedia.add(assetListBox);
     
-    workColumns.addEast(componentsAndMedia, 200);
+    workColumns.addEast(structureAndAssets, 200);
     
     Box viewerbox = ViewerBox.getViewerBox();
     workColumns.add(viewerbox);
