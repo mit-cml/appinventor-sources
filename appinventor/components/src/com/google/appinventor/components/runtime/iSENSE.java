@@ -32,7 +32,7 @@ import edu.uml.cs.isense.objects.RProjectField;
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "isense.jar, httpmime.jar")
 @DesignerComponent(version = YaVersion.ISENSE_PROJECT_VERSION,
-                   description = "A component that provides a high-level interface to iSENSEProject.org ",
+                   description = "A component that provides a high-level interface to iSENSEProject.org",
                    category = ComponentCategory.SOCIAL,
                    nonVisible = true,
                    iconName = "images/isense.png")
@@ -41,8 +41,8 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   private int ProjectID;
   private String Email;
   private String Password;
-
   private API api;
+  private boolean InProgress;
 
   public iSENSE(ComponentContainer container) {
     super(container.$form());
@@ -87,85 +87,116 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     this.Password = Password;
   }
 
-  // Login
-  @SimpleFunction(description = "Log into iSENSE")
-  public void Login() {
-    AsynchUtil.runAsynchronously(new Runnable() {
-      public void run() {
-      }
-    });
-
-    boolean login = api.createSession(Email, Password);
-    if (login == true) {
-      LoginSucceeded();
-    } else {
-      LoginFailed();
-    }
-  }
+  //
+  // // Login
+  // @SimpleFunction(description = "Log into iSENSE")
+  // public void Login() {
+  // AsynchUtil.runAsynchronously(new Runnable() {
+  // public void run() {
+  // while (InProgress)
+  // ;// wait for another aysnc task to finish
+  // InProgress = true;
+  // boolean login = api.createSession(Email, Password);
+  // if (login == true) {
+  // LoginSucceeded();
+  // } else {
+  // LoginFailed();
+  // }
+  // InProgress = false;
+  // }
+  // });
+  // }
 
   // upload dataset
   @SimpleFunction(description = "Upload Data Set to iSENSE")
-  public void UploadDataSet(String DataSetName, YailList Fields, YailList Data)
-      throws JSONException {
-    ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
-    JSONObject jData = new JSONObject();
-    for (int i = 0; i < Fields.size(); i++) {
-      for (int j = 0; j < projectFields.size(); j++) {
-        if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
-          jData.put("" + projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+  public void UploadDataSet(final String DataSetName, final YailList Fields, final YailList Data) {
+    AsynchUtil.runAsynchronously(new Runnable() {
+      public void run() {
+        // Login, if failed trigger event
+        boolean login = api.createSession(Email, Password);
+        if (login == false) {
+          LoginFailed();
+          return;
+        }
+        // Get fields from project
+        ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
+        //
+        JSONObject jData = new JSONObject();
+        for (int i = 0; i < Fields.size(); i++) {
+          for (int j = 0; j < projectFields.size(); j++) {
+            if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
+              try {
+                jData.put("" + projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+              } catch (JSONException e) {
+                UploadDataSetFailed();
+                e.printStackTrace();
+                return;
+              }
+            }
+          }
+        }
+        Log.i("iSENSE", "JSON Upload: " + jData.toString());
+        int dataset = api.jsonDataUpload(ProjectID, jData, DataSetName);
+        if (dataset == -1) {
+          UploadDataSetFailed();
+        } else {
+          UploadDataSetSucceeded(dataset);
         }
       }
-    }
-    Log.i("iSENSE", jData.toString());
-    int dataset = api.jsonDataUpload(ProjectID, jData, DataSetName);
-    if (dataset == -1) {
-      UploadDataSetFailed();
-    } else {
-      UploadDataSetSucceeded(dataset);
-    }
+    });
   }
 
-  // upload photos to dataset
+  // upload photos to Data Set
   @SimpleFunction(description = "Upload Photos to iSENSE")
-  public void UploadPhotoToDataSet(int DataSetID, String Photo) {
-    String path = Photo.substring(7);
-    File tmp = new File(path);
-    int mediaid = api.uploadDataSetMedia(DataSetID, tmp);
-    if (mediaid == -1) {
-      UploadPhotoToDataSetFailed();
-    } else {
-      UploadPhotoToDataSetSucceeded(mediaid);
-    }
-  }
-
-  // append to a data set
-  @SimpleFunction(description = "Append to a preexisting Data Set")
-  public void AppendDataSet(int DataSetID, YailList Fields, YailList Data) throws JSONException {
-    ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
-    JSONObject jData = new JSONObject();
-    for (int i = 0; i < Fields.size(); i++) {
-      for (int j = 0; j < projectFields.size(); j++) {
-        if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
-          jData.put("" + projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+  public void UploadPhotoToDataSet(final int DataSetID, final String Photo) {
+    AsynchUtil.runAsynchronously(new Runnable() {
+      public void run() {
+        // Login, if failed trigger event
+        boolean login = api.createSession(Email, Password);
+        if (login == false) {
+          LoginFailed();
+          return;
+        }
+        // upload photos
+        String path = Photo.substring(7);
+        File tmp = new File(path);
+        if (tmp.exists() == false) {
+          UploadPhotoToDataSetFailed();
+          return;
+        }
+        int mediaid = api.uploadDataSetMedia(DataSetID, tmp);
+        if (mediaid == -1) {
+          UploadPhotoToDataSetFailed();
+        } else {
+          UploadPhotoToDataSetSucceeded(mediaid);
         }
       }
-    }
-    Log.i("iSENSE", jData.toString());
-    api.appendDataSetData(DataSetID, jData);
-    AppendDataSetSucceeded(DataSetID);
+    });
   }
 
-  @SimpleFunction(description = "Gets the current time formatting correctly for iSENSE")
+  // // append to a data set
+  // @SimpleFunction(description = "Append to a preexisting Data Set")
+  // public void AppendDataSet(int DataSetID, YailList Fields, YailList Data) throws JSONException {
+  // ArrayList<RProjectField> projectFields = api.getProjectFields(ProjectID);
+  // JSONObject jData = new JSONObject();
+  // for (int i = 0; i < Fields.size(); i++) {
+  // for (int j = 0; j < projectFields.size(); j++) {
+  // if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
+  // jData.put("" + projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+  // }
+  // }
+  // }
+  // Log.i("iSENSE", jData.toString());
+  // api.appendDataSetData(DataSetID, jData);
+  // AppendDataSetSucceeded(DataSetID);
+  // }
+
+  @SimpleFunction(description = "Gets the current time. It is formated correctly for iSENSE")
   public String GetTime() {
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     return sdf.format(cal.getTime()).toString();
   }
-
-  // @SimpleFunction(description = "logcat")
-  // public void TestLogCat(String str) {
-  // Log.i("iSENSE", str);
-  // }
 
   @SimpleEvent(description = "iSENSE Upload DataSet Succeeded")
   public void UploadDataSetSucceeded(int DataSetID) {
@@ -177,15 +208,15 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     EventDispatcher.dispatchEvent(this, "UploadDataSetFailed");
   }
 
-  @SimpleEvent(description = "iSENSE Append DataSet Succeeded")
-  public void AppendDataSetSucceeded(int DataSetID) {
-    EventDispatcher.dispatchEvent(this, "AppendDataSetSucceeded", DataSetID);
-  }
-
-  @SimpleEvent(description = "iSENSE Append DataSet Failed")
-  public void AppendDataSetFailed() {
-    EventDispatcher.dispatchEvent(this, "AppendDataSetFailed");
-  }
+  // @SimpleEvent(description = "iSENSE Append DataSet Succeeded")
+  // public void AppendDataSetSucceeded(int DataSetID) {
+  // EventDispatcher.dispatchEvent(this, "AppendDataSetSucceeded", DataSetID);
+  // }
+  //
+  // @SimpleEvent(description = "iSENSE Append DataSet Failed")
+  // public void AppendDataSetFailed() {
+  // EventDispatcher.dispatchEvent(this, "AppendDataSetFailed");
+  // }
 
   @SimpleEvent(description = "iSENSE Upload Photo To DataSet Succeeded")
   public void UploadPhotoToDataSetSucceeded(int PhotoID) {
@@ -197,10 +228,10 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     EventDispatcher.dispatchEvent(this, "UploadPhotoToDataSetFailed");
   }
 
-  @SimpleEvent(description = "iSENSE Login Succeeded")
-  public void LoginSucceeded() {
-    EventDispatcher.dispatchEvent(this, "LoginSucceeded");
-  }
+  // @SimpleEvent(description = "iSENSE Login Succeeded")
+  // public void LoginSucceeded() {
+  // EventDispatcher.dispatchEvent(this, "LoginSucceeded");
+  // }
 
   @SimpleEvent(description = "iSENSE Login Failed")
   public void LoginFailed() {
