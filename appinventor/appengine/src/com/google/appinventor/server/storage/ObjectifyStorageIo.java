@@ -103,6 +103,9 @@ public class ObjectifyStorageIo implements  StorageIo {
     GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 
   private final String GCS_BUCKET_NAME = Flag.createFlag("gcs.bucket", "").get();
+
+  private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
+
   private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
 
 
@@ -1065,6 +1068,11 @@ public class ObjectifyStorageIo implements  StorageIo {
     final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
     final boolean useGCS = useGCSforFile(fileName, content.length);
     final Result<String> oldBlobstorePath = new Result<String>();
+    final boolean considerBackup = (useGcs?((fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
+        || (fileName.contains("src/") && fileName.endsWith(".bky")) // Blockly files
+        || (fileName.contains("src/") && fileName.endsWith(".scm"))) // Form Definitions
+      :false);
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         FileData fd;
@@ -1134,6 +1142,21 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.isBlob = false;
             fd.blobstorePath = null;
             fd.content = content;
+          }
+          if (considerBackup) {
+            if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
+              try {
+                String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
+                GcsOutputChannel outputChannel =
+                    gcsService.createOrReplace((new GcsFilename(GCS_BUCKET_NAME, gcsName)), GcsFileOptions.getDefaultInstance());
+                outputChannel.write(ByteBuffer.wrap(content));
+                outputChannel.close();
+                fd.lastBackup = System.currentTimeMillis();
+              } catch (IOException e) {
+                throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName + "(backup)"), e);
+              }
+            }
           }
           datastore.put(fd);
           modTime.t = updateProjectModDate(datastore, projectId);
@@ -1852,6 +1875,12 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
+  }
+
+  // Return time in ISO_8660 format
+  private static String formattedTime() {
+    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    return formatter.format(new java.util.Date());
   }
 
 }
