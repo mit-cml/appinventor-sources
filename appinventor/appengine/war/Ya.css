@@ -1726,6 +1726,15 @@ textarea::-webkit-input-placeholder {
   background-color: #b3c833;
   color: white;
 }
+.gallery-app-details .app-attributor-username {
+  margin-right: 5px;
+  color: #b3c833;
+  border-bottom: 1px dotted #b3c833;
+  display: inline;
+}
+.gallery-app-details .app-attributor-label {
+  display: inline;
+}
 .app-meta {
   font-size: 12px;
   font-weight: 900;

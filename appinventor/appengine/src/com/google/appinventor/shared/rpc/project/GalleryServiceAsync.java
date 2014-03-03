@@ -117,8 +117,19 @@ public interface GalleryServiceAsync {
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
 
   /**
+  * @see GalleryService#addAppReport(long galleryId, String report)
+  */
+  void addAppReport(long galleryId, String report, AsyncCallback<java.lang.Long> date);
+
+  /**
+  * @see GalleryService#isReportedByUser(long galleryId)
+  */
+
+  void isReportedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
+  /**
    * @see GalleryService#saveAttribution(long galleryId, long attributionId)
    */
+
   void saveAttribution(long galleryId, long attributionId, AsyncCallback<java.lang.Long> id);
 
   /**

@@ -26,6 +26,7 @@ import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.server.storage.GalleryAppData;
 import com.google.appinventor.server.storage.GalleryCommentData;
 import com.google.appinventor.server.storage.GalleryAppLikeData;
+import com.google.appinventor.server.storage.GalleryAppReportData;
 import com.google.appinventor.server.storage.GalleryAppAttributionData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -114,6 +115,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryCommentData.class);
     ObjectifyService.register(GalleryAppLikeData.class);
     ObjectifyService.register(GalleryAppAttributionData.class);
+    ObjectifyService.register(GalleryAppReportData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -688,6 +690,41 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return theDate.t;
   }
   /**
+   * check if an app is reported by a user
+   * @param galleryId
+   *          id of gallery app that was unlike on
+   * @param userId
+   *          id of user who unliked
+   * @return true if relation exists
+   */
+  @Override
+  public boolean isReportedByUser(final long galleryId, final String userId) {
+    final Result<Boolean> bool = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          boolean find = false;
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryAppReportData appReportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey)) {
+            if(appReportData.userId.equals(userId)){
+              find = true;
+              bool.t = true;
+              break;
+            }
+          }
+          if(!find){
+            bool.t = false;
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.isReportedByUser", e);
+    }
+    return bool.t;
+  }
+  /**
    * Returns a list of reports (flags) for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryAppReport}
@@ -870,13 +907,17 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return "galleryApp=" + galleryAppId;
   }
 
-   private Key<GalleryAppData> galleryKey(long galleryId) {
+  private Key<GalleryAppData> galleryKey(long galleryId) {
     return new Key<GalleryAppData>(GalleryAppData.class, galleryId);
   }
 
 
   private Key<GalleryCommentData> galleryCommentKey(long commentId) {
     return new Key<GalleryCommentData>(GalleryCommentData.class, commentId);
+  }
+
+  private Key<GalleryAppReportData> galleryReportKey(long appReportId) {
+    return new Key<GalleryAppReportData>(GalleryAppReportData.class, appReportId);
   }
   /**
    * Call job.run() in a transaction and commit the transaction if no exceptions

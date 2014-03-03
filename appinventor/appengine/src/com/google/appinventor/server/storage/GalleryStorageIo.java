@@ -166,6 +166,13 @@ public interface GalleryStorageIo {
    */
   long addAppReport(long galleryId,String userId, String report);
   /**
+  * check if an app is reported by a user
+  * @param galleryId id of gallery app that was like
+  * @param userId id of user who likes it
+  * @return true if relation exists
+  */
+  boolean isReportedByUser(long galleryId,String userId);
+  /**
    * Returns a list of reports (flags) for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryAppReport}

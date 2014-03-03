@@ -156,6 +156,20 @@ public interface GalleryService extends RemoteService {
   boolean isLikedByUser(long galleryId);
 
   /**
+  * adds a report (flag) to a gallery app
+  * @param galleryId id of gallery app that was commented on
+  * @param report report
+  * @return the id of the new report
+  */
+  long addAppReport(long galleryId, String report);
+
+  /**
+  * check if an app is reported by a user
+  * @param galleryId the id of the app
+  */
+  boolean isReportedByUser(long galleryId);
+
+  /**
    * save the attribution of an app
    * @param galleryId the id of the app
    * @param attributionId the id of the attribution app

@@ -87,6 +87,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appHeader;
   private FlowPanel appInfo;
   private FlowPanel appAction;
+  private FlowPanel appActionSub;
   private FlowPanel appMeta;
   private FlowPanel appDates;
   private FlowPanel appDescription;
@@ -454,16 +455,17 @@ panel
       initTryitButton(); 
       initLikeitButton();
       initRemixFromButton();
+      initAddReportField();
   }
   /**
    * Helper method called by constructor to initialize the remix button
    */
   private void initRemixFromButton(){
-    final Label remixFrom = new Label("Remixed From");
+    final Label remixFrom = new Label("Remixed From ");
     final Label authorNameRemixedFrom = new Label();
     appInfo.add(authorNameRemixedFrom);
-    authorNameRemixedFrom.addStyleName("app-username");
-    authorNameRemixedFrom.addStyleName("app-subtitle");
+    remixFrom.addStyleName("app-attributor-label");
+    authorNameRemixedFrom.addStyleName("app-attributor-username");
     final Button remixTo = new Button("Remixed To(only shows first one in the list)");
     appAction.add(remixFrom);
     appAction.add(authorNameRemixedFrom);
@@ -526,9 +528,70 @@ panel
   /**
    * Helper method called by constructor to initialize the like area
    */
+  private void initAddReportField() {
+    final Button quoteAReport = new Button("Report It");
+    final TextArea reportText = new TextArea();
+    final Button submitReport = new Button("Submit");
+    appAction.add(quoteAReport);
+    quoteAReport.addStyleName("app-subtitle");
+    FlowPanel panel = new FlowPanel();
+    FlowPanel subpanel = new FlowPanel();
+    subpanel.add(reportText);
+    subpanel.add(submitReport);
+    panel.add(subpanel);
+    appAction.add(panel);
+    submitReport.setVisible(false);
+    reportText.setVisible(false);
+
+
+    final OdeAsyncCallback<Boolean> isReportdByUserCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if(bool){//already reported, cannot report again
+              submitReport.setEnabled(false);
+              submitReport.setVisible(false);
+              reportText.setVisible(false);
+              quoteAReport.setEnabled(false);
+            }else{ //after user click, a report field will be pull out
+              quoteAReport.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                  submitReport.setEnabled(true);
+                  submitReport.setVisible(true);
+                  reportText.setVisible(true);
+                }
+              });
+              submitReport.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                  final OdeAsyncCallback<Long> reportClickCallback = new OdeAsyncCallback<Long>(
+                      // failure message
+                      MESSAGES.galleryError()) {
+                        @Override
+                        public void onSuccess(Long id) {
+                          submitReport.setEnabled(false);
+                          submitReport.setVisible(false);
+                          reportText.setVisible(false);
+                          quoteAReport.setEnabled(false);
+                        }
+                    };
+                  Ode.getInstance().getGalleryService().addAppReport(app.getGalleryAppId(), reportText.getText(),
+                      reportClickCallback);
+                }
+              });
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isReportedByUser(app.getGalleryAppId(),
+        isReportdByUserCallback);
+  }
+
+  /**
+   * Helper method called by constructor to initialize the like area
+   */
   private void initLikeitButton() {
     final Image likeButton = new Image();
-    likeButton.setUrl("http://i.imgur.com/jyTeyCJ.png");
+    likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");
     likeButton.addClickHandler(new ClickHandler() {
       public void onClick(ClickEvent event) {
         final OdeAsyncCallback<Integer> changeLikeCallback = new OdeAsyncCallback<Integer>(
