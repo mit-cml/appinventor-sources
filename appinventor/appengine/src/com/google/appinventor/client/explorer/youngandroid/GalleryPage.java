@@ -466,12 +466,15 @@ panel
     appInfo.add(authorNameRemixedFrom);
     remixFrom.addStyleName("app-attributor-label");
     authorNameRemixedFrom.addStyleName("app-attributor-username");
-    final Button remixTo = new Button("Remixed To(only shows first one in the list)");
     appAction.add(remixFrom);
     appAction.add(authorNameRemixedFrom);
     remixFrom.setVisible(false);
     authorNameRemixedFrom.setVisible(false);
-    //appAction.add(remixTo);
+
+    final Label remixTo = new Label("Remixed To");
+    remixTo.addStyleName("app-attributor-username");
+    remixTo.setVisible(false);
+    appAction.add(remixTo);
 
     final Result<GalleryApp> attributionGalleryApp = new Result<GalleryApp>();
     final OdeAsyncCallback<Long> remixedFromCallback = new OdeAsyncCallback<Long>(
@@ -500,6 +503,7 @@ panel
     Ode.getInstance().getGalleryService().remixedFrom(app.getGalleryAppId(), remixedFromCallback);
 
 
+
     authorNameRemixedFrom.addClickHandler(new ClickHandler() {
         public void onClick(ClickEvent event) {
           if(attributionGalleryApp.t == null){
@@ -510,23 +514,29 @@ panel
         }
     });
 
-    remixTo.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
-          // failure message
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(List<GalleryApp> apps) {
-              Ode.getInstance().switchToGalleryAppView(apps.get(0), GalleryPage.VIEWAPP);
-            }
-          };
-        Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
-      }
-    });
+    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(final List<GalleryApp> apps) {
+          //Ode.getInstance().switchToGalleryInheritanceView(apps);
+          if(apps.size() != 0){
+            remixTo.setVisible(true);
+            remixTo.addClickHandler(new ClickHandler() {
+              public void onClick(ClickEvent event) {
+                Ode.getInstance().switchToGalleryInheritanceView(apps);
+              }
+            });
+          }
+        }
+      };
+    Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
   }
 
+
+
   /**
-   * Helper method called by constructor to initialize the like area
+   * Helper method called by constructor to initialize the Report area
    */
   private void initAddReportField() {
     final Button quoteAReport = new Button("Report It");

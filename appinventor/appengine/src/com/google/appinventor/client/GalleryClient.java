@@ -40,6 +40,7 @@ public class GalleryClient {
   public static final int REQUEST_BYDEVELOPER=7;
   public static final int REQUEST_BYTAG=8;
   public static final int REQUEST_ALL=9;
+  public static final int REQUEST_REMIXED_TO=10;
 
   private static volatile GalleryClient  instance= null;
   private GalleryClient () {
@@ -161,6 +162,14 @@ public class GalleryClient {
     // ok, this is below the call back, but of course it is done first 
     ode.getGalleryService().getMostDownloadedApps(start,count,callback);
   
+  }
+  /**
+   * GetRemixedToList gets children list that apps remixed to then tells listeners
+   */
+  public void GetRemixedToList(List<GalleryApp> apps) {
+    for (GalleryRequestListener listener:listeners) {
+      listener.onAppListRequestCompleted(apps, REQUEST_REMIXED_TO);
+    }
   }
 
   public void GetMostViewed(int start, int count) {

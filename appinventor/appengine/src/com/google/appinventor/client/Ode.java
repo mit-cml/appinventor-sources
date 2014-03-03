@@ -7,6 +7,10 @@ package com.google.appinventor.client;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
@@ -14,6 +18,7 @@ import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
+import com.google.appinventor.client.boxes.GalleryInheritanceListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
 import com.google.appinventor.client.boxes.ProfileBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
@@ -100,6 +105,7 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
  *
  */
 public class Ode implements EntryPoint {
+  private static final Logger LOG = Logger.getLogger(Ode.class.getName());
   // I18n messages
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
@@ -145,6 +151,7 @@ public class Ode implements EntryPoint {
   private static final int GALLERY = 2;
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
+  private static final int GALLERYINHERITANCE = 5;
   private static int currentView = DESIGNER;
 
   /*
@@ -169,6 +176,7 @@ public class Ode implements EntryPoint {
   private int galleryTabIndex;
   private int galleryAppTabIndex;
   private int userProfileTabIndex;
+  private int galleryInheritanceTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -314,7 +322,15 @@ public class Ode implements EntryPoint {
       ErrorReporter.reportInfo(MESSAGES.chooseProject());
     }
   }
-
+  /**
+   * Switch to the Gallery Inheritance tab
+   */
+  public void switchToGalleryInheritanceView(List<GalleryApp> apps) {
+    currentView = GALLERYINHERITANCE;
+    //GalleryInheritanceListBox.getGalleryInheritanceListBox().setAppAttributionList(apps);
+    GalleryInheritanceListBox.getGalleryInheritanceListBox().getGalleryInheritanceList().showRemixedToList(apps);
+    deckPanel.showWidget(galleryInheritanceTabIndex);
+  }
   /**
    * Switch to the Debugging tab
    */
@@ -673,7 +689,20 @@ public class Ode implements EntryPoint {
     userProfileTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(uVertPanel);
     // KM: DEBUGGING END
-    
+
+    // Gallery Inheritance tab
+    VerticalPanel gIVertPanel = new VerticalPanel();
+    gIVertPanel.setWidth("100%");
+    gIVertPanel.setSpacing(0);
+    HorizontalPanel appInheritanceListPanel = new HorizontalPanel();
+    appInheritanceListPanel.setWidth("100%");
+
+    appInheritanceListPanel.add(GalleryInheritanceListBox.getGalleryInheritanceListBox());
+
+    gIVertPanel.add(appInheritanceListPanel);
+    galleryInheritanceTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(gIVertPanel);
+
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {
 
