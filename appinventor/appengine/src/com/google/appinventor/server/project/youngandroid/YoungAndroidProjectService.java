@@ -64,6 +64,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -537,11 +538,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.close();
 
       int responseCode = 0;
-      try {
-          responseCode = connection.getResponseCode();
-      } catch (IOException e) {
-          throw new CouldNotFetchException();
-      }
+      responseCode = connection.getResponseCode();
       if (responseCode != HttpURLConnection.HTTP_OK) {
         // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
         // can provide an appropriate error message to the user.
@@ -580,13 +577,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           buildErrorMsg("MalformedURLException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (IOException e) {
+      // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
+      Throwable wrappedException = e;
+      int zipFileLength = zipFile.getContent().length;
+      if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
+        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+        wrappedException = new IllegalArgumentException(
+          "Sorry, can't package projects larger than 5MB."
+          + " Yours is " + lengthMbs + "MB.", e);
+      }
       CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", e.getMessage());
-    } catch (CouldNotFetchException e) {
-        CrashReport.createAndLogError(LOG, null,
-                buildErrorMsg("CouldNotFetchException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", " Can not contact the BuildServer at " + buildServerUrl.getHost());
+          buildErrorMsg("IOException", buildServerUrl, userId, projectId), wrappedException);
+      return new RpcResult(false, "", wrappedException.getMessage());
     } catch (EncryptionException e) {
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
@@ -598,9 +600,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
         int zipFileLength = zipFile.getContent().length;
         if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
+          String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
           wrappedException = new IllegalArgumentException(
               "Sorry, can't package projects larger than 5MB."
-              + " Yours is " + zipFileLength + " bytes.", e);
+              + " Yours is " + lengthMbs + "MB.", e);
         } else {
           wrappedException = new IllegalArgumentException(
               "Sorry, project was too large to package (" + zipFileLength + " bytes)");
@@ -747,14 +750,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       }
   }
 
-  /**
-   * Special Exception for the open connect
-   */
-  class CouldNotFetchException extends Exception {
-      String mistake;
-      public CouldNotFetchException() {
-          super();
-          mistake = "Could not fetch the Build Server URL";
-      }
+  // Nicely format floating number using only two decimal places
+  private String format(double input) {
+    DecimalFormat formatter = new DecimalFormat("###.##");
+    return formatter.format(input);
   }
 }
+
