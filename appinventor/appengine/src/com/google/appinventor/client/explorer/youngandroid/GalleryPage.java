@@ -8,8 +8,8 @@ package com.google.appinventor.client.explorer.youngandroid;
 import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
-import com.google.appinventor.client.explorer.project.Project;
 
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -20,7 +20,6 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
-
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
@@ -42,7 +41,6 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
-
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -358,7 +356,7 @@ panel
     if (!newOrUpdateApp()) {
     
       appSingle.add(appsByAuthor);
-    //  appSingle.add(appsByTags);   
+    //  appSingle.add(appsByTags);
        
     }
     galleryGUI.add(appSingle);
@@ -455,7 +453,76 @@ panel
     else
       initTryitButton(); 
       initLikeitButton();
+      initRemixFromButton();
   }
+  /**
+   * Helper method called by constructor to initialize the remix button
+   */
+  private void initRemixFromButton(){
+    final Label remixFrom = new Label("Remixed From");
+    final Label authorNameRemixedFrom = new Label();
+    appInfo.add(authorNameRemixedFrom);
+    authorNameRemixedFrom.addStyleName("app-username");
+    authorNameRemixedFrom.addStyleName("app-subtitle");
+    final Button remixTo = new Button("Remixed To(only shows first one in the list)");
+    appAction.add(remixFrom);
+    appAction.add(authorNameRemixedFrom);
+    remixFrom.setVisible(false);
+    authorNameRemixedFrom.setVisible(false);
+    //appAction.add(remixTo);
+
+    final Result<GalleryApp> attributionGalleryApp = new Result<GalleryApp>();
+    final OdeAsyncCallback<Long> remixedFromCallback = new OdeAsyncCallback<Long>(
+    // failure message
+    MESSAGES.galleryError()) {
+    @Override
+      public void onSuccess(final Long attributionId) {
+        if(attributionId != -1){
+          remixFrom.setVisible(true);
+          authorNameRemixedFrom.setVisible(true);
+          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(GalleryApp AppRemixedFrom) {
+              authorNameRemixedFrom.setText(AppRemixedFrom.getTitle());
+              attributionGalleryApp.t = AppRemixedFrom;
+            }
+          };
+          Ode.getInstance().getGalleryService().getApp(attributionId, callback);
+        }else{
+          attributionGalleryApp.t = null;
+        }
+      }
+    };
+    Ode.getInstance().getGalleryService().remixedFrom(app.getGalleryAppId(), remixedFromCallback);
+
+
+    authorNameRemixedFrom.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          if(attributionGalleryApp.t == null){
+            //authorNameRemixedFrom.setEnabled(false);
+          }else{
+            Ode.getInstance().switchToGalleryAppView(attributionGalleryApp.t, GalleryPage.VIEWAPP);
+          }
+        }
+    });
+
+    remixTo.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(List<GalleryApp> apps) {
+              Ode.getInstance().switchToGalleryAppView(apps.get(0), GalleryPage.VIEWAPP);
+            }
+          };
+        Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
+      }
+    });
+  }
+
   /**
    * Helper method called by constructor to initialize the like area
    */
@@ -562,8 +629,20 @@ panel
                   Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
                       gApp.getGalleryAppId());
                   Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-                }
-              };
+
+                  final OdeAsyncCallback<Long> attributionCallback = new OdeAsyncCallback<Long>(
+                          MESSAGES.galleryError()) {
+                        @Override
+                        public void onSuccess(Long result) {
+
+                        }
+                  };
+
+                  Ode.getInstance().getGalleryService().saveAttribution(gApp.getGalleryAppId(), app.getProjectAttributionId(),
+                          attributionCallback);
+
+                }//end of projectCallback#onSuccess
+              };//end of projectCallback
             
               Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(), 
                   gApp.getGalleryAppId(), projectCallback);
@@ -800,6 +879,12 @@ panel
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
     creation.setText("Created on " + dateFormat.format(creationDate));
     update.setText("Updated on " + dateFormat.format(updateDate));
+  }
+
+  // Create a final object of this class to hold a modifiable result value that
+  // can be used in a method of an inner class.
+  private class Result<T> {
+    T t;
   }
  
    /* this is admin code that was used to temporarily to get all old apps indexed ...

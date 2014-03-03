@@ -90,6 +90,15 @@ public final class Project {
   }
 
   /**
+   * Returns the id of this project's attribution.
+   *
+   * @return  attribution id
+   */
+  public long getAttributionId() {
+    return projectInfo.getAttributionId();
+  }
+
+  /**
    * Returns the name of this project.
    *
    * @return  project name

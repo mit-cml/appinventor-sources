@@ -29,6 +29,11 @@ public class UserProject implements IsSerializable {
   private String projectType;
 
   /**
+   * The attribution ID.
+   */
+  private long attributionId;
+
+  /**
    * The date the project was created expressed in milliseconds since
    * January 1, 1970 UTC
    */
@@ -60,13 +65,14 @@ public class UserProject implements IsSerializable {
    * @param creationDate the creation date
    * @param long galleryId the gallery id
    */
-  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId) {
+  public UserProject(long projectId, String projectName, String projectType, long creationDate, long galleryId, long attributionId) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = creationDate;
     this.galleryId = galleryId;
+    this.attributionId = attributionId;
   }
 
   /**
@@ -77,13 +83,27 @@ public class UserProject implements IsSerializable {
    * @param projectType the project type
    */
   public UserProject(long projectId, String projectName, String projectType, long creationDate,
-      long modificationDate, long galleryId) {
+      long modificationDate, long galleryId, long attributionId) {
     this.projectId = projectId;
     this.projectName = projectName;
     this.projectType = projectType;
     this.creationDate = creationDate;
     this.modificationDate = modificationDate;
     this.galleryId = galleryId;
+    this.attributionId = attributionId;
+  }
+
+  /**
+   * Returns the attribution ID.
+   *
+   * @return the attributionId
+   */
+  public long getAttributionId() {
+    return attributionId;
+  }
+
+  public void setAttributionId(long attributionId) {
+	    this.attributionId = attributionId;
   }
 
   /**

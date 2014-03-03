@@ -305,6 +305,39 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     final String userId = userInfoProvider.getUserId();
     return galleryStorageIo.isLikedByUser(galleryId, userId);
   }
+
+  /**
+   * save attribution for a gallery app
+   * @param galleryId the id of the app
+   * @param attributionId the id of the attribution app
+   * @return num of like
+   */
+  @Override
+  public long saveAttribution(long galleryId, long attributionId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.saveAttribution(galleryId, attributionId);
+  }
+  /**
+   * get the attribution id for a gallery app
+   * @param galleryId the id of the app
+   * @return attribution id
+   */
+  @Override
+  public long remixedFrom(long galleryId) {
+    final String userId = userInfoProvider.getUserId();
+    return galleryStorageIo.remixedFrom(galleryId);
+  }
+  /**
+   * get the children ids of an app
+   * @param galleryId the id of the app
+   * @return list of children gallery app
+   */
+  @Override
+  public List<GalleryApp> remixedTo(long galleryId) {
+    return galleryStorageIo.remixedTo(galleryId);
+  }
+
+
 //  public void storeImage(InputStream is, long galleryId) {
 //    
 //  }

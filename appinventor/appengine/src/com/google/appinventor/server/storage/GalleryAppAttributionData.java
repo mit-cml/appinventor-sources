@@ -20,8 +20,10 @@ import javax.persistence.Id;
  *
  */
 
-public class GalleryAppLikeData {
+public class GalleryAppAttributionData {
   @Id Long id;
-  String userId;    // user id
+  long attributionId;    // attribution id
+  long galleryId;        // gallery id
+
   @Parent Key<GalleryAppData> galleryKey;
 }

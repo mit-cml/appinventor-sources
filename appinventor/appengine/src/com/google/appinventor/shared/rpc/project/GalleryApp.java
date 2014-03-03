@@ -22,6 +22,7 @@ public class GalleryApp implements IsSerializable {
     this.likes = 0;
     this.comments = 0;
     this.projectId = 0L;
+    this.attributionId = 0L;
     this.developerId = "fred";
     this.creationDate = 0L;
     this.updateDate = 0L;
@@ -65,7 +66,7 @@ public class GalleryApp implements IsSerializable {
   
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
-  public GalleryApp(String title, long projectId, String projectName, long galleryAppId) {
+  public GalleryApp(String title, long projectId, String projectName, long galleryAppId, long attributionId) {
   super();
     this.title = title;
     this.description = projectName +" description";
@@ -74,6 +75,7 @@ public class GalleryApp implements IsSerializable {
     this.likes = 0;
     this.comments = 0;
     this.projectId = projectId;
+    this.attributionId = attributionId;
     this.projectName=projectName;
     this.galleryAppId=galleryAppId;
 
@@ -102,6 +104,15 @@ public class GalleryApp implements IsSerializable {
   private long galleryAppId;
   private ArrayList<String> tags;
   private long projectId;  // when we edit a newly published app, we need the ai proj id.
+  private long attributionId;  // the gallery id which this app inherits from.
+                               // it takes from the project which inherits from a gellery app.
+
+  public long getProjectAttributionId() {
+    return attributionId;
+  }
+  public void setProjectAttributionId(long attributionId) {
+    this.attributionId=attributionId;
+  }
 
   public long getProjectId() {
     return projectId;

@@ -115,4 +115,19 @@ public interface GalleryServiceAsync {
    * @see GalleryService#isLikedByUser(long galleryId)
    */
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
+
+  /**
+   * @see GalleryService#saveAttribution(long galleryId, long attributionId)
+   */
+  void saveAttribution(long galleryId, long attributionId, AsyncCallback<java.lang.Long> id);
+
+  /**
+   * @see GalleryService#remixedFrom(long galleryId)
+   */
+  void remixedFrom(long galleryId, AsyncCallback<java.lang.Long> id);
+
+  /**
+   * @see GalleryService#remixedTo(long galleryId);
+   */
+  void remixedTo(long galleryId, AsyncCallback<List<GalleryApp>> apps);
 }

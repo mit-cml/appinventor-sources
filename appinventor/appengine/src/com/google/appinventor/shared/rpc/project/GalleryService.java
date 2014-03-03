@@ -154,4 +154,24 @@ public interface GalleryService extends RemoteService {
    * @param galleryId the id of the app
    */
   boolean isLikedByUser(long galleryId);
+
+  /**
+   * save the attribution of an app
+   * @param galleryId the id of the app
+   * @param attributionId the id of the attribution app
+   */
+  long saveAttribution(long galleryId, long attributionId);
+
+  /**
+   * get the attribution id of an app
+   * @param galleryId the id of the app
+   */
+  long remixedFrom(long galleryId);
+
+  /**
+   * get the children ids of an app
+   * @param galleryId the id of the app
+   */
+  List<GalleryApp> remixedTo(long galleryId);
+
 }

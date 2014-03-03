@@ -132,6 +132,25 @@ public interface GalleryStorageIo {
    */
   boolean isLikedByUser(long galleryId,String userId);
   /**
+   * save AttributionId
+   * @param galleryId id of gallery app that was like
+   * @param attributionId id of project's attribution
+   * @return the id of attribution info
+   */
+  long saveAttribution(long galleryId, long attributionId);
+  /**
+   * get the AttributionId
+   * @param galleryId id of gallery app that was like
+   * @return the attribution id
+   */
+  long remixedFrom(long galleryId);
+  /**
+   * get the list of Children Gallery App
+   * @param galleryId id of gallery app that was like
+   * @return list of Children Gallery App
+   */
+  List<GalleryApp> remixedTo(long galleryId);
+  /**
    * Returns a list of comments for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryComment}

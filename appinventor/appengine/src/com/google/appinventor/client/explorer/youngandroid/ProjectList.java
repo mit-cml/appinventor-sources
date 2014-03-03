@@ -6,14 +6,14 @@
 package com.google.appinventor.client.explorer.youngandroid;
 
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.GalleryClient;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -62,6 +62,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   private static final String UPDATEBUTTONTEXT = "Update Gallery app...";
   private static final String PUBLISHBUTTONTITLE = "open a dialog to publish your app to the gallery";
   private static final String UPDATEBUTTONTITLE = "open a dialog to publish your newest version in the gallery";
+
 
   private final List<Project> projects;
   private final List<Project> selectedProjects;
@@ -336,7 +337,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
           // app is not yet published
           // first create an app object with default data
           final GalleryApp app = new GalleryApp(p.getProjectName(), p.getProjectId(), 
-              p.getProjectName(), p.getGalleryId());
+              p.getProjectName(), p.getGalleryId(), p.getAttributionId());
           Ode.getInstance().switchToGalleryAppView(app, GalleryPage.NEWAPP);
         }      
       }   

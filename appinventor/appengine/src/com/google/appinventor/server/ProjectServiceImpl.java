@@ -389,7 +389,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
                            storageIo.getProjectType(userId, projectId),
                            storageIo.getProjectDateCreated(userId, projectId),
                            storageIo.getProjectDateModified(userId, projectId),
-                           storageIo.getProjectGalleryId(userId, projectId));
+                           storageIo.getProjectGalleryId(userId, projectId),
+                           storageIo.getProjectAttributionId(projectId));
   }
 
   /*
@@ -463,6 +464,9 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
      
       // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
+      //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
+      userProject.setAttributionId(attributionId);
+
       return userProject;
       } catch (FileNotFoundException e) {  
         e.printStackTrace();

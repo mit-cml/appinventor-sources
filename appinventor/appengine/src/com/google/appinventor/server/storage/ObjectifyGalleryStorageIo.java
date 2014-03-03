@@ -23,11 +23,10 @@ import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
-
 import com.google.appinventor.server.storage.GalleryAppData;
 import com.google.appinventor.server.storage.GalleryCommentData;
 import com.google.appinventor.server.storage.GalleryAppLikeData;
-
+import com.google.appinventor.server.storage.GalleryAppAttributionData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -39,12 +38,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
-
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -116,6 +113,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryAppData.class);
     ObjectifyService.register(GalleryCommentData.class);
     ObjectifyService.register(GalleryAppLikeData.class);
+    ObjectifyService.register(GalleryAppAttributionData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -564,6 +562,102 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return bool.t;
   }
 
+  /**
+   * save the attribution of a gallery app
+   *
+   * @param galleryId
+   *          id of gallery app
+   * @param attributionId
+   *          id of attribution app
+   * @return the id of attribution info
+   */
+  public long saveAttribution(final long galleryId,final long attributionId) {
+    final Result<Long> id = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+            GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
+            //if (galleryAppData != null) {
+            long date = System.currentTimeMillis();
+            Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+            GalleryAppAttributionData attributionData = new GalleryAppAttributionData();
+            attributionData.galleryKey = galleryKey(galleryId);
+            attributionData.attributionId = attributionId;
+            attributionData.galleryId = galleryId;
+            datastore.put(attributionData);
+            id.t = date; //To-Do change it
+           // }
+
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.saveAttribution", e);
+    }
+    return id.t;
+  }
+
+  /**
+   * get the attribution id of a gallery app
+   *
+   * @param galleryId
+   *          id of gallery app
+   * @return the attributionId
+   */
+  public long remixedFrom(final long galleryId) {
+    final Result<Long> id = new Result<Long>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+              Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+              boolean find = false;
+              //this is a forloop but only one result, or none if app created before this.
+              for (GalleryAppAttributionData attributionData : datastore.query(GalleryAppAttributionData.class).ancestor(galleryKey)) {
+                id.t = attributionData.attributionId;
+                find = true;
+              }
+              if(!find){
+                id.t = Long.valueOf(-1);
+              }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.saveAttribution", e);
+    }
+    return id.t;
+  }
+
+  /**
+   * get the list of children Gallery Apps
+   *
+   * @param galleryId
+   *          id of gallery app
+   * @return the list of children Gallery Apps
+   */
+  public List<GalleryApp> remixedTo(final long galleryId) {
+    final List<GalleryApp> apps = new ArrayList<GalleryApp>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+              datastore = ObjectifyService.begin();
+              for (GalleryAppAttributionData attributionData:datastore.query(GalleryAppAttributionData.class).filter("attributionId",galleryId)) {
+                GalleryAppData galleryAppData = datastore.find(galleryKey(attributionData.galleryId));
+                GalleryApp gApp = new GalleryApp();
+                makeGalleryApp(galleryAppData, gApp);
+                apps.add(gApp);
+              }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "error in galleryStorageIo.saveAttribution", e);
+    }
+    return apps;
+  }
   /**
    * adds a report (flag) to a gallery app
    * @param galleryId id of gallery app that was commented on
