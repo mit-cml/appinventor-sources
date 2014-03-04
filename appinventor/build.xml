@@ -92,6 +92,9 @@
         <pathelement location="lib/android/tools/ddmlib.jar"/>
         <pathelement location="lib/bouncycastle/bcprov-jdk15on-149.jar"/>
         <pathelement location="lib/bouncycastle/bcpkix-jdk15on-149.jar"/>
+        <pathelement location="lib/spongycastle/core-1.50.0.0.jar"/>
+        <pathelement location="lib/spongycastle/prov-1.50.0.0.jar"/>
+        <pathelement location="lib/spongycastle/pkix-1.50.0.0.jar"/>
         <pathelement location="lib/android/tools/sdklib.jar"/>
         <pathelement location="lib/args4j/args4j-2.0.18.jar" />
         <pathelement location="lib/commons-fileupload/commons-fileupload-1.2.2.jar" />

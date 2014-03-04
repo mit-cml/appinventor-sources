@@ -110,6 +110,21 @@ public final class ErrorMessages {
   public static final int ERROR_WEB_UNABLE_TO_POST_OR_PUT_FILE = 1104;
   public static final int ERROR_WEB_JSON_TEXT_DECODE_FAILED = 1105;
   public static final int ERROR_WEB_HTML_TEXT_DECODE_FAILED = 1106;
+  public static final int ERROR_WEB_HASH_TEXT_ENCODE_FAILED = 1130;
+  public static final int ERROR_WEB_HASH_FILE_ENCODE_FAILED = 1131;
+  public static final int ERROR_WEB_HMAC_TEXT_ENCODE_FAILED = 1132;
+  public static final int ERROR_WEB_HMAC_FILE_ENCODE_FAILED = 1133;
+  public static final int ERROR_WEB_AES_KEY_FAILED = 1135;
+  public static final int ERROR_WEB_AES_TEXT_ENCRYPT_FAILED = 1136;
+  public static final int ERROR_WEB_AES_FILE_ENCRYPT_FAILED = 1137;
+  public static final int ERROR_WEB_AES_TEXT_DECRYPT_FAILED = 1138;
+  public static final int ERROR_WEB_AES_FILE_DECRYPT_FAILED = 1139;
+  public static final int ERROR_WEB_RSA_KEY_FAILED = 1135;
+  public static final int ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED = 1141;
+  public static final int ERROR_WEB_RSA_TEXT_DECRYPT_FAILED = 1142;
+  public static final int ERROR_WEB_DSA_KEY_FAILED = 1143;
+  public static final int ERROR_WEB_DSA_FILE_SIGN_FAILED = 1144;
+  public static final int ERROR_WEB_DSA_FILE_VERIFY_FAILED = 1145;
   // There is a gap here because two ContactPicker errors below use the numbers 1107 and 1108.
   public static final int ERROR_WEB_MALFORMED_URL = 1109;
   public static final int ERROR_WEB_REQUEST_HEADER_NOT_LIST = 1110;
@@ -330,6 +345,36 @@ public final class ErrorMessages {
         "Unable to decode the JSON text: %s");
     errorMessages.put(ERROR_WEB_HTML_TEXT_DECODE_FAILED,
         "Unable to decode the HTML text: %s");
+    errorMessages.put(ERROR_WEB_HASH_TEXT_ENCODE_FAILED,
+        "Unable to encode the Hash text: %s");
+    errorMessages.put(ERROR_WEB_HMAC_TEXT_ENCODE_FAILED,
+        "Unable to encode the HMAC text: %s");
+    errorMessages.put(ERROR_WEB_HASH_FILE_ENCODE_FAILED,
+        "Unable to encode the Hash text: %s");
+    errorMessages.put(ERROR_WEB_HMAC_FILE_ENCODE_FAILED,
+        "Unable to encode the HMAC text: %s");
+    errorMessages.put(ERROR_WEB_AES_KEY_FAILED,
+        "Unable to generate new AES key: %s");
+    errorMessages.put(ERROR_WEB_AES_TEXT_ENCRYPT_FAILED,
+        "Unable to AES encrypt the text: %s");
+    errorMessages.put(ERROR_WEB_AES_FILE_ENCRYPT_FAILED,
+        "Unable to AES encrypt the file: %s");
+    errorMessages.put(ERROR_WEB_AES_TEXT_DECRYPT_FAILED,
+        "Unable to AES decrypt the text: %s");
+    errorMessages.put(ERROR_WEB_AES_FILE_DECRYPT_FAILED,
+        "Unable to AES decrypt the file: %s");
+    errorMessages.put(ERROR_WEB_RSA_KEY_FAILED,
+        "Unable to generate new RSA keypair: %s");
+    errorMessages.put(ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED,
+        "Unable to RSA encrypt the text: %s");
+    errorMessages.put(ERROR_WEB_RSA_TEXT_DECRYPT_FAILED,
+        "Unable to RSA decrypt the text: %s");
+    errorMessages.put(ERROR_WEB_DSA_KEY_FAILED,
+        "Unable to generate new DSA keypair: %s");
+    errorMessages.put(ERROR_WEB_DSA_FILE_SIGN_FAILED,
+        "Unable to DSA sign the file: %s");
+    errorMessages.put(ERROR_WEB_DSA_FILE_VERIFY_FAILED,
+        "Unable to DSA verify the file: %s");
     errorMessages.put(ERROR_WEB_MALFORMED_URL,
         "The specified URL is not valid: %s");
     errorMessages.put(ERROR_WEB_REQUEST_HEADER_NOT_LIST,
