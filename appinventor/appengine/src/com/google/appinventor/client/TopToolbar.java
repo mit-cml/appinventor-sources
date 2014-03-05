@@ -612,21 +612,21 @@ public class TopToolbar extends Composite {
   private static class LibraryAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "scrollbars=1");
     }
   }
 
   private static class GetStartedAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/get-started", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/get-started", "_ai2", "scrollbars=1");
     }
   }
 
   private static class TutorialsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/ai2/tutorials", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/ai2/tutorials", "_ai2", "scrollbars=1");
     }
   }
 
@@ -634,21 +634,21 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Window.open("http://appinventor.mit.edu/explore/ai2/support/troubleshooting", "_ai2",
-          "");
+          "scrollbars=1");
     }
   }
 
   private static class ForumsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/forums", "_ai2", "");
+      Window.open("http://appinventor.mit.edu/explore/forums", "_ai2", "scrollbars=1");
     }
   }
 
   private static class FeedbackAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://something.example.com", "_blank", null);
+      Window.open("http://something.example.com", "_blank", "scrollbars=1");
     }
   }
 
