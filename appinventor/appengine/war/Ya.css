@@ -1404,6 +1404,7 @@ textarea::-webkit-input-placeholder {
   border-style: none;
   padding: 0;
 }
+/*
 .gallery-nav-prev,
 .gallery-nav-next {
   float: left;
@@ -1416,11 +1417,43 @@ textarea::-webkit-input-placeholder {
   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-
 .gallery-nav-prev .gwt-Image,
 .gallery-nav-next .gwt-Image {
   top: 50%;
   position: relative;
+}
+*/
+
+.gallery-nav-prev,
+.gallery-nav-next {
+  padding: 0;
+  display: inline-block;
+  width: 425px;
+}
+.gallery-nav-prev {
+  text-align: left;
+}
+.gallery-nav-next {
+  text-align: right;
+}
+.gallery-nav-prev .gwt-Label,
+.gallery-nav-next .gwt-Label {
+  display: inline-block;
+  text-transform: uppercase;
+  color: #777;
+  padding: 5px;
+  width: 100px;
+}
+.gallery-nav-prev .gwt-Label {
+  margin-left: 5px;
+}
+.gallery-nav-next .gwt-Label {
+  margin-right: 5px;
+}
+.gallery-nav-prev .gwt-Label:hover,
+.gallery-nav-next .gwt-Label:hover {
+  cursor: pointer;
+  background-color: #FFF;
 }
 .gallery-app-collection {
   
@@ -1441,8 +1474,6 @@ textarea::-webkit-input-placeholder {
   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
-.gallery-nav-prev:hover,
-.gallery-nav-next:hover,
 .gallery-app-collection .gallery-card:hover,
 .gallery-app-showcase .gallery-card:hover {
   background-color: #EEE;

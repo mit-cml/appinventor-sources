@@ -109,10 +109,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
   private final int offset = 10;
-  private final String activeNext = "http://i.imgur.com/PC2RTC5.png";
-  private final String activePrev = "http://i.imgur.com/K8aiGBZ.png";
-  private final String disabledNext = "http://i.imgur.com/UYeELMN.png";
-  private final String disabledPrev = "http://i.imgur.com/FGDpu47.png";
+  private final String activeNext = "More Apps";
+  private final String activePrev = "Previous Apps";
+  private final String disabledNext = "";
+  private final String disabledPrev = "";
 
   /**
    * Creates a new GalleryList
@@ -206,21 +206,20 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         }
       }); 
     }
-    
+
+    gallery.GetMostRecent(appRecentCounter, offset);
+    container.add(content);
+
     // Add regular GUI components
-    final Image buttonPrev = new Image();
-//    buttonPrev.setUrl(activePrev);
-    buttonPrev.setUrl(disabledPrev);
+    final Label buttonPrev = new Label();
+    buttonPrev.setText(activePrev);
     FlowPanel prev = new FlowPanel();
     prev.add(buttonPrev);
     prev.addStyleName("gallery-nav-prev");
     container.add(prev);
-    
-    gallery.GetMostRecent(appRecentCounter, offset);
-    container.add(content);
 
-    final Image buttonNext = new Image();
-    buttonNext.setUrl(activeNext);
+    final Label buttonNext = new Label();
+    buttonNext.setText(activeNext);
     FlowPanel next = new FlowPanel();
     next.add(buttonNext);
     next.addStyleName("gallery-nav-next");
@@ -242,9 +241,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appFeaturedCounter -= offset;
             gallery.GetFeatured(appFeaturedCounter, offset, 0);
-            buttonPrev.setUrl(activePrev);
+            buttonPrev.setText(activePrev);
           } else {
-            buttonPrev.setUrl(disabledPrev);
+            buttonPrev.setText(disabledPrev);
             OdeLog.log("prev appFeaturedCounter = " + appFeaturedCounter);
           }
           break;   
@@ -253,9 +252,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appRecentCounter -= offset;
             gallery.GetMostRecent(appRecentCounter, offset);
-            buttonPrev.setUrl(activePrev);
+            buttonPrev.setText(activePrev);
           } else {
-            buttonPrev.setUrl(disabledPrev);
+            buttonPrev.setText(disabledPrev);
             OdeLog.log("prev appRecentCounter = " + appRecentCounter);
           }
           break;  
@@ -264,9 +263,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appSearchCounter -= offset;
             gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
-            buttonPrev.setUrl(activePrev);
+            buttonPrev.setText(activePrev);
           } else {
-            buttonPrev.setUrl(disabledPrev);
+            buttonPrev.setText(disabledPrev);
             OdeLog.log("prev appSearchCounter = " + appSearchCounter);
           }
           break;  
@@ -275,9 +274,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             // If the previous page still has apps to retrieve, do it
             appPopularCounter -= offset;
             gallery.GetMostDownloaded(appPopularCounter, offset);
-            buttonPrev.setUrl(activePrev);
+            buttonPrev.setText(activePrev);
           } else {
-            buttonPrev.setUrl(disabledPrev);
+            buttonPrev.setText(disabledPrev);
             OdeLog.log("prev appPopularCounter = " + appPopularCounter);
           }
           break;  
@@ -293,9 +292,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appFeaturedCounter += offset;
               gallery.GetFeatured(appFeaturedCounter, offset, 0);
-              buttonNext.setUrl(activeNext);
+              buttonNext.setText(activeNext);
             } else {
-              buttonNext.setUrl(disabledNext);
+              buttonNext.setText(disabledNext);
               OdeLog.log("next appFeaturedCounter = " + appFeaturedCounter);
             }
             break;    
@@ -304,9 +303,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appRecentCounter += offset;
               gallery.GetMostRecent(appRecentCounter, offset);
-              buttonNext.setUrl(activeNext);
+              buttonNext.setText(activeNext);
             } else {
-              buttonNext.setUrl(disabledNext);
+              buttonNext.setText(disabledNext);
               OdeLog.log("next appRecentCounter = " + appRecentCounter);
             }
             break;   
@@ -315,9 +314,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appSearchCounter += offset;
               gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
-              buttonNext.setUrl(activeNext);
+              buttonNext.setText(activeNext);
             } else {
-              buttonNext.setUrl(disabledNext);
+              buttonNext.setText(disabledNext);
               OdeLog.log("next appSearchCounter = " + appSearchCounter);
             }
             break;   
@@ -326,9 +325,9 @@ public class GalleryList extends Composite implements GalleryRequestListener {
               // If the next page still has apps to retrieve, do it
               appPopularCounter += offset;
               gallery.GetMostDownloaded(appPopularCounter, offset);
-              buttonNext.setUrl(activeNext);
+              buttonNext.setText(activeNext);
             } else {
-              buttonNext.setUrl(disabledNext);
+              buttonNext.setText(disabledNext);
               OdeLog.log("next appPopularCounter = " + appPopularCounter);
             }
             break;   

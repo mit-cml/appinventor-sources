@@ -146,10 +146,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 //      gaw.numCommentsLabel.addStyleName("gallery-meta");
       
       container.add(appCard);
-		}
-		container.addStyleName("gallery-app-collection");
-		
-	}
+    }
+    container.addStyleName("gallery-app-collection");
+    container.addStyleName("clearfix"); /* For redesigned navigation buttons */
+
+  }
   
   /**
    * Creates list of comments in the app page.
