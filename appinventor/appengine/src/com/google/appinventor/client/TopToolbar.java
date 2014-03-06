@@ -8,6 +8,7 @@ package com.google.appinventor.client;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.explorer.commands.BuildCommand;
 import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CopyYoungAndroidProjectCommand;
@@ -86,6 +87,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_EMULATOR_BUTTON = "Emulator";
   private static final String WIDGET_NAME_USB_BUTTON = "Usb";
   private static final String WIDGET_NAME_RESET_BUTTON = "Reset";
+  private static final String WIDGET_NAME_HARDRESET_BUTTON = "HardReset";
   private static final String WIDGET_NAME_PROJECT = "Project";
   private static final String WIDGET_NAME_HELP = "Help";
   private static final String WIDGET_NAME_ABOUT = "About";
@@ -164,6 +166,8 @@ public class TopToolbar extends Composite {
     connectItems.add(null);
     connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnections(),
         new ResetAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnections(),
+        new HardResetAction()));
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
     buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeButton(),
@@ -316,6 +320,13 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       startRepl(false, false, false); // We are really stopping the repl here
+    }
+  }
+
+  private class HardResetAction implements Command {
+    @Override
+    public void execute() {
+      replHardReset();
     }
   }
 
@@ -704,6 +715,18 @@ public class TopToolbar extends Composite {
     } else {
       updateConnectToDropDownButton(false, false, false);
     }
+  }
+
+  private void replHardReset() {
+    DesignToolbar.DesignProject currentProject = Ode.getInstance().getDesignToolbar().getCurrentProject();
+    if (currentProject == null) {
+      OdeLog.wlog("DesignToolbar.currentProject is null. "
+            + "Ignoring attempt to do hard reset.");
+      return;
+    }
+    DesignToolbar.Screen screen = currentProject.screens.get(currentProject.currentScreen);
+    ((YaBlocksEditor)screen.blocksEditor).hardReset();
+    updateConnectToDropDownButton(false, false, false);
   }
 
   /**

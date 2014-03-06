@@ -980,13 +980,38 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     return true;
 };
 
-Blockly.ReplMgr.hardreset = function(formName) {
+Blockly.ReplMgr.hardreset = function(formName, callback) {
     window.parent.AssetManager_reset(formName); // Reset the notion of what assets
                                                 // are loaded.
     var xhr = goog.net.XmlHttp();
     xhr.open("GET", "http://localhost:8004/reset/", true);
-    xhr.onreadystatechange = function() {}; // Ignore errors
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            if (callback) {     // Always call the callback
+                callback(this.status);
+            }
+        }
+    };
     xhr.send();
+};
+
+// ehardreset -- Reset connections and then tell aiStarter to
+// run the reset-emulator script. This will reset things to their
+// "factory" defaults.
+
+Blockly.ReplMgr.ehardreset = function(formName) {
+    var context = this;
+    var dialog = new Blockly.ReplMgr.Dialog("Do You Really?", 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.', "OK", "Cancel", 0, function(response) {
+        dialog.hide();
+        if (response == "OK") {
+            context.hardreset(formName, function() {
+                var xhr = goog.net.XmlHttp();
+                xhr.open("GET", "http://localhost:8004/emulatorreset/", true);
+                xhr.onreadystatchange = function() {}; // Ignore errors
+                xhr.send();
+            });
+        }
+    });
 };
 
 // Make a QRCode in an image tag. This is currently used by the
