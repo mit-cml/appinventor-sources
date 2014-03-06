@@ -409,28 +409,43 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         // It's possible that the behavior could change in the future if they "fix" that bug.
         // Try Bitmap.createScaledBitmap, but if it gives us an immutable bitmap, we'll have to
         // create a mutable bitmap and scale the old bitmap using Canvas.drawBitmap.
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(oldBitmap, w, h, false);
-        if (scaledBitmap.isMutable()) {
-          // scaledBitmap is mutable; we can use it in a canvas.
-          bitmap = scaledBitmap;
-          // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-          // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
-          // canvas.
-          canvas = new android.graphics.Canvas(bitmap);
+        try {
+          // See comment at the catch below
+          Bitmap scaledBitmap = Bitmap.createScaledBitmap(oldBitmap, w, h, false);
 
-        } else {
-          // scaledBitmap is immutable; we can't use it in a canvas.
+          if (scaledBitmap.isMutable()) {
+            // scaledBitmap is mutable; we can use it in a canvas.
+            bitmap = scaledBitmap;
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // canvas.
+            canvas = new android.graphics.Canvas(bitmap);
 
-          bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-          // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
-          // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
-          // canvas.
-          canvas = new android.graphics.Canvas(bitmap);
+          } else {
+            // scaledBitmap is immutable; we can't use it in a canvas.
 
-          // Draw the old bitmap into the new canvas, scaling as necessary.
-          Rect src = new Rect(0, 0, oldBitmapWidth, oldBitmapHeight);
-          RectF dst = new RectF(0, 0, w, h);
-          canvas.drawBitmap(oldBitmap, src, dst, null);
+            bitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            // NOTE(lizlooney) - I tried just doing canvas.setBitmap(bitmap), but after that the
+            // canvas.drawCircle() method did not work correctly. So, we need to create a whole new
+            // canvas.
+            canvas = new android.graphics.Canvas(bitmap);
+
+            // Draw the old bitmap into the new canvas, scaling as necessary.
+            Rect src = new Rect(0, 0, oldBitmapWidth, oldBitmapHeight);
+            RectF dst = new RectF(0, 0, w, h);
+            canvas.drawBitmap(oldBitmap, src, dst, null);
+          }
+
+        } catch (IllegalArgumentException ioe) {
+          // There's some kind of order of events issue that results in w or h being zero.
+          // I'm guessing that this is a result of specifying width or height as FILL_PARRENT on an
+          // opening screen.   In any case, w<=0 or h<=0 causes the call to createScaledBitmap
+          // to throw an illegal argument.  If this happens we simply don't draw the bitmap
+          // (which would be of width or height 0)
+          // TODO(hal): Investigate this further to see what is causes the w=0 or h=0 and see if
+          // there is a more high-level fix.
+
+          Log.e(LOG_TAG, "Bad values to createScaledBimap w = " + w + ", h = " + h);
         }
 
         // The following has nothing to do with the scaling in this method.
