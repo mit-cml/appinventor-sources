@@ -219,6 +219,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Camera")) {
+        srcCompVersion = upgradeCameraProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Canvas")) {
         srcCompVersion = upgradeCanvasProperties(componentProperties, srcCompVersion);
 
@@ -492,6 +495,16 @@ public final class YoungAndroidFormUpgrader {
       // The ShowFeedback property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeCameraProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The UseFront property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

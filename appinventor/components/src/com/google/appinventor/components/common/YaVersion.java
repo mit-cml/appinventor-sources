@@ -239,16 +239,19 @@ public class YaVersion {
   // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 84:
   // - FORM_COMPONENT_VERSION was incremented to 12.
+  // For YOUNG_ANDROID_VERSION 85:
+  // - CAMERA_COMPONENT_VERSION was incremented to 2.
 
-    public static final int YOUNG_ANDROID_VERSION = 84;
+    public static final int YOUNG_ANDROID_VERSION = 85;
 
   // ............................... Blocks Language Version Number ...............................
 
   // NOTE(lizlooney,user) - when the blocks language changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
-  // 3. Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
+  // 3. ***Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
   // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
+  // *** BlockSaveFile is no longer used in App Inventor 2 (Feb. 2014)
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -373,7 +376,9 @@ public class YaVersion {
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
-  public static final int CAMERA_COMPONENT_VERSION = 1;
+  // For CAMERA_COMPONENT_VERSION 2:
+  // - The UseFront property was added.
+   public static final int CAMERA_COMPONENT_VERSION = 2;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
