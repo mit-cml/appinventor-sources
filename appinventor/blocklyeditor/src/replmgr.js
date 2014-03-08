@@ -605,7 +605,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     });
     var timeout = function() {
         clearInterval(interval);    // Stop polling
-        dialog = new Blockly.ReplMgr.Dialog("Hmmm...", "We could not start the MIT AI Companion within the Emulator", "OK", null, 0, function() {
+        dialog = new Blockly.ReplMgr.Dialog("Connection Failure", "We could not start the MIT AI Companion within the Emulator", "OK", null, 0, function() {
             dialog.hide();
             dialog = null;
             if (progdialog) {
