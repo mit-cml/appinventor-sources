@@ -343,7 +343,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
     String projectType = storageIo.getProjectType(userId, projectId);
     if (!projectType.isEmpty()) {
-      return getProjectRpcImpl(userId, storageIo.getProjectType(userId, projectId));
+      return getProjectRpcImpl(userId, projectType);
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(),
           "user=" + userId + ", project=" + projectId,

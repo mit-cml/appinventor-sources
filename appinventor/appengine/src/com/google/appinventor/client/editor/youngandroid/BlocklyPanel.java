@@ -553,6 +553,10 @@ public class BlocklyPanel extends HTMLPanel {
     doStartRepl(formName, alreadyRunning, forEmulator, forUsb);
   }
 
+  public void hardReset() {
+    doHardReset(formName);
+  }
+
   public static boolean checkIsAdmin() {
     return Ode.getInstance().getUser().getIsAdmin();
   }
@@ -811,6 +815,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doStartRepl(String formName, boolean alreadyRunning, boolean forEmulator, boolean forUsb) /*-{
     $wnd.Blocklies[formName].ReplMgr.startRepl(alreadyRunning, forEmulator, forUsb);
+  }-*/;
+
+  public static native void doHardReset(String formName) /*-{
+    $wnd.Blocklies[formName].ReplMgr.ehardreset(formName);
   }-*/;
 
   public static native void doRenderBlockly(String formName) /*-{

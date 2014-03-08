@@ -5,11 +5,15 @@
 
 package com.google.appinventor.components.runtime;
 
+import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.DesignerComponent;
+import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
+import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.common.ComponentCategory;
+import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 
@@ -51,18 +55,52 @@ public class Camera extends AndroidNonvisibleComponent
   into the resultReturned() callback method. */
   private int requestCode;
 
-    /**
+  // whether to open into the front-facing camera
+  private boolean useFront;
+
+  /**
    * Creates a Camera component.
+   *
+   * Camera has a boolean option to request the forward-facing camera via an intent extra.
    *
    * @param container container, component will be placed in
    */
   public Camera(ComponentContainer container) {
     super(container.$form());
     this.container = container;
+
+    // Default property values
+    UseFront(false);
+  }
+
+  /**
+   * Returns true if the front-facing camera is to be used (when available)
+   *
+   * @return {@code true} indicates front-facing is to be used, {@code false} will open default
+   */
+  @SimpleProperty(
+    category = PropertyCategory.BEHAVIOR)
+  public boolean UseFront() {
+    return useFront;
+  }
+
+  /**
+   * Specifies whether the front-facing camera should be used (when available)
+   *
+   * @param front
+   *          {@code true} for front-facing camera, {@code false} for default
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = "False")
+  @SimpleProperty(description = "Specifies whether the front-facing camera should be used (when available). "
+    + "If the device does not have a front-facing camera, this option will be ignored "
+    + "and the camera will open normally.")
+  public void UseFront(boolean front) {
+    useFront = front;
   }
 
   /**
    * Takes a picture, then raises the AfterPicture event.
+   * If useFront is true, adds an extra to the intent that requests the front-facing camera.
    */
   @SimpleFunction
   public void TakePicture() {
@@ -89,6 +127,13 @@ public class Camera extends AndroidNonvisibleComponent
         MediaStore.Images.Media.INTERNAL_CONTENT_URI, values);
       Intent intent = new Intent(CAMERA_INTENT);
       intent.putExtra(CAMERA_OUTPUT, imageUri);
+
+      // NOTE: This uses an undocumented, testing feature (CAMERA_FACING).
+      // It may not work in the future.
+      if (useFront) {
+        intent.putExtra("android.intent.extras.CAMERA_FACING", 1);
+      }
+
       container.$context().startActivityForResult(intent, requestCode);
     } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
       form.dispatchErrorOccurredEvent(this, "TakePicture",

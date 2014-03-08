@@ -159,6 +159,9 @@ public class StoredData {
 
     // File settings
     String settings;
+
+    // DateTime of last backup only used if GCS is enabled
+    long lastBackup;
   }
 
   // MOTD data.

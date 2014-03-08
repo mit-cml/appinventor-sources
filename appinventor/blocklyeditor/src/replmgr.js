@@ -575,8 +575,11 @@ Blockly.ReplMgr.setDoitResult = function(block, value) {
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     var first = true;
-    var blockly = this;
+    var context = this;
     var counter = 0;            // Used to for counting down
+    var ubercounter = 0;        // Used to keep track of how many times we
+                                // have attempted to start the emulator
+    var ubergiveup = 4;         // How many attempts to start the emulator
     var pc = 0;                 // Use to keep track of state
     var dialog = null;          // We have one dialog for the block
                                 // so we don't create multiple ones
@@ -600,6 +603,22 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             dialog = null;
         }
     });
+    var timeout = function() {
+        clearInterval(interval);    // Stop polling
+        dialog = new Blockly.ReplMgr.Dialog("Hmmm...", "We could not start the MIT AI Companion within the Emulator", "OK", null, 0, function() {
+            dialog.hide();
+            dialog = null;
+            if (progdialog) {
+                progdialog.hide();
+                progdialog = null;
+            }
+            top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+            top.ReplState.connection = null;
+            top.BlocklyPanel_indicateDisconnect();
+            context.resetYail();
+            context.hardreset(context.formName);});
+    };
+
     // 0 == starting emulator
     // 1 == Counting down after emulator started
     // 2 == Counting down after repl start requested
@@ -679,6 +698,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                 }
                 pc = 2;
                 counter = 6;
+                ubercounter = 0;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
                 xhr.send();
@@ -691,6 +711,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             } else {
                 progdialog.setContent("Verifying that the Companion Started....");
                 xhr = goog.net.XmlHttp();
+                xhr.timeout = 4000; // 4 seconds
                 xhr.open("GET", rs.versionurl, true);
                 xhr.onreadystatechange = function() {
                     if (this.readyState == 4) {
@@ -698,9 +719,14 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                             pc = 4; // We got a response!
                             return;
                         } else {
-                            // We didn't work, add some time and go back to state 2
-                            counter = 5; // Wait 5 more seconds
-                            pc = 2;
+                            ubercounter += 1;
+                            if (ubercounter > ubergiveup) { // It's never going to work!
+                                timeout();
+                            } else {
+                                // We didn't work yet, add some time and go back to state 2
+                                counter = 5; // Wait 5 more seconds
+                                pc = 2;
+                            }
                         }
                     }
                 };
@@ -713,9 +739,9 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                                 // we are waiting for the version check (noop) to finish
         case 4:
             progdialog.hide();
-            rs.state = blockly.rsState.CONNECTED; // Indicate that we are good to go!
+            rs.state = context.rsState.CONNECTED; // Indicate that we are good to go!
             clearInterval(interval);
-            window.parent.BlocklyPanel_blocklyWorkspaceChanged(blockly.formName);
+            window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
         }
     }, 1000);                   // We poll once per second
 };
@@ -954,13 +980,38 @@ Blockly.ReplMgr.putAsset = function(filename, blob, success, fail, force) {
     return true;
 };
 
-Blockly.ReplMgr.hardreset = function(formName) {
+Blockly.ReplMgr.hardreset = function(formName, callback) {
     window.parent.AssetManager_reset(formName); // Reset the notion of what assets
                                                 // are loaded.
     var xhr = goog.net.XmlHttp();
     xhr.open("GET", "http://localhost:8004/reset/", true);
-    xhr.onreadystatechange = function() {}; // Ignore errors
+    xhr.onreadystatechange = function() {
+        if (this.readyState == 4) {
+            if (callback) {     // Always call the callback
+                callback(this.status);
+            }
+        }
+    };
     xhr.send();
+};
+
+// ehardreset -- Reset connections and then tell aiStarter to
+// run the reset-emulator script. This will reset things to their
+// "factory" defaults.
+
+Blockly.ReplMgr.ehardreset = function(formName) {
+    var context = this;
+    var dialog = new Blockly.ReplMgr.Dialog("Do You Really?", 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.', "OK", "Cancel", 0, function(response) {
+        dialog.hide();
+        if (response == "OK") {
+            context.hardreset(formName, function() {
+                var xhr = goog.net.XmlHttp();
+                xhr.open("GET", "http://localhost:8004/emulatorreset/", true);
+                xhr.onreadystatchange = function() {}; // Ignore errors
+                xhr.send();
+            });
+        }
+    });
 };
 
 // Make a QRCode in an image tag. This is currently used by the
