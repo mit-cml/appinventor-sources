@@ -310,8 +310,9 @@ public class ProjectServiceTest {
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject1).isEmpty());
     // No user files yet (e.g. the keystore)
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
-    long project1CreationDate = storageIo.getProjectDateCreated(USER_ID_ONE, yaProject1);
-    long project1ModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, yaProject1);
+    UserProject uproject = storageIo.getUserProject(USER_ID_ONE, yaProject1);
+    long project1CreationDate = uproject.getDateCreated();
+    long project1ModificationDate = uproject.getDateModified();
     assertTrue(project1ModificationDate >= project1CreationDate);
 
     // Make a copy of project 1.
@@ -335,9 +336,9 @@ public class ProjectServiceTest {
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject2).isEmpty());
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
-    long project1CopyCreationDate = storageIo.getProjectDateCreated(USER_ID_ONE, yaProject2);
-    long project1CopyModificationDate =
-        storageIo.getProjectDateModified(USER_ID_ONE, yaProject2);
+    UserProject uproject1 = storageIo.getUserProject(USER_ID_ONE, yaProject2);
+    long project1CopyCreationDate = uproject1.getDateCreated();
+    long project1CopyModificationDate = uproject1.getDateModified();
     assertTrue(project1CopyCreationDate > project1CreationDate);
     assertTrue(project1CopyCreationDate > project1ModificationDate);
     assertTrue(project1CopyModificationDate >= project1CopyCreationDate);

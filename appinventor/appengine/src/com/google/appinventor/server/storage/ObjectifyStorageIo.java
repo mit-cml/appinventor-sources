@@ -35,6 +35,7 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -584,6 +585,34 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
+  public UserProject getUserProject(final String userId, final long projectId) {
+    final Result<ProjectData> projectData = new Result<ProjectData>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          ProjectData pd = datastore.find(projectKey(projectId));
+          if (pd != null) {
+            projectData.t = pd;
+          } else {
+            projectData.t = null;
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          collectUserProjectErrorInfo(userId, projectId), e);
+    }
+    if (projectData == null) {
+      return null;
+    } else {
+      return new UserProject(projectId, projectData.t.name,
+          projectData.t.type, projectData.t.dateCreated,
+          projectData.t.dateModified);
+    }
+  }
+
+  @Override
   public String getProjectName(final String userId, final long projectId) {
     final Result<String> projectName = new Result<String>();
     try {
@@ -652,28 +681,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return projectHistory.t;
-  }
-
-  @Override
-  public long getProjectDateCreated(final String userId, final long projectId) {
-    final Result<Long> dateCreated = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            dateCreated.t = pd.dateCreated;
-          } else {
-            dateCreated.t = Long.valueOf(0);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return dateCreated.t;
   }
 
   @Override
