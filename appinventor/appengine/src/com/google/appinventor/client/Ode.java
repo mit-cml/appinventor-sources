@@ -576,7 +576,7 @@ public class Ode implements EntryPoint {
 
     workColumns = new SplitLayoutPanel();
     workColumns.setWidth("100%");
-    workColumns.setHeight("800px");
+    workColumns.setHeight(String.valueOf((Window.getClientHeight())*1.4)+"px");
 
     //workColumns.add(switchToDesignerButton);
 
