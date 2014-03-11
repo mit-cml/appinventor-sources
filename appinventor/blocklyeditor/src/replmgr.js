@@ -579,7 +579,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     var counter = 0;            // Used to for counting down
     var ubercounter = 0;        // Used to keep track of how many times we
                                 // have attempted to start the emulator
-    var ubergiveup = 4;         // How many attempts to start the emulator
+    var ubergiveup = 8;         // How many attempts to start the emulator
     var pc = 0;                 // Use to keep track of state
     var dialog = null;          // We have one dialog for the block
                                 // so we don't create multiple ones
@@ -605,25 +605,35 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     });
     var timeout = function() {
         clearInterval(interval);    // Stop polling
-        dialog = new Blockly.ReplMgr.Dialog("Connection Failure", "We could not start the MIT AI Companion within the Emulator", "OK", null, 0, function() {
+        var giveupButton = "Give Up";
+        var keepgoingButton = "Keep Trying";
+        dialog = new Blockly.ReplMgr.Dialog("Connection Failure", "We could not start the MIT AI Companion within the Emulator", giveupButton, keepgoingButton, 0, function(response) {
             dialog.hide();
             dialog = null;
-            if (progdialog) {
-                progdialog.hide();
-                progdialog = null;
+            if (response == giveupButton) {
+                if (progdialog) {
+                    progdialog.hide();
+                    progdialog = null;
+                }
+                top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
+                top.ReplState.connection = null;
+                top.BlocklyPanel_indicateDisconnect();
+                context.resetYail();
+                context.hardreset(context.formName);
+            } else {
+                ubercounter = 0;
+                counter = 10;
+                pc = 2;
+                interval = setInterval(mainloop, 1000); // Need to restart mainloop(polling)
             }
-            top.ReplState.state = Blockly.ReplMgr.rsState.IDLE;
-            top.ReplState.connection = null;
-            top.BlocklyPanel_indicateDisconnect();
-            context.resetYail();
-            context.hardreset(context.formName);});
+        });
     };
 
     // 0 == starting emulator
     // 1 == Counting down after emulator started
     // 2 == Counting down after repl start requested
     // 3 == Done (nothing to do), interval should be cleared
-    interval = setInterval(function() {
+    var mainloop = function() {
         var xhr;
         switch(pc) {
         case 0:
@@ -697,7 +707,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                     progdialog.setContent("Starting the Companion App in the emulator.");
                 }
                 pc = 2;
-                counter = 6;
+                counter = 10;
                 ubercounter = 0;
                 xhr = goog.net.XmlHttp();
                 xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
@@ -707,7 +717,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
         case 2:
             counter -= 1;
             if (counter > 0) {
-                progdialog.setContent("Companion started, waiting " + counter + " seconds to ensure all is running.");
+                progdialog.setContent("Companion starting, waiting " + counter + " seconds to ensure all is running.");
             } else {
                 progdialog.setContent("Verifying that the Companion Started....");
                 xhr = goog.net.XmlHttp();
@@ -723,8 +733,11 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
                             if (ubercounter > ubergiveup) { // It's never going to work!
                                 timeout();
                             } else {
-                                // We didn't work yet, add some time and go back to state 2
-                                counter = 5; // Wait 5 more seconds
+                                // We didn't work yet, kick it again and add some time and go back to state 2
+                                xhr = goog.net.XmlHttp();
+                                xhr.open("GET", "http://localhost:8004/replstart/" + device, true); // Don't look at response
+                                xhr.send();
+                                counter = 10; // Wait 10 more seconds
                                 pc = 2;
                             }
                         }
@@ -743,7 +756,8 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
             clearInterval(interval);
             window.parent.BlocklyPanel_blocklyWorkspaceChanged(context.formName);
         }
-    }, 1000);                   // We poll once per second
+    };
+    interval = setInterval(mainloop, 1000); // Once per second
 };
 
 // Convert non-ASCII Characters to kawa unicode escape
