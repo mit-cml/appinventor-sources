@@ -20,13 +20,16 @@ import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
-import android.util.Log;
-
+import android.telephony.TelephonyManager;
 import java.io.IOException;
 
 // TODO: This implementation does nothing about releasing the Media
@@ -80,6 +83,9 @@ public final class Player extends AndroidNonvisibleComponent
   
   // choices on player policy: Foreground, Always
   private boolean playInForeground;
+  // broadcast receiver for phonecall state shanges
+  private CallStateReceiver callStateReceiver;
+  private final Activity activity;
 
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
@@ -88,7 +94,7 @@ public final class Player extends AndroidNonvisibleComponent
    * 1: player prepared but not started
    * 2: player is playing
    * 3: player was playing and is now paused by user
-   * 4: player was playing and is now paused by lifecycle events
+   * 4: player was playing and is now paused by lifecycle events or phonecall interrupts
    * The allowable transitions are:
    * Start: must be called in state 1, 2, or 3, results in state 2
    * Pause: must be called in state 2, results in state 3
@@ -104,6 +110,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   public Player(ComponentContainer container) {
     super(container.$form());
+    activity = container.$context();
     sourcePath = "";
     vibe = (Vibrator) form.getSystemService(Context.VIBRATOR_SERVICE);
     form.registerForOnDestroy(this);
@@ -114,6 +121,7 @@ public final class Player extends AndroidNonvisibleComponent
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
     playInForeground = true;
+    registerCallStateMonitor();
   }
 
   /**
@@ -401,6 +409,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
+    unregisterCallStateMonitor();
     if (playerState != 0) {
       player.stop();
     }
@@ -410,5 +419,63 @@ public final class Player extends AndroidNonvisibleComponent
       player = null;
     }
     vibe.cancel();
+  }
+  
+  /**
+   * BroadcastReceiver for incomming/outgoing phonecall state changes
+   * 
+   */
+  private class CallStateReceiver extends BroadcastReceiver {
+    private boolean flag;    
+    public CallStateReceiver() {
+      flag = false;
+    }
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+      String action = intent.getAction();      
+      if(TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)){
+        String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
+        if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
+          // Incoming call
+          if(player != null && playerState == 2){
+            pause();
+            flag = true;
+          }
+        }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
+          // Call offhook
+        }else if(TelephonyManager.EXTRA_STATE_IDLE.equals(state)){
+          // Incomming/Outgoing Call ends
+          if(player != null && flag && playerState == 4){
+            Start();
+            flag = false;
+          }
+        }
+      }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){ 
+        // Outgoing call
+        if(player != null && playerState == 2){
+          pause();
+          flag = true;
+        }
+      }        
+    }  
+  } 
+  
+  /**
+   * Registers phonecall state monitor
+   */
+  private void registerCallStateMonitor(){
+    callStateReceiver = new CallStateReceiver();
+    IntentFilter intentFilter = new IntentFilter();
+    intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
+    intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
+    activity.registerReceiver(callStateReceiver, intentFilter);
+  }
+    
+  /**
+   * Unregisters phonecall state monitor
+   */
+  private void unregisterCallStateMonitor(){
+    activity.unregisterReceiver(callStateReceiver);
   }
 }
