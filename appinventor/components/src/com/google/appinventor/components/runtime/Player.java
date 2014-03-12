@@ -87,7 +87,8 @@ public final class Player extends AndroidNonvisibleComponent
    * 0: player initial state
    * 1: player prepared but not started
    * 2: player is playing
-   * 3: player was playing and is now paused
+   * 3: player was playing and is now paused by user
+   * 4: player was playing and is now paused by lifecycle events
    * The allowable transitions are:
    * Start: must be called in state 1, 2, or 3, results in state 2
    * Pause: must be called in state 2, results in state 3
@@ -298,6 +299,8 @@ public final class Player extends AndroidNonvisibleComponent
     if (player == null) return; //Do nothing if the player is not playing
     if (playerState == 2) {
       player.pause();
+      playerState = 4;
+      // Player should now be in state 4.
     }
   }
 
@@ -361,7 +364,7 @@ public final class Player extends AndroidNonvisibleComponent
   // OnResumeListener implementation
   @Override
   public void onResume() {
-    if (playInForeground && playerState == 2) {
+    if (playInForeground && playerState == 4) {
       Start();
     }
   }
