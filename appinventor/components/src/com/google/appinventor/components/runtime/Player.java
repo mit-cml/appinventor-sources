@@ -77,6 +77,9 @@ public final class Player extends AndroidNonvisibleComponent
 
   // determines if playing should loop
   private boolean loop;
+  
+  // choices on player policy: Foreground, Always
+  private boolean playInForeground;
 
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
@@ -109,6 +112,7 @@ public final class Player extends AndroidNonvisibleComponent
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
+    playInForeground = true;
   }
 
   /**
@@ -229,6 +233,33 @@ public final class Player extends AndroidNonvisibleComponent
       player.setVolume(((float) vol) / 100, ((float) vol) / 100);
     }
   }
+  
+  /**
+   * Gets the policy whether playing should only work in foreground.
+   * 
+   * @return playInForeground
+   */
+  @SimpleProperty(
+      description =
+      "If true, the player works only in foreground; if false, " +
+      "the player continues playing in background",
+      category = PropertyCategory.BEHAVIOR)
+  public boolean PlayInForeground() {
+    return playInForeground;
+  }
+  
+  /**
+   * Sets the property PlayInForeground to true or false.
+   * 
+   * @param shouldForeground determines whether plays only in foreground or always.
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "True")
+  @SimpleProperty
+  public void PlayInForeground(boolean shouldForeground) {
+    playInForeground = shouldForeground;
+  }
 
   /**
    * Plays the media.  If it was previously paused, the playing is resumed.
@@ -257,6 +288,16 @@ public final class Player extends AndroidNonvisibleComponent
         playerState = 3;
         // Player should now be in state 3.
       }
+    }
+  }
+  
+  /**
+   * Pauses when leaving the screen, but state is not changed.
+   */
+  private void pause() {
+    if (player == null) return; //Do nothing if the player is not playing
+    if (playerState == 2) {
+      player.pause();
     }
   }
 
@@ -320,7 +361,7 @@ public final class Player extends AndroidNonvisibleComponent
   // OnResumeListener implementation
   @Override
   public void onResume() {
-    if (playerState == 3) {
+    if (playInForeground && playerState == 2) {
       Start();
     }
   }
@@ -330,16 +371,16 @@ public final class Player extends AndroidNonvisibleComponent
   @Override
   public void onPause() {
     if (player == null) return; //Do nothing if the player is not ready
-    if (player.isPlaying()) {
-      Pause();
+    if (playInForeground && player.isPlaying()) {
+      pause();
     }
   }
 
   @Override
   public void onStop() {
     if (player == null) return; //Do nothing if the player is not
-    if (player.isPlaying()) {
-      Pause();
+    if (playInForeground && player.isPlaying()) {
+      pause();
     }
   }
 
