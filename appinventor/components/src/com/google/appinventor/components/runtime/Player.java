@@ -68,7 +68,7 @@ import java.io.IOException;
     nonVisible = true,
     iconName = "images/player.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
+@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET, android.permission.READ_PHONE_STATE, android.permission.PROCESS_OUTGOING_CALLS")
 public final class Player extends AndroidNonvisibleComponent
     implements Component, OnCompletionListener, OnPauseListener, OnResumeListener, OnDestroyListener, OnStopListener, Deleteable {
 
