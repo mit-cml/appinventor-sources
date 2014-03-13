@@ -23,8 +23,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Toast;
 
 /**
  * Component for making a phone call to a programatically-specified number.
@@ -60,7 +58,6 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   private String phoneNumber;
   private final Context context;
   private final CallStateReceiver callStateReceiver;
-  private static final String LOG_TAG = "PhoneCallComponent";
 
   /**
    * Creates a Phone Call component.
@@ -161,8 +158,6 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
         if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
           // Incoming call rings
-          Log.d(LOG_TAG, "Incoming Ringing: " + number);
-          Toast.makeText(context, "Incoming Ringing", Toast.LENGTH_LONG).show();
           status = 1;
           number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);          
           PhoneCallStarted(1, number);
@@ -170,8 +165,6 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
           // Call off-hook
           if(status == 1){
             // Incoming call answered
-            Log.d(LOG_TAG, "Incoming Answered: " + number);
-            Toast.makeText(context, "Incoming Answered", Toast.LENGTH_LONG).show();
             status = 3;
             IncomingCallAnswered(number);
           }
@@ -179,18 +172,12 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
           // Incomming/Outgoing Call ends             
           if(status == 1){
             // Incoming Missed or Rejected
-            Log.d(LOG_TAG, "Incoming Missed or Rejected: " + number);
-            Toast.makeText(context, "Incoming Missed or Rejected", Toast.LENGTH_LONG).show();
             PhoneCallEnded(1, number);
           }else if(status == 3){
             // Incoming Answer Ended
-            Log.d(LOG_TAG, "Incoming Answer Ended: " + number);
-            Toast.makeText(context, "Incoming Answer Ended", Toast.LENGTH_LONG).show();
             PhoneCallEnded(2, number);
           }else if(status == 2){
             // Outgoing Ended
-            Log.d(LOG_TAG, "Outgoing Ended: " + number);
-            Toast.makeText(context, "Outgoing Ended", Toast.LENGTH_LONG).show();
             PhoneCallEnded(3, number);
           }
           status = 0;
@@ -198,8 +185,6 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
         }
       }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){
         // Outgoing call dialled
-        Log.d(LOG_TAG, "OutgoingCall: " + number);
-        Toast.makeText(context, "Outgoing Dialed", Toast.LENGTH_LONG).show();
         status = 2;
         number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);        
         PhoneCallStarted(2, number);
