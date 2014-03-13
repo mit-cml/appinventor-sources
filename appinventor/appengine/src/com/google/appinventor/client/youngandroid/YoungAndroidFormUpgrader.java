@@ -267,6 +267,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("PasswordTextBox")) {
         srcCompVersion = upgradePasswordTextBoxProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("PhoneCall")) {
+        srcCompVersion = upgradePhoneCallProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("PhoneNumberPicker")) {
         srcCompVersion = upgradePhoneNumberPickerProperties(componentProperties, srcCompVersion);
 
@@ -840,6 +843,18 @@ public final class YoungAndroidFormUpgrader {
       // The Alignment property was renamed to TextAlignment.
       handlePropertyRename(componentProperties, "Alignment", "TextAlignment");
       // Properties related to this component have now been upgraded to version 2.
+      srcCompVersion = 2;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradePhoneCallProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The PhoneCallStarted event was added.
+      // The PhoneCallEnded event was added.
+      // The IncomingCallAnswered event was added.
+      // No properties need to be modified to upgrade to version 2.
       srcCompVersion = 2;
     }
     return srcCompVersion;

@@ -264,10 +264,12 @@ public class YaVersion {
   // - BUTTON_COMPONENT_VERSION was incremented to 6.
   // For YOUNG_ANDROID_VERSION 96:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 2.
-  //For YOUNG_ANDROID_VERSION 97:
+  // For YOUNG_ANDROID_VERSION 97:
   // - PLAYER_COMPONENT_VERSION was incremented to 6
+  // For YOUNG_ANDROID_VERSION 98:
+  // - PHONECALL_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 97;
+  public static final int YOUNG_ANDROID_VERSION = 98;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -574,7 +576,11 @@ public class YaVersion {
 
   public static final int PEDOMETER_COMPONENT_VERSION = 1;
 
-  public static final int PHONECALL_COMPONENT_VERSION = 1;
+  // For PHONECALL_COMPONENT_VERSION 2:
+  // - The PhoneCallStarted event was added.
+  // - The PhoneCallEnded event was added.
+  // - The IncomingCallAnswered event was added.
+  public static final int PHONECALL_COMPONENT_VERSION = 2;
 
   // For PHONENUMBERPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
