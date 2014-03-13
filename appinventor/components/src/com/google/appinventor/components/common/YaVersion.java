@@ -241,8 +241,10 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 12.
   // For YOUNG_ANDROID_VERSION 85:
   // - CAMERA_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 86:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
 
-    public static final int YOUNG_ANDROID_VERSION = 85;
+    public static final int YOUNG_ANDROID_VERSION = 86;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -295,6 +297,7 @@ public class YaVersion {
   // - Marked close-screen-with-result as a bad block
   // - Added close-screen-with-value
   // - Added close-screen-with-plain-text
+
   public static final int BLOCKS_LANGUAGE_VERSION = 17;
 
   // ................................. Component Version Numbers ..................................
@@ -643,7 +646,9 @@ public class YaVersion {
   // For VIDEOPLAYER_COMPONENT_VERSION 4:
   // - The VideoPlayer.width and VideoPlayer.height variables were marked as user visible.
   // - The FullScreen property was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 4;
+  // For VIDEOPLAYER_COMPONENT_VERSION 5:
+  // - The Volume property (setter only) was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
