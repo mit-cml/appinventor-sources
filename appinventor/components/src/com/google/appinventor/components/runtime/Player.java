@@ -30,8 +30,6 @@ import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
 import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 
@@ -287,7 +285,6 @@ public final class Player extends AndroidNonvisibleComponent
       playerState = 2;
       // Player should now be in state 2
     }
-    Log.d(LOG_TAG, "Start PlayerState: " + playerState);
   }
 
   /**
@@ -304,7 +301,6 @@ public final class Player extends AndroidNonvisibleComponent
         // Player should now be in state 3.
       }
     }
-    Log.d(LOG_TAG, "Pause PlayerState: " + playerState);
   }
   
   /**
@@ -330,7 +326,6 @@ public final class Player extends AndroidNonvisibleComponent
       player.seekTo(0);
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
     }
-    Log.d(LOG_TAG, "Stop PlayerState: " + playerState);
   }
 
   //  TODO: Reconsider whether vibrate should be here or in a separate component.
@@ -383,7 +378,6 @@ public final class Player extends AndroidNonvisibleComponent
     if (playInForeground && playerState == 4) {
       Start();
     }
-    Log.d(LOG_TAG, "onResume PlayerState: " + playerState);
   }
 
   // OnPauseListener implementation
@@ -394,7 +388,6 @@ public final class Player extends AndroidNonvisibleComponent
     if (playInForeground && player.isPlaying()) {
       pause();
     }
-    Log.d(LOG_TAG, "onPause PlayerState: " + playerState);
   }
 
   @Override
@@ -403,7 +396,6 @@ public final class Player extends AndroidNonvisibleComponent
     if (playInForeground && player.isPlaying()) {
       pause();
     }
-    Log.d(LOG_TAG, "onStop PlayerState: " + playerState);
   }
 
   // OnDestroyListener implementation
@@ -447,14 +439,12 @@ public final class Player extends AndroidNonvisibleComponent
       String action = intent.getAction();      
       if(TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)){
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-        Toast.makeText(context, state, Toast.LENGTH_LONG).show();
         if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
           // Incoming call
           if(player != null && playerState == 2){
             pause();
             flag = true;
           }
-          Log.d(LOG_TAG, "IncommingCall PlayerState: " + playerState);
         }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
           // Call offhook
         }else if(TelephonyManager.EXTRA_STATE_IDLE.equals(state)){
@@ -463,16 +453,13 @@ public final class Player extends AndroidNonvisibleComponent
             Start();
             flag = false;
           }
-          Log.d(LOG_TAG, "EndCall PlayerState: " + playerState);
         }
       }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){ 
         // Outgoing call
-        Toast.makeText(context, "Outgoing", Toast.LENGTH_LONG).show();
         if(player != null && playerState == 2){
           pause();
           flag = true;
         }
-        Log.d(LOG_TAG, "OutgoingCall PlayerState: " + playerState);
       }        
     }  
   } 
