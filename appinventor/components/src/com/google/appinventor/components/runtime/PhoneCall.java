@@ -107,28 +107,39 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
   
   /**
    * Event indicating that a phone call has started.
-   * mode "out":outgoing call; "in":incoming call
+   * status: 1:incoming call is ringing; 2:outgoing call is dialled.
    * 
-   * @param mode "out":outgoing call; "in":incoming call
+   * @param status 1:incoming call is ringing; 2:outgoing call is dialled.
    * @param phoneNumber incoming call phone number
    */
   @SimpleEvent
-  public void PhoneCallStarted(String mode, String phoneNumber) {
+  public void PhoneCallStarted(int status, String phoneNumber) {
     // invoke the application's "PhoneCallStarted" event handler.
-    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", mode, phoneNumber);
+    EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status, phoneNumber);
   }
     
   /**
    * Event indicating that a phone call has ended.
-   * mode "out":outgoing call; "in":incoming call
+   * status: 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
    * 
-   * @param mode "out":outgoing call; "in":incoming call
+   * @param status 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
    * @param phoneNumber ended call phone number
    */
   @SimpleEvent
-  public void PhoneCallEnded(String mode, String phoneNumber) {
+  public void PhoneCallEnded(int status, String phoneNumber) {
     // invoke the application's "PhoneCallEnded" event handler.
-    EventDispatcher.dispatchEvent(this, "PhoneCallEnded", mode, phoneNumber);
+    EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status, phoneNumber);
+  }
+  
+  /**
+   * Event indicating that an incoming phone call is answered.
+   * 
+   * @param phoneNumber incoming call phone number
+   */
+  @SimpleEvent
+  public void IncomingCallAnswered(String phoneNumber) {
+    // invoke the application's "IncomingCallAnswered" event handler.
+    EventDispatcher.dispatchEvent(this, "IncomingCallAnswered", phoneNumber);
   }
   
   /**
@@ -136,10 +147,10 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    *
    */
   private class CallStateReceiver extends BroadcastReceiver {
-    private String mode;
-    private String number;
+    private int status; // 0:undetermined, 1:incoming ringed, 2:outgoing dialled, 3: incoming answered
+    private String number; // phone call number
     public CallStateReceiver() {
-      mode = "";
+      status = 0;
       number = "";
     }
 
@@ -148,27 +159,50 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
       String action = intent.getAction();
       if(TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)){
         String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-        Toast.makeText(context, state, Toast.LENGTH_LONG).show();
         if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
-          // Incoming call
-          mode = "in";
-          number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
-          Log.d(LOG_TAG, "IncommingCall: " + number);
-          PhoneCallStarted(mode, number);
+          // Incoming call rings
+          Log.d(LOG_TAG, "Incoming Ringing: " + number);
+          Toast.makeText(context, "Incoming Ringing", Toast.LENGTH_LONG).show();
+          status = 1;
+          number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);          
+          PhoneCallStarted(1, number);
         }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
-          // Call offhook
+          // Call off-hook
+          if(status == 1){
+            // Incoming call answered
+            Log.d(LOG_TAG, "Incoming Answered: " + number);
+            Toast.makeText(context, "Incoming Answered", Toast.LENGTH_LONG).show();
+            status = 3;
+            IncomingCallAnswered(number);
+          }
         }else if(TelephonyManager.EXTRA_STATE_IDLE.equals(state)){
-          // Incomming/Outgoing Call ends          
-          Log.d(LOG_TAG, "EndCall: " + number);
-          PhoneCallEnded(mode, number);
+          // Incomming/Outgoing Call ends             
+          if(status == 1){
+            // Incoming Missed or Rejected
+            Log.d(LOG_TAG, "Incoming Missed or Rejected: " + number);
+            Toast.makeText(context, "Incoming Missed or Rejected", Toast.LENGTH_LONG).show();
+            PhoneCallEnded(1, number);
+          }else if(status == 3){
+            // Incoming Answer Ended
+            Log.d(LOG_TAG, "Incoming Answer Ended: " + number);
+            Toast.makeText(context, "Incoming Answer Ended", Toast.LENGTH_LONG).show();
+            PhoneCallEnded(2, number);
+          }else if(status == 2){
+            // Outgoing Ended
+            Log.d(LOG_TAG, "Outgoing Ended: " + number);
+            Toast.makeText(context, "Outgoing Ended", Toast.LENGTH_LONG).show();
+            PhoneCallEnded(3, number);
+          }
+          status = 0;
+          number = "";
         }
       }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){
-        // Outgoing call
-        Toast.makeText(context, "Outgoing", Toast.LENGTH_LONG).show();
-        mode = "out";
-        number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);
+        // Outgoing call dialled
         Log.d(LOG_TAG, "OutgoingCall: " + number);
-        PhoneCallStarted(mode,number);
+        Toast.makeText(context, "Outgoing Dialed", Toast.LENGTH_LONG).show();
+        status = 2;
+        number = intent.getStringExtra(Intent.EXTRA_PHONE_NUMBER);        
+        PhoneCallStarted(2, number);
       }
     }
   }
