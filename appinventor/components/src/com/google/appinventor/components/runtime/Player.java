@@ -87,7 +87,6 @@ public final class Player extends AndroidNonvisibleComponent
   // broadcast receiver for phonecall state shanges
   private final CallStateReceiver callStateReceiver;
   private final Activity activity;
-  private static final String LOG_TAG = "PlayerComponent";
 
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
