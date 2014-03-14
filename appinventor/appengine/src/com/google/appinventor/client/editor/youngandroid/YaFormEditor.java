@@ -356,7 +356,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
 
-      Ode.getInstance().getProjectService().save(getProjectId(), getFileId(), upgradedContent,
+      Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+          getProjectId(), getFileId(), upgradedContent,
           new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
             @Override
             public void onSuccess(Long result) {

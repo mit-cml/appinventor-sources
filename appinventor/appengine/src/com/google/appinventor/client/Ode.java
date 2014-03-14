@@ -127,6 +127,8 @@ public class Ode implements EntryPoint {
   // Nonce Information
   private String nonce;
 
+  private String sessionId = generateUuid(); // Create new session id
+
   private Random random = new Random(); // For generating random nonce
 
   // Collection of projects
@@ -477,7 +479,12 @@ public class Ode implements EntryPoint {
     // TODO(user): ODE makes too many RPC requests at startup time. Currently
     // we do 3 RPCs + 1 per project + 1 per open file. We should bundle some of
     // those with each other or with the initial HTML transfer.
-    userInfoService.getUserInformation(callback);
+    //
+    // This call also stores our sessionId in the backend. This will be checked
+    // when we go to save a file and if different file saving will be disabled
+    // Newer sessions invalidate older sessions.
+
+    userInfoService.getUserInformation(sessionId, callback);
 
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
@@ -1196,6 +1203,10 @@ public class Ode implements EntryPoint {
     return nonce;
   }
 
+  public String getSessionId() {
+    return sessionId;
+  }
+
   /*
    * getNonce() -- return a previously generated nonce.
    *
@@ -1210,6 +1221,14 @@ public class Ode implements EntryPoint {
   // a plug value. You should insert your own as appropriate.
   private native void takeSurvey() /*-{
     $wnd.open("http://web.mit.edu");
+  }-*/;
+
+  // Making this public in case we need something like this elsewhere
+  public static native String generateUuid() /*-{
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+      return v.toString(16);
+     });
   }-*/;
 
 }

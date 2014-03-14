@@ -102,7 +102,7 @@ public class FileUploadWizard extends Wizard {
                 String filesToClose [] = { node.getFileId()};
                 Ode ode = Ode.getInstance();
                 ode.getEditorManager().closeFileEditors(node.getProjectId(), filesToClose);
-                ode.getProjectService().deleteFile(
+                ode.getProjectService().deleteFile(ode.getSessionId(),
                     node.getProjectId(), node.getFileId(),
                     new OdeAsyncCallback<Long>(
                         // message on failure

@@ -5,10 +5,12 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
@@ -141,23 +143,27 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Stores a string with the project settings.
+   * @param sessionId session id
    * @param projectId  project ID
    * @param settings  project settings
    */
   @Override
-  public void storeProjectSettings(long projectId, String settings) {
+  public void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException {
+    validateSessionId(sessionId);
     String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).storeProjectSettings(userId, projectId, settings);
   }
 
   /**
    * Deletes a file in the given project.
+   * @param sessionId session id
    * @param projectId  project ID
    * @param fileId  ID of file to delete
    * @return modification date for project
    */
   @Override
-  public long deleteFile(long projectId, String fileId) {
+  public long deleteFile(String sessionId, long projectId, String fileId) throws InvalidSessionException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFile(userId, projectId, fileId);
   }
@@ -165,12 +171,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Deletes all files that are contained directly in the given directory. Files
    * in subdirectories are not deleted.
+   * @param sessionId session id
    * @param projectId project ID
    * @param directory path of the directory
    * @return modification date for project
    */
   @Override
-  public long deleteFiles(long projectId, String directory) {
+  public long deleteFiles(String sessionId, long projectId, String directory) throws InvalidSessionException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFiles(userId, projectId,
         directory);
@@ -246,6 +254,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Saves the content of the file associated with a node in the project tree.
    *
+   * @param sessionId session id
    * @param projectId  project ID
    * @param fileId  project node whose source should be saved
    * @param content  content to be saved
@@ -254,7 +263,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @see #load(long, String)
    */
   @Override
-  public long save(long projectId, String fileId, String content) {
+  public long save(String sessionId, long projectId, String fileId, String content) throws InvalidSessionException {
+    validateSessionId(sessionId);
     // Log parameters except for content
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).save(userId, projectId, fileId,
@@ -264,12 +274,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Saves the contents of multiple files.
    *
+   * @param sessionId session id
    * @param filesAndContent  list containing file descriptors and their
    *                         associated content
    * @return modification date for last modified project of list
    */
   @Override
-  public long save(List<FileDescriptorWithContent> filesAndContent) {
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     long date = 0;
     for (FileDescriptorWithContent fileAndContent : filesAndContent) {
@@ -359,4 +371,23 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
+
+  private void validateSessionId(String sessionId) throws InvalidSessionException {
+    String storedSessionId = userInfoProvider.getSessionId();
+    if (storedSessionId == null) {
+      LOG.info("storedSessionId is null");
+    } else {
+      LOG.info("storedSessionId = " + storedSessionId);
+    }
+    if (sessionId == null) {
+      LOG.info("sessionId is null");
+    } else {
+      LOG.info("sessionId = " + sessionId);
+    }
+    if (!storedSessionId.equals(sessionId))
+      if (AppInventorFeatures.requireOneLogin()) {
+        throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
+      }
+  }
+
 }

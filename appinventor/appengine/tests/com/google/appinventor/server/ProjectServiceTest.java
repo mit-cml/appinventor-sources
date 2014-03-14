@@ -7,6 +7,7 @@ package com.google.appinventor.server;
 
 import static com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters.YOUNG_ANDROID_FORM_NAME;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
@@ -103,8 +104,10 @@ public class ProjectServiceTest {
 
     PowerMock.mockStatic(LocalUser.class);
     localUserMock = PowerMock.createMock(LocalUser.class);
+    expect(localUserMock.getSessionId()).andReturn("test-session").anyTimes();
+    localUserMock.setSessionId("test-session");
+    expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
 
@@ -116,6 +119,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
+    localUserMock.setSessionId("test-session");
   }
 
   @After
@@ -166,7 +170,7 @@ public class ProjectServiceTest {
         user1Project1Source1FileId);
 
     long oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
-    long modificationDate = projectServiceImpl.save(user1Project1, user1Project1Source1FileId,
+    long modificationDate = projectServiceImpl.save("test-session", user1Project1, user1Project1Source1FileId,
         YOUNG_ANDROID_COMMENT + user1Project1Source1);
     assertEquals(YOUNG_ANDROID_COMMENT + user1Project1Source1,
         projectServiceImpl.load(user1Project1, user1Project1Source1FileId));
@@ -208,7 +212,7 @@ public class ProjectServiceTest {
     filesWithContent.add(new FileDescriptorWithContent(user1Project2, user1Project2Source1FileId,
         u1p2s1));
     checkModificationDateMatchesStored(oldModificationDate, USER_ID_ONE, user1Project1);
-    modificationDate = projectServiceImpl.save(filesWithContent);
+    modificationDate = projectServiceImpl.save("test-session", filesWithContent);
     assertTrue(oldModificationDate < modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project2);
     oldModificationDate = modificationDate;
@@ -229,7 +233,7 @@ public class ProjectServiceTest {
     assertEquals(u1p2s1, fileWithContent.getContent());
 
     oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
-    modificationDate = projectServiceImpl.deleteFile(user1Project1, user1Project1Source1FileId);
+    modificationDate = projectServiceImpl.deleteFile("test-session", user1Project1, user1Project1Source1FileId);
     assertTrue(oldModificationDate < modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
@@ -477,7 +481,7 @@ public class ProjectServiceTest {
     String storedSettings =
         "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
         "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"KittyIcon.png\"}}";
-    projectServiceImpl.storeProjectSettings(projectId, storedSettings);
+    projectServiceImpl.storeProjectSettings("test-session", projectId, storedSettings);
     loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
     assertEquals(storedSettings, loadedSettings);
     PowerMock.verifyAll();

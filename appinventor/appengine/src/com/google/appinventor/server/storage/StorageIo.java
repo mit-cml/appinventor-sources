@@ -70,6 +70,15 @@ public interface StorageIo {
   void setTosAccepted(String userId);
 
   /**
+   * Sets the user's session id value which is used to ensure only
+   * one valid session exists for a user
+   *
+   * @param userId user id
+   * @param sessionId the session id (uuid) value
+   */
+  void setUserSessionId(String userId, String sessionId);
+
+  /**
    * Returns a string with the user's settings.
    *
    * @param userId user id

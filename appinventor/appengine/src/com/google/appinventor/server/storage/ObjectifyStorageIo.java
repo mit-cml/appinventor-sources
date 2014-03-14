@@ -179,7 +179,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, false, false);
+      tuser = new User(userId, email, false, false, null);
     }
     final User user = tuser;
     try {
@@ -195,6 +195,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           user.setUserEmail(userData.email);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
+          user.setSessionId(userData.sessionid);
         }
       });
     } catch (ObjectifyException e) {
@@ -254,6 +255,26 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public void setUserSessionId(final String userId, final String sessionId) {
+    String cachekey = User.usercachekey + "|" + userId;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.sessionid = sessionId;
+            datastore.put(userData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override

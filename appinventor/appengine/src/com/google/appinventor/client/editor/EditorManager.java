@@ -298,7 +298,8 @@ public final class EditorManager {
       }
     }
    
-    Ode.getInstance().getProjectService().save(yailFiles,
+    Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+        yailFiles,
         new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
       @Override
       public void onSuccess(Long date) {
@@ -341,7 +342,8 @@ public final class EditorManager {
       }
 
     } else {
-      Ode.getInstance().getProjectService().save(filesWithContent,
+      Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+          filesWithContent,
           new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
         @Override
         public void onSuccess(Long date) {

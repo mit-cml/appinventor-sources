@@ -18,7 +18,7 @@ public interface UserInfoServiceAsync {
   /**
    * @see UserInfoService#getUserInformation()
    */
-  void getUserInformation(AsyncCallback<User> callback);
+  void getUserInformation(String sessionId, AsyncCallback<User> callback);
 
   /**
    * @see UserInfoService#loadUserSettings()

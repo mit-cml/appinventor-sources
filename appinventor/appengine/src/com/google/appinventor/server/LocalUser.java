@@ -86,4 +86,25 @@ public class LocalUser implements UserInfoProvider {
       throw new UnsupportedOperationException("User field should have been initialized.");
     }
   }
+
+  @Override
+  public String getSessionId() {
+    try {
+      return user.get().getSessionId();
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
+  @Override
+  public void setSessionId(String sessionId) {
+    try {
+      user.get().setSessionId(sessionId);
+    } catch (NullPointerException e) {
+      // This should never happen, but just in case...
+      throw new UnsupportedOperationException("User field should have been initialized.");
+    }
+  }
+
 }

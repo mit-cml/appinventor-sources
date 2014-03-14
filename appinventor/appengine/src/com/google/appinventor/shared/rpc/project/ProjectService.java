@@ -5,6 +5,7 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.gwt.user.client.rpc.RemoteService;
@@ -77,27 +78,30 @@ public interface ProjectService extends RemoteService {
 
   /**
    * Stores a string with the project settings.
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param settings  project settings
    */
-  void storeProjectSettings(long projectId, String settings);
+  void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException;
 
   /**
    * Deletes a file in the given project.
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param fileId  ID of file to delete
    * @return modification date for project
    */
-  long deleteFile(long projectId, String fileId);
+  long deleteFile(String sessionId, long projectId, String fileId) throws InvalidSessionException;
 
   /**
    * Deletes all files that are contained directly in the given directory. Files
    * in subdirectories are not deleted.
+   * @param sessionId current session id
    * @param projectId project ID
    * @param directory path of the directory
    * @return modification date for project
    */
-  long deleteFiles(long projectId, String directory);
+  long deleteFiles(String sessionId, long projectId, String directory) throws InvalidSessionException;
 
   /**
    * Loads the file information associated with a node in the project tree. The
@@ -145,6 +149,7 @@ public interface ProjectService extends RemoteService {
   /**
    * Saves the content of the file associated with a node in the project tree.
    *
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param fileId  project node whose source should be saved
    * @param content  content to be saved
@@ -152,16 +157,17 @@ public interface ProjectService extends RemoteService {
    *
    * @see #load(long, String)
    */
-  long save(long projectId, String fileId, String content);
+  long save(String sessionId, long projectId, String fileId, String content) throws InvalidSessionException;
 
   /**
    * Saves the contents of multiple files.
    *
+   * @param sessionId current session id
    * @param filesAndContent  list containing file descriptor and their
    *                         associated content
    * @return modification date for last modified project of list
    */
-  public long save(List<FileDescriptorWithContent> filesAndContent);
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException;
 
   /**
    * Invokes a build command for the project on the back-end.

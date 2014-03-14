@@ -79,4 +79,17 @@ public final class AppInventorFeatures {
   public static boolean showSurveySplashScreen() {
     return false;
   }
+
+  /**
+   * If set to true, an account can be in use in only one browser tab.
+   * When a new login is detected, all older sessions are no longer
+   * permitted to save project files.
+   *
+   * @return true to limit account use to one session at a time
+   */
+  public static boolean requireOneLogin() {
+    return false;
+  }
+
+
 }
