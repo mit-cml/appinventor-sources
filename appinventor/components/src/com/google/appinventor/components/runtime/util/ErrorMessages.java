@@ -83,6 +83,7 @@ public final class ErrorMessages {
   public static final int ERROR_ACTIVITY_STARTER_NO_CORRESPONDING_ACTIVITY = 601;
   // Media errors
   public static final int ERROR_UNABLE_TO_LOAD_MEDIA = 701;
+  public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
   public static final int ERROR_UNABLE_TO_PREPARE_MEDIA = 702;
   public static final int ERROR_UNABLE_TO_PLAY_MEDIA = 703;
   public static final int ERROR_MEDIA_EXTERNAL_STORAGE_READONLY = 704;
@@ -287,6 +288,8 @@ public final class ErrorMessages {
     // Media errors
     errorMessages.put(ERROR_UNABLE_TO_LOAD_MEDIA,
         "Unable to load %s.");
+    errorMessages.put(ERROR_UNABLE_TO_FOCUS_MEDIA,
+        "Unable to focus %s.");
     errorMessages.put(ERROR_UNABLE_TO_PREPARE_MEDIA,
         "Unable to prepare %s.");
     errorMessages.put(ERROR_UNABLE_TO_PLAY_MEDIA,
