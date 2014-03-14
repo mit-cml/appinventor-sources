@@ -1181,16 +1181,18 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   }
 
   /**
-   * Draws a ring (circle not filled in) at the given coordinates on the canvas,
-   * with the given radius and ringWidth.
+   * <p>Draws a ring (circle with a hole in the middle) at the given coordinates on the 
+   * canvas, with the given radius and ring width.</p>
    *
    * @param x  x coordinate
    * @param y  y coordinate
    * @param r  radius
    * @param ringWidth  width of the ring
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Draws a ring (circle with a hole in the middle) at the "
+      + "given coordinates on the canvas, with the given radius and ring width.")
   public void DrawRing(int x, int y, float r, float ringWidth) {
+    // Create new Paint copy to prevent modifications to global paint.
     Paint strokePaint = new Paint(paint);
     strokePaint.setStrokeWidth(ringWidth);
     strokePaint.setStyle(Paint.Style.STROKE);
