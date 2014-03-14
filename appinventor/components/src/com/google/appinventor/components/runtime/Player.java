@@ -21,15 +21,12 @@ import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
-import android.telephony.TelephonyManager;
 
 import java.io.IOException;
 
@@ -84,8 +81,9 @@ public final class Player extends AndroidNonvisibleComponent
   
   // choices on player policy: Foreground, Always
   private boolean playInForeground;
-  // broadcast receiver for phonecall state shanges
-  private final CallStateReceiver callStateReceiver;
+  // status of audio focus
+  private boolean focusOn;
+  private AudioManager am;
   private final Activity activity;
 
   /*
@@ -122,8 +120,8 @@ public final class Player extends AndroidNonvisibleComponent
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
     playInForeground = true;
-    callStateReceiver = new CallStateReceiver();
-    registerCallStateMonitor();
+    focusOn = false; 
+    am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
   }
 
   /**
@@ -175,7 +173,8 @@ public final class Player extends AndroidNonvisibleComponent
       }
 
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
+      requestFocus();
+      
       // The Simple API is set up so that the user never has to call prepare.
       prepare();
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
@@ -278,6 +277,9 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
+    if(!focusOn){
+      requestFocus();
+    }
     if (playerState == 1 || playerState == 2 || playerState == 3 || playerState == 4) {
       player.setLooping(loop);
       player.start();
@@ -319,7 +321,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
-    if (playerState == 1 || playerState == 2 || playerState == 3) {
+    if (playerState == 2 || playerState == 3 || playerState == 4) {
       player.stop();
       prepare();
       player.seekTo(0);
@@ -370,6 +372,64 @@ public final class Player extends AndroidNonvisibleComponent
   public void Completed() {
     EventDispatcher.dispatchEvent(this, "Completed");
   }
+  
+  /**
+   * Indicates that the other player has taken the focus of media
+   */
+  @SimpleEvent
+  public void Preempted() {
+    EventDispatcher.dispatchEvent(this, "Preempted");
+  }
+  
+  private void requestFocus() {
+    // Request permanent focus on music stream
+    int result = am.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+    if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+      focusOn = true;
+    }else {
+      form.dispatchErrorOccurredEvent(this, "Source",
+        ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
+    }
+  }
+  
+  private void abandonFocus() {
+    am.abandonAudioFocus(afChangeListener);
+    focusOn = false;
+  }
+  
+  private OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
+    private boolean flag = false;
+    public void onAudioFocusChange(int focusChange) {
+      switch(focusChange){
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+        // Focus loss transient: Pause playback
+        if(player != null && playerState == 2){
+          pause();
+          flag = true;
+        }
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS:
+        // Focus loss permanent: Stop playback (focus taken by other music services)
+        flag = false;
+        abandonFocus();
+        if (player != null && (playerState == 2 || playerState == 3 || playerState == 4)) {
+          player.stop();
+          prepare();
+          player.seekTo(0);
+        }
+        // playerState is 1 now
+        Preempted(); 
+        break;
+      case AudioManager.AUDIOFOCUS_GAIN:
+        // Focus gain: Resume playback 
+        if(player != null && flag && playerState == 4){
+          Start();
+          flag = false;
+        }
+        break;
+      }        
+    }
+};
 
   // OnResumeListener implementation
   @Override
@@ -411,7 +471,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
-    unregisterCallStateMonitor();
+    abandonFocus();
     if (playerState != 0) {
       player.stop();
     }
@@ -423,60 +483,4 @@ public final class Player extends AndroidNonvisibleComponent
     vibe.cancel();
   }
   
-  /**
-   * BroadcastReceiver for incomming/outgoing phonecall state changes
-   * 
-   */
-  private class CallStateReceiver extends BroadcastReceiver {
-    private boolean flag;    
-    public CallStateReceiver() {
-      flag = false;
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-      String action = intent.getAction();      
-      if(TelephonyManager.ACTION_PHONE_STATE_CHANGED.equals(action)){
-        String state = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
-        if(TelephonyManager.EXTRA_STATE_RINGING.equals(state)){
-          // Incoming call
-          if(player != null && playerState == 2){
-            pause();
-            flag = true;
-          }
-        }else if(TelephonyManager.EXTRA_STATE_OFFHOOK.equals(state)){
-          // Call offhook
-        }else if(TelephonyManager.EXTRA_STATE_IDLE.equals(state)){
-          // Incomming/Outgoing Call ends
-          if(player != null && flag && playerState == 4){
-            Start();
-            flag = false;
-          }
-        }
-      }else if(Intent.ACTION_NEW_OUTGOING_CALL.equals(action)){ 
-        // Outgoing call
-        if(player != null && playerState == 2){
-          pause();
-          flag = true;
-        }
-      }        
-    }  
-  } 
-  
-  /**
-   * Registers phonecall state monitor
-   */
-  private void registerCallStateMonitor(){    
-    IntentFilter intentFilter = new IntentFilter();
-    intentFilter.addAction(Intent.ACTION_NEW_OUTGOING_CALL);
-    intentFilter.addAction(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-    activity.registerReceiver(callStateReceiver, intentFilter);
-  }
-    
-  /**
-   * Unregisters phonecall state monitor
-   */
-  private void unregisterCallStateMonitor(){
-    activity.unregisterReceiver(callStateReceiver);
-  }
 }
