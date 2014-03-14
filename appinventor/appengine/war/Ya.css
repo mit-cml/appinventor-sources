@@ -1294,3 +1294,15 @@ textarea::-webkit-input-placeholder {
 .checkbox.inline + .checkbox.inline {
   margin-left: 10px;
 }
+
+/*
+ * Privacy Editor 
+ */
+ 
+.privacy-HTML {
+  width: 500px;
+  height: 300px;
+  border: 1px solid black;
+  background-color: white;
+  overflow: auto;
+}

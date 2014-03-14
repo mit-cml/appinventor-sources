@@ -152,6 +152,21 @@
     <filter-name>odeAuthFilter</filter-name>
     <servlet-name>projectService</servlet-name>
   </filter-mapping>
+  
+  <!-- privacy editor -->
+  <servlet>
+    <servlet-name>privacyEditorService</servlet-name>
+    <servlet-class>com.google.appinventor.server.PrivacyEditorServiceImpl</servlet-class>
+    <load-on-startup>11</load-on-startup>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>privacyEditorService</servlet-name>
+    <url-pattern>/ode/privacyEditor</url-pattern>
+  </servlet-mapping>
+  <filter-mapping>
+    <filter-name>odeAuthFilter</filter-name>
+    <servlet-name>privacyEditorService</servlet-name>
+  </filter-mapping>
 
   <!-- upload -->
   <servlet>
