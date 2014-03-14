@@ -57,6 +57,7 @@ import java.util.List;
  * <li> background image
  * <li> the "drawing layer", populated through calls to
  *      {@link #DrawPoint(int,int)}, {@link #DrawCircle(int,int,float)},
+ *      {@link #DrawRing(int, int, float, float)}, 
  *      {@link #DrawText(String,int,int)}, and
  *      {@link #DrawTextAtAngle(String,int,int,float)}, and
  *      {@link #SetBackgroundPixelColor(int,int,int)}
@@ -1176,6 +1177,24 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   @SimpleFunction
   public void DrawCircle(int x, int y, float r) {
     view.canvas.drawCircle(x, y, r, paint);
+    view.invalidate();
+  }
+
+  /**
+   * Draws a ring (circle not filled in) at the given coordinates on the canvas,
+   * with the given radius and ringWidth.
+   *
+   * @param x  x coordinate
+   * @param y  y coordinate
+   * @param r  radius
+   * @param ringWidth  width of the ring
+   */
+  @SimpleFunction
+  public void DrawRing(int x, int y, float r, float ringWidth) {
+    Paint strokePaint = new Paint(paint);
+    strokePaint.setStrokeWidth(ringWidth);
+    strokePaint.setStyle(Paint.Style.STROKE);
+    view.canvas.drawCircle(x, y, r, strokePaint);
     view.invalidate();
   }
 
