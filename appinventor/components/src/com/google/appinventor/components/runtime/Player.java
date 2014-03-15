@@ -19,6 +19,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.IllegalArgumentError;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.MediaUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
 import android.content.Context;
@@ -85,6 +86,7 @@ public final class Player extends AndroidNonvisibleComponent
   private boolean focusOn;
   private AudioManager am;
   private final Activity activity;
+  private boolean audioFocusSupported;
 
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
@@ -121,7 +123,12 @@ public final class Player extends AndroidNonvisibleComponent
     loop = false;
     playInForeground = true;
     focusOn = false; 
-    am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO){      
+      audioFocusSupported = true;
+      am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+    }else{
+      audioFocusSupported = false;
+    }    
   }
 
   /**
@@ -173,8 +180,9 @@ public final class Player extends AndroidNonvisibleComponent
       }
 
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-      requestFocus();
-      
+      if(audioFocusSupported){
+        requestFocus();
+      }
       // The Simple API is set up so that the user never has to call prepare.
       prepare();
       // Player should now be in state 1. (If prepare failed, we are in state 0.)
@@ -277,7 +285,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Start() {
-    if(!focusOn){
+    if(audioFocusSupported && !focusOn){
       requestFocus();
     }
     if (playerState == 1 || playerState == 2 || playerState == 3 || playerState == 4) {
@@ -381,6 +389,9 @@ public final class Player extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Preempted");
   }
   
+  /**
+   *  Requests music stream permanent focus
+   */
   private void requestFocus() {
     // Request permanent focus on music stream
     int result = am.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
@@ -392,12 +403,16 @@ public final class Player extends AndroidNonvisibleComponent
     }
   }
   
+  /**
+   * Abandons music stream permanent focus
+   */
   private void abandonFocus() {
     am.abandonAudioFocus(afChangeListener);
     focusOn = false;
   }
   
-  private OnAudioFocusChangeListener afChangeListener = new OnAudioFocusChangeListener() {
+  private OnAudioFocusChangeListener afChangeListener = 
+    (!audioFocusSupported)? null: new OnAudioFocusChangeListener() {
     private boolean flag = false;
     public void onAudioFocusChange(int focusChange) {
       switch(focusChange){
@@ -471,7 +486,9 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
-    abandonFocus();
+    if(audioFocusSupported){
+      abandonFocus();
+    }
     if (playerState != 0) {
       player.stop();
     }
@@ -482,5 +499,4 @@ public final class Player extends AndroidNonvisibleComponent
     }
     vibe.cancel();
   }
-  
 }
