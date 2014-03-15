@@ -25,7 +25,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Vibrator;
 
@@ -67,7 +66,7 @@ import java.io.IOException;
     nonVisible = true,
     iconName = "images/player.png")
 @SimpleObject
-@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET, android.permission.READ_PHONE_STATE, android.permission.PROCESS_OUTGOING_CALLS")
+@UsesPermissions(permissionNames = "android.permission.VIBRATE, android.permission.INTERNET")
 public final class Player extends AndroidNonvisibleComponent
     implements Component, OnCompletionListener, OnPauseListener, OnResumeListener, OnDestroyListener, OnStopListener, Deleteable {
 
@@ -86,8 +85,18 @@ public final class Player extends AndroidNonvisibleComponent
   private boolean focusOn;
   private AudioManager am;
   private final Activity activity;
-  private boolean audioFocusSupported;
+  // Flag if SDK level >= 8
+  private static final boolean audioFocusSupported;
+  private Object afChangeListener;
 
+  static{
+    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO){      
+      audioFocusSupported = true;
+    }else{
+      audioFocusSupported = false;
+    }
+  }
+  
   /*
    * playerState encodes a simplified version of the full MediaPlayer state space, that should be
    * adequate, given this API:
@@ -103,7 +112,7 @@ public final class Player extends AndroidNonvisibleComponent
    * We can simplify this to remove state 0 and use a simple boolean after we're
    * more confident that there are no start-up problems.
    */
-
+  
   /**
    * Creates a new Player component.
    *
@@ -123,12 +132,44 @@ public final class Player extends AndroidNonvisibleComponent
     loop = false;
     playInForeground = true;
     focusOn = false; 
-    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_FROYO){      
-      audioFocusSupported = true;
+    if(audioFocusSupported){
       am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-    }else{
-      audioFocusSupported = false;
-    }    
+      afChangeListener = (android.media.AudioManager.OnAudioFocusChangeListener) new android.media.AudioManager.OnAudioFocusChangeListener() {
+        private boolean flag = false;
+        public void onAudioFocusChange(int focusChange) {
+          switch(focusChange){
+          case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+            // Focus loss transient: Pause playback
+            if(player != null && playerState == 2){
+              pause();
+              flag = true;
+            }
+            break;
+          case AudioManager.AUDIOFOCUS_LOSS:
+            // Focus loss permanent: Stop playback (focus taken by other music services)
+            flag = false;
+            // Abandon focus
+            am.abandonAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener);
+            focusOn = false;
+            if (player != null && (playerState == 2 || playerState == 3 || playerState == 4)) {
+              player.stop();
+              prepare();
+              player.seekTo(0);
+            }
+            // playerState is 1 now
+            Preempted(); 
+            break;
+          case AudioManager.AUDIOFOCUS_GAIN:
+            // Focus gain: Resume playback 
+            if(player != null && flag && playerState == 4){
+              Start();
+              flag = false;
+            }
+            break;
+          }        
+        }
+      };
+    }   
   }
 
   /**
@@ -181,7 +222,14 @@ public final class Player extends AndroidNonvisibleComponent
 
       player.setAudioStreamType(AudioManager.STREAM_MUSIC);
       if(audioFocusSupported){
-        requestFocus();
+        // Request permanent focus on music stream
+        int result = am.requestAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+          focusOn = true;
+        }else {
+          form.dispatchErrorOccurredEvent(this, "Source",
+            ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
+        }
       }
       // The Simple API is set up so that the user never has to call prepare.
       prepare();
@@ -286,7 +334,14 @@ public final class Player extends AndroidNonvisibleComponent
   @SimpleFunction
   public void Start() {
     if(audioFocusSupported && !focusOn){
-      requestFocus();
+      // Request permanent focus on music stream
+      int result = am.requestAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+      if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
+        focusOn = true;
+      }else {
+        form.dispatchErrorOccurredEvent(this, "Source",
+          ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
+      }
     }
     if (playerState == 1 || playerState == 2 || playerState == 3 || playerState == 4) {
       player.setLooping(loop);
@@ -313,7 +368,7 @@ public final class Player extends AndroidNonvisibleComponent
   }
   
   /**
-   * Pauses when leaving the screen, but state is not changed.
+   * Pauses when leaving the screen or losing focus.
    */
   private void pause() {
     if (player == null) return; //Do nothing if the player is not playing
@@ -389,63 +444,6 @@ public final class Player extends AndroidNonvisibleComponent
     EventDispatcher.dispatchEvent(this, "Preempted");
   }
   
-  /**
-   *  Requests music stream permanent focus
-   */
-  private void requestFocus() {
-    // Request permanent focus on music stream
-    int result = am.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
-    if(result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED){
-      focusOn = true;
-    }else {
-      form.dispatchErrorOccurredEvent(this, "Source",
-        ErrorMessages.ERROR_UNABLE_TO_FOCUS_MEDIA, sourcePath);
-    }
-  }
-  
-  /**
-   * Abandons music stream permanent focus
-   */
-  private void abandonFocus() {
-    am.abandonAudioFocus(afChangeListener);
-    focusOn = false;
-  }
-  
-  private OnAudioFocusChangeListener afChangeListener = 
-    (!audioFocusSupported)? null: new OnAudioFocusChangeListener() {
-    private boolean flag = false;
-    public void onAudioFocusChange(int focusChange) {
-      switch(focusChange){
-      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-        // Focus loss transient: Pause playback
-        if(player != null && playerState == 2){
-          pause();
-          flag = true;
-        }
-        break;
-      case AudioManager.AUDIOFOCUS_LOSS:
-        // Focus loss permanent: Stop playback (focus taken by other music services)
-        flag = false;
-        abandonFocus();
-        if (player != null && (playerState == 2 || playerState == 3 || playerState == 4)) {
-          player.stop();
-          prepare();
-          player.seekTo(0);
-        }
-        // playerState is 1 now
-        Preempted(); 
-        break;
-      case AudioManager.AUDIOFOCUS_GAIN:
-        // Focus gain: Resume playback 
-        if(player != null && flag && playerState == 4){
-          Start();
-          flag = false;
-        }
-        break;
-      }        
-    }
-};
-
   // OnResumeListener implementation
   @Override
   public void onResume() {
@@ -487,7 +485,9 @@ public final class Player extends AndroidNonvisibleComponent
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
     if(audioFocusSupported){
-      abandonFocus();
+      // Abandon focus
+      am.abandonAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener);
+      focusOn = false;
     }
     if (playerState != 0) {
       player.stop();
