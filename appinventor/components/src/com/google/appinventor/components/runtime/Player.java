@@ -140,27 +140,21 @@ public final class Player extends AndroidNonvisibleComponent
           switch(focusChange){
           case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
             // Focus loss transient: Pause playback
+            //Toast.makeText(activity, "Focus loss transient", Toast.LENGTH_LONG).show();
             if(player != null && playerState == 2){
               pause();
               flag = true;
             }
             break;
           case AudioManager.AUDIOFOCUS_LOSS:
-            // Focus loss permanent: Stop playback (focus taken by other music services)
+            // Focus loss permanent: focus taken by other players
+            //Toast.makeText(activity, "Focus loss", Toast.LENGTH_LONG).show();
             flag = false;
-            // Abandon focus
-            am.abandonAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener);
-            focusOn = false;
-            if (player != null && (playerState == 2 || playerState == 3 || playerState == 4)) {
-              player.stop();
-              prepare();
-              player.seekTo(0);
-            }
-            // playerState is 1 now
-            Preempted(); 
+            OtherPlayerStarted(); 
             break;
           case AudioManager.AUDIOFOCUS_GAIN:
             // Focus gain: Resume playback 
+            //Toast.makeText(activity, "Focus gain", Toast.LENGTH_LONG).show();
             if(player != null && flag && playerState == 4){
               Start();
               flag = false;
@@ -384,6 +378,11 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleFunction
   public void Stop() {
+    if(audioFocusSupported && focusOn){
+      // Abandon focus
+      am.abandonAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener);
+      focusOn = false;
+    }
     if (playerState == 2 || playerState == 3 || playerState == 4) {
       player.stop();
       prepare();
@@ -437,11 +436,11 @@ public final class Player extends AndroidNonvisibleComponent
   }
   
   /**
-   * Indicates that the other player has taken the focus of media
+   * Indicates that the other player has requested the focus of media
    */
   @SimpleEvent
-  public void Preempted() {
-    EventDispatcher.dispatchEvent(this, "Preempted");
+  public void OtherPlayerStarted() {
+    EventDispatcher.dispatchEvent(this, "OtherPlayerStarted");
   }
   
   // OnResumeListener implementation
@@ -484,7 +483,7 @@ public final class Player extends AndroidNonvisibleComponent
 
   private void prepareToDie() {
     // TODO(lizlooney) - add descriptively named constants for these magic numbers.
-    if(audioFocusSupported){
+    if(audioFocusSupported && focusOn){
       // Abandon focus
       am.abandonAudioFocus((android.media.AudioManager.OnAudioFocusChangeListener) afChangeListener);
       focusOn = false;
