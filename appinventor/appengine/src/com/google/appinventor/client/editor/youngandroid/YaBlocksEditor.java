@@ -11,6 +11,8 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.FormChangeListener;
@@ -31,7 +33,9 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.TreeItem;
+import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -220,11 +224,15 @@ public final class YaBlocksEditor extends FileEditor
       // don't want a component drawer open in the blocks editor when we
       // come back to it.
       updateBlocksTree(form, null);
-
-      Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets()
-          .getWidget(2));
-      //Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 1);
+      
+      Ode.getInstance().getWorkColumns().remove(PaletteBox.getPaletteBox());
+      Ode.getInstance().getWorkColumns().remove(PropertiesBox.getPropertiesBox());
+      
+      VerticalPanel structureAndAssets = Ode.getInstance().getStructureAndAssets();
+      Ode.getInstance().getWorkColumns().insertWest(
+    		  Ode.getInstance().getStructureAndAssets(), 200, ViewerBox.getViewerBox());
       Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+      
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
       hideComponentBlocks();
@@ -272,8 +280,12 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.clear();
     paletteBox.setVisible(true);
 
-    Ode.getInstance().getWorkColumns().remove(Ode.getInstance().getStructureAndAssets().getWidget(0));
-    //Ode.getInstance().getWorkColumns().insert(Ode.getInstance().getStructureAndAssets(), 3);
+    Ode.getInstance().getWorkColumns().insertEast(
+    		Ode.getInstance().getStructureAndAssets(), 222, ViewerBox.getViewerBox());
+    Ode.getInstance().getWorkColumns().insertWest(PaletteBox.getPaletteBox(), 222, ViewerBox.getViewerBox());
+    Ode.getInstance().getWorkColumns().insertEast(
+    		PropertiesBox.getPropertiesBox(), 222, Ode.getInstance().getStructureAndAssets());
+    
     Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
     AssetListBox.getAssetListBox().setVisible(true);

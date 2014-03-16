@@ -263,6 +263,14 @@ public class Ode implements EntryPoint {
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
   }
+  
+  public void switchToBlocksEditor() {
+
+  }
+  
+  public void switchToFormEditor() {
+	  
+  }
 
   /**
    * Switch to the Designer tab. Shows an error message if there is no currentFileEditor.
