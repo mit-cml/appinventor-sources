@@ -12,6 +12,7 @@ import com.google.appinventor.client.boxes.AssetListBox;
 import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
+import com.google.appinventor.client.boxes.SourceStructureBox;
 import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -33,7 +34,9 @@ import com.google.gwt.event.logical.shared.ResizeHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.TreeItem;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -228,10 +231,10 @@ public final class YaBlocksEditor extends FileEditor
       Ode.getInstance().getWorkColumns().remove(PaletteBox.getPaletteBox());
       Ode.getInstance().getWorkColumns().remove(PropertiesBox.getPropertiesBox());
       
-      VerticalPanel structureAndAssets = Ode.getInstance().getStructureAndAssets();
-      Ode.getInstance().getWorkColumns().insertWest(
-    		  Ode.getInstance().getStructureAndAssets(), 200, ViewerBox.getViewerBox());
-      Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+      DockLayoutPanel structureAndAssets = Ode.getInstance().getStructureAndAssets();
+      Ode.getInstance().getWorkColumns().insertWest(structureAndAssets, 220, ViewerBox.getViewerBox());
+      structureAndAssets.remove(SourceStructureBox.getSourceStructureBox());
+      structureAndAssets.insertNorth(BlockSelectorBox.getBlockSelectorBox(), 570, AssetListBox.getAssetListBox());
       
       BlockSelectorBox.getBlockSelectorBox().setVisible(true);
       AssetListBox.getAssetListBox().setVisible(true);
@@ -280,15 +283,16 @@ public final class YaBlocksEditor extends FileEditor
     paletteBox.clear();
     paletteBox.setVisible(true);
 
-    Ode.getInstance().getWorkColumns().insertEast(
-    		Ode.getInstance().getStructureAndAssets(), 222, ViewerBox.getViewerBox());
-    Ode.getInstance().getWorkColumns().insertWest(PaletteBox.getPaletteBox(), 222, ViewerBox.getViewerBox());
-    Ode.getInstance().getWorkColumns().insertEast(
-    		PropertiesBox.getPropertiesBox(), 222, Ode.getInstance().getStructureAndAssets());
+    DockLayoutPanel structureAndAssets = Ode.getInstance().getStructureAndAssets();
+    Ode.getInstance().getWorkColumns().insertEast(structureAndAssets, 222, ViewerBox.getViewerBox());
+    structureAndAssets.remove(BlockSelectorBox.getBlockSelectorBox());
+    structureAndAssets.addNorth(SourceStructureBox.getSourceStructureBox(), 570);   
+    structureAndAssets.add(AssetListBox.getAssetListBox());
     
-    Ode.getInstance().getStructureAndAssets().insert(BlockSelectorBox.getBlockSelectorBox(), 0);
+    Ode.getInstance().getWorkColumns().insertWest(PaletteBox.getPaletteBox(), 222, ViewerBox.getViewerBox());
+    Ode.getInstance().getWorkColumns().insertEast(PropertiesBox.getPropertiesBox(), 222, Ode.getInstance().getStructureAndAssets());
+    
     BlockSelectorBox.getBlockSelectorBox().setVisible(false);
-    AssetListBox.getAssetListBox().setVisible(true);
 
     // Clear and hide the blocks selector tree
     sourceStructureExplorer.clearTree();

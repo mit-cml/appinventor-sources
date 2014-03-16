@@ -54,6 +54,7 @@ import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -73,6 +74,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -169,7 +171,8 @@ public class Ode implements EntryPoint {
   private StatusPanel statusPanel;
   //private HorizontalPanel workColumns;
   private SplitLayoutPanel workColumns;
-  private VerticalPanel structureAndAssets;
+  //private VerticalPanel structureAndAssets;
+  private DockLayoutPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
@@ -584,7 +587,7 @@ public class Ode implements EntryPoint {
 
     workColumns = new SplitLayoutPanel();
     workColumns.setWidth("100%");
-    workColumns.setHeight(String.valueOf((Window.getClientHeight())*1.4)+"px");
+    workColumns.setHeight(Window.getClientHeight() - 120 +"px");
 
     //workColumns.add(switchToDesignerButton);
 
@@ -596,17 +599,16 @@ public class Ode implements EntryPoint {
     propertiesbox.setWidth("100%");
     workColumns.addEast(propertiesbox, 200);
 
-    structureAndAssets = new VerticalPanel();
-    structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
+    structureAndAssets = new DockLayoutPanel(Unit.PX);
     // Only one of the SourceStructureBox and the BlockSelectorBox is visible
     // at any given time, according to whether we are showing the form editor
     // or the blocks editor. They share the same screen real estate.
     SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
     sourceStructureBox.setWidth("100%");
-    structureAndAssets.add(sourceStructureBox);
-    BlockSelectorBox blockSelectorBox = BlockSelectorBox.getBlockSelectorBox();
-    blockSelectorBox.setWidth("100%");
-    structureAndAssets.add(blockSelectorBox);  // initially not visible
+    structureAndAssets.addNorth(sourceStructureBox, 570);
+    //BlockSelectorBox blockSelectorBox = BlockSelectorBox.getBlockSelectorBox();
+    //blockSelectorBox.setWidth("100%");
+    //structureAndAssets.addNorth(blockSelectorBox, 570);  // initially not visible
     AssetListBox assetListBox = AssetListBox.getAssetListBox();
     assetListBox.setWidth("100%");
     structureAndAssets.add(assetListBox);
@@ -760,7 +762,7 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link VerticalPanel}
    */
-  public VerticalPanel getStructureAndAssets() {
+  public DockLayoutPanel getStructureAndAssets() {
     return structureAndAssets;
   }
 
