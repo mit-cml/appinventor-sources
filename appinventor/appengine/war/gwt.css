@@ -1142,8 +1142,10 @@ td.datePickerMonth {
 }
 
 .gwt-SplitLayoutPanel-HDragger {
-  background: #d0e4f6 url(images/splitPanelThumb.png) center center no-repeat;
+  
   cursor: col-resize;
+  opacity:0.2;
+  filter:alpha(opacity=20);
 }
 
 .gwt-SplitLayoutPanel-VDragger {
