@@ -241,6 +241,8 @@ public class YaVersion {
   // - FORM_COMPONENT_VERSION was incremented to 12.
   // For YOUNG_ANDROID_VERSION 85:
   // - CAMERA_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 86:
+  // - CANVAS_COMPONENT_VERSION was incremented to 8.
 
     public static final int YOUNG_ANDROID_VERSION = 85;
 
@@ -395,7 +397,9 @@ public class YaVersion {
   // - Added TouchDown, TouchUp, and Flung events.
   // For CANVAS_COMPONENT_VERSION 7:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int CANVAS_COMPONENT_VERSION = 7;
+  // For CANVAS_COMPONENT_VERSION 8:
+  // - The Fill property was added.
+  public static final int CANVAS_COMPONENT_VERSION = 8;
 
   // For CHECKBOX_COMPONENT_VERSION 2:
   // - The Value property was renamed to Checked.

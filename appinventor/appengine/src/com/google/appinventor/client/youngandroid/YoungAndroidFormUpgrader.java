@@ -542,6 +542,11 @@ public final class YoungAndroidFormUpgrader {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 7;
     }
+    if (srcCompVersion < 8) {
+      // The fill property was added.
+      // No properties need to be modified to upgrade to version 8.
+      srcCompVersion = 8;
+    }
     return srcCompVersion;
   }
 

@@ -105,6 +105,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private int backgroundColor;
   private String backgroundImagePath = "";
   private int textAlignment;
+  private boolean fill;
 
   // Default values
   private static final int MIN_WIDTH_HEIGHT = 1;
@@ -112,6 +113,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
   private static final int DEFAULT_PAINT_COLOR = Component.COLOR_BLACK;
   private static final int DEFAULT_BACKGROUND_COLOR = Component.COLOR_WHITE;
   private static final int FLING_INTERVAL = 1000;  // ms
+  private static final boolean DEFAULT_FILL = true;
 
   // Keep track of enclosed sprites.  This list should always be
   // sorted by increasing sprite.Z().
@@ -668,6 +670,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
     BackgroundColor(DEFAULT_BACKGROUND_COLOR);
     TextAlignment(Component.ALIGNMENT_NORMAL);
     FontSize(Component.FONT_DEFAULT_SIZE);
+    Fill(DEFAULT_FILL);
 
     sprites = new LinkedList<Sprite>();
     motionEventParser = new MotionEventParser();
@@ -1045,6 +1048,37 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       case Component.ALIGNMENT_OPPOSITE:
         paint.setTextAlign(Paint.Align.RIGHT);
         break;
+    }
+  }
+  
+  /**
+   * Returns the currently specified fill setting: true if shapes should be filled
+   * when drawn, false otherwise
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public boolean Fill() {
+    return fill;
+  }
+  
+  /**
+   * Sets the fill setting for shapes drawn on this canvas. Setting this property to
+   * true will fill the inside of shapes with the current paint color. When false,
+   * shapes will be drawn with lines of width specified by the canvas' LineWidth 
+   * property with no fill inside the lines.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+                    defaultValue = "True")
+  @SimpleProperty(
+      description = "Whether or not the inside of drawn shapes should be filled.",
+      userVisible = false)
+  public void Fill(boolean fill) {
+    this.fill = fill;
+    if(fill) {
+      paint.setStyle(Paint.Style.FILL);
+    } else {
+      paint.setStyle(Paint.Style.STROKE);
     }
   }
 
