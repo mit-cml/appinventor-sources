@@ -1050,29 +1050,32 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
         break;
     }
   }
-  
+
   /**
    * Returns the currently specified fill setting: true if shapes should be filled
    * when drawn, false otherwise
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean Fill() {
     return fill;
   }
-  
+
   /**
-   * Sets the fill setting for shapes drawn on this canvas. Setting this property to
-   * true will fill the inside of shapes with the current paint color. When false,
-   * shapes will be drawn with lines of width specified by the canvas' LineWidth 
-   * property with no fill inside the lines.
+   * Sets the fill setting for shapes and text drawn on this canvas. Setting this property
+   * to true will draw solid shapes using the current paint color. When false,
+   * shapes will be drawn as an outline of width specified by the canvas' LineWidth
+   * property with no fill (transparent center) inside the outline. Text will be drawn
+   * as an outline of the letters, creating block letters.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
                     defaultValue = "True")
   @SimpleProperty(
-      description = "Whether or not the inside of drawn shapes should be filled.",
-      userVisible = false)
+      description = "Specifies whether the inside of shapes and text drawn on this canvas " +
+      "should be filled. Value is true if shapes should be filled with the canvas' " +
+      "paint color and false if shapes should have a transparent center (no fill). " +
+      "The width of the outline of shapes drawn with no fill is determined by the canvas' " +
+      "line width property.")
   public void Fill(boolean fill) {
     this.fill = fill;
     if(fill) {
