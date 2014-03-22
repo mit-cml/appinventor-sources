@@ -1191,6 +1191,86 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * Show a Warning Dialog box when another login session has been
+   * created. The user is then given two choices. They can either
+   * close this session of App Inventor, which will close the current
+   * window, or they can click "Take Over" which will reload this
+   * window effectively making it the latest login and invalidating
+   * all other sessions.
+   *
+   * We are called from OdeAsyncCallback when we detect that our
+   * session has been invalidated.
+   */
+  public void invalidSessionDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Your Session is Stale!");
+    dialogBox.setHeight("200px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p>Your account has been logged in from another location. " +
+        "You can be logged in from only one location at a time in order to avoid damaging your " +
+        "projects.</p><p>Using the buttons below you can either end this session or you " +
+        "can reload this session which will make it the most recent login and " +
+        "invalidate all other sessions.</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button closeSession = new Button("End This Session");
+    closeSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          finalDialog();
+        }
+      });
+    holder.add(closeSession);
+    Button reloadSession = new Button("Invalidate the Other Session");
+    reloadSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          reloadWindow();
+        }
+      });
+    holder.add(reloadSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * The "Final" Dialog box. When a user chooses to end their session
+   * due to a conflicting login, we should show this dialog which is modal
+   * and has no exit! My preference would have been to close the window
+   * altogether, but the browsers won't let javascript code close windows
+   * that it didn't open itself (like the main window). I also tried to
+   * use document.write() to write replacement HTML but that caused errors
+   * in Firefox and strange behavior in Chrome. So we do this...
+   *
+   * We are called from invalidSessionDialog() (above).
+   */
+  private void finalDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Your Session is Finished");
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p><b>Your Session is now ended, you may close this window</b></p>");
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
    * generateNonce() -- Generate a unique String value
    * this value is used to reference a built APK without
    * requiring explicit authentication.
@@ -1229,6 +1309,10 @@ public class Ode implements EntryPoint {
       var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
       return v.toString(16);
      });
+  }-*/;
+
+  private static native void reloadWindow() /*-{
+    top.location.reload();
   }-*/;
 
 }
