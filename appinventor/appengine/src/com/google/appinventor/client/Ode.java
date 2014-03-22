@@ -194,6 +194,8 @@ public class Ode implements EntryPoint {
 
   private boolean windowClosing;
 
+  private boolean screensLocked;
+
   /**
    * Returns global instance of Ode.
    *
@@ -1294,6 +1296,26 @@ public class Ode implements EntryPoint {
    */
   public String getNonce() {
     return nonce;
+  }
+
+  // Code to lock out certain screen and project switching code
+  // These are locked out while files are being saved
+  // lockScreens(true) is called from EditorManager when it
+  // is about to call saveDirtyEditors() and then cleared
+  // in the afterSaving command called when saveDirtyEditors
+  // is finished.
+
+  public boolean screensLocked() {
+    return screensLocked;
+  }
+
+  public void lockScreens(boolean value) {
+    if (value) {
+      OdeLog.log("Locking Screens");
+    } else {
+      OdeLog.log("Unlocking Screens");
+    }
+    screensLocked = value;
   }
 
   // Native code to open a new window (or tab) to display the

@@ -47,6 +47,9 @@ public class ProjectToolbar extends Toolbar {
   private static class NewAction implements Command {
     @Override
     public void execute() {
+      if (Ode.getInstance().screensLocked()) {
+        return;                 // Refuse to switch if locked (save file happening)
+      }
       new NewYoungAndroidProjectWizard().center();
       // The wizard will switch to the design view when the new
       // project is created.

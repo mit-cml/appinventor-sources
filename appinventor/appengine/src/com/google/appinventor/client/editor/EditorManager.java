@@ -70,7 +70,13 @@ public final class EditorManager {
       public void run() {
         // When the timer goes off, save all dirtyProjectSettings and
         // dirtyFileEditors.
-        saveDirtyEditors(null);
+        Ode.getInstance().lockScreens(true); // Lock out changes
+        saveDirtyEditors(new Command() {
+            @Override
+            public void execute() {
+              Ode.getInstance().lockScreens(false); // I/O finished, unlock
+            }
+          });
       }
     };
   }
