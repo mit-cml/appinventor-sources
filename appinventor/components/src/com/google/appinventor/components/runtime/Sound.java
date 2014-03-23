@@ -41,10 +41,10 @@ import java.util.Map;
     "files and optionally vibrates for the number of milliseconds " +
     "(thousandths of a second) specified in the Blocks Editor.  The name of " +
     "the sound file to play can be specified either in the Designer or in " +
-    "the Blocks Editor.</p> <p>For legal sound and video formats, see " +
+    "the Blocks Editor.</p> <p>For supported sound file formats, see " +
     "<a href=\"http://developer.android.com/guide/appendix/media-formats.html\"" +
     " target=\"_blank\">Android Supported Media Formats</a>.</p>" +
-    "<p>This component is best for short sound files, such as sound " +
+    "<p>This <code>Sound</code> component is best for short sound files, such as sound " +
     "effects, while the <code>Player</code> component is more efficient for " +
     "longer sounds, such as songs.</p>",
     category = ComponentCategory.MEDIA,
@@ -95,9 +95,8 @@ public class Sound extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "The name of the sound file.  Only <a href=\"" +
-      "http://developer.android.com/guide/appendix/media-formats.html" +
-      "\">certain formats</a> are supported.")
+      description = "The name of the sound file.  Only certain " +
+      "formats are supported.  See http://developer.android.com/guide/appendix/media-formats.html.")
   public String Source() {
     return sourcePath;
   }
@@ -157,7 +156,8 @@ public class Sound extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR,
-      description = "The minimum interval...")
+      description = "The minimum interval between sounds.  If you play a sound, " +
+      "all further Play() calls will be ignored until the interval has elapsed.")
   public int MinimumInterval() {
     return minimumInterval;
   }
@@ -203,7 +203,7 @@ public class Sound extends AndroidNonvisibleComponent
   /**
    * Pauses playing the sound if it is being played.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Pauses playing the sound if it is being played.")
   public void Pause() {
     if (streamId != 0) {
       soundPool.pause(streamId);
@@ -215,7 +215,7 @@ public class Sound extends AndroidNonvisibleComponent
   /**
    * Resumes playing the sound after a pause.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Resumes playing the sound after a pause.")
   public void Resume() {
     if (streamId != 0) {
       soundPool.resume(streamId);
@@ -227,7 +227,7 @@ public class Sound extends AndroidNonvisibleComponent
   /**
    * Stops playing the sound if it is being played.
    */
-  @SimpleFunction
+@SimpleFunction(description = "Stops playing the sound if it is being played.")
   public void Stop() {
     if (streamId != 0) {
       soundPool.stop(streamId);
@@ -240,7 +240,7 @@ public class Sound extends AndroidNonvisibleComponent
   /**
    * Vibrates for the specified number of milliseconds.
    */
-  @SimpleFunction
+  @SimpleFunction(description = "Vibrates for the specified number of milliseconds.")
   public void Vibrate(int millisecs) {
     vibe.vibrate(millisecs);
   }
