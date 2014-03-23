@@ -52,7 +52,7 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
       return;
     }
     if (caught instanceof InvalidSessionException) {
-      ErrorReporter.reportError(caught.getMessage());
+      Ode.getInstance().invalidSessionDialog();
       return;
     }
     String errorMessage =
