@@ -1207,21 +1207,20 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Your Session is Stale!");
+    dialogBox.setText("This Session Is Out of Date");
     dialogBox.setHeight("200px");
-    dialogBox.setWidth("400px");
+    dialogBox.setWidth("800px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p>Your account has been logged in from another location. " +
-        "You can be logged in from only one location at a time in order to avoid damaging your " +
-        "projects.</p><p>Using the buttons below you can either end this session or you " +
-        "can reload this session which will make it the most recent login and " +
-        "invalidate all other sessions.</p>");
+    HTML message = new HTML("<p>Your account has been opened from another location.</p>" +
+        "<p>To protect your projects and prevent data loss, you can only log in from " +
+        "one browser tab on one computer.</p>" +
+        "<p>Choose one of the buttons below to:</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    Button closeSession = new Button("End This Session");
+    Button closeSession = new Button("End The Session Here");
     closeSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1229,7 +1228,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(closeSession);
-    Button reloadSession = new Button("Invalidate the Other Session");
+    Button reloadSession = new Button("Stop all other sessions and make this the current session");
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
