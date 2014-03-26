@@ -114,6 +114,13 @@
         <pathelement location="lib/oauth/google-oauth-client-1.10.1-beta.jar" />
         <!-- fusiontables libs -->
         <pathelement location="lib/fusiontables/fusiontables.jar" />
+        <!-- spreadsheets libs -->
+        <pathelement location="lib/spreadsheets/gdata-client-1.0.jar"/>
+        <pathelement location="lib/spreadsheets/gdata-client-meta-1.0.jar"/>
+        <pathelement location="lib/spreadsheets/gdata-core-1.0.jar"/>
+        <pathelement location="lib/spreadsheets/gdata-spreadsheet-3.0.jar"/>
+        <pathelement location="lib/spreadsheets/gdata-spreadsheet-meta-3.0.jar"/>
+        <!--<pathelement location="lib/spreadsheets/guava-14.0.1.jar"/>-->
         <!-- acra -->
         <pathelement location="lib/acra/acra-4.4.0.jar" />
         <!-- gwt libs -->

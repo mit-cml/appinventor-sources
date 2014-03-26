@@ -125,6 +125,13 @@
         <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
         <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+
+        <pathelement location="${lib.dir}/spreadsheets/gdata-client-1.0.jar"/>
+        <pathelement location="${lib.dir}/spreadsheets/gdata-client-meta-1.0.jar"/>
+        <pathelement location="${lib.dir}/spreadsheets/gdata-core-1.0.jar"/>
+        <pathelement location="${lib.dir}/spreadsheets/gdata-spreadsheet-3.0.jar"/>
+        <pathelement location="${lib.dir}/spreadsheets/gdata-spreadsheet-meta-3.0.jar"/>
+
         <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
         <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
@@ -222,6 +229,13 @@
           <pathelement location="${lib.dir}/twitter/twitter4j-core-3.0.5.jar" />
           <pathelement location="${lib.dir}/twitter/twitter4j-media-support-3.0.5.jar" />
           <pathelement location="${lib.dir}/fusiontables/fusiontables.jar" />
+
+          <pathelement location="${lib.dir}/spreadsheets/gdata-client-1.0.jar"/>
+          <pathelement location="${lib.dir}/spreadsheets/gdata-client-meta-1.0.jar"/>
+          <pathelement location="${lib.dir}/spreadsheets/gdata-core-1.0.jar"/>
+          <pathelement location="${lib.dir}/spreadsheets/gdata-spreadsheet-3.0.jar"/>
+          <pathelement location="${lib.dir}/spreadsheets/gdata-spreadsheet-meta-3.0.jar"/>
+
           <pathelement location="${lib.dir}/oauth/google-api-client-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-api-client-android2-1.10.3-beta.jar" />
           <pathelement location="${lib.dir}/oauth/google-http-client-1.10.3-beta.jar" />
