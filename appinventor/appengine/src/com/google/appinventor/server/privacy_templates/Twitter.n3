@@ -1,0 +1,44 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/Twitter#> .
+
+# Twitter is component
+# It is used for social networking
+# It enables communication to the Web
+# It requires user authorization and login, once login it has many functions
+# Search Twitter for tweets or labels
+# Sends a Tweet
+# Sendg a Tweet with Image
+# Direct message to a Twitter user
+# Receive recent messages
+# Follow Twitter user
+# Stop following Twitter user
+# Get followers
+# Get recent messages by followed users
+# Get recent mentions
+# Example of usage is usually to share data with Twitter followers, or uploading something to Twitter
+
+# Component Description
+:TwitterComponent  
+    a    ai:Component;
+    ai:category     ai:Social;
+    ai:description  "allows user to interact with Twitter";
+    ai:details      "Upon log in, many actions are authenticated to the application: ",
+                    "Tweet ",
+                    "Tweet image ",
+                    "Send message ",
+                    "Receive message",
+                    "Follow another user ",
+                    "Stop following an user ",
+                    "Get current followers ",
+                    "Get tweets of followed users ",
+                    "Get tweets that mention the user";
+
+# Privacy Implication and Common Usage
+    ai:access       android:Internet; 
+    ai:dataUsage    ai:SocialNetworking;
+    ai:examples     "Twitter", "WeReport";
+    ai:purpose      ai:DataAccess;
+    ai:requires     ai:UserLogin .
+    

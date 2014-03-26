@@ -1,0 +1,187 @@
+# 
+#   AppInventor Ontology for PrivacyInformer 
+# 
+#   Created by Daniela Miao (dmiao@mit.edu) 
+# 
+#   March 2014
+# 
+
+@prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+# 
+#   Top-level classes for components and component functions
+#
+
+:Component  
+    rdfs:comment "AppInventor are composed of components"; 
+    rdfs:label "An Appventor component ";
+    a   rdfs:Class .
+
+:ComponentClass
+    rdfs:comment "generic class for instances of AppInventor component categories such as Sensor, Social etc."; 
+    rdfs:label "component category ";
+    a   rdfs:Class .
+
+:PurposeClass
+    rdfs:comment "generic class for instances of component purpose within the mobile application or AppInventor project"; 
+    rdfs:label "component purpose class ";
+    a   rdfs:Class .
+
+:RequireClass
+    rdfs:comment "generic class for instances of functional requirement in order for component to work properly"; 
+    rdfs:label "requirement class ";
+    a   rdfs:Class .
+
+:UsageClass
+    rdfs:comment "generic class for instances of data usage"; 
+    rdfs:label "data usage class ";
+    a   rdfs:Class .
+
+# 
+#   Properties for the :Component class
+#
+
+:access
+    a   rdf:Property;
+    rdfs:comment "what the component can access within the Android OS and smartphone";
+    rdfs:label "has access to ";
+    rdfs:range  android:Component;
+    rdfs:domain :Component .
+
+:category
+    a rdf:Property;
+    rdfs:comment "the AppInventor component category as seen in the palette within the Designer view";
+    rdfs:label "belongs to category ";
+    rdfs:range  :ComponentClass;
+    rdfs:domain :Component .
+
+:description a rdf:Property .
+    a   rdf:Property;
+    rdfs:comment "one-liner functional description of the component for inclusion in the privacy description of the AppInventor project";
+    rdfs:label "has main function ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:details a rdf:Property .
+    a   rdf:Property;
+    rdfs:comment "more detailed description of the component, anything that does not have an explicit property assigned; expansion of :description"; 
+    rdfs:label "has other functions ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:dataUsage  
+    a   rdf:Property;
+    rdfs:comment "data usage of the data collected by the component, if any"
+    rdfs:label "uses collected data for/to ";
+    rdfs:range  :UsageClass;
+    rdfs:domain :Component .
+
+:examples
+    a   rdf:Property; 
+    rdfs:comment "example applications that use the component";
+    rdfs:label "is used in example application ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:purpose
+    a   rdf:Property;
+    rdfs:comment "purpose of the component in the mobile application or AppInventor project";
+    rdfs:label "serves the following purpose in the mobile app: ";
+    rdfs:range  :PurposeClass;
+    rdfs:domain :Component .
+
+:requires
+    a   rdf:Property;
+    rdfs:comment "what the component requires in order to function, note could be a subset of :access";
+    rdfs:label "requires the following to function properly: ";
+    rdfs:range  android:Component;
+    rdfs:range  :RequireClass;
+    rdfs:domain :Component .
+
+# 
+#   Instances for some top-level classes 
+#
+
+#
+# ComponentClass
+#
+
+:Sensors
+    a   :ComponentClass;
+    rdfs:comment "category for all sensors, keeping consistent with the AppInventor interface";
+    rdfs:label "sensors such as LocationSensor, AccelerometerSensor and LightSensor" .
+
+:Connectivity
+    a   :ComponentClass;
+    rdfs:comment "category for all connectivity related components";
+    rdfs:label "connectivity, which is responsible for connection the application to the Web in general" .
+
+:Social
+    a   :ComponentClass;
+    rdfs:comment "category for social networking components";
+    rdfs:label "social, which enabled the application to connect to social networks such as Twitter and Facebook" .
+
+#
+# PurposeClass
+#
+
+:DataSending
+    a   :PurposeClass;
+    rdfs:comment "a general purpose of components is sending data to external servers or sites";
+    rdfs:label "send data to external server or sites".
+
+:DataReceiving
+    a   :PurposeClass;
+    rdfs:comment "a general purpose of components is receiving data from external servers or sites";
+    rdfs:label "receive data from external servers or sites".
+
+:DataGathering
+    a   :PurposeClass;
+    rdfs:comment "a common purpose of AppInventor components is to gather data from the user (all sensor components)";
+    rdfs:label "collect data from the user or the phone".
+
+:DataAccess
+    a   :PurposeClass;
+    rdfs:comment "a common purpose of AppInventor components is to access data on the phone or on an external server/site";
+    rdfs:label "access user data on the phone or on external servers".
+
+#
+# RequireClass
+#
+
+:UserLogin
+    a   :RequireClass;
+    rdfs:comment "many applications require user to log into an account created via another service, such as Twitter or Facebook";
+    rdfs:label "user log into an account from another service" .
+
+#
+#  Usage Class
+#
+
+:DetectMotion  
+    a   :UsageClass;
+    rdfs:comment "many sensor data are usually used to detect motion";
+    rdfs:label "detect motion of the phone such as shaking, speeding, falling etc." .
+
+:MeasureAcceleration  
+    a   :UsageClass;
+    rdfs:comment "accelerometer data is specifically used to measure acceleration of the phone in X, Y, Z direction";
+    rdfs:label "measure acceleration of the phone in any X, Y, Z direction" .
+
+:DetectLocation  
+    a   :UsageClass;
+    rdfs:comment "location sensor is specifically used to measure location of the phone";
+    rdfs:label "determine location of the phone" .
+
+:ProvidePersonalizedService 
+    a   :UsageClass;
+    rdfs:comment "some data are collected in order to provide more personalized services to the user";
+    rdfs:label "provide personalized application services" .
+
+:SocialNetworking
+    a   :UsageClass;
+    rdfs:comment "some data are collected and shared as a part of social networking";
+    rdfs:label "network within social applications" .
+

@@ -43,7 +43,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     for (String component : appComponents) {
       preview += component + "<br>";
     }
-    
+    preview += getClass().getResource("privacy_templates/Twitter.n3");
     return preview;
   }
 
