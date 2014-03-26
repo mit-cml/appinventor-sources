@@ -400,13 +400,14 @@ Blockly.onKeyDown_ = function(e) {
           descendantCount -= Blockly.selected.nextConnection.targetBlock().
             getDescendants().length;
         }
-        if(descendantCount > 3){
-          if (confirm("Are you sure you want to delete the selected block and its children?")){
+        // Ask for confirmation before deleting 3 or more blocks
+        if (descendantCount >= 3) {
+          if (confirm("Are you sure you want to delete all " + descendantCount + " of these blocks?")) {
             Blockly.hideChaff();
             Blockly.selected.dispose(true, true);
           }
         }
-        else{
+        else {
           Blockly.hideChaff();
           Blockly.selected.dispose(true, true);
         }
