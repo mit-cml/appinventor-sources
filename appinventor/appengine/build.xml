@@ -126,6 +126,14 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/objectify-3.0/objectify-3.0.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gson/gson-2.1.jar" />  <!-- for keyczar --> 
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/log4j/log4j-1.2.16.jar" />  <!-- for keyczar -->
+    
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jena-core-2.11.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jena-arq-2.11.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jena-iri-1.0.1.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/xercesImpl-2.11.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jcl-over-slf4j-1.6.4.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/slf4j-api-1.6.4.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/slf4j-log4j12-1.6.4.jar" />
     <!-- GCS Libs -->
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/gcs/appengine-gcs-client-0.3.jar" />
     <!-- gwt libs -->
