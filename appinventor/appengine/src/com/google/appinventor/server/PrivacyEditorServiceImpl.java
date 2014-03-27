@@ -1,11 +1,16 @@
 package com.google.appinventor.server;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.hp.hpl.jena.rdf.model.Model;
+import org.apache.jena.riot.RDFDataMgr;
 
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -21,6 +26,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
 
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
+  Model model = ModelFactory.createDefaultModel();
   
   @Override
   public String getPreview(long projectId) {
@@ -45,7 +51,19 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     for (String component : appComponents) {
       preview += component + "<br>";
     }
-    preview += getClass().getResource("privacy_templates/Twitter.n3");
+    
+    InputStream template = getClass().getResourceAsStream("privacy_templates/Twitter.ttl");
+    model.read(template, null, "TTL");
+    template = getClass().getResourceAsStream("privacy_templates/Web.ttl");
+    model.read(template, null, "TTL");
+    template = getClass().getResourceAsStream("privacy_templates/Accelerometer.ttl");
+    model.read(template, null, "TTL");
+    
+    StringWriter out = new StringWriter();
+    model.write(out, "TTL");
+
+    System.out.println(out.toString());
+    preview += out.toString();
     return preview;
   }
 

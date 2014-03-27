@@ -131,6 +131,7 @@
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jena-arq-2.11.1.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jena-iri-1.0.1.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/xercesImpl-2.11.0.jar" />
+    <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/xml-apis-1.4.01.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/jcl-over-slf4j-1.6.4.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/slf4j-api-1.6.4.jar" />
     <copy todir="${build.war.dir}/WEB-INF/lib" file="${lib.dir}/jena/slf4j-log4j12-1.6.4.jar" />
