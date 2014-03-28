@@ -2,7 +2,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
 @prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
-@prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/Accelerometer#> .
+@prefix accelerometer: <http://dig.csail.mit.edu/2014/PrivacyInformer/AccelerometerSensor#> .
 
 # Accelerometer is a component
 # It is also a sensor
@@ -16,7 +16,7 @@
 # Acceleration units are in International Standard (m/s^2)
 
 # Component Description
-:AccelerometerComponent  
+accelerometer:AccelerometerSensorComponent  
     a    ai:Component;
     ai:category     ai:Sensor;
     ai:description  "senses the Android device's accelerometer, which detects shaking and measures acceleration in three dimensions";

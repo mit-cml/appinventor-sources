@@ -1,16 +1,17 @@
 package com.google.appinventor.server;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.jena.riot.RDFDataMgr;
-
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
+import com.hp.hpl.jena.rdf.model.Property;
+import com.hp.hpl.jena.rdf.model.Resource;
+import com.hp.hpl.jena.rdf.model.ResourceFactory;
+import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.VCARD;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -26,17 +27,57 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
 
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
-  Model model = ModelFactory.createDefaultModel();
+  private static Model model = ModelFactory.createDefaultModel();
+  
+  // Custom Defined Constants
+  private static final String TEMPLATE_LOC ="privacy_templates/"; // template location with respective to current classpath
+  private static final String AI_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#";
+  private static final String COMPONENT_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/";
+  private static final Property contains = ResourceFactory.createProperty( AI_NS, "contains");
   
   @Override
   public String getPreview(long projectId) {
-    // TODO generate the appropriate preview based on the list of components used in the project
-    final String userId = userInfoProvider.getUserId();
-    List<String> projectFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    // reset model statements
+    model.removeAll();
+    // get templates
+    List<String> templates = getTemplates(getClass());
+    // reset preview text
     String preview = "";
-    List<String> appComponents = new ArrayList<String>();
+    // get userId based on projectId
+    final String userId = userInfoProvider.getUserId();
     
+    // create a unique URI based on the project name and email address
+    // populate it with basic RDF.type
+    String privacyDescriptionURI = "http://www.example.org/" + storageIo.getProjectName(userId, projectId) + userId;
+    Resource privacyDescription = model.createResource(privacyDescriptionURI).addProperty(RDF.type, ResourceFactory.createResource( AI_NS + "PrivacyDescription"));
+    
+    // get the project source files 
+    List<String> projectFiles = storageIo.getProjectSourceFiles(userId, projectId);
+    
+    // get a list of all components in the project
+    List<String> appComponents = getComponentList(projectFiles, userId, projectId);
+    
+    // for each component, if it has a template, add the component to Jena model then add its template
+    for (String component : appComponents) {
+      if (templates.contains(component)) {
+        privacyDescription.addProperty(contains, ResourceFactory.createResource( COMPONENT_NS + component + "#" + component + "Component"));
+        model.read(getClass().getResourceAsStream( TEMPLATE_LOC + component), null, "TTL");
+      }
+    }
+    
+    StringWriter out = new StringWriter();
+    model.write(out, "TTL");
+
+    //System.out.println(out.toString());
+    preview += out.toString();
+    return preview;
+  }
+
+  // Get component list
+  private List<String> getComponentList(List<String> projectFiles, String userId, long projectId) {
+    List<String> appComponents = new ArrayList<String>();
     for (String filename : projectFiles) {
+      // .scm contains list of components
       if (filename.substring(filename.length()-4).equals(".scm")) {
         JSONObject propertiesObject = YoungAndroidSourceAnalyzer.parseSourceFile(storageIo.downloadFile(userId, projectId, filename, StorageUtil.DEFAULT_CHARSET), JSON_PARSER);
         JSONObject formProperties = propertiesObject.get("Properties").asObject();
@@ -47,26 +88,10 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
         }
       }
     }
-    
-    for (String component : appComponents) {
-      preview += component + "<br>";
-    }
-    
-    InputStream template = getClass().getResourceAsStream("privacy_templates/Twitter.ttl");
-    model.read(template, null, "TTL");
-    template = getClass().getResourceAsStream("privacy_templates/Web.ttl");
-    model.read(template, null, "TTL");
-    template = getClass().getResourceAsStream("privacy_templates/Accelerometer.ttl");
-    model.read(template, null, "TTL");
-    
-    StringWriter out = new StringWriter();
-    model.write(out, "TTL");
-
-    System.out.println(out.toString());
-    preview += out.toString();
-    return preview;
+    return appComponents;
   }
-
+  
+  // Get all components in the project, recursively
   private void getAllComponents(JSONArray components, List<String> appComponents) {
     for (JSONValue component : components.getElements()) {
       String element = component.asObject().get("$Type").asString().getString();
@@ -80,5 +105,24 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
         getAllComponents(nestedComponents, appComponents);
       }
     }
+  }
+  
+  // Get a list of available templates using given classpath
+  private List<String> getTemplates(Class loader) {
+    List<String> templates = new ArrayList<String>();
+    InputStream in = loader.getResourceAsStream(TEMPLATE_LOC);
+    BufferedReader rdr = new BufferedReader(new InputStreamReader(in));
+    String line;
+    try {
+      while ((line = rdr.readLine()) != null) {
+          templates.add(line);
+      }
+      rdr.close();
+    }
+    catch (IOException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return templates;
   }
 }

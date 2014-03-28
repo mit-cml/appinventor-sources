@@ -11,7 +11,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 # 
-#   Top-level classes for components and component functions
+#   Top-level classes for AppInventor components and component functions
 #
 
 :Component  
@@ -29,6 +29,10 @@
     rdfs:label "component purpose class ";
     a   rdfs:Class .
 
+:PrivacyDescription
+    rdfs:label "Privacy description for mobile application ";
+    a   rdfs:Class .
+
 :RequireClass
     rdfs:comment "generic class for instances of functional requirement in order for component to work properly"; 
     rdfs:label "requirement class ";
@@ -38,6 +42,17 @@
     rdfs:comment "generic class for instances of data usage"; 
     rdfs:label "data usage class ";
     a   rdfs:Class .
+
+#
+#   Properties for the :PrivacyDescription class
+#
+
+:contains
+    a   rdf:Property;
+    rdfs:comment "what the privacy description contains information on";
+    rdfs:label "contains privacy information on ";
+    rdfs:range  :Component;
+    rdfs:domain :PrivacyDescription .
 
 # 
 #   Properties for the :Component class
