@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.parsers.*;
-
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -24,6 +22,7 @@ import com.google.appinventor.shared.properties.json.JSONValue;
 import com.google.appinventor.shared.rpc.privacy.PrivacyEditorService;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
+import com.google.appinventor.shared.youngandroid.YoungAndroidXMLSourceAnalyzer;
 
 public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements PrivacyEditorService {
 
@@ -70,8 +69,9 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     // get blocks logic file
     List<String> xmlFiles = getBlocks(projectFiles, userId, projectId);
     for (String file : xmlFiles) {
-      System.out.println(file);
+      YoungAndroidXMLSourceAnalyzer.parseXMLSource(file, templates);
     }
+    
     
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
