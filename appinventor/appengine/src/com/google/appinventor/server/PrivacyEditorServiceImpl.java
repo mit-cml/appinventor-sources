@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.xml.parsers.*;
+
 import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
@@ -65,11 +67,17 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       }
     }
     
+    // get blocks logic file
+    List<String> xmlFiles = getBlocks(projectFiles, userId, projectId);
+    for (String file : xmlFiles) {
+      System.out.println(file);
+    }
+    
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
 
     //System.out.println(out.toString());
-    preview += out.toString();
+    preview = "";
     return preview;
   }
 
@@ -105,6 +113,18 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
         getAllComponents(nestedComponents, appComponents);
       }
     }
+  }
+  
+  // Get blocks logic
+  private List<String> getBlocks(List<String> projectFiles, String userId, long projectId) {
+    List<String> xmlFiles = new ArrayList<String>();
+    for (String filename : projectFiles) {
+      // .bky contains blocks logic
+      if (filename.substring(filename.length()-4).equals(".bky")) {
+        xmlFiles.add(storageIo.downloadFile(userId, projectId, filename, StorageUtil.DEFAULT_CHARSET));
+      }
+    }
+    return xmlFiles;
   }
   
   // Get a list of available templates using given classpath
