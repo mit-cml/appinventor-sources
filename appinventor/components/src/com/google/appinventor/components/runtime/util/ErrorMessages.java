@@ -141,6 +141,13 @@ public final class ErrorMessages {
   public static final int ERROR_REPL_SECURITY_ERROR = 1801;
   //AccelerometerSensor Errors
   public static final int ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY = 1901;
+  
+  //File errors
+  public static final int ERROR_CANNOT_FIND_FILE = 2001;
+  public static final int ERROR_CANNOT_READ_FILE = 2002;
+  public static final int ERROR_CANNOT_CREATE_FILE = 2003;
+  public static final int ERROR_CANNOT_WRITE_TO_FILE = 2004;
+  
 
   // Please start the next group of error numbers at 2001.
 
@@ -376,6 +383,15 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_BAD_VALUE_FOR_ACCELEROMETER_SENSITIVITY,
        "The value -- %s -- provided for AccelerometerSensor's sensitivity was bad. " +
        "The only legal values are 1, 2, or 3.");
+    //File Errors
+    errorMessages.put(ERROR_CANNOT_FIND_FILE,
+       "The file %s could not be found");
+    errorMessages.put(ERROR_CANNOT_READ_FILE,
+       "The file %s could not be opened");
+    errorMessages.put(ERROR_CANNOT_CREATE_FILE,
+       "The file %s could not be created");
+    errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE,
+       "Cannot write to file %s");
   }
 
   private ErrorMessages() {
