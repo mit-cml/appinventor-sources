@@ -250,8 +250,10 @@ public class YaVersion {
   // - SPINNER_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 89:
   // - LISTVIEW_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 90:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 2
 
-    public static final int YOUNG_ANDROID_VERSION = 89;
+    public static final int YOUNG_ANDROID_VERSION = 90;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -599,7 +601,8 @@ public class YaVersion {
   // - The MultiLine property was added.
   public static final int TEXTBOX_COMPONENT_VERSION = 4;
 
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
+  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
