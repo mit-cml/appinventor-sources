@@ -102,6 +102,16 @@
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
         <pathelement location="lib/twitter/twitter4j-core-3.0.5.jar" />
         <pathelement location="lib/twitter/twitter4j-media-support-3.0.5.jar" />
+        <!-- jena libs -->
+        <pathelement location="lib/jena/jena-core-2.11.1.jar" />
+        <pathelement location="lib/jena/jena-arq-2.11.1.jar" />
+        <pathelement location="lib/jena/jena-iri-1.0.1.jar" />
+        <pathelement location="lib/jena/xercesImpl-2.11.0.jar" />
+        <pathelement location="lib/jena/xml-apis-1.4.01.jar" />
+        <pathelement location="lib/jena/jcl-over-slf4j-1.6.4.jar" />
+        <pathelement location="lib/jena/slf4j-api-1.6.4.jar" />
+        <pathelement location="lib/jena/slf4j-log4j12-1.6.4.jar" />
+
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>

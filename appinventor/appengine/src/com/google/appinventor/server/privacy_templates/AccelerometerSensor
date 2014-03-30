@@ -1,6 +1,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix accelerometer: <http://dig.csail.mit.edu/2014/PrivacyInformer/AccelerometerSensor#> .
 
 # Accelerometer is a component
 # It is also a sensor
@@ -14,7 +16,7 @@
 # Acceleration units are in International Standard (m/s^2)
 
 # Component Description
-<#Accelerometer>  
+accelerometer:AccelerometerSensorComponent  
     a    ai:Component;
     ai:category     ai:Sensor;
     ai:description  "senses the Android device's accelerometer, which detects shaking and measures acceleration in three dimensions";
@@ -29,4 +31,23 @@
     ai:example      "Fitbit", "TrackMe";
     ai:dataUsage    ai:MeasuresAcceleration, ai:DetectMotion;
     ai:purpose      ai:DataGathering; 
-    ai:requires     android:Accelerometer . 
+    ai:requires     android:Accelerometer;
+
+# Component Properties, Methods and Events 
+    ai:hasProperty  accelerometer:XAccel, accelerometer:YAccel, accelerometer:ZAccel;
+    ai:hasMethod    accelerometer:setSensitivity;
+    ai:hasEvent     accelerometer:AccelerationChanged, accelerometer:Shaking .
+
+# Instance Definitions
+
+accelerometer:XAccel    a   ai:ComponentProperty; 
+                        rdfs:label  "accelerometer's X acceleration " .
+accelerometer:YAccel    a   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Y acceleration " .
+accelerometer:ZAccel    a   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Z acceleration " .
+
+accelerometer:AccelerationChanged   a   ai:ComponentEvent;
+                                    rdfs:label  "accelerometer's event that detects when its value changes " .
+accelerometer:Shaking   a   ai:ComponentEvent;
+                        rdfs:label  "accelerometer's event that detects when the device is shaken " .

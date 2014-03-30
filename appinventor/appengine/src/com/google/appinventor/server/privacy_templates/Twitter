@@ -1,7 +1,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
-@prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/Twitter#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix twitter: <http://dig.csail.mit.edu/2014/PrivacyInformer/Twitter#> .
 
 # Twitter is component
 # It is used for social networking
@@ -20,7 +21,7 @@
 # Example of usage is usually to share data with Twitter followers, or uploading something to Twitter
 
 # Component Description
-:TwitterComponent  
+twitter:TwitterComponent  
     a    ai:Component;
     ai:category     ai:Social;
     ai:description  "allows user to interact with Twitter";
@@ -42,3 +43,13 @@
     ai:purpose      ai:DataAccess;
     ai:requires     ai:UserLogin .
     
+# Instance Definitions
+twitter:Username    a   ai:ComponentProperty; 
+                    rdfs:label  "user name of the Twitter account holder " .
+                
+twitter:Tweet   a   ai:ComponentMethod;
+                rdfs:label  "twitter's tweet method " .
+
+twitter:MentionsReceived    a   ai:ComponentEvent;
+                            rdfs:label  "twitter event that detects when messages that mention the account holder's name have been received " .
+

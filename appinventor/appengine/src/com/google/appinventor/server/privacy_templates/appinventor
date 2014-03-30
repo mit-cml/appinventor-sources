@@ -11,7 +11,7 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 
 # 
-#   Top-level classes for components and component functions
+#   Top-level classes for AppInventor components and component functions
 #
 
 :Component  
@@ -24,9 +24,28 @@
     rdfs:label "component category ";
     a   rdfs:Class .
 
+:ComponentProperty
+    rdfs:comment "generic class for all AppInventor component properties such as XAccel for AccelerometerSensor etc."; 
+    rdfs:label "component property";
+    a   rdfs:Class .
+
+:ComponentMethod
+    rdfs:comment "generic class for all AppInventor component methods such as setSensitivity for AccelerometerSensor etc."; 
+    rdfs:label "component method";
+    a   rdfs:Class .
+
+:ComponentEvent
+    rdfs:comment "generic class for all AppInventor events such as AccelerationChanged for AccelerometerSensor etc."; 
+    rdfs:label "component event";
+    a   rdfs:Class .
+
 :PurposeClass
     rdfs:comment "generic class for instances of component purpose within the mobile application or AppInventor project"; 
     rdfs:label "component purpose class ";
+    a   rdfs:Class .
+
+:PrivacyDescription
+    rdfs:label "Privacy description for mobile application ";
     a   rdfs:Class .
 
 :RequireClass
@@ -38,6 +57,17 @@
     rdfs:comment "generic class for instances of data usage"; 
     rdfs:label "data usage class ";
     a   rdfs:Class .
+
+#
+#   Properties for the :PrivacyDescription class
+#
+
+:contains
+    a   rdf:Property;
+    rdfs:comment "what the privacy description contains information on";
+    rdfs:label "contains privacy information on ";
+    rdfs:range  :Component;
+    rdfs:domain :PrivacyDescription .
 
 # 
 #   Properties for the :Component class
@@ -56,6 +86,13 @@
     rdfs:label "belongs to category ";
     rdfs:range  :ComponentClass;
     rdfs:domain :Component .
+
+:connectsTo
+    a rdf:Property;
+    rdfs:comment "this is created to describe relationships and interactions between AppInventor components, such as when Web component sends Location information out";
+    rdfs:label "makes a connection to ";
+    rdfs:range :Component, :ComponentProperty, :ComponentMethod, :ComponentEvent;
+    rdfs:domain :Component, :ComponentProperty, :ComponentMethod, :ComponentEvent .
 
 :description a rdf:Property .
     a   rdf:Property;
@@ -82,6 +119,24 @@
     a   rdf:Property; 
     rdfs:comment "example applications that use the component";
     rdfs:label "is used in example application ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:hasProperty
+    a   rdf:Property; 
+    rdfs:label "has component property ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:hasMethod
+    a   rdf:Property; 
+    rdfs:label "has component method ";
+    rdfs:range  rdfs:Literal;
+    rdfs:domain :Component .
+
+:hasEvent
+    a   rdf:Property; 
+    rdfs:label "has component event ";
     rdfs:range  rdfs:Literal;
     rdfs:domain :Component .
 

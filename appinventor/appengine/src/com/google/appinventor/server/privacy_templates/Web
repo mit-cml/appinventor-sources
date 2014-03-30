@@ -1,6 +1,8 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix web: <http://dig.csail.mit.edu/2014/PrivacyInformer/Web#> .
 
 # Web is a component
 # It is a connectivity component 
@@ -10,7 +12,7 @@
 # Example of usage is usually to send and receive data from specified sites 
 
 # Component Description
-<#Web>  
+web:WebComponent 
     a    ai:Component;
     ai:category     ai:Connectivity;
     ai:description  "provides funtionality for HTTP GET and POST requests";
@@ -21,4 +23,14 @@
     ai:examples     "DropBox", "FileUpload";
     ai:purpose      ai:DataSending, ai:DataReceiving;
     ai:requires     android:Internet .
-    
+
+# Instance Definitions
+web:URL     a   ai:ComponentProperty; 
+            rdfs:label  "URL of the web component " .
+                
+web:PostText    a   ai:ComponentMethod;
+                rdfs:label  "web component's POST method " .
+
+web:GotText     a   ai:ComponentEvent;
+                rdfs:label  "web event that detects when text has been received " . 
+
