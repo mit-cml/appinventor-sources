@@ -11,7 +11,6 @@ import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.vocabulary.RDF;
-import com.hp.hpl.jena.vocabulary.VCARD;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -26,6 +25,7 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidXMLSourceAnalyzer;
 
 public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements PrivacyEditorService {
 
+  // Declare and Initialize required constants
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
   private static Model model = ModelFactory.createDefaultModel();
@@ -35,6 +35,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static final String AI_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#";
   private static final String COMPONENT_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/";
   private static final Property contains = ResourceFactory.createProperty( AI_NS, "contains");
+  private static final Property connectsTo = ResourceFactory.createProperty( AI_NS, "connectsTo");
   
   @Override
   public String getPreview(long projectId) {
@@ -49,7 +50,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     
     // create a unique URI based on the project name and email address
     // populate it with basic RDF.type
-    String privacyDescriptionURI = "http://www.example.org/" + storageIo.getProjectName(userId, projectId) + userId;
+    String privacyDescriptionURI = "http://www.example.org/" + storageIo.getProjectName(userId, projectId) + userInfoProvider.getUserEmail();
     Resource privacyDescription = model.createResource(privacyDescriptionURI).addProperty(RDF.type, ResourceFactory.createResource( AI_NS + "PrivacyDescription"));
     
     // get the project source files 
@@ -66,17 +67,19 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       }
     }
     
-    // get blocks logic file
+    // get blocks logic files
     List<String> xmlFiles = getBlocks(projectFiles, userId, projectId);
-    for (String file : xmlFiles) {
-      YoungAndroidXMLSourceAnalyzer.parseXMLSource(file, templates);
-    }
     
+    // for each XML source file, parse it and get the relationships in it, then process relationships by adding "connectsTo" statements to the model
+    for (String file : xmlFiles) {
+      ArrayList<ArrayList<ArrayList<String>>> relationships = YoungAndroidXMLSourceAnalyzer.parseXMLSource(file, templates);
+      processRelationships(relationships);
+    }
     
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
-
-    //System.out.println(out.toString());
+    
+    System.out.println(out.toString());
     preview = "";
     return preview;
   }
@@ -127,6 +130,26 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     return xmlFiles;
   }
   
+  // Process relationships between AppInventor components as parsed by the BkyParserHandler
+  private void processRelationships(ArrayList<ArrayList<ArrayList<String>>> relationships) {
+    for (ArrayList<ArrayList<String>> relationship : relationships) {
+      assert (relationship.size() == 2); // each relationship is between a pair of components only
+      ArrayList<String> comp1 = relationship.get(0);
+      ArrayList<String> comp2 = relationship.get(1);
+      Resource parentComp;
+      if (!comp1.get(1).equalsIgnoreCase("NONE")) {
+        parentComp = model.createResource(COMPONENT_NS + comp1.get(0) + "#" + comp1.get(2));
+      } else {
+        parentComp = model.createResource(COMPONENT_NS + comp1.get(0) + "#" + comp1.get(0) + "Component");
+      }
+      
+      if (!comp2.get(1).equalsIgnoreCase("NONE")) {
+        parentComp.addProperty(connectsTo, ResourceFactory.createResource(COMPONENT_NS + comp2.get(0) + "#" + comp2.get(2)));
+      } else {
+        parentComp.addProperty(connectsTo, ResourceFactory.createResource(COMPONENT_NS + comp2.get(0) + "#" + comp2.get(0) + "Component"));
+      }
+    }
+  }
   // Get a list of available templates using given classpath
   private List<String> getTemplates(Class loader) {
     List<String> templates = new ArrayList<String>();

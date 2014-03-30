@@ -31,4 +31,23 @@ accelerometer:AccelerometerSensorComponent
     ai:example      "Fitbit", "TrackMe";
     ai:dataUsage    ai:MeasuresAcceleration, ai:DetectMotion;
     ai:purpose      ai:DataGathering; 
-    ai:requires     android:Accelerometer . 
+    ai:requires     android:Accelerometer;
+
+# Component Properties, Methods and Events 
+    ai:hasProperty  accelerometer:XAccel, accelerometer:YAccel, accelerometer:ZAccel;
+    ai:hasMethod    accelerometer:setSensitivity;
+    ai:hasEvent     accelerometer:AccelerationChanged, accelerometer:Shaking .
+
+# Instance Definitions
+
+accelerometer:XAccel    a   ai:ComponentProperty; 
+                        rdfs:label  "accelerometer's X acceleration " .
+accelerometer:YAccel    a   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Y acceleration " .
+accelerometer:ZAccel    a   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Z acceleration " .
+
+accelerometer:AccelerationChanged   a   ai:ComponentEvent;
+                                    rdfs:label  "accelerometer's event that detects when its value changes " .
+accelerometer:Shaking   a   ai:ComponentEvent;
+                        rdfs:label  "accelerometer's event that detects when the device is shaken " .

@@ -43,3 +43,13 @@ twitter:TwitterComponent
     ai:purpose      ai:DataAccess;
     ai:requires     ai:UserLogin .
     
+# Instance Definitions
+twitter:Username    a   ai:ComponentProperty; 
+                    rdfs:label  "user name of the Twitter account holder " .
+                
+twitter:Tweet   a   ai:ComponentMethod;
+                rdfs:label  "twitter's tweet method " .
+
+twitter:MentionsReceived    a   ai:ComponentEvent;
+                            rdfs:label  "twitter event that detects when messages that mention the account holder's name have been received " .
+
