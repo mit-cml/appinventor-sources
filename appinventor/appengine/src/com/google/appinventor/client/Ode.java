@@ -20,7 +20,9 @@ import com.google.appinventor.client.boxes.ViewerBox;
 import com.google.appinventor.client.editor.EditorManager;
 import com.google.appinventor.client.editor.FileEditor;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
+import com.google.appinventor.client.explorer.commands.ChainableCommand;
 import com.google.appinventor.client.explorer.commands.CommandRegistry;
+import com.google.appinventor.client.explorer.commands.SaveAllEditorsCommand;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
@@ -1263,13 +1265,20 @@ public class Ode implements EntryPoint {
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p>Your account has been opened from another location.</p>" +
-        "<p>To protect your projects and prevent data loss, you can only log in from " +
-        "one browser tab on one computer.</p>" +
-        "<p>Choose one of the buttons below to:</p>");
+    HTML message = new HTML("<p><font color=red>Warning:</font> This session is out of date.</p>" +
+        "<p>This App Inventor account has been opened from another location. " +
+        "Using a single account from more than one location at the same time " +
+        "can damage your projects.</p>" +
+        "<p>Choose one of the buttons below to:" +
+        "<ul>" +
+        "<li>End this session here.</li>" +
+        "<li>Make this the current session and make the other sessions out of date.</li>" +
+        "<li>Continue with both sessions.</li>" +
+        "</ul>" +
+        "</p>");
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    Button closeSession = new Button("End The Session Here");
+    Button closeSession = new Button("End This Session");
     closeSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1277,7 +1286,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(closeSession);
-    Button reloadSession = new Button("Stop all other sessions and make this the current session");
+    Button reloadSession = new Button("Make this the current session");
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1285,6 +1294,79 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(reloadSession);
+    Button continueSession = new Button("Continue with Both Sessions");
+    continueSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          bashWarningDialog();
+        }
+      });
+    holder.add(continueSession);
+    DialogBoxContents.add(message);
+    DialogBoxContents.add(holder);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * The user has chosen to continue a session even though
+   * others are still active. This risks damaging (bashing) projects.
+   * So before we proceed, we provide a stern warning. If they press
+   * "Continue" we set their sessionId to "force" which is recognized
+   * by the backend as a sessionId that should always match. This is
+   * safe because normal sessionIds are UUIDs which are always longer
+   * then the word "force." I know this is a bit kludgey, but by doing
+   * it this way we don't have to change the RPC interface which makes
+   * releasing this code non-disruptive to people using App Inventor
+   * during the release.
+   *
+   * If the user selects "Cancel" we take them back to the
+   * invalidSessionDialog.
+   */
+
+  private void bashWarningDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Do you want to continue with multiple sessions?");
+    dialogBox.setHeight("200px");
+    dialogBox.setWidth("800px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p><font color=red>WARNING:</font> A second App " +
+        "Inventor session has been opened for this account. You may choose to " +
+        "continue with both sessions, but working with App Inventor from more " +
+        "than one session simultaneously can cause blocks to be lost in ways " +
+        "that cannot be recovered from the App Inventor server.</p><p>" +
+        "We recommend that people not open multiple sessions on the same " +
+        "account. But if you do need to work in this way, then you should " +
+        "regularly export your project to your local computer, so you will " +
+        "have a backup copy independent of the App Inventor server. Use " +
+        "\"Export\" from the Projects menu to export the project.</p>");
+    message.setStyleName("DialogBox-message");
+    FlowPanel holder = new FlowPanel();
+    Button continueSession = new Button("Continue with Multiple Sessions");
+    continueSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          sessionId = "force";  // OK, over-ride in place!
+          // Because we ultimately got here from a failure in the save function...
+          ChainableCommand cmd = new SaveAllEditorsCommand(null);
+          cmd.startExecuteChain(Tracking.PROJECT_ACTION_SAVE_YA, getCurrentYoungAndroidProjectRootNode());
+          // Will now go back to our regularly scheduled main loop
+        }
+      });
+    holder.add(continueSession);
+    Button cancelSession = new Button("Do not use multiple Sessions");
+    cancelSession.addClickListener(new ClickListener() {
+        public void onClick(Widget sender) {
+          dialogBox.hide();
+          invalidSessionDialog();
+        }
+      });
+    holder.add(cancelSession);
     DialogBoxContents.add(message);
     DialogBoxContents.add(holder);
     dialogBox.setWidget(DialogBoxContents);

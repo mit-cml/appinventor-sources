@@ -101,7 +101,8 @@ public class AssetList extends Composite implements ProjectChangeListener {
         // because the CSS style for selection specifies a span.
         String nodeName = node.getName();
         if (nodeName.length() > 20)
-          nodeName = nodeName.substring(0, 17) + "...";
+          nodeName = nodeName.substring(0, 8) + "..." + nodeName.substring(nodeName.length() - 9,
+              nodeName.length());
         TreeItem treeItem = new TreeItem(
             new HTML("<span>" + nodeName + "</span>"));
         // keep a pointer from the tree item back to the actual node
