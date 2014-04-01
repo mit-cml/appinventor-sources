@@ -244,7 +244,9 @@ public final class VideoPlayer extends AndroidViewComponent implements
     // clip volume to range [0, 100]
     vol = Math.max(vol, 0);
     vol = Math.min(vol, 100);
-    mPlayer.setVolume(((float) vol) / 100, ((float) vol) / 100);
+    if (mPlayer != null) {
+      mPlayer.setVolume(((float) vol) / 100, ((float) vol) / 100);
+    }
   }
 
 
