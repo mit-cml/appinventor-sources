@@ -95,46 +95,52 @@ class Application(Frame):
         self.component.compName = self.nameField.get()
 
         try:
-            # check for name input
-            if not self.component.compImgName:
-                tkMessageBox.showerror("Missing Name","Please enter component name") 
-                return
-
-            #check for category selection
-            if not self.component.category:
-                tkMessageBox.showerror("Missing Category","Please select a category") 
-                return
-
-            # check if selected an icon
-            if not self.component.imgFile:
-                tkMessageBox.showerror("Missing Icon","Please select an icon image")
-                return 
-
-            # copy image file to folder, can get error if user checked resize and doest have PIL installed
+            # check if component already exists
             try:
-                self.component.copyImageToFolder()
-            except ImportError, e:
-                tkMessageBox.showerror("Unable to import PIL","Please install PIL or unselect checkbox")           
-                return
-
-            # add references to the image file, can get error if component already exists
-            try:   
-                self.component.addImageReference()
-            except DuplicateError, e:   
+                open('../../components/src/com/google/appinentor/components/runtime/%s.java', 'r')
                 tkMessageBox.showerror("Duplicate Component","%s already exists" % self.component.compName)
-                return           
+            # if doesnt exist will raise error
+            except IOError:
+                # check for name input
+                if not self.component.compImgName:
+                    tkMessageBox.showerror("Missing Name","Please enter component name") 
+                    return
 
-            # will create mock component if is visible and add references to SimpleComponentDescriptor
-            self.component.createMockComponent()
+                #check for category selection
+                if not self.component.category:
+                    tkMessageBox.showerror("Missing Category","Please select a category") 
+                    return
 
-            # will create the actual component file
-            self.component.createComponent()
+                # check if selected an icon
+                if not self.component.imgFile:
+                    tkMessageBox.showerror("Missing Icon","Please select an icon image")
+                    return 
 
-            tkMessageBox.showinfo('Success', 'Component created successfully')
+                # copy image file to folder, can get error if user checked resize and doest have PIL installed
+                try:
+                    self.component.copyImageToFolder()
+                except ImportError, e:
+                    tkMessageBox.showerror("Unable to import PIL","Please install PIL or unselect checkbox")           
+                    return
+
+                # add references to the image file, can get error if component already exists
+                try:   
+                    self.component.addImageReference()
+                except DuplicateError, e:   
+                    tkMessageBox.showerror("Duplicate Component","%s already exists" % self.component.compName)
+                    return           
+
+                # will create mock component if is visible and add references to SimpleComponentDescriptor
+                self.component.createMockComponent()
+
+                # will create the actual component file
+                self.component.createComponent()
+
+                tkMessageBox.showinfo('Success', 'Component created successfully')
 
         # if could not open some file for writing
-        except IOError, e:
-            tkMessageBox.showerror("IOError",str(e))
+        except Exception, e:
+            tkMessageBox.showerror("Exception",str(e))
 
 
 def main():  
