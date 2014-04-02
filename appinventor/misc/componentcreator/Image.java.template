@@ -1,0 +1,6 @@
+  /**
+    * Designer palette item: %s
+    */
+  @Source("com/google/appinventor/images/%s.png")
+  ImageResource %s();
+
