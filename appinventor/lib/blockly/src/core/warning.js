@@ -78,7 +78,7 @@ Blockly.Warning.prototype.createIcon_ = function() {
 Blockly.Warning.prototype.textToDom_ = function(text) {
   var paragraph = /** @type {!SVGTextElement} */ (
       Blockly.createSvgElement(
-          'text', {'class': 'blocklyText', 'y': Blockly.Bubble.BORDER_WIDTH},
+          'text', {'class': 'blocklyText blocklyErrorWarningText', 'y': Blockly.Bubble.BORDER_WIDTH},
           null));
   var lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
