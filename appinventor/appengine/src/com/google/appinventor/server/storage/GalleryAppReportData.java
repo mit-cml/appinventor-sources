@@ -22,10 +22,13 @@ import javax.persistence.Id;
 
 public class GalleryAppReportData {
   @Id Long id;
-  String userId;    // author of the comment
+  String reporterId;    // user who reported
+  String offenderId;    // user being reported
   @Parent Key<GalleryAppData> galleryKey;
-  String report;   // the comment
+  String reportText;   // the comment
 
   // timestamp
   @Indexed public long dateCreated;
+
+  Boolean resolved;
 }

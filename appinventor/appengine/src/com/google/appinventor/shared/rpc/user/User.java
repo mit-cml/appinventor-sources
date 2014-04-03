@@ -31,6 +31,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // whether the user has admin priviledges
   private boolean isAdmin;
 
+  // which type the user has
+  private int type;
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
@@ -45,7 +48,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin) {
+  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin, int type) {
     this.id = id;
     this.email = email;
     if (name==null)
@@ -55,6 +58,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
     this.link = link;
+    this.type = type;
   }
 
   /**
@@ -165,6 +169,19 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     isAdmin = admin;
   }
 
+  @Override
+  public int getType() {
+    return type;
+  }
+
+  /**
+   * Sets which type the user has.
+   *
+   * @param type `
+   */
+  public void setType(int type) {
+    this.type = type;
+  }
 
   /**
    * Returns this object.
@@ -187,7 +204,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   }
 
   public User copy() {
-    return new User(id, email, name, link, tosAccepted, isAdmin);
+    return new User(id, email, name, link, tosAccepted, isAdmin, type);
   }
 
   public static String getDefaultName(String email)

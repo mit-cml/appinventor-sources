@@ -17,6 +17,7 @@ import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
+import com.google.appinventor.client.boxes.ModerationPageBox;
 import com.google.appinventor.client.boxes.GalleryListBox;
 import com.google.appinventor.client.boxes.GalleryInheritanceListBox;
 import com.google.appinventor.client.boxes.GalleryAppBox;
@@ -156,6 +157,7 @@ public class Ode implements EntryPoint {
   private static final int GALLERYAPP = 3;
   private static final int USERPROFILE = 4;
   private static final int GALLERYINHERITANCE = 5;
+  private static final int MODERATIONPAGE = 6;
   private static int currentView = DESIGNER;
 
   /*
@@ -181,6 +183,7 @@ public class Ode implements EntryPoint {
   private int galleryAppTabIndex;
   private int userProfileTabIndex;
   private int galleryInheritanceTabIndex;
+  private int moderationPageTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -335,6 +338,13 @@ public class Ode implements EntryPoint {
     //GalleryInheritanceListBox.getGalleryInheritanceListBox().setAppAttributionList(apps);
     GalleryInheritanceListBox.getGalleryInheritanceListBox().getGalleryInheritanceList().showRemixedToList(apps);
     deckPanel.showWidget(galleryInheritanceTabIndex);
+  }
+  /**
+   * Switch to the Moderation Page tab
+   */
+  public void switchToModerationPageView() {
+    currentView = MODERATIONPAGE;
+    deckPanel.showWidget(moderationPageTabIndex);
   }
   /**
    * Switch to the Debugging tab
@@ -526,7 +536,10 @@ public class Ode implements EntryPoint {
         OdeLog.log("### MSG final = " + u);
         // Reset message count for further use
         topPanel.showUserEmail(u);
-
+        topPanel.showUserEmail(user.getUserEmail());
+        if(user.getType() == 1){
+          topPanel.showModerationLink();
+        }
       }
 
       @Override
@@ -733,6 +746,19 @@ public class Ode implements EntryPoint {
     gIVertPanel.add(appInheritanceListPanel);
     galleryInheritanceTabIndex = deckPanel.getWidgetCount();
     deckPanel.add(gIVertPanel);
+
+    // Moderation Page tab
+    VerticalPanel mPVertPanel = new VerticalPanel();
+    mPVertPanel.setWidth("100%");
+    mPVertPanel.setSpacing(0);
+    HorizontalPanel moderationPagePanel = new HorizontalPanel();
+    moderationPagePanel.setWidth("100%");
+
+    moderationPagePanel.add(ModerationPageBox.getModerationPageBox());
+
+    mPVertPanel.add(moderationPagePanel);
+    moderationPageTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(mPVertPanel);
 
     // Debugging tab
     if (AppInventorFeatures.hasDebuggingView()) {

@@ -676,7 +676,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @return the id of the new report
    */
   @Override
-  public long addAppReport(final long galleryId,final String userId, final String report) {
+  public long addAppReport(final String reportText, final long galleryId,final String offenderId, final String reporterId) {
     final Result<Long> theDate = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -684,10 +684,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppReportData reportData = new GalleryAppReportData();
           long date = System.currentTimeMillis();
-          reportData.report = report;
-          reportData.userId = userId;
+          reportData.reportText = reportText;
+          reportData.reporterId = reporterId;
+          reportData.offenderId = offenderId;
           reportData.galleryKey = galleryKey(galleryId);
           reportData.dateCreated=date;
+          reportData.resolved = false;
           theDate.t=date;
           datastore.put(reportData);
         }
@@ -713,9 +715,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           boolean find = false;
+          LOG.log(Level.SEVERE, "$$$$$:" + galleryId);
+          LOG.log(Level.SEVERE, "$$$$$:" + userId);
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
           for (GalleryAppReportData appReportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey)) {
-            if(appReportData.userId.equals(userId)){
+            if(appReportData.reporterId.equals(userId)){
               find = true;
               bool.t = true;
               break;
@@ -735,25 +739,24 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   /**
    * Returns a list of reports (flags) for an app
    * @param galleryId id of gallery app
+   * @param start start index
+   * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
   @Override
-  public List<GalleryAppReport> getAppReports(final long galleryId) {
+  public List<GalleryAppReport> getAppReports(final long galleryId, final int start, final int count) {
    final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey).order("-dateCreated")) {
-            User commenter = storageIo.getUser(reportData.userId);
-            String name="unknown";
-            if (commenter!= null) {
-               name = commenter.getUserName();
-            }
-            GalleryAppReport galleryReport = new GalleryAppReport(galleryId,
-                reportData.userId,reportData.report,reportData.dateCreated);
-            galleryReport.setUserName(name);
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).filter("resolved", false).order("-dateCreated").offset(start).limit(count)) {
+            User reporter = storageIo.getUser(reportData.reporterId);
+            User offender = storageIo.getUser(reportData.offenderId);
+            GalleryApp app = getGalleryApp(galleryId);
+            GalleryAppReport galleryReport = new GalleryAppReport(reportData.id,reportData.reportText, app, offender, reporter,
+                reportData.dateCreated, reportData.resolved);
             reports.add(galleryReport);
           }
         }
@@ -767,24 +770,24 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
 
   /**
    * Returns a list of reports (flags) for all app
+   * @param start start index
+   * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
   @Override
-  public List<GalleryAppReport> getAppReports() {
+  public List<GalleryAppReport> getAppReports(final int start, final int count) {
    final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
-          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).order("-dateCreated")) {
-            User commenter = storageIo.getUser(reportData.userId);
-            String name="unknown";
-            if (commenter!= null) {
-               name = commenter.getUserName();
-            }
-            GalleryAppReport galleryReport = new GalleryAppReport(reportData.galleryKey.getId(),
-                reportData.userId,reportData.report,reportData.dateCreated);
-            galleryReport.setUserName(name);
+          datastore = ObjectifyService.begin();
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).filter("resolved", false).order("-dateCreated").offset(start).limit(count)) {
+            User reporter = storageIo.getUser(reportData.reporterId);
+            User offender = storageIo.getUser(reportData.offenderId);
+            GalleryApp app = getGalleryApp(reportData.galleryKey.getId());
+            GalleryAppReport galleryReport = new GalleryAppReport(reportData.id,reportData.reportText, app, offender, reporter,
+                reportData.dateCreated, reportData.resolved);
             reports.add(galleryReport);
           }
         }
@@ -794,6 +797,34 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
 
     return reports;
+  }
+  /**
+   * mark an report as resolved
+   * @param reportId the id of the app
+   */
+  @Override
+  public boolean markReportAsResolved(final long reportId){
+    final Result<Boolean> success = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          datastore = ObjectifyService.begin();
+          success.t = false;
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).filter("resolved", false).order("-dateCreated")) {
+            if(reportData.id == reportId){
+              reportData.resolved = true;
+              datastore.put(reportData);
+              success.t = true;
+              break;
+            }
+          }
+         }
+      });
+     } catch (ObjectifyException e) {
+         throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.markReportAsResolved", e);
+     }
+     return success.t;
   }
 
   /**

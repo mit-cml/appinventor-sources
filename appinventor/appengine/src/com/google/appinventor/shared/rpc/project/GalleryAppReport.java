@@ -2,6 +2,7 @@ package com.google.appinventor.shared.rpc.project;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.logging.Logger;
+import com.google.appinventor.shared.rpc.user.User;
 
 public class GalleryAppReport implements IsSerializable{
   private long appId;
@@ -18,22 +19,33 @@ public class GalleryAppReport implements IsSerializable{
   }
 
 
-  public GalleryAppReport(long appId, String userId, String report, long timeStamp ) {
+
+  public GalleryAppReport(long reportId, String reportText, GalleryApp app, User offender, User reporter, long timeStamp, boolean resolved ) {
     super();
-    this.appId = appId;
+    this.reportId=reportId;
+    this.reportText = reportText;
+    this.app = app;
+    this.offender=offender;
+    this.reporter=reporter;
     this.timeStamp = timeStamp;
-    this.report = report;
-    this.userId = userId;
-
+    this.resolved = resolved;
 
   }
 
-  public long getAppId() {
-    return appId;
+  public long getReportId() {
+    return reportId;
   }
 
-  public void setAppID(long appId) {
-    this.appId = appId;
+  public void setReportID(long reportId) {
+    this.reportId = reportId;
+  }
+
+  public GalleryApp getApp() {
+    return app;
+  }
+
+  public void setApp(GalleryApp app) {
+    this.app = app;
   }
 
   public long getTimeStamp() {
@@ -44,33 +56,47 @@ public class GalleryAppReport implements IsSerializable{
     this.timeStamp = timeStamp;
   }
 
-  public String getReport() {
-    return report;
+  public String getReportText() {
+    return reportText;
   }
-  public void setReport(String report) {
-    this.report = report;
-  }
-
-  public String getUserId() {
-    return userId;
+  public void setReportText(String reportText) {
+    this.reportText = reportText;
   }
 
-  public void setUserId(String userId) {
-    this.userId = userId;
+  public User getOffender() {
+    return offender;
   }
 
-  public String getUserName() {
-    return userName;
+  public void setOffender(User offender) {
+    this.offender = offender;
+  }
+  public User getReporter() {
+    return reporter;
   }
 
-  public void setUserName(String name) {
-    this.userName = name;
+  public void setReporter(User reporter) {
+    this.reporter = reporter;
   }
 
+  public User getResolved() {
+    return reporter;
+  }
+
+  public void setResolved(boolean resolved) {
+    this.resolved = resolved;
+  }
+
+  // Here are the data members
+  private long reportId;
+  private GalleryApp app;
+  private String reportText;
+  private User offender;
+  private User reporter;
+  private boolean resolved;
 
   @Override
   public String toString() {
-    return report;
+    return reportText;
   }
 
 }

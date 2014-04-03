@@ -779,8 +779,8 @@ panel
                           submitReport.setEnabled(false);
                         }
                     };
-                  Ode.getInstance().getGalleryService().addAppReport(
-                      app.getGalleryAppId(), reportText.getText(), reportClickCallback);
+                  Ode.getInstance().getGalleryService().addAppReport(app, reportText.getText(),
+                      reportClickCallback);
                 }
               });
             }

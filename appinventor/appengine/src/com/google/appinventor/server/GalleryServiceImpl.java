@@ -19,7 +19,6 @@ import com.google.appengine.tools.cloudstorage.GcsFileOptions.Builder;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
 import com.google.appengine.tools.cloudstorage.GcsFileMetadata;
 import com.google.appengine.tools.cloudstorage.GcsOutputChannel;
-
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
@@ -32,14 +31,13 @@ import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.GalleryService;
-
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.common.collect.Lists;
-
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -49,7 +47,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -314,9 +311,22 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @return the id of the new report
    */
   @Override
-  public long addAppReport(long galleryId, String report) {
-    final String userId = userInfoProvider.getUserId();
-    return galleryStorageIo.addAppReport(galleryId, userId, report);
+  public long addAppReport(GalleryApp app, String reportText) {
+    final String reporterId = userInfoProvider.getUserId();
+    String offenderId = app.getDeveloperId();
+    return galleryStorageIo.addAppReport(reportText, app.getGalleryAppId(), offenderId,reporterId);
+  }
+
+  /**
+  * gets recent reports
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  @Override
+  public List<GalleryAppReport> getRecentReports(int start, int count) {
+    return galleryStorageIo.getAppReports(start,count);
+
   }
 
   /**
@@ -358,7 +368,14 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public List<GalleryApp> remixedTo(long galleryId) {
     return galleryStorageIo.remixedTo(galleryId);
   }
-
+  /**
+   * mark an report as resolved
+   * @param reportId the id of the app
+   */
+  @Override
+  public boolean markReportAsResolved(long reportId) {
+    return galleryStorageIo.markReportAsResolved(reportId);
+  }
 
 //  public void storeImage(InputStream is, long galleryId) {
 //    

@@ -39,7 +39,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
@@ -160,7 +159,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, null, null, false, false);
+      tuser = new User(userId, email, null, null, false, false, 0);
     }
     final User user = tuser;
     try {
@@ -177,6 +176,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           user.setUserEmail(userData.email);
           user.setUserName(userData.name);
           user.setUserLink(userData.link);
+          user.setType(userData.type);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
         }
       });
@@ -194,13 +194,13 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   private UserData createUser(Objectify datastore, String userId, String email) {
-    UserData userData = new UserData();
+	UserData userData = new UserData();
     userData.id = userId;
     userData.tosAccepted = false;
     userData.settings = "";
     userData.email = email == null ? "" : email;
     userData.name = User.getDefaultName(email);
-    
+    userData.type = 0;
     datastore.put(userData);
     return userData;
   }
@@ -256,7 +256,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           // we need to change the memcache version of user
           User user = new User(userData.id,userData.email,name, userData.link, userData.tosAccepted,
-             false);
+             false, userData.type);
           String cachekey = User.usercachekey + "|" + userId;
           memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }
@@ -280,7 +280,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           // we need to change the memcache version of user
           User user = new User(userData.id,userData.email,userData.name,link,userData.tosAccepted,
-             false);
+             false, userData.type);
           String cachekey = User.usercachekey + "|" + userId;
           memcache.put(cachekey, user, Expiration.byDeltaSeconds(60)); // Remember for one minute
         }

@@ -152,6 +152,11 @@ public interface GalleryStorageIo {
    */
   List<GalleryApp> remixedTo(long galleryId);
   /**
+   * mark an report as resolved
+   * @param reportId the id of the app
+   */
+  boolean markReportAsResolved(long reportId);
+  /**
    * Returns a list of comments for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryComment}
@@ -160,12 +165,14 @@ public interface GalleryStorageIo {
 
   /**
    * adds a report (flag) to a gallery app
-   * @param galleryId id of gallery app that was commented on
-   * @param userId id of user who commented
-   * @param report report
+   * @param reportText the report
+   * @param galleryId id of the galleryApp
+   * @param offenderId id of user who is being reported
+   * @param reporterId if of the user who reported
    * @return the id of the new report
    */
-  long addAppReport(long galleryId,String userId, String report);
+  long addAppReport(final String reportText, final long galleryId,
+      final String offenderId, final String reporterId);
   /**
   * check if an app is reported by a user
   * @param galleryId id of gallery app that was like
@@ -176,15 +183,19 @@ public interface GalleryStorageIo {
   /**
    * Returns a list of reports (flags) for an app
    * @param galleryId id of gallery app
+   * @param start start index
+   * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
-  List<GalleryAppReport> getAppReports(long galleryId);
+  List<GalleryAppReport> getAppReports(long galleryId, int start, int count);
 
   /**
    * Returns a list of reports (flags) for all app
+   * @param start start index
+   * @param count number to return
    * @return list of {@link GalleryAppReport}
    */
-  List<GalleryAppReport> getAppReports();
+  List<GalleryAppReport> getAppReports(int start, int count);
   /**
    * adds a report (flag) to a gallery app comment
    * @param commentId id of comment that was reported

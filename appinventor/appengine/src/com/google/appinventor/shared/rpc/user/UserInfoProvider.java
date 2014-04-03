@@ -60,4 +60,11 @@ public interface UserInfoProvider {
    *         {@code false} otherwise
    */
   boolean getIsAdmin();
+
+  /**
+   * Returns which type the user has
+   *
+   * @return user type
+   */
+  int getType();
 }

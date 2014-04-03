@@ -116,9 +116,14 @@ public interface GalleryServiceAsync {
   void isLikedByUser(long galleryId, AsyncCallback<java.lang.Boolean> bool);
 
   /**
-  * @see GalleryService#addAppReport(long galleryId, String report)
+  * @see GalleryService#addAppReport(GalleryApp app, String reportText)
   */
-  void addAppReport(long galleryId, String report, AsyncCallback<java.lang.Long> date);
+  void addAppReport(GalleryApp app, String reportText, AsyncCallback<java.lang.Long> date);
+
+  /**
+  * @see GalleryService#getRecentReports(int start, int count)
+  */
+  void getRecentReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
 
   /**
   * @see GalleryService#isReportedByUser(long galleryId)
@@ -140,9 +145,14 @@ public interface GalleryServiceAsync {
    * @see GalleryService#remixedTo(long galleryId);
    */
   void remixedTo(long galleryId, AsyncCallback<List<GalleryApp>> apps);
+  /**
+   * @see GalleryService#markReportAsResolved(long reportId);
+   */
+  void markReportAsResolved(long reportId, AsyncCallback<Boolean> callback);
 
   void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Void> callback);
   void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
   void readMessage(long timestamp, AsyncCallback<Void> callback);
   void appStatsWasRead(long appId, AsyncCallback<Void> callback);
+
 }

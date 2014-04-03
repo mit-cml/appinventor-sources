@@ -70,6 +70,10 @@ public interface OdeMessages extends Messages {
   @Description("Header for date modified column of project table.")
   String projectDateModifiedHeader();
 
+  @DefaultMessage("Text")
+  @Description("Header for text column of report table.")
+  String reportTextHeader();
+
   // Used in DesignToolbar.java
 
   @DefaultMessage("Save")
@@ -145,6 +149,28 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Blocks Editor is open")
   @Description("Label of the button for opening the blocks editor when the it is already open")
   String blocksEditorIsOpenButton();
+
+  //Used in ModerationPage.java
+
+  @DefaultMessage("Report")
+  @Description("Label of the report text field on moderation page")
+  String moderationReportTextHeader();
+
+  @DefaultMessage("App")
+  @Description("Label of the app field on moderation page")
+  String moderationAppHeader();
+
+  @DefaultMessage("Reported On")
+  @Description("Label of the created date of report field on moderation page")
+  String moderationReportDateCreatedHeader();
+
+  @DefaultMessage("App Author")
+  @Description("Label of the app author field on moderation page")
+  String moderationAppAuthorHeader();
+
+  @DefaultMessage("Reporter")
+  @Description("Label of the reporter field on moderation page")
+  String moderationReporterHeader();
 
   // Used in MotdFetcher.java
 
@@ -264,7 +290,11 @@ public interface OdeMessages extends Messages {
 
   @Description("Name of Gallery tab")
   String tabNameGallery();
-  
+
+  @DefaultMessage("Moderation")
+  @Description("Name of moderation tab")
+  String tabNameModeration();
+
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();
@@ -352,6 +382,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("My Profile")
   @Description("Caption for profile page box.")
   String profilePageBoxCaption();
+
+  // Used in boxes/ModerationPageBox.java
+
+  @DefaultMessage("Reports")
+  @Description("Caption for moderation page box.")
+  String moderationPageBoxCaption();
   
   // Used in boxes/GalleryListBox.java
 

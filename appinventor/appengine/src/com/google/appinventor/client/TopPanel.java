@@ -33,6 +33,7 @@ public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
   private final DropDownButton accountButton;
   private final String WIDGET_NAME_MESSAGES = "Messages";
+  private final TextButton moderation;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
   private static final String SIGNOUT_URL = "/ode/_logout";
@@ -121,11 +122,11 @@ public class TopPanel extends Composite {
       gallery.setStyleName("ode-TopPanelButton");
       links.add(gallery);
     }
-	*/
-		
-	// Code on gallerydev branch
-	// Gallery Link	
-	TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
+    */
+
+    // Code on gallerydev branch
+    // Gallery Link
+    TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
     gallery.setStyleName("ode-TopPanelButton");
     gallery.addClickHandler(new ClickHandler() {
       @Override
@@ -134,6 +135,17 @@ public class TopPanel extends Composite {
       }
     });
     links.add(gallery);
+
+    moderation = new TextButton(MESSAGES.tabNameModeration());
+    moderation.setStyleName("ode-TopPanelButton");
+    moderation.addClickHandler(new ClickHandler() {
+    @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToModerationPageView();
+      }
+    });
+    moderation.setVisible(false);
+    links.add(moderation);
 
     // Create the Account Information
     rightPanel = new VerticalPanel();
@@ -221,6 +233,13 @@ public class TopPanel extends Composite {
    */
   public void showUserEmail(String email) {
     accountButton.setCaption(email);
+  }
+
+  /**
+   * Updates the UI to show the moderation's link.
+   */
+  public void showModerationLink() {
+    moderation.setVisible(true);
   }
 
   /**

@@ -156,11 +156,19 @@ public interface GalleryService extends RemoteService {
 
   /**
   * adds a report (flag) to a gallery app
-  * @param galleryId id of gallery app that was commented on
-  * @param report report
+  * @param app app that is being reported
+  * @param reportText the report
   * @return the id of the new report
   */
-  long addAppReport(long galleryId, String report);
+  long addAppReport(GalleryApp app, String reportText);
+
+  /**
+  * gets recent reports
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  List<GalleryAppReport> getRecentReports(int start, int count);
 
   /**
   * check if an app is reported by a user
@@ -190,5 +198,11 @@ public interface GalleryService extends RemoteService {
   List<Message> getMessages(String receiverId);
   void readMessage(long timestamp);
   void appStatsWasRead(long appId);
+
+  /**
+   * mark an report as resolved
+   * @param reportId the id of the app
+   */
+  boolean markReportAsResolved(long reportId);
 
 }
