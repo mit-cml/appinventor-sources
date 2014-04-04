@@ -519,7 +519,8 @@ public final class YoungAndroidProjectService extends CommonProjectService {
     URL buildServerUrl = null;
     ProjectSourceZip zipFile = null;
     Settings projectSettings = new Settings(JSON_PARSER, storageIo.loadProjectSettings(userId, projectId));
-    boolean attachPrivacy = (projectSettings.getSetting(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_ATTACH_PRIVACY_DESCRIPTION) == "True");
+    boolean attachPrivacy = (projectSettings.getSetting(SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS, SettingsConstants.YOUNG_ANDROID_SETTINGS_ATTACH_PRIVACY_DESCRIPTION).equalsIgnoreCase("True"));
+    
     try {
       buildServerUrl = new URL(getBuildServerUrlStr(
           user.getUserEmail(),

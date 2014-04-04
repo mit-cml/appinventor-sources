@@ -485,6 +485,7 @@ public final class Compiler {
    * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
+                                /* whether to attach a privacy */ File privacyDescription,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForRepl, boolean isForWireless, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir) throws IOException, JSONException {
@@ -545,7 +546,15 @@ public final class Compiler {
     if (!compiler.attachComponentAssets()) {
       return false;
     }
-
+    
+    // Add privacy description to assets if available
+    if (privacyDescription != null) {
+      out.println("________Attaching privacy description");
+      if (!compiler.attachPrivacyDescription(privacyDescription)) {
+        return false;
+      }
+    }
+    
     // Create class files.
     out.println("________Compiling source files");
     File classesDir = createDirectory(buildDir, "classes");
@@ -615,6 +624,17 @@ public final class Compiler {
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
     return true;
+  }
+
+  private boolean attachPrivacyDescription(File privacyDescription) {
+    try {
+      Files.copy(privacyDescription, new File(project.getAssetsDirectory(), privacyDescription.getName()));
+      return true;
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+      return false;
+    }
   }
 
   /*
