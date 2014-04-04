@@ -444,6 +444,7 @@
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
                     <li> <a href="#ListPicker"> ListPicker </a> </li>
+                    <li> <a href="#ListView"> ListView </a> </li>
                     <li> <a href="#Notifier"> Notifier </a> </li>
                     <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
                     <li> <a href="#Screen"> Screen </a> </li>
@@ -788,6 +789,40 @@
   <dd>Opens the picker, as though the user clicked on it.</dd>
 </dl>
 
+<h2 id="ListView">ListView</h2>
+
+<p><p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. </p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>Set a list of text elements to build your list.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Build a list with a series of text elements separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.</dd>
+  <dt><code>Height</code></dt>
+  <dd>Determines the height of the list on the view.</dd>
+  <dt><code><em>Selection</em></code></dt>
+  <dd>Returns the text last selected in the ListView.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>Choose a position to be your index. This could be used to retrieve the text at the position chosen in the list.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Sets visibility of ShowFilterBar. True will show the bar, Flase will hide it.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Determines the width of the list on the view.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to be raised right after an element has been chosen, but before assigning the element to the Selection property.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
 <h2 id="Notifier">Notifier</h2>
 

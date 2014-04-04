@@ -21,6 +21,7 @@ import com.google.appinventor.client.editor.simple.components.MockImage;
 import com.google.appinventor.client.editor.simple.components.MockImagePicker;
 import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
+import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
@@ -112,6 +113,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/web.png", images.web());
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
+    bundledImages.put("images/listView.png", images.listview());
     imagesInitialized = true;
   }
 
@@ -259,6 +261,8 @@ public final class SimpleComponentDescriptor {
       return new MockImage(editor);
     } else if (name.equals(MockLabel.TYPE)) {
       return new MockLabel(editor);
+    } else if (name.equals(MockListView.TYPE)) {
+      return new MockListView(editor);
     } else if (name.equals(MockSlider.TYPE)) {
         return new MockSlider(editor);
     } else if (name.equals(MockPasswordTextBox.TYPE)) {
