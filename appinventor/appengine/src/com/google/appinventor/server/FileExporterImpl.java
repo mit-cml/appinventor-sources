@@ -60,11 +60,12 @@ public final class FileExporterImpl implements FileExporter {
   public ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                                  boolean includeProjectHistory,
                                                  boolean includeAndroidKeystore,
+                                                 boolean attachPrivacy,
                                                  @Nullable String zipName) throws IOException {
     // Download project source files as a zip.
     if (storageIo instanceof ObjectifyStorageIo) {
       return ((ObjectifyStorageIo)storageIo).exportProjectSourceZip(userId, projectId,
-          includeProjectHistory, includeAndroidKeystore, zipName);
+          includeProjectHistory, includeAndroidKeystore, attachPrivacy, zipName);
     } else {
       throw new IllegalArgumentException("Objectify only");
     }
@@ -86,7 +87,7 @@ public final class FileExporterImpl implements FileExporter {
     for (Long projectId : projectIds) {
       try {
         ProjectSourceZip projectSourceZip =
-            exportProjectSourceZip(userId, projectId, false, false, null);
+            exportProjectSourceZip(userId, projectId, false, false, /* include privacy policy */ false, null);
         byte[] data = projectSourceZip.getContent();
         String name = projectSourceZip.getFileName();
 

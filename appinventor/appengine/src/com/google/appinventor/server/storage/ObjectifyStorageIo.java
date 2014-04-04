@@ -19,6 +19,8 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.FileExporter;
+import com.google.appinventor.server.PrivacyEditorServiceImpl;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
@@ -31,6 +33,7 @@ import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
+import com.google.appinventor.shared.rpc.privacy.PrivacyEditorService;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -43,13 +46,13 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.io.ByteStreams;
-
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
 import com.googlecode.objectify.ObjectifyService;
 import com.googlecode.objectify.Query;
 
 import java.io.ByteArrayOutputStream;
+
 
 // GCS imports
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
@@ -1443,6 +1446,7 @@ public class ObjectifyStorageIo implements  StorageIo {
   public ProjectSourceZip exportProjectSourceZip(final String userId, final long projectId,
                                                  final boolean includeProjectHistory,
                                                  final boolean includeAndroidKeystore,
+                                                 final boolean attachPrivacy,
                                                  @Nullable String zipName) throws IOException {
     final Result<Integer> fileCount = new Result<Integer>();
     fileCount.t = 0;
@@ -1582,6 +1586,16 @@ public class ObjectifyStorageIo implements  StorageIo {
       } catch (ObjectifyException e) {
         throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
       }
+    }
+    
+    // Generate the privacy description if attachPrivacy is set
+    if (attachPrivacy) {
+      PrivacyEditorService privacySvc = new PrivacyEditorServiceImpl();
+      String privacyDescription = privacySvc.getPreview(projectId);
+      out.putNextEntry(new ZipEntry(StorageUtil.PRIVACY_RDF_FILENAME));
+      out.write(privacyDescription.getBytes());
+      out.closeEntry();
+      fileCount.t++;
     }
 
     out.close();

@@ -27,6 +27,8 @@ public class StorageUtil {
 
   public static final String ANDROID_KEYSTORE_FILENAME = "android.keystore";
 
+  public static final String PRIVACY_RDF_FILENAME = "privacy.ttl";
+
   /**
    * Gets the final component from a path.  This assumes that path components
    * are separated by forward slashes.

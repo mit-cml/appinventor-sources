@@ -22,7 +22,10 @@ web:WebComponent
     ai:access       android:Internet; 
     ai:examples     "DropBox", "FileUpload";
     ai:purpose      ai:DataSending, ai:DataReceiving;
-    ai:requires     android:Internet .
+    ai:requires     android:Internet;
+    ai:hasProperty  web:URL;
+    ai:hasMethod    web:PostText;
+    ai:hasEvent     web:GotText .
 
 # Instance Definitions
 web:URL     a   ai:ComponentProperty; 

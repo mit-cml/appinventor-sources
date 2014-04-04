@@ -79,8 +79,8 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
     
-    System.out.println(out.toString());
-    preview = "";
+    //System.out.println(out.toString());
+    preview = out.toString();
     return preview;
   }
 
