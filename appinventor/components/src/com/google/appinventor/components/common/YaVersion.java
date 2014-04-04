@@ -657,6 +657,10 @@ public class YaVersion {
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
+    // For listView component Version
+  //Initial version
+  public static final int LISTVIEW_COMPONENT_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if
