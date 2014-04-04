@@ -905,7 +905,7 @@ Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = '/reference/components/u
 Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = '/reference/components/userinterface.html#labelevents';
 Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = '/reference/components/userinterface.html#labelmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = '/reference/components/userinterface.html#ListPicker';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_HELPURL = '/reference/components/userinterface.html#ListPicker';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#listpickerproperties';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#listpickerevents';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#listpickermethods';
@@ -918,7 +918,7 @@ Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = '/reference/components/u
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = '/reference/components/userinterface.html#PasswordTextBox';
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = '/reference/components/userinterface.html#pwdboxproperties';
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = '/reference/components/userinterface.html#pwdboxevents';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = '/reference/components/userinterface.html#pwdboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_METHODS_HELPURL = '/reference/components/userinterface.html#pwdboxmethods';
 
 Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = '/reference/components/userinterface.html#Screen';
 Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = '/reference/components/userinterface.html#screenproperties';
@@ -959,6 +959,7 @@ Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = '/reference/components/
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = '/reference/components/media.html#Camera';
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = '/reference/components/media.html#cameraproperties';
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = '/reference/components/media.html#cameraevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_METHODS_HELPURL = '/reference/components/media.html#cameramethods';
 
 Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = '/reference/components/media.html#ImagePicker';
 Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = '/reference/components/media.html#imagepickerproperties';
@@ -985,10 +986,10 @@ Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = '/reference/c
 Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = '/reference/components/media.html#speechrecognizerevents';
 Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = '/reference/components/media.html#speechrecognizermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "/reference/components/media.html#TextToSpeech";
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = '/reference/components/media.html#texttospeechproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = '/reference/components/media.html#texttospeechevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = '/reference/components/media.html#texttospeechmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL = "/reference/components/media.html#TextToSpeech";
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL = '/reference/components/media.html#texttospeechproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL = '/reference/components/media.html#texttospeechevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL = '/reference/components/media.html#texttospeechmethods';
 
 Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = '/reference/components/media.html#VideoPlayer';
 Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = '/reference/components/media.html#videoplayerproperties';
