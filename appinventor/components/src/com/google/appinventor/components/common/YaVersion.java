@@ -661,6 +661,9 @@ public class YaVersion {
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
+
+  public static final int SPINNER_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if
