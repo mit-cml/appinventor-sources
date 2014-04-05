@@ -246,8 +246,10 @@ public class YaVersion {
   // - The Sharing Component was added
   // For YOUNG_ANDROID_VERSION 87:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 88:
+  // - SPINNER_COMPONENT_VERSION was incremented to 1
 
-    public static final int YOUNG_ANDROID_VERSION = 87;
+    public static final int YOUNG_ANDROID_VERSION = 88;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -677,6 +679,9 @@ public class YaVersion {
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
+
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 

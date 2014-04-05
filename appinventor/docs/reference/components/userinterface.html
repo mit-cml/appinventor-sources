@@ -448,6 +448,7 @@
                     <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
+                    <li> <a href="#Spinner"> Spinner </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
@@ -963,6 +964,42 @@ none
 <dd>Indicates that position of the slider thumb has changed.</dd>
 </dl><h3 id="slidermethods">Methods</h3>
 <p>none</p>
+
+<h2 id="Spinner">Spinner</h2>
+
+<p><p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>returns a list of text elements to be picked from.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>sets the Spinner list to the elements passed in the comma-separated string</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Prompt</code></dt>
+  <dd>Text with the current title for the Spinner window</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the current selected item in the spinner </dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1. If no item is selected, the value will be 0.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSelecting(text selection)</code></dt>
+  <dd>Event called after the user selects an item from the dropdown list.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DisplayDropdown()</code></dt>
+  <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
+</dl>
 
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />
