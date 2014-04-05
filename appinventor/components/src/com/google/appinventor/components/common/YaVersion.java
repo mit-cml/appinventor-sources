@@ -657,7 +657,7 @@ public class YaVersion {
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
-    // For listView component Version
+  // For listView component Version
   //Initial version
   public static final int LISTVIEW_COMPONENT_VERSION = 1;
 

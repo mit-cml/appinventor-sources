@@ -59,7 +59,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     lay.setOrientation(LinearLayout.VERTICAL);
 
     ElementsFromString("");
-    //CustomAdapter ad=new CustomAdapter(container.$context(),items,it, it);
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_list_item_1, items);
     view.setAdapter(adapter);
     view.setBackgroundColor(COLOR_BLACK);
@@ -87,7 +86,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
 
         @Override
         public void afterTextChanged(Editable arg0) {
-            // no-op. Required method
+          // no-op. Required method
         }
       });
       if (showFilter==false) {
@@ -143,19 +142,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     super.Width(width);
   }
 
-
   /**
-   * Returns the text displayed by the label.
-   *
-   * @return  label caption
-   */
-  /*@SimpleProperty(
-      category = PropertyCategory.APPEARANCE)
-  public String ElementsFromString() {
-    //return TextViewUtil.getText(view);
-    return "Hey";
-  }*/
-
+  * Sets true or false to determine whether the search filter box is displayed in the listview or not
+  */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN, defaultValue = DEFAULT_ENABLED ? "True"
       : "False")
   @SimpleProperty
@@ -200,6 +189,9 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
     selection=items[index];
   }
 
+  /**
+  * Returns the text in the listview at the position set by selectionindex
+  */
   @SimpleProperty(description="Returns the text of your selection.",  category = PropertyCategory.BEHAVIOR)
   public String Selection(){
       selection=items[index];
@@ -210,10 +202,8 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
    * Simple event to raise when the component is clicked but before the
    * picker activity is started.
    */
-
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    //EventDispatcher.dispatchEvent(this, "AfterPicking");
     index=position;
     AfterPicking();
   }
@@ -225,7 +215,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Simple event to be raised after the picker activity returns its
+   * Simple event to be raised after the list returns its
    * result and the properties have been filled in.
    */
   @SimpleEvent

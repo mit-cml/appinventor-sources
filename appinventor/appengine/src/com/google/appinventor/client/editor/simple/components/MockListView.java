@@ -36,17 +36,13 @@ public final class MockListView extends MockVisibleComponent {
     super(editor, TYPE, images.listview());
 
     // Initialize mock label UI
-    //labelWidget = new InlineHTML();
     listBoxWidget=new ListBox();
-    //labelWidget.setStylePrimaryName("ode-SimpleMockComponent");
     listBoxWidget.setStylePrimaryName("ode-SimpleMockComponent");
-    //initComponent(labelWidget);
     initComponent(listBoxWidget);
   }
 
   @Override
   public void onCreateFromPalette() {
-    // Change label text to component name
     changeProperty(PROPERTY_NAME_TEXT, MESSAGES.textPropertyValue(getName()));
   }
 
@@ -105,7 +101,6 @@ public final class MockListView extends MockVisibleComponent {
         listBoxWidget.addItem(a[i]);
     }
     listBoxWidget.setVisibleItemCount(a.length);
-    //RootPanel.get().add(listBoxWidget);
   }
 
 
