@@ -452,6 +452,7 @@
                     <li> <a href="#Slider"> Slider </a> </li>
                     <li> <a href="#Spinner"> Spinner </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
+                    <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
                   <h2 id="Button"> Button </h2>
@@ -1219,6 +1220,63 @@ none
                       line text boxes close the keyboard when the users presses
                       the Done key. </dd>
                   </dl>
+
+                  <h2 id="TimePicker">TimePicker</h2>
+                  <p><p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p></p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Hour</em></code></dt>
+                    <dd>The hour of the last time set using the time picker. The hour is in a 24 hour format. If the last time set was 11:53 pm, this property will return 23.</dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Minute</em></code></dt>
+                    <dd>The minute of the last time set using the time picker</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterTimeSet()</code></dt>
+                    <dd>This event is run when a user has set the time in the popup dialog.</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
+
                   <h2 id="WebViewer"> WebViewer </h2>
                   <img src="images/webviewer.png" alt="Picture of WebViewer component" />
                   <p> Component for viewing Web pages. The Home URL can be

@@ -95,7 +95,7 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/camera.png")
   ImageResource camera();
-  
+
   /**
    * Designer palette item: camcorder declaration
    */
@@ -318,6 +318,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/twitter.png")
   ImageResource twitterComponent();
+
+  /**
+   * Designer palette item: TimePicker Component
+   */
+  @Source("com/google/appinventor/images/timePicker.png")
+  ImageResource timePickerComponent();
 
   /**
    * Designer palette item: TinyDB Component

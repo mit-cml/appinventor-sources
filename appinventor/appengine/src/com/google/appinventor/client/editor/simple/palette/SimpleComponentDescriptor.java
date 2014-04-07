@@ -24,6 +24,7 @@ import com.google.appinventor.client.editor.simple.components.MockImageSprite;
 import com.google.appinventor.client.editor.simple.components.MockLabel;
 import com.google.appinventor.client.editor.simple.components.MockListView;
 import com.google.appinventor.client.editor.simple.components.MockListPicker;
+import com.google.appinventor.client.editor.simple.components.MockTimePicker;
 import com.google.appinventor.client.editor.simple.components.MockNonVisibleComponent;
 import com.google.appinventor.client.editor.simple.components.MockPasswordTextBox;
 import com.google.appinventor.client.editor.simple.components.MockPhoneNumberPicker;
@@ -108,6 +109,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/textToSpeech.png", images.textToSpeech());
     bundledImages.put("images/texting.png", images.texting());
     bundledImages.put("images/datePicker.png", images.datePickerComponent());
+    bundledImages.put("images/timePicker.png", images.timePickerComponent());
     bundledImages.put("images/tinyDB.png", images.tinyDB());
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
@@ -283,6 +285,8 @@ public final class SimpleComponentDescriptor {
       return new MockListPicker(editor);
     } else if (name.equals(MockDatePicker.TYPE)) {
       return new MockDatePicker(editor);
+    } else if (name.equals(MockTimePicker.TYPE)) {
+      return new MockTimePicker(editor);
     } else if (name.equals(MockHorizontalArrangement.TYPE)) {
       return new MockHorizontalArrangement(editor);
     } else if (name.equals(MockVerticalArrangement.TYPE)) {
