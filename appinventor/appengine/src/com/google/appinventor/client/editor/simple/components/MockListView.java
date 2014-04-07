@@ -22,9 +22,7 @@ public final class MockListView extends MockVisibleComponent {
    */
   public static final String TYPE = "ListView";
 
-  // GWT label widget used to mock a Simple Label
-  private InlineHTML labelWidget;
-
+  // GWT label widget used to mock a Simple ListBox
   private ListBox listBoxWidget;
 
   /**
