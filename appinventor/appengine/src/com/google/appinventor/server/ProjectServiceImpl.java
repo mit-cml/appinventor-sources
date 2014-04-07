@@ -12,6 +12,8 @@ import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
@@ -199,6 +201,40 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value depends on the file kind. Source (text) files should
+   * typically return their contents. Image files will be more likely to return
+   * the URL that the browser can find them at.
+   *
+   * This version returns a ChecksumedLoadFile which contains the file content
+   * and a MD5 checksum.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  implementation dependent
+   */
+  @Override
+  public ChecksumedLoadFile load2(long projectId, String fileId) throws ChecksumedFileException {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).load2(userId, projectId, fileId);
+  }
+
+  /**
+   * Attempt to record the project Id and error message when we detect a corruption
+   * while loading a project.
+   *
+   * @param projectId project id
+   * @param message Error message from the thrown exception
+   *
+   */
+  @Override
+  public void recordCorruption(long projectId, String fileId, String message) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).recordCorruption(userId, projectId, fileId, message);
   }
 
   /**

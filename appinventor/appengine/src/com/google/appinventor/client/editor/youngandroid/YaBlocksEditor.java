@@ -23,6 +23,8 @@ import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
@@ -154,9 +156,18 @@ public final class YaBlocksEditor extends FileEditor
 
   @Override
   public void loadFile(final Command afterFileLoaded) {
-    OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(MESSAGES.loadError()) {
+    final long projectId = getProjectId();
+    final String fileId = getFileId();
+    OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
-      public void onSuccess(String blkFileContent) {
+      public void onSuccess(ChecksumedLoadFile result) {
+        String blkFileContent;
+        try {
+          blkFileContent = result.getContent();
+        } catch (ChecksumedFileException e) {
+          this.onFailure(e);
+          return;
+        }
         blocksArea.loadBlocksContent(blkFileContent);
         loadComplete = true;
         selectedDrawer = null;
@@ -164,8 +175,15 @@ public final class YaBlocksEditor extends FileEditor
           afterFileLoaded.execute();
         }
       }
+      @Override
+      public void onFailure(Throwable caught) {
+        if (caught instanceof ChecksumedFileException) {
+          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());
+        }
+        super.onFailure(caught);
+      }
     };
-    Ode.getInstance().getProjectService().load(getProjectId(), getFileId(), callback);
+    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
 
   @Override

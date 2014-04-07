@@ -227,4 +227,13 @@ public class StoredData {
     public Date timestamp;
   }
 
+  @Unindexed
+  static final class CorruptionRecord {
+    @Id Long id;
+    @Indexed public Date timestamp;
+    public String userId;
+    public long projectId;
+    public String fileId;
+    public String message;
+  }
 }

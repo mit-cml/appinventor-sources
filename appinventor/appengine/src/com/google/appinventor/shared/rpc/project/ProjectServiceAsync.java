@@ -6,6 +6,7 @@
 package com.google.appinventor.shared.rpc.project;
 
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
@@ -75,10 +76,20 @@ public interface ProjectServiceAsync {
   void load(long projectId, String fileId, AsyncCallback<String> callback);
 
   /**
+   * @see ProjectService#load2(long, String)
+   */
+  void load2(long projectId, String fileId, AsyncCallback<ChecksumedLoadFile> callback);
+
+  /**
+   * @see ProjectService#recordCorruption(long, String, String)
+   */
+  void recordCorruption(long ProjectId, String fileId, String message, AsyncCallback<Void> callback);
+
+  /**
    * @see ProjectService#loadraw(long, String)
    */
-
   void loadraw(long projectId, String fileId, AsyncCallback<byte []> callback);
+
   /**
    * @see ProjectService#loadraw2(long, String)
    */
