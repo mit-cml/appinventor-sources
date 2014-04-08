@@ -384,6 +384,7 @@ public interface StorageIo {
    * @param projectId  project ID
    * @param includeProjectHistory  whether or not to include the project history
    * @param includeAndroidKeystore  whether or not to include the Android keystore
+   * @param attachPrivacy whether or not to attach a generate privacy description of the Android app
    * @param zipName  the name of the zip file, if a specific one is desired
 
    * @return  project with the content as requested by params.
@@ -391,6 +392,7 @@ public interface StorageIo {
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
                                           boolean includeAndroidKeystore,
+                                          boolean attachPrivacy,
                                           @Nullable String zipName) throws IOException;
 
   /**
