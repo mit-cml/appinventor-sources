@@ -89,7 +89,7 @@ class NewComponent():
             f.write(text)
 
     def createComponent(self):
-        version = self.compName.upper() + '_VERSION'
+        version = self.compName.upper() + '_COMPONENT_VERSION'
 
         # get template for visible or nonvisible component and write to file
         if self.visibleComponent:
@@ -109,7 +109,8 @@ class NewComponent():
         with open('../../components/src/com/google/appinventor/components/common/YaVersion.java', 'r') as f:
             text = f.read()
             oldtxt = 'public static final int SLIDER_COMPONENT_VERSION = 1;'
-            newtxt = '\n\n\n  public static final int %s = 1;' % version
+            newtxt = '\n\n\n  // For %s 1:\n  // - Initial Version.\n' % version
+            newtxt += '  public static final int %s = 1;' % version
             text = re.sub(re.escape(oldtxt), oldtxt + newtxt, text)
 
         with open('../../components/src/com/google/appinventor/components/common/YaVersion.java', 'w') as f:

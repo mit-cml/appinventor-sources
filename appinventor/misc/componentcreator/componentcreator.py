@@ -1,4 +1,4 @@
-from Tkinter import Tk, BOTH, END, IntVar, StringVar
+from Tkinter import Tk, BOTH, END, IntVar, StringVar, LEFT
 from ttk import Button, Checkbutton, Frame, Style, Combobox, Label, Entry
 from tkFileDialog import askopenfilename
 import tkMessageBox
@@ -17,7 +17,14 @@ class Application(Frame):
         Frame.__init__(self, master)
         self.pack(fill=BOTH, expand=1) 
         self.initUI()
+        self.setGeometry()
         self.component = NewComponent()
+
+    def setGeometry(self):
+        x = 300
+        y = 100
+        self.master.geometry("400x300+%d+%d" % (x, y))
+        self.master.update()
 
 
     def initUI(self):
@@ -28,19 +35,21 @@ class Application(Frame):
 
         #indicator label
         self.labelName = Label(self, text="Component Name:")
-        self.labelName.place(x=10, y=10)
-        
+        self.labelName.place(x=10, y=10)        
+        self.master.update()
+
         # create variable and namefield for input of component name
         sv = StringVar()
         sv.trace("w", lambda name, index, mode, sv=sv: self.nameChanged(sv))
         self.nameField = Entry(self, textvariable=sv)
-        self.nameField.place(x=120, y=10)
-        
+        self.nameField.place(x=10+self.labelName.winfo_width() + 10, y=10)
+        self.master.update()
+
         # label for image name that will show img name for a given component name
         self.imgNameVar = StringVar()
         self.imgNameVar.set('imageName:')
         self.labelImageName = Label(self, textvariable=self.imgNameVar)
-        self.labelImageName.place(x=120,y=40)
+        self.labelImageName.place(x=10+self.labelName.winfo_width()+10,y=40)
 
         # checkbox for visible component or not
         self.cbVar = IntVar()
@@ -50,20 +59,23 @@ class Application(Frame):
         # dropdown list for category
         self.labelCategory = Label(self, text="Category:")
         self.labelCategory.place(x=10, y=110)
+        self.master.update()
+
         acts = ['UserInterface', 'Layout', 'Media', 'Animation', 'Sensors', 'Social', 'Storage',
                 'Connectivity', 'LegoMindStorms', 'Experimental', 'Internal', 'Uninitialized']        
         self.catBox = Combobox(self, values=acts)
-        self.catBox.place(x=80, y=110)
+        self.catBox.place(x=10+self.labelCategory.winfo_width()+10, y=110)
 
         # button to select icon image
         self.getImageButton = Button(self, text="Select icon", command=self.getImage)
         self.getImageButton.place(x=10, y=150)
+        self.master.update()
 
         # explanation for resizing
         self.resizeVar = IntVar()
         self.resizeCB = Checkbutton(self, 
             text="ON=Resize Image (Requires PIL)\nOFF=Provide 16x16 Image", variable=self.resizeVar)
-        self.resizeCB.place(x=100, y=150)
+        self.resizeCB.place(x=10+self.getImageButton.winfo_width()+10, y=150)
 
         # create button
         self.createButton = Button(self, text="Create", command=self.create)
@@ -71,7 +83,7 @@ class Application(Frame):
 
         #cancel button
         self.cancelButton = Button(self, text="Cancel", command=self.quit)
-        self.cancelButton.place(x=150, y=230)
+        self.cancelButton.place(x=200, y=230)
 
 
     # open file picker for selecting an icon
@@ -147,11 +159,6 @@ def main():
     root = Tk()
 
     # sets window size and geometry
-    x = (root.winfo_screenwidth() - root.winfo_reqwidth()) / 2
-    y = -100 + (root.winfo_screenheight() - root.winfo_reqheight()) / 2
-    root.geometry("300x300+%d+%d" % (x, y))
-
-
     app = Application(master=root)
     root.mainloop()  
 
