@@ -103,7 +103,7 @@ Blockly.ErrorIcon.prototype.createIcon_ = function() {
  */
 Blockly.ErrorIcon.prototype.textToDom_ = function(text) {
   var paragraph = Blockly.createSvgElement('text',
-      {'class': 'blocklyText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
+      {'class': 'blocklyText  blocklyErrorWarningText', 'y': Blockly.Bubble.BORDER_WIDTH}, null);
   var lines = text.split('\n');
   for (var i = 0; i < lines.length; i++) {
     var tspanElement = Blockly.createSvgElement('tspan',
