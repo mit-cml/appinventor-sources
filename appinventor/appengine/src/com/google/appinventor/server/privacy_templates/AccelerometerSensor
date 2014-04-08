@@ -17,37 +17,49 @@
 
 # Component Description
 accelerometer:AccelerometerSensorComponent  
-    a    ai:Component;
-    ai:category     ai:Sensor;
-    ai:description  "senses the Android device's accelerometer, which detects shaking and measures acceleration in three dimensions";
-    ai:details      "X measures when phone is tilted sideways",
-                    "Y measures when phone is tilted up and down",
-                    "Z measures phone's acceleration compared to the Earth's gravity",
-                    "units are in International Standard (m/s^2)",
-                    "implemented using android.hardware.SensorListener";
+    a   owl:Class;
+    rdfs:subClassOf ai:Component,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:category; 
+                        owl:hasValue    ai:Sensor] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:description; 
+                        owl:hasValue    "senses the Android device's accelerometer, which detects shaking and measures acceleration in three dimensions"] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:details; 
+                        owl:hasValue    "X measures when phone is tilted sideways",
+                                        "Y measures when phone is tilted up and down",
+                                        "Z measures phone's acceleration compared to the Earth's gravity",
+                                        "units are in International Standard (m/s^2)",
+                                        "implemented using android.hardware.SensorListener"] ,
 
 # Privacy Implication and Common Usage
-    ai:access       android:Accelerometer; 
-    ai:example      "Fitbit", "TrackMe";
-    ai:dataUsage    ai:MeasuresAcceleration, ai:DetectMotion;
-    ai:purpose      ai:DataGathering; 
-    ai:requires     android:Accelerometer;
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:access; 
+                        owl:hasValue    android:Accelerometer] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:examples; 
+                        owl:hasValue    "Fitbit", "TrackMe" ] ,
+                    [   a               owl:Restriction;
+                        owl:onPropoerty ai:dataUsage;
+                        owl:hasValue    ai:MeasuresAcceleration, ai:DetectMotion ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:purpose; 
+                        owl:hasValue    ai:DataGathering ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:requires; 
+                        owl:hasValue    android:Accelerometer ] .
 
-# Component Properties, Methods and Events 
-    ai:hasProperty  accelerometer:XAccel, accelerometer:YAccel, accelerometer:ZAccel;
-    ai:hasMethod    accelerometer:setSensitivity;
-    ai:hasEvent     accelerometer:AccelerationChanged, accelerometer:Shaking .
 
 # Instance Definitions
-
-accelerometer:XAccel    a   ai:ComponentProperty; 
+accelerometer:XAccel    rdfs:subclassOf   ai:ComponentProperty; 
                         rdfs:label  "accelerometer's X acceleration " .
-accelerometer:YAccel    a   ai:ComponentProperty;
+accelerometer:YAccel    rdfs:subclassOf   ai:ComponentProperty;
                         rdfs:label  "accelerometer's Y acceleration " .
-accelerometer:ZAccel    a   ai:ComponentProperty;
+accelerometer:ZAccel    rdfs:subclassOf   ai:ComponentProperty;
                         rdfs:label  "accelerometer's Z acceleration " .
 
-accelerometer:AccelerationChanged   a   ai:ComponentEvent;
+accelerometer:AccelerationChanged   rdfs:subclassOf   ai:ComponentEvent;
                                     rdfs:label  "accelerometer's event that detects when its value changes " .
-accelerometer:Shaking   a   ai:ComponentEvent;
+accelerometer:Shaking   rdfs:subclassOf   ai:ComponentEvent;
                         rdfs:label  "accelerometer's event that detects when the device is shaken " .
