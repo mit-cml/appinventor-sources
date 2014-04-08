@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.hp.hpl.jena.rdf.model.InfModel;
 import com.hp.hpl.jena.rdf.model.Model;
@@ -32,7 +33,8 @@ import com.google.appinventor.shared.youngandroid.YoungAndroidXMLSourceAnalyzer;
 
 public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements PrivacyEditorService {
 
-  
+  //Logging support
+  private static final Logger LOG = Logger.getLogger(PrivacyEditorServiceImpl.class.getName());
   
   // Custom Defined Constants
   private static final String BASE_NS = "http://www.example.org/privacyDescription#";
@@ -170,8 +172,10 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       Resource parentPredInstance = addComponentDetails(comp1);
       Resource childPredInstance = addComponentDetails(comp2);
       
-      // add the relationship to the privacy description
-      model.add(parentPredInstance, connectsTo, childPredInstance);
+      if (parentPredInstance != null && childPredInstance != null) {
+        // add the relationship to the privacy description
+        model.add(parentPredInstance, connectsTo, childPredInstance);
+      }
     }
   }
   
@@ -181,6 +185,13 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     String comp_name = compDetails.get(1);
     String predicate_type = compDetails.get(2);
     String predicate_name = compDetails.get(3);
+    
+    if (predicate_type.equalsIgnoreCase("NONE") || predicate_name.equalsIgnoreCase("NONE")) {
+      // there is no predicate type or instance indicated for this block, so we return null
+      LOG.info("PrivacyEditorService: The component block " + comp_name + "of type " + comp_type + "has no valid predicate type (i.e. no method, property or event)");
+      return null;
+    }
+    
     Resource predicateInstance = model.createResource(BASE_NS + comp_name + predicate_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + predicate_name));
     Resource parentInstance = model.createResource(BASE_NS + comp_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + comp_type + "Component"))
                                                                        .addProperty(ResourceFactory.createProperty(AI_NS, predicate_type), predicateInstance);
