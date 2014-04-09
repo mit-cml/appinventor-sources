@@ -6,12 +6,17 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.client.boxes.MotdBox;
+import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.TextButton;
+import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.Message;
 import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
@@ -27,6 +32,7 @@ import static com.google.appinventor.client.Ode.MESSAGES;
 public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
   private final DropDownButton accountButton;
+  private final String WIDGET_NAME_MESSAGES = "Messages";
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
   private static final String SIGNOUT_URL = "/ode/_logout";
@@ -140,6 +146,9 @@ public class TopPanel extends Composite {
     // Account Drop Down Button
     List<DropDownItem> userItems = Lists.newArrayList();
 
+    // Messages
+    userItems.add(new DropDownItem(WIDGET_NAME_MESSAGES, MESSAGES.messagesLink(), new MessageAction()));
+
     // Sign Out
     userItems.add(new DropDownItem(WIDGET_NAME_SIGN_OUT, MESSAGES.signOutLink(), new SignOutAction()));
 
@@ -226,6 +235,162 @@ public class TopPanel extends Composite {
     public void execute() {
       Window.Location.replace(SIGNOUT_URL);
     }
+  }
+
+  private static class MessageAction implements Command {
+    @Override
+    public void execute() {
+      final int[] msgCount = {0};
+      // Create a PopUpPanel with a button to close it
+      final PopupPanel popup = new PopupPanel(true);
+      popup.setStyleName("ode-InboxContainer");
+      final FlowPanel content = new FlowPanel();
+      content.addStyleName("ode-Inbox");
+      Label title = new Label(MESSAGES.messageInboxTitle());
+      title.addStyleName("InboxTitle");
+      content.add(title);
+
+      Button closeButton = new Button("x");
+//      closeButton.addStyleName("ActionButton");
+      closeButton.addStyleName("CloseButton");
+      closeButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          popup.hide();
+        }
+      });
+      content.add(closeButton);
+
+      final FlowPanel msgList = new FlowPanel();
+      msgList.addStyleName("MsgList");
+      ScrollPanel msgPanel = new ScrollPanel(msgList);
+      msgPanel.addStyleName("MsgListWrapper");
+      content.add(msgPanel);
+
+      // Retrieve list of unread dl and likes from this user's apps
+      final OdeAsyncCallback<List<GalleryApp>> appUnreadCallback =
+          new OdeAsyncCallback<List<GalleryApp>>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(List<GalleryApp> apps) {
+              // get the new unread list so gui updates
+              for (final GalleryApp app : apps) {
+                // Only add if this app actually has unread data
+                if (app.getUnreadDownloads() + app.getUnreadLikes() > 0) {
+                  msgCount[0]++;
+                  generateUnreadStatsMessage(app, app.getUnreadDownloads(), app.getUnreadLikes(), msgList);
+                }
+              }
+              if (msgCount[0] == 0) { // No new messages, add a prompt
+                Label noMsgPrompt = new Label("You have no messages at this moment.");
+                noMsgPrompt.addStyleName("MsgNoPrompt");
+                msgList.add(noMsgPrompt);
+              }
+            }
+        };
+      Ode.getInstance().getGalleryService().getDeveloperApps(Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
+
+/*
+      // Retrieve list of unread messages of this user
+      // We are not using this at the moment because all messages will be system generated ones above
+      final OdeAsyncCallback<List<Message>> msgUnreadCallback = new OdeAsyncCallback<List<Message>>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(List<Message> msgs) {
+              // get the new comment list so gui updates
+              OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
+              for (final Message m : msgs) {
+//                msgCount++;
+                HTML msgBody = new HTML(m.toString2());
+                msgBody.setStyleName("demo-PopUpPanel-message");
+                content.add(msgBody);
+
+                if (m.getStatus().equalsIgnoreCase("1")) {
+                  Button msgButton = new Button("Confirm read");
+                  msgButton.addClickHandler(new ClickHandler() {
+                    public void onClick(ClickEvent event) {
+                      final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+                          MESSAGES.galleryError()) {
+                            @Override
+                            public void onSuccess(Void result) {
+                              OdeLog.log("### MSGS READ SUCCESSFULLY");
+                            }
+                        };
+                      Ode.getInstance().getGalleryService().readMessage(m.getTimetamp(), messagesCallback);
+                    }
+                  });
+                  content.add(msgButton);
+                }
+              }
+            }
+        };
+      Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), msgUnreadCallback);
+*/
+
+
+      popup.setWidget(content);
+      // Center and show the popup
+      popup.center();
+    }
+  }
+
+  /**
+   * Helper method to generate the UI for a single "unread app stats" message.
+   * @param app   the app for the unread statistics
+   * @param dls   the number of unread downloads of the app
+   * @param likes   the number of unread likes of the app
+   * @param container   the parent container that this message resides in
+   */
+  private static void generateUnreadStatsMessage(final GalleryApp app, int dls, int likes, FlowPanel container) {
+    Boolean hasDls = true;
+    Boolean hasLikes = true;
+    if (dls == 0) {
+      hasDls = false;
+    } else if ( likes == 0) {
+      hasLikes = false;
+    }
+    final FlowPanel msg = new FlowPanel();
+    msg.addStyleName("MsgEntry");
+    Label msgBody = new Label("Your app \"" + app.getTitle() + "\" has been liked "
+        + likes + " times and downloaded " + dls + " times since the last time you check it. Keep up the good work!");
+    if (hasDls && !hasLikes) {
+      msgBody.setText("Your app \"" + app.getTitle() + "\" has been downloaded "
+          + dls + " times" + " since the last time you check it. Keep up the good work!");
+    } else if (!hasDls && hasLikes) {
+      msgBody.setText("Your app \"" + app.getTitle() + "\" has been liked "
+          + likes + " times" + " since the last time you check it. Keep up the good work!");
+    }
+    msgBody.setStyleName("MsgBody");
+    msg.add(msgBody);
+    FlowPanel msgMeta = new FlowPanel();
+    msgMeta.addStyleName("MsgMeta");
+    msgMeta.addStyleName("clearfix");
+    Label actionRead = new Label("Mark as read");
+    actionRead.addStyleName("primary-link");
+    Label actionDelete = new Label("Delete message");
+    actionDelete.addStyleName("primary-link");
+    Label msgSender = new Label("Sent from System");
+    msgSender.addStyleName("MsgSender");
+    msgMeta.add(actionRead);
+//    msgMeta.add(actionDelete);
+//    msgMeta.add(msgSender);
+    msg.add(msgMeta);
+    container.add(msg);
+
+    actionRead.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void result) {
+//                OdeLog.log("### appstats READ SUCCESSFULLY");
+                msg.removeFromParent();
+              }
+          };
+        Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), messagesCallback);
+      }
+    });
   }
 }
 

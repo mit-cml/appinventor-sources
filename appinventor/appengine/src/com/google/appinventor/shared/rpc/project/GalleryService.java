@@ -109,11 +109,10 @@ public interface GalleryService extends RemoteService {
   GalleryApp getApp(long galleryId);
 
   /**
-   * record fact that app was downloaded
+   * Record the fact that app was downloaded
    * @param galleryId id of app that was downloaded
-   * @param newProjectId id of newly created project
    */
-  void appWasDownloaded(long galleryId, long newProjectId);
+  void appWasDownloaded(long galleryId);
 
   
   /**
@@ -187,5 +186,9 @@ public interface GalleryService extends RemoteService {
    * @param galleryId the id of the app
    */
   List<GalleryApp> remixedTo(long galleryId);
+  void sendMessageFromSystem(String senderId, String receiverId, String message);
+  List<Message> getMessages(String receiverId);
+  void readMessage(long timestamp);
+  void appStatsWasRead(long appId);
 
 }

@@ -58,10 +58,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     DESCENDING,
   }
 
-  private static final String PUBLISHBUTTONTEXT = "Publish to Gallery...";
-  private static final String UPDATEBUTTONTEXT = "Update Gallery app...";
-  private static final String PUBLISHBUTTONTITLE = "open a dialog to publish your app to the gallery";
-  private static final String UPDATEBUTTONTITLE = "open a dialog to publish your newest version in the gallery";
+  // TODO: add these to OdeMessages.java
+  private static final String PUBLISHBUTTONTEXT = "Publish to Gallery";
+  private static final String UPDATEBUTTONTEXT = "Update Gallery app";
+  private static final String PUBLISHBUTTONTITLE = "Open a dialog to publish your app to the Gallery";
+  private static final String UPDATEBUTTONTITLE = "Open a dialog to publish your newest version in the Gallery";
 
 
   private final List<Project> projects;
@@ -207,7 +208,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
     final Label nameLabel;
     final Label dateCreatedLabel;
     final Label dateModifiedLabel;
-    final Button editButton;
+    final Label editButton;
 
     private ProjectWidgets(final Project project) {
       checkBox = new CheckBox();
@@ -244,7 +245,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
       
-      editButton = new Button("---");
+      editButton = new Label("---");
+      editButton.addStyleName("ode-ProjectGalleryLink");
      
    
     }

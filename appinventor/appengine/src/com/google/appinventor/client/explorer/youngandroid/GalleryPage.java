@@ -20,6 +20,7 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.OdeMessages;
 import com.google.gwt.cell.client.EditTextCell;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
@@ -38,6 +39,7 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
@@ -61,10 +63,10 @@ import com.google.appinventor.shared.rpc.project.UserProject;
  * or updating a previously published app
  *
  * @author wolberd@gmail.com (Dave Wolber)
- * @author vincentaths@gmail.com(Vincent Zhang)
+ * @author vincentaths@gmail.com (Vincent Zhang)
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
-
+  public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
 
   GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
@@ -83,14 +85,20 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appSingle;
   private FlowPanel appsByAuthor;
   private FlowPanel appsByTags;
+  private FlowPanel appsRemixes;
   private FlowPanel appDetails;
   private FlowPanel appHeader;
   private FlowPanel appInfo;
   private FlowPanel appAction;
-  private FlowPanel appActionSub;
+  private FlowPanel appAuthor;
   private FlowPanel appMeta;
   private FlowPanel appDates;
-  private FlowPanel appDescription;
+  private FlowPanel appPrimaryWrapper;
+  private FlowPanel appSecondaryWrapper;
+  private TabPanel appActionTabs;
+  private TabPanel sidebarTabs;
+  private FlowPanel appDescPanel;
+  private FlowPanel appReportPanel;
   private FlowPanel appComments;
   private FlowPanel appCommentsList;
   private String tagSelected;
@@ -107,19 +115,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FileUpload upload;
   private FlowPanel imageUploadBoxInner;
   private FocusPanel wrapper;
-  private Label creation;
-  private Label update;
-  private CellList<String> titleCellList;
-  private CellList<String> descCellList;
+  private Label appCreated;
+  private Label appChanged;
   private TextArea titleText;
   private TextArea desc;
   private FlowPanel descBox;
   private FlowPanel titleBox;
-  private Label likeLabel;
-  private Image likeButton;
-
+  private Label likeCount;
   private Button actionButton;
-  private Button publishButton;
   private Button removeButton;
 
 /* Here is the organization of this page:
@@ -153,25 +156,26 @@ panel
    * Creates a new GalleryPage, must take in parameters
    *
    */
-  public GalleryPage (final GalleryApp app, final int editStatus) {
-  
-   
-    // get a reference to the Gallery Client which handles the communication to
-    //   server to get gallery data
+  public GalleryPage(final GalleryApp app, final int editStatus) {
+    // Get a reference to the Gallery Client which handles the communication to
+    // server to get gallery data
     gallery = GalleryClient.getInstance();
     gallery.addListener(this);
+
     // We are either publishing a new app, updating, or just reading. If we are publishing
     //   a new app, app has some partial info to be published. Otherwise, it has all
     //   the info for the already published app
     this.app = app;
     this.editStatus = editStatus;
     initComponents();
-    
+
+    // App header - image
+    appHeader.addStyleName("app-header");
     // If we're editing or updating, add input form for image
     if (newOrUpdateApp()) {
-      initEditComponents();
+      initImageComponents();
     } else  { // we are just viewing this page so setup the image
-      initReadOnlyImage();   
+      initReadOnlyImage();
     }
 
     // Now let's add the button for publishing, updating, or trying
@@ -180,174 +184,69 @@ panel
     if (editStatus==UPDATEAPP) {
       initRemoveButton();
     }
-    // App details - header title
-    if (newOrUpdateApp()) {
-      // GUI for editable title container
-      titleText.setText(app.getTitle());
-      titleText.addValueChangeHandler(new ValueChangeHandler<String>() {
-        @Override
-        public void onValueChange(ValueChangeEvent<String> event) {
-          app.setTitle(titleText.getText());   
-          
-        }
 
-      });
-      
-      titleText.addStyleName("app-desc-textarea");
-      titleBox.add(titleText);
-      
-      appInfo.add(titleBox);
-      
-    } else {
-      Label title = new Label(app.getTitle());
-      appInfo.add(title);
-      title.addStyleName("app-title");   
-    }
-    
-   
-    // if we are publishing no app name  
-    if (editStatus!=NEWAPP) {
-      Label authorPrefix = new Label("By ");
-      appInfo.add(authorPrefix);
-      authorPrefix.addStyleName("app-subtitle");
+    // App details - app title
+    appInfo.add(titleBox);
+    initAppTitle(titleBox);
 
-      final Image authorAvatar = new Image();
-      authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
-      // if the user has provided a gallery app image, we'll load it. But if not
-      // the error will occur and we'll load default image
-      authorAvatar.addErrorHandler(new ErrorHandler() {
-        public void onError(ErrorEvent event) {
-          authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
-        }
-      });
-      authorAvatar.addErrorHandler(new ErrorHandler() {
-        public void onError(ErrorEvent event) {
-          image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
-        }
-      });
+    // App details - app author info
+    appInfo.add(appAuthor);
+    initAppAuthor(appAuthor);
 
-      appInfo.add(authorAvatar);
-      authorAvatar.addStyleName("app-userimage");
-
-      Label authorName = new Label(app.getDeveloperName());      
-      appInfo.add(authorName);
-      authorName.addStyleName("app-username");
-      authorName.addStyleName("app-subtitle");
-
-      authorName.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          Ode.getInstance().switchToUserProfileView(
-              app.getDeveloperId(), 1 /* 1 for public view*/ );
-        }
-      });
-
+    // Not showing in new app becaus it doesn't have these info
+    if (!newOrUpdateApp()) {
       // App details - meta
       appInfo.add(appMeta);
-      appMeta.addStyleName("app-meta");
-    
-      // Images for meta data
-      Image numViews = new Image();
-      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
-      Image numDownloads = new Image();
-      numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
-      Image numLikes = new Image();
-      numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
-      Image numComments = new Image();
-      numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
-    
-      // Add meta data
-      appMeta.add(numViews);
-      appMeta.add(new Label(Integer.toString(app.getViews())));
-      appMeta.add(numDownloads);
-      appMeta.add(new Label(Integer.toString(app.getDownloads())));
-      appMeta.add(numLikes);
-      appMeta.add(new Label(Integer.toString(app.getLikes())));
-      appMeta.add(numComments);
-      appMeta.add(new Label(Integer.toString(app.getComments())));
-
-      // Add app dates
-      appInfo.add(appDates);
-      updateAppDates();
-    
-      appDates.add(creation);
-      appDates.add(update);
-      appDates.addStyleName("app-dates");
+      initAppMeta(appMeta);
     }
+    // App details - dates
+    appInfo.add(appDates);
+    initAppDates(appDates);
 
-     // App description
-    if (newOrUpdateApp()) {
-      
-      desc.setText(app.getDescription());
-      desc.addValueChangeHandler(new ValueChangeHandler<String>() {
-        @Override
-        public void onValueChange(ValueChangeEvent<String> event) {
-          app.setDescription(desc.getText());   
-        }
-
-      });
-      desc.addStyleName("app-desc-textarea");
-      descBox.add(desc);
-      
-      appInfo.add(descBox);
-    } else {
-      appInfo.add(appDescription);
-      Label description = new Label(app.getDescription());
-      appDescription.add(description);
-      appDescription.addStyleName("app-description");    
-    }
-    
-    appInfo.addStyleName("app-info-container");
-
-    FlowPanel appClear = new FlowPanel();
-    appClear.addStyleName("clearfix");
-    appClear.add(appHeader);
-    appClear.add(appInfo);
-    appDetails.add(appClear);
-    
-    HTML divider = new HTML("<div class='section-divider'></div>");
-    appDetails.add(divider);
-    
-    // App details - comments
-    appDetails.add(appComments);
-    Label commentsHeader = new Label("Comments and Reviews");
-    commentsHeader.addStyleName("app-comments-header");
-    appComments.add(commentsHeader);
-    final TextArea commentTextArea = new TextArea();
-    commentTextArea.addStyleName("app-comments-textarea");
-    appComments.add(commentTextArea);
-    Button commentSubmit = new Button("Submit my comment");
-    commentSubmit.addStyleName("app-comments-submit");
-    commentSubmit.addClickHandler(new ClickHandler() {
-      @Override
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Long> commentPublishCallback = new OdeAsyncCallback<Long>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Long date) {
-                // get the new comment list so gui updates
-                //   note: we might modify the call to publishComment so it returns
-                //   the list instead, this would save one server call
-                gallery.GetComments(app.getGalleryAppId(), 0, 100);
-              }
-          };
-        Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(), 
-            commentTextArea.getText(), commentPublishCallback); 
-      }
-    });
-    appComments.add(commentSubmit);
-    
-
-    // Add list of comments
-    gallery.GetComments(app.getGalleryAppId(), 0, 100);
-    appComments.add(appCommentsList);
-    appCommentsList.addStyleName("app-comments");
- 
-    // Add sidebar stuff, only in public state
     if (!newOrUpdateApp()) {
-      gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());      
+      initRemixFromButton();
+    }
+
+     // App details - app description
+    appInfo.add(descBox);
+    initAppDesc(descBox, appDescPanel);
+    /**
+     * TODO: I may need to change the code logic here. appDescPanel is actually
+     * not added to [appInfo], instead in public state appDescPanel will be 
+     * added into the [appActionTabs] (not showing in editable states) as a sub
+     * tab. So it may not be the best idea to modify appDescPanel in a method 
+     * that resides in [appInfo]'s code block. - Vincent, 03/28/2014
+     */
+
+
+    // Pass app components to App Detail container
+    appInfo.addStyleName("app-info-container");
+    appPrimaryWrapper.add(appHeader);
+    appPrimaryWrapper.add(appInfo);
+    appPrimaryWrapper.addStyleName("clearfix");
+    appDetails.add(appPrimaryWrapper);
+
+
+    // If app is in its public state, add action tabs
+    if (!newOrUpdateApp()) {
+      // Add a divider
+      HTML dividerPrimary = new HTML("<div class='section-divider'></div>");
+      appDetails.add(dividerPrimary);
+      // Initialize action tabs
+      initActionTabs();
+      // Initialize app action features
+      initReportSection();
+
+      // We are not showing comments at initial launch, Such sadness :'[
+      /*
+      HTML dividerSecondary = new HTML("<div class='section-divider'></div>");
+      appDetails.add(dividerSecondary);
+      initAppComments();
+      */
+
+      // Add sidebar stuff, only in public state
       // By default, load the first tag's apps
-    
+      gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());
     }
 
     // Add everything to top-level containers
@@ -355,10 +254,9 @@ panel
     appDetails.addStyleName("gallery-container");
     appDetails.addStyleName("gallery-app-details");
     if (!newOrUpdateApp()) {
-    
-      appSingle.add(appsByAuthor);
-    //  appSingle.add(appsByTags);
-       
+      appSingle.add(sidebarTabs);
+      sidebarTabs.addStyleName("gallery-container");
+      sidebarTabs.addStyleName("gallery-app-showcase");
     }
     galleryGUI.add(appSingle);
     appSingle.addStyleName("gallery-app-single");
@@ -380,31 +278,47 @@ panel
     appHeader = new FlowPanel();
     appInfo = new FlowPanel();
     appAction = new FlowPanel();
+    appAuthor = new FlowPanel();
     appMeta = new FlowPanel();
     appDates = new FlowPanel();
-    appDescription = new FlowPanel();
+    appPrimaryWrapper = new FlowPanel();
+    appSecondaryWrapper = new FlowPanel();
+    appDescPanel = new FlowPanel();
+    appReportPanel = new FlowPanel();
+    appActionTabs = new TabPanel();
+    sidebarTabs = new TabPanel();
     appComments = new FlowPanel();
     appCommentsList = new FlowPanel();
     appsByAuthor = new FlowPanel();
     appsByTags = new FlowPanel();
+    appsRemixes = new FlowPanel();
     tagSelected = "";
     
-    creation = new Label();
-    update = new Label();
+    appCreated = new Label();
+    appChanged = new Label();
     descBox = new FlowPanel();
     titleBox = new FlowPanel();
     desc = new TextArea();
     titleText = new TextArea();
-
-    // App header - image
-    appHeader.addStyleName("app-header");
   }
 
 
   /**
-   * Helper method called by constructor to initialize editing components
+   * Helper method to check if the app is in its "editable" state
+   * If the app is in its "public" state it should return false
    */
-  private void initEditComponents() {
+  private boolean newOrUpdateApp() {
+    if ((editStatus==NEWAPP) || (editStatus==UPDATEAPP))
+      return true;
+    else
+      return false;
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize image upload components
+   */
+  private void initImageComponents() {
     imageUploadBox = new FlowPanel();
     imageUploadBox.addStyleName("app-image-uploadbox");
     imageUploadBox.addStyleName("gallery-editbox");
@@ -439,450 +353,20 @@ panel
     });
     appHeader.add(wrapper);
   }
+
+
   /**
    * Helper method called by constructor to create the app image for display
    */
   private void initReadOnlyImage() {
     updateAppImage(app.getCloudImageURL(), appHeader);   
   }
-  private void initActionButton () {
-    if (editStatus==NEWAPP)
-      initPublishButton();
-    else 
-    if (editStatus == UPDATEAPP)
-      initUpdateButton();
-    else
-      initTryitButton(); 
-      initLikeitButton();
-      initRemixFromButton();
-      initAddReportField();
-  }
-  /**
-   * Helper method called by constructor to initialize the remix button
-   */
-  private void initRemixFromButton(){
-    final Label remixFrom = new Label("Remixed From ");
-    final Label authorNameRemixedFrom = new Label();
-    appInfo.add(authorNameRemixedFrom);
-    remixFrom.addStyleName("app-attributor-label");
-    authorNameRemixedFrom.addStyleName("app-attributor-username");
-    appAction.add(remixFrom);
-    appAction.add(authorNameRemixedFrom);
-    remixFrom.setVisible(false);
-    authorNameRemixedFrom.setVisible(false);
-
-    final Label remixTo = new Label("Remixed To");
-    remixTo.addStyleName("app-attributor-username");
-    remixTo.setVisible(false);
-    appAction.add(remixTo);
-
-    final Result<GalleryApp> attributionGalleryApp = new Result<GalleryApp>();
-    final OdeAsyncCallback<Long> remixedFromCallback = new OdeAsyncCallback<Long>(
-    // failure message
-    MESSAGES.galleryError()) {
-    @Override
-      public void onSuccess(final Long attributionId) {
-        if(attributionId != -1){
-          remixFrom.setVisible(true);
-          authorNameRemixedFrom.setVisible(true);
-          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-          // failure message
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(GalleryApp AppRemixedFrom) {
-              authorNameRemixedFrom.setText(AppRemixedFrom.getTitle());
-              attributionGalleryApp.t = AppRemixedFrom;
-            }
-          };
-          Ode.getInstance().getGalleryService().getApp(attributionId, callback);
-        }else{
-          attributionGalleryApp.t = null;
-        }
-      }
-    };
-    Ode.getInstance().getGalleryService().remixedFrom(app.getGalleryAppId(), remixedFromCallback);
-
-
-
-    authorNameRemixedFrom.addClickHandler(new ClickHandler() {
-        public void onClick(ClickEvent event) {
-          if(attributionGalleryApp.t == null){
-            //authorNameRemixedFrom.setEnabled(false);
-          }else{
-            Ode.getInstance().switchToGalleryAppView(attributionGalleryApp.t, GalleryPage.VIEWAPP);
-          }
-        }
-    });
-
-    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
-      // failure message
-      MESSAGES.galleryError()) {
-        @Override
-        public void onSuccess(final List<GalleryApp> apps) {
-          //Ode.getInstance().switchToGalleryInheritanceView(apps);
-          if(apps.size() != 0){
-            remixTo.setVisible(true);
-            remixTo.addClickHandler(new ClickHandler() {
-              public void onClick(ClickEvent event) {
-                Ode.getInstance().switchToGalleryInheritanceView(apps);
-              }
-            });
-          }
-        }
-      };
-    Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
-  }
-
 
 
   /**
-   * Helper method called by constructor to initialize the Report area
+   * Main method to validify and upload the app image
    */
-  private void initAddReportField() {
-    final Button quoteAReport = new Button("Report It");
-    final TextArea reportText = new TextArea();
-    final Button submitReport = new Button("Submit");
-    appAction.add(quoteAReport);
-    quoteAReport.addStyleName("app-subtitle");
-    FlowPanel panel = new FlowPanel();
-    FlowPanel subpanel = new FlowPanel();
-    subpanel.add(reportText);
-    subpanel.add(submitReport);
-    panel.add(subpanel);
-    appAction.add(panel);
-    submitReport.setVisible(false);
-    reportText.setVisible(false);
-
-
-    final OdeAsyncCallback<Boolean> isReportdByUserCallback = new OdeAsyncCallback<Boolean>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(Boolean bool) {
-            if(bool){//already reported, cannot report again
-              submitReport.setEnabled(false);
-              submitReport.setVisible(false);
-              reportText.setVisible(false);
-              quoteAReport.setEnabled(false);
-            }else{ //after user click, a report field will be pull out
-              quoteAReport.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                  submitReport.setEnabled(true);
-                  submitReport.setVisible(true);
-                  reportText.setVisible(true);
-                }
-              });
-              submitReport.addClickHandler(new ClickHandler() {
-                public void onClick(ClickEvent event) {
-                  final OdeAsyncCallback<Long> reportClickCallback = new OdeAsyncCallback<Long>(
-                      // failure message
-                      MESSAGES.galleryError()) {
-                        @Override
-                        public void onSuccess(Long id) {
-                          submitReport.setEnabled(false);
-                          submitReport.setVisible(false);
-                          reportText.setVisible(false);
-                          quoteAReport.setEnabled(false);
-                        }
-                    };
-                  Ode.getInstance().getGalleryService().addAppReport(app.getGalleryAppId(), reportText.getText(),
-                      reportClickCallback);
-                }
-              });
-            }
-          }
-      };
-    Ode.getInstance().getGalleryService().isReportedByUser(app.getGalleryAppId(),
-        isReportdByUserCallback);
-  }
-
-  /**
-   * Helper method called by constructor to initialize the like area
-   */
-  private void initLikeitButton() {
-    final Image likeButton = new Image();
-    likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");
-    likeButton.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Integer> changeLikeCallback = new OdeAsyncCallback<Integer>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Integer num) {
-                 //TODO deal with/discuss server data sync later; now is updating locally.
-              }
-          };
-        final OdeAsyncCallback<Boolean> isLikedByUserCallback = new OdeAsyncCallback<Boolean>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Boolean bool) {
-                if(bool){//already liked
-                  Ode.getInstance().getGalleryService().decreaseLikes(app.getGalleryAppId(),
-                      changeLikeCallback);
-                  likeLabel.setText(String.valueOf(Integer.valueOf(likeLabel.getText()) - 1));
-                  likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
-                }else{
-                  Ode.getInstance().getGalleryService().increaseLikes(app.getGalleryAppId(),
-                      changeLikeCallback);
-                  likeLabel.setText(String.valueOf(Integer.valueOf(likeLabel.getText()) + 1));
-                  likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
-                }
-              }
-          };
-        Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
-            isLikedByUserCallback);
-      }
-    });
-    appAction.add(likeButton);
-    likeLabel = new Label("");
-    appAction.add(likeLabel);
-    final OdeAsyncCallback<Integer> likeNumCallback = new OdeAsyncCallback<Integer>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(Integer num) {
-            likeLabel.setText(String.valueOf(num));
-          }
-      };
-    Ode.getInstance().getGalleryService().getNumLikes(app.getGalleryAppId(),
-        likeNumCallback);
-
-    final OdeAsyncCallback<Boolean> isLikedCallback = new OdeAsyncCallback<Boolean>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(Boolean bool) {
-            if(!bool){
-              likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
-            }else{
-              likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
-            }
-          }
-      };
-    Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
-        isLikedCallback); 
-  }
-  /**
-   * Helper method called by constructor to initialize the try it button
-   */
-  private void initTryitButton() {
-    actionButton = new Button(TRYITBUTTONTEXT);    
-    actionButton.addClickHandler(new ClickHandler() {
-      // Open up source file if clicked the action button
-      public void onClick(ClickEvent event) {
-        //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-        gallery.loadSourceFile(app);
-      }
-    });
-    actionButton.addStyleName("app-action");
-    appAction.add(actionButton);
-  }
-  /**
-   * Helper method called by constructor to initialize the publish button
-   */
-  private void initPublishButton() {
-    actionButton = new Button(PUBLISHBUTTONTEXT);    
-    actionButton.addClickHandler(new ClickHandler() {
-      // Open up source file if clicked the action button
-      public void onClick(ClickEvent event) {
-         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
-              MESSAGES.galleryError()) {
-            @Override
-            // When publish or update call returns
-            public void onSuccess(final GalleryApp gApp) {
-              // we only set the projectId to the gallery app if new app. If we
-              // are updating its already set
-              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-                  MESSAGES.galleryError()) {
-                @Override 
-                public void onSuccess(Void result) {
-                  // this is called after published and after we've set the galleryid
-                  // tell the project list to change project's button to "Update"
-                  Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
-                      gApp.getGalleryAppId());
-                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-
-                  final OdeAsyncCallback<Long> attributionCallback = new OdeAsyncCallback<Long>(
-                          MESSAGES.galleryError()) {
-                        @Override
-                        public void onSuccess(Long result) {
-
-                        }
-                  };
-
-                  Ode.getInstance().getGalleryService().saveAttribution(gApp.getGalleryAppId(), app.getProjectAttributionId(),
-                          attributionCallback);
-
-                }//end of projectCallback#onSuccess
-              };//end of projectCallback
-            
-              Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(), 
-                  gApp.getGalleryAppId(), projectCallback);
-              // we need to update the app object for this gallery page
-              gallery.appWasChanged();
-             
-            }
-            
-          };
-          // call publish with the default app data...
-          Ode.getInstance().getGalleryService().publishApp(app.getProjectId(), 
-              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
-        
-      }
-    });
-    actionButton.addStyleName("app-action");
-    appAction.add(actionButton);  
-  }
-  /**
-   * Helper method called by constructor to initialize the publish button
-   */
-  private void initUpdateButton() {
-    actionButton = new Button(UPDATEBUTTONTEXT);    
-    actionButton.addClickHandler(new ClickHandler() {
-
-      public void onClick(ClickEvent event) {
-         final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
-            MESSAGES.galleryError()) {
-            @Override 
-            public void onSuccess(Void result) {
-              gallery.appWasChanged();  // to update the gallery list and page
-              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-            }
-          };
-          
-          Ode.getInstance().getGalleryService().updateApp(app,imageUploaded,updateSourceCallback);
-          
-      }
-    });
-    actionButton.addStyleName("app-action");
-    appAction.add(actionButton);  
-  }
-  /**
-   * Helper method called by constructor to initialize the remove button
-   */
-  private void initRemoveButton() {
-    removeButton = new Button(REMOVEBUTTONTEXT);    
-    removeButton.addClickHandler(new ClickHandler() {
-
-      public void onClick(ClickEvent event) {
-         // need a are you sure dialog
-         final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
-            MESSAGES.galleryDeleteError()) {
-            @Override 
-            public void onSuccess(Void result) {
-              // once we have deleted, set the project id back to -1
-              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
-                  MESSAGES.gallerySetProjectIdError()) {
-                @Override 
-                public void onSuccess(Void result) {
-                  // this is called after deleted and after we've set the galleryid
-                  Ode.getInstance().getProjectManager().UnpublishProject(app.getProjectId());
-                  Ode.getInstance().switchToProjectsView();
-                }
-              };
-              GalleryClient client = GalleryClient.getInstance();
-              client.appWasChanged();  // tell views to update
-              Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(), 
-                  -1, projectCallback);
-            }
-          };
-          
-          Ode.getInstance().getGalleryService().deleteApp(app.getGalleryAppId(),callback);
-          
-      }
-    });
-    removeButton.addStyleName("app-action");
-    appAction.add(removeButton);  
-  }
-
-  /**
-   * Loads the proper tab GUI with gallery's app data.
-   *
-   * @param apps: list of returned gallery apps from callback.
-   * 
-   * @param requestId: determines the specific type of app data.
-   */
-  private void refreshApps(List<GalleryApp> apps, int requestId) {
-    switch (requestId) {
-      case GalleryClient.REQUEST_BYDEVELOPER: 
-        galleryGF.generateSidebar(apps, appsByAuthor, "By this developer", false); 
-        break;
-      case GalleryClient.REQUEST_BYTAG: 
-        String tagTitle = "Tagged with " + tagSelected;
-        galleryGF.generateSidebar(apps, appsByTags, tagTitle, true); 
-        break;
-    } 
-  }
-  /**
-   * when the gallery client gets some apps it produces this callback for
-   * gallery page to listen to
-   */
-  @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)   {
-   if (apps != null)
-      refreshApps(apps, requestId);
-    else
-      Window.alert("apps was null");
-
-  }
-  
-  /**
-   * When the gallery client gets some comments it fires this callback for
-   * gallery page to listen to
-   */
-  @Override
-  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
-      galleryGF.generateAppPageComments(comments, appCommentsList);
-      if (comments == null) 
-        Window.alert("comment list was null");
-  }
-  
-  @Override
-  public void onSourceLoadCompleted(UserProject projectInfo) {
-  }
-  
-  /*
-   * Helper method providing easier way to grab value from GWT's CellList,
-   * it also sanitizes the input in the process.
-   * NOTE: not currently being used, title can be anything, but need to 
-   * figure out how projectName and title relate to each other
-   */
-  private String sanitizeEditedValue(CellList l) {
-    String text = l.getRowElement(0).getString();
-    int greaterThanCount = text.length() - text.replace(">", "").length();
-    int lessThanCount = text.length() - text.replace("<", "").length();
-    if (text.length() < 1) {
-      OdeLog.log("Sorry, your input is too short");
-    } else if (lessThanCount > 2 | greaterThanCount > 2) {
-      OdeLog.log("Sorry, contains illegal characters");
-    } else {
-      // Valid state, grab text value
-      text = text.substring(text.indexOf('>') + 1, text.indexOf('<', 2));
-      // OdeLog.log(text);
-    }
-    return text;
-  }
-  
-
-  private String makeValidFilename(String uploadFilename) {
-    // Strip leading path off filename.
-    // We need to support both Unix ('/') and Windows ('\\') separators.
-    String filename = uploadFilename.substring(
-        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
-    // We need to strip out whitespace from the filename.
-    filename = filename.replaceAll("\\s", "");
-    return filename;
-  }
-
-  private boolean newOrUpdateApp() {
-    if ((editStatus==NEWAPP) || (editStatus==UPDATEAPP))
-      return true;
-    else
-      return false;
-  }
-
-  private void uploadImage () {
+  private void uploadImage() {
     String uploadFilename = upload.getFilename();
     if (!uploadFilename.isEmpty()) {
       // Grab and validify the filename
@@ -927,6 +411,22 @@ panel
 
   }
   
+
+  /**
+   * Helper method to validify file name, used in uploadImage()
+   * @param uploadFilename  The full filename of the file
+   */
+  private String makeValidFilename(String uploadFilename) {
+    // Strip leading path off filename.
+    // We need to support both Unix ('/') and Windows ('\\') separators.
+    String filename = uploadFilename.substring(
+        Math.max(uploadFilename.lastIndexOf('/'), uploadFilename.lastIndexOf('\\')) + 1);
+    // We need to strip out whitespace from the filename.
+    filename = filename.replaceAll("\\s", "");
+    return filename;
+  }
+
+
   /**
    * Helper method to update the app image
    * @param url  The URL of the image to show
@@ -945,33 +445,642 @@ panel
     });
     container.add(image);   
   }
-  
-  private void updateAppDates() {
-    Date creationDate = new Date(app.getCreationDate());
-    Date updateDate = new Date(app.getUpdateDate());
-    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd hh:mm:ss a");
-    creation.setText("Created on " + dateFormat.format(creationDate));
-    update.setText("Updated on " + dateFormat.format(updateDate));
+
+
+  /**
+   * Helper method called by constructor to create the app's main action button
+   */
+  private void initActionButton () {
+    if (editStatus==NEWAPP)
+      initPublishButton();
+    else if (editStatus == UPDATEAPP)
+      initUpdateButton();
+    else // Public view state
+      initTryitButton();
   }
 
-  // Create a final object of this class to hold a modifiable result value that
-  // can be used in a method of an inner class.
-  private class Result<T> {
-    T t;
+
+  /**
+   * Helper method called by constructor to initialize the app's title section
+   * @param container   The container that title resides
+   */
+  private void initAppTitle(Panel container) {
+    if (newOrUpdateApp()) {
+      // GUI for editable title container
+      if (editStatus==NEWAPP) {
+        // If it's new app, give a textual hint telling user this is title
+        titleText.setText(app.getTitle() + "'s title");
+      } else if (editStatus==UPDATEAPP) {
+        // If it's not new, just set whatever's in the data field already
+        titleText.setText(app.getTitle());
+      }
+      titleText.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          app.setTitle(titleText.getText());
+        }
+      });
+      titleText.addStyleName("app-desc-textarea");
+      container.add(titleText);
+    } else {
+      Label title = new Label(app.getTitle());
+      title.addStyleName("app-title");
+      container.add(title);
+    }
   }
- 
-   /* this is admin code that was used to temporarily to get all old apps indexed ...
-    final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+
+
+  /**
+   * Helper method called by constructor to initialize the author's info
+   * @param container   The container that author's info resides
+   */
+  private void initAppAuthor(Panel container) {
+    // Add author's prefix
+    Label authorPrefix = new Label("By ");
+    appInfo.add(authorPrefix);
+    authorPrefix.addStyleName("app-subtitle");
+
+    // Add author's image
+    final Image authorAvatar = new Image();
+    authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
+    // If the user has provided a gallery app image, we'll load it. But if not
+    // the error will occur and we'll load default image
+    authorAvatar.addErrorHandler(new ErrorHandler() {
+      public void onError(ErrorEvent event) {
+        authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+      }
+    });
+    authorAvatar.addErrorHandler(new ErrorHandler() {
+      public void onError(ErrorEvent event) {
+        image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
+      }
+    });
+    authorAvatar.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().switchToUserProfileView(
+            app.getDeveloperId(), 1 /* 1 for public view */ );
+      }
+    });
+    appInfo.add(authorAvatar);
+    authorAvatar.addStyleName("app-userimage");
+
+    // Add author's name
+    Label authorName = new Label(app.getDeveloperName());
+    appInfo.add(authorName);
+    authorName.addStyleName("app-username");
+    authorName.addStyleName("app-subtitle");
+
+    authorName.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        Ode.getInstance().switchToUserProfileView(
+            app.getDeveloperId(), 1 /* 1 for public view*/ );
+      }
+    });
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the app's meta fields
+   * @param container   The container that meta fields reside
+   */
+  private void initAppMeta(Panel container) {
+    // Images for meta data
+    Image numDownloads = new Image();
+    numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
+    Image numLikes = new Image();
+    numLikes.setUrl("http://i.imgur.com/N6Lpeo2.png");
+
+    // Add meta data
+    container.addStyleName("app-meta");
+    container.add(numDownloads);
+    container.add(new Label(Integer.toString(app.getDownloads())));
+    // Adds dynamic like
+    initLikeSection(container);
+
+
+    // We are not using views and comments at initial launch
+    /*
+    Image numViews = new Image();
+    numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+    Image numComments = new Image();
+    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
+    container.add(numViews);
+    container.add(new Label(Integer.toString(app.getViews())));
+    container.add(numComments);
+    container.add(new Label(Integer.toString(app.getComments())));
+    */
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the app's date fields
+   * @param container   The container that date fields reside
+   */
+  private void initAppDates(Panel container) {
+    Date createdDate = new Date(app.getCreationDate());
+    Date changedDate = new Date(app.getUpdateDate());
+    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd");
+    appCreated.setText(MESSAGES.galleryAppCreatedPrefix() + dateFormat.format(createdDate));
+    appChanged.setText(MESSAGES.galleryAppChangedPrefix() + dateFormat.format(changedDate));
+    container.add(appCreated);
+    container.add(appChanged);
+    container.addStyleName("app-dates");
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the app's description
+   * @param c1   The container that description resides (editable state)
+   * @param c2   The container that description resides (public state)
+   */
+  private void initAppDesc(Panel c1, Panel c2) {
+    if (newOrUpdateApp()) {
+      desc.setText(app.getDescription());
+      desc.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          app.setDescription(desc.getText());
+        }
+      });
+      desc.addStyleName("app-desc-textarea");
+      c1.add(desc);
+    } else {
+      Label description = new Label(app.getDescription());
+      c2.add(description);
+      c2.addStyleName("app-description");
+    }
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the app's comment area
+   */
+  private void initAppComments() {
+    // App details - comments
+    appDetails.add(appComments);
+    appComments.addStyleName("app-comments-wrapper");
+    Label commentsHeader = new Label("Comments and Reviews");
+    commentsHeader.addStyleName("app-comments-header");
+    appComments.add(commentsHeader);
+    final TextArea commentTextArea = new TextArea();
+    commentTextArea.addStyleName("app-comments-textarea");
+    appComments.add(commentTextArea);
+    Button commentSubmit = new Button("Submit my comment");
+    commentSubmit.addStyleName("app-comments-submit");
+    commentSubmit.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Long> commentPublishCallback = new OdeAsyncCallback<Long>(
             // failure message
             MESSAGES.galleryError()) {
               @Override
-              public void onSuccess(Void x) {
-                
+              public void onSuccess(Long date) {
+                // get the new comment list so gui updates
+                //   note: we might modify the call to publishComment so it returns
+                //   the list instead, this would save one server call
+                gallery.GetComments(app.getGalleryAppId(), 0, 100);
               }
           };
-    Ode.getInstance().getGalleryService().indexAll(100,callback);
-    ** end temporary code */
- 
- 
- 
+        Ode.getInstance().getGalleryService().publishComment(app.getGalleryAppId(),
+            commentTextArea.getText(), commentPublishCallback);
+      }
+    });
+    appComments.add(commentSubmit);
+
+    // Add list of comments
+    gallery.GetComments(app.getGalleryAppId(), 0, 100);
+    appComments.add(appCommentsList);
+    appCommentsList.addStyleName("app-comments");
+
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the app action tabs
+   */
+  private void initActionTabs() {
+    // Add a bunch of tabs for executable actions regarding the app
+    appSecondaryWrapper.addStyleName("clearfix");
+    appSecondaryWrapper.add(appActionTabs);
+    appActionTabs.addStyleName("app-actions");
+    appActionTabs.add(appDescPanel, "Description");
+//    appActionTabs.add(appLikePanel, "Likes");
+//    appActionTabs.add(appRemixPanel, "Remixes");
+    appActionTabs.add(appReportPanel, "Report");
+    appActionTabs.selectTab(0);
+    appActionTabs.addStyleName("app-actions-tabs");
+    appDetails.add(appSecondaryWrapper);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the remix button
+   */
+  private void initRemixFromButton(){
+    final Label remixedFrom = new Label(MESSAGES.galleryRemixedFrom());
+    remixedFrom.addStyleName("primary-prompt");
+    remixedFrom.addStyleName("inline");
+    final Label parentApp = new Label();
+    parentApp.addStyleName("primary-link");
+    parentApp.addStyleName("inline");
+    appInfo.add(remixedFrom);
+    appInfo.add(parentApp);
+    remixedFrom.setVisible(false);
+    parentApp.setVisible(false);
+
+    final Result<GalleryApp> attributionGalleryApp = new Result<GalleryApp>();
+    final OdeAsyncCallback<Long> remixedFromCallback = new OdeAsyncCallback<Long>(
+    // failure message
+    MESSAGES.galleryError()) {
+    @Override
+      public void onSuccess(final Long attributionId) {
+        if (attributionId != -1) {
+          remixedFrom.setVisible(true);
+          parentApp.setVisible(true);
+          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(GalleryApp AppRemixedFrom) {
+              parentApp.setText(AppRemixedFrom.getTitle() + ".");
+              attributionGalleryApp.t = AppRemixedFrom;
+            }
+          };
+          Ode.getInstance().getGalleryService().getApp(attributionId, callback);
+        } else {
+          attributionGalleryApp.t = null;
+        }
+      }
+    };
+    Ode.getInstance().getGalleryService().remixedFrom(app.getGalleryAppId(), remixedFromCallback);
+
+    parentApp.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          if (attributionGalleryApp.t == null) {
+          } else {
+            Ode.getInstance().switchToGalleryAppView(attributionGalleryApp.t, GalleryPage.VIEWAPP);
+          }
+        }
+    });
+
+    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(final List<GalleryApp> apps) {
+          //Ode.getInstance().switchToGalleryInheritanceView(apps);
+          if (apps.size() != 0) {
+            // Display remixes at the sidebar on the same page
+            galleryGF.generateSidebar(apps, sidebarTabs, appsRemixes, "Remixes",
+                MESSAGES.galleryAppsRemixesSidebar() + app.getTitle(), false, false);
+          }
+        }
+      };
+    Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the report section
+   */
+  private void initReportSection() {
+    final HTML reportPrompt = new HTML();
+    reportPrompt.setHTML(MESSAGES.galleryReportPrompt());
+    reportPrompt.addStyleName("primary-prompt");
+    final TextArea reportText = new TextArea();
+    reportText.addStyleName("action-textarea");
+    final Button submitReport = new Button(MESSAGES.galleryReportButton());
+    submitReport.addStyleName("action-button");
+    appReportPanel.add(reportPrompt);
+    appReportPanel.add(reportText);
+    appReportPanel.add(submitReport);
+
+    final OdeAsyncCallback<Boolean> isReportdByUserCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean isAlreadyReported) {
+            if(isAlreadyReported) { //already reported, cannot report again
+              reportPrompt.setHTML(MESSAGES.galleryAlreadyReportedPrompt());
+              reportText.setVisible(false);
+              submitReport.setVisible(false);
+              submitReport.setEnabled(false);
+            } else {
+              submitReport.addClickHandler(new ClickHandler() {
+                public void onClick(ClickEvent event) {
+                  final OdeAsyncCallback<Long> reportClickCallback = new OdeAsyncCallback<Long>(
+                      // failure message
+                      MESSAGES.galleryError()) {
+                        @Override
+                        public void onSuccess(Long id) {
+                          reportPrompt.setHTML(MESSAGES.galleryReportCompletionPrompt());
+                          reportText.setVisible(false);
+                          submitReport.setVisible(false);
+                          submitReport.setEnabled(false);
+                        }
+                    };
+                  Ode.getInstance().getGalleryService().addAppReport(
+                      app.getGalleryAppId(), reportText.getText(), reportClickCallback);
+                }
+              });
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isReportedByUser(app.getGalleryAppId(),
+        isReportdByUserCallback);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the like section
+   * @param container   The container that like label & image reside
+   */
+  private void initLikeSection(Panel container) { //TODO: Update the location of this button
+    final Image likeButton = new Image();
+    likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");
+    container.add(likeButton);
+    likeCount = new Label("");
+    container.add(likeCount);
+    final Label likePrompt = new Label("");
+    likePrompt.addStyleName("primary-link");
+    container.add(likePrompt);
+    likePrompt.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Integer> changeLikeCallback = new OdeAsyncCallback<Integer>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Integer num) {
+                // TODO: deal with/discuss server data sync later; now is updating locally.
+                // Bin you need to finish this man - Vincent 03/27/14
+              }
+          };
+        final OdeAsyncCallback<Boolean> isLikedByUserCallback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean bool) {
+                if (bool) { // If the app is already liked before, and user clicks again, that means unlike
+                  Ode.getInstance().getGalleryService().decreaseLikes(app.getGalleryAppId(),
+                      changeLikeCallback);
+                  likePrompt.setText(MESSAGES.galleryAppsLike());
+                  // Old code
+                  likeCount.setText(String.valueOf(Integer.valueOf(likeCount.getText()) - 1));
+                  likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png"); // Unliked
+                } else {
+                  // If the app is not yet liked, and user clicks like, that means add a like
+                  Ode.getInstance().getGalleryService().increaseLikes(app.getGalleryAppId(),
+                      changeLikeCallback);
+                  likePrompt.setText(MESSAGES.galleryAppsAlreadyLike());
+                  // Old code
+                  likeCount.setText(String.valueOf(Integer.valueOf(likeCount.getText()) + 1));
+                  likeButton.setUrl("http://i.imgur.com/HjRfYkk.png"); // Liked
+                }
+              }
+          };
+        Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
+            isLikedByUserCallback); // This happens when user click on like, we need to check if it's already liked
+      }
+    });
+
+    final OdeAsyncCallback<Integer> likeNumCallback = new OdeAsyncCallback<Integer>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Integer num) {
+            likeCount.setText(String.valueOf(num));
+          }
+      };
+    Ode.getInstance().getGalleryService().getNumLikes(app.getGalleryAppId(),
+        likeNumCallback);
+
+    final OdeAsyncCallback<Boolean> isLikedCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean bool) {
+            if (!bool) {
+              likePrompt.setText(MESSAGES.galleryAppsLike());
+              likeButton.setUrl("http://i.imgur.com/N6Lpeo2.png");//unliked
+            } else {
+              likePrompt.setText(MESSAGES.galleryAppsAlreadyLike());
+              likeButton.setUrl("http://i.imgur.com/HjRfYkk.png");//liked
+            }
+          }
+      };
+    Ode.getInstance().getGalleryService().isLikedByUser(app.getGalleryAppId(),
+        isLikedCallback);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the try it button
+   */
+  private void initTryitButton() {
+    actionButton = new Button(TRYITBUTTONTEXT);
+    actionButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+        //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
+        gallery.loadSourceFile(app);
+        /*
+        // Send the app author a message regarding people trying out this app
+        final OdeAsyncCallback<Void> messageSentCallback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void result) {
+              }
+          };
+        Ode.getInstance().getGalleryService().sendMessageFromSystem(
+            "0", app.getDeveloperId(), "An user downloaded your app", messageSentCallback);
+        gallery.appWasDownloaded(app.getGalleryAppId());
+        */
+      }
+    });
+    actionButton.addStyleName("app-action-button");
+    appAction.add(actionButton);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the publish button
+   */
+  private void initPublishButton() {
+    actionButton = new Button(PUBLISHBUTTONTEXT);
+    actionButton.addClickHandler(new ClickHandler() {
+      // Open up source file if clicked the action button
+      public void onClick(ClickEvent event) {
+         final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
+              MESSAGES.galleryError()) {
+            @Override
+            // When publish or update call returns
+            public void onSuccess(final GalleryApp gApp) {
+              // we only set the projectId to the gallery app if new app. If we
+              // are updating its already set
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Void result) {
+                  // this is called after published and after we've set the galleryid
+                  // tell the project list to change project's button to "Update"
+                  Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
+                      gApp.getGalleryAppId());
+                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+
+                  final OdeAsyncCallback<Long> attributionCallback = new OdeAsyncCallback<Long>(
+                          MESSAGES.galleryError()) {
+                        @Override
+                        public void onSuccess(Long result) {
+                        }
+                  };
+                  Ode.getInstance().getGalleryService().saveAttribution(gApp.getGalleryAppId(), app.getProjectAttributionId(),
+                          attributionCallback);
+                }//end of projectCallback#onSuccess
+              };//end of projectCallback
+              Ode.getInstance().getProjectService().setGalleryId(gApp.getProjectId(),
+                  gApp.getGalleryAppId(), projectCallback);
+              // we need to update the app object for this gallery page
+              gallery.appWasChanged();
+            }
+          };
+          // call publish with the default app data...
+          Ode.getInstance().getGalleryService().publishApp(app.getProjectId(),
+              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+      }
+    });
+    actionButton.addStyleName("app-action-button");
+    appAction.add(actionButton);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the publish button
+   */
+  private void initUpdateButton() {
+    actionButton = new Button(UPDATEBUTTONTEXT);
+    actionButton.addClickHandler(new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+         final OdeAsyncCallback<Void> updateSourceCallback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(Void result) {
+              gallery.appWasChanged();  // to update the gallery list and page
+              Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
+            }
+          };
+          Ode.getInstance().getGalleryService().updateApp(app,imageUploaded,updateSourceCallback);
+      }
+    });
+    actionButton.addStyleName("app-action-button");
+    appAction.add(actionButton);
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize the remove button
+   */
+  private void initRemoveButton() {
+    removeButton = new Button(REMOVEBUTTONTEXT);
+    removeButton.addClickHandler(new ClickHandler() {
+
+      public void onClick(ClickEvent event) {
+         // need a are you sure dialog
+         final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryDeleteError()) {
+            @Override
+            public void onSuccess(Void result) {
+              // once we have deleted, set the project id back to -1
+              final OdeAsyncCallback<Void> projectCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.gallerySetProjectIdError()) {
+                @Override
+                public void onSuccess(Void result) {
+                  // this is called after deleted and after we've set the galleryid
+                  Ode.getInstance().getProjectManager().UnpublishProject(app.getProjectId());
+                  Ode.getInstance().switchToProjectsView();
+                }
+              };
+              GalleryClient client = GalleryClient.getInstance();
+              client.appWasChanged();  // tell views to update
+              Ode.getInstance().getProjectService().setGalleryId(app.getProjectId(),
+                  -1, projectCallback);
+            }
+          };
+          Ode.getInstance().getGalleryService().deleteApp(app.getGalleryAppId(),callback);
+      }
+    });
+    removeButton.addStyleName("app-action-button");
+    appAction.add(removeButton);
+  }
+
+
+  /**
+   * Loads the proper tab GUI with gallery's app data.
+   * @param apps: list of returned gallery apps from callback.
+   * @param requestId: determines the specific type of app data.
+   */
+  private void refreshApps(List<GalleryApp> apps, int requestId) {
+    switch (requestId) {
+      case GalleryClient.REQUEST_BYDEVELOPER:
+        galleryGF.generateSidebar(apps, sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), false, true);
+        break;
+//      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
+//        String tagTitle = "Tagged with " + tagSelected;
+//        galleryGF.generateSidebar(apps, appsByTags, tagTitle, true);
+//        break;
+    } 
+  }
+
+
+  /**
+   * When the gallery client gets some apps it fires this callback for
+   * gallery page to listen to
+   */
+  @Override
+  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)   {
+   if (apps != null)
+      refreshApps(apps, requestId);
+    else
+      Window.alert("apps was null");
+  }
+
+
+  /**
+   * When the gallery client gets some comments it fires this callback for
+   * gallery page to listen to
+   */
+  @Override
+  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
+      galleryGF.generateAppPageComments(comments, appCommentsList);
+      if (comments == null)
+        Window.alert("comment list was null");
+  }
+
+
+  @Override
+  public void onSourceLoadCompleted(UserProject projectInfo) {
+
+  }
+
+
+  /**
+   * Create a final object of this class to hold a modifiable result value that
+   * can be used in a method of an inner class
+   */
+  private class Result<T> {
+    T t;
+  }
+
+
+  /**
+   * Creates a new null GalleryPage.
+   * This is only used for init in GalleryAppBox.java, do not use this normally
+   *
+   */
+  public GalleryPage() {
+
+  }
+
+
 }

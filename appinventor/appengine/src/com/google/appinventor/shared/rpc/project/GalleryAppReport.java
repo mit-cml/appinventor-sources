@@ -4,6 +4,11 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import java.util.logging.Logger;
 
 public class GalleryAppReport implements IsSerializable{
+  private long appId;
+  private long timeStamp;
+  private String report;
+  private String userId;
+  private String userName;
 
   /**
    * Default constructor. This constructor is required by GWT.
@@ -13,7 +18,7 @@ public class GalleryAppReport implements IsSerializable{
   }
 
 
-  public GalleryAppReport(long appId, String userId, String report,long timeStamp ) {
+  public GalleryAppReport(long appId, String userId, String report, long timeStamp ) {
     super();
     this.appId = appId;
     this.timeStamp = timeStamp;
@@ -62,12 +67,6 @@ public class GalleryAppReport implements IsSerializable{
     this.userName = name;
   }
 
-  // Here are the data members
-  private long appId;
-  private long timeStamp;
-  private String report;
-  private String userId;
-  private String userName;
 
   @Override
   public String toString() {

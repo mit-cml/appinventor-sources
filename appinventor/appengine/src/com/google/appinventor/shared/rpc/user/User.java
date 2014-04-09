@@ -49,9 +49,9 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.id = id;
     this.email = email;
     if (name==null)
-      this.name=getDefaultName();
+      this.name = getDefaultName();
     else
-      this.name=name;
+      this.name = name;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
     this.link = link;
@@ -93,12 +93,16 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   /**
    * Returns the user's name.
-   *
+   * If user's name is missing (not set yet), return email instead.
    * @return user name
    */
   @Override
   public String getUserName() {
-    return name;
+    if (name != null) {
+      return name;
+    } else {
+      return email;
+    }
   }
 
   /**

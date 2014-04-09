@@ -15,6 +15,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 
@@ -45,7 +46,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
     final Label numViewsLabel;
     final Label numLikesLabel;
     final Image image;
-  
+
     private GalleryAppWidget(final GalleryApp app) {
       nameLabel = new Label(app.getTitle());
       authorLabel = new Label(app.getDeveloperName());
@@ -87,9 +88,14 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       FlowPanel appCardContent = new FlowPanel();
       FlowPanel appCardMeta = new FlowPanel();
       
-      // Special processing for app title, mainly for fade-out effect
+      // Special processing for the app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
+        "<span class='paragraph-end-block'></span></div>");
+
+      // Special processing for the app author, mainly for fade-out effect
+      HTML appAuthor = new HTML("" +
+        "<div class='gallery-subtitle'>" + gaw.authorLabel.getText() +
         "<span class='paragraph-end-block'></span></div>");
 
       gaw.image.addClickHandler(new ClickHandler() {
@@ -110,7 +116,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCard.add(gaw.image);
       appCard.add(appCardContent);
       appCardContent.add(appTitle);
-      appCardContent.add(gaw.authorLabel);
+      appCardContent.add(appAuthor);
       appCardContent.add(appCardMeta);
 
       // Set helper icons
@@ -124,12 +130,12 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 //    Image numComments = new Image();
 //    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
       
-      appCardMeta.add(numViews);
-      appCardMeta.add(gaw.numViewsLabel);
+//      appCardMeta.add(numViews);
+//      appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
       appCardMeta.add(gaw.numDownloadsLabel);
-//      appCardMeta.add(numLikes);
-//      appCardMeta.add(gaw.numLikesLabel);
+      appCardMeta.add(numLikes);
+      appCardMeta.add(gaw.numLikesLabel);
       // For generic cards, do not show comment
 //      appCardMeta.add(numComments);
 //      appCardMeta.add(gaw.numCommentsLabel);
@@ -138,7 +144,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCard.addStyleName("gallery-card");
       gaw.image.addStyleName("gallery-card-cover");
 //      gaw.nameLabel.addStyleName("gallery-title");
-      gaw.authorLabel.addStyleName("gallery-subtitle");
+//      gaw.authorLabel.addStyleName("gallery-subtitle");
       appCardContent.addStyleName("gallery-card-content");
       gaw.numViewsLabel.addStyleName("gallery-meta");
       gaw.numDownloadsLabel.addStyleName("gallery-meta");
@@ -211,26 +217,38 @@ public class GalleryGuiFactory implements GalleryRequestListener {
   
   /**
    * Creates a sidebar showcasing apps; the CSS name will be the same as the
-   * passed-in container's name.
+   * passed-in container's name. This sidebar shows up as a tab under parent.
    *
    * @param apps: list of returned gallery apps from callback.
-   * 
-   * @param container: the GUI panel where the sidebar will reside.
-   * 
+   *
+   * @param parent: the parent TabPanel that this panel will reside in.
+   *
+   * @param container: the panel containing this particular sidebar.
+   *
    * @param name: the name or title of this particular sidebar.
-   * 
-   * @param refreshable: if true then the GUI can be reloaded later.
+   *
+   * @param desc: the short description of this particular sidebar.
+   *
+   * @param refreshable: if true then this sidebar can be reloaded later.
+   *
+   * @param isDefault: if true then this sidebar is the default tab showing.
    */
-  public void generateSidebar(List<GalleryApp> apps, FlowPanel container, String name, Boolean refreshable) {
+  public void generateSidebar(List<GalleryApp> apps, TabPanel parent,
+      FlowPanel container, String name, String desc,
+      Boolean refreshable, Boolean isDefault) {
     if (refreshable) {
       // Flush the panel's content if we knew new stuff is coming in!
       container.clear();
     }
-    
-    Label title = new Label(name);
-    title.addStyleName("gallery-showcase-title");
-    container.add(title);
-    
+    parent.add(container, name);
+    if (isDefault) {
+      parent.selectTab(0);  //TODO: fix order
+    }
+
+    Label descLabel = new Label(desc);
+    descLabel.addStyleName("gallery-showcase-desc");
+    container.add(descLabel);
+
     for (final GalleryApp app : apps) {
       // Create the associated GUI object for app
       GalleryAppWidget gaw = new GalleryAppWidget(app);
@@ -243,6 +261,11 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       // Special processing for the app title, mainly for fade-out effect
       HTML appTitle = new HTML("" +
         "<div class='gallery-title'>" + gaw.nameLabel.getText() +
+        "<span class='paragraph-end-block'></span></div>");
+
+      // Special processing for the app author, mainly for fade-out effect
+      HTML appAuthor = new HTML("" +
+        "<div class='gallery-subtitle'>" + gaw.authorLabel.getText() +
         "<span class='paragraph-end-block'></span></div>");
 
       gaw.image.addClickHandler(new ClickHandler() {
@@ -263,12 +286,12 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCard.add(gaw.image);
       appCard.add(appCardContent);
       appCardContent.add(appTitle);
-      appCardContent.add(gaw.authorLabel);
+      appCardContent.add(appAuthor);
       appCardContent.add(appCardMeta);
 
       // Set helper icons
-      Image numViews = new Image();
-      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
+//      Image numViews = new Image();
+//      numViews.setUrl("http://i.imgur.com/jyTeyCJ.png");
       Image numDownloads = new Image();
       numDownloads.setUrl("http://i.imgur.com/j6IPJX0.png");
       Image numLikes = new Image();
@@ -277,8 +300,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
 //    Image numComments = new Image();
 //    numComments.setUrl("http://i.imgur.com/GGt7H4c.png");
       
-      appCardMeta.add(numViews);
-      appCardMeta.add(gaw.numViewsLabel);
+//      appCardMeta.add(numViews);
+//      appCardMeta.add(gaw.numViewsLabel);
       appCardMeta.add(numDownloads);
       appCardMeta.add(gaw.numDownloadsLabel);
       appCardMeta.add(numLikes);
@@ -292,7 +315,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       appCard.addStyleName("clearfix");
       gaw.image.addStyleName("gallery-card-cover");
 //      gaw.nameLabel.addStyleName("gallery-title");
-      gaw.authorLabel.addStyleName("gallery-subtitle");
+//      gaw.authorLabel.addStyleName("gallery-subtitle");
       appCardContent.addStyleName("gallery-card-content");
       gaw.numViewsLabel.addStyleName("gallery-meta");
       gaw.numDownloadsLabel.addStyleName("gallery-meta");
@@ -301,8 +324,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
       
       container.add(appCard);
     }
-    container.addStyleName("gallery-container");
-    container.addStyleName("gallery-app-showcase");
+
   }
 
   @Override

@@ -10,6 +10,7 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
+import com.google.appinventor.shared.rpc.project.Message;
 
 import java.io.IOException;
 import java.util.List;
@@ -203,6 +204,15 @@ public interface GalleryStorageIo {
    * @return list of {@link GalleryCommentReport}
    */
   List<GalleryCommentReport> getCommentReports();
+
+
+  void sendMessage(String senderId, String receiverId, String message);
+
+  List<Message> getMessages(String receiverId);
+
+  void readMessage(long timestamp);
+
+  void appStatsWasRead(long appId);
 
   
 }

@@ -29,6 +29,7 @@ import com.google.appinventor.server.storage.GalleryAppLikeData;
 import com.google.appinventor.server.storage.GalleryAppReportData;
 import com.google.appinventor.server.storage.GalleryAppAttributionData;
 import com.google.appinventor.shared.rpc.Motd;
+import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
@@ -73,6 +74,7 @@ import javax.annotation.Nullable;
  * StorageIo which handles the rest of the AI database.
  *
  * @author wolberd@gmail.com (David Wolber)
+ * @author vincentaths@gmail.com (Vincent Zhang)
  *
  */
 public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
@@ -116,6 +118,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryAppLikeData.class);
     ObjectifyService.register(GalleryAppAttributionData.class);
     ObjectifyService.register(GalleryAppReportData.class);
+    ObjectifyService.register(MessageData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -159,7 +162,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.dateCreated = date;
           appData.dateModified = date;
           appData.title = title;
-          appData.projectName= projectName;
+          appData.projectName = projectName;
           appData.description = description;
           appData.projectId = projectId;
           appData.userId = userId;
@@ -252,7 +255,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     
     Objectify datastore = ObjectifyService.begin();
     for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).offset(start).limit(count)) {
-      
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
@@ -261,19 +263,20 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
   
  /**
-   * records that an app has been downloaded
+   * Records that an app has been downloaded
    * @param galleryId the id of gallery app that was downloaded
    */
   @Override
   public void incrementDownloads(final long galleryId) {
-    
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
-            galleryAppData.numDownloads= galleryAppData.numDownloads+1;
+            galleryAppData.numDownloads = galleryAppData.numDownloads + 1;
+            galleryAppData.unreadDownloads = galleryAppData.unreadDownloads + 1;
             datastore.put(galleryAppData);
           }
         }
@@ -375,7 +378,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @return the id of the new comment
    */
   @Override
-  public long addComment(final long galleryId,final String userId, final String comment) {
+  public long addComment(final long galleryId, final String userId, final String comment) {
     final Result<Long> theDate = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -448,12 +451,19 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
+            // Forge the like data entry
             Key<GalleryAppData> galleryKey = galleryKey(galleryId);
             GalleryAppLikeData likeData = new GalleryAppLikeData();
             likeData.galleryKey = galleryKey(galleryId);
             likeData.userId = userId;
             datastore.put(likeData);
+
+            // Retrieve the current number of likes
             numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+
+            // Increase app's unread like count
+            galleryAppData.unreadLikes = galleryAppData.unreadLikes + 1;
+            datastore.put(galleryAppData);
           }
         }
       });
@@ -466,11 +476,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   /**
    * decrease likes to a gallery app
    *
-   * @param galleryId
-   *          id of gallery app that was unlike on
-   * @param userId
-   *          id of user who unliked
-   * @return the number of the new like
+   * @param galleryId   id of gallery app that was unlike on
+   * @param userId    id of user who unliked
+   * @return    the number of the new like
    */
   @Override
   public int decreaseLikes(final long galleryId, final String userId) {
@@ -481,17 +489,20 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
-            boolean find = false;
-            int count = 0;
             Key<GalleryAppData> galleryKey = galleryKey(galleryId);
             for (GalleryAppLikeData likeData : datastore.query(GalleryAppLikeData.class).ancestor(galleryKey)) {
               if(likeData.userId.equals(userId)){
-                find = true;
                 datastore.delete(likeData);
                 break;
               }
             }
             numLikes.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+
+            // Increase app's unread like count
+            if (galleryAppData.unreadLikes > 0) {
+              galleryAppData.unreadLikes = galleryAppData.unreadLikes - 1;
+              datastore.put(galleryAppData);
+            }
           }
         }
       });
@@ -516,8 +527,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
-          int count = 0;
-            num.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
+          num.t = datastore.query(GalleryAppLikeData.class).ancestor(galleryKey).count();
         }
       });
     } catch (ObjectifyException e) {
@@ -528,13 +538,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   /**
-   * check if an app is liked by a user
+   * Check if an app is liked by a user
    *
-   * @param galleryId
-   *          id of gallery app that was unlike on
-   * @param userId
-   *          id of user who unliked
-   * @return true if relation exists
+   * @param galleryId   id of gallery app that was unlike on
+   * @param userId    id of user who unliked
+   * @return    true if relation exists
    */
   @Override
   public boolean isLikedByUser(final long galleryId, final String userId) {
@@ -856,27 +864,20 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   @Override
   public List<GalleryCommentReport> getCommentReports() {
-   final List<GalleryCommentReport> reports = new ArrayList<GalleryCommentReport>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          for (GalleryCommentReportData reportData : datastore.query(GalleryCommentReportData.class).order("-dateCreated")) {
-            User commenter = storageIo.getUser(reportData.userId);
-            String name="unknown";
-            if (commenter!= null) {
-               name = commenter.getUserName();
-            }
-            GalleryCommentReport galleryCommentReport = new GalleryCommentReport(reportData.galleryCommentKey.getId(),
-                reportData.userId,reportData.report,reportData.dateCreated);
-            galleryCommentReport.setUserName(name);
-            reports.add(galleryCommentReport);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getCommentReports (all)", e);
+    final List<GalleryCommentReport> reports = new ArrayList<GalleryCommentReport>();
+    Objectify datastore = ObjectifyService.begin();
+    for (GalleryCommentReportData reportData : datastore.query(GalleryCommentReportData.class).order("-dateCreated")) {
+      User commenter = storageIo.getUser(reportData.userId);
+      String name="unknown";
+      if (commenter!= null) {
+         name = commenter.getUserName();
+      }
+      GalleryCommentReport galleryCommentReport = new GalleryCommentReport(reportData.galleryCommentKey.getId(),
+          reportData.userId,reportData.report,reportData.dateCreated);
+      galleryCommentReport.setUserName(name);
+      reports.add(galleryCommentReport);
     }
+
 
     return reports;
   }
@@ -888,7 +889,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * 
    */
   private void makeGalleryApp(GalleryAppData appData, GalleryApp galleryApp) {
-    galleryApp.setTitle (appData.title); 
+    galleryApp.setTitle(appData.title);
     galleryApp.setProjectName(appData.projectName);
     galleryApp.setGalleryAppId(appData.id);
     galleryApp.setProjectId(appData.projectId);
@@ -897,7 +898,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     User developer = storageIo.getUser(appData.userId);
     galleryApp.setDeveloperName(developer.getUserName());
     galleryApp.setDeveloperId(appData.userId);
-    galleryApp.setDownloads(appData.numDownloads);  
+    galleryApp.setDownloads(appData.numDownloads);
+    galleryApp.setUnreadDownloads(appData.unreadDownloads);
+    galleryApp.setUnreadLikes(appData.unreadLikes);
     galleryApp.setCreationDate(appData.dateCreated);
     galleryApp.setUpdateDate(appData.dateModified);
 
@@ -919,6 +922,78 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   private Key<GalleryAppReportData> galleryReportKey(long appReportId) {
     return new Key<GalleryAppReportData>(GalleryAppReportData.class, appReportId);
   }
+
+
+  /**
+   * Sends a message to a particular user
+   * @param senderId id of user sending this message
+   * @param receiverId id of user receiving this message
+   * @param message body of message
+   */
+  @Override
+  public void sendMessage(final String senderId, final String receiverId, final String message) {
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          MessageData messageData = new MessageData();
+          long date = System.currentTimeMillis();
+          messageData.senderId = senderId;
+          messageData.receiverId = receiverId;
+          messageData.message = message;
+          messageData.status = "1"; // notify, which means unread
+          messageData.datestamp = date;
+          datastore.put(messageData);
+        }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.sendMessage", e);
+    }
+  }
+
+
+  /**
+   * Returns a list of messages to a particular user
+   * @param receiverId id of user receiving messages
+   * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
+   */  @Override
+  public List<Message> getMessages(final String receiverId) {
+    final List<Message> msgs = new ArrayList<Message>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    Objectify datastore = ObjectifyService.begin();
+    for (MessageData msgData : datastore.query(MessageData.class)
+        .filter("receiverId", receiverId)) {
+      Message msg = new Message(msgData.senderId, msgData.receiverId,
+          msgData.message, msgData.status, msgData.datestamp);
+      msgs.add(msg);
+    }
+    return msgs;
+  }
+
+  private Key<MessageData> msgKey(long datestamp) {
+    return new Key<MessageData>(MessageData.class, datestamp);
+  }
+
+   /**
+    * Returns a list of messages to a particular user
+    * @param receiverId id of user receiving messages
+    * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
+    */  @Override
+   public void readMessage(final long timestamp) {
+     // if i try to run this in runjobwithretries it tells me can't run
+     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+     // of not using transactions (run with) so i grabbed
+     Objectify datastore = ObjectifyService.begin();
+     MessageData msgData = datastore.find(msgKey(timestamp));
+     if (msgData != null) {
+       LOG.info("### MSG READ GOT IN");
+       msgData.status = "2"; // 2 means read already
+       datastore.put(msgData);
+     }
+   }
+
   /**
    * Call job.run() in a transaction and commit the transaction if no exceptions
    * occur. If we get a {@link java.util.ConcurrentModificationException}
@@ -957,6 +1032,29 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     if (tries > MAX_JOB_RETRIES) {
       throw new ObjectifyException("Couldn't commit job after max retries.");
+    }
+  }
+
+  /**
+   * A GalleryApp's unread statistics (unread downloads, likes etc) have been
+   * read. Clean the counts in the database object.
+   * @param appId   the id of GalleryApp
+   */
+  public void appStatsWasRead(final long appId) {
+    //TODO implement
+    LOG.warning("####### ENTERED OBJTFY-GLRY-STRG-IO appStatsWasRead");
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryAppData app = datastore.get(new Key<GalleryAppData>(GalleryAppData.class, appId));
+          app.unreadDownloads = 0;
+          app.unreadLikes = 0;
+          datastore.put(app);
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
     }
   }
 }

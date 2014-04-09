@@ -47,6 +47,7 @@ public class StoredData {
 
     public String name;
     public String link;
+    public int type;
 
   }
 
@@ -209,5 +210,6 @@ public class StoredData {
     public String email;
     public String projectId;
   }
+
 
 }

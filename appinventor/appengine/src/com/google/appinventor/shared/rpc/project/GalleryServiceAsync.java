@@ -5,7 +5,6 @@
 
 package com.google.appinventor.shared.rpc.project;
 
-import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public interface GalleryServiceAsync {
   /**
    * @see GalleryService#updateAppMetadata(GalleryApp)
    */
-  void updateAppMetadata(GalleryApp app,AsyncCallback<Void> callback);
+  void updateAppMetadata(GalleryApp app, AsyncCallback<Void> callback);
 
   /**
    * @see GalleryService#updateAppSource(long, long, String, String, String)
@@ -57,9 +56,9 @@ public interface GalleryServiceAsync {
   void deleteApp(long galleryId, AsyncCallback<java.lang.Void> arg2);
   
   /**
-   * @see GalleryService#appWasDownloaded(long galleryId, long projectId)
+   * @see GalleryService#appWasDownloaded(long galleryId)
    */
-  void appWasDownloaded(long galleryId, long projectId, AsyncCallback<java.lang.Void> arg2);
+  void appWasDownloaded(long galleryId, AsyncCallback<java.lang.Void> arg2);
 
   /**
    * @see GalleryService#getRecentApps(int start, int count)
@@ -80,7 +79,7 @@ public interface GalleryServiceAsync {
   /**
    * @see GalleryService#findApps(String keywords, int start, int count)
    */
-  void findApps( String keywords, int start, int count, AsyncCallback<List<GalleryApp>> callback);
+  void findApps(String keywords, int start, int count, AsyncCallback<List<GalleryApp>> callback);
 
    /**
    * @see GalleryService#getApp(int start, int count)
@@ -141,4 +140,9 @@ public interface GalleryServiceAsync {
    * @see GalleryService#remixedTo(long galleryId);
    */
   void remixedTo(long galleryId, AsyncCallback<List<GalleryApp>> apps);
+
+  void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Void> callback);
+  void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
+  void readMessage(long timestamp, AsyncCallback<Void> callback);
+  void appStatsWasRead(long appId, AsyncCallback<Void> callback);
 }

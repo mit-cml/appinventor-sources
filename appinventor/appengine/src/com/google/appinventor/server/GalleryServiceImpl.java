@@ -27,6 +27,7 @@ import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
@@ -44,6 +45,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -235,10 +237,9 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   /**
    * record fact that app was downloaded
    * @param galleryId id of app that was downloaded
-   * @param newProjectId id of newly created project
    */
   @Override
-  public void appWasDownloaded(long galleryId, long projectId) {
+  public void appWasDownloaded(long galleryId) {
     galleryStorageIo.incrementDownloads(galleryId);
   }
   /**
@@ -474,7 +475,54 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       LOG.log(Level.INFO, "FAILED WRITING IMAGE TO GCS");
       e.printStackTrace();
     }
-      
+  }
 
+
+  /**
+   * Send a system message to user
+   * @param senderId id of user sending this message
+   * @param receiverId id of user receiving this message
+   * @param message body of message
+   */
+  @Override
+  public void sendMessageFromSystem(String senderId, String receiverId, String message) {
+    LOG.info("### SEND MSG FROM SYSTEM");
+//    final String userId = userInfoProvider.getUserId(); // gets current userId
+    galleryStorageIo.sendMessage(senderId, receiverId, message);
+  }
+
+  /**
+   * Send a system message to user
+   * @param senderId    id of user sending this message
+   * @param receiverId    id of user receiving this message
+   * @param message   body of message
+   */
+  @Override
+  public List<Message> getMessages(String receiverId) {
+//    LOG.info("### GET MSGS");
+//    final String userId = userInfoProvider.getUserId(); // gets current userId
+    return galleryStorageIo.getMessages(receiverId);
+  }
+
+  /**
+   * Tell the system to mark a specific message as read
+   * @param timestamp   the timestamp serves as the key to identify message
+   */
+  @Override
+  public void readMessage(long timestamp) {
+//    LOG.info("### READ MSGS");
+//    final String userId = userInfoProvider.getUserId(); // gets current userId
+    galleryStorageIo.readMessage(timestamp);
+  }
+
+  /**
+   * Tell the system to mark a specific app's stats as read
+   * @param timestamp   the timestamp serves as the key to identify message
+   */
+  @Override
+  public void appStatsWasRead(long appId) {
+//    LOG.info("### READ MSGS");
+//    final String userId = userInfoProvider.getUserId(); // gets current userId
+    galleryStorageIo.appStatsWasRead(appId);
   }
 }

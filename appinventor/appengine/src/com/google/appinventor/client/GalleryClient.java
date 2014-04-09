@@ -27,6 +27,9 @@ import com.google.appinventor.client.explorer.project.Project;
 /**
  * Gallery Client is a facade for the ui to talk to the gallery server side.
  * It is a Singleton and has a list of listeners (GalleryPage, GalleryList)
+ *
+ * @author wolberd@gmail.com (David Wolber)
+ * @author vincentaths@gmail.com (Vincent Zhang)
  */
 public class GalleryClient {
 
@@ -245,6 +248,8 @@ public class GalleryClient {
     // this is really what's happening here, we call server to load project
     ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
   } 
+
+
  /* appWasChanged called to tell galleryList (and possibly others) that app is modified
   *
   */
@@ -252,6 +257,36 @@ public class GalleryClient {
     // for now, let's update the recent list and the popular list (in case one was deleted)
     GetMostRecent(0,5);
     GetMostDownloaded(0,5);
+  }
+
+
+ /* appWasDownloaded called to tell backend that app is downloaded
+  *
+  */
+  public void appWasDownloaded(final long galleryId) {
+    // Inform the GalleryService (which eventually goes to ObjectifyGalleryStorageIo)
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<Void> callback = new OdeAsyncCallback<Void>(
+      MESSAGES.galleryDownloadedAppsError()) {
+      @Override
+      public void onSuccess(Void result) {
+        // If app was successfully downloaded, get another async call going
+        // This call we increment the download count of this app
+        final OdeAsyncCallback<GalleryApp> appCallback = new OdeAsyncCallback<GalleryApp>(
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(GalleryApp app) {
+            app.incrementDownloads();
+          }
+        };
+        Ode.getInstance().getGalleryService().getApp(galleryId, appCallback);
+
+      }
+    };
+    // ok, this is below the call back, but of course it is done first
+    ode.getGalleryService().appWasDownloaded(galleryId, callback);
+
+
   }
 
   private String getStartCountString(int start, int count) {

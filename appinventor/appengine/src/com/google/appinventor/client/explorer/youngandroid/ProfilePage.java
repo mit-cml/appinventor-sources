@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,13 +20,19 @@ import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.client.ErrorReporter;
+import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.GalleryGuiFactory;
+import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
@@ -44,10 +51,10 @@ import com.google.gwt.event.dom.client.ErrorEvent;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 
-/* panel has:
-   
-  cardContainer  -- like App Header, make it like appClear
-   majorContentCard -- like app Info
+/* profileGUI has:
+
+  profileSingle
+   mainContent -- like app Info
      userContentTitle
      userNameLabel
      userNameBox
@@ -63,22 +70,42 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 
 */
 
-public class ProfilePage extends Composite {
+/**
+ * The profile page shows a single user's profile information
+ *
+ * It has different modes for public viewing or when user is editing privately
+ *
+ * @author vincentaths@gmail.com (Vincent Zhang)
+ */
+public class ProfilePage extends Composite/* implements GalleryRequestListener*/ {
 
   public static final int PRIVATE = 0;
   public static final int PUBLIC = 1;
 
   String userId = "-1";  
+  final int profileStatus;
 
   final FileUpload imageUpload = new FileUpload();
   // Create GUI wrappers and components
-  // the main panel and its container
-  VerticalPanel panel = new VerticalPanel();
-  FlowPanel cardContainer = new FlowPanel();
-  // cardContainer contains a card for picture (appCardWrapper) and info (majorContentCard)
-  FocusPanel appCardWrapper = new FocusPanel();
 
-  FlowPanel majorContentCard = new FlowPanel();
+  // The abstract top-level GUI container
+  VerticalPanel profileGUI = new VerticalPanel();
+  // The actual container that components go in
+  VerticalPanel profileSingle = new VerticalPanel();
+  // The main profile container, same as appDetails in GalleryPage
+  FlowPanel mainContent = new FlowPanel();
+  // The sidebar showing a list of apps by this author, same as GalleryPage
+  FlowPanel appsByAuthor = new FlowPanel();
+
+  // Wrapper for primary profile content (image + userinfo)
+  FlowPanel profilePrimaryWrapper = new FlowPanel();
+  // Header in this case is basically image-related components
+  FlowPanel profileHeader = new FlowPanel();
+  FocusPanel profileHeaderWrapper = new FocusPanel();
+  // Other basic user profile information
+  FlowPanel profileInfo = new FlowPanel();
+
+  FocusPanel appCardWrapper = new FocusPanel();
   FlowPanel imageUploadBox = new FlowPanel();
   FlowPanel imageUploadBoxInner = new FlowPanel();  
   Image userAvatar = new Image(); 
@@ -94,55 +121,59 @@ public class ProfilePage extends Composite {
   Anchor userLinkDisplay = new Anchor();
   final Button profileSummit = new Button("Update Profile");
 
-
   private static final Logger LOG = Logger.getLogger(ProfilePage.class.getName());
+  private static final Ode ode = Ode.getInstance();
+
+  GalleryClient gallery = null;
+  GalleryGuiFactory galleryGF = new GalleryGuiFactory();
 
   /**
-   * Creates a new GalleryPage, must take in parameters
+   * Creates a new ProfilePage, must take in parameters
    *
-   * @param user  the string ID of user that we are about to render
+   * @param incomingUserId  the string ID of user that we are about to render
    * @param editStatus  the edit status (0 is private, 1 is public)
    *
    */
-  public ProfilePage(String user, final int editStatus) {
-    LOG.log(Level.WARNING, "#### userid of profile page " + user);
+  public ProfilePage(String incomingUserId, final int editStatus) {
+    LOG.log(Level.WARNING, "#### userid of profile page " + incomingUserId + "#####" + userId);
     LOG.log(Level.WARNING, "#### editstatus of profile page " + editStatus);
 
     // Replace the global variable
-    userId = user;
+    userId = incomingUserId;
+    profileStatus = editStatus;
 
-    // setup panel
-    panel.setWidth("100%");
-    panel.addStyleName("ode-UserProfileWrapper");
-    
+    // If we're editing or updating, add input form for image
     if (editStatus == PRIVATE) {
-      // USER PROFILE IN PRIVATE (EDITABLE) STATE
-      // setup upload stuff
-      imageUploadPrompt.setText("Upload your profile image!");
-      // Set the correct handler for servlet side capture
-      imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-      imageUpload.addChangeHandler(new ChangeHandler (){
-        public void onChange(ChangeEvent event) {
-          uploadImage();
-        }
-      });
-      appCardWrapper.addClickHandler(new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-          // The correct way to trigger click event on FileUpload
-          imageUpload.getElement().<InputElement>cast().click();
-        }
-      });
-      imageUploadBoxInner.add(imageUploadPrompt);
-      imageUploadBoxInner.add(imageUpload);
-      imageUploadBoxInner.add(userAvatar);
+      initImageComponents();
+    } else  { // we are just viewing this page so setup the image
+      initReadOnlyImage();
+    }
 
-      // set up the user info stuff
+//      // setup upload stuff
+//      imageUploadPrompt.setText("Upload your profile image!");
+//      // Set the correct handler for servlet side capture
+//      imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+//      imageUpload.addChangeHandler(new ChangeHandler (){
+//        public void onChange(ChangeEvent event) {
+//          uploadImage();
+//        }
+//      });
+//      appCardWrapper.addClickHandler(new ClickHandler() {
+//        @Override
+//        public void onClick(ClickEvent event) {
+//          // The correct way to trigger click event on FileUpload
+//          imageUpload.getElement().<InputElement>cast().click();
+//        }
+//      });
+//      imageUploadBoxInner.add(imageUploadPrompt);
+//      imageUploadBoxInner.add(imageUpload);
+//      imageUploadBoxInner.add(userAvatar);
+
+    if (editStatus == PRIVATE) {
       userContentHeader.setText("Edit your profile");
       usernameLabel.setText("Your display name");
       userLinkLabel.setText("More info link");
 
-      final Ode ode = Ode.getInstance();
       profileSummit.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -176,38 +207,35 @@ public class ProfilePage extends Composite {
         }
       });
 
-      majorContentCard.add(userContentHeader);
-      majorContentCard.add(usernameLabel);
-      majorContentCard.add(userNameBox);
-      majorContentCard.add(userLinkLabel);
-      majorContentCard.add(userLinkBox);
-      majorContentCard.add(profileSummit);
+      profileInfo.add(userContentHeader);
+      profileInfo.add(usernameLabel);
+      profileInfo.add(userNameBox);
+      profileInfo.add(userLinkLabel);
+      profileInfo.add(userLinkBox);
+      profileInfo.add(profileSummit);
 
     } else {
-      panel.addStyleName("ode-Public");
+      profileSingle.addStyleName("ode-Public");
       // USER PROFILE IN PUBLIC (NON-EDITABLE) STATE
-      // set up the user info stuff
       imageUploadBoxInner.clear();
-
-      // set up the user link
+      // Set up the user info stuff
       userLinkLabel.setText("More info link:");
-
-      majorContentCard.add(userContentHeader);
-      majorContentCard.add(userLinkLabel);
-      majorContentCard.add(userLinkDisplay);
+      profileInfo.add(userContentHeader);
+      profileInfo.add(userLinkLabel);
+      profileInfo.add(userLinkDisplay);
     }
 
-    // Add styling
-    cardContainer.addStyleName("gallery-app-collection");
-    imageUploadBox.addStyleName("gallery-card");
+    // Add GUI layers in the "main content" container
+    profileHeader.addStyleName("app-header"); //TODO: change a more contextual style name
+    profilePrimaryWrapper.add(profileHeader); // profileImage
+    profileInfo.addStyleName("app-info-container");
+    profilePrimaryWrapper.add(profileInfo);
+    profilePrimaryWrapper.addStyleName("clearfix");
+    mainContent.add(profilePrimaryWrapper);
 
-    userAvatar.addStyleName("gallery-card-cover");
-    userAvatar.addStyleName("status-updating");
-    imageUpload.addStyleName("app-image-upload");
-    imageUploadPrompt.addStyleName("gallery-editprompt");
-
-    // add styling for user info stuff
-    majorContentCard.addStyleName("gallery-content-card");
+    // Add styling for user info detail components
+    mainContent.addStyleName("gallery-container");
+    mainContent.addStyleName("gallery-content-details");
     userContentHeader.addStyleName("app-title");
     usernameLabel.addStyleName("profile-textlabel");
     userNameBox.addStyleName("profile-textbox");
@@ -220,16 +248,20 @@ public class ProfilePage extends Composite {
     imageUpload.addStyleName("app-image-upload");
 
 
-    // Add all the GUI layers up at the end
-    panel.add(cardContainer);
+    // Setup top level containers
+    // profileGUI is just the abstract top-level GUI container
+    profileGUI.addStyleName("ode-UserProfileWrapper");
+    // profileSingle is the actual container that components go in
+    profileSingle.addStyleName("gallery-page-single");
 
-    cardContainer.add(appCardWrapper);
-    appCardWrapper.add(imageUploadBox);
-    imageUploadBox.add(imageUploadBoxInner);
-    cardContainer.add(majorContentCard);
 
-    initWidget(panel);
-    
+    // Add containers to the top-tier GUI, initialize
+    profileSingle.add(mainContent);
+    profileGUI.add(profileSingle);
+    profileSingle.add(appsByAuthor);
+    initWidget(profileGUI);
+
+
     // Retrieve user info right after GUI is initialized
     final OdeAsyncCallback<User> userInformationCallback = new OdeAsyncCallback<User>(
         // failure message
@@ -242,25 +274,12 @@ public class ProfilePage extends Composite {
               userId = user.getUserId();
               userNameBox.setText(user.getUserName());
               userLinkBox.setText(user.getUserLink());
-            } else {
+            } else if (editStatus == PUBLIC) {
               // In this case it'll return the user of [userId]
-              userContentHeader.setText("Public Profile of " + user.getUserName());
-              String link = user.getUserLink();
-              if (link == null) {
-                userLinkDisplay.setText("N/A");
-              } else {
-                if (link.isEmpty()) {
-                  userLinkDisplay.setText("N/A");
-                } else {
-                  link = link.toLowerCase();
-                  // Validate link format, fill in http part
-                  if (!link.startsWith("http")) {
-                    link = "http://" + link;
-                  }
-                  userLinkDisplay.setText(link);
-                  userLinkDisplay.setHref(link);
-                }
-              }
+              userContentHeader.setText(user.getUserName());
+              makeValidLink(userLinkDisplay, user.getUserLink());
+
+
             }
             // once we get the user info and id we can show the right image
             updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
@@ -271,13 +290,87 @@ public class ProfilePage extends Composite {
       Ode.getInstance().getUserInfoService().getUserInformation(userInformationCallback);
     } else {
       Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
+      LOG.warning("###### PROFILEPAGE GOT IN return success, ready to grab appsByDev");
+      // Retrieve apps by this author for sidebar
+      gallery.GetAppsByDeveloper(0, 5, userId);
     }
+  }
 
-  } 
 
-    
+  /**
+   * Helper method to validify a hyperlink
+   * @param link    the GWT anchor object to validify
+   * @param linktext    the actual http link that the anchor should point to
+   */
+  private void makeValidLink(Anchor link, String linktext) {
+    if (linktext == null) {
+      link.setText("N/A");
+    } else {
+      if (linktext.isEmpty()) {
+        link.setText("N/A");
+      } else {
+        linktext = linktext.toLowerCase();
+        // Validate link format, fill in http part
+        if (!linktext.startsWith("http")) {
+          linktext = "http://" + linktext;
+        }
+        link.setText(linktext);
+        link.setHref(linktext);
+      }
+    }
+  }
+
+
+  /**
+   * Helper method called by constructor to initialize image upload components
+   */
+  private void initImageComponents() {
+    imageUploadBox = new FlowPanel();
+    imageUploadBox.addStyleName("app-image-uploadbox");
+    imageUploadBox.addStyleName("gallery-editbox");
+    imageUploadBoxInner = new FlowPanel();
+    imageUploadPrompt = new Label("Upload your profile image!");
+    imageUploadPrompt.addStyleName("gallery-editprompt");
+
+    updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+    imageUploadPrompt.addStyleName("app-image-uploadprompt");
+    imageUploadBoxInner.add(imageUploadPrompt);
+
+    final FileUpload upload = new FileUpload();
+    upload.addStyleName("app-image-upload");
+    // Set the correct handler for servlet side capture
+    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+    upload.addChangeHandler(new ChangeHandler (){
+      public void onChange(ChangeEvent event) {
+        uploadImage();
+      }
+    });
+    imageUploadBoxInner.add(upload);
+    imageUploadBox.add(imageUploadBoxInner);
+    profileHeaderWrapper.add(imageUploadBox);
+    profileHeaderWrapper.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        // The correct way to trigger click event on FileUpload
+        upload.getElement().<InputElement>cast().click();
+      }
+    });
+    profileHeader.add(profileHeaderWrapper);
+  }
+
+
+  /**
+   * Helper method called by constructor to create the app image for display
+   */
+  private void initReadOnlyImage() {
+    updateUserImage(GalleryApp.getUserImageUrl(userId), profileHeader);
+  }
+
+
+  /**
+   * Main method to validify and upload the app image
+   */
   private void uploadImage() {
-        
     String uploadFilename = imageUpload.getFilename();
     if (!uploadFilename.isEmpty()) {
       String filename = makeValidFilename(uploadFilename);
@@ -295,8 +388,7 @@ public class ProfilePage extends Composite {
               updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
               break;
             case FILE_TOO_LARGE:
-              // The user can resolve the problem by
-              // uploading a smaller file.
+              // The user can resolve the problem by uploading a smaller file.
               ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
               break;
             default:
@@ -305,11 +397,14 @@ public class ProfilePage extends Composite {
           }
         }
       });
-          
     }
-        
   }
-  
+
+
+  /**
+   * Helper method to validify file name, used in uploadImage()
+   * @param uploadFilename  The full filename of the file
+   */
   private String makeValidFilename(String uploadFilename) {
     // Strip leading path off filename.
     // We need to support both Unix ('/') and Windows ('\\') separators.
@@ -320,10 +415,19 @@ public class ProfilePage extends Composite {
     return filename;
   }
 
+
+  /**
+   * Helper method to update the user's image
+   * @param url  The URL of the image to show
+   * @param container  The container that image widget resides
+   */
   private void updateUserImage(String url, Panel container) {
     userAvatar = new Image();
     userAvatar.setUrl(url);
     userAvatar.addStyleName("app-image");
+    if (profileStatus == PRIVATE) {
+      userAvatar.addStyleName("status-updating");
+    }
     // if the user has provided a gallery app image, we'll load it. But if not
     // the error will occur and we'll load default image
     userAvatar.addErrorHandler(new ErrorHandler() {
@@ -333,7 +437,45 @@ public class ProfilePage extends Composite {
     });
     container.add(userAvatar);   
   }
-  
-  
-  
+
+
+  /**
+   * Loads the proper tab GUI with gallery's app data.
+   * @param apps: list of returned gallery apps from callback.
+   * @param requestId: determines the specific type of app data.
+   */
+  /*  private void refreshApps(List<GalleryApp> apps, int requestId) {
+    switch (requestId) {
+      case GalleryClient.REQUEST_BYDEVELOPER:
+        LOG.warning("###### PROFILEPAGE GOT IN refreshapps");
+//        galleryGF.generateSidebar(apps, appsByAuthor, MESSAGES.galleryAppsByAuthorSidebar(), false);
+        break;
+    }
+  }
+
+
+  @Override
+  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId) {
+    if (apps != null) {
+      LOG.warning("###### PROFILEPAGE GOT IN onAppListRequestCompleted");
+      refreshApps(apps, requestId);
+    } else {
+      Window.alert("app list returned null");
+    }
+  }
+
+
+  @Override
+  public void onCommentsRequestCompleted(List<GalleryComment> comments) {
+    // TODO Auto-generated method stub
+  }
+
+
+  @Override
+  public void onSourceLoadCompleted(UserProject projectInfo) {
+    // TODO Auto-generated method stub
+  }
+*/
+
+
 }

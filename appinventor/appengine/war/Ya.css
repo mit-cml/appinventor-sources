@@ -170,7 +170,9 @@ select {
 /*
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
-
+.ode-ProjectGalleryLink {
+  
+}
 .ode-ProjectNameLabel {
   font-weight: bold;
   font-size: small;
@@ -222,7 +224,6 @@ select {
 /*
  * TopPanel
  */
-
 
 .ode-TopPanel {
   min-height: 40px;
@@ -365,7 +366,74 @@ select {
   padding: 0px 6px;
 }
 
+/*
+ * Message inbox
+ */
 
+.ode-InboxContainer {
+  display: block;
+  background: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);   -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  width: 600px;
+  padding: 30px;
+}
+.ode-Inbox {
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #666;
+}
+.ode-Inbox .CloseButton {
+  float: right;
+  display: inline;
+  border: none;
+  padding: 10px;
+  background: none;
+  box-shadow: none;
+  color: #999;
+}
+.ode-Inbox .CloseButton:hover {
+  background: lightyellow;
+}
+.InboxTitle {
+  display: inline;
+}
+.MsgListWrapper {
+  height: 300px; /* ScrollPanel */
+  margin: 15px 0 0;
+  display: block;
+}
+.MsgList {
+}
+.MsgNoPrompt {
+}
+.MsgEntry {
+  margin-bottom: 30px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #ddd;
+}
+.MsgBody {
+  line-height: 1.5;
+  margin-bottom: 10px;
+  color: #333;
+}
+.MsgMeta .primary-link {
+  display: inline;
+  margin-right: 20px;
+  float: left;
+}
+.MsgMeta .ActionButton {
+  display: inline;
+  margin-right: 20px;
+  background: #b3c833;
+}
+.MsgMeta .MsgSender {
+  display: inline;
+  float: right;
+  font-size: 13px;
+  font-style: italic;
+  vertical-align: bottom;
+}
 
 /*
  * Deck Panel
@@ -1284,7 +1352,31 @@ textarea::-webkit-input-placeholder {
 
 
 /* Gallery-specific styles */
-/* "My Stuff" page GUI */
+.ode-UserProfileWrapper,
+.gallery {
+  width: 950px;
+  margin: 0 auto;
+}
+.gallery-page-single,
+.gallery-app-single {
+  width: 100%;
+  display: block;
+  margin: 20px 10px;
+}
+.gallery-container {
+  float: left;
+  position: relative;
+  margin: 0 15px 15px 0;
+  background: #fff;
+  vertical-align: top;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* "My Stuff" page related stlyes, including tabs & user profile */
 /*
 .ode-MyTabs {
   width: 100%;
@@ -1310,13 +1402,14 @@ textarea::-webkit-input-placeholder {
     box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 */
-.ode-UserProfileWrapper .gallery-content-card {
-  width: 50%;
-  padding: 15px;
+
+.gwt-TabPanelBottom .gallery-page-single { /* profile page under "My stuff" */
+  margin: 20px 0;
 }
-.ode-UserProfileWrapper .gallery-content-card .app-title {
+.ode-UserProfileWrapper .app-title {
   margin-bottom: 15px;
 }
+/*
 .ode-UserProfileWrapper .gallery-card {
   height: 160px;
 }
@@ -1328,7 +1421,6 @@ textarea::-webkit-input-placeholder {
   height: 130px;
   background: none;
 }
-
 .ode-UserProfileWrapper .gallery-card .gallery-editprompt {
   margin: -150px 0;
 }
@@ -1340,6 +1432,7 @@ textarea::-webkit-input-placeholder {
   opacity: 0.1;
   margin-bottom: 30px;
 }
+*/
 .ode-UserProfileWrapper .profile-textlabel,
 .ode-UserProfileWrapper .profile-textdisplay {
   font-size: 14px;
@@ -1364,6 +1457,8 @@ textarea::-webkit-input-placeholder {
   -moz-border-radius: 0px;
   border-radius: 0px;
 }
+
+
 /* Gallery app collections, or app cards related styles */
 .gallery > table {
   border: none;
@@ -1371,10 +1466,9 @@ textarea::-webkit-input-placeholder {
   width: 100%;
 }
 .gallery .gwt-TabPanel {
-  margin: 10px 0;
 }
 .gallery .gwt-TabBar {
-  margin: 10px 0 0;
+  margin: 0;
   border: none;
   border-style: none; 
 }
@@ -1391,6 +1485,10 @@ textarea::-webkit-input-placeholder {
   background-color: none;
   margin-right: 10px;
 }
+.gallery-app-details .gwt-TabBar .gwt-TabBarItem,
+.gallery-app-details .gwt-TabBar .gwt-TabBarItem-selected {
+  padding: 5px 5px 5px 0;
+}
 .gallery .gwt-TabBar .gwt-TabBarItem {
   color: #999;	
   font-weight: 100;
@@ -1404,26 +1502,9 @@ textarea::-webkit-input-placeholder {
   border-style: none;
   padding: 0;
 }
-/*
-.gallery-nav-prev,
-.gallery-nav-next {
-  float: left;
-  background-color: #fff;
-  height: 239px;
-  width: 25px;
-  margin: 5px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.gallery-app-details .gwt-TabPanelBottom {
+  margin: 15px 0;
 }
-.gallery-nav-prev .gwt-Image,
-.gallery-nav-next .gwt-Image {
-  top: 50%;
-  position: relative;
-}
-*/
-
 .gallery-nav-prev,
 .gallery-nav-next {
   padding: 0;
@@ -1461,8 +1542,7 @@ textarea::-webkit-input-placeholder {
 .gallery-card {
   width: 160px;
 }
-.gallery-app-collection .gallery-card,
-.gallery-content-card {
+.gallery-app-collection .gallery-card {
   margin: 5px;
   float: left;
   position: relative;
@@ -1480,6 +1560,7 @@ textarea::-webkit-input-placeholder {
   -webkit-transition: background-color 1s ease; 
   -moz-transition: background-color 1s ease; 
   -o-transition: background-color 1s ease; 	
+  cursor: pointer;
 }
 .gallery-app-showcase .gallery-card {
   clear: both;
@@ -1501,6 +1582,7 @@ textarea::-webkit-input-placeholder {
 }
 .gallery-app-showcase .gallery-card-content {
   overflow: hidden;
+  width: 140px;
   margin-left: 90px;
   padding: 15px 15px 15px 0;
 }
@@ -1540,6 +1622,16 @@ textarea::-webkit-input-placeholder {
   font-size: 12px;
   line-height: 15px;
   color: #999;
+  display: block;
+  font-weight: 900;
+  margin-bottom: 0px;
+  margin-top: 2px;
+  min-height: 17px;
+  overflow: hidden;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+  cursor: auto;
 }
 .gallery-meta {
   font-size: 12px;
@@ -1557,15 +1649,11 @@ textarea::-webkit-input-placeholder {
   width: 12px;
   height: 12px;
 }
-.gallery-app-details .gwt-HTML {
-  padding: 0 0 30px;
-  clear: both;
-}
 .section-divider {
   border-bottom: 1px solid #d6d6d6;
   max-width: 1360px;
   display: block;
-  margin: 30px 0 0;
+  margin: 15px 0;
 }
 
 /* Gallery search panel or search bar styles */
@@ -1597,27 +1685,11 @@ textarea::-webkit-input-placeholder {
   border-radius: 0;
 }
 
+
 /* Gallery individual app page styles */
-.gallery {
-  width: 950px;
-  margin: 0 auto;
-}
-.gallery-app-single {
-  width: 100%;
-  display: block;
-  margin: 20px 10px;
-}
-.gallery-container {
+.app-info-container {
+  width: 430px;
   float: left;
-  position: relative;
-  margin: 0 15px 15px 0;
-  background: #fff;
-  vertical-align: top;
-  text-decoration: none;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -moz-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -ms-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 .gallery-editbox {
   border: 1px dashed #ccc!important;
@@ -1632,10 +1704,6 @@ textarea::-webkit-input-placeholder {
   font-weight: normal;
   font-size: 16px;
   padding: 40px 20px;
-}
-.app-info-container {
-  width: 430px;
-  float: left;
 }
 .app-info-container .gallery-editbox {
   width: 100%;
@@ -1656,11 +1724,28 @@ textarea::-webkit-input-placeholder {
   width: 260px;
   padding: 15px 0;
 }
-.gallery-showcase-title {
-  margin: 0 15px;
-  font-size: 21px;
+.gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
+
 }
-.gallery-app-single .gallery-app-details {
+.gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
+  margin: 0 15px;
+  font-size: 18px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 300;
+  padding: 0;
+}
+.gallery-showcase-desc,
+.gallery-showcase-title {
+  margin: 10px 15px 0;
+  padding: 0;
+  width: 230px;
+  font-size: 14px;
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 300;
+  color: #666;
+}
+.gallery-content-details,
+.gallery-app-details {
   width: 600px;
   padding: 30px;
   height: auto;
@@ -1676,7 +1761,7 @@ textarea::-webkit-input-placeholder {
   height: 130px;
 }
 .app-header .status-updating {
-  opacity: 0.5;
+  opacity: 0.1;
 }
 .app-header .app-image-uploadbox {
   width: 128px;
@@ -1689,13 +1774,15 @@ textarea::-webkit-input-placeholder {
 .app-image-upload {
   display: none;
 }
-.app-header .app-action,
+.app-header .app-action-button {
+  width: 130px;
+}
+.ode-Inbox .ActionButton,
+.gallery-app-details .app-action-button,
 .gallery-app-details .app-comments-submit,
 .ode-UserProfileWrapper .profile-submit {
-  display: block;
   color: #fff;
   line-height: 36px;
-  width: 130px;
   text-shadow: none;
   border-radius: 0;
   text-transform: uppercase;
@@ -1708,10 +1795,12 @@ textarea::-webkit-input-placeholder {
   border: none;
   border-color: none;
 }
-.app-header .app-action,
+.gallery-app-details .app-action-button,
 .gallery-app-details .app-comments-submit{
   margin: 15px 0;
+  display: block;
 }
+.InboxTitle,
 .app-title,
 .gallery-app-details .app-comments-header {
   font-size: 28px;
@@ -1756,6 +1845,7 @@ textarea::-webkit-input-placeholder {
 .gallery-app-details .app-username:hover {
   background-color: #b3c833;
   color: white;
+  cursor: pointer;
 }
 .gallery-app-details .app-attributor-username {
   margin-right: 5px;
@@ -1768,11 +1858,11 @@ textarea::-webkit-input-placeholder {
 }
 .app-meta {
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 15px;
   text-decoration: none;
   display: inline;
-  padding: 10px 10px 0;
+  padding: 10px 0 0 15px;
   color: #999;
 }
 .app-meta .gwt-Image { /* Mini meta images */
@@ -1791,6 +1881,7 @@ textarea::-webkit-input-placeholder {
 }
 .app-dates .gwt-Label {
   line-height: 175%;
+  font-weight: 300;
   margin: 0 15px 0 0;
   color: #999;
 }
@@ -1823,15 +1914,11 @@ textarea::-webkit-input-placeholder {
   font-weight: 100;
   margin-bottom: 15px;
 }
-.app-description {
-  margin: 15px 0 0;
-  color: #333;
-  font-size: 14px;
-  font-weight: 300;
-  line-height: 1.5;
-}
-.gallery-app-details .app-comments-header {
 
+
+/* Gallery app comment related styles */
+.gallery-app-details .app-comments-wrapper {
+  display: none; /* We are not showing comments before initial launch */
 }
 .gallery-app-details .app-comments {
   width: 100%;
@@ -1873,10 +1960,69 @@ textarea::-webkit-input-placeholder {
   font-size: 14px;
   font-weight: 300;
 }
-.clearfix:after { 
-   content: "."; 
-   visibility: hidden; 
-   display: block; 
-   height: 0; 
-   clear: both;
+
+
+
+/* Gallery app actions related styles */
+.gallery-app-details .app-actions {
+  display: block;
+  width: 100%;
+}
+.gallery-app-single .gwt-TabBar .gwt-TabBarItem-selected {
+  color: #b3c833;
+  font-weight: 300;
+}
+.app-description,
+.app-actions .gwt-TabPanelBottom .gwt-Label,
+.app-info-container .primary-prompt,
+.app-actions .primary-prompt {
+  /* margin: 15px 0; */
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #666;
+}
+.app-meta .primary-link {
+  font-size: 12px;
+}
+.primary-link {
+  color: #b3c833;
+  border-bottom: 1px dotted #b3c833;
+  font-weight: 300; font-size: 14px; line-height: 1.75;
+}
+.primary-link:hover {
+  background-color: #b3c833;
+  color: white;
+  cursor: pointer;
+}
+.app-actions .action-button {
+}
+.app-actions .action-textarea {
+  width: 99%;
+  height: 75px;
+  margin: 15px 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}
+
+
+/* General gallery helper styles */
+.message-popup {
+  background-color: #fff;
+  border: 1px solid lightgrey;
+  padding: 20px;
+}
+.block {
+  display: block;
+}
+.inline {
+  display: inline;
+}
+.clearfix:after {
+  content: ".";
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
 }

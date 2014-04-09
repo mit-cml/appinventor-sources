@@ -11,6 +11,7 @@ import java.util.logging.Logger;
  */
 public class GalleryApp implements IsSerializable {
 
+
   /**
    * Default constructor. This constructor is required by GWT.
    * note: don't think this is being used, can remove code within?
@@ -20,6 +21,7 @@ public class GalleryApp implements IsSerializable {
     this.downloads = 0;
     this.views = 0;
     this.likes = 0;
+    this.unreadLikes = 0;
     this.comments = 0;
     this.projectId = 0L;
     this.attributionId = 0L;
@@ -35,7 +37,8 @@ public class GalleryApp implements IsSerializable {
 
   public GalleryApp(String title, String developerId, String description,
       long creationDate, long updateDate, String imageURL, String projectName,
-      int downloads, int views, int likes, int comments, 
+      int downloads, int views, int likes, int unreadLikes,
+      int unreadDownloads, int comments,
       String imageBlobId, String sourceBlobId, long galleryAppId, 
       ArrayList<String> tags) {
     super();
@@ -57,13 +60,15 @@ public class GalleryApp implements IsSerializable {
     this.downloads = downloads;
     this.views = views;
     this.likes = likes;
+    this.unreadLikes = unreadLikes;
+    this.unreadDownloads = unreadDownloads;
     this.comments = comments;
     this.imageBlobId = imageBlobId;
     this.sourceBlobId = sourceBlobId;
     this.galleryAppId = galleryAppId;
     this.tags = tags;
   }
-  
+
   /* this constructor is called when we are creating a new gallery app but don't have
      the stuff yet */
   public GalleryApp(String title, long projectId, String projectName, long galleryAppId, long attributionId) {
@@ -73,18 +78,22 @@ public class GalleryApp implements IsSerializable {
     this.downloads = 0;
     this.views = 0;
     this.likes = 0;
+    this.unreadLikes = 0;
+    this.unreadDownloads = 0;
     this.comments = 0;
     this.projectId = projectId;
     this.attributionId = attributionId;
     this.projectName=projectName;
     this.galleryAppId=galleryAppId;
-
+    this.projectName = projectName;
+    this.galleryAppId = galleryAppId;
     this.developerId = "none";
-    this.developerName= "none";
+    this.developerName = "none";
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageBlobId = "SFKJF";
   }
+
 
   private String title;
   private String developerId;
@@ -98,6 +107,8 @@ public class GalleryApp implements IsSerializable {
   private int downloads;
   private int views;
   private int likes;
+  private int unreadLikes;
+  private int unreadDownloads;
   private int comments;
   private String imageBlobId;
   private String sourceBlobId;
@@ -169,6 +180,9 @@ public class GalleryApp implements IsSerializable {
   public void setDownloads(int downloads) {
     this.downloads = downloads;
   }
+  public void incrementDownloads() {
+    this.downloads++;
+  }
   public int getViews() {
     return views;
   }
@@ -180,6 +194,18 @@ public class GalleryApp implements IsSerializable {
   }
   public void setLikes(int likes) {
     this.likes = likes;
+  }
+  public int getUnreadLikes() {
+    return unreadLikes;
+  }
+  public void setUnreadLikes(int unreadLikes) {
+    this.unreadLikes = unreadLikes;
+  }
+  public int getUnreadDownloads() {
+    return unreadDownloads;
+  }
+  public void setUnreadDownloads(int unreadDownloads) {
+    this.unreadDownloads = unreadDownloads;
   }
   public int getComments() {
     return comments;

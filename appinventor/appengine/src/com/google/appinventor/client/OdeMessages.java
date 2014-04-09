@@ -248,6 +248,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the link for signing out")
   String signOutLink();
 
+  @DefaultMessage("Messages")
+  @Description("Label of the link for user messages")
+  String messagesLink();
+
   @DefaultMessage("My Stuff")
   @Description("Name of My Projects tab")
   String tabNameProjects();
@@ -296,6 +300,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Please choose a project to open or create a new project.")
   @Description("Message shown when there is no current file editor to switch to")
   String chooseProject();
+
+  @DefaultMessage("Messages")
+  @Description("Title for user's message inbox")
+  String messageInboxTitle();
 
   // Used in boxes/AssetListBox.java
 
@@ -995,7 +1003,7 @@ public interface OdeMessages extends Messages {
   String confirmDeleteSingleProject(String projectName);
 
   @DefaultMessage("Are you really sure you want to delete this project: {0}?"+
-      " Note that the published copy of this project will be removed from the gallery as well")
+      " Note that the published copy of this project will be removed from the gallery as well.")
   @Description("Confirmation message for selecting a single project and clicking delete")
   String confirmDeleteSinglePublishedProject(String projectName);
 
@@ -1009,7 +1017,7 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when deleting a project failed on the server.")
   String deleteProjectError();
 
-  @DefaultMessage("One project must be selected")
+  @DefaultMessage("One project must be selected.")
   @Description("Error message displayed when no or many projects are selected")
   String wrongNumberProjectsSelected();
 
@@ -1057,7 +1065,6 @@ public interface OdeMessages extends Messages {
       "There is no undo for deleting your keystore file.")
   @Description("Confirmation message for delete keystore")
   String confirmDeleteKeystore();
-
 
 
   // Used in output/OdeLog.java
@@ -1194,7 +1201,57 @@ public interface OdeMessages extends Messages {
   @Description("Caption for project upload wizard.")
   String projectUploadWizardCaption();
 
-  // used in gallerypage.java
+  // Used in GalleryPage.java
+
+  @DefaultMessage("Click to like this app!")
+  @Description("Text for gallery page like button (not liked yet).")
+  String galleryAppsLike();
+
+  @DefaultMessage("You already liked (click to unlike).")
+  @Description("Text for gallery page like button (already liked).")
+  String galleryAppsAlreadyLike();
+
+  @DefaultMessage("Apps developed by")
+  @Description("Title for the gallery page sidebar that shows list of apps of a specific author.")
+  String galleryAppsByAuthorSidebar();
+
+  @DefaultMessage("Created on ")
+  @Description("Text prefix for the gallery app shared / created date.")
+  String galleryAppCreatedPrefix();
+
+  @DefaultMessage("Changed on ")
+  @Description("Text prefix for the gallery app last changed date.")
+  String galleryAppChangedPrefix();
+
+  @DefaultMessage("This app is remixed from ")
+  @Description("Text prefix for the gallery app remixed from label.")
+  String galleryRemixedFrom();
+
+  @DefaultMessage("Click to view the remixes of this app!")
+  @Description("Text for the gallery app remix children list.")
+  String galleryRemixChildren();
+
+  @DefaultMessage("Remixes of ")
+  @Description("Title prefix for the gallery page sidebar that shows list of remixed apps.")
+  String galleryAppsRemixesSidebar();
+
+  @DefaultMessage("Please explain why you feel this app is disrespectful or inappropriate, or otherwise breaks the <a href=\"http://google.com\">App Inventor Gallery Community Guidelines.</a> " +
+      "")
+  @Description("Prompt for the gallery app report section.")
+  String galleryReportPrompt();
+
+  @DefaultMessage("Submit report")
+  @Description("Text for the gallery app report button.")
+  String galleryReportButton();
+
+  @DefaultMessage("You reported this app. An administrator will process your report shortly.")
+  @Description("Prompt for the gallery app report section when user just submitted the report.")
+  String galleryReportCompletionPrompt();
+
+  @DefaultMessage("You already reported this app. An administrator will process your report shortly.")
+  @Description("Prompt for the gallery app report section if user has already reported.")
+  String galleryAlreadyReportedPrompt();
+
   @DefaultMessage("Server error: could not retrieve comments")
   @Description("Error message reported when can't get gallery app comments on server.")
   String galleryCommentError();
@@ -1222,13 +1279,7 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Server error: could not get most downloaded apps from gallery")
   @Description("Error message reported when can't get most downloaded apps server.")
   String galleryDownloadedAppsError();
-  // Used in gallerylist.java
 
-  @DefaultMessage("Server error: gallery cannot be accessed")
-  @Description("Error message reported when the gallery cannot be accessed.")
-  String galleryError();
-
-  // Used in galleryPage.java
   @DefaultMessage("Server error: gallery deletion error")
   @Description("Error message reported when the gallery delete breaks")
   String galleryDeleteError(); 
@@ -1245,6 +1296,12 @@ public interface OdeMessages extends Messages {
       "Project source files are aia files.")
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
+
+  // Used in GalleryList.java
+
+  @DefaultMessage("Server error: gallery cannot be accessed")
+  @Description("Error message reported when the gallery cannot be accessed.")
+  String galleryError();
 
   // Used in wizards/Wizard.java
 
@@ -1349,4 +1406,5 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Reset Connection")
   @Description("Reset all connections.")
   String resetConnections();
+
 }

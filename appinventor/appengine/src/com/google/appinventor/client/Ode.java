@@ -53,6 +53,7 @@ import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
+import com.google.appinventor.shared.rpc.project.Message;
 
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
@@ -133,6 +134,9 @@ public class Ode implements EntryPoint {
 
   // User information
   private User user;
+
+  // Unread message count, global
+  private int msgCount;
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -303,6 +307,7 @@ public class Ode implements EntryPoint {
    */
   public void switchToUserProfileView(String userId, int editStatus) {
     currentView = USERPROFILE;
+    OdeLog.log("###########" + userId + "||||||" + editStatus);
     ProfileBox.setProfile(userId, editStatus);
     deckPanel.showWidget(userProfileTabIndex);
   }
@@ -488,14 +493,40 @@ public class Ode implements EntryPoint {
         // After the user settings have been loaded, openPreviousProject will be called.
         userSettings.loadSettings();
 
+        final String userInfo = user.getUserName();
+        // Get the message count to display right next to user
+        final OdeAsyncCallback<List<Message>> messagesCallback = new OdeAsyncCallback<List<Message>>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(List<Message> msgs) {
+                msgCount = 0;
+                // get the new comment list so gui updates
+//                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
+                for (Message m : msgs) {
+                  OdeLog.log("### MSG status = " + m.getStatus());
+                  OdeLog.log("### MSG count = " + msgCount);
+                  if (m.getStatus().equalsIgnoreCase("1")) {
+                    OdeLog.log("### MSG GOT IN");
+                    msgCount++;
+                  }
+                }
+                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " + userInfo.concat(Integer.toString(msgCount)));
+              }
+          };
+        Ode.getInstance().getGalleryService().getMessages(user.getUserId(), messagesCallback);
+
         // Initialize project and editor managers
         projectManager = new ProjectManager();
         editorManager = new EditorManager();
 
         // Initialize UI
         initializeUi();
+        String u = userInfo + " (" + Integer.toString(msgCount) + ")";
+        OdeLog.log("### MSG final = " + u);
+        // Reset message count for further use
+        topPanel.showUserEmail(u);
 
-        topPanel.showUserEmail(user.getUserEmail());
       }
 
       @Override
