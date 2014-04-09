@@ -106,7 +106,7 @@ select {
   border-left: 1px solid #d2d2d2;
   border-bottom: 1px solid #d2d2d2;
   border-right: 1px solid #d2d2d2;
-  margin: 4px;
+  margin: 0px;
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.065);
 }
 

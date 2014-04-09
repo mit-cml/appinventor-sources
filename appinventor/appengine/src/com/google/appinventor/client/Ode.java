@@ -56,6 +56,7 @@ import com.google.appinventor.shared.rpc.user.UserInfoServiceAsync;
 import com.google.appinventor.shared.settings.SettingsConstants;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -75,6 +76,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.user.client.ui.DeckPanel;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -87,6 +89,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PushButton;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.SplitLayoutPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -170,8 +173,10 @@ public class Ode implements EntryPoint {
   private int debuggingTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
-  private HorizontalPanel workColumns;
-  private VerticalPanel structureAndAssets;
+  //private HorizontalPanel workColumns;
+  private SplitLayoutPanel workColumns;
+  //private VerticalPanel structureAndAssets;
+  private DockLayoutPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
@@ -266,6 +271,14 @@ public class Ode implements EntryPoint {
     currentView = PROJECTS;
     getTopToolbar().updateFileMenuButtons(currentView);
     deckPanel.showWidget(projectsTabIndex);
+  }
+  
+  public void switchToBlocksEditor() {
+
+  }
+  
+  public void switchToFormEditor() {
+	  
   }
 
   /**
@@ -583,33 +596,45 @@ public class Ode implements EntryPoint {
     designToolbar = new DesignToolbar();
     dVertPanel.add(designToolbar);
 
-    workColumns = new HorizontalPanel();
+    workColumns = new SplitLayoutPanel();
     workColumns.setWidth("100%");
+    workColumns.setHeight(Window.getClientHeight() - 120 +"px");
 
     //workColumns.add(switchToDesignerButton);
 
     Box palletebox = PaletteBox.getPaletteBox();
-    palletebox.setWidth("222px");
-    workColumns.add(palletebox);
+    palletebox.setWidth("100%");
+    workColumns.addWest(palletebox, 200);
 
-    Box viewerbox = ViewerBox.getViewerBox();
-    workColumns.add(viewerbox);
-    workColumns.setCellWidth(viewerbox, "97%");
-    workColumns.setCellHeight(viewerbox, "97%");
+    Box propertiesbox = PropertiesBox.getPropertiesBox();
+    propertiesbox.setWidth("100%");
+    workColumns.addEast(propertiesbox, 200);
 
-    structureAndAssets = new VerticalPanel();
-    structureAndAssets.setVerticalAlignment(VerticalPanel.ALIGN_TOP);
+    structureAndAssets = new DockLayoutPanel(Unit.PX);
     // Only one of the SourceStructureBox and the BlockSelectorBox is visible
     // at any given time, according to whether we are showing the form editor
     // or the blocks editor. They share the same screen real estate.
-    structureAndAssets.add(SourceStructureBox.getSourceStructureBox());
-    structureAndAssets.add(BlockSelectorBox.getBlockSelectorBox());  // initially not visible
-    structureAndAssets.add(AssetListBox.getAssetListBox());
-    workColumns.add(structureAndAssets);
+    SourceStructureBox sourceStructureBox = SourceStructureBox.getSourceStructureBox();
+    sourceStructureBox.setWidth("100%");
+    structureAndAssets.addNorth(sourceStructureBox, 570);
+    //BlockSelectorBox blockSelectorBox = BlockSelectorBox.getBlockSelectorBox();
+    //blockSelectorBox.setWidth("100%");
+    //structureAndAssets.addNorth(blockSelectorBox, 570);  // initially not visible
+    AssetListBox assetListBox = AssetListBox.getAssetListBox();
+    assetListBox.setWidth("100%");
+    structureAndAssets.add(assetListBox);
+    structureAndAssets.setWidth("100%");
+    
+    //SplitLayoutPanel componentsAndMedia = new SplitLayoutPanel();
+    //componentsAndMedia.addNorth(sourceStructureBox, 600);
+    //componentsAndMedia.add(assetListBox);
+    
+    workColumns.addEast(structureAndAssets, 200);
+    
+    Box viewerbox = ViewerBox.getViewerBox();
+    workColumns.add(viewerbox);
+    
 
-    Box propertiesbox = PropertiesBox.getPropertiesBox();
-    propertiesbox.setWidth("222px");
-    workColumns.add(propertiesbox);
     //switchToBlocksButton.setHeight("650px");
     //workColumns.add(switchToBlocksButton);
     dVertPanel.add(workColumns);
@@ -748,7 +773,7 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link VerticalPanel}
    */
-  public VerticalPanel getStructureAndAssets() {
+  public DockLayoutPanel getStructureAndAssets() {
     return structureAndAssets;
   }
 
@@ -757,7 +782,7 @@ public class Ode implements EntryPoint {
    *
    * @return  {@link HorizontalPanel}
    */
-  public HorizontalPanel getWorkColumns() {
+  public SplitLayoutPanel getWorkColumns() {
     return workColumns;
   }
 
