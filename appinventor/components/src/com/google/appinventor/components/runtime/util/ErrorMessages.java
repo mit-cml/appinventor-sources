@@ -153,7 +153,12 @@ public final class ErrorMessages {
   public static final int ERROR_CANNOT_DELETE_ASSET = 2105;
   public static final int ERROR_CANNOT_WRITE_ASSET = 2106;
 
-  // Please start the next group of error numbers at 2201.
+  // Yandex.Translate errors
+  public static final int ERROR_TRANSLATE_NO_KEY_FOUND = 2201;
+  public static final int ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE = 2202;
+  public static final int ERROR_TRANSLATE_JSON_RESPONSE = 2203;
+
+  // Please start the next group of error numbers at 2301.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -397,6 +402,13 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE, "Cannot write to file %s");
     errorMessages.put(ERROR_CANNOT_DELETE_ASSET, "Cannot delete asset file at %s");
     errorMessages.put(ERROR_CANNOT_WRITE_ASSET, "Cannot write asset file at %s");
+    //Yandex.Translate translate Errors
+    errorMessages.put(ERROR_TRANSLATE_NO_KEY_FOUND, "Missing API key for the Yandex.Translate " +
+        "service.");
+    errorMessages.put(ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE, "The translation service is not " +
+        "available; Please try again later.");
+    errorMessages.put(ERROR_TRANSLATE_JSON_RESPONSE, "The response from the Yandex.Translate " +
+        "service cannot be parsed; Please try again later.");
   }
 
   private ErrorMessages() {

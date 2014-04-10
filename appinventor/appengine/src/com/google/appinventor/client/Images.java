@@ -471,4 +471,10 @@ public interface Images extends Resources {
   @Source("com/google/appinventor/images/spinner.png")
   ImageResource spinner();
 
+  /**
+    * Designer palette item: YandexTranslate
+    */
+  @Source("com/google/appinventor/images/yandex.png")
+  ImageResource yandex();
+
 }

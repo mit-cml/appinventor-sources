@@ -119,6 +119,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/sharing.png", images.sharingComponent());
     bundledImages.put("images/spinner.png", images.spinner());
     bundledImages.put("images/listView.png", images.listview());
+    bundledImages.put("images/yandex.png", images.yandex());
     imagesInitialized = true;
   }
 
