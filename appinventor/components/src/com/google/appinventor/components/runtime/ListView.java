@@ -199,8 +199,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-   * Simple event to raise when the component is clicked but before the
-   * picker activity is started.
+   * Simple event to raise when the component is clicked
    */
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

@@ -237,8 +237,10 @@ public class YaVersion {
   // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 83:
   // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
+    // For YOUNG_ANDROID_VERSION 84:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 1.
 
-    public static final int YOUNG_ANDROID_VERSION = 83;
+    public static final int YOUNG_ANDROID_VERSION = 84;
 
   // ............................... Blocks Language Version Number ...............................
 
