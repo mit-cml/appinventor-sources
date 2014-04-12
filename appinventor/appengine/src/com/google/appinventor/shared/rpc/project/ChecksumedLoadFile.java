@@ -36,7 +36,7 @@ public class ChecksumedLoadFile implements Serializable {
     MessageDigest md = null;
     try {
       md = MessageDigest.getInstance("MD5");
-      byte [] retval = md.digest(content.getBytes());
+      byte [] retval = md.digest(content.getBytes("UTF-8"));
       String hexval = byteArrayToHexString(retval);
       if (!hexval.equals(checksum)) {
         throw new ChecksumedFileException("Checksum doesn't match " + hexval + " " + checksum);
@@ -44,6 +44,8 @@ public class ChecksumedLoadFile implements Serializable {
       return content;
     } catch (java.security.NoSuchAlgorithmException e) {
       throw new ChecksumedFileException(e.toString());
+    } catch (java.io.UnsupportedEncodingException e) { // We need to catch this because it can
+      throw new ChecksumedFileException(e.toString()); // be thrown by the .getBytes() call above
     }
   }
 
@@ -51,11 +53,13 @@ public class ChecksumedLoadFile implements Serializable {
     MessageDigest md = null;
     try {
       md = MessageDigest.getInstance("MD5");
-      byte [] retval = md.digest(content.getBytes());
+      byte [] retval = md.digest(content.getBytes("UTF-8"));
       String hexval = byteArrayToHexString(retval);
       this.checksum = hexval;
       this.content = content;
     } catch (java.security.NoSuchAlgorithmException e) {
+      throw new ChecksumedFileException(e.toString());
+    } catch (java.io.UnsupportedEncodingException e) {
       throw new ChecksumedFileException(e.toString());
     }
   }
