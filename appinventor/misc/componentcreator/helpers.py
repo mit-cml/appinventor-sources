@@ -26,7 +26,7 @@ class NewComponent():
             raise DuplicateError
 
         # insert new component in file and write
-        text = re.sub(re.escape('procedures();'), 'procedures();\n%s' % newtxt, text)
+        text = re.sub(re.escape('procedures();'), 'procedures();\n%s\n' % newtxt, text)
 
         with open('../../appengine/src/com/google/appinventor/client/Images.java', 'w') as f:
             f.write(text)
