@@ -243,6 +243,7 @@ public class YaVersion {
   // - CAMERA_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 86:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
+  // - The Sharing Component was added
 
     public static final int YOUNG_ANDROID_VERSION = 86;
 
@@ -569,6 +570,8 @@ public class YaVersion {
 
   public static final int PLAYER_COMPONENT_VERSION = 5;
 
+  public static final int SHARING_COMPONENT_VERSION = 1;
+
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
@@ -686,9 +689,9 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.16ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.17ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2", "2.17ai2zx1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

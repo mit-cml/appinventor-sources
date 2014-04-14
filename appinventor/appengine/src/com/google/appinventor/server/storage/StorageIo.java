@@ -360,6 +360,17 @@ public interface StorageIo {
   String downloadFile(String userId, long projectId, String fileId, String encoding);
 
   /**
+   * Records a "corruption" record so we can analyze if corruption is
+   * happening.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param message The message from the exception on the client
+   */
+
+  void recordCorruption(String userId, long projectId, String fileId, String message);
+
+  /**
    * Downloads raw file data.
    * @param userId a user Id (the request is made on behalf of this user)
    * @param projectId  project ID

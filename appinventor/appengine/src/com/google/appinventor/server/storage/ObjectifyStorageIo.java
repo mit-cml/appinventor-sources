@@ -21,6 +21,7 @@ import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.PrivacyEditorServiceImpl;
+import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
@@ -150,6 +151,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(WhiteListData.class);
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
+    ObjectifyService.register(CorruptionRecord.class);
   }
 
   ObjectifyStorageIo() {
@@ -1343,6 +1345,28 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (UnsupportedEncodingException e) {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, "
           + collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public void recordCorruption(String userId, long projectId, String fileId, String message) {
+    Objectify datastore = ObjectifyService.begin();
+    final CorruptionRecord data = new CorruptionRecord();
+    data.timestamp = new Date();
+    data.id = null;
+    data.userId = userId;
+    data.fileId = fileId;
+    data.projectId = projectId;
+    data.message = message;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            datastore.put(data);
+          }
+        });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 

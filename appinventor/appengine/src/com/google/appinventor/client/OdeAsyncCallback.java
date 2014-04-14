@@ -6,6 +6,7 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.shared.rpc.InvalidSessionException;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.IncompatibleRemoteServiceException;
@@ -53,6 +54,10 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
     }
     if (caught instanceof InvalidSessionException) {
       Ode.getInstance().invalidSessionDialog();
+      return;
+    }
+    if (caught instanceof ChecksumedFileException) {
+      Ode.getInstance().corruptionDialog();
       return;
     }
     String errorMessage =

@@ -8,6 +8,8 @@ package com.google.appinventor.shared.rpc.project;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -115,6 +117,33 @@ public interface ProjectService extends RemoteService {
    * @return  implementation dependent
    */
   String load(long projectId, String fileId);
+
+  /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value depends on the file kind. Source (text) files should
+   * typically return their contents. Image files will be more likely to return
+   * the URL that the browser can find them at.
+   *
+   * This version returns a ChecksumedLoadFile which includes the file content
+   * and a checksum (MD5) of the content to detect silent network corruption
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  checksummed file object
+   */
+  ChecksumedLoadFile load2(long projectId, String fileId) throws ChecksumedFileException;
+
+  /**
+   * Attempt to record the project Id and error message when we detect a corruption
+   * while loading a project.
+   *
+   * @param projectId project id
+   * @param fileId the fileid (aka filename) of the file in question
+   * @param message Error message from the thrown exception
+   *
+   */
+  void recordCorruption(long ProjectId, String fileId, String message);
 
   /**
    * Loads the file information associated with a node in the project tree. The

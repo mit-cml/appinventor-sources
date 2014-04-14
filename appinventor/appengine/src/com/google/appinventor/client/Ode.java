@@ -1403,6 +1403,52 @@ public class Ode implements EntryPoint {
   }
 
   /**
+   * corruptionDialog -- Put up a dialog box explaining that we detected corruption
+   * while reading in a project file. There is no continuing once this happens.
+   *
+   */
+  void corruptionDialog() {
+    // Create the UI elements of the DialogBox
+    final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
+    dialogBox.setStylePrimaryName("ode-DialogBox");
+    dialogBox.setText("Project Read Error");
+    dialogBox.setHeight("100px");
+    dialogBox.setWidth("400px");
+    dialogBox.setGlassEnabled(true);
+    dialogBox.setAnimationEnabled(true);
+    dialogBox.center();
+    VerticalPanel DialogBoxContents = new VerticalPanel();
+    HTML message = new HTML("<p><b>We detected errors while reading in your project</b></p>" +
+        "<p>To protect your project from damage, we have ended this session. You may close this " +
+        "window.</p>");
+    message.setStyleName("DialogBox-message");
+    DialogBoxContents.add(message);
+    dialogBox.setWidget(DialogBoxContents);
+    dialogBox.show();
+  }
+
+  /**
+   * recordCorruptProject -- Record that we received a corrupt read. This
+   * may or may not work depending on the reason why we received a corrupt
+   * file. If the network just went down, then obviously we won't be able
+   * to use the network to report this problem. However if the corruption
+   * was due to a proxy mangling data (perhaps in the name of censorship)
+   * then this will likely work. We'll see.... (JIS)
+   *
+   */
+
+  public void recordCorruptProject(long projectId, String fileId, String message) {
+    getProjectService().recordCorruption(projectId, fileId, message,
+        new OdeAsyncCallback<Void>(
+          "") {                   // No failure message
+          @Override
+            public void onSuccess(Void result) {
+            // do nothing
+          }
+        });
+  }
+
+  /**
    * generateNonce() -- Generate a unique String value
    * this value is used to reference a built APK without
    * requiring explicit authentication.
