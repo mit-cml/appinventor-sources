@@ -1326,7 +1326,7 @@ public class Form extends Activity
   }
 
   public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.NONE,
+    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, 3,
     "Stop this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
