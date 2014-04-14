@@ -22,34 +22,50 @@
 
 # Component Description
 twitter:TwitterComponent  
-    a    ai:Component;
-    ai:category     ai:Social;
-    ai:description  "allows user to interact with Twitter";
-    ai:details      "Upon log in, many actions are authenticated to the application: ",
-                    "Tweet ",
-                    "Tweet image ",
-                    "Send message ",
-                    "Receive message",
-                    "Follow another user ",
-                    "Stop following an user ",
-                    "Get current followers ",
-                    "Get tweets of followed users ",
-                    "Get tweets that mention the user";
+    a   owl:Class;
+    rdfs:subClassOf ai:Component,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:category; 
+                        owl:hasValue    ai:Social] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:description; 
+                        owl:hasValue    "allows user to interact with Twitter" ] , 
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:details; 
+                        owl:hasValue    "Upon log in, many actions are authenticated to the application: ",
+                                        "Tweet ", 
+                                        "Tweet image ",
+                                        "Send message ",
+                                        "Receive message",
+                                        "Follow another user ",
+                                        "Stop following an user ",
+                                        "Get current followers ",
+                                        "Get tweets of followed users ",
+                                        "Get tweets that mention the user" ] ,
 
 # Privacy Implication and Common Usage
-    ai:access       android:Internet; 
-    ai:dataUsage    ai:SocialNetworking;
-    ai:examples     "Twitter", "WeReport";
-    ai:purpose      ai:DataAccess;
-    ai:requires     ai:UserLogin .
-    
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:access; 
+                        owl:hasValue    android:Internet] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:examples; 
+                        owl:hasValue    "Twitter", "WeReport" ] ,
+                    [   a               owl:Restriction;
+                        owl:onPropoerty ai:dataUsage;
+                        owl:hasValue    ai:SocialNetworking ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:purpose; 
+                        owl:hasValue    ai:DataAccess ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:requires; 
+                        owl:hasValue    ai:UserLogin, android:Internet ] .
+
 # Instance Definitions
-twitter:Username    a   ai:ComponentProperty; 
+twitter:Username    rdfs:subclassOf   ai:ComponentProperty; 
                     rdfs:label  "user name of the Twitter account holder " .
                 
-twitter:Tweet   a   ai:ComponentMethod;
+twitter:Tweet   rdfs:subclassOf   ai:ComponentMethod;
                 rdfs:label  "twitter's tweet method " .
 
-twitter:MentionsReceived    a   ai:ComponentEvent;
+twitter:MentionsReceived    rdfs:subclassOf   ai:ComponentEvent;
                             rdfs:label  "twitter event that detects when messages that mention the account holder's name have been received " .
-

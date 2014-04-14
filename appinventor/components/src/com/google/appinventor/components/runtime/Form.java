@@ -8,7 +8,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -56,6 +58,7 @@ import com.google.appinventor.components.runtime.util.AlignmentUtil;
 import com.google.appinventor.components.runtime.util.AnimationUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FullScreenVideoUtil;
+import com.google.appinventor.components.runtime.util.FullScreenWebview;
 import com.google.appinventor.components.runtime.util.JsonUtil;
 import com.google.appinventor.components.runtime.util.MediaUtil;
 import com.google.appinventor.components.runtime.util.OnInitializeListener;
@@ -1301,11 +1304,29 @@ public class Form extends Activity
     // Comment out the next line if we don't want the exit button
     addExitButtonToMenu(menu);
     addAboutInfoToMenu(menu);
+    
+    // add privacy description menu item if needed
+    if (privacyDescriptionExists()) {
+      addPrivacyDescriptionToMenu(menu);
+    }
     return true;
+  }
+  
+  
+  public void addPrivacyDescriptionToMenu(Menu menu) {
+    MenuItem privacyDescriptionItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    "Privacy Description")
+    .setOnMenuItemClickListener(new OnMenuItemClickListener() {
+      public boolean onMenuItemClick(MenuItem item) {
+        showPrivacyDescription();
+        return true;
+      }
+    });
+    privacyDescriptionItem.setIcon(android.R.drawable.ic_menu_agenda);    
   }
 
   public void addExitButtonToMenu(Menu menu) {
-    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.FIRST,
+    MenuItem stopApplicationItem = menu.add(Menu.NONE, Menu.NONE, Menu.NONE,
     "Stop this application")
     .setOnMenuItemClickListener(new OnMenuItemClickListener() {
       public boolean onMenuItemClick(MenuItem item) {
@@ -1328,6 +1349,15 @@ public class Form extends Activity
     aboutAppItem.setIcon(android.R.drawable.sym_def_app_icon);
   }
 
+  private void showPrivacyDescription(){
+    // The privacy description points to local file assets/privacy.html
+    Intent i = new Intent(this, FullScreenWebview.class);
+    i.putExtra(FullScreenWebview.ARG_LOCAL, true);
+    i.putExtra(FullScreenWebview.ARG_DOCUMENT_PATH, ComponentConstants.PRIVACY_DESCRIPTION);
+    i.putExtra(FullScreenWebview.ARG_MESSAGE, "Test test....");
+    startActivity(i);
+  }
+  
   private void showExitApplicationNotification() {
     String title = "Stop application?";
     String message = "Stop this application and exit? You'll need to relaunch " +
@@ -1474,5 +1504,24 @@ public class Form extends Activity
    */
   public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
     return fullScreenVideoUtil.performAction(action, source, data);
+  }
+  
+  /**
+   * Helper method to check whether there is a privacy description file available
+   * 
+   */
+  private boolean privacyDescriptionExists() {
+    String filePath = null;
+    try {
+      filePath = ComponentConstants.PRIVACY_DESCRIPTION;
+      InputStream fileStream = getAssets().open(filePath);
+      return true;
+    } catch (FileNotFoundException fe) {
+      Log.d(LOG_TAG, "No such file " + filePath);
+      return false;
+    } catch (IOException e) {
+      Log.d(LOG_TAG, "Problem loading assets file " + filePath);
+      return false;
+    }
   }
 }

@@ -1,5 +1,6 @@
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
 @prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
 @prefix web: <http://dig.csail.mit.edu/2014/PrivacyInformer/Web#> .
@@ -12,28 +13,40 @@
 # Example of usage is usually to send and receive data from specified sites 
 
 # Component Description
-web:WebComponent 
-    a    ai:Component;
-    ai:category     ai:Connectivity;
-    ai:description  "provides funtionality for HTTP GET and POST requests";
-    ai:details      "can be used for HTTP GET, POST, PUT and DELETE";
+web:WebComponent
+    a   owl:Class;
+    rdfs:subClassOf ai:Component,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:category; 
+                        owl:hasValue    ai:Connectivity ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:description; 
+                        owl:hasValue    "provides funtionality for HTTP GET and POST requests" ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:details; 
+                        owl:hasValue    "can be used for HTTP GET, POST, PUT and DELETE" ] ,
 
 # Privacy Implication and Common Usage
-    ai:access       android:Internet; 
-    ai:examples     "DropBox", "FileUpload";
-    ai:purpose      ai:DataSending, ai:DataReceiving;
-    ai:requires     android:Internet;
-    ai:hasProperty  web:URL;
-    ai:hasMethod    web:PostText;
-    ai:hasEvent     web:GotText .
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:access; 
+                        owl:hasValue    android:Internet ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:examples; 
+                        owl:hasValue    "DropBox", "FileUpload" ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:purpose; 
+                        owl:hasValue    ai:DataSending, ai:DataReceiving ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:requires; 
+                        owl:hasValue    android:Internet ] .
 
-# Instance Definitions
-web:URL     a   ai:ComponentProperty; 
+# Properties, Methods and Events definitions
+web:URL     rdfs:subclassOf   ai:ComponentProperty; 
             rdfs:label  "URL of the web component " .
                 
-web:PostText    a   ai:ComponentMethod;
+web:PostText    rdfs:subclassOf   ai:ComponentMethod;
                 rdfs:label  "web component's POST method " .
 
-web:GotText     a   ai:ComponentEvent;
+web:GotText     rdfs:subclassOf   ai:ComponentEvent;
                 rdfs:label  "web event that detects when text has been received " . 
 

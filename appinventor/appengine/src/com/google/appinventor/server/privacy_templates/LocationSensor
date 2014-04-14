@@ -13,37 +13,49 @@
 
 # Component Description
 location:LocationSensorComponent  
-    a    ai:Component;
-    ai:category     ai:Sensor;
-    ai:description  "senses the Android device's location with latitude and longitude values, can also convert physical addresses to lat/long values, as well as detect when the location changes";
-    ai:details      "altitude can also be measured when the device supports it",
-                    "implemented using android.hardware.SensorListener";
+    a   owl:Class;
+    rdfs:subClassOf ai:Component,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:category; 
+                        owl:hasValue    ai:Sensor] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:description; 
+                        owl:hasValue    "senses the Android device's location with latitude and longitude values, can also convert physical addresses to lat/long values, as well as detect when the location changes" ] , 
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:details; 
+                        owl:hasValue    "altitude can also be measured when the device supports it",
+                                        "implemented using android.hardware.SensorListener"] ,
 
 # Privacy Implication and Common Usage
-    ai:access       android:CoarseLocation, android:FineLocation;
-    ai:example      "Google Maps", "TrackMe";
-    ai:dataUsage    ai:DetectLocation;
-    ai:purpose      ai:DataGathering; 
-    ai:requires     android:CoarseLocation, android:FineLocation;
-
-# Component Properties, Methods and Events 
-    ai:hasProperty  location:Latitude, location:Longitude, location:Altitude;
-    ai:hasMethod    location:LatitudeFromAddress, location:LongitudeFromAddress;
-    ai:hasEvent     location:LocationChanged .
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:access; 
+                        owl:hasValue    android:CoarseLocation, android:FineLocation] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:examples; 
+                        owl:hasValue    "Google Maps", "TrackMe" ] ,
+                    [   a               owl:Restriction;
+                        owl:onPropoerty ai:dataUsage;
+                        owl:hasValue    ai:DetectLocation ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:purpose; 
+                        owl:hasValue    ai:DataGathering ] ,
+                    [   a               owl:Restriction;
+                        owl:onProperty  ai:requires; 
+                        owl:hasValue    android:CoarseLocation, android:FineLocation ] .
 
 # Instance Definitions
-location:Latitude   a   ai:ComponentProperty; 
+location:Latitude   rdfs:subclassOf   ai:ComponentProperty; 
                     rdfs:label  "device's location by latitude " .
-location:Longitude  a   ai:ComponentProperty;
+location:Longitude  rdfs:subclassOf   ai:ComponentProperty;
                     rdfs:label  "device's location by longitude " .
-location:Altitude   a   ai:ComponentProperty;
+location:Altitude   rdfs:subclassOf   ai:ComponentProperty;
                     rdfs:label  "device's location by altitude " .
 
-location:LatitudeFromAddress    a   ai:ComponentMethod;
+location:LatitudeFromAddress    rdfs:subclassOf   ai:ComponentMethod;
                                 rdfs:label  "from a physical address, get the corresponding latitude value " .
 
-location:LongitudeFromAddress   a   ai:ComponentMethod;
+location:LongitudeFromAddress   rdfs:subclassOf   ai:ComponentMethod;
                                 rdfs:label  "from a physical address, get the corresponding longitude value " .
 
-location:LocationChanged   a   ai:ComponentEvent;
+location:LocationChanged   rdfs:subclassOf   ai:ComponentEvent;
                            rdfs:label  "location sensor's event that detects when its value changes " .

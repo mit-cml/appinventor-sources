@@ -44,18 +44,20 @@ public class BkyParserHandler extends DefaultHandler {
         // create a new entry for this component in the privacy-sensitive map
         ArrayList<String> values = new ArrayList<String>();
         values.add(component);
+        values.add(attributes.getValue("instance_name"));
+        
         if (attributes.getValue("method_name") != null) {
-          values.add("method_name");
+          values.add("hasMethod");
           values.add(attributes.getValue("method_name"));
         } else if (attributes.getValue("property_name") != null) {
-          values.add("property_name");
+          values.add("hasProperty");
           values.add(attributes.getValue("property_name"));
         } else if (attributes.getValue("event_name") != null) {
-          values.add("event_name");
+          values.add("hasEvent");
           values.add(attributes.getValue("event_name"));
         } else {
-          values.add("NONE");
-          values.add("NONE");
+          values.add("NONE"); // no method, property or event found!
+          values.add("NONE"); // put in placeholders
         }
         // add the entry to the map of privacy-sensitive components
         map.put(curLevel, values);
@@ -74,21 +76,30 @@ public class BkyParserHandler extends DefaultHandler {
           }
         }
       } 
+    } else if (qName.equalsIgnoreCase("next")) {
+      // Similar to when we see a </block>, a <next> tag means the current block is over, so we should
+      // remove all its associated entries in the privacy-sensitive components map, using current level.
+      removeEntries(curLevel);
     }
   }
 
   public void endElement(String uri, String localName, String qName) throws SAXException {
     if (qName.equalsIgnoreCase("block")) {
-      curLevel--;
       // every time we exit a <block></block>, we must remove its associated entries in the
       // privacy-sensitive components map, since there is no way they have "nested" components
       // from this point onwards.
-      Iterator<Entry<Integer, ArrayList<String>>> iter = map.entrySet().iterator();
-      while (iter.hasNext()) {
-        Entry<Integer, ArrayList<String>> entry = iter.next();
-        if(entry.getKey() > curLevel) {
-            iter.remove();
-        }
+      removeEntries(curLevel);
+      curLevel--;
+    }
+  }
+  
+
+  private void removeEntries(int curLevel) {
+    Iterator<Entry<Integer, ArrayList<String>>> iter = map.entrySet().iterator();
+    while (iter.hasNext()) {
+      Entry<Integer, ArrayList<String>> entry = iter.next();
+      if(entry.getKey() >= curLevel) {
+          iter.remove();
       }
     }
   }
