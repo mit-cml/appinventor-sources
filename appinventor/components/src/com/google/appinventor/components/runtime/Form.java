@@ -8,7 +8,9 @@
 
 package com.google.appinventor.components.runtime;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -1304,7 +1306,9 @@ public class Form extends Activity
     addAboutInfoToMenu(menu);
     
     // add privacy description menu item if needed
-    addPrivacyDescriptionToMenu(menu);
+    if (privacyDescriptionExists()) {
+      addPrivacyDescriptionToMenu(menu);
+    }
     return true;
   }
   
@@ -1349,7 +1353,7 @@ public class Form extends Activity
     // The privacy description points to local file assets/privacy.html
     Intent i = new Intent(this, FullScreenWebview.class);
     i.putExtra(FullScreenWebview.ARG_LOCAL, true);
-    i.putExtra(FullScreenWebview.ARG_DOCUMENT_PATH, "privacy.ttl");
+    i.putExtra(FullScreenWebview.ARG_DOCUMENT_PATH, ComponentConstants.PRIVACY_DESCRIPTION);
     i.putExtra(FullScreenWebview.ARG_MESSAGE, "Test test....");
     startActivity(i);
   }
@@ -1500,5 +1504,24 @@ public class Form extends Activity
    */
   public synchronized Bundle fullScreenVideoAction(int action, VideoPlayer source, Object data) {
     return fullScreenVideoUtil.performAction(action, source, data);
+  }
+  
+  /**
+   * Helper method to check whether there is a privacy description file available
+   * 
+   */
+  private boolean privacyDescriptionExists() {
+    String filePath = null;
+    try {
+      filePath = ComponentConstants.PRIVACY_DESCRIPTION;
+      InputStream fileStream = getAssets().open(filePath);
+      return true;
+    } catch (FileNotFoundException fe) {
+      Log.d(LOG_TAG, "No such file " + filePath);
+      return false;
+    } catch (IOException e) {
+      Log.d(LOG_TAG, "Problem loading assets file " + filePath);
+      return false;
+    }
   }
 }
