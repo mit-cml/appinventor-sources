@@ -63,6 +63,9 @@ public final class Compiler {
 
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
+  
+  private static final String FULL_WEBVIEW_ACTIVITY_CLASS =
+      "com.google.appinventor.components.runtime.util.FullScreenWebview";
 
   public static final String RUNTIME_FILES_DIR = "/files/";
 
@@ -438,6 +441,12 @@ public final class Compiler {
       out.write("      <intent-filter>\n");
       out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
       out.write("      </intent-filter>\n");
+      out.write("    </activity>\n");
+      
+      // FullScreenWebView Activity
+      out.write("    <activity android:name=\"" + FULL_WEBVIEW_ACTIVITY_CLASS + "\" " +
+          "android:configChanges=\"orientation|keyboardHidden\" " +
+          "android:screenOrientation=\"behind\">\n");
       out.write("    </activity>\n");
 
       // BroadcastReceiver for Texting Component
