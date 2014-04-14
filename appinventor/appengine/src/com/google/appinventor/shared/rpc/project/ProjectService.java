@@ -5,8 +5,11 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -77,27 +80,30 @@ public interface ProjectService extends RemoteService {
 
   /**
    * Stores a string with the project settings.
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param settings  project settings
    */
-  void storeProjectSettings(long projectId, String settings);
+  void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException;
 
   /**
    * Deletes a file in the given project.
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param fileId  ID of file to delete
    * @return modification date for project
    */
-  long deleteFile(long projectId, String fileId);
+  long deleteFile(String sessionId, long projectId, String fileId) throws InvalidSessionException;
 
   /**
    * Deletes all files that are contained directly in the given directory. Files
    * in subdirectories are not deleted.
+   * @param sessionId current session id
    * @param projectId project ID
    * @param directory path of the directory
    * @return modification date for project
    */
-  long deleteFiles(long projectId, String directory);
+  long deleteFiles(String sessionId, long projectId, String directory) throws InvalidSessionException;
 
   /**
    * Loads the file information associated with a node in the project tree. The
@@ -111,6 +117,33 @@ public interface ProjectService extends RemoteService {
    * @return  implementation dependent
    */
   String load(long projectId, String fileId);
+
+  /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value depends on the file kind. Source (text) files should
+   * typically return their contents. Image files will be more likely to return
+   * the URL that the browser can find them at.
+   *
+   * This version returns a ChecksumedLoadFile which includes the file content
+   * and a checksum (MD5) of the content to detect silent network corruption
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  checksummed file object
+   */
+  ChecksumedLoadFile load2(long projectId, String fileId) throws ChecksumedFileException;
+
+  /**
+   * Attempt to record the project Id and error message when we detect a corruption
+   * while loading a project.
+   *
+   * @param projectId project id
+   * @param fileId the fileid (aka filename) of the file in question
+   * @param message Error message from the thrown exception
+   *
+   */
+  void recordCorruption(long ProjectId, String fileId, String message);
 
   /**
    * Loads the file information associated with a node in the project tree. The
@@ -145,6 +178,7 @@ public interface ProjectService extends RemoteService {
   /**
    * Saves the content of the file associated with a node in the project tree.
    *
+   * @param sessionId current session id
    * @param projectId  project ID
    * @param fileId  project node whose source should be saved
    * @param content  content to be saved
@@ -152,16 +186,17 @@ public interface ProjectService extends RemoteService {
    *
    * @see #load(long, String)
    */
-  long save(long projectId, String fileId, String content);
+  long save(String sessionId, long projectId, String fileId, String content) throws InvalidSessionException;
 
   /**
    * Saves the contents of multiple files.
    *
+   * @param sessionId current session id
    * @param filesAndContent  list containing file descriptor and their
    *                         associated content
    * @return modification date for last modified project of list
    */
-  public long save(List<FileDescriptorWithContent> filesAndContent);
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException;
 
   /**
    * Invokes a build command for the project on the back-end.

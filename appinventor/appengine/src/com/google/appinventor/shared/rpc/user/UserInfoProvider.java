@@ -46,4 +46,9 @@ public interface UserInfoProvider {
    *         {@code false} otherwise
    */
   boolean getIsAdmin();
+
+  String getSessionId();
+
+  void setSessionId(String SessionId);
+
 }

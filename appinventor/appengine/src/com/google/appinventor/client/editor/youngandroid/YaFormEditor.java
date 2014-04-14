@@ -37,6 +37,8 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.shared.properties.json.JSONObject;
 import com.google.appinventor.shared.properties.json.JSONParser;
 import com.google.appinventor.shared.properties.json.JSONValue;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidFormNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.base.Preconditions;
@@ -153,10 +155,19 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
 
   @Override
   public void loadFile(final Command afterFileLoaded) {
-    OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(MESSAGES.loadError()) {
+    final long projectId = getProjectId();
+    final String fileId = getFileId();
+    OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
-      public void onSuccess(String result) {
-        final FileContentHolder fileContentHolder = new FileContentHolder(result);
+      public void onSuccess(ChecksumedLoadFile result) {
+        String contents;
+        try {
+          contents = result.getContent();
+        } catch (ChecksumedFileException e) {
+          this.onFailure(e);
+          return;
+        }
+        final FileContentHolder fileContentHolder = new FileContentHolder(contents);
         upgradeFile(fileContentHolder, new Command() {
           @Override
           public void execute() {
@@ -167,8 +178,15 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
           }
         });
       }
+      @Override
+      public void onFailure(Throwable caught) {
+        if (caught instanceof ChecksumedFileException) {
+          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());
+        }
+        super.onFailure(caught);
+      }
     };
-    Ode.getInstance().getProjectService().load(getProjectId(), getFileId(), callback);
+    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
 
   @Override
@@ -356,7 +374,8 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
       String upgradedContent = YoungAndroidSourceAnalyzer.generateSourceFile(propertiesObject);
       fileContentHolder.setFileContent(upgradedContent);
 
-      Ode.getInstance().getProjectService().save(getProjectId(), getFileId(), upgradedContent,
+      Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+          getProjectId(), getFileId(), upgradedContent,
           new OdeAsyncCallback<Long>(MESSAGES.saveError()) {
             @Override
             public void onSuccess(Long result) {

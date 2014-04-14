@@ -110,7 +110,11 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/twitter.png", images.twitterComponent());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
+<<<<<<< HEAD
     bundledImages.put("images/spinner.png", images.spinner());
+=======
+    bundledImages.put("images/sharing.png", images.sharingComponent());
+>>>>>>> 47b47d15f371655c0c0b88ca0662e8a53789b574
     imagesInitialized = true;
   }
 

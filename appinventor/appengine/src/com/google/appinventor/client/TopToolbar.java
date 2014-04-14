@@ -652,7 +652,7 @@ public class TopToolbar extends Composite {
   private static class ForumsAction implements Command {
     @Override
     public void execute() {
-      Window.open("http://appinventor.mit.edu/explore/forums", "_ai2", "scrollbars=1");
+      Window.open("https://groups.google.com/forum/#!forum/mitappinventortest", "_ai2", "scrollbars=1");
     }
   }
 

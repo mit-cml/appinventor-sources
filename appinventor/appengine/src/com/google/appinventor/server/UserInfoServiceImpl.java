@@ -30,8 +30,16 @@ public class UserInfoServiceImpl extends OdeRemoteServiceServlet implements User
    * @return  user information record
    */
   @Override
-  public User getUserInformation() {
-    return userInfoProvider.getUser();
+  public User getUserInformation(String sessionId) {
+    // This is a little evil here. We are fetching the User object
+    // *and* side effecting it by storing the sessionId
+    // A more pedagotically correct way would be to do the store
+    // in a separate RPC. But that would add another round trip.
+    User user = userInfoProvider.getUser();
+    user.setSessionId(sessionId); // Store local copy
+    // Store it in the data store
+    storageIo.setUserSessionId(userInfoProvider.getUserId(), sessionId);
+    return user;
   }
 
   /**

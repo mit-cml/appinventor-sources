@@ -91,7 +91,9 @@ import java.io.IOException;
         + "your application, in which case you should reduce the number of media "
         + "files or their sizes.  Most video editing software, such as Windows "
         + "Movie Maker and Apple iMovie, can help you decrease the size of videos "
-        + "by shortening them or re-encoding the video into a more compact format.</p>",
+        + "by shortening them or re-encoding the video into a more compact format.</p>"
+        + "<p>You can also set the media source to a URL that points to a streaming video, "
+        + "but the URL must point to the video file itself, not to a program that plays the video.",
     category = ComponentCategory.MEDIA)
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
@@ -116,6 +118,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   private boolean delayedStart = false;
 
+  private MediaPlayer mPlayer;
   /**
    * Creates a new VideoPlayer component.
    *
@@ -151,7 +154,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   /**
    * Sets the video source.
-   * 
+   *
    * <p/>
    * See {@link MediaUtil#determineMediaSource} for information about what a
    * path can be.
@@ -220,6 +223,32 @@ public final class VideoPlayer extends AndroidViewComponent implements
       }
     }
   }
+
+
+
+
+
+  /**
+   * Sets the volume property to a number between 0 and 100.
+   *
+   * @param vol  the desired volume level
+   */
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
+      defaultValue = "50")
+  @SimpleProperty(
+      description = "Sets the volume to a number between 0 and 100. " +
+      "Values less than 0 will be treated as 0, and values greater than 100 " +
+      "will be treated as 100.")
+  public void Volume(int vol) {
+    // clip volume to range [0, 100]
+    vol = Math.max(vol, 0);
+    vol = Math.min(vol, 100);
+    if (mPlayer != null) {
+      mPlayer.setVolume(((float) vol) / 100, ((float) vol) / 100);
+    }
+  }
+
 
   /**
    * Method for starting the VideoPlayer once the media has been loaded.
@@ -323,7 +352,8 @@ public final class VideoPlayer extends AndroidViewComponent implements
   public void onPrepared(MediaPlayer newMediaPlayer) {
     mediaReady = true;
     delayedStart = false;
-    videoView.setMediaPlayer(newMediaPlayer, true);
+    mPlayer = newMediaPlayer;
+    videoView.setMediaPlayer(mPlayer, true);
     if (delayedStart) {
       Start();
     }
@@ -355,7 +385,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
     }
     videoView.setVideoURI(null);
     videoView.clearAnimation();
-    
+
     delayedStart = false;
     mediaReady = false;
 
@@ -369,7 +399,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   /**
    * Returns the component's horizontal width, measured in pixels.
-   * 
+   *
    * @return width in pixels
    */
 
@@ -381,7 +411,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   /**
    * Specifies the component's horizontal width, measured in pixels.
-   * 
+   *
    * @param width in pixels
    */
 
@@ -396,7 +426,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   /**
    * Returns the component's vertical height, measured in pixels.
-   * 
+   *
    * @return height in pixels
    */
 
@@ -408,7 +438,7 @@ public final class VideoPlayer extends AndroidViewComponent implements
 
   /**
    * Specifies the component's vertical height, measured in pixels.
-   * 
+   *
    * @param height
    *          in pixels
    */

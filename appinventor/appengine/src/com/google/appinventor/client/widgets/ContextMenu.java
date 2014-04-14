@@ -26,7 +26,9 @@ public final class ContextMenu {
    */
   public ContextMenu() {
     popupPanel = new PopupPanel(true);  // autoHide
-
+    //Enabling Glass under the popups so that clicks on the iframe (blockly) also hide the panel
+    popupPanel.setGlassEnabled(true);
+    popupPanel.setGlassStyleName("none"); //No style is passed (the default grays out the window)
     menuBar = new MenuBar(true);
     menuBar.setStylePrimaryName("ode-ContextMenu");
     popupPanel.add(menuBar);

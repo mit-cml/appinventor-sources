@@ -211,7 +211,11 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       nameLabel.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+          Ode ode = Ode.getInstance();
+          if (ode.screensLocked()) {
+            return;             // i/o in progress, ignore request
+          }
+          ode.openYoungAndroidProjectInDesigner(project);
         }
       });
       nameLabel.addStyleName("ode-ProjectNameLabel");

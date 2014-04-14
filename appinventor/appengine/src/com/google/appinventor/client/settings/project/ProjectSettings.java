@@ -64,6 +64,7 @@ public final class ProjectSettings extends CommonSettings implements SettingsAcc
     String s = encodeSettings();
     OdeLog.log("Saving project settings: " + s);
     Ode.getInstance().getProjectService().storeProjectSettings(
+        Ode.getInstance().getSessionId(),
         project.getProjectId(), s,
         new OdeAsyncCallback<Void>(
             // failure message

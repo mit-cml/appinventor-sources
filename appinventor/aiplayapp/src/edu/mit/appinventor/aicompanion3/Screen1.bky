@@ -491,7 +491,7 @@
             </value>
             <value name="ARG2">
               <block type="text">
-                <title name="TEXT">OK</title>
+                <title name="TEXT">Continue without WiFi</title>
               </block>
             </value>
             <value name="ARG3">
@@ -509,15 +509,34 @@
       </block>
     </statement>
   </block>
-  <block type="component_event" x="2060" y="1109">
+  <block type="component_event" x="1788" y="1215">
     <mutation component_type="Notifier" instance_name="Notifier1" event_name="AfterChoosing"></mutation>
     <title name="COMPONENT_SELECTOR">Notifier1</title>
     <statement name="DO">
-      <block type="component_method">
-        <mutation component_type="PhoneStatus" method_name="shutdown" is_generic="false" instance_name="PhoneStatus1"></mutation>
-        <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+      <block type="controls_if" inline="false">
+        <value name="IF0">
+          <block type="logic_compare" inline="true">
+            <title name="OP">EQ</title>
+            <value name="A">
+              <block type="lexical_variable_get">
+                <title name="VAR">choice</title>
+              </block>
+            </value>
+            <value name="B">
+              <block type="text">
+                <title name="TEXT">Exit</title>
+              </block>
+            </value>
+          </block>
+        </value>
+        <statement name="DO0">
+          <block type="component_method">
+            <mutation component_type="PhoneStatus" method_name="shutdown" is_generic="false" instance_name="PhoneStatus1"></mutation>
+            <title name="COMPONENT_SELECTOR">PhoneStatus1</title>
+          </block>
+        </statement>
       </block>
     </statement>
   </block>
-  <yacodeblocks ya-version="84" language-version="17"></yacodeblocks>
+  <yacodeblocks ya-version="86" language-version="17"></yacodeblocks>
 </xml>

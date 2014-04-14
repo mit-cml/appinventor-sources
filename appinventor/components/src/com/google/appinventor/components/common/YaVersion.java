@@ -239,16 +239,22 @@ public class YaVersion {
   // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
   // For YOUNG_ANDROID_VERSION 84:
   // - FORM_COMPONENT_VERSION was incremented to 12.
+  // For YOUNG_ANDROID_VERSION 85:
+  // - CAMERA_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 86:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
+  // - The Sharing Component was added
 
-    public static final int YOUNG_ANDROID_VERSION = 84;
+    public static final int YOUNG_ANDROID_VERSION = 86;
 
   // ............................... Blocks Language Version Number ...............................
 
   // NOTE(lizlooney,user) - when the blocks language changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
-  // 3. Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
+  // 3. ***Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
   // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
+  // *** BlockSaveFile is no longer used in App Inventor 2 (Feb. 2014)
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -292,6 +298,7 @@ public class YaVersion {
   // - Marked close-screen-with-result as a bad block
   // - Added close-screen-with-value
   // - Added close-screen-with-plain-text
+
   public static final int BLOCKS_LANGUAGE_VERSION = 17;
 
   // ................................. Component Version Numbers ..................................
@@ -373,7 +380,9 @@ public class YaVersion {
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
-  public static final int CAMERA_COMPONENT_VERSION = 1;
+  // For CAMERA_COMPONENT_VERSION 2:
+  // - The UseFront property was added.
+   public static final int CAMERA_COMPONENT_VERSION = 2;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
@@ -561,6 +570,8 @@ public class YaVersion {
 
   public static final int PLAYER_COMPONENT_VERSION = 5;
 
+  public static final int SHARING_COMPONENT_VERSION = 1;
+
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
@@ -638,7 +649,9 @@ public class YaVersion {
   // For VIDEOPLAYER_COMPONENT_VERSION 4:
   // - The VideoPlayer.width and VideoPlayer.height variables were marked as user visible.
   // - The FullScreen property was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 4;
+  // For VIDEOPLAYER_COMPONENT_VERSION 5:
+  // - The Volume property (setter only) was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
@@ -679,9 +692,9 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.16ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.17ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2", "2.17ai2zx1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

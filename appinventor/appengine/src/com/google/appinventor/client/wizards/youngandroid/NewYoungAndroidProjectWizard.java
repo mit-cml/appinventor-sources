@@ -15,6 +15,7 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.common.utils.StringUtils;
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
@@ -71,11 +72,21 @@ public final class NewYoungAndroidProjectWizard extends NewProjectWizard {
           NewYoungAndroidProjectParameters parameters = new NewYoungAndroidProjectParameters(
               packageName);
           NewProjectCommand callbackCommand = new NewProjectCommand() {
-            @Override
-            public void execute(Project project) {
-              Ode.getInstance().openYoungAndroidProjectInDesigner(project);
-            }
-          };
+              @Override
+              public void execute(final Project project) {
+                Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+                    @Override
+                    public void execute() {
+                      if (Ode.getInstance().screensLocked()) { // Wait until I/O finished
+                        Scheduler.get().scheduleDeferred(this); // on other project
+                      } else {
+                        Ode.getInstance().openYoungAndroidProjectInDesigner(project);
+                      }
+                    }
+                  });
+              }
+            };
+
           createNewProject(YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE, projectName,
               parameters, callbackCommand);
           Tracking.trackEvent(Tracking.PROJECT_EVENT, Tracking.PROJECT_ACTION_NEW_YA, projectName);

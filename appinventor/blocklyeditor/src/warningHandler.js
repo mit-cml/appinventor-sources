@@ -373,6 +373,26 @@ Blockly.WarningHandler.setBlockError = function(message){
   this.setErrorIconText(message);
 }
 
+// Check a disposed block for any errors or warnings and update state accordingly.
+Blockly.WarningHandler.checkDisposedBlock = function(){
+  if(this.warning) {
+    this.setWarningText(null);
+  }
+  if(this.errorIcon) {
+    this.setErrorIconText(null);
+  }
+  if(this.hasWarning) {
+    this.hasWarning = false;
+    Blockly.WarningHandler.warningCount--;
+    Blockly.WarningHandler.updateWarningErrorCount();
+  }
+  if(this.hasError) {
+    this.hasError = false;
+    Blockly.WarningHandler.errorCount--;
+    Blockly.WarningHandler.updateWarningErrorCount();
+  }
+}
+
 //Warnings
 
 //Warnings indicate that there is a problem with the project, but it will not run

@@ -20,6 +20,7 @@ import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.HorizontalPanel;
@@ -161,7 +162,11 @@ public class DesignToolbar extends Toolbar {
   private class AddFormAction implements Command {
     @Override
     public void execute() {
-      ProjectRootNode projectRootNode = Ode.getInstance().getCurrentYoungAndroidProjectRootNode();
+      Ode ode = Ode.getInstance();
+      if (ode.screensLocked()) {
+        return;                 // Don't permit this if we are locked out (saving files)
+      }
+      ProjectRootNode projectRootNode = ode.getCurrentYoungAndroidProjectRootNode();
       if (projectRootNode != null) {
         ChainableCommand cmd = new AddFormCommand();
         cmd.startExecuteChain(Tracking.PROJECT_ACTION_ADDFORM_YA, projectRootNode);
@@ -172,7 +177,11 @@ public class DesignToolbar extends Toolbar {
   private class RemoveFormAction implements Command {
     @Override
     public void execute() {
-      YoungAndroidSourceNode sourceNode = Ode.getInstance().getCurrentYoungAndroidSourceNode();
+      Ode ode = Ode.getInstance();
+      if (ode.screensLocked()) {
+        return;                 // Don't permit this if we are locked out (saving files)
+      }
+      YoungAndroidSourceNode sourceNode = ode.getCurrentYoungAndroidSourceNode();
       if (sourceNode != null && !sourceNode.isScreen1()) {
         // DeleteFileCommand handles the whole operation, including displaying the confirmation
         // message dialog, closing the form editor and the blocks editor,
@@ -207,7 +216,20 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
-  private void doSwitchScreen(long projectId, String screenName, View view) {
+  private void doSwitchScreen(final long projectId, final String screenName, final View view) {
+    Scheduler.get().scheduleDeferred(new Scheduler.ScheduledCommand() {
+        @Override
+        public void execute() {
+          if (Ode.getInstance().screensLocked()) { // Wait until I/O complete
+            Scheduler.get().scheduleDeferred(this);
+          } else {
+            doSwitchScreen1(projectId, screenName, view);
+          }
+        }
+      });
+  }
+
+  private void doSwitchScreen1(long projectId, String screenName, View view) {
     if (!projectMap.containsKey(projectId)) {
       OdeLog.wlog("DesignToolbar: no project with id " + projectId
           + ". Ignoring SwitchScreenAction.execute().");

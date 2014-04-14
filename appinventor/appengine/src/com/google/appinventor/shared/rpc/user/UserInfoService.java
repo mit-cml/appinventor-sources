@@ -21,7 +21,7 @@ public interface UserInfoService extends RemoteService {
    *
    * @return  user information
    */
-  User getUserInformation();
+  User getUserInformation(String sessionId);
 
   /**
    * Retrieves the user's settings.
