@@ -42,10 +42,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
     // Adds the component to its designated container
     container.$add(this);
 
-    // items = new YailList();
-    // selection = "";
-    // selectionIndex = 0;
-
     // set regular and dropdown layouts
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_spinner_item);
     adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
