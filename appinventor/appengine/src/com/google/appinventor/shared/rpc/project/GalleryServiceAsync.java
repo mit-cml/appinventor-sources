@@ -124,6 +124,10 @@ public interface GalleryServiceAsync {
   * @see GalleryService#getRecentReports(int start, int count)
   */
   void getRecentReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
+  /**
+  * @see GalleryService#getAllAppReports(int start, int count)
+  */
+  void getAllAppReports(int start, int count, AsyncCallback<List<GalleryAppReport>> callback);
 
   /**
   * @see GalleryService#isReportedByUser(long galleryId)
@@ -149,10 +153,26 @@ public interface GalleryServiceAsync {
    * @see GalleryService#markReportAsResolved(long reportId);
    */
   void markReportAsResolved(long reportId, AsyncCallback<Boolean> callback);
+  /**
+   * check if gallery app is activated
+   * @see GalleryService#isGalleryAppActivatd(long galleryId)
+   */
+  void isGalleryAppActivated(long galleryId, AsyncCallback<Boolean> callback);
+
+  /**
+   * @see GalleryService#deactivateGalleryApp(long galleryId);
+   * @param appId the id of the app
+   */
+  void deactivateGalleryApp(long galleryId, AsyncCallback<Boolean> callback);
 
   void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Void> callback);
   void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
   void readMessage(long timestamp, AsyncCallback<Void> callback);
   void appStatsWasRead(long appId, AsyncCallback<Void> callback);
+
+  /**
+   * update Database Field, should only be used by system admin
+   */
+  void updateDatabaseField(AsyncCallback<Void> callback);
 
 }

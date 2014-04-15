@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.explorer.youngandroid;
 
+
 import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -13,20 +14,33 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.client.GalleryClient;
+import com.google.appinventor.client.widgets.DropDownButton;
+import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
+import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.shared.rpc.user.User;
+import com.google.common.collect.Lists;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
+
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.user.client.Command;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 import java.util.ArrayList;
@@ -37,11 +51,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.appinventor.client.OdeAsyncCallback;
-import com.google.appinventor.client.output.OdeLog;
 
 
-import com.google.appinventor.shared.rpc.project.GalleryAppReport;
+
+
+
+
 
 /**
  * The report list shows all reports in a table.
@@ -51,11 +66,13 @@ import com.google.appinventor.shared.rpc.project.GalleryAppReport;
  * @author wolberd@gmail.com, based on ProjectList.java, lizlooney@google.com (Liz Looney),
  */
 public class ReportList extends Composite  {
-
+  private final CheckBox checkBox;
+  private final VerticalPanel panel;
   private List<GalleryAppReport> reports;
   private List<GalleryAppReport> selectedReports;
   private final List<GalleryAppReport> selectedGalleryAppReports;
   private final Map<GalleryAppReport, ReportWidgets> ReportWidgets;
+  private DropDownButton templateButton;
 
   // UI elements
   private final Grid table;
@@ -65,19 +82,40 @@ public class ReportList extends Composite  {
    */
   public ReportList() {
 
+
+
+    // Initialize UI
+    panel = new VerticalPanel();
+    panel.setWidth("100%");
+
+    HorizontalPanel checkBoxPanel = new HorizontalPanel();
+    checkBoxPanel.addStyleName("all-reports");
+    checkBox = new CheckBox();
+    checkBox.addValueChangeHandler(new ValueChangeHandler<Boolean>() {
+      @Override
+      public void onValueChange(ValueChangeEvent<Boolean> event) {
+        boolean isChecked = event.getValue(); // auto-unbox from Boolean to boolean
+        if (isChecked) {
+          initializeAllReports();
+        } else {
+          initializeReports();
+        }
+    }
+    });
+    checkBoxPanel.add(checkBox);
+    Label checkBoxText = new Label("Show Resolved Reports");
+    checkBoxPanel.add(checkBoxText);
+    panel.add(checkBoxPanel);
+
     selectedGalleryAppReports = new ArrayList<GalleryAppReport>();
     ReportWidgets = new HashMap<GalleryAppReport, ReportWidgets>();
 
-    // Initialize UI
     table = new Grid(1, 8); // The table initially contains just the header row.
     table.addStyleName("ode-ProjectTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
 
     setHeaderRow();
-
-    VerticalPanel panel = new VerticalPanel();
-    panel.setWidth("100%");
 
     panel.add(table);
     initWidget(panel);
@@ -142,6 +180,23 @@ public class ReportList extends Composite  {
         Ode.getInstance().getGalleryService().getRecentReports(0,10,callback);
   }
 
+  private void initializeAllReports() {
+    final OdeAsyncCallback<List<GalleryAppReport>> callback = new OdeAsyncCallback<List<GalleryAppReport>>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(List<GalleryAppReport> reportList) {
+          reports=reportList;
+          ReportWidgets.clear();
+          for (GalleryAppReport report : reports) {
+            ReportWidgets.put(report, new ReportWidgets(report));
+          }
+          refreshTable();
+        }
+      };
+      Ode.getInstance().getGalleryService().getAllAppReports(0,10,callback);
+  }
+
   private class ReportWidgets {
     final Label reportTextLabel;
     final Label appLabel;
@@ -151,6 +206,8 @@ public class ReportList extends Composite  {
     final Button sendMessageButton;
     final Button deactiveAppButton;
     final Button markAsResolvedButton;
+    boolean appActive;
+    boolean appResolved;
 
     private ReportWidgets(final GalleryAppReport report) {
 
@@ -209,9 +266,7 @@ public class ReportList extends Composite  {
     rw.reportTextLabel.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        DialogBox db = new DialogBox();
-        db.setText(r.getReportText());
-        db.show();
+
       }
     });
 
@@ -239,15 +294,56 @@ public class ReportList extends Composite  {
     rw.sendMessageButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-
+        sendMessagePopup(r);
       }
     });
+
+    final OdeAsyncCallback<Boolean> isActivatedCallback = new OdeAsyncCallback<Boolean>(
+    // failure message
+    MESSAGES.galleryError()) {
+      @Override
+      public void onSuccess(Boolean active) {
+        if(active){
+          rw.deactiveAppButton.setText("Deactivate App");
+          rw.appActive = true;
+        }
+        else {
+          rw.deactiveAppButton.setText("Reactivate App");
+          rw.appActive = false;
+        }
+      }
+    };
+    Ode.getInstance().getGalleryService().isGalleryAppActivated(r.getApp().getGalleryAppId(), isActivatedCallback);
+
     rw.deactiveAppButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-
+          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+            // failure message
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Boolean success) {
+                if(rw.appActive == true){
+                  rw.deactiveAppButton.setText("Reactivate App");//revert button
+                  rw.appActive = false;
+                }else{
+                  rw.deactiveAppButton.setText("Deactivate App");//revert button
+                  rw.appActive = true;
+                }
+              }
+            };
+            Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
         }
     });
+
+    if(r.getResolved()){//current status is resolved
+      rw.markAsResolvedButton.setText("Mark As Unresolved");//revert button
+      rw.appResolved = true;
+    }else{//current status is unresolved
+      rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
+      rw.appResolved = false;
+    }
+    OdeLog.log("######### Setup markReportAsResolved: r.getReportId():" + r.getReportId() + ", r.getReportText():" + r.getReportText());
     rw.markAsResolvedButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -257,10 +353,22 @@ public class ReportList extends Composite  {
             @Override
             public void onSuccess(Boolean success) {
               if(success){
-                onReportRemoved(r);
+                if(checkBox.getValue() == false){//only unresolved reports, remove directly.
+                  onReportRemoved(r);
+                }else{//both resolved and unresolved reports
+                  if(r.getResolved()){//current status is resolved
+                    r.setResolved(false);
+                    rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
+                    rw.appResolved = false;
+                  }else{//current status is unResolved
+                    r.setResolved(true);
+                    rw.markAsResolvedButton.setText("Mark As UnResolved");//revert button
+                    rw.appResolved = true;
+                  }
+                }
               }
             }
-        };
+          };
         Ode.getInstance().getGalleryService().markReportAsResolved(r.getReportId(), callback);
       }
     });
@@ -293,8 +401,6 @@ public class ReportList extends Composite  {
     return selectedGalleryAppReports;
   }
 
-  // ProjectManagerEventListener implementation
-
   public void onReportAdded(GalleryAppReport report) {
     reports.add(report);
     ReportWidgets.put(report, new ReportWidgets(report));
@@ -308,5 +414,157 @@ public class ReportList extends Composite  {
     refreshTable();
 
     selectedGalleryAppReports.remove(report);
+  }
+
+  private void sendMessagePopup(final GalleryAppReport report){
+      // Create a PopUpPanel with a button to close it
+      final PopupPanel popup = new PopupPanel(true);
+      popup.setStyleName("ode-InboxContainer");
+      final FlowPanel content = new FlowPanel();
+      content.addStyleName("ode-Inbox");
+      Label title = new Label(MESSAGES.messageInboxTitle());
+      title.addStyleName("InboxTitle");
+      content.add(title);
+
+      Button closeButton = new Button("x");
+//      closeButton.addStyleName("ActionButton");
+      closeButton.addStyleName("CloseButton");
+      closeButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          popup.hide();
+        }
+      });
+      content.add(closeButton);
+
+      final FlowPanel msgPanel = new FlowPanel();
+      msgPanel.addStyleName("app-actions");
+      final Label sentFrom = new Label("Sent From: ");
+      final Label sentTo = new Label("Sent To: " + report.getOffender().getUserName());
+      final TextArea msgText = new TextArea();
+      msgText.addStyleName("action-textarea");
+      final Button sendMsg = new Button("Send Message");
+      sendMsg.addStyleName("action-button");
+
+      // Account Drop Down Button
+      List<DropDownItem> templateItems = Lists.newArrayList();
+      // Messages Template 1
+      templateItems.add(new DropDownItem("template1", "Inappropriate App Content", new TemplateAction(msgText, 1, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", "Inappropriate User profile content", new TemplateAction(msgText, 2, null)));
+      templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
+      templateButton.setStyleName("ode-TopPanelButton");
+
+      new TemplateAction(msgText, 1, report.getApp().getTitle()).execute();
+
+      msgPanel.add(templateButton);
+      msgPanel.add(sentFrom);
+      msgPanel.add(sentTo);
+      msgPanel.add(msgText);
+      msgPanel.add(sendMsg);
+
+      content.add(msgPanel);
+      popup.setWidget(content);
+      // Center and show the popup
+      popup.center();
+
+      OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+        // failure message
+        MESSAGES.serverUnavailable()) {
+          @Override
+          public void onSuccess(final User currentUser) {
+            sentFrom.setText("Sent From: " + currentUser.getUserName());
+            sendMsg.addClickHandler(new ClickHandler() {
+              public void onClick(ClickEvent event) {
+                final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.galleryError()) {
+                    @Override
+                    public void onSuccess(final Void result) {
+                      OdeLog.log("### Moderator MSGS SEND SUCCESSFULLY");
+                      popup.hide();
+                    }
+                  };
+                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+              }
+            });
+          }
+        };
+      Ode.getInstance().getUserInfoService().getUserInformation(callback);
+    }
+  /**
+   *
+   * this is a template using for update database.
+   * update Database Field, should only be used by system admin
+   */
+  private void setUpdateDatabaseButton(){
+    /*
+	final Button button = new Button("Update Database Field");
+    button.addClickHandler(new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+          OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
+          // failure message
+          MESSAGES.serverUnavailable()) {
+            @Override
+            public void onSuccess(final Void callBack) {
+              button.setVisible(true);
+            }
+          };
+          Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
+      }
+    });
+    panel.add(button);
+    */
+    final Button button = new Button("Update Database Field");
+    button.setVisible(false);
+
+    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+	// failure message
+    MESSAGES.serverUnavailable()) {
+      @Override
+      public void onSuccess(final User currentUser) {
+        if(currentUser.getType() != 10){
+          return;
+        }
+        button.setVisible(true);
+        button.addClickHandler(new ClickHandler() {
+          @Override
+          public void onClick(ClickEvent event) {
+            OdeAsyncCallback<Void> updateCallback = new OdeAsyncCallback<Void>(
+            // failure message
+            MESSAGES.serverUnavailable()) {
+              @Override
+              public void onSuccess(final Void callBack) {
+                button.setVisible(true);
+              }
+            };
+            Ode.getInstance().getGalleryService().updateDatabaseField(updateCallback);
+          }
+        });
+      }
+    };
+    Ode.getInstance().getUserInfoService().getUserInformation(callback);
+    panel.add(button);
+  }
+  private class TemplateAction implements Command {
+    TextArea msgText;
+    int type;
+    String customText;
+    TemplateAction(TextArea msgText, int type, String customText){
+      this.msgText = msgText;
+      this.type = type;
+      this.customText = customText;
+    }
+    @Override
+    public void execute() {
+      if(type == 1){
+        msgText.setText("Your app \"" + customText  + "\" has been removed from the gallery due to inappropriate content. "
+                + "Please review the guidelines at ..."
+                + "If you feel this action has been taken in error, or you would like to discuss the issue, "
+                + "please use the App Inventor forum at: \n");
+        templateButton.setCaption("Inappropriate App Content");
+      }else if(type == 2){
+        msgText.setText("Your profile contains inappropriate content. Please modify your profile.\n");
+        templateButton.setCaption("Inappropriate User profile content");
+      }
+    }
   }
 }

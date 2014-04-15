@@ -2006,6 +2006,12 @@ textarea::-webkit-input-placeholder {
   border-radius: 0;
 }
 
+/* Moderation Page styles */
+.all-reports {
+  float:right;
+  margin-right:40px;
+}
+
 
 /* General gallery helper styles */
 .message-popup {

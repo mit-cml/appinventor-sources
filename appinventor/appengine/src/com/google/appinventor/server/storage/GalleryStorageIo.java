@@ -157,6 +157,16 @@ public interface GalleryStorageIo {
    */
   boolean markReportAsResolved(long reportId);
   /**
+   * deactivate app
+   * @param galleryId the id of the gallery app
+   */
+  boolean deactivateGalleryApp(long galleryId);
+  /**
+   * check if gallery app is activated
+   * @param galleryId the id of the gallery app
+   */
+  boolean isGalleryAppActivated(long galleryId);
+  /**
    * Returns a list of comments for an app
    * @param galleryId id of gallery app
    * @return list of {@link GalleryComment}
@@ -197,6 +207,13 @@ public interface GalleryStorageIo {
    */
   List<GalleryAppReport> getAppReports(int start, int count);
   /**
+  * gets existing reports
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  List<GalleryAppReport> getAllAppReports(int start, int count);
+  /**
    * adds a report (flag) to a gallery app comment
    * @param commentId id of comment that was reported
    * @param userId id of user who commented
@@ -225,5 +242,5 @@ public interface GalleryStorageIo {
 
   void appStatsWasRead(long appId);
 
-  
+  void updateDatabaseField();
 }

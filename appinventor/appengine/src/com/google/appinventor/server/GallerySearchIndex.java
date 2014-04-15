@@ -21,6 +21,7 @@ import com.google.appengine.api.search.DeleteException;
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.googlecode.objectify.NotFoundException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -77,6 +78,7 @@ public class GallerySearchIndex {
     Index index = getIndex();
     try {
       index.delete(String.valueOf(galleryId));
+      index.deleteSchema();
     } catch (DeleteException e) {
       LOG.info("error deleting index entry");
     }
@@ -97,10 +99,20 @@ public class GallerySearchIndex {
       LOG.info("Sending query " + query);
       Results<ScoredDocument> results = getIndex().search(query);
 
+
       // Iterate over the documents in the results
       for (ScoredDocument document : results) {
-        GalleryApp app = galleryStorageIo.getGalleryApp(Long.parseLong(document.getId()));
-        apps.add(app);
+        LOG.info("Find:" + document.getId());
+      }
+
+      // Iterate over the documents in the results
+      for (ScoredDocument document : results) {
+        try{
+          GalleryApp app = galleryStorageIo.getGalleryApp(Long.parseLong(document.getId()));
+          apps.add(app);
+        }catch(NotFoundException e){
+          LOG.log(Level.SEVERE, "Didn't Find GalleryAppData.id: " + document.getId());
+        }
       }
     } catch (SearchException e) {
       if (StatusCode.TRANSIENT_ERROR.equals(e.getOperationResult().getCode())) {

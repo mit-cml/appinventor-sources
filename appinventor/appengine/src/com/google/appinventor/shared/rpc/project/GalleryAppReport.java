@@ -78,8 +78,8 @@ public class GalleryAppReport implements IsSerializable{
     this.reporter = reporter;
   }
 
-  public User getResolved() {
-    return reporter;
+  public boolean getResolved() {
+    return resolved;
   }
 
   public void setResolved(boolean resolved) {

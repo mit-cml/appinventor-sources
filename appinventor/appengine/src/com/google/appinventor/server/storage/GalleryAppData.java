@@ -39,4 +39,6 @@ public class GalleryAppData {
   @Indexed
   String userId;
 
+  boolean active; //if false, app will be hided.
+
 }

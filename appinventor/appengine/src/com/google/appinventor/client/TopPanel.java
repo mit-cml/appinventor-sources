@@ -309,7 +309,7 @@ public class TopPanel extends Composite {
         };
       Ode.getInstance().getGalleryService().getDeveloperApps(Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
 
-/*
+
       // Retrieve list of unread messages of this user
       // We are not using this at the moment because all messages will be system generated ones above
       final OdeAsyncCallback<List<Message>> msgUnreadCallback = new OdeAsyncCallback<List<Message>>(
@@ -321,7 +321,7 @@ public class TopPanel extends Composite {
               OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
               for (final Message m : msgs) {
 //                msgCount++;
-                HTML msgBody = new HTML(m.toString2());
+                HTML msgBody = new HTML(m.getMessage());
                 msgBody.setStyleName("demo-PopUpPanel-message");
                 content.add(msgBody);
 
@@ -345,7 +345,7 @@ public class TopPanel extends Composite {
             }
         };
       Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), msgUnreadCallback);
-*/
+
 
 
       popup.setWidget(content);

@@ -729,6 +729,7 @@ panel
         @Override
         public void onSuccess(final List<GalleryApp> apps) {
           //Ode.getInstance().switchToGalleryInheritanceView(apps);
+          OdeLog.log("#### in GalleryPage remixedTo onSuccess " + apps.size());
           if (apps.size() != 0) {
             // Display remixes at the sidebar on the same page
             galleryGF.generateSidebar(apps, sidebarTabs, appsRemixes, "Remixes",

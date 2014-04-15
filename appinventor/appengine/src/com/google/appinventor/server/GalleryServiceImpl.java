@@ -328,6 +328,16 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.getAppReports(start,count);
 
   }
+  /**
+  * gets existing reports
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  @Override
+  public List<GalleryAppReport> getAllAppReports(int start, int count){
+    return galleryStorageIo.getAllAppReports(start,count);
+  }
 
   /**
    * check if an app is reprted by a user
@@ -375,6 +385,23 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public boolean markReportAsResolved(long reportId) {
     return galleryStorageIo.markReportAsResolved(reportId);
+  }
+
+  /**
+   * deactivate app
+   * @param galleryId the id of the gallery app
+   */
+  @Override
+  public boolean deactivateGalleryApp(long galleryId) {
+    return galleryStorageIo.deactivateGalleryApp(galleryId);
+  }
+  /**
+   * check if gallery app is Activated
+   * @param galleryId the id of the gallery app
+   */
+  @Override
+  public boolean isGalleryAppActivated(long galleryId){
+    return galleryStorageIo.isGalleryAppActivated(galleryId);
   }
 
 //  public void storeImage(InputStream is, long galleryId) {
@@ -541,5 +568,12 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 //    LOG.info("### READ MSGS");
 //    final String userId = userInfoProvider.getUserId(); // gets current userId
     galleryStorageIo.appStatsWasRead(appId);
+  }
+  /**
+   * update Database Field, should only be used by system admin
+   */
+  @Override
+  public void updateDatabaseField(){
+    galleryStorageIo.updateDatabaseField();
   }
 }

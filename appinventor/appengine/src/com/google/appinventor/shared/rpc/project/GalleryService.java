@@ -171,6 +171,14 @@ public interface GalleryService extends RemoteService {
   List<GalleryAppReport> getRecentReports(int start, int count);
 
   /**
+  * gets existing reports
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  List<GalleryAppReport> getAllAppReports(int start, int count);
+
+  /**
   * check if an app is reported by a user
   * @param galleryId the id of the app
   */
@@ -201,8 +209,25 @@ public interface GalleryService extends RemoteService {
 
   /**
    * mark an report as resolved
-   * @param reportId the id of the app
+   * @param reportId the id of the report
    */
   boolean markReportAsResolved(long reportId);
+
+  /**
+   * deactivate gallery app
+   * @param galleryId the id of the gallery app
+   */
+  boolean deactivateGalleryApp(long galleryId);
+
+  /**
+   * check if gallery app  is activated
+   * @param galleryId the id of the gallery app
+   */
+  boolean isGalleryAppActivated(long galleryId);
+
+  /**
+   * update Database Field, should only be used by system admin
+   */
+  void updateDatabaseField();
 
 }

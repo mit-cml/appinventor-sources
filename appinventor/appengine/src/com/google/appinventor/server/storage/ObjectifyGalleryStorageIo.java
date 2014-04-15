@@ -28,6 +28,7 @@ import com.google.appinventor.server.storage.GalleryCommentData;
 import com.google.appinventor.server.storage.GalleryAppLikeData;
 import com.google.appinventor.server.storage.GalleryAppReportData;
 import com.google.appinventor.server.storage.GalleryAppAttributionData;
+import com.google.appinventor.server.GallerySearchIndex;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -155,6 +156,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) throws ObjectifyException {
+          datastore = ObjectifyService.begin();
           long date = System.currentTimeMillis();
           GalleryAppData appData = new GalleryAppData();
           appData.id = null;  // let Objectify auto-generate the project id
@@ -166,6 +168,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.description = description;
           appData.projectId = projectId;
           appData.userId = userId;
+          appData.active = true;
           datastore.put(appData); // put the appData in the db so that it gets assigned an id
 
           assert appData.id != null;
@@ -179,7 +182,6 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           // written in this job, reading the assigned id from pd should work.
 
           Key<GalleryAppData> galleryKey = galleryKey(appData.id);
-          
         }
  
       });
@@ -209,7 +211,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-dateModified").offset(start).limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-dateModified").filter("active", true).offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -231,7 +233,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").offset(start).limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).order("-numDownloads").filter("active", true).offset(start).limit(count)) {
       
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
@@ -239,7 +241,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
     return apps;
   }
-  
+
   /**
    * Returns a list of apps created by a particular developer
    * @param userId id of developer
@@ -254,14 +256,14 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     // of not using transactions (run with) so i grabbed
     
     Objectify datastore = ObjectifyService.begin();
-    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).offset(start).limit(count)) {
+    for (GalleryAppData appData:datastore.query(GalleryAppData.class).filter("userId",userId).filter("active", true).offset(start).limit(count)) {
       GalleryApp gApp = new GalleryApp();
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
     }
     return apps;
   }
-  
+
  /**
    * Records that an app has been downloaded
    * @param galleryId the id of gallery app that was downloaded
@@ -341,7 +343,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param galleryId the id of gallery app to be deleted
    */
   public void deleteApp(final long galleryId) {
-
+    //the commenting code is for deleting app, instead, we are going to deactivate app
+	/*
     try {
       // first job deletes the UserProjectData in the user's entity group
       runJobWithRetries(new JobRetryHelper() {
@@ -367,6 +370,22 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
      } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,"gallery remove error", e);
     }
+    */
+    //for now, we only set app to inactive status.
+    try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            // delete the GalleryApp
+            GalleryAppData appData = datastore.find(galleryKey(galleryId));
+            if(appData != null){
+              appData.active = false;
+            }
+          }
+        });
+       } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null,"gallery remove error", e);
+      }
   }
 
 
@@ -621,10 +640,13 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
+              datastore = ObjectifyService.begin();
               Key<GalleryAppData> galleryKey = galleryKey(galleryId);
               boolean find = false;
               //this is a forloop but only one result, or none if app created before this.
               for (GalleryAppAttributionData attributionData : datastore.query(GalleryAppAttributionData.class).ancestor(galleryKey)) {
+                GalleryAppData appData = datastore.find(galleryKey(attributionData.attributionId));
+                if(appData.active == false) break;
                 id.t = attributionData.attributionId;
                 find = true;
               }
@@ -656,6 +678,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
               datastore = ObjectifyService.begin();
               for (GalleryAppAttributionData attributionData:datastore.query(GalleryAppAttributionData.class).filter("attributionId",galleryId)) {
                 GalleryAppData galleryAppData = datastore.find(galleryKey(attributionData.galleryId));
+                if(!galleryAppData.active) continue;
                 GalleryApp gApp = new GalleryApp();
                 makeGalleryApp(galleryAppData, gApp);
                 apps.add(gApp);
@@ -769,7 +792,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   /**
-   * Returns a list of reports (flags) for all app
+   * Returns a list of reports (flags) for all app(not including the resolved ones)
    * @param start start index
    * @param count number to return
    * @return list of {@link GalleryAppReport}
@@ -799,6 +822,36 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return reports;
   }
   /**
+  * gets existing reports, including both resolved and unresloved reports.
+  * @param start start index
+  * @param count number to retrieve
+  * @return the list of reports
+  */
+  @Override
+  public List<GalleryAppReport> getAllAppReports(final int start, final int count){
+    final List<GalleryAppReport> reports = new ArrayList<GalleryAppReport>();
+      try {
+        runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            datastore = ObjectifyService.begin();
+            for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).order("-dateCreated").offset(start).limit(count)) {
+              User reporter = storageIo.getUser(reportData.reporterId);
+              User offender = storageIo.getUser(reportData.offenderId);
+              GalleryApp app = getGalleryApp(reportData.galleryKey.getId());
+              GalleryAppReport galleryReport = new GalleryAppReport(reportData.id,reportData.reportText, app, offender, reporter,
+                reportData.dateCreated, reportData.resolved);
+              reports.add(galleryReport);
+            }
+          }
+        });
+      } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getExistingAppReports (all)", e);
+      }
+
+    return reports;
+  }
+  /**
    * mark an report as resolved
    * @param reportId the id of the app
    */
@@ -811,9 +864,9 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           datastore = ObjectifyService.begin();
           success.t = false;
-          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).filter("resolved", false).order("-dateCreated")) {
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class)) {
             if(reportData.id == reportId){
-              reportData.resolved = true;
+              reportData.resolved = !reportData.resolved;
               datastore.put(reportData);
               success.t = true;
               break;
@@ -825,6 +878,67 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
          throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.markReportAsResolved", e);
      }
      return success.t;
+  }
+  /**
+   * deactivate app
+   * @param appId the id of the app
+   */
+  @Override
+  public boolean deactivateGalleryApp(final long galleryId) {
+    final Result<Boolean> success = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+            datastore = ObjectifyService.begin();
+            success.t = false;
+            Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+            GalleryAppData appData = datastore.find(galleryKey);
+            if(appData != null){
+              appData.active = !appData.active;
+              datastore.put(appData);
+              success.t = true;
+              if(appData.active){
+                GalleryApp gApp = new GalleryApp();
+                makeGalleryApp(appData, gApp);
+                GallerySearchIndex.getInstance().indexApp(gApp);
+              }else{
+                GallerySearchIndex.getInstance().unIndexApp(appData.id);
+              }
+            }
+         }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.markReportAsResolved", e);
+    }
+    return success.t;
+  }
+  /**
+   * check if gallery app is activated
+   * @param galleryId the id of the gallery app
+   */
+  @Override
+  public boolean isGalleryAppActivated(final long galleryId){
+    final Result<Boolean> success = new Result<Boolean>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+            datastore = ObjectifyService.begin();
+            success.t = false;
+            Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+            GalleryAppData appData = datastore.find(galleryKey);
+            if(appData != null){
+              if(appData.active){
+                success.t = true;
+              }
+            }
+         }
+      });
+    } catch (ObjectifyException e) {
+       throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.markReportAsResolved", e);
+    }
+    return success.t;
   }
 
   /**
@@ -934,6 +1048,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     galleryApp.setUnreadLikes(appData.unreadLikes);
     galleryApp.setCreationDate(appData.dateCreated);
     galleryApp.setUpdateDate(appData.dateModified);
+    galleryApp.setActive(appData.active);
 
   }
 
@@ -1086,6 +1201,31 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       });
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
+    }
+  }
+  /**
+   * update Database Field, should only be used by system admin
+   */
+  public void updateDatabaseField(){
+    final Result<Boolean> success = new Result<Boolean>();
+    success.t = false;
+    try {
+      // first job is on the gallery entity, creating the GalleryAppData object
+      // and the associated files.
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) throws ObjectifyException {
+          datastore = ObjectifyService.begin();
+          for (GalleryAppData appData:datastore.query(GalleryAppData.class)) {
+              appData.active = true;
+              datastore.put(appData);
+          }
+          success.t = true;
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null,
+          "gallery error", e);
     }
   }
 }
