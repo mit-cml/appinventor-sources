@@ -674,8 +674,8 @@ public class YaVersion {
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
-
-  public static final int SPINNER_VERSION = 1;
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 

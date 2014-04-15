@@ -18,61 +18,61 @@ import com.google.gwt.user.client.ui.ListBox;
  */
 public final class MockSpinner extends MockVisibleComponent {
 
-	/**
-	 * Component type name.
-	 */
-	public static final String TYPE = "Spinner";
-	private static final int DEFAULT_WIDTH = 100;
+  /**
+   * Component type name.
+   */
+  public static final String TYPE = "Spinner";
+  private static final int DEFAULT_WIDTH = 100;
 
-	/**
-	 * Creates a new MockSpinner component.
-	 * 
-	 * @param editor
-	 *          editor of source file the component belongs to
-	 */
+  /**
+   * Creates a new MockSpinner component.
+   * 
+   * @param editor
+   *          editor of source file the component belongs to
+   */
 
-	// Widget for showing the mock component
-	private ListBox spinnerWidget;
+  // Widget for showing the mock component
+  private ListBox spinnerWidget;
 
-	/**
-	 * Creates a new MockSpinner component.
-	 * 
-	 * @param editor
-	 *          editor of source file the component belongs to
-	 */
-	public MockSpinner(SimpleEditor editor) {
-		super(editor, TYPE, images.spinner());
+  /**
+   * Creates a new MockSpinner component.
+   * 
+   * @param editor
+   *          editor of source file the component belongs to
+   */
+  public MockSpinner(SimpleEditor editor) {
+    super(editor, TYPE, images.spinner());
 
-		// Initialize mock label UI
-		spinnerWidget = new ListBox();
-		spinnerWidget.addItem("spinner component");
-		spinnerWidget.setStylePrimaryName("ode-SimpleMockComponent");
-		// labelWidget.setText("your new Spinner");
-		initComponent(spinnerWidget);
-		refreshForm();
-	}
+    // Initialize mock label UI
+    spinnerWidget = new ListBox();
+    spinnerWidget.addItem("spinner component");
+    spinnerWidget.setStylePrimaryName("ode-SimpleMockComponent");
+    // labelWidget.setText("your new Spinner");
+    initComponent(spinnerWidget);
+    refreshForm();
+  }
 
-	@Override
-	protected boolean isPropertyVisible(String propertyName) {
-		// We don't want to allow user to change the component height. S/he can only
-		// change the
-		// component width
-		if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
-			return false;
-		}
-		return super.isPropertyVisible(propertyName);
-	}
+  @Override
+  protected boolean isPropertyVisible(String propertyName){
+    // We don't want to allow user to change the component height. S/he can only
+    // change the
+    // component width
+    if (propertyName.equals(PROPERTY_NAME_HEIGHT)) {
+      return false;
+    }
+    return super.isPropertyVisible(propertyName);
+  }
 
-	@Override
-	public int getPreferredWidth() {
-		// The superclass uses getOffsetWidth, which won't work for us.
-		return DEFAULT_WIDTH;
-	}
+  @Override
+  public int getPreferredWidth(){
+    // The superclass uses getOffsetWidth, which won't work for us.
+    return DEFAULT_WIDTH;
+  }
 
-	// PropertyChangeListener implementation
-	@Override
-	public void onPropertyChange(String propertyName, String newValue) {
-		super.onPropertyChange(propertyName, newValue);
+  // PropertyChangeListener implementation
+  @Override
+  public void onPropertyChange(String propertyName, String newValue){
+    super.onPropertyChange(propertyName, newValue);
 
-	}
+  }
 }

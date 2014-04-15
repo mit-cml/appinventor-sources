@@ -23,7 +23,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
 import com.google.appinventor.components.runtime.util.YailList;
 
-@DesignerComponent(version = YaVersion.SPINNER_VERSION, description = "<p>A spinner component, that when clicked on, displays a pop-up"
+@DesignerComponent(version = YaVersion.SPINNER_COMPONENT_VERSION, description = "<p>A spinner component, that when clicked on, displays a pop-up"
     + " with a list of elements. These elements can be set in"
     + "the Designer or Blocks Editor by setting the "
     + "<code>ElementsFromString</code> property to their string-separated "
@@ -81,10 +81,9 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   }
 
   /**
-   * Selection index property setter method.
+   * Selection index property setter method, not a designer property to prevent
+   * inconsistencies if selection is invalid
    */
-  // Not a designer property, since this could lead to unpredictable
-  // results if Selection is set to an incompatible value.
   @SimpleProperty(description = "Set the spinner selection to the element at the given index. If an attempt is "
       + "made to set this to a number less than 1 or greater than the number "
       + "of items in the Spinner, SelectionIndex will be set to 0, and "
@@ -165,7 +164,7 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
   /**
    * Indicates a user has selected an item
    */
-  @SimpleEvent(description = "Even called when the user selects an item from the dropdown list")
+  @SimpleEvent(description = "Event called when the user selects an item from the dropdown list")
   public void DidSelectItem(String selection){
     EventDispatcher.dispatchEvent(this, "DidSelectItem", selection);
   }
@@ -176,7 +175,6 @@ public final class Spinner extends AndroidViewComponent implements OnItemSelecte
 
   }
 
-  // not sure when gets called, did not add and event for it
   public void onNothingSelected(AdapterView<?> parent){
     view.setSelection(0);
   }
