@@ -397,6 +397,14 @@ public interface OdeMessages extends Messages {
   @Description("Checkbox controlling whether to display invisible components in the designer.")
   String showHiddenComponentsCheckbox();
 
+  @DefaultMessage("Check to see Preview on Tablet size.")
+  @Description("Checkbox (check) controlling whether to display a preview on Tablet size.")
+  String previewTabletSize();
+
+  @DefaultMessage("Un-check to see Preview on Phone size.")
+  @Description("Checkbox (un-check) controlling whether to display a preview on Phone size.")
+  String previewPhoneSize();
+
   // Used in editor/simple/components/MockComponent.java
 
   @DefaultMessage("Rename Component")
@@ -670,13 +678,13 @@ public interface OdeMessages extends Messages {
   @Description("Caption and summary for Fill Parent choice")
   String fillParentCaption();
 
-  @DefaultMessage("pixels")
-  @Description("Caption for pixels label")
-  String pixelsCaption();
+  @DefaultMessage("DP") // DP - Density Independent Pixels
+  @Description("Caption for DPs label")
+  String dpsCaption();
 
-  @DefaultMessage("{0} pixels")
-  @Description("Summary for custom length in pixels")
-  String pixelsSummary(String pixels);
+  @DefaultMessage("{0} DPs")
+  @Description("Summary for custom length in DPs")
+  String dpsSummary(String dps);
 
   @DefaultMessage("The value must be a number greater than or equal to 0")
   @Description("Error shown after validation of custom length field failed.")

@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2014 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
@@ -731,7 +731,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    * Updates the sorted set of Sprites and the screen when a Sprite's Z
    * property is changed.
    *
-   * @param Sprite the Sprite whose Z property has changed
+   * @param sprite the Sprite whose Z property has changed
    */
   void changeSpriteLayer(Sprite sprite) {
     removeSprite(sprite);
@@ -1001,7 +1001,7 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
       defaultValue = DEFAULT_LINE_WIDTH + "")
   @SimpleProperty
   public void LineWidth(float width) {
-    paint.setStrokeWidth(width);
+    paint.setStrokeWidth((context.getResources().getDisplayMetrics().density * width) + 0.5f);
   }
 
   /**
@@ -1175,7 +1175,8 @@ public final class Canvas extends AndroidViewComponent implements ComponentConta
    */
   @SimpleFunction
   public void DrawCircle(int x, int y, float r) {
-    view.canvas.drawCircle(x, y, r, paint);
+    float densityRadius = (context.getResources().getDisplayMetrics().density * r) + 0.5f;
+    view.canvas.drawCircle(x, y, densityRadius, paint);
     view.invalidate();
   }
 

@@ -319,14 +319,9 @@ public final class Compiler {
     try {
       BufferedWriter out = new BufferedWriter(new FileWriter(manifestFile));
       out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
-      // TODO(markf) Allow users to set versionCode and versionName attributes.
-      // See http://developer.android.com/guide/publishing/publishing.html for
-      // more info.
       out.write("<manifest " +
           "xmlns:android=\"http://schemas.android.com/apk/res/android\" " +
           "package=\"" + packageName + "\" " +
-          // TODO(markf): uncomment the following line when we're ready to enable publishing to the
-          // Android Market.
          "android:versionCode=\"" + vCode +"\" " + "android:versionName=\"" + vName + "\" " +
           ">\n");
 
@@ -351,22 +346,13 @@ public final class Compiler {
       for (String permission : permissionsNeeded) {
         out.write("  <uses-permission android:name=\"" + permission + "\" />\n");
       }
-      // TODO(markf): Change the minSdkVersion below if we ever require an SDK beyond 1.5.
       // The market will use the following to filter apps shown to devices that don't support
       // the specified SDK version.  We might also want to allow users to specify minSdkVersion
       // or have us specify higher SDK versions when the program uses a component that uses
       // features from a later SDK (e.g. Bluetooth).
-      out.write("  <uses-sdk android:minSdkVersion=\"3\" />\n");
-
-      // If we set the targetSdkVersion to 4, we can run full size apps on tablets.
-      // On non-tablet hi-res devices like a Nexus One, the screen dimensions will be the actual
-      // device resolution. Unfortunately, images, canvas, sprites, and buttons with images are not
-      // sized appropriately. For example, an image component with an image that is 60x60, width
-      // and height properties set to automatic, is sized as 40x40. So they appear on the screen
-      // much smaller than they should be. There is code in Canvas and ImageSprite to work around
-      // this problem, but images and buttons are still an unsolved problem. We'll have to solve
-      // that before we can set the targetSdkVersion to 4 here.
-      // out.write("  <uses-sdk android:targetSdkVersion=\"4\" />\n");
+      out.write("  <uses-sdk android:minSdkVersion=\"4\" />\n");
+      // TODO (jos) Now that we build for 1.6 we can make support for tablets on Play automatic
+      // by adding supported screen sizes to the manifest.
 
       out.write("  <application ");
 
