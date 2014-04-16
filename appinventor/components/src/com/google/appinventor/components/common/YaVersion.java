@@ -244,8 +244,10 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 86:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
   // - The Sharing Component was added
+  // For YOUNG_ANDROID_VERSION 87:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 4
 
-    public static final int YOUNG_ANDROID_VERSION = 86;
+    public static final int YOUNG_ANDROID_VERSION = 87;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -668,7 +670,9 @@ public class YaVersion {
   // - The CanGoForward and CanGoBack methods were added
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
-  public static final int WEBVIEWER_COMPONENT_VERSION = 3;
+  // For WEBVIEWER_COMPONENT_VERSION 4:
+  // - Add WebViewString
+  public static final int WEBVIEWER_COMPONENT_VERSION = 4;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
