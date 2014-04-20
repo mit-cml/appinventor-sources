@@ -110,6 +110,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/isense.png", images.iSENSEComponent());
     bundledImages.put("images/voting.png", images.voting());
     bundledImages.put("images/web.png", images.web());
+    bundledImages.put("images/sharing.png", images.sharingComponent());
     imagesInitialized = true;
   }
 

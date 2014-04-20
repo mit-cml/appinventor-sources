@@ -25,6 +25,8 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
   // whether the user has admin priviledges
   private boolean isAdmin;
 
+  private String sessionId;        // Used to ensure only one account active at a time
+
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
   // key/value store for the entire application. By prepending a unique value, we ensure
@@ -39,11 +41,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, boolean tosAccepted, boolean isAdmin) {
+  public User(String id, String email, boolean tosAccepted, boolean isAdmin, String sessionId) {
     this.id = id;
     this.email = email;
     this.tosAccepted = tosAccepted;
     this.isAdmin = isAdmin;
+    this.sessionId = sessionId;
   }
 
   /**
@@ -137,7 +140,24 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return id.hashCode();
   }
 
+  /**
+   * Get the unique session id associated with this user
+   * This is used to ensure that only one session is opened
+   * per uers. Old sessions are invalidated.
+   *
+   * @return sessionId
+   */
+  @Override
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  @Override
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
+
   public User copy() {
-    return new User(id, email, tosAccepted, isAdmin);
+    return new User(id, email, tosAccepted, isAdmin, sessionId);
   }
 }

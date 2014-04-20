@@ -459,6 +459,11 @@
                         </a>
                       </li>
                       <li>
+                        <a href="#Sharing">
+                          Sharing
+                        </a>
+                      </li>
+                      <li>
                         <a href="#Texting">
                           Texting
                         </a>
@@ -747,6 +752,25 @@ none
   <dd>Opens the picker, as though the user clicked on it.</dd>
 </dl>
 
+<h2 id="Sharing">Sharing</h2>
+
+<p>Sharing is a non-visible component that enables sharing files and/or messages between your app and other apps installed on a device. The component will display a list of the installed apps that can handle the information provided,  and will allow the user to choose one to share the content with, for instance a mail app, a social network app, a texting app, and so on.</p>
+
+<h3>Properties</h3>
+none
+
+<h3>Events</h3>
+none
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>ShareFile(text file)</code></dt>
+  <dd>Shares a file through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the file inserted on it.</dd>
+  <dt><code>ShareFileWithMessage(text file, text message)</code></dt>
+  <dd>Shares both a file and a message through any capable application installed on the phone by displaying a list of available apps and allowing the user to  choose one from the list. The selected app will open with the file and message inserted on it.</dd>
+  <dt><code>ShareMessage(text message)</code></dt>
+  <dd>Shares a message through any capable application installed on the phone by displaying a list of the available apps and allowing the user to choose one from the list. The selected app will open with the message inserted on it.</dd>
+</dl>
 
                     <h2 id="Texting">
                       Texting

@@ -440,4 +440,10 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/procedures.png")
   ImageResource procedures();
+
+  /**
+   * Designer palette item: Sharing Component
+   */
+  @Source("com/google/appinventor/images/sharing.png")
+  ImageResource sharingComponent();
 }

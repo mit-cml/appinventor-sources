@@ -145,9 +145,7 @@ public final class FileImporterImpl implements FileImporter {
     }
     String settings = YoungAndroidProjectService.getProjectSettings(null, null, null, null);
     long projectId = storageIo.createProject(userId, project, settings);
-    return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
-        storageIo.getProjectType(userId, projectId),
-        storageIo.getProjectDateCreated(userId, projectId));
+    return storageIo.getUserProject(userId, projectId);
   }
 
   @VisibleForTesting

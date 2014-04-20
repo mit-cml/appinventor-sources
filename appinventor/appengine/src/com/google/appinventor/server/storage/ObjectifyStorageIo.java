@@ -19,6 +19,7 @@ import com.google.appengine.api.memcache.Expiration;
 import com.google.appinventor.server.CrashReport;
 import com.google.appinventor.server.FileExporter;
 import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.server.storage.StoredData.CorruptionRecord;
 import com.google.appinventor.server.storage.StoredData.FeedbackData;
 import com.google.appinventor.server.storage.StoredData.FileData;
 import com.google.appinventor.server.storage.StoredData.MotdData;
@@ -35,6 +36,8 @@ import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
 import com.google.common.annotations.VisibleForTesting;
@@ -102,6 +105,9 @@ public class ObjectifyStorageIo implements  StorageIo {
     GcsServiceFactory.createGcsService(RetryParams.getDefaultInstance());
 
   private final String GCS_BUCKET_NAME = Flag.createFlag("gcs.bucket", "").get();
+
+  private static final long TWENTYFOURHOURS = 24*3600*1000; // 24 hours in milliseconds
+
   private final boolean useGcs = Flag.createFlag("use.gcs", false).get();
 
 
@@ -142,6 +148,7 @@ public class ObjectifyStorageIo implements  StorageIo {
     ObjectifyService.register(WhiteListData.class);
     ObjectifyService.register(FeedbackData.class);
     ObjectifyService.register(NonceData.class);
+    ObjectifyService.register(CorruptionRecord.class);
   }
 
   ObjectifyStorageIo() {
@@ -174,7 +181,7 @@ public class ObjectifyStorageIo implements  StorageIo {
       return tuser;
     } else {                    // If not in memcache, or tos
                                 // not yet accepted, fetch from datastore
-      tuser = new User(userId, email, false, false);
+      tuser = new User(userId, email, false, false, null);
     }
     final User user = tuser;
     try {
@@ -190,6 +197,7 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
           user.setUserEmail(userData.email);
           user.setUserTosAccepted(userData.tosAccepted || !requireTos.get());
+          user.setSessionId(userData.sessionid);
         }
       });
     } catch (ObjectifyException e) {
@@ -249,6 +257,26 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (ObjectifyException e) {
       throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
     }
+  }
+
+  @Override
+  public void setUserSessionId(final String userId, final String sessionId) {
+    String cachekey = User.usercachekey + "|" + userId;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          UserData userData = datastore.find(userKey(userId));
+          if (userData != null) {
+            userData.sessionid = sessionId;
+            datastore.put(userData);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, collectUserErrorInfo(userId), e);
+    }
+    memcache.delete(cachekey);  // Flush cached copy because it changed
   }
 
   @Override
@@ -558,16 +586,39 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public String getProjectType(final String userId, final long projectId) {
-    final Result<String> projectType = new Result<String>();
+//    final Result<String> projectType = new Result<String>();
+//    try {
+//      runJobWithRetries(new JobRetryHelper() {
+//        @Override
+//        public void run(Objectify datastore) {
+//          ProjectData pd = datastore.find(projectKey(projectId));
+//          if (pd != null) {
+//            projectType.t = pd.type;
+//          } else {
+//            projectType.t = "";
+//          }
+//        }
+//      });
+//    } catch (ObjectifyException e) {
+//      throw CrashReport.createAndLogError(LOG, null,
+//          collectUserProjectErrorInfo(userId, projectId), e);
+//    }
+    // We only have one project type, no need to ask about it
+    return YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE;
+  }
+
+  @Override
+  public UserProject getUserProject(final String userId, final long projectId) {
+    final Result<ProjectData> projectData = new Result<ProjectData>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
           ProjectData pd = datastore.find(projectKey(projectId));
           if (pd != null) {
-            projectType.t = pd.type;
+            projectData.t = pd;
           } else {
-            projectType.t = "";
+            projectData.t = null;
           }
         }
       });
@@ -575,7 +626,13 @@ public class ObjectifyStorageIo implements  StorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           collectUserProjectErrorInfo(userId, projectId), e);
     }
-    return projectType.t;
+    if (projectData == null) {
+      return null;
+    } else {
+      return new UserProject(projectId, projectData.t.name,
+          projectData.t.type, projectData.t.dateCreated,
+          projectData.t.dateModified);
+    }
   }
 
   @Override
@@ -647,28 +704,6 @@ public class ObjectifyStorageIo implements  StorageIo {
           collectUserProjectErrorInfo(userId, projectId), e);
     }
     return projectHistory.t;
-  }
-
-  @Override
-  public long getProjectDateCreated(final String userId, final long projectId) {
-    final Result<Long> dateCreated = new Result<Long>();
-    try {
-      runJobWithRetries(new JobRetryHelper() {
-        @Override
-        public void run(Objectify datastore) {
-          ProjectData pd = datastore.find(projectKey(projectId));
-          if (pd != null) {
-            dateCreated.t = pd.dateCreated;
-          } else {
-            dateCreated.t = Long.valueOf(0);
-          }
-        }
-      });
-    } catch (ObjectifyException e) {
-      throw CrashReport.createAndLogError(LOG, null,
-          collectUserProjectErrorInfo(userId, projectId), e);
-    }
-    return dateCreated.t;
   }
 
   @Override
@@ -1063,6 +1098,11 @@ public class ObjectifyStorageIo implements  StorageIo {
     final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
     final boolean useGCS = useGCSforFile(fileName, content.length);
     final Result<String> oldBlobstorePath = new Result<String>();
+    final boolean considerBackup = (useGcs?((fileName.contains("src/") && fileName.endsWith(".blk")) // AI1 Blocks Files
+        || (fileName.contains("src/") && fileName.endsWith(".bky")) // Blockly files
+        || (fileName.contains("src/") && fileName.endsWith(".scm"))) // Form Definitions
+      :false);
+
     try {
       runJobWithRetries(new JobRetryHelper() {
         FileData fd;
@@ -1070,6 +1110,13 @@ public class ObjectifyStorageIo implements  StorageIo {
         @Override
         public void run(Objectify datastore) throws ObjectifyException {
           fd = datastore.find(projectFileKey(projectKey(projectId), fileName));
+
+          // <Screen>.yail files are missing when user converts AI1 project to AI2
+          // instead of blowing up, just create a <Screen>.yail file
+          if (fd == null && fileName.endsWith(".yail")){
+            fd = createProjectFile(datastore, projectKey(projectId), FileData.RoleEnum.SOURCE, fileName);
+          }
+
           Preconditions.checkState(fd != null);
           if (fd.isBlob) {
             // mark the old blobstore blob for deletion
@@ -1125,6 +1172,21 @@ public class ObjectifyStorageIo implements  StorageIo {
             fd.isBlob = false;
             fd.blobstorePath = null;
             fd.content = content;
+          }
+          if (considerBackup) {
+            if ((fd.lastBackup + TWENTYFOURHOURS) < System.currentTimeMillis()) {
+              try {
+                String gcsName = makeGCSfileName(fileName + "." + formattedTime() + ".backup", projectId);
+                GcsOutputChannel outputChannel =
+                    gcsService.createOrReplace((new GcsFilename(GCS_BUCKET_NAME, gcsName)), GcsFileOptions.getDefaultInstance());
+                outputChannel.write(ByteBuffer.wrap(content));
+                outputChannel.close();
+                fd.lastBackup = System.currentTimeMillis();
+              } catch (IOException e) {
+                throw CrashReport.createAndLogError(LOG, null,
+                    collectProjectErrorInfo(userId, projectId, fileName + "(backup)"), e);
+              }
+            }
           }
           datastore.put(fd);
           modTime.t = updateProjectModDate(datastore, projectId);
@@ -1280,6 +1342,28 @@ public class ObjectifyStorageIo implements  StorageIo {
     } catch (UnsupportedEncodingException e) {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding, "
           + collectProjectErrorInfo(userId, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public void recordCorruption(String userId, long projectId, String fileId, String message) {
+    Objectify datastore = ObjectifyService.begin();
+    final CorruptionRecord data = new CorruptionRecord();
+    data.timestamp = new Date();
+    data.id = null;
+    data.userId = userId;
+    data.fileId = fileId;
+    data.projectId = projectId;
+    data.message = message;
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+          @Override
+          public void run(Objectify datastore) {
+            datastore.put(data);
+          }
+        });
+    } catch (ObjectifyException e) {
+      throw CrashReport.createAndLogError(LOG, null, null, e);
     }
   }
 
@@ -1843,6 +1927,12 @@ public class ObjectifyStorageIo implements  StorageIo {
   @VisibleForTesting
   ProjectData getProject(long projectId) {
     return ObjectifyService.begin().find(projectKey(projectId));
+  }
+
+  // Return time in ISO_8660 format
+  private static String formattedTime() {
+    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    return formatter.format(new java.util.Date());
   }
 
 }

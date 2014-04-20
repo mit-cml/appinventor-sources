@@ -45,6 +45,8 @@ public class StoredData {
 
     @Indexed public Date visited; // Used to figure out if a user is active. Timestamp when settings are stored.
 
+    String sessionid;           // uuid of active session
+
   }
 
   // Project properties
@@ -159,6 +161,9 @@ public class StoredData {
 
     // File settings
     String settings;
+
+    // DateTime of last backup only used if GCS is enabled
+    long lastBackup;
   }
 
   // MOTD data.
@@ -222,4 +227,13 @@ public class StoredData {
     public Date timestamp;
   }
 
+  @Unindexed
+  static final class CorruptionRecord {
+    @Id Long id;
+    @Indexed public Date timestamp;
+    public String userId;
+    public long projectId;
+    public String fileId;
+    public String message;
+  }
 }

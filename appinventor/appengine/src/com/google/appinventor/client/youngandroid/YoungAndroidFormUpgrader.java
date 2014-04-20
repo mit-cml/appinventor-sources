@@ -219,6 +219,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("Camera")) {
+        srcCompVersion = upgradeCameraProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Canvas")) {
         srcCompVersion = upgradeCanvasProperties(componentProperties, srcCompVersion);
 
@@ -492,6 +495,16 @@ public final class YoungAndroidFormUpgrader {
       // The ShowFeedback property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeCameraProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The UseFront property was added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
@@ -927,6 +940,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 4.
       srcCompVersion = 4;
     }
+    if (srcCompVersion < 5) {
+        // The Volume property (setter only) was created.
+        // No properties need to be modified to upgrade to version 4.
+        srcCompVersion = 5;
+      }
     return srcCompVersion;
   }
 
@@ -1015,12 +1033,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
       // No properties need to be modified to upgrade to version 3.
-      srcCompVersion = 3;
+      // WebViewString added
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

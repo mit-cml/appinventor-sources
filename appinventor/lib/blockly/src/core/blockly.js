@@ -395,8 +395,22 @@ Blockly.onKeyDown_ = function(e) {
     // Delete or backspace.
     try {
       if (Blockly.selected && Blockly.selected.isDeletable()) {
-        Blockly.hideChaff();
-        Blockly.selected.dispose(true, true);
+        var descendantCount = Blockly.selected.getDescendants().length;
+        if (Blockly.selected.nextConnection && Blockly.selected.nextConnection.targetConnection) {
+          descendantCount -= Blockly.selected.nextConnection.targetBlock().
+            getDescendants().length;
+        }
+        // Ask for confirmation before deleting 3 or more blocks
+        if (descendantCount >= 3) {
+          if (confirm("Are you sure you want to delete all " + descendantCount + " of these blocks?")) {
+            Blockly.hideChaff();
+            Blockly.selected.dispose(true, true);
+          }
+        }
+        else {
+          Blockly.hideChaff();
+          Blockly.selected.dispose(true, true);
+        }
       }
     } finally {
       // Stop the browser from going back to the previous page.

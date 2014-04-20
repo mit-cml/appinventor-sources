@@ -207,7 +207,7 @@ public final class AddFormCommand extends ChainableCommand {
                   ode.getEditorManager().getOpenProjectEditor(project.getProjectId());
               FileEditor formEditor = projectEditor.getFileEditor(formFileId);
               FileEditor blocksEditor = projectEditor.getFileEditor(blocksFileId);
-              if (formEditor != null && blocksEditor != null) {
+              if (formEditor != null && blocksEditor != null && !ode.screensLocked()) {
                 DesignToolbar designToolbar = Ode.getInstance().getDesignToolbar();
                 long projectId = formEditor.getProjectId();
                 designToolbar.addScreen(projectId, formName, formEditor, 

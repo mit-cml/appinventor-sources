@@ -9,6 +9,7 @@ import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
@@ -67,6 +68,15 @@ public interface StorageIo {
    * @param userId user id
    */
   void setTosAccepted(String userId);
+
+  /**
+   * Sets the user's session id value which is used to ensure only
+   * one valid session exists for a user
+   *
+   * @param userId user id
+   * @param sessionId the session id (uuid) value
+   */
+  void setUserSessionId(String userId, String sessionId);
 
   /**
    * Returns a string with the user's settings.
@@ -141,6 +151,15 @@ public interface StorageIo {
   String getProjectType(String userId, long projectId);
 
   /**
+   * Returns the ProjectData object complete.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   * @return new UserProject object
+   */
+
+  UserProject getUserProject(String userId, long projectId);
+
+  /**
    * Returns a project name.
    *
    * @param userId a user Id (the request is made on behalf of this user)
@@ -166,15 +185,6 @@ public interface StorageIo {
    * @return String specially formatted history
    */
   String getProjectHistory(String userId, long projectId);
-
-  /**
-   * Returns the date the project was created.
-   * @param userId a user Id (the request is made on behalf of this user)
-   * @param projectId  project id
-   *
-   * @return long milliseconds
-   */
-  long getProjectDateCreated(String userId, long projectId);
 
   // Non-project-specific file management
 
@@ -348,6 +358,17 @@ public interface StorageIo {
    * @return  text file content
    */
   String downloadFile(String userId, long projectId, String fileId, String encoding);
+
+  /**
+   * Records a "corruption" record so we can analyze if corruption is
+   * happening.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param message The message from the exception on the client
+   */
+
+  void recordCorruption(String userId, long projectId, String fileId, String message);
 
   /**
    * Downloads raw file data.

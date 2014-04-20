@@ -7,6 +7,8 @@ package com.google.appinventor.server.project;
 
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.user.User;
@@ -145,6 +147,40 @@ public abstract class CommonProjectService {
    */
   public String load(String userId, long projectId, String fileId) {
     return storageIo.downloadFile(userId, projectId, fileId, StorageUtil.DEFAULT_CHARSET);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value depends on the file kind. Source (text) files should
+   * typically return their contents. Image files will be more likely to return
+   * the URL that the browser can find them at.
+   *
+   * This version returns a ChecksumedLoadFile object which includes the file
+   * content and a SHA-1 hash to validate file integrity accross the network.
+   *
+   * @param userId the user id
+   * @param projectId  project root node ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  ChecksumedLoadFile object
+   */
+  public ChecksumedLoadFile load2(String userId, long projectId, String fileId) throws ChecksumedFileException {
+    ChecksumedLoadFile retval = new ChecksumedLoadFile();
+    retval.setContent(storageIo.downloadFile(userId, projectId, fileId, StorageUtil.DEFAULT_CHARSET));
+    return retval;
+  }
+
+  /**
+   * Attempt to record the project Id and error message when we detect a corruption
+   * while loading a project.
+   *
+   * @param userId user id
+   * @param projectId project id
+   * @param message Error message from the thrown exception
+   *
+   */
+  public void recordCorruption(String userId, long projectId, String fileId, String message) {
+    storageIo.recordCorruption(userId, projectId, fileId, message);
   }
 
   /**
