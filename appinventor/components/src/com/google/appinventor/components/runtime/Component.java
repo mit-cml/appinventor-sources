@@ -10,13 +10,12 @@ import com.google.appinventor.components.common.ComponentConstants;
 
 /**
  * Interface for Simple components.
- *
+ * 
  */
 @SimpleObject
 public interface Component {
   /**
-   * Returns the dispatch delegate that is responsible for dispatching events
-   * for this component.
+   * Returns the dispatch delegate that is responsible for dispatching events for this component.
    */
   public HandlesEventDispatching getDispatchDelegate();
 
@@ -115,8 +114,8 @@ public interface Component {
   static final int TOAST_LENGTH_LONG = 1;
 
   /*
-   * Screen direction constants.
-   * Observe that opposite directions have the same magnitude but opposite signs.
+   * Screen direction constants. Observe that opposite directions have the same magnitude but
+   * opposite signs.
    */
   static final int DIRECTION_NORTH = 1;
   static final int DIRECTION_NORTHEAST = 2;
@@ -131,9 +130,13 @@ public interface Component {
   static final int DIRECTION_MIN = -4;
   static final int DIRECTION_MAX = 4;
 
-  //Slider defaults for setting MinimumValue and MaximumValue
+  // Slider defaults for setting MinimumValue and MaximumValue
   public static float SLIDER_MIN_VALUE = 10;
   public static float SLIDER_MAX_VALUE = 50;
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
+
+  // iSENSE
+  public static int iSENSE_LOGIN_TYPE_EMAIL = 1;
+  public static int iSENSE_LOGIN_TYPE_KEY = 2;
 
 }

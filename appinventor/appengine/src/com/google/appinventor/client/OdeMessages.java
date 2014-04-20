@@ -1265,4 +1265,16 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  
+  //iSENSE.java
+
+  @DefaultMessage("Email/Password")
+  @Description("Text for iSENSE login type Email")
+  String emailiSENSELoginType();
+
+  @DefaultMessage("Contributor Key")
+  @Description("Text for iSENSE login type Contributor Key")
+  String contributorKeyiSENSELoginType();
+
+  
 }

@@ -1,21 +1,10 @@
 package com.google.appinventor.components.runtime;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
 import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.PropertyCategory;
-import com.google.appinventor.components.annotations.SimpleEvent;
-import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesLibraries;
@@ -23,11 +12,10 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.util.AsynchUtil;
-import com.google.appinventor.components.runtime.util.YailList;
+import com.google.appinventor.components.runtime.util.ErrorMessages;
 
-import edu.uml.cs.isense.comm.API;
-import edu.uml.cs.isense.objects.RProjectField;
+import edu.uml.cs.isense.api.API;
+
 
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
 @UsesLibraries(libraries = "isense.jar, httpmime.jar")
@@ -41,7 +29,11 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   private int ProjectID;
   private String Email;
   private String Password;
+  private String ContributorKey;
+  private String YourName;
   private API api;
+  private int LoginType;
+  
   private boolean InProgress;
 
   public iSENSE(ComponentContainer container) {
@@ -86,28 +78,60 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   public void Password(String Password) {
     this.Password = Password;
   }
+  
+  //Contributor Key
+  @SimpleProperty(description = "iSENSE Contributor Key", category = PropertyCategory.BEHAVIOR)
+  public String ContributorKey() {
+    return ContributorKey;
+  }
 
-  //
-  // // Login
-  // @SimpleFunction(description = "Log into iSENSE")
-  // public void Login() {
-  // AsynchUtil.runAsynchronously(new Runnable() {
-  // public void run() {
-  // while (InProgress)
-  // ;// wait for another aysnc task to finish
-  // InProgress = true;
-  // boolean login = api.createSession(Email, Password);
-  // if (login == true) {
-  // LoginSucceeded();
-  // } else {
-  // LoginFailed();
-  // }
-  // InProgress = false;
-  // }
-  // });
-  // }
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty
+  public void ContributorKey(String ContributorKey) {
+    this.ContributorKey = ContributorKey;
+  }
 
-  // upload dataset
+  //Name
+  @SimpleProperty(description = "iSENSE Your Name", category = PropertyCategory.BEHAVIOR)
+  public String YourName() {
+    return YourName;
+  }
+
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
+  @SimpleProperty
+  public void YourName(String YourName) {
+    this.YourName = YourName;
+  }
+
+  /**
+   * Returns a number that selects how you will login to isenseproject.org
+   * The choices are: 1 = email, 2 = key
+   *
+   * @return  one of {@link Component#iSENSE_LOGIN_TYPE_EMAIL},
+   *          {@link Component#iSENSE_LOGIN_TYPE_KEY}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "This selects how you will login to iSENSEProject.org.  Either an email or a contributor key")
+  public int LoginType() {
+    return LoginType;
+  }
+  
+  /**
+   * Specifies the sensitivity of the accelerometer
+   * and checks that the argument is a legal value.
+   *
+   * @param sensitivity one of {@link Component#iSENSE_LOGIN_TYPE_EMAIL},
+   *          {@link Component#iSENSE_LOGIN_TYPE_KEY}
+   *
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_ISENSE_LOGIN_TYPE,
+      defaultValue = Component.iSENSE_LOGIN_TYPE_EMAIL + "")
+  @SimpleProperty
+  public void LoginType(int LoginType) {
+    this.LoginType = LoginType;
+  }
+/*  // upload dataset
   @SimpleFunction(description = "Upload Data Set to iSENSE")
   public void UploadDataSet(final String DataSetName, final YailList Fields, final YailList Data) {
     AsynchUtil.runAsynchronously(new Runnable() {
@@ -236,5 +260,5 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent(description = "iSENSE Login Failed")
   public void LoginFailed() {
     EventDispatcher.dispatchEvent(this, "LoginFailed");
-  }
+  }*/
 }
