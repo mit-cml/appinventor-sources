@@ -20,6 +20,7 @@ import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.widget.EditText;
+import android.text.InputType;
 
 /**
  * Underlying base class for TextBox, not directly accessible to Simple
@@ -54,6 +55,9 @@ public abstract class TextBoxBase extends AndroidViewComponent
 
   // Backing for text color
   private int textColor;
+
+  // TextInputType for text extra properties
+  private int TextInputType;
 
   // This is our handle on Android's nice 3-d default textbox.
   private Drawable defaultTextBoxDrawable;
@@ -99,6 +103,7 @@ public abstract class TextBoxBase extends AndroidViewComponent
     Hint("");
     Text("");
     TextColor(Component.COLOR_BLACK);
+    TextInputType(Component.TEXT_INPUT_TYPE_DEFAULT); 
   }
 
   @Override
@@ -312,6 +317,67 @@ public abstract class TextBoxBase extends AndroidViewComponent
   @SimpleProperty
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
+  }
+
+  /**
+   * Returns the extra properties of textEdit.
+   *
+   * @return  one of {@link Component#TEXT_INPUT_TYPE_DEFAULT}, 
+   *          {@link Component#TEXT_INPUT_TYPE_EMAIL},
+   *          {@link Component#TEXT_INPUT_TYPE_PHONE},
+   *          {@link Component#TEXT_INPUT_TYPE_ADDRESS},
+   *          {@link Component#TEXT_INPUT_TYPE_TIME},
+   *          {@link Component#TEXT_INPUT_TYPE_DATE},
+   *          {@link Component#TEXT_INPUT_TYPE_DATETIME} or
+   *          {@link Component#TEXT_INPUT_TYPE_PERSON_NAME}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      description = "Text Input Type Property",
+      userVisible = false)
+  public int TextInputType() {
+    return TextInputType;
+  }
+
+  /**
+   * Specifies the extra property of textEdit. This does not check that the argument is a legal value.
+   *
+   * @param shape one of {@link Component#TEXT_INPUT_TYPE_DEFAULT}, 
+   *          {@link Component#TEXT_INPUT_TYPE_EMAIL},
+   *          {@link Component#TEXT_INPUT_TYPE_PHONE},
+   *          {@link Component#TEXT_INPUT_TYPE_ADDRESS},
+   *          {@link Component#TEXT_INPUT_TYPE_TIME},
+   *          {@link Component#TEXT_INPUT_TYPE_DATE},
+   *          {@link Component#TEXT_INPUT_TYPE_DATETIME} or
+   *          {@link Component#TEXT_INPUT_TYPE_PERSON_NAME}
+   *   
+   * @throws IllegalArgumentException if TextInputType is not a legal value.
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_TEXT_INPUT_TYPE,
+      defaultValue = Component.TEXT_INPUT_TYPE_DEFAULT + "")
+  @SimpleProperty(description = "Specifies the text extra property (default, email," +
+      " phone, address, " +
+	  "  time, date, datetime, person name). ",
+      userVisible = false)
+  public void TextInputType(int TextInputType) {
+    if (TextInputType == 0) {
+      view.setInputType(InputType.TYPE_CLASS_TEXT);
+    } else if (TextInputType == 1) {
+      view.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+    } else if (TextInputType == 2) {
+      view.setInputType(InputType.TYPE_CLASS_PHONE);
+    } else if (TextInputType == 3) {
+      view.setInputType(InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
+    } else if (TextInputType == 4) {
+      view.setInputType(InputType.TYPE_DATETIME_VARIATION_TIME);
+    } else if (TextInputType == 5) {
+      view.setInputType(InputType.TYPE_DATETIME_VARIATION_DATE);
+    } else if (TextInputType == 6) {
+      view.setInputType(InputType.TYPE_CLASS_DATETIME);
+    } else if (TextInputType == 7) {
+      view.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
+    }
+    this.TextInputType = TextInputType;
   }
 
   /**
