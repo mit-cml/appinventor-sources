@@ -1,7 +1,7 @@
 #!/bin/bash
 
 appinventor=~/Documents/appinventor-sources/appinventor
-appengine=~/Documents/appengine/appengine-java-sdk-1.8.7
+appengine=~/Documents/appengine/appengine-java-sdk-1.9.3
 
 cd $appinventor
 
