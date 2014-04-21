@@ -14,7 +14,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
-import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.view.View;
@@ -34,7 +34,8 @@ import android.text.Editable;
 @DesignerComponent(version = YaVersion.LISTVIEW_COMPONENT_VERSION,
     description = "<p>This is a visible component that allows to place a list of text elements in" +
         " your Screen to display. <br> The list can be set using the ElementsFromString property" +
-        " or using the Elements block in the blocks editor. </p>",
+        " or using the Elements block in the blocks editor. <br> Warning: This component will" +
+        " not work correctly on Screens that are scrollable.</p>",
     category = ComponentCategory.USERINTERFACE,
     nonVisible = false,
     iconName = "images/listView.png")
@@ -46,7 +47,7 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   private final LinearLayout listViewLayout;
   private ArrayAdapter<String> adapter;
   private YailList items;
-  int index = 0;
+  private int selectionIndex;
   private String selection;
   private boolean showFilter = false;
   private static final boolean DEFAULT_ENABLED = false;
@@ -115,15 +116,6 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
-  * This function sets the list of the ListView through and adapter
-  */
-  public void setList(){
-    adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_list_item_1,
-        items.toStringArray());
-    view.setAdapter(adapter);
-  }
-
-  /**
   * Sets the height of the listView on the screen
   * @param height for height length
   */
@@ -181,6 +173,17 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
   }
 
   /**
+   * Set a list of text elements to build a ListView
+   * @param itemsList a YailList containing the strings to be added to the ListView
+   */
+  @SimpleProperty(description="Set a list of text elements to build your list.",
+      category = PropertyCategory.BEHAVIOR)
+  public void Elements(YailList itemsList) {
+    items = ElementsUtil.elements(itemsList, "Listview");
+    setAdapterData();
+  }
+
+  /**
    * Specifies the text elements you want to add to the ListView.
    * @param itemstring a string containing a comma-separated list of the strings to be picked from
    */
@@ -189,40 +192,47 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       "such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the " +
       "list.",  category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
-    if (itemstring.length() == 0) {
-      items = new YailList();
-    } else {
-      items = YailList.makeList((Object[]) itemstring.split(" *, *"));
-    }
-    setList();
+    items = ElementsUtil.elementsFromString(itemstring);
+    setAdapterData();
   }
 
   /**
-   * Set a list of text elements to build a ListView
-   * @param itemsList a YailList containing the strings to be added to the ListView
+   * This function sets the list of the ListView through an adapter
    */
-  @SimpleProperty(description="Set a list of text elements to build your list.",
+  public void setAdapterData(){
+    adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_list_item_1,
+        items.toStringArray());
+    view.setAdapter(adapter);
+  }
+
+  /**
+   * Selection index property getter method.
+   */
+  @SimpleProperty(
+      description = "The index of the currently selected item, starting at " +
+          "1.  If no item is selected, the value will be 0.  If an attempt is " +
+          "made to set this to a number less than 1 or greater than the number " +
+          "of items in the ListView, SelectionIndex will be set to 0, and " +
+          "Selection will be set to the empty text.",
       category = PropertyCategory.BEHAVIOR)
-  public void Elements(YailList itemsList) {
-    Object[] objects = itemsList.toStringArray();
-    for (int i = 0; i < objects.length; i++) {
-      if (!(objects[i] instanceof String)) {
-        throw new YailRuntimeError("Items passed to ListPicker must be Strings", "Error");
-      }
-    }
-    items = itemsList;
-    setList();
+  public int SelectionIndex() {
+    return selectionIndex;
   }
 
   /**
    * Sets the index to the passed argument for selection
-   * @param i the index to be selected
+   * @param index the index to be selected
    */
-  @SimpleProperty(description="Choose a position to be your index. This could be used to retrieve "
-    +"the text at the position chosen in the list.",  category = PropertyCategory.BEHAVIOR)
-  public void SelectionIndex(int i){
-    index = i - 1;
-    selection = items.getString(index);
+  @SimpleProperty(description="Choose a position to be your index. This could be used to retrieve" +
+      "the text at the position chosen in the list. If an attempt is made to set this to a " +
+      "number less than 1 or greater than the number of items in the ListView, SelectionIndex " +
+      "will be set to 0, and Selection will be set to the empty text."
+      ,
+      category = PropertyCategory.BEHAVIOR)
+  public void SelectionIndex(int index){
+    selectionIndex = ElementsUtil.selectionIndex(index, items);
+    // Now, we need to change Selection to correspond to SelectionIndex.
+    selection = ElementsUtil.setSelectionFromIndex(index, items);
   }
 
   /**
@@ -232,28 +242,29 @@ public final class ListView extends AndroidViewComponent implements AdapterView.
       category = PropertyCategory
       .BEHAVIOR)
   public String Selection(){
-      selection = items.getString(index);
       return selection;
   }
 
   /**
-   * Simple event to raise when the component is clicked
+   * Selection property setter method.
    */
-  @Override
-  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-    BeforePicking();
-    index = position;
-    AfterPicking();
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty
+  public void Selection(String value) {
+    selection = value;
+    // Now, we need to change SelectionIndex to correspond to Selection.
+    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
   }
 
   /**
-   * Simple event to be raised right after an element has been chosen,
-   * but before assigning the element to the Selection property.
+   * Simple event to raise when the component is clicked. Implementation of
+   * AdapterView.OnItemClickListener
    */
-  @SimpleEvent(description = "Simple event to be raised right after an element has been chosen," +
-      " but before assigning the element to the Selection property.")
-  public void BeforePicking() {
-    EventDispatcher.dispatchEvent(this, "BeforePicking");
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+    SelectionIndex(position + 1); // AI lists are 1-based
+    AfterPicking();
   }
 
   /**
