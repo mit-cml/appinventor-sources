@@ -15,6 +15,7 @@ import com.google.appinventor.client.editor.simple.components.MockCanvas;
 import com.google.appinventor.client.editor.simple.components.MockCheckBox;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.components.MockContactPicker;
+import com.google.appinventor.client.editor.simple.components.MockDatePicker;
 import com.google.appinventor.client.editor.simple.components.MockEmailPicker;
 import com.google.appinventor.client.editor.simple.components.MockHorizontalArrangement;
 import com.google.appinventor.client.editor.simple.components.MockImage;
@@ -106,6 +107,7 @@ public final class SimpleComponentDescriptor {
     bundledImages.put("images/speechRecognizer.png", images.speechRecognizer());
     bundledImages.put("images/textToSpeech.png", images.textToSpeech());
     bundledImages.put("images/texting.png", images.texting());
+    bundledImages.put("images/datePicker.png", images.datePickerComponent());
     bundledImages.put("images/tinyDB.png", images.tinyDB());
     bundledImages.put("images/tinyWebDB.png", images.tinyWebDB());
     bundledImages.put("images/twitter.png", images.twitterComponent());
@@ -279,6 +281,8 @@ public final class SimpleComponentDescriptor {
       return new MockEmailPicker(editor);
     } else if (name.equals(MockListPicker.TYPE)) {
       return new MockListPicker(editor);
+    } else if (name.equals(MockDatePicker.TYPE)) {
+      return new MockDatePicker(editor);
     } else if (name.equals(MockHorizontalArrangement.TYPE)) {
       return new MockHorizontalArrangement(editor);
     } else if (name.equals(MockVerticalArrangement.TYPE)) {

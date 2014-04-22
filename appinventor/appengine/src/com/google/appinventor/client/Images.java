@@ -115,6 +115,12 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
+   * Designer palette item: TimePicker Component
+   */
+  @Source("com/google/appinventor/images/datePicker.png")
+  ImageResource datePickerComponent();
+
+  /**
    * Designer palette item: form component
    */
   @Source("com/google/appinventor/images/form.png")

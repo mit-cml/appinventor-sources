@@ -441,6 +441,7 @@
                     <li> <a href="#Button"> Button </a> </li>
                     <li> <a href="#CheckBox"> CheckBox </a> </li>
                     <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#DatePicker"> DatePicker </a> </li>
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
                     <li> <a href="#ListPicker"> ListPicker </a> </li>
@@ -646,6 +647,66 @@
                     <dd> Text describing time time of an instant </dd>
                   </dl>
 
+                  <h2 id="DatePicker">DatePicker</h2>
+
+                  <p><p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p></p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code><em>Day</em></code></dt>
+                    <dd>the Day of the month that was last picked using the DatePicker.</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Month</em></code></dt>
+                    <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 0 = January, 11 = December.</dd>
+                    <dt><code><em>MonthInText</em></code></dt>
+                    <dd>Returns the name of the Month that was last picked using the DatePicker, in textual format.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Year</em></code></dt>
+                    <dd>the Year that was last picked using the DatePicker</dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterDateSet()</code></dt>
+                    <dd>Event that runs after the user chooses a Date in the dialog</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
 
                  <h2 id="Image">Image</h2>
 
