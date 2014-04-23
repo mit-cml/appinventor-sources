@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.appinventor.components.annotations.DesignerComponent;
@@ -22,6 +23,7 @@ import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.AsyncCallbackPair;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
@@ -46,6 +48,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   private String YourName;
   private API api;
   private int LoginType = -1;
+  private Handler handler;
 
   private boolean InProgress;
 
@@ -54,6 +57,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     Log.i("iSENSE", "Starting? " + container.toString());
     LoginType(Component.iSENSE_LOGIN_TYPE_EMAIL + "");
     api = API.getInstance();
+    handler = new Handler();
     // api.useDev(true);
   }
 
@@ -154,26 +158,53 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
           }
         }
         int dataset = -1;
+        // login with email
         if (LoginType == iSENSE_LOGIN_TYPE_EMAIL) {
           RPerson user = api.createSession(Email, Password);
           if (user == null) {
-            LoginFailed();
-            UploadDataSetFailed();
+            handler.post(new Runnable() {
+              public void run() {
+                LoginFailed();
+                UploadDataSetFailed();
+              }
+            });
             return;
           }
           dataset = api.uploadDataSet(ProjectID, jData, DataSetName);
+          // login with contribution key
         } else if (LoginType == iSENSE_LOGIN_TYPE_KEY) {
-          dataset = api.uploadDataSet(ProjectID, jData, ContributorKey, YourName);
+          dataset = api.uploadDataSet(ProjectID, DataSetName, jData, ContributorKey, YourName);
         }
         Log.i("iSENSE", "JSON Upload: " + jData.toString());
         Log.i("iSENSE", "Dataset ID: " + dataset);
-        if (dataset == -1) {
-          UploadDataSetFailed();
-        } else {
-          UploadDataSetSucceeded(dataset);
-        }
+        UploadDataSetResult(dataset);
       }
     });
+  }
+
+  private void UploadDataSetResult(int dataset) {
+    AsyncCallbackPair<Integer> myCallback = new AsyncCallbackPair<Integer>() {
+      public void onSuccess(final Integer result) {
+        handler.post(new Runnable() {
+          public void run() {
+            UploadDataSetSucceeded(result);
+          }
+        });
+      }
+
+      public void onFailure(final String message) {
+        handler.post(new Runnable() {
+          public void run() {
+            UploadDataSetFailed();
+          }
+        });
+      }
+    };
+    if (dataset == -1) {
+      myCallback.onFailure("");
+    } else {
+      myCallback.onSuccess(dataset);
+    }
   }
 
   @SimpleFunction(description = "Get the Data Sets for the current project")
