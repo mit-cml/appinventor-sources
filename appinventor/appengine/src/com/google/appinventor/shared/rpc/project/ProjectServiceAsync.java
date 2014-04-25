@@ -124,4 +124,10 @@ public interface ProjectServiceAsync {
    * @see ProjectService#addFile(long, String)
    */
   void addFile(long projectId, String fileId, AsyncCallback<Long> callback);
+
+  /**
+   * @see ProjectService#log(String)
+   */
+  void log(String message, AsyncCallback<Void> callback);
+
 }

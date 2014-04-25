@@ -230,4 +230,13 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
+
+  /**
+   * Log a string to the server log, always log with
+   * severity WARNING.
+   *
+   * @param message message to log
+   */
+  void log(String message);
+
 }

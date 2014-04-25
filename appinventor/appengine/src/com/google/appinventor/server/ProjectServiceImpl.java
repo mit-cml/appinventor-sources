@@ -408,6 +408,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
 
+  @Override
+  public void log(String message) {
+    LOG.warning(message);
+  }
+
   private void validateSessionId(String sessionId) throws InvalidSessionException {
     String storedSessionId = userInfoProvider.getSessionId();
     if (storedSessionId == null) {
