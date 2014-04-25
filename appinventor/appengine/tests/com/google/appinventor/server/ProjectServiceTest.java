@@ -14,6 +14,7 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -368,8 +369,12 @@ public class ProjectServiceTest {
 
     String scmFileId = "src/com/domain/noname/" + projectName + "/"
         + YOUNG_ANDROID_FORM_NAME + ".scm";
-    storageIo.uploadFile(projectId, scmFileId,
-        userId, YOUNG_ANDROID_PROJECT_SCM_SOURCE, StorageUtil.DEFAULT_CHARSET);
+    try {
+      storageIo.uploadFile(projectId, scmFileId,
+          userId, YOUNG_ANDROID_PROJECT_SCM_SOURCE, StorageUtil.DEFAULT_CHARSET);
+    } catch (BlocksTruncatedException e) {
+      // Won't happen
+    }
 
     return projectId;
   }

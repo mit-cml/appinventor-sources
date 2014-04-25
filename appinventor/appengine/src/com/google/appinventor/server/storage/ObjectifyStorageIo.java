@@ -30,6 +30,7 @@ import com.google.appinventor.server.storage.StoredData.UserFileData;
 import com.google.appinventor.server.storage.StoredData.UserProjectData;
 import com.google.appinventor.server.storage.StoredData.RendezvousData;
 import com.google.appinventor.server.storage.StoredData.WhiteListData;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
@@ -1069,9 +1070,20 @@ public class ObjectifyStorageIo implements  StorageIo {
 
   @Override
   public long uploadFile(final long projectId, final String fileName, final String userId,
+      final String content, final String encoding) throws BlocksTruncatedException {
+    try {
+      return uploadRawFile(projectId, fileName, userId, false, content.getBytes(encoding));
+    } catch (UnsupportedEncodingException e) {
+      throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding,"
+          + collectProjectErrorInfo(null, projectId, fileName), e);
+    }
+  }
+
+  @Override
+  public long uploadFileForce(final long projectId, final String fileName, final String userId,
       final String content, final String encoding) {
     try {
-      return uploadRawFile(projectId, fileName, userId, content.getBytes(encoding));
+      return uploadRawFileForce(projectId, fileName, userId, content.getBytes(encoding));
     } catch (UnsupportedEncodingException e) {
       throw CrashReport.createAndLogError(LOG, null, "Unsupported file content encoding,"
           + collectProjectErrorInfo(null, projectId, fileName), e);
@@ -1092,8 +1104,19 @@ public class ObjectifyStorageIo implements  StorageIo {
   }
 
   @Override
-  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+  public long uploadRawFileForce(final long projectId, final String fileName, final String userId,
       final byte[] content) {
+    try {
+      return uploadRawFile(projectId, fileName, userId, true, content);
+    } catch (BlocksTruncatedException e) {
+      // Won't get here, exception isn't thrown when force is true
+      return 0;
+    }
+  }
+
+  @Override
+  public long uploadRawFile(final long projectId, final String fileName, final String userId,
+      final boolean force, final byte[] content) throws BlocksTruncatedException {
     final Result<Long> modTime = new Result<Long>();
     final boolean useBlobstore = useBlobstoreForFile(fileName, content.length);
     final boolean useGCS = useGCSforFile(fileName, content.length);
@@ -1118,6 +1141,13 @@ public class ObjectifyStorageIo implements  StorageIo {
           }
 
           Preconditions.checkState(fd != null);
+
+          if ((content.length < 120) && (fileName.endsWith(".bky"))) { // Likely this is an empty blocks workspace
+            if (!force) {            // force is true if we *really* want to save it!
+              checkForBlocksTruncation(fd); // See if we had previous content and throw and exception if so
+            }
+          }
+
           if (fd.isBlob) {
             // mark the old blobstore blob for deletion
            oldBlobstorePath.t = fd.blobstorePath;
@@ -1207,6 +1237,9 @@ public class ObjectifyStorageIo implements  StorageIo {
         deleteBlobstoreFile(oldBlobstorePath.t);
       }
     } catch (ObjectifyException e) {
+      if (e.getMessage().startsWith("Blocks")) { // Convert Exception
+        throw new BlocksTruncatedException();
+      }
       throw CrashReport.createAndLogError(LOG, null,
           collectProjectErrorInfo(userId, projectId, fileName), e);
     }
@@ -1865,6 +1898,10 @@ public class ObjectifyStorageIo implements  StorageIo {
         job.onNonFatalError();
         LOG.log(Level.WARNING, "Optimistic concurrency failure", ex);
       } catch (ObjectifyException oe) {
+        String message = oe.getMessage();
+        if (message != null && message.startsWith("Blocks")) { // This one is fatal!
+          throw oe;
+        }
         // maybe this should be a fatal error? I think the only thing
         // that creates this exception (other than this method) is uploadToBlobstore
         job.onNonFatalError();
@@ -1933,6 +1970,18 @@ public class ObjectifyStorageIo implements  StorageIo {
   private static String formattedTime() {
     java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     return formatter.format(new java.util.Date());
+  }
+
+  // We are called when our caller detects we are about to write a trivial (empty)
+  // workspace. We check to see if previously the workspace was non-trivial and
+  // if so, throw the BlocksTruncatedException. This will be passed through the RPC
+  // layer to the client code which will put up a dialog box for the user to review
+  // See Ode.java for more information
+  private void checkForBlocksTruncation(FileData fd) throws ObjectifyException {
+    if (fd.isBlob || fd.isGCS || fd.content.length > 120)
+      throw new ObjectifyException("BlocksTruncated"); // Hack
+    // I'm avoiding having to modify every use of runJobWithRetries to handle a new
+    // exception, so we use this dodge.
   }
 
 }

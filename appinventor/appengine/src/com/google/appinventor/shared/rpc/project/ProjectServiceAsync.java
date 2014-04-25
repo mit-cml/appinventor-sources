@@ -106,6 +106,11 @@ public interface ProjectServiceAsync {
   void save(String sessionId, long projectId, String fileId, String source, AsyncCallback<Long> callback);
 
   /**
+   * @see ProjectService#save2(String, long, String, String)
+   */
+  void save2(String sessionId, long projectId, String fileId, boolean force, String source, AsyncCallback<Long> callback);
+
+  /**
    * @see ProjectService#save(String, List)
    */
   void save(String sessionId, List<FileDescriptorWithContent> filesAndContent, AsyncCallback<Long> callback);
