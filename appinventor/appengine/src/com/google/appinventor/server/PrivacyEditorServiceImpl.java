@@ -11,6 +11,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.ModelFactory;
 import com.hp.hpl.jena.rdf.model.Property;
 import com.hp.hpl.jena.rdf.model.RDFNode;
+import com.hp.hpl.jena.rdf.model.ResIterator;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.rdf.model.ResourceFactory;
 import com.hp.hpl.jena.rdf.model.Statement;
@@ -19,6 +20,7 @@ import com.hp.hpl.jena.reasoner.Reasoner;
 import com.hp.hpl.jena.reasoner.ReasonerRegistry;
 import com.hp.hpl.jena.util.PrintUtil;
 import com.hp.hpl.jena.vocabulary.RDF;
+import com.hp.hpl.jena.vocabulary.RDFS;
 import com.google.appinventor.server.properties.json.ServerJsonParser;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
@@ -41,13 +43,15 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static final String TEMPLATE_LOC ="privacy_templates/"; // template location with respective to current classpath
   private static final String AI_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#";
   private static final String COMPONENT_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/";
-  private static final Property contains = ResourceFactory.createProperty( AI_NS, "contains");
-  private static final Property connectsTo = ResourceFactory.createProperty( AI_NS, "connectsTo");
+  private static final Property aiContains = ResourceFactory.createProperty( AI_NS, "contains");
+  private static final Property aiConnectsTo = ResourceFactory.createProperty( AI_NS, "connectsTo");
+  private static final Property aiDescription = ResourceFactory.createProperty( AI_NS, "description");
   
   //Declare and Initialize required constants
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
   private static Model model = ModelFactory.createDefaultModel();
+  private static Model ontModel = ModelFactory.createDefaultModel();
   
   @Override
   public String getPreview(long projectId) {
@@ -65,7 +69,9 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     
     // create a unique URI based on the project name and email address
     // populate it with basic RDF.type
-    String privacyDescriptionURI = BASE_NS + storageIo.getProjectName(userId, projectId) + "_" + userInfoProvider.getUserEmail().split("@")[0];
+    String projectName = storageIo.getProjectName(userId, projectId);
+    String userEmail = userInfoProvider.getUserEmail();
+    String privacyDescriptionURI = BASE_NS + projectName + "_" + userEmail.split("@")[0];
     Resource privacyDescription = model.createResource(privacyDescriptionURI).addProperty(RDF.type, ResourceFactory.createResource( AI_NS + "PrivacyDescription"));
     
     // get the project source files 
@@ -77,9 +83,9 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     // for each component, if it has a template (meaning it's privacy-sensitive), add the component to Jena model and set the appropriate prefix
     for (String component : appComponents) {
       if (templates.contains(component)) {
-        privacyDescription.addProperty(contains, ResourceFactory.createResource( COMPONENT_NS + component + "#" + component + "Component"));
+        privacyDescription.addProperty(aiContains, ResourceFactory.createResource( COMPONENT_NS + component + "#" + component + "Component"));
         model.setNsPrefix(component.toLowerCase(), COMPONENT_NS + component + "#");
-        //model.read(getClass().getResourceAsStream( TEMPLATE_LOC + component), null, "TTL");
+        ontModel.read(getClass().getResourceAsStream( TEMPLATE_LOC + component), null, "TTL");
       }
     }
     
@@ -91,30 +97,77 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       ArrayList<ArrayList<ArrayList<String>>> relationships = YoungAndroidXMLSourceAnalyzer.parseXMLSource(file, templates);
       processRelationships(relationships);
     }
-
-/*    // Testing code for Jena inference
-    Resource web1 = model.createResource("http://www.example.org/test#web1").addProperty(RDF.type, ResourceFactory.createResource("http://dig.csail.mit.edu/2014/PrivacyInformer/Web#WebComponent"));
-    Reasoner reasoner = ReasonerRegistry.getOWLReasoner();
-    Model webSchema = ModelFactory.createDefaultModel().read(getClass().getResourceAsStream(TEMPLATE_LOC + "Web"), null, "TTL");
-    reasoner = reasoner.bindSchema(webSchema);
-    InfModel infmodel = ModelFactory.createInfModel(reasoner, model);
     
-    Model sample = ModelFactory.createDefaultModel();
-    for (StmtIterator i = infmodel.listStatements(web1, null, (RDFNode) null); i.hasNext();) {
-      Statement stmt = i.nextStatement();
-      sample.add(stmt);
-      //System.out.println(PrintUtil.print(stmt));
-    }
-*/    
     // Write the model statements to an out string
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
     
     //System.out.println(out.toString());
     preview = out.toString();
-    return preview;
+    
+    String html = getPreviewHTML(projectName, userEmail, model, ontModel);
+    //System.out.println(html);
+    return html;
   }
 
+  public String getPreviewHTML(String projectName, String userEmail, Model model, Model ontModel) {
+    Model aiAndroidModel = ModelFactory.createDefaultModel();
+    aiAndroidModel.read(getClass().getResourceAsStream( TEMPLATE_LOC + "appinventor"), null, "TTL");
+    aiAndroidModel.read(getClass().getResourceAsStream( TEMPLATE_LOC + "android"), null, "TTL");
+    
+    String html = "";
+    String title = "<h1>Privacy Description for " + projectName + "</h1>";
+    String intro = "<p>" + projectName + " is an Android mobile application made on the AppInventor platform. The developer can be reached at <a>" + userEmail + "</a>.</p>";
+    String summary = "";
+    String details = "";
+    
+    // select all the components referred to by property "ai:contains"
+    StmtIterator iter = model.listStatements(null, aiContains, (RDFNode) null);
+    if (iter.hasNext()) {
+      summary = "<p> This application contains the following privacy-sensitive components: " +
+                "<ul>";
+      while (iter.hasNext()) {
+        // create a list element for the component
+        Resource component = iter.nextStatement().getObject().asResource();
+        String compLabel = ontModel.getProperty(component, RDFS.label).getString();
+        String compDescription = ontModel.getProperty(component, aiDescription).getString();
+        summary += "<li><a href=\"#" + compLabel.split(" ")[0] + "\">" + compLabel + "</a>, which " + compDescription + ".";
+        
+        // create a section for detailed annotations of the component
+        details += "<h3 id=\"" + compLabel.split(" ")[0] + "\">Details for " + compLabel + "</h3>";
+        details += "<ul>";
+        details += "<li>" + compLabel + " " + compDescription;
+        StmtIterator propIter = ontModel.listStatements(component, null, (RDFNode) null);
+        while (propIter.hasNext()) {
+          Statement cur = propIter.nextStatement();
+          Statement predicateLabel = aiAndroidModel.getProperty(cur.getPredicate().asResource(), RDFS.label);
+          
+          if (predicateLabel != null) {
+            String predicateLabelStr = predicateLabel.getString();
+            String objectLabelStr = cur.getObject().toString(); //default label for object is the URI
+            if (cur.getObject().isLiteral()) {
+              objectLabelStr = cur.getObject().asLiteral().getString();
+            } else {
+              Statement objectLabel = aiAndroidModel.getProperty(cur.getObject().asResource(), RDFS.label);
+              if (objectLabel != null) {
+                objectLabelStr = objectLabel.getString();
+              }
+            }
+            
+            // add a new bullet point to the detailed annotation
+            details += "<li>" + compLabel + " " + predicateLabelStr + objectLabelStr;
+          }
+        }
+        details += "</ul>";
+      }
+      summary += "</ul>";
+    } else {
+      summary = "This application does not contain any privacy-sensitive components as defined in AppInventor.";
+    }
+    
+    html = title + intro + summary + details;
+    return html;
+  }
   // Get component list
   private List<String> getComponentList(List<String> projectFiles, String userId, long projectId) {
     List<String> appComponents = new ArrayList<String>();
@@ -174,7 +227,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       
       if (parentPredInstance != null && childPredInstance != null) {
         // add the relationship to the privacy description
-        model.add(parentPredInstance, connectsTo, childPredInstance);
+        model.add(parentPredInstance, aiConnectsTo, childPredInstance);
       }
     }
   }

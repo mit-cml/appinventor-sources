@@ -15,30 +15,17 @@
 # Component Description
 web:WebComponent
     a   owl:Class;
-    rdfs:subClassOf ai:Component,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:category; 
-                        owl:hasValue    ai:Connectivity ] ,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:description; 
-                        owl:hasValue    "provides funtionality for HTTP GET and POST requests" ] ,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:details; 
-                        owl:hasValue    "can be used for HTTP GET, POST, PUT and DELETE" ] ,
+    rdfs:label  "web component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "provides funtionality for HTTP GET and POST requests";
+    ai:category     ai:Connectivity;
+    ai:details      "can be used for HTTP GET, POST, PUT and DELETE";
 
 # Privacy Implication and Common Usage
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:access; 
-                        owl:hasValue    android:Internet ] ,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:examples; 
-                        owl:hasValue    "DropBox", "FileUpload" ] ,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:purpose; 
-                        owl:hasValue    ai:DataSending, ai:DataReceiving ] ,
-                    [   a               owl:Restriction;
-                        owl:onProperty  ai:requires; 
-                        owl:hasValue    android:Internet ] .
+    ai:access       android:Internet; 
+    ai:examples     "DropBox", "FileUpload";
+    ai:purpose      ai:DataSending, ai:DataReceiving;
+    ai:requires     android:Internet .
 
 # Properties, Methods and Events definitions
 web:URL     rdfs:subclassOf   ai:ComponentProperty; 
