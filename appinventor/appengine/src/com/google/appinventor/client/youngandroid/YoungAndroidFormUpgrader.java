@@ -216,6 +216,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Slider")) {
         srcCompVersion = upgradeSliderProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("TextToSpeech")) {
+        srcCompVersion = upgradeTextToSpeechProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
@@ -468,6 +471,16 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 1) {
       // Initial version. Placeholder for future upgrades
       srcCompVersion = 1;
+    }
+
+    return srcCompVersion;
+  }
+
+  private static int upgradeTextToSpeechProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added speech pitch and rate
+      srcCompVersion = 2;
     }
 
     return srcCompVersion;
@@ -1033,12 +1046,14 @@ public final class YoungAndroidFormUpgrader {
 
   private static int upgradeWebViewerProperties(Map<String, JSONValue> componentProperties,
                                                 int srcCompVersion) {
-    if (srcCompVersion < 3) {
+    if (srcCompVersion < 4) {
       // The CanGoForward and CanGoBack methods were added.
       // No properties need to be modified to upgrade to version 2.
       // UsesLocation property added.
       // No properties need to be modified to upgrade to version 3.
-      srcCompVersion = 3;
+      // WebViewString added
+      // No properties need to be modified to upgrade to version 4.
+      srcCompVersion = 4;
     }
     return srcCompVersion;
   }

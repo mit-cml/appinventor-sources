@@ -73,6 +73,16 @@ public class ExternalTextToSpeech implements ITextToSpeech, ActivityResultListen
   }
 
   @Override
+    public void setPitch(float pitch) {
+        // nothing to do
+    }
+
+    @Override
+    public void setSpeechRate(float speechRate) {
+    // nothing to do
+  }
+
+  @Override
   public void resultReturned(int requestCode, int resultCode, Intent data) {
     boolean isSuccess = (requestCode == this.requestCode) && (resultCode == Activity.RESULT_OK);
     if (isSuccess) {

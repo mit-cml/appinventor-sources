@@ -67,13 +67,13 @@ public class FileExporterImplTest extends LocalDatastoreTestCase {
     storageIo.uploadFile(projectId, FORM1_QUALIFIED_NAME, USER_ID, FORM1_CONTENT,
         StorageUtil.DEFAULT_CHARSET);
     storageIo.addSourceFilesToProject(USER_ID, projectId, false, IMAGE1_NAME);
-    storageIo.uploadRawFile(projectId, IMAGE1_NAME, USER_ID, IMAGE_CONTENT);
+    storageIo.uploadRawFile(projectId, IMAGE1_NAME, USER_ID, true, IMAGE_CONTENT);
     storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET1_QUALIFIED_NAME);
     storageIo.uploadRawFile(projectId, TARGET1_QUALIFIED_NAME, USER_ID,
-        TARGET1_CONTENT);
+        true, TARGET1_CONTENT);
     storageIo.addOutputFilesToProject(USER_ID, projectId, TARGET2_QUALIFIED_NAME);
     storageIo.uploadRawFile(projectId, TARGET2_QUALIFIED_NAME, USER_ID,
-        TARGET2_CONTENT);
+        true, TARGET2_CONTENT);
   }
 
   private Map<String, byte[]> testExportProjectSourceZipHelper(ProjectSourceZip project)

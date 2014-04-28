@@ -441,14 +441,18 @@
                     <li> <a href="#Button"> Button </a> </li>
                     <li> <a href="#CheckBox"> CheckBox </a> </li>
                     <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#DatePicker"> DatePicker </a> </li>
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
                     <li> <a href="#ListPicker"> ListPicker </a> </li>
+                    <li> <a href="#ListView"> ListView </a> </li>
                     <li> <a href="#Notifier"> Notifier </a> </li>
                     <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
+                    <li> <a href="#Spinner"> Spinner </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
+                    <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
                   <h2 id="Button"> Button </h2>
@@ -644,6 +648,66 @@
                     <dd> Text describing time time of an instant </dd>
                   </dl>
 
+                  <h2 id="DatePicker">DatePicker</h2>
+
+                  <p><p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p></p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code><em>Day</em></code></dt>
+                    <dd>the Day of the month that was last picked using the DatePicker.</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Month</em></code></dt>
+                    <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 0 = January, 11 = December.</dd>
+                    <dt><code><em>MonthInText</em></code></dt>
+                    <dd>Returns the name of the Month that was last picked using the DatePicker, in textual format.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Year</em></code></dt>
+                    <dd>the Year that was last picked using the DatePicker</dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterDateSet()</code></dt>
+                    <dd>Event that runs after the user chooses a Date in the dialog</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
 
                  <h2 id="Image">Image</h2>
 
@@ -787,6 +851,38 @@
   <dd>Opens the picker, as though the user clicked on it.</dd>
 </dl>
 
+<h2 id="ListView">ListView</h2>
+
+<p><p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. <br> Warning: This component will not work correctly on Screens that are scrollable. </p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>Set a list of text elements to build your list.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Build a list with a series of text elements separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.</dd>
+  <dt><code>Height</code></dt>
+  <dd>Determines the height of the list on the view.</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the text last selected in the ListView.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListView, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Sets visibility of ShowFilterBar. True will show the bar, False will hide it.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Determines the width of the list on the view.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
 
 <h2 id="Notifier">Notifier</h2>
 
@@ -964,6 +1060,42 @@ none
 </dl><h3 id="slidermethods">Methods</h3>
 <p>none</p>
 
+<h2 id="Spinner">Spinner</h2>
+
+<p><p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>returns a list of text elements to be picked from.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>sets the Spinner list to the elements passed in the comma-separated string</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Prompt</code></dt>
+  <dd>Text with the current title for the Spinner window</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the current selected item in the spinner </dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1. If no item is selected, the value will be 0.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSelecting(text selection)</code></dt>
+  <dd>Event called after the user selects an item from the dropdown list.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DisplayDropdown()</code></dt>
+  <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
+</dl>
+
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />
                   <p> Users enter text in a text box component. </p>
@@ -1088,6 +1220,63 @@ none
                       line text boxes close the keyboard when the users presses
                       the Done key. </dd>
                   </dl>
+
+                  <h2 id="TimePicker">TimePicker</h2>
+                  <p><p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p></p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Hour</em></code></dt>
+                    <dd>The hour of the last time set using the time picker. The hour is in a 24 hour format. If the last time set was 11:53 pm, this property will return 23.</dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Minute</em></code></dt>
+                    <dd>The minute of the last time set using the time picker</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterTimeSet()</code></dt>
+                    <dd>This event is run when a user has set the time in the popup dialog.</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
+
                   <h2 id="WebViewer"> WebViewer </h2>
                   <img src="images/webviewer.png" alt="Picture of WebViewer component" />
                   <p> Component for viewing Web pages. The Home URL can be
@@ -1133,7 +1322,12 @@ none
                       designer.</dd>
                     <dt> <code> Visible </code> </dt>
                     <dd> Whether the component is visible </dd>
-                    <dt> <code> Width </code> </dt>
+                    <dt><code>WebViewString</code></dt>
+                    <dd>Gets the WebView's String, which is viewable
+                      through Javascript in the WebView as the
+                      window.AppInventor object</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
                   </dl>
                   <h3> Events </h3>
                   none

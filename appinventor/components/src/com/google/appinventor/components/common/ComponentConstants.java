@@ -65,4 +65,11 @@ public class ComponentConstants {
    * Used to record the name of privacy description 
    */
   public static final String PRIVACY_DESCRIPTION = "privacy.ttl";
+
+  /**
+   * ListView component.
+   */
+  public static final int LISTVIEW_PREFERRED_WIDTH = 315;
+  public static final int LISTVIEW_PREFERRED_HEIGHT = 40;
+  public static final int LISTVIEW_FILTER_PREFERRED_HEIGHT = 30;
 }

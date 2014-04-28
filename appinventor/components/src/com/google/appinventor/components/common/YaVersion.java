@@ -244,8 +244,20 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 86:
   // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
   // - The Sharing Component was added
+  // For YOUNG_ANDROID_VERSION 87:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 88:
+  // - SPINNER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 89:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 90:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 91:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 92:
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
 
-    public static final int YOUNG_ANDROID_VERSION = 86;
+    public static final int YOUNG_ANDROID_VERSION = 92;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -418,6 +430,8 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
+
+  public static final int DATEPICKER_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -593,7 +607,8 @@ public class YaVersion {
   // - The MultiLine property was added.
   public static final int TEXTBOX_COMPONENT_VERSION = 4;
 
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
+  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -605,6 +620,8 @@ public class YaVersion {
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
+
+  public static final int TIMEPICKER_COMPONENT_VERSION = 1;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 
@@ -668,11 +685,19 @@ public class YaVersion {
   // - The CanGoForward and CanGoBack methods were added
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
-  public static final int WEBVIEWER_COMPONENT_VERSION = 3;
+  // For WEBVIEWER_COMPONENT_VERSION 4:
+  // - Add WebViewString
+  public static final int WEBVIEWER_COMPONENT_VERSION = 4;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
+
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
+
+  // For listView component Version
+  public static final int LISTVIEW_COMPONENT_VERSION = 1;
 
   // Companion Versions and Update Information
 

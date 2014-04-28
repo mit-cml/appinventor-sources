@@ -5,6 +5,7 @@
 
 package com.google.appinventor.shared.rpc.project;
 
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.ServerLayout;
@@ -189,6 +190,22 @@ public interface ProjectService extends RemoteService {
   long save(String sessionId, long projectId, String fileId, String content) throws InvalidSessionException;
 
   /**
+   * Saves the content of the file associated with a node in the project tree.
+   * This version can throw a BlocksTruncatedException if an attempt is made to
+   * save a trivial blocks file.
+   *
+   * @param sessionId current session id
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be saved
+   * @param content  content to be saved
+   * @return modification date for project
+   *
+   * @see #load(long, String)
+   */
+  long save2(String sessionId, long projectId, String fileId, boolean force, String content) throws InvalidSessionException,
+      BlocksTruncatedException;
+
+  /**
    * Saves the contents of multiple files.
    *
    * @param sessionId current session id
@@ -196,7 +213,8 @@ public interface ProjectService extends RemoteService {
    *                         associated content
    * @return modification date for last modified project of list
    */
-  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException;
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException,
+      BlocksTruncatedException;
 
   /**
    * Invokes a build command for the project on the back-end.
@@ -230,4 +248,13 @@ public interface ProjectService extends RemoteService {
    * @return modification date for project
    */
   long addFile(long projectId, String fileId);
+
+  /**
+   * Log a string to the server log, always log with
+   * severity WARNING.
+   *
+   * @param message message to log
+   */
+  void log(String message);
+
 }
