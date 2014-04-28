@@ -844,6 +844,11 @@ select.ode-PropertyEditor[disabled] {
   vertical-align: middle;
 }
 
+/* class for the ListView Mock component */
+.spinnerComponentStyle {
+  outline: 1px solid lightgray;
+}
+
 /* Component Help */
 
 .ode-ComponentHelpPopup {
