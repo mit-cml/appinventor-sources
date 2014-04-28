@@ -308,6 +308,10 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
+ public void switchToBlocksEditor() {
+      new SwitchToBlocksEditorAction().execute();
+    }
+
   private class SwitchToFormEditorAction implements Command {
     @Override
     public void execute() {
@@ -324,6 +328,10 @@ public class DesignToolbar extends Toolbar {
         ViewerBox.getViewerBox().setViewerCaption(MESSAGES.viewerBoxCaption());
       }
     }
+  }
+
+ public void switchToFormEditor() {
+    new SwitchToFormEditorAction().execute();
   }
 
   public void addProject(long projectId, String projectName) {
@@ -473,4 +481,9 @@ public class DesignToolbar extends Toolbar {
   public DesignProject getCurrentProject() {
     return currentProject;
   }
+
+  public boolean inBlocksView(){
+    return currentView==View.BLOCKS;
+  }
+
 }

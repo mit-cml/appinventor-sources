@@ -6,7 +6,6 @@
 
 package com.google.appinventor.client.editor.youngandroid;
 
-import com.google.appinventor.client.ComponentsTranslation;
 import com.google.appinventor.client.DesignToolbar;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
@@ -15,6 +14,7 @@ import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
 import com.google.appinventor.components.common.YaVersion;
 
 import com.google.common.collect.Maps;
@@ -30,8 +30,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.user.client.Window;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -807,6 +806,22 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static String getLocalizedComponentType(String key) {
     return TranslationDesignerPallete.getCorrespondingString(key);
+
+  public static void switchToBlocksEditor(){
+    Ode.getInstance().getDesignToolbar().switchToBlocksEditor();
+  }
+
+  public static void switchToFormEditor(){
+    Ode.getInstance().getDesignToolbar().switchToFormEditor();
+  }
+  public static void displayDialog(){
+    NewUserGetStarted.displayDialog();
+  }
+  public static String getProjectId(){
+    return String.valueOf(Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId());
+  }
+  public static boolean inBlocksView(){
+    return Ode.getInstance().getDesignToolbar().inBlocksView();
   }
 
   // ------------ Native methods ------------
@@ -978,6 +993,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native String getCompVersion() /*-{
     return $wnd.PREFERRED_COMPANION;
+  }-*/;
+
+  public static native void nextStep()/*-{
+    return $wnd.nextStep();
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{
