@@ -9,6 +9,7 @@
 @prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
 
 # 
 #   Top-level classes for AppInventor components and component functions
@@ -94,23 +95,23 @@
     rdfs:range :Component, :ComponentProperty, :ComponentMethod, :ComponentEvent;
     rdfs:domain :Component, :ComponentProperty, :ComponentMethod, :ComponentEvent .
 
-:description a rdf:Property .
+:description
     a   rdf:Property;
     rdfs:comment "one-liner functional description of the component for inclusion in the privacy description of the AppInventor project";
     rdfs:label "has main function ";
     rdfs:range  rdfs:Literal;
     rdfs:domain :Component .
 
-:details a rdf:Property .
+:details
     a   rdf:Property;
     rdfs:comment "more detailed description of the component, anything that does not have an explicit property assigned; expansion of :description"; 
-    rdfs:label "has other functions ";
+    rdfs:label "has other features: ";
     rdfs:range  rdfs:Literal;
     rdfs:domain :Component .
 
 :dataUsage  
     a   rdf:Property;
-    rdfs:comment "data usage of the data collected by the component, if any"
+    rdfs:comment "data usage of the data collected by the component, if any";
     rdfs:label "uses collected data for/to ";
     rdfs:range  :UsageClass;
     rdfs:domain :Component .
@@ -171,7 +172,7 @@
 :Connectivity
     a   :ComponentClass;
     rdfs:comment "category for all connectivity related components";
-    rdfs:label "connectivity, which is responsible for connection the application to the Web in general" .
+    rdfs:label "connectivity, which is responsible for connecting the application to the Web in general" .
 
 :Social
     a   :ComponentClass;
@@ -220,7 +221,7 @@
     rdfs:comment "many sensor data are usually used to detect motion";
     rdfs:label "detect motion of the phone such as shaking, speeding, falling etc." .
 
-:MeasureAcceleration  
+:MeasuresAcceleration  
     a   :UsageClass;
     rdfs:comment "accelerometer data is specifically used to measure acceleration of the phone in X, Y, Z direction";
     rdfs:label "measure acceleration of the phone in any X, Y, Z direction" .

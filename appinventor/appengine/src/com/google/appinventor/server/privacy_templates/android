@@ -9,6 +9,7 @@
 @prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
 
 # 
 # Top-level class for all Android components
@@ -60,7 +61,7 @@
     a   :Component .
 
 :Internet
-    rdfs:label "Internet access";
+    rdfs:label "Internet connection";
     a   :Component .
 
 :LightSensor
