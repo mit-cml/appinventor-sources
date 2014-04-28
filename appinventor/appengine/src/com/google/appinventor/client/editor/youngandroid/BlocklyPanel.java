@@ -996,7 +996,7 @@ public class BlocklyPanel extends HTMLPanel {
   }-*/;
 
   public static native void nextStep()/*-{
-    return $wnd.nextStep();
+    nextStep();
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{

@@ -1,6 +1,6 @@
 /*This file is for useful functions needed for the tutorial*/
 
-// var proj_number=GetCurrentView();
+//var proj_number=$wnd.GetCurrentView();
 var currentStepIndex=0;
 // var steps=[];
 
@@ -137,3 +137,54 @@ step_6=function(){
 	changeText("Click and hold a TextToSpeech. Drag it from the Palette to the Viewer.. This component will show up in the Non-Visible components area below the phone screen. Note that this component is found in the Media drawer.");
 }
 
+step_7=function(){
+	changeText("Now let’s program our app! Click the Blocks button to go to the Blocks Tab.");
+}
+step_8=function(){
+	//TODO call/test truth of inBlocksView
+	changeText("This is the Workspace. Drag blocks from the drawers to the Workspace to build relationships and behavior.");
+}
+step_9=function(){
+	changeText("These are Built-In Blocks. Find blocks for general behaviors you may want to add to your app. ");
+}
+step_10=function(){
+	changeText("These are Component Blocks. Find blocks for behaviors for specific components. ");
+}
+step_11=function(){
+	changeText("Find the block that says When Button1 Click from the Button Drawer. Click and hold this block. Drag it into your workspace. ");
+}
+step_12=function(){
+	if (isButtonClickThere()){
+		changeText("Find the block that says TextToSpeech1.Speak from the TextToSpeech Drawer. Click and hold this block. Drag it inside the Button Click block so that they fit together. ");
+	}
+	else{
+		currentStepIndex-=1;
+	}
+}
+step_13=function(){
+	if (isTextToSpeechThere()){
+		changeText("Almost done! Now you just need to tell the TextToSpeech.Speak block what to say. To do that, click on the Text drawer under Built-In. Drag out a text block and plug it into the socket labeled 'message'. ");
+	}
+	else{
+		currentStepIndex-=1;
+	}
+}
+step_14=function(){
+	if (isTextBlockThere()){
+		changeText("Clicking on the text block will allow you to type a message. Type the message: Congratulations! You’ve made your first app!");
+	}
+	else{
+		currentStepIndex-=1;
+	}
+}
+step_15=function(){
+	if (doesTextBlockHaveText()){
+		changeText("Go to your connected device and click the button. Make sure your volume is up! You should hear the phone speak the phrase out loud. (This works even with the emulator.) ");
+	}
+	else{
+		currentStepIndex-=1;
+	}
+}
+step_16=function(){
+	changeText("Congratulations! You made your first app! If you’d like to make a new project, click here or click here to view some of our web tutorials.");
+}
