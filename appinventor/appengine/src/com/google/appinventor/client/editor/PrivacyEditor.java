@@ -102,7 +102,7 @@ public final class PrivacyEditor extends Composite {
     };
     
     // Make the call to get the preview of privacy notice
-    privacySvc.getPreview(projectId, callback);
+    privacySvc.getPrivacyHTML(projectId, callback);
     
     initWidget(pVertPanel);
   }

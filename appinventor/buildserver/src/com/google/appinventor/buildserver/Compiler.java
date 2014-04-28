@@ -638,6 +638,14 @@ public final class Compiler {
   private boolean attachPrivacyDescription(File privacyDescription) {
     try {
       Files.copy(privacyDescription, new File(project.getAssetsDirectory(), privacyDescription.getName()));
+      // the default privacy description file name is privacy.html, but privacy.ttl should be there as well
+      String privacyTTLName = privacyDescription.getAbsolutePath().substring(0, privacyDescription.getAbsolutePath().lastIndexOf(".")) + ".ttl";
+      File privacyTTL = new File(privacyTTLName);
+      if (!privacyTTL.exists()) {
+        LOG.warning("Privacy Description TTL file - " + privacyTTL + " does not exist");
+      } else {
+        Files.copy(privacyTTL, new File(project.getAssetsDirectory(), privacyTTL.getName()));
+      }
       return true;
     } catch (IOException e1) {
       // TODO Auto-generated catch block

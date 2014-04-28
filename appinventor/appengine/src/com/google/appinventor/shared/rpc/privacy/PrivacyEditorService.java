@@ -6,5 +6,6 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
 @RemoteServiceRelativePath(ServerLayout.PRIVACY_SERVICE)
 public interface PrivacyEditorService extends RemoteService {
-  String getPreview(long projectId);
+  String getPrivacyTTL(long projectId);
+  String getPrivacyHTML(long projectId);
 }

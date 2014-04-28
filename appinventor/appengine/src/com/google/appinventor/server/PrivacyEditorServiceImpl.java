@@ -57,9 +57,10 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static Model ontModel = ModelFactory.createDefaultModel();
   
   @Override
-  public String getPreview(long projectId) {
+  public String getPrivacyTTL(long projectId) {
     // reset model statements and prefixes
     model.removeAll();
+    ontModel.removeAll();
     model.setNsPrefix("", BASE_NS);
     model.setNsPrefix("ai", AI_NS);
     
@@ -105,19 +106,21 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
     
-    //System.out.println(out.toString());
-    preview = out.toString();
-    
-    String html = getPreviewHTML(projectName, userEmail, model, ontModel);
-    //System.out.println(html);
-    return html;
+    return out.toString();
   }
 
-  public String getPreviewHTML(String projectName, String userEmail, Model model, Model ontModel) {
+  public String getPrivacyHTML(long projectId) {
+    // We must first generate the privacy model for this AppInventor
+    String privacyModel = getPrivacyTTL(projectId);
+    
+    // Create a new model with the appinventor and android ontology loaded
     Model aiAndroidModel = ModelFactory.createDefaultModel();
     aiAndroidModel.read(getClass().getResourceAsStream( TEMPLATE_LOC + "appinventor"), null, "TTL");
     aiAndroidModel.read(getClass().getResourceAsStream( TEMPLATE_LOC + "android"), null, "TTL");
     
+    // Set up the initial content of the privacy description
+    String projectName = storageIo.getProjectName(userInfoProvider.getUserId(), projectId);
+    String userEmail = userInfoProvider.getUserEmail();
     String html = "";
     String title = "<h1>Privacy Description for " + projectName + "</h1>";
     String intro = "<p>" + projectName + " is an Android mobile application made on the AppInventor platform. The developer can be reached at <a>" + userEmail + "</a>.</p>";

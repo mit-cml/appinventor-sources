@@ -4,5 +4,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.HTML;
 
 public interface PrivacyEditorServiceAsync {
-  void getPreview(long projectId, AsyncCallback<String> callback);
+  void getPrivacyTTL(long projectId, AsyncCallback<String> callback);
+  void getPrivacyHTML(long projectId, AsyncCallback<String> callback);
 }

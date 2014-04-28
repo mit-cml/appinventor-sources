@@ -64,7 +64,7 @@ public class ComponentConstants {
   /**
    * Used to record the name of privacy description 
    */
-  public static final String PRIVACY_DESCRIPTION = "privacy.ttl";
+  public static final String PRIVACY_DESCRIPTION = "privacy.html";
 
   /**
    * ListView component.

@@ -161,11 +161,11 @@ public final class ProjectBuilder {
             (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
         
         // Figure out whether there is a privacy description in the source zip to attach
-        File privacyDescription = findPrivacyDescription(sourceFiles);
+        File privacyDescriptionHTML = findPrivacyDescriptionHTML(sourceFiles);
         
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, /* whether to attach a privacy */ privacyDescription, console, console, userErrors, isForRepl, isForWireless,
+            Compiler.compile(project, componentTypes, /* whether to attach a privacy */ privacyDescriptionHTML, console, console, userErrors, isForRepl, isForWireless,
                              keyStorePath, childProcessRam, dexCachePath);
         console.close();
         userErrors.close();
@@ -204,11 +204,11 @@ public final class ProjectBuilder {
       return Result.createFailingResult("", "Server error performing build");
     }
   }
-
-  private File findPrivacyDescription(List<String> sourceFiles) {
-    // find the file privacy.ttl
+  
+  private File findPrivacyDescriptionHTML(List<String> sourceFiles) {
+    // find the file privacy.html
     for (String file : sourceFiles) {
-      if (file.endsWith("privacy.ttl")) {
+      if (file.endsWith("privacy.html")) {
         File privacyDescription = new File(file);
         if (!privacyDescription.exists()) {
           LOG.warning("Privacy Description file - " + privacyDescription + " does not exist");

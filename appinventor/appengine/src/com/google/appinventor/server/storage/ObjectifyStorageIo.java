@@ -56,6 +56,8 @@ import com.googlecode.objectify.Query;
 import java.io.ByteArrayOutputStream;
 
 
+
+
 // GCS imports
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsFilename;
@@ -69,6 +71,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.channels.Channels;
 import java.nio.ByteBuffer;
@@ -1648,9 +1651,16 @@ public class ObjectifyStorageIo implements  StorageIo {
     // Generate the privacy description if attachPrivacy is set
     if (attachPrivacy) {
       PrivacyEditorService privacySvc = new PrivacyEditorServiceImpl();
-      String privacyDescription = privacySvc.getPreview(projectId);
+      
+      String privacyDescriptionTTL = privacySvc.getPrivacyTTL(projectId);
       out.putNextEntry(new ZipEntry(StorageUtil.PRIVACY_RDF_FILENAME));
-      out.write(privacyDescription.getBytes());
+      out.write(privacyDescriptionTTL.getBytes());
+      out.closeEntry();
+      fileCount.t++;
+      
+      String privacyDescriptionHTML = privacySvc.getPrivacyHTML(projectId);
+      out.putNextEntry(new ZipEntry(StorageUtil.PRIVACY_HTML_FILENAME));
+      out.write(privacyDescriptionHTML.getBytes());
       out.closeEntry();
       fileCount.t++;
     }
