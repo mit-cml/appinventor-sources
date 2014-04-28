@@ -37,14 +37,14 @@ accelerometer:AccelerometerSensorComponent
     ai:requires     android:AccelerometerSensor .
 
 # Instance Definitions
-accelerometer:XAccel    rdfs:subclassOf   ai:ComponentProperty; 
+accelerometer:XAccel    rdfs:subClassOf   ai:ComponentProperty; 
                         rdfs:label  "accelerometer's X acceleration " .
-accelerometer:YAccel    rdfs:subclassOf   ai:ComponentProperty;
+accelerometer:YAccel    rdfs:subClassOf   ai:ComponentProperty;
                         rdfs:label  "accelerometer's Y acceleration " .
-accelerometer:ZAccel    rdfs:subclassOf   ai:ComponentProperty;
+accelerometer:ZAccel    rdfs:subClassOf   ai:ComponentProperty;
                         rdfs:label  "accelerometer's Z acceleration " .
 
-accelerometer:AccelerationChanged   rdfs:subclassOf   ai:ComponentEvent;
-                                    rdfs:label  "accelerometer's event that detects when its value changes " .
-accelerometer:Shaking   rdfs:subclassOf   ai:ComponentEvent;
-                        rdfs:label  "accelerometer's event that detects when the device is shaken " .
+accelerometer:AccelerationChanged   rdfs:subClassOf   ai:ComponentEvent;
+                                    rdfs:label  "accelerometer detects a change in device acceleration" .
+accelerometer:Shaking   rdfs:subClassOf   ai:ComponentEvent;
+                        rdfs:label  "accelerometer detects device shaking" .

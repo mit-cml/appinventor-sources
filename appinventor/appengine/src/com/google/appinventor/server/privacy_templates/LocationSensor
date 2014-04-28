@@ -30,18 +30,18 @@ location:LocationSensorComponent
     ai:requires     android:CoarseLocation, android:FineLocation .
 
 # Instance Definitions
-location:Latitude   rdfs:subclassOf   ai:ComponentProperty; 
-                    rdfs:label  "device's location by latitude " .
-location:Longitude  rdfs:subclassOf   ai:ComponentProperty;
-                    rdfs:label  "device's location by longitude " .
-location:Altitude   rdfs:subclassOf   ai:ComponentProperty;
-                    rdfs:label  "device's location by altitude " .
+location:Latitude   rdfs:subClassOf   ai:ComponentProperty; 
+                    rdfs:label  "device's latitude " .
+location:Longitude  rdfs:subClassOf   ai:ComponentProperty;
+                    rdfs:label  "device's longitude " .
+location:Altitude   rdfs:subClassOf   ai:ComponentProperty;
+                    rdfs:label  "device's altitude " .
 
-location:LatitudeFromAddress    rdfs:subclassOf   ai:ComponentMethod;
-                                rdfs:label  "from a physical address, get the corresponding latitude value " .
+location:LatitudeFromAddress    rdfs:subClassOf   ai:ComponentMethod;
+                                rdfs:label  "location sensor method that converts from a physical address to the corresponding latitude value " .
 
-location:LongitudeFromAddress   rdfs:subclassOf   ai:ComponentMethod;
-                                rdfs:label  "from a physical address, get the corresponding longitude value " .
+location:LongitudeFromAddress   rdfs:subClassOf   ai:ComponentMethod;
+                                rdfs:label  "location sensor method that converts from a physical address to the corresponding longitude value " .
 
-location:LocationChanged   rdfs:subclassOf   ai:ComponentEvent;
-                           rdfs:label  "location sensor's event that detects when its value changes " .
+location:LocationChanged   rdfs:subClassOf   ai:ComponentEvent;
+                           rdfs:label  "location sensor detects a change " .

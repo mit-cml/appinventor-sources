@@ -28,12 +28,12 @@ web:WebComponent
     ai:requires     android:Internet .
 
 # Properties, Methods and Events definitions
-web:URL     rdfs:subclassOf   ai:ComponentProperty; 
+web:URL     rdfs:subClassOf   ai:ComponentProperty; 
             rdfs:label  "URL of the web component " .
                 
-web:PostText    rdfs:subclassOf   ai:ComponentMethod;
+web:PostText    rdfs:subClassOf   ai:ComponentMethod;
                 rdfs:label  "web component's POST method " .
 
-web:GotText     rdfs:subclassOf   ai:ComponentEvent;
-                rdfs:label  "web event that detects when text has been received " . 
+web:GotText     rdfs:subClassOf   ai:ComponentEvent;
+                rdfs:label  "web component detects text has been received " . 
 

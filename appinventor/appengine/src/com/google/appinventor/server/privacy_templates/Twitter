@@ -47,11 +47,11 @@ twitter:TwitterComponent
     ai:requires     ai:UserLogin .
 
 # Instance Definitions
-twitter:Username    rdfs:subclassOf   ai:ComponentProperty; 
+twitter:Username    rdfs:subClassOf   ai:ComponentProperty; 
                     rdfs:label  "user name of the Twitter account holder " .
                 
-twitter:Tweet   rdfs:subclassOf   ai:ComponentMethod;
+twitter:Tweet   rdfs:subClassOf   ai:ComponentMethod;
                 rdfs:label  "twitter's tweet method " .
 
-twitter:MentionsReceived    rdfs:subclassOf   ai:ComponentEvent;
-                            rdfs:label  "twitter event that detects when messages that mention the account holder's name have been received " .
+twitter:MentionsReceived    rdfs:subClassOf   ai:ComponentEvent;
+                            rdfs:label  "twitter detects messages that mention the account holder's name " .

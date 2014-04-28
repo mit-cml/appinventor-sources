@@ -46,6 +46,9 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static final Property aiContains = ResourceFactory.createProperty( AI_NS, "contains");
   private static final Property aiConnectsTo = ResourceFactory.createProperty( AI_NS, "connectsTo");
   private static final Property aiDescription = ResourceFactory.createProperty( AI_NS, "description");
+  private static final Resource aiComponentEvent = ResourceFactory.createResource(AI_NS + "ComponentEvent");
+  private static final Resource aiComponentMethod = ResourceFactory.createResource(AI_NS + "ComponentMethod");
+  private static final Resource aiComponentProperty = ResourceFactory.createResource(AI_NS + "ComponentProperty");
   
   //Declare and Initialize required constants
   private final transient StorageIo storageIo = StorageIoInstanceHolder.INSTANCE;
@@ -118,13 +121,14 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     String html = "";
     String title = "<h1>Privacy Description for " + projectName + "</h1>";
     String intro = "<p>" + projectName + " is an Android mobile application made on the AppInventor platform. The developer can be reached at <a>" + userEmail + "</a>.</p>";
-    String summary = "";
+    String summary = "<h3>Privacy Summary</h3>";
     String details = "";
+    String interactions = "<h3>Privacy-sensitive Interactions</h3>";
     
     // select all the components referred to by property "ai:contains"
     StmtIterator iter = model.listStatements(null, aiContains, (RDFNode) null);
     if (iter.hasNext()) {
-      summary = "<p> This application contains the following privacy-sensitive components: " +
+      summary += "<p> This application contains the following privacy-sensitive components: " +
                 "<ul>";
       while (iter.hasNext()) {
         // create a list element for the component
@@ -160,14 +164,64 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
         }
         details += "</ul>";
       }
-      summary += "</ul>";
+      summary += "</ul></p>";
+      
+      // find all statements containing "ai:connectsTo"
+      StmtIterator connectsIter = model.listStatements(null, aiConnectsTo, (RDFNode) null);
+      if (connectsIter.hasNext()) {
+        interactions += "<p>The privacy-sensitive components interact in the following ways: " +
+                       "<ul>";
+        while (connectsIter.hasNext()) {
+          // find the subject and object of the connectsTo statement, then track down their AI classes
+          Statement cur = connectsIter.nextStatement();
+          Resource subject = cur.getSubject().asResource();
+          Resource object = cur.getObject().asResource();
+          
+          Resource subjectSubclass = model.getProperty(subject, RDF.type).getResource();
+          Resource objectSubclass = model.getProperty(object, RDF.type).getResource();
+          
+          Resource subjectClass = ontModel.getProperty(subjectSubclass, RDFS.subClassOf).getResource();
+          Resource objectClass = ontModel.getProperty(objectSubclass, RDFS.subClassOf).getResource();
+          
+          // find the label for the subject and object
+          Statement subjectLabel = ontModel.getProperty(subjectSubclass, RDFS.label);
+          Statement objectLabel = ontModel.getProperty(objectSubclass, RDFS.label);
+          String subjectLabelStr = (subjectLabel==null) ? subjectSubclass.getURI() : subjectLabel.getString();
+          String objectLabelStr = (objectLabel==null) ? objectSubclass.getURI() : objectLabel.getString();
+          
+          /* 
+           * Classes are either ai:ComponentEvent, ai:ComponentMethod or ai:ComponentProperty
+           * Interactions possible:
+           *   ai:ComponentEvent ai:connectsTo ai:ComponentMethod
+           *   ai:ComponentEvent ai:connectsTo ai:ComponentProperty
+           *   ai:ComponentMethod ai:connectsTo ai:ComponentProperty
+           *   
+           */
+          
+          if (subjectClass.equals(aiComponentEvent) && objectClass.equals(aiComponentMethod)) {
+            interactions += "<li>when " + subjectLabelStr + ", " + "the " + objectLabelStr + " is called."; 
+          } else if (subjectClass.equals(aiComponentEvent) && objectClass.equals(aiComponentProperty)) {
+            interactions += "<li>when " + subjectLabelStr + ", " + "the " + objectLabelStr + " is accessed.";
+          } else if (subjectClass.equals(aiComponentMethod) && objectClass.equals(aiComponentProperty)) {
+            interactions += "<li>" + subjectLabelStr + " is called with " + objectLabelStr + " as the parameter.";
+          } else { // non-traditional interaction
+            interactions += "<li>" + subjectLabelStr + " connects to " + objectLabelStr;
+          }
+        }
+        interactions += "</ul></p>";
+      } else {
+        interactions += "<p>There are no interactions between the application's privacy-sensitive components.</p>";
+      }
     } else {
-      summary = "This application does not contain any privacy-sensitive components as defined in AppInventor.";
+      // No privacy-sensitive components in this AppInventor project
+      summary += "<p>This application does not contain any privacy-sensitive components as defined in AppInventor.</p>";
+      interactions = "";
     }
     
-    html = title + intro + summary + details;
+    html = title + intro + summary + interactions + details;
     return html;
   }
+  
   // Get component list
   private List<String> getComponentList(List<String> projectFiles, String userId, long projectId) {
     List<String> appComponents = new ArrayList<String>();
