@@ -2290,3 +2290,37 @@ textarea::-webkit-input-placeholder {
   height: 0;
   clear: both;
 }
+
+/* For Tutorial Dialog Boxes */
+.ode-DialogBox-popup {
+  border-top: 4px solid #8fc202
+  z-index: 5;
+}
+
+/* For Joanie's Tutorial Edits */
+.ode-DialogBox-Tutorial{
+  left: 468px;
+  top: 199px;
+  
+  overflow: visible;
+  position: absolute;
+  background-color: rgba(193, 194, 195, 0.909804);
+  border-left-width: 6px;
+  border-left-style: solid;
+  border-left-color: #7EA53C;
+  border-right-width: 6px;
+  border-right-style: solid;
+  border-right-color: #7EA53C;
+  border-bottom-width: 6px;
+  border-bottom-style: solid;
+  border-bottom-color: #7EA53C;
+  border-top-width: 6px;
+  border-top-style: solid;
+  border-top-color: #7EA53C;
+  height: 200px;
+  display: block;
+  padding: 10px;
+  box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
+  direction: ltr;
+  cursor:move;
+}
