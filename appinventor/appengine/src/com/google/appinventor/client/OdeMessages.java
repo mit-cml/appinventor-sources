@@ -1265,4 +1265,37 @@ public interface OdeMessages extends Messages {
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
 
+  // Different Text Properties
+  // Used in editor/youngandroid/properties/YoungAndroidTextInputTypeChoicePropertyEditor.java
+  @DefaultMessage("Default")
+  @Description("Text for TextInputType choice 'default'")
+  String defaultTextInputType();
+
+  @DefaultMessage("Email")
+  @Description("Text for TextInputType choice 'email'")
+  String emailTextInputType();
+
+  @DefaultMessage("Phone")
+  @Description("Text for TextInputType choice 'phone'")
+  String phoneTextInputType();
+
+  @DefaultMessage("Postal Address")
+  @Description("Text for TextInputType choice 'postal address'")
+  String addressTextInputType();
+
+  @DefaultMessage("Time")
+  @Description("Text for TextInputType choice 'time'")
+  String timeTextInputType();
+
+  @DefaultMessage("Date")
+  @Description("Text for TextInputType choice 'date'")
+  String dateTextInputType();
+
+  @DefaultMessage("Date Time")
+  @Description("Text for TextInputType choice 'datetime'")
+  String datetimeTextInputType();
+
+  @DefaultMessage("Persons Name")
+  @Description("Text for TextInputType choice 'person name'")
+  String textPersonNameTextInputType();
 }

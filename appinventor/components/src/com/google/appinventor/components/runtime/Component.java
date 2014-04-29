@@ -136,4 +136,15 @@ public interface Component {
   public static float SLIDER_MAX_VALUE = 50;
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
+  /*
+   * Text Extra Property Styles.
+   */
+  static final int TEXT_INPUT_TYPE_DEFAULT = 0;
+  static final int TEXT_INPUT_TYPE_EMAIL = 1;
+  static final int TEXT_INPUT_TYPE_PHONE = 2;
+  static final int TEXT_INPUT_TYPE_ADDRESS = 3;
+  static final int TEXT_INPUT_TYPE_TIME = 4;
+  static final int TEXT_INPUT_TYPE_DATE = 5;
+  static final int TEXT_INPUT_TYPE_DATETIME = 6;
+  static final int TEXT_INPUT_TYPE_PERSON_NAME = 7;
 }

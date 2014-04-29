@@ -178,4 +178,11 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXT_RECEIVING = "text_receiving";
 
+  /**
+   * Text Extra Properties.
+   * @see
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextInputTypeChoicePropertyEditor
+   */
+  public static final String PROPERTY_TYPE_TEXT_INPUT_TYPE = "text_input_type";
+
 }

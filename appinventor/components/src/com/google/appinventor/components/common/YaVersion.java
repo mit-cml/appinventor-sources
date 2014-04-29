@@ -685,9 +685,7 @@ public class YaVersion {
   // - The CanGoForward and CanGoBack methods were added
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
-  // For WEBVIEWER_COMPONENT_VERSION 4:
-  // - Add WebViewString
-  public static final int WEBVIEWER_COMPONENT_VERSION = 4;
+  public static final int WEBVIEWER_COMPONENT_VERSION = 3;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
