@@ -146,8 +146,8 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  private static final int DESIGNER = 0;
-  private static final int PROJECTS = 1;
+  public static final int PROJECTS = 0;
+  public static final int DESIGNER = 1;
   private static int currentView = DESIGNER;
 
   /*
@@ -368,7 +368,7 @@ public class Ode implements EntryPoint {
       }
       assetManager.loadAssets(project.getProjectId());
     }
-    getTopToolbar().updateFileMenuButtons(1);
+    getTopToolbar().updateFileMenuButtons(DESIGNER);
   }
 
   /**

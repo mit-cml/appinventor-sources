@@ -156,7 +156,7 @@ public class DesignToolbar extends Toolbar {
 
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
-    Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
+    Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
   }
 
   private class AddFormAction implements Command {
@@ -266,11 +266,11 @@ public class DesignToolbar extends Toolbar {
     if (currentView == View.FORM) {
       projectEditor.selectFileEditor(screen.formEditor);
       toggleEditor(false);
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     } else {  // must be View.BLOCKS
       projectEditor.selectFileEditor(screen.blocksEditor);
       toggleEditor(true);
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+      Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
@@ -288,7 +288,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.BLOCKS);
         toggleEditor(true);       // Gray out the blocks button and enable the designer button
-        Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
       }
     }
   }
@@ -305,7 +305,7 @@ public class DesignToolbar extends Toolbar {
         long projectId = Ode.getInstance().getCurrentYoungAndroidProjectRootNode().getProjectId();
         switchToScreen(projectId, currentProject.currentScreen, View.FORM);
         toggleEditor(false);      // Gray out the Designer button and enable the blocks button
-        Ode.getInstance().getTopToolbar().updateFileMenuButtons(1);
+        Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
       }
     }
   }
