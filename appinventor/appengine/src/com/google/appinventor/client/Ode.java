@@ -314,8 +314,8 @@ public class Ode implements EntryPoint {
     // save the project so Privacy Description Preview is accurate
     editorManager.saveDirtyEditors(null);
     
-    // refresh the contents of the privacy viewer box - this is a bit hacky
-    // TODO refresh the content of the preview window only?
+    // refresh the contents of the privacy viewer box
+    // TODO is this hacky? Maybe refresh the content of the preview window only?
     PrivacyViewerBox.getViewerBox().show(currentFileEditor.getProjectRootNode());
     
     // show privacy show

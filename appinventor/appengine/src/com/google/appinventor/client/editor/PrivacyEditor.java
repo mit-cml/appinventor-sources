@@ -77,6 +77,21 @@ public final class PrivacyEditor extends Composite {
             SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS,
             SettingsConstants.YOUNG_ANDROID_SETTINGS_ATTACH_PRIVACY_DESCRIPTION,
             isChecked ? "True" : "False");
+        // Update preview window as needed
+        PrivacyEditorServiceAsync privacySvc = Ode.getInstance().getPrivacyEditorService();
+        AsyncCallback<String> callback = new AsyncCallback<String>() {
+          public void onFailure(Throwable caught) {
+            // TODO: Do something with errors
+          }
+          public void onSuccess(String result) {
+            if (optInCheckbox.getValue()) {
+              preview.setHTML(result);
+            } else {
+              preview.setHTML("");
+            }
+          }
+        };
+        privacySvc.getPrivacyHTML(projectId, callback);
       }
     });
     pVertPanel.add(optInCheckbox);
@@ -86,7 +101,6 @@ public final class PrivacyEditor extends Composite {
     
     preview = new HTML();
     preview.addStyleName("privacy-HTML");
-    pVertPanel.add(preview);
     
     // Get PrivacyEditorService proxy
     PrivacyEditorServiceAsync privacySvc = Ode.getInstance().getPrivacyEditorService();
@@ -97,14 +111,19 @@ public final class PrivacyEditor extends Composite {
         // TODO: Do something with errors
       }
       public void onSuccess(String result) {
-        preview.setHTML(result);
+        if (optInCheckbox.getValue()) {
+          preview.setHTML(result);
+        } else {
+          preview.setHTML("");
+        }
       }
     };
     
     // Make the call to get the preview of privacy notice
     privacySvc.getPrivacyHTML(projectId, callback);
     
+    pVertPanel.add(preview);
+    
     initWidget(pVertPanel);
   }
-
 }

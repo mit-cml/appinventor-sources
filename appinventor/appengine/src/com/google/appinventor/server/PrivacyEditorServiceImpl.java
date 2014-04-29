@@ -123,7 +123,8 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     String userEmail = userInfoProvider.getUserEmail();
     String html = "";
     String title = "<h1>Privacy Description for " + projectName + "</h1>";
-    String intro = "<p>" + projectName + " is an Android mobile application made on the AppInventor platform. The developer can be reached at <a>" + userEmail + "</a>.</p>";
+    String intro = "<p>" + projectName + " is an Android mobile application made on the AppInventor platform. " +
+                   "The developer can be reached at <a href=\"mailto:" + userEmail + "\">" + userEmail + "</a>.</p>";
     String summary = "<h3>Privacy Summary</h3>";
     String details = "";
     String interactions = "<h3>Privacy-sensitive Interactions</h3>";
