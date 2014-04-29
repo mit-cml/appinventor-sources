@@ -247,7 +247,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon, newVCode, newVName, newUsesLocation);
-      storageIo.uploadFile(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
+      storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
   }
@@ -390,7 +390,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             // codeblocks file around for now (for debugging) but don't send it to the client.
             String blocklyFileContents = convertCodeblocksToBlockly(userId, projectId, fileId);
             storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
-            storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
+            storageIo.uploadFileForce(projectId, blocklyFileName, userId, blocklyFileContents,
                 StorageUtil.DEFAULT_CHARSET);
             sourceNode = new YoungAndroidBlocksNode(blocklyFileName);
           }
@@ -441,17 +441,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
         String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
         storageIo.addSourceFilesToProject(userId, projectId, false, formFileName);
-        storageIo.uploadFile(projectId, formFileName, userId, formFileContents,
+        storageIo.uploadFileForce(projectId, formFileName, userId, formFileContents,
             StorageUtil.DEFAULT_CHARSET);
 
         String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
         storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
-        storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
+        storageIo.uploadFileForce(projectId, blocklyFileName, userId, blocklyFileContents,
             StorageUtil.DEFAULT_CHARSET);
 
         String yailFileContents = "";  // start empty
         storageIo.addSourceFilesToProject(userId, projectId, false, yailFileName);
-        return storageIo.uploadFile(projectId, yailFileName, userId, yailFileContents,
+        return storageIo.uploadFileForce(projectId, yailFileName, userId, yailFileContents,
             StorageUtil.DEFAULT_CHARSET);
       } else {
         throw new IllegalStateException("One or more files to be added already exists.");

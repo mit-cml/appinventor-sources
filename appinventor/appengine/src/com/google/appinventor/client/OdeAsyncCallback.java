@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client;
 
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
 import com.google.appinventor.client.output.OdeLog;
@@ -58,6 +59,11 @@ public abstract class OdeAsyncCallback<T> implements AsyncCallback<T> {
     }
     if (caught instanceof ChecksumedFileException) {
       Ode.getInstance().corruptionDialog();
+      return;
+    }
+    if (caught instanceof BlocksTruncatedException) {
+      OdeLog.log("Caught BlocksTruncatedException");
+      ErrorReporter.reportError("Caught BlocksTruncatedException");
       return;
     }
     String errorMessage =

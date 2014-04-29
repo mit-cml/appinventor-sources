@@ -141,4 +141,15 @@ public class InternalTextToSpeech implements ITextToSpeech {
     Log.d(LOG_TAG, "Internal TTS got onResume");
     initializeTts();
   }
+
+    @Override
+    public void setPitch(float pitch) {
+        tts.setPitch(pitch);
+    }
+
+    @Override
+    public void setSpeechRate(float speechRate) {
+        tts.setSpeechRate(speechRate);
+    }
+
 }

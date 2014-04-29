@@ -6,6 +6,7 @@
 package com.google.appinventor.server.project;
 
 import com.google.appinventor.server.storage.StorageIo;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -97,7 +98,7 @@ public abstract class CommonProjectService {
     if (!sourceFiles.contains(fileId)) {
       storageIo.addSourceFilesToProject(userId, projectId, false, fileId);
     }
-    return storageIo.uploadRawFile(projectId, fileId, userId, new byte[0]);
+    return storageIo.uploadRawFileForce(projectId, fileId, userId, new byte[0]);
   }
 
   /**
@@ -212,6 +213,10 @@ public abstract class CommonProjectService {
 
   /**
    * Saves the content of the file associated with a node in the project tree.
+   * This is a backwards compatible version that always sets force to true
+   * Its primary purpose is to ease the release transition. People running an
+   * older Ode at release time won't lose. At some point this function should go
+   * away and save2 renamed back to save (through stages).
    *
    * @param userId the user id
    * @param projectId  project root node ID
@@ -219,11 +224,40 @@ public abstract class CommonProjectService {
    * @param content  content to be saved
    * @return modification date for project
    *
-   * @see com.google.appinventor.shared.rpc.project.ProjectService#load(long, String)
+   * @see com.google.appinventor.shared.rpc.project.ProjectService#save(String, long, String, String)
    */
   public long save(String userId, long projectId, String fileId, String content) {
-    return storageIo.uploadFile(projectId, fileId, userId,
-        content, StorageUtil.DEFAULT_CHARSET);
+    try {
+      return save2(userId, projectId, fileId, true, content);
+    } catch (BlocksTruncatedException e) {
+      // Won't happen because it isn't thrown when the force argument is true
+      // This is here just to keep the Java compiler happy. It isn't smart enough
+      // to know that the exception won't be thrown in this case.
+      return 0;
+    }
+  }
+
+  /**
+   * Saves the content of the file associated with a node in the project tree.
+   * if force is false, an error is thrown if an attempt is made to save a
+   * trivial (empty) blocks file workspace that had previously had contents.
+   *
+   * @param userId the user id
+   * @param projectId  project root node ID
+   * @param fileId  project node whose source should be loaded
+   * @param content  content to be saved
+   * @return modification date for project
+   *
+   * @see com.google.appinventor.shared.rpc.project.ProjectService#save(String, long, String, String)
+   */
+  public long save2(String userId, long projectId, String fileId, boolean force, String content) throws BlocksTruncatedException {
+    if (force) {
+      return storageIo.uploadFileForce(projectId, fileId, userId,
+          content, StorageUtil.DEFAULT_CHARSET);
+    } else {
+      return storageIo.uploadFile(projectId, fileId, userId,
+          content, StorageUtil.DEFAULT_CHARSET);
+    }
   }
 
   /**

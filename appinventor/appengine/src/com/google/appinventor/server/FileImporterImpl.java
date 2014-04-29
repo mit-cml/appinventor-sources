@@ -181,7 +181,7 @@ public final class FileImporterImpl implements FileImporter {
     if (!sourceFiles.contains(fileName)) {
       storageIo.addSourceFilesToProject(userId, projectId, false, fileName);
     }
-    return storageIo.uploadRawFile(projectId, fileName, userId, content);
+    return storageIo.uploadRawFileForce(projectId, fileName, userId, content);
   }
 
   @Override
