@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
 public final class PrivacyEditor extends Composite {
@@ -58,7 +59,7 @@ public final class PrivacyEditor extends Composite {
     optinText = new HTML("<b>This is where you can opt in or out of the automatic privacy description generation feature. To opt in, please check the box below:</b>");
     pVertPanel.add(optinText);
     
-    optInCheckbox = new CheckBox(MESSAGES.optIntoPrivacyNoticeCheckbox()) {
+    optInCheckbox = new CheckBox(" " + MESSAGES.optIntoPrivacyNoticeCheckbox()) {
       @Override
       protected void onLoad() {
         // onLoad is called immediately after a widget becomes attached to the browser's document.

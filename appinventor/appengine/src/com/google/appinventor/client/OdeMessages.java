@@ -1275,7 +1275,7 @@ public interface OdeMessages extends Messages {
   String unableToCompile(String errorMesssage);
 
   // Used in Privacy Description Generator
-  @DefaultMessage("Back to Designer/Blocks View")
+  @DefaultMessage("Back to Development View")
   @Description("Text on 'Back' button to go back to the designer/blocks view.")
   String backToDevButton();
   

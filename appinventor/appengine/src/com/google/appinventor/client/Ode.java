@@ -149,8 +149,8 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  private static final int DESIGNER = 0;
-  private static final int PROJECTS = 1;
+  private static final int PROJECTS = 0;
+  private static final int DESIGNER = 1;
   private static final int PRIVACY = 2;
   private static int currentView = DESIGNER;
 
