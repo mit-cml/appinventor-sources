@@ -91,6 +91,7 @@ public class TopToolbar extends Composite {
   private static final String WIDGET_NAME_GETSTARTED = "GetStarted";
   private static final String WIDGET_NAME_TUTORIALS = "Tutorials";
   private static final String WIDGET_NAME_SHOWSPLASH = "ShowSplash";
+  private static final String WIDGET_NAME_WALKTHROUGH = "Walkthrough";
   private static final String WIDGET_NAME_TROUBLESHOOTING = "Troubleshooting";
   private static final String WIDGET_NAME_FORUMS = "Forums";
   private static final String WIDGET_NAME_FEEDBACK = "ReportIssue";
@@ -227,6 +228,18 @@ public class TopToolbar extends Composite {
       helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
           new WindowOpenAction(forumsUrl)));
     }
+    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryLink(),
+        new LibraryAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedLink(),
+        new GetStartedAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsLink(),
+        new TutorialsAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_WALKTHROUGH, MESSAGES.walkthroughLink(),
+        new WalkthroughAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingLink(),
+        new TroubleShootingAction()));
+    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsLink(),
+        new ForumsAction()));
     helpItems.add(null);
     String feedbackUrl = config.getFeedbackUrl();
     if (!Strings.isNullOrEmpty(feedbackUrl)) {
@@ -790,6 +803,19 @@ public class TopToolbar extends Composite {
   }
 
   private static class ShowSplashAction implements Command {
+    @Override
+    public void execute() {
+      ProjectToolbar.getStarted();
+    }
+  }
+  private static class WalkthroughAction implements Command {
+    @Override
+    public void execute() {
+      ProjectToolbar.getStarted();
+    }
+  }
+
+  private static class TroubleShootingAction implements Command {
     @Override
     public void execute() {
       Ode.getInstance().showWelcomeDialog();

@@ -587,6 +587,11 @@ public interface OdeMessages extends Messages {
   @Description("Name of Tutorials link")
   String tutorialsMenuItem();
 
+
+  @DefaultMessage("Walkthrough")
+  @Description("Name of Walkthrough link")
+  String walkthroughLink();
+
   @DefaultMessage("Troubleshooting")
   @Description("Name of Troubleshooting link")
   String troubleshootingMenuItem();
