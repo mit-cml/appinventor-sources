@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.ArrayList;
 
 import com.google.appinventor.client.Ode;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 
 
@@ -74,7 +75,9 @@ public static void displayDialog(){
       @Override
       public void onClick(ClickEvent event) {
         //TODO: how to switch to designer screen
-        //nextStep();
+        OdeLog.log("Before call");
+        BlocklyPanel.callNextStep();
+        OdeLog.log("After call");
       }
     });
 

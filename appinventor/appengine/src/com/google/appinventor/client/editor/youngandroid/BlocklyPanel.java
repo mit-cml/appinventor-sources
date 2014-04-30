@@ -462,6 +462,12 @@ public class BlocklyPanel extends HTMLPanel {
     YaBlocksEditor.toggleWarning();
   }
 
+  public static void callNextStep(){
+    OdeLog.log("Before call to do");
+    doNextStep();
+    OdeLog.log("After call to do");
+  }
+
   /**
    * Remember any component instances for this form in case
    * the workspace gets reinitialized later (we get detached from
@@ -885,6 +891,16 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBackpack());
     $wnd.BlocklyPanel_setBackpack =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::setBackpack(Ljava/lang/String;));
+    $wnd.BlocklyPanel_SwitchToBlocksEditor=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchToBlocksEditor());
+    $wnd.BlocklyPanel_SwitchToFormEditor=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchToFormEditor());
+    $wnd.BlocklyPanel_DisplayDialog=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::displayDialog());
+    $wnd.BlocklyPanel_GetProjectId=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getProjectId());
+    $wnd.BlocklyPanel_InBlocksView=
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::inBlocksView());
   }-*/;
 
   private native void initJS() /*-{
@@ -994,8 +1010,8 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  public static native void nextStep()/*-{
-    nextStep();
+  public static native void doNextStep()/*-{
+    $wnd.nextStep();
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{

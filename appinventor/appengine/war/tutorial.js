@@ -1,9 +1,10 @@
-/*This file is for useful functions needed for the tutorial*/
-
-//var proj_number=$wnd.GetCurrentView();
 var currentStepIndex=0;
+var proj_number;
 // var steps=[];
 
+getProjectNumber=function(){
+	proj_number=window.BlocklyPanel_GetProjectId();
+}
 
 changeText = function(message){
 
@@ -19,7 +20,7 @@ changePosition=function(top, left){
 
 /* Javascript functions for testing truthness of steps */
 
-isButtonClickThere=function(proj_number){
+isButtonClickThere=function(){
 	var blocklies=Blocklies[proj_number+"_Screen1"];
 	var allblocks=blocklies.mainWorkspace.getAllBlocks();
 	var truth=false;
@@ -32,7 +33,7 @@ isButtonClickThere=function(proj_number){
 	return truth;
 }
 
-isTextToSpeechThere=function(proj_number){
+isTextToSpeechThere=function(){
 	var blocklies=Blocklies[proj_number+"_Screen1"];
 	var truth=false;
 	if (blocklies!=null){
@@ -54,7 +55,7 @@ isTextToSpeechThere=function(proj_number){
 	return truth;
 }
 
-isTextBlockThere=function(proj_number){
+isTextBlockThere=function(){
 	var blocklies=Blocklies[proj_number+"_Screen1"];
 	var truth=false;
 	if (blocklies!=null){
@@ -76,7 +77,7 @@ isTextBlockThere=function(proj_number){
 	return truth;
 }
 
-doesTextBlockHaveText=function(proj_number){
+doesTextBlockHaveText=function(){
 	var blocklies=Blocklies[proj_number+"_Screen1"];
 	var allblocks=blocklies.mainWorkspace.getAllBlocks();
 	var truth=false;
@@ -158,7 +159,7 @@ step_12=function(){
 		changeText("Find the block that says TextToSpeech1.Speak from the TextToSpeech Drawer. Click and hold this block. Drag it inside the Button Click block so that they fit together. ");
 	}
 	else{
-		currentStepIndex-=1;
+		currentStepIndex=10;
 	}
 }
 step_13=function(){
@@ -166,7 +167,7 @@ step_13=function(){
 		changeText("Almost done! Now you just need to tell the TextToSpeech.Speak block what to say. To do that, click on the Text drawer under Built-In. Drag out a text block and plug it into the socket labeled 'message'. ");
 	}
 	else{
-		currentStepIndex-=1;
+		currentStepIndex=11;
 	}
 }
 step_14=function(){
@@ -174,7 +175,7 @@ step_14=function(){
 		changeText("Clicking on the text block will allow you to type a message. Type the message: Congratulations! You’ve made your first app!");
 	}
 	else{
-		currentStepIndex-=1;
+		currentStepIndex=12;
 	}
 }
 step_15=function(){
@@ -182,7 +183,7 @@ step_15=function(){
 		changeText("Go to your connected device and click the button. Make sure your volume is up! You should hear the phone speak the phrase out loud. (This works even with the emulator.) ");
 	}
 	else{
-		currentStepIndex-=1;
+		currentStepIndex=13;
 	}
 }
 step_16=function(){
