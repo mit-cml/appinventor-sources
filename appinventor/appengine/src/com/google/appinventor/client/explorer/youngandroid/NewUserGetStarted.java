@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.ClickListener;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CustomButton;
 import com.google.gwt.user.client.ui.DialogBox;
+import com.google.gwt.user.client.ui.Frame;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
@@ -54,13 +55,19 @@ public static void displayDialog(){
 
     dialogBox.setAnimationEnabled(true);
 
-    //close button
+    //elements
     Button closeButton = new Button("close");
+    closeButton.getElement().setId("closeButton");
+    Frame frame = new Frame("");
+    frame.getElement().setId("Tutorial_frame");
+    Button nextButton = new Button("next");
+    nextButton.getElement().setId("nextButton");
+
+
     VerticalPanel dialogVPanel = new VerticalPanel();
     dialogVPanel.setWidth("300px");
     dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
     dialogVPanel.add(closeButton);
-    closeButton.getElement().setId("closeButton");
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -68,8 +75,7 @@ public static void displayDialog(){
       }
     });
     //next button
-    Button nextButton = new Button("next");
-    nextButton.getElement().setId("nextButton");
+
     dialogVPanel.add(nextButton);
     nextButton.addClickHandler(new ClickHandler() {
       @Override
