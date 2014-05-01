@@ -464,9 +464,8 @@ public class BlocklyPanel extends HTMLPanel {
   }
 
   public static void callNextStep(){
-    OdeLog.log("Before call to do");
-    doNextStep();
-    OdeLog.log("After call to do");
+    String proj_number=BlocklyPanel.getProjectId();
+    doNextStep(proj_number);
   }
 
   /**
@@ -829,7 +828,17 @@ public class BlocklyPanel extends HTMLPanel {
   public static boolean inBlocksView(){
     return Ode.getInstance().getDesignToolbar().inBlocksView();
   }
-
+  // public static List<String> getComponentNames(){
+  //   String formName=YaBlocksEditor.blocksArea.formName;
+  //   YaBlocksEditor blocksEditor = formToBlocksEditor.get(formName);
+  //   List<String> InstanceNames = blocksEditor.myFormEditor.getComponentNames();
+  //   List<String> ComponentNames = new ArrayList<String>();
+  //   for (int i=0; i<names.length; i++){
+  //     String instanceName = InstanceNames[i];
+  //     ComponentNames.append(blocksEditor.myFormEditor.getComponentInstanceTypeName(formName,instanceName));
+  //   }
+  //   return ComponentNames;
+  // }
   // ------------ Native methods ------------
 
   /**
@@ -902,6 +911,8 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getProjectId());
     $wnd.BlocklyPanel_InBlocksView=
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::inBlocksView());
+    $wnd.BlocklyPanel_GetComponentNames=
+       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getComponentNames());
   }-*/;
 
   private native void initJS() /*-{
@@ -1011,8 +1022,8 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  public static native void doNextStep()/*-{
-    $wnd.nextStep();
+  public static native void doNextStep(String proj_number)/*-{
+    $wnd.nextStep(proj_number);
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{

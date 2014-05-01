@@ -20,6 +20,7 @@ import com.google.appinventor.client.explorer.commands.ShowBarcodeCommand;
 import com.google.appinventor.client.explorer.commands.ShowProgressBarCommand;
 import com.google.appinventor.client.explorer.commands.WaitForBuildResultCommand;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.explorer.youngandroid.NewUserGetStarted;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.tracking.Tracking;
 import com.google.appinventor.client.utils.Downloader;
@@ -811,7 +812,7 @@ public class TopToolbar extends Composite {
   private static class WalkthroughAction implements Command {
     @Override
     public void execute() {
-      ProjectToolbar.getStarted();
+      NewUserGetStarted.displayDialog();
     }
   }
 
