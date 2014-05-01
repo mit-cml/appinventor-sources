@@ -11,6 +11,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Typeface;
 import android.view.Gravity;
 import android.widget.TextView;
+import android.text.Html;
 
 /**
  * Helper methods for manipulating {@link TextView} objects.
@@ -161,6 +162,18 @@ public class TextViewUtil {
    */
   public static String getText(TextView textview) {
     return textview.getText().toString();
+  }
+
+  /**
+   * Sets the text for a {@link TextView}.
+   *
+   * @param textview   text view instance
+   * @param text  new text to be shown
+   * @param format  format type plain = 0, html = 1
+   */
+  public static void setTextHTML(TextView textview, String text) {
+    textview.setText(Html.fromHtml(text));
+    textview.requestLayout();
   }
 
   /**

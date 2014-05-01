@@ -500,7 +500,9 @@ public class YaVersion {
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
-  public static final int LABEL_COMPONENT_VERSION = 2;
+  // For LABEL_COMPONENT_VERSION 3:
+  // - The HTML format is defined.
+  public static final int LABEL_COMPONENT_VERSION = 3;
 
   public static final int NXT_COLORSENSOR_COMPONENT_VERSION = 1;
 

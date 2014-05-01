@@ -51,6 +51,11 @@ public final class Label extends AndroidViewComponent {
   // Backing for text color
   private int textColor;
 
+// Label Format
+  private int LabelFormat;
+
+  private static final String LOG_TAG = "Label";
+
   /**
    * Creates a new Label component.
    *
@@ -71,6 +76,7 @@ public final class Label extends AndroidViewComponent {
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_BLACK);
+    LabelFormat(Component.LABEL_FORMAT_DEFAULT);
   }
 
   @Override
@@ -277,7 +283,47 @@ public final class Label extends AndroidViewComponent {
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
-    TextViewUtil.setText(view, text);
+    int fmt = LabelFormat;
+    if (fmt == 1) {
+      TextViewUtil.setTextHTML(view, text);
+    } else {
+      TextViewUtil.setText(view, text);
+    }
+  }
+
+
+  /**
+   * Returns the label's text's format
+   *
+   * @return  one of {@link Component#LABEL_FORMAT_DEFAULT},
+   *          {@link Component#LABEL_FORMAT_HTML}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.APPEARANCE,
+      userVisible = false)
+  public int LabelFormat() {
+    return LabelFormat;
+  }
+
+  /**
+   * Specifies the label's text's format
+   *
+   * @param typeface  one of {@link Component#LABEL_FORMAT_DEFAULT},
+   *                  {@link Component#LABEL_FORMAT_HTML}
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LABEL_FORMAT,
+      defaultValue = Component.LABEL_FORMAT_DEFAULT + "")
+  @SimpleProperty(
+      userVisible = false)
+  public void LabelFormat(int fmt) {
+    LabelFormat = fmt;
+    if (fmt == 1) {
+      String txt = TextViewUtil.getText(view);
+      TextViewUtil.setTextHTML(view, txt);
+    } else {
+      String txt = TextViewUtil.getText(view);
+      TextViewUtil.setText(view, txt);
+    }
   }
 
   /**

@@ -136,4 +136,10 @@ public interface Component {
   public static float SLIDER_MAX_VALUE = 50;
   public static float SLIDER_THUMB_VALUE = (SLIDER_MIN_VALUE + SLIDER_MAX_VALUE) / 2.0f;
 
+  /*
+   * Text Format Property Styles.
+   */
+  static final int LABEL_FORMAT_DEFAULT = 0;
+  static final int LABEL_FORMAT_HTML = 1;
+
 }

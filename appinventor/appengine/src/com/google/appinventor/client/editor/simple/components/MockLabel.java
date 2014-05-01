@@ -20,6 +20,11 @@ public final class MockLabel extends MockVisibleComponent {
    */
   public static final String TYPE = "Label";
 
+  /**
+   * Component type name.
+   */
+  private int label_format;
+
   // GWT label widget used to mock a Simple Label
   private InlineLabel labelWidget;
 
