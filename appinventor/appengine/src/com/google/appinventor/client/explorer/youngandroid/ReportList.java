@@ -318,21 +318,7 @@ public class ReportList extends Composite  {
     rw.deactiveAppButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Boolean success) {
-                if(rw.appActive == true){
-                  rw.deactiveAppButton.setText("Reactivate App");//revert button
-                  rw.appActive = false;
-                }else{
-                  rw.deactiveAppButton.setText("Deactivate App");//revert button
-                  rw.appActive = true;
-                }
-              }
-            };
-            Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
+          deactiveAppPopup(r, rw);
         }
     });
 
@@ -483,6 +469,125 @@ public class ReportList extends Composite  {
                     }
                   };
                   Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+              }
+            });
+          }
+        };
+      Ode.getInstance().getUserInfoService().getUserInformation(callback);
+    }
+  private void deactiveAppPopup(final GalleryAppReport r, final ReportWidgets rw){
+      // Create a PopUpPanel with a button to close it
+      final PopupPanel popup = new PopupPanel(true);
+      popup.setStyleName("ode-InboxContainer");
+      final FlowPanel content = new FlowPanel();
+      content.addStyleName("ode-Inbox");
+      Label title = new Label(MESSAGES.messageInboxTitle());
+      title.addStyleName("InboxTitle");
+      content.add(title);
+
+      Button closeButton = new Button("x");
+//      closeButton.addStyleName("ActionButton");
+      closeButton.addStyleName("CloseButton");
+      closeButton.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          popup.hide();
+        }
+      });
+      content.add(closeButton);
+
+      final FlowPanel msgPanel = new FlowPanel();
+      msgPanel.addStyleName("app-actions");
+      final Label sentFrom = new Label("Sent From: ");
+      final Label sentTo = new Label("Sent To: " + r.getOffender().getUserName());
+      final TextArea msgText = new TextArea();
+      msgText.addStyleName("action-textarea");
+      final Button sendMsgAndDRApp = new Button("Send Message & ");
+      sendMsgAndDRApp.addStyleName("action-button");
+      final Button cancel = new Button("Cancel");
+      cancel.addStyleName("action-button");
+
+      // Account Drop Down Button
+      List<DropDownItem> templateItems = Lists.newArrayList();
+      // Messages Template 1
+      templateItems.add(new DropDownItem("template1", "Inappropriate App Content", new TemplateAction(msgText, 1, r.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", "Inappropriate User profile content", new TemplateAction(msgText, 2, null)));
+      templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
+      templateButton.setStyleName("ode-TopPanelButton");
+
+      new TemplateAction(msgText, 1, r.getApp().getTitle()).execute();
+
+      msgPanel.add(templateButton);
+      msgPanel.add(sentFrom);
+      msgPanel.add(sentTo);
+      msgPanel.add(msgText);
+      msgPanel.add(sendMsgAndDRApp);
+      msgPanel.add(cancel);
+
+      content.add(msgPanel);
+      popup.setWidget(content);
+      // Center and show the popup
+      popup.center();
+
+      cancel.addClickHandler(new ClickHandler() {
+          public void onClick(ClickEvent event) {
+            popup.hide();
+          }
+      });
+
+      final OdeAsyncCallback<Boolean> isActivatedCallback = new OdeAsyncCallback<Boolean>(
+        // failure message
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Boolean active) {
+            if(active){
+              sendMsgAndDRApp.setText("Send Message & Reactivate App");
+             }
+            else {
+              sendMsgAndDRApp.setText("Send Message & Deactivate App");
+            }
+          }
+      };
+      Ode.getInstance().getGalleryService().isGalleryAppActivated(r.getApp().getGalleryAppId(), isActivatedCallback);
+
+      OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+        // failure message
+        MESSAGES.serverUnavailable()) {
+          @Override
+          public void onSuccess(final User currentUser) {
+            sentFrom.setText("Sent From: " + currentUser.getUserName());
+            sendMsgAndDRApp.addClickHandler(new ClickHandler() {
+              public void onClick(ClickEvent event) {
+                final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+                  MESSAGES.galleryError()) {
+                    @Override
+                    public void onSuccess(final Void result) {
+                      OdeLog.log("### Moderator MSGS SEND SUCCESSFULLY");
+                      popup.hide();
+
+                      final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+                        // failure message
+                        MESSAGES.galleryError()) {
+                          @Override
+                            public void onSuccess(Boolean success) {
+                              if(!success)
+                                return;
+                              OdeLog.log("### Moderator APP DEACTIVATED/REACTIVED SUCCESSFULLY");
+                              popup.hide();
+                              if(rw.appActive == true){
+                                rw.deactiveAppButton.setText("Reactivate App");//revert button
+                                rw.appActive = false;
+                                sendMsgAndDRApp.setText("Send Message & Reactivate App");
+                              }else{
+                                rw.deactiveAppButton.setText("Deactivate App");//revert button
+                                rw.appActive = true;
+                                sendMsgAndDRApp.setText("Send Message & Deactivate App");
+                              }
+                            }
+                         };
+                      Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
+                    }
+                  };
+                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), r.getOffender().getUserId(), msgText.getText(), messagesCallback);
               }
             });
           }
