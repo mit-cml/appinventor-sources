@@ -107,9 +107,14 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    * status: 1:incoming call is ringing; 2:outgoing call is dialled.
    * 
    * @param status 1:incoming call is ringing; 2:outgoing call is dialled.
-   * @param phoneNumber incoming call phone number
+   * @param phoneNumber incoming/outgoing call phone number
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = 
+      "Event indicating that a phonecall has started." +
+      " If status is 1, incoming call is ringing; " +
+      "if status is 2, outgoing call is dialled. " +
+      "phoneNumber is the incoming/outgoing phone number.")
   public void PhoneCallStarted(int status, String phoneNumber) {
     // invoke the application's "PhoneCallStarted" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallStarted", status, phoneNumber);
@@ -122,7 +127,13 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    * @param status 1:incoming call is missed or rejected; 2:incoming call is answered before hanging up; 3:Outgoing call is hung up.
    * @param phoneNumber ended call phone number
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description =
+      "Event indicating that a phone call has ended. " +
+      "If status is 1, incoming call is missed or rejected; " +
+      "if status is 2, incoming call is answered before hanging up; " +
+      "if status is 3, outgoing call is hung up. " +
+      "phoneNumber is the ended call phone number.")
   public void PhoneCallEnded(int status, String phoneNumber) {
     // invoke the application's "PhoneCallEnded" event handler.
     EventDispatcher.dispatchEvent(this, "PhoneCallEnded", status, phoneNumber);
@@ -133,7 +144,10 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
    * 
    * @param phoneNumber incoming call phone number
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description =
+      "Event indicating that an incoming phone call is answered. " +
+      "phoneNumber is the incoming call phone number.")
   public void IncomingCallAnswered(String phoneNumber) {
     // invoke the application's "IncomingCallAnswered" event handler.
     EventDispatcher.dispatchEvent(this, "IncomingCallAnswered", phoneNumber);
@@ -211,7 +225,6 @@ public class PhoneCall extends AndroidNonvisibleComponent implements Component, 
 
   @Override
   public void onDestroy() {
-    // TODO Auto-generated method stub
     unregisterCallStateMonitor();
   }
 }
