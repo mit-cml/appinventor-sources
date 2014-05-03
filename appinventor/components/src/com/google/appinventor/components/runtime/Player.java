@@ -130,7 +130,7 @@ public final class Player extends AndroidNonvisibleComponent
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
     loop = false;
-    playInForeground = true;
+    playInForeground = false;
     focusOn = false; 
     if(audioFocusSupported){
       am = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
@@ -315,7 +315,7 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-      defaultValue = "True")
+      defaultValue = "False")
   @SimpleProperty
   public void PlayInForeground(boolean shouldForeground) {
     playInForeground = shouldForeground;
