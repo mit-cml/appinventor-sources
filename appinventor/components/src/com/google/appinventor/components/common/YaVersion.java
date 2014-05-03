@@ -256,8 +256,10 @@ public class YaVersion {
   // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 92:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
+  //For YOUNG_ANDROID_VERSION 93:
+  // - PLAYER_COMPONENT_VERSION was incremented to 6
 
-    public static final int YOUNG_ANDROID_VERSION = 92;
+    public static final int YOUNG_ANDROID_VERSION = 93;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -581,8 +583,10 @@ public class YaVersion {
   // - The IsPlaying method was added.
   // For PLAYER_COMPONENT_VERSION 5:
   // - The IsLooping property was renamed to Loop.
+  // For PLAYER_COMPONENT_VERSION 6:
+  // - The PlayInForeground property was added.
 
-  public static final int PLAYER_COMPONENT_VERSION = 5;
+  public static final int PLAYER_COMPONENT_VERSION = 6;
 
   public static final int SHARING_COMPONENT_VERSION = 1;
 

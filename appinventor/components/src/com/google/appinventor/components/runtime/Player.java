@@ -140,7 +140,6 @@ public final class Player extends AndroidNonvisibleComponent
           switch(focusChange){
           case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
             // Focus loss transient: Pause playback
-            //Toast.makeText(activity, "Focus loss transient", Toast.LENGTH_LONG).show();
             if(player != null && playerState == 2){
               pause();
               flag = true;
@@ -148,13 +147,11 @@ public final class Player extends AndroidNonvisibleComponent
             break;
           case AudioManager.AUDIOFOCUS_LOSS:
             // Focus loss permanent: focus taken by other players
-            //Toast.makeText(activity, "Focus loss", Toast.LENGTH_LONG).show();
             flag = false;
             OtherPlayerStarted(); 
             break;
           case AudioManager.AUDIOFOCUS_GAIN:
             // Focus gain: Resume playback 
-            //Toast.makeText(activity, "Focus gain", Toast.LENGTH_LONG).show();
             if(player != null && flag && playerState == 4){
               Start();
               flag = false;
@@ -301,8 +298,10 @@ public final class Player extends AndroidNonvisibleComponent
    */
   @SimpleProperty(
       description =
-      "If true, the player works only in foreground; if false, " +
-      "the player continues playing in background",
+      "If true, the player will pause playing when leaving " + 
+      "the current screen; " + 
+      "if false (default option), the player continues playing"+
+      " whenever current screen is displaying or not",
       category = PropertyCategory.BEHAVIOR)
   public boolean PlayInForeground() {
     return playInForeground;
@@ -316,7 +315,10 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty
+  @SimpleProperty(
+      description = 
+      "If true, the player works only in foreground; if false, " +
+      "the player continues playing in background")
   public void PlayInForeground(boolean shouldForeground) {
     playInForeground = shouldForeground;
   }
