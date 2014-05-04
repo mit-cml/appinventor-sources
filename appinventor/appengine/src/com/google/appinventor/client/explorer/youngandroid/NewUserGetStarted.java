@@ -62,7 +62,8 @@ public static void displayDialog(){
     frame.getElement().setId("Tutorial_frame");
     Button nextButton = new Button("next");
     nextButton.getElement().setId("nextButton");
-
+    Button backButton = new Button("back");
+    backButton.getElement().setId("backButton");
 
     VerticalPanel dialogVPanel = new VerticalPanel();
     dialogVPanel.setWidth("300px");
@@ -80,10 +81,15 @@ public static void displayDialog(){
     nextButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        //TODO: how to switch to designer screen
-        OdeLog.log("Before call");
         BlocklyPanel.callNextStep();
-        OdeLog.log("After call");
+      }
+    });
+
+    dialogVPanel.add(backButton);
+    backButton.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        BlocklyPanel.callBackStep();
       }
     });
 

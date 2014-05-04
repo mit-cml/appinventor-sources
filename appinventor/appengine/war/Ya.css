@@ -2318,8 +2318,10 @@ textarea::-webkit-input-placeholder {
   border-top-style: solid;
   border-top-color: #7EA53C;
   height: 200px;
+  width: 200px;
   display: block;
   padding: 10px;
+  padding-right: 150px;
   box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
   direction: ltr;
   cursor:move;

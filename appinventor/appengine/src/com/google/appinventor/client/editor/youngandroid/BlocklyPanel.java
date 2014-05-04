@@ -466,10 +466,16 @@ public class BlocklyPanel extends HTMLPanel {
     YaBlocksEditor.toggleWarning();
   }
 
+  /**For Integrated Tutorial**/
   public static void callNextStep(){
     String proj_number=BlocklyPanel.getProjectId();
     String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     doNextStep(proj_number+"_"+currentScreen);
+  }
+  public static void callBackStep(){
+    String proj_number=BlocklyPanel.getProjectId();
+    String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
+    doBackStep(proj_number+"_"+currentScreen);
   }
 
   /**
@@ -1031,8 +1037,12 @@ public class BlocklyPanel extends HTMLPanel {
     return $wnd.PREFERRED_COMPANION;
   }-*/;
 
-  public static native void doNextStep(String proj_number)/*-{
-    $wnd.Tutorial.nextStep(proj_number);
+  public static native void doNextStep(String formName)/*-{
+    $wnd.Tutorial.nextStep(formName);
+  }-*/;
+
+  public static native void doBackStep(String formName)/*-{
+    $wnd.Tutorial.backStep(formName);
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{
