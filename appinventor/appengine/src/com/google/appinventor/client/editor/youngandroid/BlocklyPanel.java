@@ -477,6 +477,9 @@ public class BlocklyPanel extends HTMLPanel {
     String currentScreen = Ode.getInstance().getDesignToolbar().getCurrentProject().currentScreen;
     doBackStep(proj_number+"_"+currentScreen);
   }
+  public static void callSetTutorial(){
+    doSetTutorial();
+  }
 
   /**
    * Remember any component instances for this form in case
@@ -1043,6 +1046,10 @@ public class BlocklyPanel extends HTMLPanel {
 
   public static native void doBackStep(String formName)/*-{
     $wnd.Tutorial.backStep(formName);
+  }-*/;
+
+  public static native void doSetTutorial()/*-{
+    $wnd.Tutorial.setTutorial("Tutorial_TalkToMe");
   }-*/;
 
   static native void setPreferredCompanion(String comp, String url) /*-{
