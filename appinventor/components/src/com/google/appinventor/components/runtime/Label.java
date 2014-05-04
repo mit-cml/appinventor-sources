@@ -51,7 +51,7 @@ public final class Label extends AndroidViewComponent {
   // Backing for text color
   private int textColor;
 
-// Label Format
+  // Label Format
   private int LabelFormat;
 
   private static final String LOG_TAG = "Label";
