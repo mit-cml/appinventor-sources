@@ -13,10 +13,18 @@ var Tutorial = {
 		div.style.left=left+"px";
 		div.style.top=top+"px";
 	},
-	/**Use to switch between tests **/
+	/**Use to switch between steps **/
 	nextStep: function(formName){
-		if (Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].validate(formName)){
+		if (Tutorial.currentStepIndex==Tutorial.currentTutorial.steps.length){
+		}
+		else if (Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].validate(formName)){
 			Tutorial.currentStepIndex+=1;
+			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
+		}
+	},
+	backStep: function(formName){
+		if (Tutorial.currentStepIndex!=0){
+			Tutorial.currentStepIndex=Tutorial.currentStepIndex-1;
 			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
 		}
 	},
