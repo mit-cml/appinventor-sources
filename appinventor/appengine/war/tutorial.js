@@ -2,7 +2,8 @@ var Tutorial = {
 	currentStepIndex: 0,
 	currentTutorial: "None",
 	setTutorial: function(tutorial){
-		Tutorial.currentTutorial=tutorial;
+
+		Tutorial.currentTutorial=window[tutorial];
 	},
 
 	changeText: function(message){

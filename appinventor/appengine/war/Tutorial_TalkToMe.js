@@ -10,7 +10,7 @@
 
 /*Every tutorial will be harcoded into a tutorial object which can easily be run */
 
-var tutorial1 = {
+var Tutorial_TalkToMe = {
 	title: "Talk To Me",
 	noCheck: function(){
 		return true;

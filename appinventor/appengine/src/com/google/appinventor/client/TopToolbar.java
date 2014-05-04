@@ -1,3 +1,4 @@
+
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
 // Copyright 2011-2013 MIT, All rights reserved
@@ -813,6 +814,7 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       NewUserGetStarted.displayDialog();
+      BlocklyPanel.callSetTutorial();
     }
   }
 
