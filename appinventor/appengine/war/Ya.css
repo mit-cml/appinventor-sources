@@ -2330,7 +2330,6 @@ textarea::-webkit-input-placeholder {
   border-top-width: 6px;
   border-top-style: solid;
   border-top-color: #7EA53C;
-  height: 200px;
   width: 200px;
   display: block;
   padding: 10px;
@@ -2338,4 +2337,11 @@ textarea::-webkit-input-placeholder {
   box-shadow: 2px 2px 2px rgba(0,0,0,0.2);
   direction: ltr;
   cursor:move;
+}
+#nextButton{
+  padding-left: 15px;
+  padding-right: 15px
+}
+#closeButton{
+  padding-right: 100px;
 }

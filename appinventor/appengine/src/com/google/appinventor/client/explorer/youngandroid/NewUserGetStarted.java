@@ -22,6 +22,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.CustomButton;
 import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.Frame;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.PushButton;
@@ -66,9 +67,13 @@ public static void displayDialog(){
     backButton.getElement().setId("backButton");
 
     VerticalPanel dialogVPanel = new VerticalPanel();
+    HorizontalPanel hPanel = new HorizontalPanel();
+    hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER)
+    dialogVPanel.add(frame);
+    dialogVPanel.add(hPanel);
+
     dialogVPanel.setWidth("300px");
     dialogVPanel.setHorizontalAlignment(VerticalPanel.ALIGN_CENTER);
-    dialogVPanel.add(closeButton);
     closeButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -77,7 +82,6 @@ public static void displayDialog(){
     });
     //next button
 
-    dialogVPanel.add(nextButton);
     nextButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -85,13 +89,16 @@ public static void displayDialog(){
       }
     });
 
-    dialogVPanel.add(backButton);
     backButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
         BlocklyPanel.callBackStep();
       }
     });
+
+    hPanel.add(closeButton);
+    hPanel.add(backButton);
+    hPanel.add(nextButton);
 
     dialogBox.setGlassEnabled(false);
     dialogBox.setModal(false);
