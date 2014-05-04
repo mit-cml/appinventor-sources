@@ -2327,8 +2327,17 @@ textarea::-webkit-input-placeholder {
 }
 #nextButton{
   padding-left: 15px;
-  padding-right: 15px
+  padding-right: 15px;
+
+}
+#backButton{
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-left: 5px;
+  margin-right: 5px;
 }
 #closeButton{
-  padding-right: 100px;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: 135px;
 }
