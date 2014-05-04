@@ -18,7 +18,7 @@ var Tutorial_TalkToMe = {
 	steps:
 		[
 			{
-				text: "Welcome to this tutorial",
+				text: "Welcome to App Inventor! To get started, we'll be guiding you to build an app that allows your phone to talk to you with the press of a button.",
 				validate: function(formName){
 					return true;
 				},
