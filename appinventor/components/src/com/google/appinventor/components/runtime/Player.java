@@ -440,7 +440,7 @@ public final class Player extends AndroidNonvisibleComponent
   /**
    * Indicates that the other player has requested the focus of media
    */
-  @SimpleEvent
+  @SimpleEvent(description = "Event: another player in your Android has grabbed the audio output stream")
   public void OtherPlayerStarted() {
     EventDispatcher.dispatchEvent(this, "OtherPlayerStarted");
   }
