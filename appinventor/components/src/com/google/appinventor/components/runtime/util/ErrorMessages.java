@@ -90,6 +90,7 @@ public final class ErrorMessages {
   public static final int ERROR_MEDIA_IMAGE_FILE_FORMAT = 706;
   public static final int ERROR_MEDIA_CANNOT_OPEN = 707;
   public static final int ERROR_MEDIA_FILE_ERROR = 708;
+  public static final int ERROR_UNABLE_TO_FOCUS_MEDIA = 709;
   // SoundRecorder errors
   public static final int ERROR_SOUND_RECORDER = 801;
   public static final int ERROR_SOUND_RECORDER_CANNOT_CREATE = 802;
@@ -300,6 +301,8 @@ public final class ErrorMessages {
     errorMessages.put(ERROR_MEDIA_CANNOT_OPEN,
         "Cannot open file %s.");
     errorMessages.put(ERROR_MEDIA_FILE_ERROR, "Got file error: %s.");
+    errorMessages.put(ERROR_UNABLE_TO_FOCUS_MEDIA,
+        "Unable to grant exclusive lock of audio output stream to %s.");
      // SoundRecorder errors
     errorMessages.put(ERROR_SOUND_RECORDER, "An unexpected error occurred while recording sound.");
     errorMessages.put(ERROR_SOUND_RECORDER_CANNOT_CREATE, "Cannot start recording: %s");
