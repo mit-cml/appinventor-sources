@@ -256,8 +256,10 @@ public class YaVersion {
   // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 92:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
-
-    public static final int YOUNG_ANDROID_VERSION = 92;
+  // For YOUNG_ANDROID_VERSION 93:
+  // - WEB_COMPONENT_VERSION was incremented to 4
+  
+    public static final int YOUNG_ANDROID_VERSION = 93;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -679,7 +681,9 @@ public class YaVersion {
   //   method was added.
   // For WEB_COMPONENT_VERSION 3:
   // - PUT and DELETE Actions added (PutText, PutTextWithEncoding, PutFile, and Delete).
-  public static final int WEB_COMPONENT_VERSION = 3;
+  // For WEB_COMPONENT_VERSION 4:
+  // - Base64 methods were added (Base64EncodeFile, Base64EncodeText, Base64DecodeToFile, Base64DecodeToText).
+  public static final int WEB_COMPONENT_VERSION = 4;
 
   // For WEBVIEWER_COMPONENT_VERSION 2:
   // - The CanGoForward and CanGoBack methods were added
