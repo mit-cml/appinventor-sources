@@ -59,8 +59,8 @@ public static void displayDialog(){
     //elements
     Button closeButton = new Button("close");
     closeButton.getElement().setId("closeButton");
-    Frame frame = new Frame("");
-    frame.getElement().setId("Tutorial_frame");
+    // Frame frame = new Frame("");
+    // frame.getElement().setId("Tutorial_frame");
     Button nextButton = new Button("next");
     nextButton.getElement().setId("nextButton");
     Button backButton = new Button("back");
@@ -68,8 +68,8 @@ public static void displayDialog(){
 
     VerticalPanel dialogVPanel = new VerticalPanel();
     HorizontalPanel hPanel = new HorizontalPanel();
-    hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER)
-    dialogVPanel.add(frame);
+    hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+    // dialogVPanel.add(frame);
     dialogVPanel.add(hPanel);
 
     dialogVPanel.setWidth("300px");
