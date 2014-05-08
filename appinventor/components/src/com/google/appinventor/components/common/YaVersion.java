@@ -390,7 +390,10 @@ public class YaVersion {
   // - The Shape property was added.
   // For BUTTON_COMPONENT_VERSION 5:
   // - The ShowFeedback property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 5;
+  //For BUTTON_COMPONENT_VERSION 6:
+  // - Added TouchUp and TouchDown events
+  // - FontSize, FontBold, FontItalic properties made visible in block editor
+  public static final int BUTTON_COMPONENT_VERSION = 6;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
