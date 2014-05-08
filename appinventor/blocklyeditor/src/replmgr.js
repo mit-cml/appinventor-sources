@@ -547,30 +547,30 @@ Blockly.ReplMgr.processRetvals = function(responses) {
     }
     Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 };
-
+//Modified to reflect block.comment to block.doitbubble
 Blockly.ReplMgr.setDoitResult = function(block, value) {
     var patt = /Do It Result:.*?\n---\n/m;
-    var comment = "";
+    var doitbubble = "";
     var result = 'Do It Result: ' + value + '\n---\n';
-    if (block.comment) {
-        comment = block.comment.getText();
+    if (block.doitbubble) {
+        doitbubble = block.doitbubble.getText();
     }
-    if (!comment) {
-        comment = result;
+    if (!doitbubble) {
+        doitbubble = result;
     } else {
-        if (patt.test(comment)) { // Already a doit there!
-            comment = comment.replace(patt, result);
+        if (patt.test(doitbubble)) { // Already a doit there!
+            doitbubble = doitbubble.replace(patt, result);
         } else {
-            comment = result + comment;
+            doitbubble = result + doitbubble;
         }
     }
-    // If we don't set visible to false, the comment
+    // If we don't set visible to false, the doitbubble
     // doesn't always change when it should...
-    if (block.comment) {
-        block.comment.setVisible(false);
+    if (block.doitbubble) {
+        block.doitbubble.setVisible(false);
     }
-    block.setCommentText(comment);
-    block.comment.setVisible(true);
+    block.setDoItBubbleText(doitbubble);
+    block.doitbubble.setVisible(true);
 };
 
 Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
