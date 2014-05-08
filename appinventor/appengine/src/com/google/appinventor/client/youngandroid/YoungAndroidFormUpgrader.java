@@ -1041,6 +1041,11 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+        // The method XmlTextDecode was added.
+        // No properties need to be modified to upgrade to version 4.
+        srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
