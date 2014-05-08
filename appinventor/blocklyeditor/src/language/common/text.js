@@ -80,9 +80,10 @@ Blockly.Language.text_join = {
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
+    this.itemBlockName = 'text_join_item';
     return Blockly.decompose(workspace,'text_join_item',this);
   },
-  compose: Blockly.compose,
+  compose: Blockly.mincompose,
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     this.appendDummyInput(this.emptyInputName)

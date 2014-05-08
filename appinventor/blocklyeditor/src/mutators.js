@@ -96,6 +96,68 @@ Blockly.compose = function(containerBlock) {
   }
 }
 
+Blockly.mincompose = function(containerBlock) {
+  if(this.valuesToSave != null){
+    for (name in this.valuesToSave) {
+      this.valuesToSave[name] = this.getTitleValue(name);
+    }
+  }
+  var itemBlock = containerBlock.getInputTargetBlock('STACK');
+  var count = 0;
+  while (itemBlock){
+    count++;
+    itemBlock = itemBlock.nextConnection &&
+    itemBlock.nextConnection.targetBlock();
+  }
+  itemBlock = containerBlock.getInputTargetBlock('STACK');
+  if (count < 2){
+    var connection;
+    if (itemBlock){
+      connection = itemBlock.nextConnection;
+      var itemBlockNew = new Blockly.Block(containerBlock.workspace, this.itemBlockName);
+      itemBlockNew.initSvg();
+      connection.connect(itemBlockNew.previousConnection);
+      itemBlockNew.render();
+    }
+    else{
+      connection = containerBlock.getInput('STACK').connection;
+      for (var x = 0; x < 2; x++) {
+        itemBlock = new Blockly.Block(containerBlock.workspace, this.itemBlockName);
+        itemBlock.initSvg();
+        connection.connect(itemBlock.previousConnection);
+        connection = itemBlock.nextConnection;
+        itemBlock.render();
+      }
+    } 
+  }
+  if (this.itemCount_ == 0) {
+    if(this.emptyInputName != null) {
+      this.removeInput(this.emptyInputName);
+    }
+  }
+  else {
+    for (var x = this.itemCount_ - 1; x >= 0; x--) {
+      this.removeInput(this.repeatingInputName + x);
+    }
+  }
+  this.itemCount_ = 0;
+  // Rebuild the block's inputs.
+  itemBlock = containerBlock.getInputTargetBlock('STACK');
+  while (itemBlock) {
+    var input = this.addInput(this.itemCount_)
+    // Reconnect any child blocks.
+    if (itemBlock.valueConnection_) {
+      input.connection.connect(itemBlock.valueConnection_);
+    }
+    this.itemCount_++;
+    itemBlock = itemBlock.nextConnection &&
+      itemBlock.nextConnection.targetBlock();
+  }
+  if (this.itemCount_ == 0) {
+    this.addEmptyInput();
+  }
+}
+
 Blockly.saveConnections = function(containerBlock) {
   // Store a pointer to any connected child blocks.
   var itemBlock = containerBlock.getInputTargetBlock('STACK');

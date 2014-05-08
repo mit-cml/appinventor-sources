@@ -186,9 +186,10 @@ Blockly.Language.math_add = {
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
+    this.itemBlockName = 'math_mutator_item';
     return Blockly.decompose(workspace,'math_mutator_item',this);
   },
-  compose: Blockly.compose,
+  compose: Blockly.mincompose,
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     var input = this.appendDummyInput(this.emptyInputName);
@@ -271,9 +272,10 @@ Blockly.Language.math_multiply = {
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
+    this.itemBlockName = 'math_mutator_item';
     return Blockly.decompose(workspace,'math_mutator_item',this);
   },
-  compose: Blockly.compose,
+  compose: Blockly.mincompose,
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     var input = this.appendDummyInput(this.emptyInputName);
@@ -414,9 +416,10 @@ Blockly.Language.math_on_list = {
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
+    this.itemBlockName = 'math_mutator_item';
     return Blockly.decompose(workspace,'math_mutator_item',this);
   },
-  compose: Blockly.compose,
+  compose: Blockly.mincompose,
   saveConnections: Blockly.saveConnections,
   addEmptyInput: function(){
     var input = this.appendDummyInput(this.emptyInputName);
