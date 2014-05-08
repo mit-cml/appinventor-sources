@@ -104,11 +104,12 @@ public final class Player extends AndroidNonvisibleComponent
    * 1: player prepared but not started
    * 2: player is playing
    * 3: player was playing and is now paused by user
-   * 4: player was playing and is now paused by lifecycle events or phonecall interrupts
+   * 4: player was playing and is now paused by lifecycle events or audio focus interrupts
    * The allowable transitions are:
-   * Start: must be called in state 1, 2, or 3, results in state 2
+   * Start: must be called in state 1, 2, 3 or 4, results in state 2
    * Pause: must be called in state 2, results in state 3
-   * Stop: must be called in state 1, 2 or 3, results in state 1
+   * pause: must be called in state 2, results in state 4
+   * Stop: must be called in state 1, 2, 3 or 4, results in state 1
    * We can simplify this to remove state 0 and use a simple boolean after we're
    * more confident that there are no start-up problems.
    */
@@ -315,10 +316,7 @@ public final class Player extends AndroidNonvisibleComponent
   @DesignerProperty(
       editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
-  @SimpleProperty(
-      description = 
-      "If true, the player works only in foreground; if false, " +
-      "the player continues playing in background")
+  @SimpleProperty
   public void PlayInForeground(boolean shouldForeground) {
     playInForeground = shouldForeground;
   }
@@ -440,7 +438,9 @@ public final class Player extends AndroidNonvisibleComponent
   /**
    * Indicates that the other player has requested the focus of media
    */
-  @SimpleEvent
+  @SimpleEvent(description = 
+		  "This event is signaled when another player has started" +
+		  " (when the current player is playing or paused but not stopped).")
   public void OtherPlayerStarted() {
     EventDispatcher.dispatchEvent(this, "OtherPlayerStarted");
   }

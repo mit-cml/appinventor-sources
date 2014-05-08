@@ -585,6 +585,7 @@ public class YaVersion {
   // - The IsLooping property was renamed to Loop.
   // For PLAYER_COMPONENT_VERSION 6:
   // - The PlayInForeground property was added.
+  // - The OtherPlayerStarted event was added.
 
   public static final int PLAYER_COMPONENT_VERSION = 6;
 
