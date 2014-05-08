@@ -1,0 +1,33 @@
+SpongCastle (http://rtyley.github.io/spongycastle/)
+-------------------------------------------------------
+Why?
+
+The Android platform unfortunately ships with a cut-down version of Bouncy Castle - as well as being crippled, it also makes installing an updated version of the libraries difficult due to classloader conflicts.
+
+Spongy Castle is the stock Bouncy Castle libraries with a couple of small changes to make it work on Android:
+
+    all package names have been moved from org.bouncycastle.* to org.spongycastle.* - to avoid classloader conflicts
+    the Java Security API Provider name is now SC rather than BC
+    no class names change, so the BouncyCastleProvider class remains Bouncy, not Spongy, but moves to the org.spongycastle.jce.provider package.
+
+Download
+
+Spongy Castle artifacts are published on Maven Central. Use Gradle or the android-maven-plugin to make the most of this, or click the jar links below - make sure you include all dependencies:
+
+    core (jar) - Core lightweight API
+    prov (jar) - JCE provider (requires core)
+    pkix (jar) - PKIX, CMS, EAC, TSP, PKCS, OCSP, CMP, and CRMF APIs (requires prov)
+    pg (jar) - OpenPGP API (requires prov)
+
+Using Spongy Castle
+
+Register it just like the standard BouncyCastleProvider, but use insertProviderAt() rather than addProvider(), to ensure that Spongy Castle is used in preference to any other security provider on the device:
+
+static {
+    Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+}
+
+There's an example of Spongy Castle in active use in the ToyAuthAgentService of the toy-android-ssh-agent project. There's also an even simpler demo Eclipse project showing how to include Spongy Castle in a vanilla Eclipse project.
+Licence
+
+Spongy Castle uses the same adaptation of the MIT X11 License as Bouncy Castle.

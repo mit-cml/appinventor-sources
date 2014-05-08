@@ -12,6 +12,7 @@ import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.UsesLibraries;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.HtmlEntities;
@@ -20,6 +21,8 @@ import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.collect.Lists;
 import com.google.appinventor.components.runtime.collect.Maps;
 import com.google.appinventor.components.runtime.util.AsynchUtil;
+import com.google.appinventor.components.runtime.util.CryptoUtil;
+import com.google.appinventor.components.runtime.util.CryptoUtil.CipherText;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
 import com.google.appinventor.components.runtime.util.FileUtil;
 import com.google.appinventor.components.runtime.util.GingerbreadUtil;
@@ -29,7 +32,11 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -49,8 +56,18 @@ import java.net.ProtocolException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 import java.util.Map;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * The Original Web component provided functions for HTTP GET and POST requests.
@@ -65,6 +82,7 @@ import java.util.Map;
     iconName = "images/web.png")
 @SimpleObject
 @UsesPermissions(permissionNames = "android.permission.INTERNET")
+@UsesLibraries(libraries = "sccore.jar," + "scprov.jar")
 public class Web extends AndroidNonvisibleComponent implements Component {
   /**
    * InvalidRequestHeadersException can be thrown from processRequestHeaders.
@@ -757,6 +775,683 @@ public class Web extends AndroidNonvisibleComponent implements Component {
           ErrorMessages.ERROR_WEB_HTML_TEXT_DECODE_FAILED, htmlText);
       return "";
     }
+  }
+
+  /**
+   * Hashes given text using the algorithm specified in type.
+   * Types include {md5, sha-1, sha-256, sha-384, sha-512}.
+   * If type is empty, the default algorithm sha-256 is chosen.
+   * 
+   * @param text the text to be hashed
+   * @param type the algorithm name in {md5, sha-1, sha-256, sha-384, sha-512}
+   * @return hashed string
+   */
+  @SimpleFunction
+  public String HashTextEncode(String text, String type) {
+    String res = "";
+    String alg = type;
+    if(type == null) alg = "";
+    try {
+      res = CryptoUtil.hash(text.getBytes("UTF-8"), alg);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "HashTextEncode",
+          ErrorMessages.ERROR_WEB_HASH_TEXT_ENCODE_FAILED, text);
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "HashTextEncode",
+          ErrorMessages.ERROR_WEB_HASH_TEXT_ENCODE_FAILED, text);
+    }
+    return res;
+  }
+  
+  /**
+   * Hashes given file using the algorithm specified in type.
+   * Types include {md5, sha-1, sha-256, sha-384, sha-512}.
+   * If type is empty, the default algorithm sha-256 is chosen.
+   * 
+   * @param path the file path
+   * @param type the algorithm name in {md5, sha-1, sha-256, sha-384, sha-512}
+   * @return hashed string
+   */
+  @SimpleFunction
+  public String HashFileEncode(String path, String type) {
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    String res = "";
+    String alg = type;
+    if(type == null) alg = "";
+    try {
+      byte[] content = FileUtil.readFile(filePath);
+      res = CryptoUtil.hash(content, alg);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "HashFileEncode",
+          ErrorMessages.ERROR_WEB_HASH_FILE_ENCODE_FAILED, path);
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "HashFileEncode",
+          ErrorMessages.ERROR_WEB_HASH_FILE_ENCODE_FAILED, path);
+    }
+    return res;
+  }
+  
+  /**
+   * Generates the HMAC (Hash-based Message Authentication Code)
+   * of given text using the algorithm specified in type. 
+   * Types include {hmacmd5, hmacsha1, hmacsha256, hmacsha384, hmacsha512}. 
+   * If type is empty, the default algorithm hmacsha256 is chosen. 
+   * Key is the secret phrase.
+   * 
+   * @param text the text to be encoded
+   * @param key the secret phrase
+   * @param type the algorithm name in {hmacmd5, hmacsha1, hmacsha256, hmacsha384, hmacsha512}
+   * @return the HMAC string
+   */
+  @SimpleFunction
+  public String HmacTextEncode(String text, String key, String type) {
+    String res = "";
+    String alg = type;
+    if(type == null) alg = "";
+    try {
+      res = CryptoUtil.hmac(text.getBytes("UTF-8"), key.getBytes("UTF-8"), alg);
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacTextEncode",
+          ErrorMessages.ERROR_WEB_HMAC_TEXT_ENCODE_FAILED, text);
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacTextEncode",
+          ErrorMessages.ERROR_WEB_HMAC_TEXT_ENCODE_FAILED, text);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacTextEncode",
+          ErrorMessages.ERROR_WEB_HMAC_TEXT_ENCODE_FAILED, text);
+    }
+    return res;
+  }
+  
+  /**
+   * Generates the HMAC (Hash-based Message Authentication Code)
+   * of given file using the algorithm specified in type. 
+   * Types include {hmacmd5, hmacsha1, hmacsha256, hmacsha384, hmacsha512}. 
+   * If type is empty, the default algorithm hmacsha256 is chosen. 
+   * Key is the secret phrase.
+   * 
+   * @param path the file path
+   * @param key the secret phrase
+   * @param type the algorithm name in {hmacmd5, hmacsha1, hmacsha256, hmacsha384, hmacsha512}
+   * @return the HMAC string
+   */
+  @SimpleFunction
+  public String HmacFileEncode(String path, String key, String type) {
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    String res = "";
+    String alg = type;
+    if(type == null) alg = "";
+    try {
+      byte[] content = FileUtil.readFile(filePath);
+      res = CryptoUtil.hmac(content, key.getBytes("UTF-8"), alg);
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacFileEncode",
+          ErrorMessages.ERROR_WEB_HMAC_FILE_ENCODE_FAILED, path);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacFileEncode",
+          ErrorMessages.ERROR_WEB_HMAC_FILE_ENCODE_FAILED, path);
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "HmacFileEncode",
+          ErrorMessages.ERROR_WEB_HMAC_FILE_ENCODE_FAILED, path);
+    }
+    return res;
+  }  
+  
+  /**
+   * Event indicating that new key(or keypair) has been generated.
+   * 
+   * @param type the algorithm name for the key, in {"aes", "rsa", "dsa"}
+   * @param key the key (secret key for AES, public key for RSA & DSA) in base64 string
+   */
+  @SimpleEvent
+  public void KeyReady(String type, String key) {
+    // invoke the application's "KeyReady" event handler.
+    EventDispatcher.dispatchEvent(this, "KeyReady", type, key);
+  }
+  
+  /**
+   * Generates new secret key for AES encryption and decryption. 
+   * Password is the user’s password. Must be placed before new 
+   * AES encryption and decryption. If this method is missing, 
+   * the last secretKey in history will be used.
+   * 
+   * @param password user's password
+   */
+  @SimpleFunction
+  public void PrepareAesKey(final String password) {
+    AsynchUtil.runAsynchronously(new Runnable(){
+      String secret = "";
+      @Override
+      public void run() {        
+        try {
+          byte[] salt = CryptoUtil.generateSalt();
+          byte[] secretKey = CryptoUtil.getSecretKey(password.toCharArray(), salt);
+          secret = Base64.encodeToString(secretKey, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+        } catch (NoSuchAlgorithmException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareAesKey",
+              ErrorMessages.ERROR_WEB_AES_KEY_FAILED, e.getMessage());
+        } catch (InvalidKeySpecException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareAesKey",
+              ErrorMessages.ERROR_WEB_AES_KEY_FAILED, e.getMessage());
+        } catch (NoSuchProviderException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareAesKey",
+              ErrorMessages.ERROR_WEB_AES_KEY_FAILED, e.getMessage());
+        } finally {
+          activity.runOnUiThread(new Runnable(){
+            @Override
+            public void run() {
+              KeyReady("aes", secret);              
+            }            
+          });
+        }
+        
+      }
+      
+    });
+    
+  }
+  
+  /**
+   * Encrypts given plaintext using AES-256 algorithm. 
+   * Returns a 2-element List of Pairs 
+   * ((text <ciphertext>) (hmac <hmac of ciphertext>))
+   * 
+   * @param key AES secret key as a base64 string
+   * @param text the text to be encrypted
+   * @return the 2-element List ((text <ciphertext>) (hmac <hmac of ciphertext>))
+   */
+  @SimpleFunction
+  public YailList AesTextEncrypt(String key, String text) {
+    String[] textArray = {"text",""};
+    String[] hmacArray = {"hmac",""};
+    byte[] secretKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      CipherText cipherText = CryptoUtil.aesEncrypt(secretKey, text.getBytes("UTF-8"));
+      textArray[1] = Base64.encodeToString(cipherText.text, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+      hmacArray[1] = cipherText.hmac; 
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (InvalidAlgorithmParameterException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextEncrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_ENCRYPT_FAILED, e.getMessage());
+    }
+    // Wraps into 2-element YailList ((text <ciphertext>) (hmac <hmac of ciphertext>))
+    YailList[] tmpList = {YailList.makeList(textArray), YailList.makeList(hmacArray)};
+    return YailList.makeList(tmpList);
+  }
+  
+  /**
+   * Encrypts given file using AES-256 algorithm. 
+   * Returns a 2-element List of pairs 
+   * ((path <encrypted file path>) (hmac <hmac of file>)).
+   * 
+   * @param key AES secret key as a base64 string
+   * @param path path to the file to be encrypted
+   * @return the 2-element List of pairs ((path <encrypted file path>) (hmac <hmac of file>))
+   */
+  @SimpleFunction
+  public YailList AesFileEncrypt(String key, String path) {
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    String[] pathArray = {"path",""};
+    String[] hmacArray = {"hmac",""};    
+    byte[] secretKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      byte[] content = FileUtil.readFile(filePath);
+      CipherText cipherText = CryptoUtil.aesEncrypt(secretKey, content);
+      FileUtil.writeFile(cipherText.text, filePath+".enc");
+      pathArray[1] = filePath+".enc";
+      hmacArray[1] = cipherText.hmac; 
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (InvalidAlgorithmParameterException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileEncrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_ENCRYPT_FAILED, path);
+    }
+    // Wraps into 2-element YailList ((path <encrypted file path>) (hmac <hmac of file>))
+    YailList[] tmpList = {YailList.makeList(pathArray), YailList.makeList(hmacArray)};
+    return YailList.makeList(tmpList);
+  }
+  
+  /**
+   * Decrypts given text using AES-256 algorithm.
+   * list is a 2-element List of pairs 
+   * ((text <ciphertext>) (hmac <hmac of ciphertext>))
+   * 
+   * @param key AES secret key as a base64 string
+   * @param list a 2-element List ((text <ciphertext>) (hmac <hmac of ciphertext>))
+   * @return decrypted text
+   */
+  @SimpleFunction
+  public String AesTextDecrypt(String key, YailList list) {
+    String text = "";
+    String hmac = "";
+    if(list.size() == 2){
+      for(int i=0; i < 2; i++){
+        Object item = list.getObject(i);
+        if(item instanceof YailList){
+          YailList entry = (YailList) item;
+          if(entry.size() == 2){
+            String name = entry.getObject(0).toString();
+            String value = entry.getObject(1).toString();
+            if(name.equalsIgnoreCase("text")){
+              text = value;
+            }else{
+              hmac = value;
+            }              
+          }
+        }
+      }      
+    }
+    String res = "";
+    CipherText cipherText;
+    byte[] secretKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      cipherText = new CipherText(Base64.decode(text, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING), hmac);
+      byte[] decrypted = CryptoUtil.aesDecrypt(secretKey, cipherText);
+      res = new String(decrypted, "UTF-8");
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (InvalidAlgorithmParameterException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesTextDecrypt",
+          ErrorMessages.ERROR_WEB_AES_TEXT_DECRYPT_FAILED, e.getMessage());
+    }    
+    return res;
+  }
+  
+  /**
+   * Decrypts given file using AES-256 algorithm.
+   * list is a 2-element List of pairs 
+   * ((path <encrypted file path>) (hmac <hmac of file>)).
+   * Returns the path to decrypted file.
+   * 
+   * @param key AES secret key as a base64 string
+   * @param list a 2-element List ((path <encrypted file path>) (hmac <hmac of file>))
+   * @return decrypted file path
+   */
+  @SimpleFunction
+  public String AesFileDecrypt(String key, YailList list) {
+    String path = "";
+    String hmac = "";
+    if(list.size() == 2){
+      for(int i=0; i < 2; i++){
+        Object item = list.getObject(i);
+        if(item instanceof YailList){
+          YailList entry = (YailList) item;
+          if(entry.size() == 2){
+            String name = entry.getObject(0).toString();
+            String value = entry.getObject(1).toString();
+            if(name.equalsIgnoreCase("path")){
+              path = value;
+            }else{
+              hmac = value;
+            }              
+          }
+        }
+      }      
+    }
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    String res = "";
+    CipherText cipherText;
+    byte[] secretKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      byte[] content = FileUtil.readFile(filePath);
+      cipherText = new CipherText(content, hmac);
+      byte[] decrypted = CryptoUtil.aesDecrypt(secretKey, cipherText);
+      FileUtil.writeFile(decrypted, filePath+".dec");
+      res = filePath+".dec";
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (InvalidAlgorithmParameterException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "AesFileDecrypt",
+          ErrorMessages.ERROR_WEB_AES_FILE_DECRYPT_FAILED, path);
+    }    
+    return res;
+  }
+  
+  /**
+   * Generates RSA keypair. Must be placed before new 
+   * RSA encryption and decryption. If this method is missing, 
+   * the last keypair in history will be used.
+   * 
+   */
+  @SimpleFunction
+  public void PrepareRsaKeyPair(){
+    AsynchUtil.runAsynchronously(new Runnable(){
+      String pubKeyString = "";
+      @Override
+      public void run() {
+        try {
+          byte[][] kp = CryptoUtil.generateRsaKeyPair();
+          pubKeyString = Base64.encodeToString(kp[0], Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+          SharedPreferences sharedPreferences = activity.getSharedPreferences("TinyDB1", Context.MODE_PRIVATE);
+          SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
+          sharedPrefsEditor.putString("_RSA_PRI_KEY", Base64.encodeToString(kp[1], Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING));
+          sharedPrefsEditor.commit();
+        } catch (NoSuchAlgorithmException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareRsaKeyPair",
+              ErrorMessages.ERROR_WEB_RSA_KEY_FAILED, e.getMessage());
+        } catch (InvalidKeySpecException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareRsaKeyPair",
+              ErrorMessages.ERROR_WEB_RSA_KEY_FAILED, e.getMessage());
+        } catch (IOException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareRsaKeyPair",
+              ErrorMessages.ERROR_WEB_RSA_KEY_FAILED, e.getMessage());
+        } finally {
+          activity.runOnUiThread(new Runnable(){
+            @Override
+            public void run() {
+              KeyReady("rsa", pubKeyString);              
+            }            
+          });
+        }
+        
+      }
+      
+    });
+    
+  }
+  
+  /**
+   * Encrypts text with RSA public key
+   * 
+   * @param key the RSA public key in Base64 string (UrlSafe & NoWrap)
+   * @param text Base64 text to be encrypted
+   * @return encrypted text in Base64
+   */
+  @SimpleFunction
+  public String RsaTextEncrypt(String key, String text){
+    String res = "";
+    byte[] pubKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      byte[] encrypted = CryptoUtil.rsaEncrypt(pubKey, text.getBytes("UTF-8"));
+      res = Base64.encodeToString(encrypted, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeySpecException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextEncrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_ENCRYPT_FAILED, e.getMessage());
+    }
+    return res;
+  }
+  
+  /**
+   * Decrypts given ciphertext using RSA private key
+   * 
+   * @param text the ciphertext in Base64 to be decrypted
+   * @return decrypted text
+   */
+  @SimpleFunction
+  public String RsaTextDecrypt(String text){
+    String res = "";
+    byte[] encrypted = Base64.decode(text, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    SharedPreferences sharedPreferences = activity.getSharedPreferences("TinyDB1", Context.MODE_PRIVATE);
+    byte[] priKey = Base64.decode(sharedPreferences.getString("_RSA_PRI_KEY", ""), Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {        
+      byte[] decrypted = CryptoUtil.rsaDecrypt(priKey, encrypted);
+      res = new String(decrypted, "UTF-8");
+    } catch (IllegalArgumentException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (UnsupportedEncodingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (NoSuchPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (IllegalBlockSizeException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (BadPaddingException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    } catch (InvalidKeySpecException e) {
+      form.dispatchErrorOccurredEvent(this, "RsaTextDecrypt",
+          ErrorMessages.ERROR_WEB_RSA_TEXT_DECRYPT_FAILED, e.getMessage());
+    }    
+    return res;
+  }
+  
+  /**
+   * Generates DSA keypair. Must be placed before new 
+   * signing the file. If this method is missing, 
+   * the last keypair in history will be used.
+   * 
+   */
+  @SimpleFunction
+  public void PrepareDsaKeyPair(){
+    
+    AsynchUtil.runAsynchronously(new Runnable(){
+      String pubKeyString = "";
+      @Override
+      public void run() {
+        try {
+          byte[][] kp = CryptoUtil.generateDsaKeyPair();
+          pubKeyString = Base64.encodeToString(kp[0], Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+          SharedPreferences sharedPreferences = activity.getSharedPreferences("TinyDB1", Context.MODE_PRIVATE);
+          SharedPreferences.Editor sharedPrefsEditor = sharedPreferences.edit();
+          sharedPrefsEditor.putString("_DSA_PRI_KEY", Base64.encodeToString(kp[1], Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING));
+          sharedPrefsEditor.commit();
+        } catch (NoSuchAlgorithmException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareDsaKeyPair",
+              ErrorMessages.ERROR_WEB_DSA_KEY_FAILED, e.getMessage());
+        } catch (InvalidKeySpecException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareDsaKeyPair",
+              ErrorMessages.ERROR_WEB_DSA_KEY_FAILED, e.getMessage());
+        } catch (IOException e) {
+          form.dispatchErrorOccurredEvent(Web.this, "PrepareDsaKeyPair",
+              ErrorMessages.ERROR_WEB_DSA_KEY_FAILED, e.getMessage());
+        } finally {
+          activity.runOnUiThread(new Runnable(){
+            @Override
+            public void run() {
+              KeyReady("dsa", pubKeyString);              
+            }            
+          });          
+        }
+      }
+      
+    });    
+  }
+  
+  /**
+   * Signs file with DSA private key.
+   * Returns signature encoded in base64 string.
+   * 
+   * @param path file path
+   * @return signature encoded in base64 string
+   */
+  @SimpleFunction
+  public String DsaFileSign(String path){
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    String res = "";   
+    SharedPreferences sharedPreferences = activity.getSharedPreferences("TinyDB1", Context.MODE_PRIVATE);
+    byte[] priKey = Base64.decode(sharedPreferences.getString("_DSA_PRI_KEY", ""), Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      byte[] data = FileUtil.readFile(filePath);
+      byte[] signature = CryptoUtil.dsaSign(priKey, data);
+      res = Base64.encodeToString(signature, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileSign",
+          ErrorMessages.ERROR_WEB_DSA_FILE_SIGN_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileSign",
+          ErrorMessages.ERROR_WEB_DSA_FILE_SIGN_FAILED, e.getMessage());
+    } catch (InvalidKeySpecException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileSign",
+          ErrorMessages.ERROR_WEB_DSA_FILE_SIGN_FAILED, e.getMessage());
+    } catch (SignatureException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileSign",
+          ErrorMessages.ERROR_WEB_DSA_FILE_SIGN_FAILED, e.getMessage());
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileSign",
+          ErrorMessages.ERROR_WEB_DSA_FILE_SIGN_FAILED, e.getMessage());
+    }
+    return res;
+  }
+  
+  /**
+   * Verifies the signature with given file.
+   * Returns true if the signature is authentic, otherwise false.
+   * 
+   * @param key the DSA public key in base64 string
+   * @param signature the signature in base64 to be verified
+   * @param path file path
+   * @return true if the signature is authentic, otherwise false.
+   */
+  @SimpleFunction
+  public boolean DsaFileVerify(String key, String signature, String path){
+    String filePath = path;
+    if(path.contains("://")){
+      Uri uri = Uri.parse(path);
+      if(uri.getScheme().compareTo("file")==0){
+        filePath = path.replace("file://", "");
+      }
+    }
+    boolean res = false;    
+    byte[] pubKey = Base64.decode(key, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    byte[] sigToVerify = Base64.decode(signature, Base64.URL_SAFE | Base64.NO_WRAP | Base64.NO_PADDING);
+    try {
+      byte[] data = FileUtil.readFile(filePath);
+      res = CryptoUtil.dsaVerify(pubKey, sigToVerify, data);
+    } catch (InvalidKeyException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileVerify",
+          ErrorMessages.ERROR_WEB_DSA_FILE_VERIFY_FAILED, e.getMessage());
+    } catch (NoSuchAlgorithmException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileVerify",
+          ErrorMessages.ERROR_WEB_DSA_FILE_VERIFY_FAILED, e.getMessage());
+    } catch (InvalidKeySpecException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileVerify",
+          ErrorMessages.ERROR_WEB_DSA_FILE_VERIFY_FAILED, e.getMessage());
+    } catch (SignatureException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileVerify",
+          ErrorMessages.ERROR_WEB_DSA_FILE_VERIFY_FAILED, e.getMessage());
+    } catch (IOException e) {
+      form.dispatchErrorOccurredEvent(this, "DsaFileVerify",
+          ErrorMessages.ERROR_WEB_DSA_FILE_VERIFY_FAILED, e.getMessage());
+    }
+    return res;
   }
 
   /*
