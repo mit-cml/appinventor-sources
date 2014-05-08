@@ -1041,6 +1041,15 @@ public final class YoungAndroidFormUpgrader {
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
     }
+    if (srcCompVersion < 4) {
+        // The methods HashTextEncode, HashFileEncode, HmacTextEncode, HmacFileEncode were added.
+    	// The event KeyReady was added.
+    	// The methods PrepareAesKey, AesFileEncrypt, AesTextEncrypt, AesFileDecrypt, AesTextDecrypt were added.
+    	// The methods PrepareRsaKeyPair, RsaTextEncrypt, RsaTextDecrypt were added.
+    	// The methods PrepareDsaKeyPair, DsaFileSign, DsaFileVerify were added.
+        // No properties need to be modified to upgrade to version 4.
+        srcCompVersion = 4;
+    }
     return srcCompVersion;
   }
 
