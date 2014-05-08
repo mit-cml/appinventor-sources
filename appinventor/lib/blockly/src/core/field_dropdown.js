@@ -219,7 +219,7 @@ Blockly.FieldDropdown.prototype.showEditor_ = function() {
     x = xy.x - Blockly.ContextMenu.X_PADDING + Blockly.BlockSvg.SEP_SPACE_X / 2;
   }
   svgGroup.setAttribute('transform',
-      'translate(' + x + ', ' + (xy.y + borderBBox.height) + ')');
+      'translate(' + x*Blockly.WORKSPACE_SCALE+ ', ' + (xy.y + borderBBox.height)*Blockly.WORKSPACE_SCALE + ')');
 };
 
 /**

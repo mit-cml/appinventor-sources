@@ -30,6 +30,7 @@ goog.provide('Blockly.Workspace');
 goog.require('Blockly.ScrollbarPair');
 goog.require('Blockly.Trashcan');
 goog.require('Blockly.Xml');
+goog.require('Blockly.Zoom');
 
 
 /**
@@ -108,6 +109,8 @@ Blockly.Workspace.prototype.fireChangeEventPid_ = null;
  */
 Blockly.Workspace.prototype.scrollbar = null;
 
+Blockly.Workspace.prototype.zoom = null;
+
 /**
  * Create the trash can elements.
  * @return {!Element} The workspace's SVG group.
@@ -173,6 +176,14 @@ Blockly.Workspace.prototype.addWarningIndicator = function(getMetrics) {
   }
 };
 
+Blockly.Workspace.prototype.addZoomIcons = function () {
+  if (Blockly.Zoom) {
+    this.zoom = new Blockly.Zoom(this);
+    var svgZoomIcons = this.zoom.createDom();
+    this.svgGroup_.insertBefore(svgZoomIcons,this.svgBlockCanvas);
+    this.zoom.init();
+  }
+}
 
 /**
  * Get the SVG element that forms the drawing surface.

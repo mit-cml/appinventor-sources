@@ -396,7 +396,7 @@ Blockly.Block.prototype.getRelativeToSurfaceXY = function() {
 Blockly.Block.prototype.moveBy = function(dx, dy) {
   var xy = this.getRelativeToSurfaceXY();
   this.svg_.getRootElement().setAttribute('transform',
-      'translate(' + (xy.x + dx) + ', ' + (xy.y + dy) + ')');
+      'translate(' + (xy.x + dx/Blockly.WORKSPACE_SCALE) + ', ' + (xy.y + dy/Blockly.WORKSPACE_SCALE) + ')');
   this.moveConnections_(dx, dy);
 };
 
@@ -791,8 +791,8 @@ Blockly.Block.prototype.onMouseMove_ = function(e) {
     return;
   }
   Blockly.removeAllRanges();
-  var dx = e.clientX - this.startDragMouseX;
-  var dy = e.clientY - this.startDragMouseY;
+  var dx = (e.clientX - this.startDragMouseX)/Blockly.WORKSPACE_SCALE;
+  var dy = (e.clientY - this.startDragMouseY)/Blockly.WORKSPACE_SCALE;
   if (Blockly.Block.dragMode_ == 1) {
     // Still dragging within the sticky DRAG_RADIUS.
     var dr = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
