@@ -4,6 +4,7 @@ var Tutorial = {
 	setTutorial: function(tutorial){
 
 		Tutorial.currentTutorial=window[tutorial];
+		Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
 	},
 
 	changeText: function(message){
@@ -16,11 +17,13 @@ var Tutorial = {
 	},
 	/**Use to switch between steps **/
 	nextStep: function(formName){
-		if (Tutorial.currentStepIndex==Tutorial.currentTutorial.steps.length){
+		if (Tutorial.currentStepIndex==Tutorial.currentTutorial.steps.length-1){
+			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
 		}
 		else if (Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].validate(formName)){
 			Tutorial.currentStepIndex+=1;
 			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
+			Tutorial.changePosition(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].top,Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].left);
 		}
 	},
 	backStep: function(formName){

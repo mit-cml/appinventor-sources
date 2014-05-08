@@ -22,35 +22,45 @@ var Tutorial_TalkToMe = {
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: window.innerWidth/3 
 			},
 			{
-				text: "This screen is called the <b>Design tab</b>. This is where you design what your app looks like. ",
+				text: "This window is called the <b>Design tab</b>. This is where you design what your app looks like. ",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: window.innerWidth/3 
 			},
 			{
-				text: "This is the <em>Viewer</em>. Drag components from the Palette to the Viewer to see what your app will look like.",
+				text: "This part of the window is called the <em>Viewer</em>. Drag components from the Palette to the Viewer to see what your app will look like.",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: window.innerWidth/3 
 			},
 			{
 				text: "This is the <em>Palette</em>. The Palette is made of several drawers: User Interface, Media, Layout, Drawing and Animation, Sensors, and more. Find components and drag them to the Viewer to add them to your app.",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: 75 
 			},
 			{
 				text: "Click and hold a Button component. Drag it from the Palette to the Viewer. Note that Buttons are found in the User Interface drawer. Notice how your connected device should display a Button on the screen.",
 				validate: function(formName){
 					return Tutorial.testForComponent("Button");
 				},
-				url: ""
+				url: "",
+				top: 50,
+				left: window.innerWidth*2/3 
 			},
 			{
 				text: 	"These are the properties of a Button. Change the Text property to display the words Talk To Me on the button.",
@@ -58,14 +68,18 @@ var Tutorial_TalkToMe = {
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: 50,
+				left: window.innerWidth*2/3-175 
 			},
 			{
-				text: "Click and hold a TextToSpeech. Drag it from the Palette to the Viewer. This component will show up in the Non-Visible components area below the phone screen. Note that this component is found in the Media drawer.",
+				text: "Open the Media drawer in the Palette. Click and hold a TextToSpeech. Drag it from the Palette to the Viewer. This component will show up in the Non-Visible components area below the phone screen. Note that this component is found in the Media drawer.",
 				validate: function(formName){
 					return Tutorial.testForComponent("TextToSpeech");
 				},
-				url: ""
+				url: "",
+				top: 50,
+				left: window.innerWidth*2/3-175
 			},
 			{
 				text: "Now let's program our app! Click the Blocks button to go to the Blocks Tab.",
@@ -73,33 +87,41 @@ var Tutorial_TalkToMe = {
 					var truth= BlocklyPanel_InBlocksView();
 					return truth;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: window.innerWidth/3 
 			},
 			{
 				text: "This is the Workspace. Drag blocks from the drawers to the Workspace to build relationships and behavior.",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/3,
+				left: window.innerWidth/3 
 			},
 			{
 				text: "These are Built-In Blocks. Find blocks for general behaviors you may want to add to your app. ",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/6,
+				left: window.innerWidth/6 
 			},
 			{
 				text: "These are Component Blocks. Find blocks for behaviors for specific components. ",
 				validate: function(formName){
 					return true;
 				},
-				url: ""
+				url: "",
+				top: window.innerHeight/2,
+				left: window.innerWidth/6 
 			},
 			{
 				text: "Find the block that says When Button1 Click from the Button Drawer. Click and hold this block. Drag it into your workspace. ",
 				validate: function(formName){
-					var blocklies=Blocklies[formName+"_Screen1"];
+					var blocklies=Blocklies[formName];
 					var truth=false;
 					if (blocklies!=null){
 						var allblocks=blocklies.mainWorkspace.getAllBlocks();
@@ -112,12 +134,14 @@ var Tutorial_TalkToMe = {
 					}
 					return truth;
 				},
-				url: ""
+				url: "",
+				top: 50,
+				left: window.innerWidth*2/3
 			},
 			{
 				text: "Find the block that says TextToSpeech1.Speak from the TextToSpeech Drawer. Click and hold this block. Drag it inside the Button Click block so that they fit together. ",
 				validate: function(formName){
-					var blocklies=Blocklies[formName+"_Screen1"];
+					var blocklies=Blocklies[formName];
 					var truth=false;
 					if (blocklies!=null){
 
@@ -151,9 +175,9 @@ var Tutorial_TalkToMe = {
 						for (var i=0; i<allblocks.length; i++ ){
 							var block=allblocks[i];
 							if (block.methodName=="Speak" & block.typeName=="TextToSpeech"){
-								var arg=block.getInput("ARG0");
+								var arg=block.getInput("ARG0").connection.targetConnection;
 								if (arg!=null){
-									var source=arg.connection.targetConnection.sourceBlock_;
+									var source=arg.sourceBlock_;
 									if (source.type=="text"){
 										truth=true;
 									}
@@ -166,7 +190,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Clicking on the text block will allow you to type a message. Type the message: Congratulations! You’ve made your first app!",
+				text: "Clicking on the text block will allow you to type a message. Type the message: Congratulations! You've made your first app!",
 				validate: function(formName){
 					var blocklies=Blocklies[formName];
 					var truth=false;
@@ -193,7 +217,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Congratulations! You made your first app! If you’d like to make a new project, click here or click here to view some of our web tutorials.",
+				text: "Congratulations! You made your first app! If you’d like to make a new project, click on Projects --> Start new project or click <a href='http://appinventor.mit.edu/explore/ai2/tutorials.html'>here</a> to view some of our web tutorials.",
 				validate: function(formName){
 					return true;
 				},
