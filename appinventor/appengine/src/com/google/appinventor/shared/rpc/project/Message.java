@@ -9,18 +9,19 @@ import java.util.logging.Logger;
  * to the view
  */
 public class Message implements IsSerializable{
+
   @Override
   public String toString() {
-    return "Message [senderId=" + senderId + ", receiverId=" + receiverId
-        + ", message=" + message + ", status=" + status + ", timetamp="
-        + timetamp + "]";
+    return "Message [id=" + id + ", senderId=" + senderId + ", receiverId="
+        + receiverId + ", message=" + message + ", status=" + status
+        + ", timetamp=" + timetamp + "]";
   }
 
-
+  private long id;
   private String senderId; // 0 = system sent
   private String receiverId;
   private String message;
-  private String status; // 1 = notify; 2 = active; 3 = removed
+  private String status; // 1 = unread; 2 = read; 3 = removed
   private long timetamp;
 
   /**
@@ -30,14 +31,23 @@ public class Message implements IsSerializable{
   private Message() {
   }
 
-  public Message(String senderId, String receiverId, String message,
+  public Message(Long id, String senderId, String receiverId, String message,
       String status, long timetamp) {
     super();
+    this.id = id;
     this.senderId = senderId;
     this.receiverId = receiverId;
     this.message = message;
     this.status = status;
     this.timetamp = timetamp;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
   }
 
   public String getSenderId() {
@@ -80,5 +90,11 @@ public class Message implements IsSerializable{
     this.timetamp = timetamp;
   }
 
+  public boolean isUnread() {
+    if (this.status.equalsIgnoreCase("1"))
+      return true;
+    else
+      return false;
+  }
 
 }

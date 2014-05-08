@@ -78,7 +78,6 @@ public class GallerySearchIndex {
     Index index = getIndex();
     try {
       index.delete(String.valueOf(galleryId));
-      index.deleteSchema();
     } catch (DeleteException e) {
       LOG.info("error deleting index entry");
     }
@@ -112,6 +111,7 @@ public class GallerySearchIndex {
           apps.add(app);
         }catch(NotFoundException e){
           LOG.log(Level.SEVERE, "Didn't Find GalleryAppData.id: " + document.getId());
+          unIndexApp(Long.parseLong(document.getId()));
         }
       }
     } catch (SearchException e) {

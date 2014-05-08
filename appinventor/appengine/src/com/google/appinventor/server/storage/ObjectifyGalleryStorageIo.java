@@ -408,8 +408,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           commentData.comment = comment;
           commentData.userId = userId;
           commentData.galleryKey = galleryKey(galleryId);
-          commentData.dateCreated=date;
-          theDate.t=date;
+          commentData.dateCreated = date;
+          theDate.t = date;
           
           datastore.put(commentData);
         }
@@ -600,23 +600,21 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    *          id of attribution app
    * @return the id of attribution info
    */
-  public long saveAttribution(final long galleryId,final long attributionId) {
-    final Result<Long> id = new Result<Long>();
+  public long saveAttribution(final long galleryId, final long attributionId) {
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
         public void run(Objectify datastore) {
             GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
-            //if (galleryAppData != null) {
-            long date = System.currentTimeMillis();
             Key<GalleryAppData> galleryKey = galleryKey(galleryId);
             GalleryAppAttributionData attributionData = new GalleryAppAttributionData();
             attributionData.galleryKey = galleryKey(galleryId);
             attributionData.attributionId = attributionId;
+            if (attributionData.attributionId == 0) {
+              attributionData.attributionId = -1L;
+            }
             attributionData.galleryId = galleryId;
             datastore.put(attributionData);
-            id.t = date; //To-Do change it
-           // }
 
         }
       });
@@ -624,7 +622,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       throw CrashReport.createAndLogError(LOG, null,
           "error in galleryStorageIo.saveAttribution", e);
     }
-    return id.t;
+    return System.currentTimeMillis();
   }
 
   /**
@@ -646,7 +644,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
               //this is a forloop but only one result, or none if app created before this.
               for (GalleryAppAttributionData attributionData : datastore.query(GalleryAppAttributionData.class).ancestor(galleryKey)) {
                 GalleryAppData appData = datastore.find(galleryKey(attributionData.attributionId));
-                if(appData.active == false) break;
+                if(appData == null || appData.active == false) break;
                 id.t = attributionData.attributionId;
                 find = true;
               }
@@ -738,8 +736,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         @Override
         public void run(Objectify datastore) {
           boolean find = false;
-          LOG.log(Level.SEVERE, "$$$$$:" + galleryId);
-          LOG.log(Level.SEVERE, "$$$$$:" + userId);
+//          LOG.log(Level.SEVERE, "$$$$$:" + galleryId);
+//          LOG.log(Level.SEVERE, "$$$$$:" + userId);
           Key<GalleryAppData> galleryKey = galleryKey(galleryId);
           for (GalleryAppReportData appReportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey)) {
             if(appReportData.reporterId.equals(userId)){
@@ -1069,6 +1067,11 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new Key<GalleryAppReportData>(GalleryAppReportData.class, appReportId);
   }
 
+  
+  private Key<MessageData> msgKey(long id) {
+    return new Key<MessageData>(MessageData.class, id);
+  }
+
 
   /**
    * Sends a message to a particular user
@@ -1097,29 +1100,19 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-
   /**
-   * Returns a list of messages to a particular user
-   * @param receiverId id of user receiving messages
-   * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
+   * Delete a message from database
+   * @param id id of the message
    */  @Override
-  public List<Message> getMessages(final String receiverId) {
-    final List<Message> msgs = new ArrayList<Message>();
+  public void deleteMessage(final long id) {
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
     // of not using transactions (run with) so i grabbed
     Objectify datastore = ObjectifyService.begin();
-    for (MessageData msgData : datastore.query(MessageData.class)
-        .filter("receiverId", receiverId)) {
-      Message msg = new Message(msgData.senderId, msgData.receiverId,
-          msgData.message, msgData.status, msgData.datestamp);
-      msgs.add(msg);
+    MessageData msgData = datastore.get(msgKey(id));
+    if (msgData != null) {
+      datastore.delete(msgData);
     }
-    return msgs;
-  }
-
-  private Key<MessageData> msgKey(long datestamp) {
-    return new Key<MessageData>(MessageData.class, datestamp);
   }
 
    /**
@@ -1127,14 +1120,37 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     * @param receiverId id of user receiving messages
     * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
     */  @Override
-   public void readMessage(final long timestamp) {
+   public List<Message> getMessages(final String receiverId) {
+     final List<Message> msgs = new ArrayList<Message>();
      // if i try to run this in runjobwithretries it tells me can't run
      // non-ancestor query as a transaction. ObjectifyStorageio has some samples
      // of not using transactions (run with) so i grabbed
      Objectify datastore = ObjectifyService.begin();
-     MessageData msgData = datastore.find(msgKey(timestamp));
+     for (MessageData msgData : datastore.query(MessageData.class)
+         .filter("receiverId", receiverId)/*.order("-datestamp")*/) {
+       Message msg = new Message(msgData.id, msgData.senderId, msgData.receiverId,
+           msgData.message, msgData.status, msgData.datestamp);
+       msgs.add(msg);
+     }
+     return msgs;
+   }
+
+   /**
+    * Returns a list of messages to a particular user
+    * @param receiverId id of user receiving messages
+    * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
+    */  @Override
+   public void readMessage(final long id) {
+     // if i try to run this in runjobwithretries it tells me can't run
+     // non-ancestor query as a transaction. ObjectifyStorageIo has some samples
+     // of not using transactions (run with) so i grabbed
+//     LOG.warning("### readMessage in ObjectifyGalleryStorageIo");
+     Objectify datastore = ObjectifyService.begin();
+//     LOG.warning("### readMessage, id: " + id);
+     MessageData msgData = datastore.get(msgKey(id));
+//     LOG.warning("### readMessage, Msgdata: " + msgData.toString());
      if (msgData != null) {
-       LOG.info("### MSG READ GOT IN");
+//       LOG.warning("### MSG READ GOT IN");
        msgData.status = "2"; // 2 means read already
        datastore.put(msgData);
      }
@@ -1203,6 +1219,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       throw CrashReport.createAndLogError(LOG, null,"gallery error", e);
     }
   }
+
   /**
    * update Database Field, should only be used by system admin
    */

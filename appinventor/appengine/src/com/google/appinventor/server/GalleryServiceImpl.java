@@ -549,19 +549,26 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
 
   /**
-   * Tell the system to mark a specific message as read
-   * @param timestamp   the timestamp serves as the key to identify message
+   * Tell the system to mark a specific message as deleted
+   * @param msgId   the id serves as the key to identify message
    */
   @Override
-  public void readMessage(long timestamp) {
-//    LOG.info("### READ MSGS");
-//    final String userId = userInfoProvider.getUserId(); // gets current userId
-    galleryStorageIo.readMessage(timestamp);
+  public void deleteMessage(long msgId) {
+    galleryStorageIo.deleteMessage(msgId); 
+  }
+
+  /**
+   * Tell the system to mark a specific message as read
+   * @param msgId   the id serves as the key to identify message
+   */
+  @Override
+  public void readMessage(long msgId) {
+    galleryStorageIo.readMessage(msgId);
   }
 
   /**
    * Tell the system to mark a specific app's stats as read
-   * @param timestamp   the timestamp serves as the key to identify message
+   * @param appId   the id serves as the key to identify the app
    */
   @Override
   public void appStatsWasRead(long appId) {
@@ -569,6 +576,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 //    final String userId = userInfoProvider.getUserId(); // gets current userId
     galleryStorageIo.appStatsWasRead(appId);
   }
+
   /**
    * update Database Field, should only be used by system admin
    */
@@ -576,4 +584,6 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   public void updateDatabaseField(){
     galleryStorageIo.updateDatabaseField();
   }
+
+
 }

@@ -171,7 +171,9 @@ select {
  * ProjectList and CopyYoungAndroidProjectCommand.CopyProjectDialog
  */
 .ode-ProjectGalleryLink {
-  
+  cursor: pointer;
+  color: #b3c833;
+  text-align: center;
 }
 .ode-ProjectNameLabel {
   font-weight: bold;
@@ -408,8 +410,13 @@ select {
 .MsgNoPrompt {
 }
 .MsgEntry {
-  margin-bottom: 30px;
-  padding-bottom: 30px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+}
+.MsgEntry-highlighted {
+  background-color: lightyellow;
+  padding: 20px 0;
   border-bottom: 1px solid #ddd;
 }
 .MsgBody {
@@ -430,6 +437,7 @@ select {
 .MsgMeta .MsgSender {
   display: inline;
   float: right;
+  margin-right: 5px;
   font-size: 13px;
   font-style: italic;
   vertical-align: bottom;
@@ -1363,6 +1371,11 @@ textarea::-webkit-input-placeholder {
   display: block;
   margin: 20px 10px;
 }
+
+.gallery-page-single > tbody > tr {
+  display:inline-table;
+  vertical-align: top;
+}
 .gallery-container {
   float: left;
   position: relative;
@@ -1720,13 +1733,12 @@ textarea::-webkit-input-placeholder {
 .gallery-editprompt input {
   width: 90%;
 }
-.gallery-app-single .gallery-app-showcase {
+.gallery-app-single .gallery-app-showcase,
+.gallery-page-single .gallery-app-showcase {
   width: 260px;
   padding: 15px 0;
 }
-.gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
-
-}
+.gallery-page-single .gallery-app-showcase .gwt-TabBarItem,
 .gallery-app-single .gallery-app-showcase .gwt-TabBarItem {
   margin: 0 15px;
   font-size: 18px;
@@ -1968,6 +1980,7 @@ textarea::-webkit-input-placeholder {
   display: block;
   width: 100%;
 }
+.gallery-page-single .gwt-TabBar .gwt-TabBarItem-selected,
 .gallery-app-single .gwt-TabBar .gwt-TabBarItem-selected {
   color: #b3c833;
   font-weight: 300;
@@ -1990,6 +2003,7 @@ textarea::-webkit-input-placeholder {
   border-bottom: 1px dotted #b3c833;
   font-weight: 300; font-size: 14px; line-height: 1.75;
 }
+.ode-ProjectGalleryLink:hover,
 .primary-link:hover {
   background-color: #b3c833;
   color: white;
@@ -2008,8 +2022,14 @@ textarea::-webkit-input-placeholder {
 
 /* Moderation Page styles */
 .all-reports {
-  float:right;
-  margin-right:40px;
+  float: right;
+}
+.ode-ModerationTable {
+
+}
+.ode-ModerationTable .primary-link {
+  color: black;
+
 }
 
 

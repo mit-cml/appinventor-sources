@@ -167,7 +167,8 @@ public interface GalleryServiceAsync {
 
   void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Void> callback);
   void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
-  void readMessage(long timestamp, AsyncCallback<Void> callback);
+  void deleteMessage(long msgId, AsyncCallback<Void> callback);
+  void readMessage(long msgId, AsyncCallback<Void> callback);
   void appStatsWasRead(long appId, AsyncCallback<Void> callback);
 
   /**

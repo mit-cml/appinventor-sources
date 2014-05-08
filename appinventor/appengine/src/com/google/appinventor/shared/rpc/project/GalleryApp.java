@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * for an app before its published.
  */
 public class GalleryApp implements IsSerializable {
-
+  public final static long FROMSCRATCH = -1L;
 
   /**
    * Default constructor. This constructor is required by GWT.
@@ -23,8 +23,9 @@ public class GalleryApp implements IsSerializable {
     this.likes = 0;
     this.unreadLikes = 0;
     this.comments = 0;
-    this.projectId = 0L;
-    this.attributionId = 0L;
+    this.projectId = FROMSCRATCH;
+    this.galleryAppId = FROMSCRATCH;
+    this.attributionId = FROMSCRATCH;
     this.developerId = "fred";
     this.creationDate = 0L;
     this.updateDate = 0L;
@@ -49,6 +50,7 @@ public class GalleryApp implements IsSerializable {
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.imageURL = imageURL;
+    this.attributionId = FROMSCRATCH;
     // the source file name we get from gallery can have some bad characters in it...
     // e.g., name  (2).zip. We need to cleanse this and probably deal with url as
     //   well.
@@ -84,8 +86,6 @@ public class GalleryApp implements IsSerializable {
     this.comments = 0;
     this.projectId = projectId;
     this.attributionId = attributionId;
-    this.projectName=projectName;
-    this.galleryAppId=galleryAppId;
     this.projectName = projectName;
     this.galleryAppId = galleryAppId;
     this.developerId = "none";

@@ -14,6 +14,7 @@ import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.common.collect.Lists;
+import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -21,6 +22,10 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.*;
 
+import java.text.Format;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
@@ -106,9 +111,9 @@ public class TopPanel extends Composite {
 
     feedbackLink.setStyleName("ode-TopPanelButton");
     links.add(feedbackLink);
-	
-	/*
-	// Code on master branch
+  
+  /*
+  // Code on master branch
     // Gallery Link
     if (Ode.getInstance().getUser().getIsAdmin()) {
       TextButton gallery = new TextButton(MESSAGES.galleryLink());
@@ -260,6 +265,7 @@ public class TopPanel extends Composite {
     @Override
     public void execute() {
       final int[] msgCount = {0};
+      final boolean[] noMsgsDetected = {false};
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
       popup.setStyleName("ode-InboxContainer");
@@ -297,54 +303,43 @@ public class TopPanel extends Composite {
                 // Only add if this app actually has unread data
                 if (app.getUnreadDownloads() + app.getUnreadLikes() > 0) {
                   msgCount[0]++;
-                  generateUnreadStatsMessage(app, app.getUnreadDownloads(), app.getUnreadLikes(), msgList);
+                  generateUnreadStatsMessage(app, 
+                      app.getUnreadDownloads(), app.getUnreadLikes(), msgList);
                 }
               }
-              if (msgCount[0] == 0) { // No new messages, add a prompt
+            }
+        };
+      Ode.getInstance().getGalleryService().getDeveloperApps(
+          Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
+
+
+      // Retrieve list of messages of this user
+      final OdeAsyncCallback<List<Message>> mCallback = new OdeAsyncCallback<List<Message>>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(List<Message> msgs) {
+              msgCount[0] += msgs.size();
+//              List<Message> sortedMsgs = new ArrayList<Message>();
+              Collections.sort(msgs, new Comparator<Message>() {
+                @Override
+                public int compare(Message o1, Message o2) {
+                  return Long.valueOf(o2.getTimetamp()).compareTo(Long.valueOf(o1.getTimetamp()));
+                }
+              });
+              // get the new comment list so gui updates
+              for (final Message m : msgs) {
+                generateMessage(m, msgList);
+              }
+              if (msgCount[0] == 0 && !noMsgsDetected[0]) {
+                noMsgsDetected[0] = true;
                 Label noMsgPrompt = new Label("You have no messages at this moment.");
                 noMsgPrompt.addStyleName("MsgNoPrompt");
                 msgList.add(noMsgPrompt);
               }
             }
         };
-      Ode.getInstance().getGalleryService().getDeveloperApps(Ode.getInstance().getUser().getUserId(), 0, 10, appUnreadCallback);
-
-
-      // Retrieve list of unread messages of this user
-      // We are not using this at the moment because all messages will be system generated ones above
-      final OdeAsyncCallback<List<Message>> msgUnreadCallback = new OdeAsyncCallback<List<Message>>(
-          // failure message
-          MESSAGES.galleryError()) {
-            @Override
-            public void onSuccess(List<Message> msgs) {
-              // get the new comment list so gui updates
-              OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
-              for (final Message m : msgs) {
-//                msgCount++;
-                HTML msgBody = new HTML(m.getMessage());
-                msgBody.setStyleName("demo-PopUpPanel-message");
-                content.add(msgBody);
-
-                if (m.getStatus().equalsIgnoreCase("1")) {
-                  Button msgButton = new Button("Confirm read");
-                  msgButton.addClickHandler(new ClickHandler() {
-                    public void onClick(ClickEvent event) {
-                      final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
-                          MESSAGES.galleryError()) {
-                            @Override
-                            public void onSuccess(Void result) {
-                              OdeLog.log("### MSGS READ SUCCESSFULLY");
-                            }
-                        };
-                      Ode.getInstance().getGalleryService().readMessage(m.getTimetamp(), messagesCallback);
-                    }
-                  });
-                  content.add(msgButton);
-                }
-              }
-            }
-        };
-      Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), msgUnreadCallback);
+      Ode.getInstance().getGalleryService().getMessages(Ode.getInstance().getUser().getUserId(), mCallback);
 
 
 
@@ -354,6 +349,74 @@ public class TopPanel extends Composite {
     }
   }
 
+  /**
+   * Helper method to generate the UI for a single regular message.
+   * @param app   the app for the unread statistics
+   * @param dls   the number of unread downloads of the app
+   * @param likes   the number of unread likes of the app
+   * @param container   the parent container that this message resides in
+   */
+  private static void generateMessage(final Message m, FlowPanel container) {
+    final FlowPanel msg = new FlowPanel();
+    if (m.isUnread()) {
+      msg.addStyleName("MsgEntry-highlighted");
+    } else if (m.getStatus().equalsIgnoreCase("2")) {
+      // read
+      msg.addStyleName("MsgEntry");
+    } else {
+      // deleted already
+    }
+    Label msgBody = new Label(m.getMessage());
+    msgBody.setStyleName("MsgBody");
+    msg.add(msgBody);
+    FlowPanel msgMeta = new FlowPanel();
+    msgMeta.addStyleName("MsgMeta");
+    msgMeta.addStyleName("clearfix");
+    Label actionRead = new Label("Mark as read");
+    actionRead.addStyleName("primary-link");
+    Label actionDelete = new Label(" x ");
+    actionDelete.addStyleName("primary-link");
+    DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd HH:mm");
+    Label msgTime = new Label();
+    msgTime.setText(dateFormat.format(new Date(m.getTimetamp())));
+    msgTime.addStyleName("MsgSender");
+    Label msgSender = new Label("from App Inventor team ");
+    msgSender.addStyleName("MsgSender");
+//    msgMeta.add(actionRead);
+    msgMeta.add(actionDelete);
+    msgMeta.add(msgTime);
+    msgMeta.add(msgSender);
+    msg.add(msgMeta);
+    container.add(msg);
+
+    // Once the inbox is opened by user, mark this message as read...
+    if (m.isUnread()) {
+      final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(Void result) {
+              OdeLog.log("### Once the inbox is opened by user, mark this message as read...");
+//              msg.removeFromParent();
+            }
+        };
+      Ode.getInstance().getGalleryService().readMessage(m.getId(), mCallback);
+    }
+
+    // Event handler for deleting message
+    actionDelete.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
+            MESSAGES.galleryError()) {
+              @Override
+              public void onSuccess(Void result) {
+                OdeLog.log("### mark this message as deleted...");
+                msg.removeFromParent();
+              }
+          };
+        Ode.getInstance().getGalleryService().deleteMessage(m.getId(), mCallback);
+      }
+    });
+  }
   /**
    * Helper method to generate the UI for a single "unread app stats" message.
    * @param app   the app for the unread statistics
@@ -370,7 +433,7 @@ public class TopPanel extends Composite {
       hasLikes = false;
     }
     final FlowPanel msg = new FlowPanel();
-    msg.addStyleName("MsgEntry");
+    msg.addStyleName("MsgEntry-highlighted");
     Label msgBody = new Label("Your app \"" + app.getTitle() + "\" has been liked "
         + likes + " times and downloaded " + dls + " times since the last time you check it. Keep up the good work!");
     if (hasDls && !hasLikes) {
@@ -391,25 +454,24 @@ public class TopPanel extends Composite {
     actionDelete.addStyleName("primary-link");
     Label msgSender = new Label("Sent from System");
     msgSender.addStyleName("MsgSender");
-    msgMeta.add(actionRead);
+//    msgMeta.add(actionRead);
 //    msgMeta.add(actionDelete);
 //    msgMeta.add(msgSender);
     msg.add(msgMeta);
     container.add(msg);
 
-    actionRead.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void result) {
-//                OdeLog.log("### appstats READ SUCCESSFULLY");
-                msg.removeFromParent();
-              }
-          };
-        Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), messagesCallback);
-      }
-    });
+
+    // Once the inbox is opened by user, mark this message as read
+    final OdeAsyncCallback<Void> mCallback = new OdeAsyncCallback<Void>(
+        MESSAGES.galleryError()) {
+          @Override
+          public void onSuccess(Void result) {
+//            msg.removeFromParent();
+          }
+      };
+    Ode.getInstance().getGalleryService().appStatsWasRead(app.getGalleryAppId(), mCallback);
+
+
   }
 }
 

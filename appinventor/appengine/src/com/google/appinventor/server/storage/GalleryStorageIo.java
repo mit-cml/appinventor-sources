@@ -236,6 +236,8 @@ public interface GalleryStorageIo {
 
   void sendMessage(String senderId, String receiverId, String message);
 
+  void deleteMessage(long id);
+
   List<Message> getMessages(String receiverId);
 
   void readMessage(long timestamp);

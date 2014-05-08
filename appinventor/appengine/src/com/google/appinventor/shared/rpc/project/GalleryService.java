@@ -204,7 +204,8 @@ public interface GalleryService extends RemoteService {
   List<GalleryApp> remixedTo(long galleryId);
   void sendMessageFromSystem(String senderId, String receiverId, String message);
   List<Message> getMessages(String receiverId);
-  void readMessage(long timestamp);
+  void readMessage(long msgId);
+  void deleteMessage(long msgId);
   void appStatsWasRead(long appId);
 
   /**

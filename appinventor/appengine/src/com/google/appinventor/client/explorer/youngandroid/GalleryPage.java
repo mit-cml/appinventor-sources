@@ -55,6 +55,7 @@ import java.util.List;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
+import com.google.appinventor.shared.rpc.user.User;
 
 /**
  * The gallery page shows a single app from the gallery 
@@ -175,6 +176,7 @@ panel
     if (newOrUpdateApp()) {
       initImageComponents();
     } else  { // we are just viewing this page so setup the image
+      OdeLog.log("$$$$ This is public state...");
       initReadOnlyImage();
     }
 
@@ -194,11 +196,12 @@ panel
     initAppAuthor(appAuthor);
 
     // Not showing in new app becaus it doesn't have these info
+    // App details - meta
     if (!newOrUpdateApp()) {
-      // App details - meta
       appInfo.add(appMeta);
       initAppMeta(appMeta);
     }
+
     // App details - dates
     appInfo.add(appDates);
     initAppDates(appDates);
@@ -359,6 +362,7 @@ panel
    * Helper method called by constructor to create the app image for display
    */
   private void initReadOnlyImage() {
+    OdeLog.log("$$$$ init read only image...");
     updateAppImage(app.getCloudImageURL(), appHeader);   
   }
 
@@ -433,6 +437,7 @@ panel
    * @param container  The container that image widget resides
    */
   private void updateAppImage(String url, Panel container) {
+    OdeLog.log("$$$$ update app image..." + url);
     image = new Image();
     image.setUrl(url);
     image.addStyleName("app-image");
@@ -500,42 +505,53 @@ panel
     appInfo.add(authorPrefix);
     authorPrefix.addStyleName("app-subtitle");
 
-    // Add author's image
-    final Image authorAvatar = new Image();
-    authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
-    // If the user has provided a gallery app image, we'll load it. But if not
-    // the error will occur and we'll load default image
-    authorAvatar.addErrorHandler(new ErrorHandler() {
-      public void onError(ErrorEvent event) {
-        authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
-      }
-    });
-    authorAvatar.addErrorHandler(new ErrorHandler() {
-      public void onError(ErrorEvent event) {
-        image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
-      }
-    });
-    authorAvatar.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToUserProfileView(
-            app.getDeveloperId(), 1 /* 1 for public view */ );
-      }
-    });
-    appInfo.add(authorAvatar);
-    authorAvatar.addStyleName("app-userimage");
+    // Add author's image - not when creating a new app
+    if (editStatus != NEWAPP) {
+      final Image authorAvatar = new Image();
+      authorAvatar.addStyleName("app-userimage");
+      authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
+      // If the user has provided a gallery app image, we'll load it. But if not
+      // the error will occur and we'll load default image
+      authorAvatar.addErrorHandler(new ErrorHandler() {
+        public void onError(ErrorEvent event) {
+          authorAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
+        }
+      });
+      authorAvatar.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToUserProfileView(
+              app.getDeveloperId(), 1 /* 1 for public view */ );
+        }
+      });
+      appInfo.add(authorAvatar);
+    }
 
     // Add author's name
-    Label authorName = new Label(app.getDeveloperName());
-    appInfo.add(authorName);
+    final Label authorName = new Label();
+    if (editStatus == NEWAPP) {
+      // App doesn't have author info yet, grab current user info
+      OdeAsyncCallback<User> userCallback = new OdeAsyncCallback<User>(
+          MESSAGES.serverUnavailable()) {
+            @Override
+            public void onSuccess(final User currentUser) {
+              authorName.setText(currentUser.getUserName());
+            }
+          };
+        Ode.getInstance().getUserInfoService().getUserInformation(userCallback);
+    } else {
+      authorName.setText(app.getDeveloperName());
+      authorName.addClickHandler(new ClickHandler() {
+        public void onClick(ClickEvent event) {
+          Ode.getInstance().switchToUserProfileView(
+              app.getDeveloperId(), 1 /* 1 for public view*/ );
+        }
+      });
+    }
     authorName.addStyleName("app-username");
     authorName.addStyleName("app-subtitle");
+    appInfo.add(authorName);
 
-    authorName.addClickHandler(new ClickHandler() {
-      public void onClick(ClickEvent event) {
-        Ode.getInstance().switchToUserProfileView(
-            app.getDeveloperId(), 1 /* 1 for public view*/ );
-      }
-    });
+
   }
 
 
@@ -577,8 +593,14 @@ panel
    * @param container   The container that date fields reside
    */
   private void initAppDates(Panel container) {
-    Date createdDate = new Date(app.getCreationDate());
-    Date changedDate = new Date(app.getUpdateDate());
+    Date createdDate = new Date();
+    Date changedDate = new Date();
+    if (editStatus == NEWAPP) {
+    } else {
+      createdDate = new Date(app.getCreationDate());
+      changedDate = new Date(app.getUpdateDate());
+      
+    }
     DateTimeFormat dateFormat = DateTimeFormat.getFormat("yyyy/MM/dd");
     appCreated.setText(MESSAGES.galleryAppCreatedPrefix() + dateFormat.format(createdDate));
     appChanged.setText(MESSAGES.galleryAppChangedPrefix() + dateFormat.format(changedDate));

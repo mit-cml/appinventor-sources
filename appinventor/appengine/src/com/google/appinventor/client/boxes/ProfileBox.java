@@ -12,25 +12,29 @@ import com.google.appinventor.client.explorer.youngandroid.ProfilePage;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.boxes.Box;
+import com.google.gwt.user.client.ui.FlowPanel;
 
 
 
 /**
  * Box implementation for user profile.
  *
+ * @author vincentaths@gmail.com (Vincent Zhang)
+ *
  */
-public final class ProfileBox extends Box {
+public final class ProfileBox extends FlowPanel {
 
-  // Singleton Gallery explorer box instance (only one Gallery explorer allowed)
+  // Singleton Profile explorer box instance (only one Profile explorer allowed)
   private static final ProfileBox INSTANCE = new ProfileBox();
 
-  // Gallery list for young android
+  // Profile page for young android
+  private static FlowPanel pContainer;
   private static ProfilePage pPage;
 
   /**
-   * Returns the singleton GalleryAppBox.
+   * Returns the singleton ProfileBox.
    *
-   * @return  Gallery list box
+   * @return  ProfileBox box
    */
   public static ProfileBox getUserProfileBox() {
     return INSTANCE;
@@ -38,31 +42,31 @@ public final class ProfileBox extends Box {
 
   public static void setProfile(String userId, int editStatus)
   {
-//    OdeLog.log("######### I got in setApp");
-//    OdeLog.log("######### I got in setApp user " + userId);
-//    OdeLog.log("######### I got in setApp edit " + editStatus);
+    OdeLog.log("######### I got in setApp");
+    OdeLog.log("######### I got in setApp user " + userId);
+    OdeLog.log("######### I got in setApp edit " + editStatus);
+    pContainer.clear();
     pPage = new ProfilePage(userId, editStatus);
-    INSTANCE.setContent(pPage);
+    pContainer.add(pPage);
   }
   /**
    * Creates new user profile box.
    */
   private ProfileBox() {
-    super(MESSAGES.userProfileBoxCaption(),
-        300,    // height
-        false,  // minimizable
-        false); // removable
-
-    //pPage = new GalleryPage(app);
-    //setContent(pPage);
+//    super(MESSAGES.userProfileBoxCaption(),
+//        300,    // height
+//        false,  // minimizable
+//        false); // removable
+    pContainer = new FlowPanel();
+    this.add(pContainer);
   }
 
-  /**
-   * Returns user profile page.
-   *
-   * @return  User profile page.
-   */
-  public ProfilePage getUserProfilePage() {
-     return pPage;
-  }
+//  /**
+//   * Returns user profile page.
+//   *
+//   * @return  User profile page.
+//   */
+//  public ProfilePage getUserProfilePage() {
+//     return pPage;
+//  }
 }

@@ -81,9 +81,6 @@ public class ReportList extends Composite  {
    * Creates a new ProjectList
    */
   public ReportList() {
-
-
-
     // Initialize UI
     panel = new VerticalPanel();
     panel.setWidth("100%");
@@ -111,7 +108,7 @@ public class ReportList extends Composite  {
     ReportWidgets = new HashMap<GalleryAppReport, ReportWidgets>();
 
     table = new Grid(1, 8); // The table initially contains just the header row.
-    table.addStyleName("ode-ProjectTable");
+    table.addStyleName("ode-ModerationTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
 
@@ -215,17 +212,17 @@ public class ReportList extends Composite  {
       reportTextLabel.addStyleName("ode-ProjectNameLabel");
 
       appLabel = new Label(report.getApp().getTitle());
-      appLabel.addStyleName("ode-ProjectNameLabel");
+      appLabel.addStyleName("primary-link");
 
       DateTimeFormat dateTimeFormat = DateTimeFormat.getMediumDateTimeFormat();
       Date dateCreated = new Date(report.getTimeStamp());
       dateCreatedLabel = new Label(dateTimeFormat.format(dateCreated));
 
       appAuthorlabel = new Label(report.getOffender().getUserName());
-      appAuthorlabel.addStyleName("ode-ProjectNameLabel");
+      appAuthorlabel.addStyleName("primary-link");
 
       reporterLabel = new Label(report.getReporter().getUserName());
-      reporterLabel.addStyleName("ode-ProjectNameLabel");
+      reporterLabel.addStyleName("primary-link");
 
       sendMessageButton = new Button("Send Message");
 
@@ -329,7 +326,6 @@ public class ReportList extends Composite  {
       rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
       rw.appResolved = false;
     }
-    OdeLog.log("######### Setup markReportAsResolved: r.getReportId():" + r.getReportId() + ", r.getReportText():" + r.getReportText());
     rw.markAsResolvedButton.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
@@ -464,11 +460,12 @@ public class ReportList extends Composite  {
                   MESSAGES.galleryError()) {
                     @Override
                     public void onSuccess(final Void result) {
-                      OdeLog.log("### Moderator MSGS SEND SUCCESSFULLY");
                       popup.hide();
                     }
                   };
-                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
+                  Ode.getInstance().getGalleryService().sendMessageFromSystem(
+                      currentUser.getUserId(), report.getOffender().getUserId(), 
+                      msgText.getText(), messagesCallback);
               }
             });
           }
@@ -561,7 +558,6 @@ public class ReportList extends Composite  {
                   MESSAGES.galleryError()) {
                     @Override
                     public void onSuccess(final Void result) {
-                      OdeLog.log("### Moderator MSGS SEND SUCCESSFULLY");
                       popup.hide();
 
                       final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
@@ -571,7 +567,6 @@ public class ReportList extends Composite  {
                             public void onSuccess(Boolean success) {
                               if(!success)
                                 return;
-                              OdeLog.log("### Moderator APP DEACTIVATED/REACTIVED SUCCESSFULLY");
                               popup.hide();
                               if(rw.appActive == true){
                                 rw.deactiveAppButton.setText("Reactivate App");//revert button

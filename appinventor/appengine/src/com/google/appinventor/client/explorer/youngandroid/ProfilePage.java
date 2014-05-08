@@ -16,6 +16,8 @@ import java.util.logging.Logger;
 //import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
+
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
@@ -42,6 +44,7 @@ import com.google.gwt.user.client.ui.Panel;
 import com.google.gwt.user.client.ui.FocusPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -95,7 +98,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   // The main profile container, same as appDetails in GalleryPage
   FlowPanel mainContent = new FlowPanel();
   // The sidebar showing a list of apps by this author, same as GalleryPage
-  FlowPanel appsByAuthor = new FlowPanel();
+  private TabPanel sidebarTabs = new TabPanel();
 
   // Wrapper for primary profile content (image + userinfo)
   FlowPanel profilePrimaryWrapper = new FlowPanel();
@@ -135,16 +138,31 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    *
    */
   public ProfilePage(String incomingUserId, final int editStatus) {
-    LOG.log(Level.WARNING, "#### userid of profile page " + incomingUserId + "#####" + userId);
-    LOG.log(Level.WARNING, "#### editstatus of profile page " + editStatus);
 
     // Replace the global variable
-    userId = incomingUserId;
+    if (incomingUserId.equalsIgnoreCase("-1")) {
+      // this is user checking out own profile, thus we grab current user info
+      // Get current user id
+      OdeAsyncCallback<User> userCallback = new OdeAsyncCallback<User>(
+          MESSAGES.serverUnavailable()) {
+            @Override
+            public void onSuccess(final User currentUser) {
+              userId = currentUser.getUserId();
+//              OdeLog.log("#### get current user id = " + userId);
+              initImageComponents(userId);
+            }
+          };
+        Ode.getInstance().getUserInfoService().getUserInformation(userCallback);
+    } else {
+      // this is checking out an already existing user's profile...
+//      OdeLog.log("#### user id directly set to " + incomingUserId);
+      userId = incomingUserId;
+    }
     profileStatus = editStatus;
 
     // If we're editing or updating, add input form for image
     if (editStatus == PRIVATE) {
-      initImageComponents();
+      // This should only set up image after userId is returned above
     } else  { // we are just viewing this page so setup the image
       initReadOnlyImage();
     }
@@ -217,7 +235,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     } else {
       profileSingle.addStyleName("ode-Public");
       // USER PROFILE IN PUBLIC (NON-EDITABLE) STATE
-      imageUploadBoxInner.clear();
+//      imageUploadBoxInner.clear();
       // Set up the user info stuff
       userLinkLabel.setText("More info link:");
       profileInfo.add(userContentHeader);
@@ -247,18 +265,26 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     profileSummit.addStyleName("profile-submit");
     imageUpload.addStyleName("app-image-upload");
 
-
+    // Add sidebar
+    if (editStatus == PUBLIC) {
+      sidebarTabs.addStyleName("gallery-container");
+      sidebarTabs.addStyleName("gallery-app-showcase");
+    }
     // Setup top level containers
-    // profileGUI is just the abstract top-level GUI container
-    profileGUI.addStyleName("ode-UserProfileWrapper");
     // profileSingle is the actual container that components go in
     profileSingle.addStyleName("gallery-page-single");
 
 
     // Add containers to the top-tier GUI, initialize
     profileSingle.add(mainContent);
+    if (editStatus == PUBLIC) {
+      profileSingle.add(sidebarTabs);
+    }
+
+    // profileGUI is just the abstract top-level GUI container
     profileGUI.add(profileSingle);
-    profileSingle.add(appsByAuthor);
+    profileGUI.addStyleName("ode-UserProfileWrapper");
+    profileGUI.addStyleName("gallery");
     initWidget(profileGUI);
 
 
@@ -282,17 +308,27 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 
             }
             // once we get the user info and id we can show the right image
-            updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+//            updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
 
          }
     };
     if (editStatus == PRIVATE) {
       Ode.getInstance().getUserInfoService().getUserInformation(userInformationCallback);
     } else {
+      // Public state
       Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
-      LOG.warning("###### PROFILEPAGE GOT IN return success, ready to grab appsByDev");
       // Retrieve apps by this author for sidebar
-      gallery.GetAppsByDeveloper(0, 5, userId);
+      final OdeAsyncCallback<List<GalleryApp>> byAuthorCallback = new OdeAsyncCallback<List<GalleryApp>>(
+          // failure message
+          MESSAGES.galleryError()) {
+            @Override
+            public void onSuccess(List<GalleryApp> apps) {
+              FlowPanel appsByAuthor = new FlowPanel();
+              galleryGF.generateSidebar(apps, sidebarTabs, appsByAuthor, "Apps By Author", 
+                  MESSAGES.galleryAppsByAuthorSidebar() + " this user", false, true);
+            }
+        };
+      Ode.getInstance().getGalleryService().getDeveloperApps(userId, 0,5, byAuthorCallback);
     }
   }
 
@@ -324,35 +360,39 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   /**
    * Helper method called by constructor to initialize image upload components
    */
-  private void initImageComponents() {
-    imageUploadBox = new FlowPanel();
+  private void initImageComponents(String userId) {
+//    imageUploadBox = new FlowPanel();
     imageUploadBox.addStyleName("app-image-uploadbox");
     imageUploadBox.addStyleName("gallery-editbox");
-    imageUploadBoxInner = new FlowPanel();
+//    imageUploadBoxInner = new FlowPanel();
     imageUploadPrompt = new Label("Upload your profile image!");
     imageUploadPrompt.addStyleName("gallery-editprompt");
 
+
+//    OdeLog.log("#### got in initImageComponents, GalleryApp.getUserImageUrl(userId) = " + GalleryApp.getUserImageUrl(userId));
     updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
     imageUploadPrompt.addStyleName("app-image-uploadprompt");
     imageUploadBoxInner.add(imageUploadPrompt);
 
-    final FileUpload upload = new FileUpload();
-    upload.addStyleName("app-image-upload");
+//    final FileUpload upload = new FileUpload();
+//    upload.addStyleName("app-image-upload");
     // Set the correct handler for servlet side capture
-    upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
-    upload.addChangeHandler(new ChangeHandler (){
+    imageUpload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
+    imageUpload.addChangeHandler(new ChangeHandler (){
       public void onChange(ChangeEvent event) {
+//        OdeLog.log("$$$$ you try to upload an image");
         uploadImage();
       }
     });
-    imageUploadBoxInner.add(upload);
+    imageUploadBoxInner.add(imageUpload);
     imageUploadBox.add(imageUploadBoxInner);
     profileHeaderWrapper.add(imageUploadBox);
     profileHeaderWrapper.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
+//        OdeLog.log("$$$$ you try to trigger click event on FileUpload");
         // The correct way to trigger click event on FileUpload
-        upload.getElement().<InputElement>cast().click();
+        imageUpload.getElement().<InputElement>cast().click();
       }
     });
     profileHeader.add(profileHeaderWrapper);
@@ -372,22 +412,26 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    */
   private void uploadImage() {
     String uploadFilename = imageUpload.getFilename();
+//    OdeLog.log("$$$$ filename = " + uploadFilename);
     if (!uploadFilename.isEmpty()) {
       String filename = makeValidFilename(uploadFilename);
       // Forge the request URL for gallery servlet
       String uploadUrl = GWT.getModuleBaseURL() + ServerLayout.GALLERY_SERVLET + 
           "/user/" + userId + "/" + filename;
+//      OdeLog.log("$$$$ profile page image upload" + uploadUrl);
       Uploader.getInstance().upload(imageUpload, uploadUrl,
           new OdeAsyncCallback<UploadResponse>(MESSAGES.fileUploadError()) {
         @Override
         public void onSuccess(UploadResponse uploadResponse) {
           switch (uploadResponse.getStatus()) {
             case SUCCESS:
+//              OdeLog.log("$$$$ profile page image upload success");
               ErrorReporter.hide();
               imageUploadBoxInner.clear();
               updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
               break;
             case FILE_TOO_LARGE:
+//              OdeLog.log("$$$$ profile page image upload too large");
               // The user can resolve the problem by uploading a smaller file.
               ErrorReporter.reportInfo(MESSAGES.fileTooLargeError());
               break;
@@ -422,9 +466,10 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    * @param container  The container that image widget resides
    */
   private void updateUserImage(String url, Panel container) {
-    userAvatar = new Image();
+//    userAvatar = new Image();
     userAvatar.setUrl(url);
     userAvatar.addStyleName("app-image");
+//    OdeLog.log("#### profileStatus == " + profileStatus + ", url = " + url);
     if (profileStatus == PRIVATE) {
       userAvatar.addStyleName("status-updating");
     }
@@ -432,10 +477,11 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     // the error will occur and we'll load default image
     userAvatar.addErrorHandler(new ErrorHandler() {
       public void onError(ErrorEvent event) {
+//        OdeLog.log("#### you triggered userAvatar error handler, get back to default img");
         userAvatar.setUrl(GalleryApp.DEFAULTUSERIMAGE);
       }
     });
-    container.add(userAvatar);   
+    container.add(userAvatar);
   }
 
 
@@ -447,7 +493,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   /*  private void refreshApps(List<GalleryApp> apps, int requestId) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        LOG.warning("###### PROFILEPAGE GOT IN refreshapps");
+        OdeLog.log("###### PROFILEPAGE GOT IN refreshapps");
 //        galleryGF.generateSidebar(apps, appsByAuthor, MESSAGES.galleryAppsByAuthorSidebar(), false);
         break;
     }
@@ -457,7 +503,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   @Override
   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId) {
     if (apps != null) {
-      LOG.warning("###### PROFILEPAGE GOT IN onAppListRequestCompleted");
+      OdeLog.log("###### PROFILEPAGE GOT IN onAppListRequestCompleted");
       refreshApps(apps, requestId);
     } else {
       Window.alert("app list returned null");

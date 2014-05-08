@@ -203,6 +203,12 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     return id.hashCode();
   }
 
+  public boolean isModerator() {
+    if(type == 1){
+      return true;
+    }
+    return false;
+  }
   public User copy() {
     return new User(id, email, name, link, tosAccepted, isAdmin, type);
   }

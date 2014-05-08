@@ -137,7 +137,7 @@ public class Ode implements EntryPoint {
   private User user;
 
   // Unread message count, global
-  private int msgCount;
+  private final int[] msgCount = {0};
 
   // Collection of projects
   private ProjectManager projectManager;
@@ -510,7 +510,7 @@ public class Ode implements EntryPoint {
             MESSAGES.galleryError()) {
               @Override
               public void onSuccess(List<Message> msgs) {
-                msgCount = 0;
+                msgCount[0] = 0;
                 // get the new comment list so gui updates
 //                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, size = " + msgs.size());
                 for (Message m : msgs) {
@@ -518,10 +518,16 @@ public class Ode implements EntryPoint {
                   OdeLog.log("### MSG count = " + msgCount);
                   if (m.getStatus().equalsIgnoreCase("1")) {
                     OdeLog.log("### MSG GOT IN");
-                    msgCount++;
+                    msgCount[0]++;
                   }
                 }
-                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " + userInfo.concat(Integer.toString(msgCount)));
+                OdeLog.log("### MSGS RETRIEVED SUCCESSFULLY, string = " + 
+                userInfo.concat(Integer.toString(msgCount[0])));
+
+                String u = userInfo + " (" + Integer.toString(msgCount[0]) + ")";
+                OdeLog.log("### MSG final = " + u);
+                // Reset message count for further use
+                topPanel.showUserEmail(u);
               }
           };
         Ode.getInstance().getGalleryService().getMessages(user.getUserId(), messagesCallback);
@@ -532,12 +538,8 @@ public class Ode implements EntryPoint {
 
         // Initialize UI
         initializeUi();
-        String u = userInfo + " (" + Integer.toString(msgCount) + ")";
-        OdeLog.log("### MSG final = " + u);
-        // Reset message count for further use
-        topPanel.showUserEmail(u);
-        topPanel.showUserEmail(user.getUserEmail());
-        if(user.getType() == 1){
+//        topPanel.showUserEmail(user.getUserEmail());
+        if(user.isModerator()){
           topPanel.showModerationLink();
         }
       }
