@@ -36,16 +36,16 @@ import com.google.appinventor.client.explorer.project.Project;
 public class GalleryClient {
 
   private List<GalleryRequestListener> listeners;
-  public static final int REQUEST_FEATURED=1;
-  public static final int REQUEST_RECENT=2;
-  public static final int REQUEST_SEARCH=3;
-  public static final int REQUEST_MOSTLIKED=4;
-  public static final int REQUEST_MOSTDOWNLOADED=5;
-  public static final int REQUEST_MOSTVIEWED=6;
-  public static final int REQUEST_BYDEVELOPER=7;
-  public static final int REQUEST_BYTAG=8;
-  public static final int REQUEST_ALL=9;
-  public static final int REQUEST_REMIXED_TO=10;
+  public static final int REQUEST_FEATURED = 1;
+  public static final int REQUEST_RECENT = 2;
+  public static final int REQUEST_SEARCH = 3;
+  public static final int REQUEST_MOSTLIKED = 4;
+  public static final int REQUEST_MOSTDOWNLOADED = 5;
+  public static final int REQUEST_MOSTVIEWED = 6;
+  public static final int REQUEST_BYDEVELOPER = 7;
+  public static final int REQUEST_BYTAG = 8;
+  public static final int REQUEST_ALL = 9;
+  public static final int REQUEST_REMIXED_TO = 10;
 
   private static volatile GalleryClient  instance= null;
   private GalleryClient () {
@@ -141,7 +141,7 @@ public class GalleryClient {
     }
     };
     // This is below the call back, but of course it is done first
-    ode.getGalleryService().getRecentApps(start,count,callback);
+    ode.getGalleryService().getRecentApps(start, count, callback);
   
   }
   /**

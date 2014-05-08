@@ -31,6 +31,7 @@ import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.CellList;
 import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -68,6 +69,7 @@ import com.google.appinventor.shared.rpc.user.User;
  */
 public class GalleryPage extends Composite implements GalleryRequestListener {
   public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
+  final Ode ode = Ode.getInstance();
 
   GalleryClient gallery = null;
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
@@ -102,7 +104,8 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appReportPanel;
   private FlowPanel appComments;
   private FlowPanel appCommentsList;
-  private String tagSelected;
+  private FlowPanel returnToGallery;
+//private String tagSelected;
 
   public static final int VIEWAPP = 0;
   public static final int NEWAPP = 1;
@@ -252,15 +255,18 @@ panel
       gallery.GetAppsByDeveloper(0, 5, app.getDeveloperId());
     }
 
-    // Add everything to top-level containers
+    // Add to appSingle
     appSingle.add(appDetails);
     appDetails.addStyleName("gallery-container");
     appDetails.addStyleName("gallery-app-details");
+
     if (!newOrUpdateApp()) {
       appSingle.add(sidebarTabs);
       sidebarTabs.addStyleName("gallery-container");
       sidebarTabs.addStyleName("gallery-app-showcase");
     }
+
+    // Add everything to top-level containers
     galleryGUI.add(appSingle);
     appSingle.addStyleName("gallery-app-single");
     panel.add(galleryGUI);
@@ -295,7 +301,8 @@ panel
     appsByAuthor = new FlowPanel();
     appsByTags = new FlowPanel();
     appsRemixes = new FlowPanel();
-    tagSelected = "";
+    returnToGallery = new FlowPanel();
+//    tagSelected = "";
     
     appCreated = new Label();
     appChanged = new Label();
@@ -692,6 +699,18 @@ panel
     appActionTabs.selectTab(0);
     appActionTabs.addStyleName("app-actions-tabs");
     appDetails.add(appSecondaryWrapper);
+    // Return to Gallery link
+    Label returnLabel = new Label("Back to Gallery");
+    returnLabel.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent clickEvent) {
+        ode.switchToGalleryView();
+      }
+    });
+    returnToGallery.add(returnLabel);
+    returnToGallery.addStyleName("gallery-nav-return");
+    returnToGallery.addStyleName("primary-link");
+    appSecondaryWrapper.add(returnToGallery); //
   }
 
 

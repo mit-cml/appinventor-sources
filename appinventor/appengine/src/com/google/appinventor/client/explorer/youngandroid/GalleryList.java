@@ -100,6 +100,17 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private final FlowPanel appPopularContent;
   private final FlowPanel appSearchContent;
 
+  public static final int REQUEST_FEATURED=1;
+  public static final int REQUEST_RECENT=2;
+  public static final int REQUEST_SEARCH=3;
+  public static final int REQUEST_MOSTLIKED=4;
+  public static final int REQUEST_MOSTDOWNLOADED=5;
+  public static final int REQUEST_MOSTVIEWED=6;
+  public static final int REQUEST_BYDEVELOPER=7;
+  public static final int REQUEST_BYTAG=8;
+  public static final int REQUEST_ALL=9;
+  public static final int REQUEST_REMIXED_TO=10;
+
   private int appRecentCounter = 0;
   private int appFeaturedCounter = 0;
   private int appPopularCounter = 0;
@@ -110,9 +121,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appSearchExhausted = false;
   
   private final String activeNext = "More Apps";
-  private final String activePrev = "Previous Apps";
-  private final String disabledNext = "";
-  private final String disabledPrev = "";
+//  private final String activePrev = "Previous Apps";
 
   public static final int NUMAPPSTOSHOW = 10;
 
@@ -142,20 +151,22 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
     // HTML segment for gallery typeface
     HTML headerExtra = new HTML(
-    		"<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
+    		"<link href='http://fonts.googleapis.com/css?" +
+    		"family=Roboto:400,300,100' rel='stylesheet' type='text/css'>");
     galleryGUI.add(headerExtra);
 
     // Add content to panels
-    addGalleryAppTab(appFeatured, appFeaturedContent, 1);
-    addGalleryAppTab(appRecent, appRecentContent, 2);
-    addGalleryAppTab(appSearch, appSearchContent, 3);
-    addGalleryAppTab(appPopular, appPopularContent, 5);
+//    addGalleryAppTab(appFeatured, appFeaturedContent, REQUEST_FEATURED);
+    addGalleryAppTab(appRecent, appRecentContent, REQUEST_RECENT);
+    addGalleryAppTab(appSearch, appSearchContent, REQUEST_SEARCH);
+    addGalleryAppTab(appPopular, appPopularContent, REQUEST_MOSTDOWNLOADED);
 
-    // addGallerySearchTab(appSearch);  don't think we need because in regular addgallerytab below
+    // addGallerySearchTab(appSearch);  
+    // don't think we need because in regular addgallerytab below
 
     // Add panels to main tabPanel
     appTabs.add(appRecent, "Recent");
-    appTabs.add(appFeatured, "Featured");
+//    appTabs.add(appFeatured, "Featured"); // 2014/05/15: don't need now
     appTabs.add(appPopular, "Popular");
     appTabs.add(appSearch, "Search");
     appTabs.selectTab(0);
@@ -171,8 +182,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     
     // Calls to gallery get methods will eventually trigger call back to methods
     // at bottom of this file
-    gallery.GetFeatured(0, NUMAPPSTOSHOW, 0);
-    gallery.GetMostDownloaded(0, NUMAPPSTOSHOW);
+//    gallery.GetFeatured(0, offset, 0); // 2014/05/15: don't need now
   }
 
 
@@ -190,7 +200,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
 
     final TextBox searchText = new TextBox();
     // Search specific
-    if (request == 3) {
+    if (request == REQUEST_SEARCH) {
       FlowPanel searchPanel = new FlowPanel();
       searchText.addStyleName("gallery-search-textarea");
       Button sb = new Button("Search for apps");
@@ -206,40 +216,50 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         public void onClick(ClickEvent event) {
           gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
         }
-      }); 
+      });
+    } else if (request == REQUEST_RECENT) {
+      gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
+    } else if (request == REQUEST_MOSTDOWNLOADED) {
+      gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
     }
-
-    gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
     container.add(content);
 
     // Add regular GUI components
-    final Label buttonPrev = new Label();
-    buttonPrev.setText(activePrev);
+//    final Label buttonPrev = new Label();
+//    buttonPrev.setText(activePrev);
     FlowPanel prev = new FlowPanel();
-    prev.add(buttonPrev);
+//    prev.add(buttonPrev);
     prev.addStyleName("gallery-nav-prev");
     container.add(prev);
 
     final Label buttonNext = new Label();
     buttonNext.setText(activeNext);
+    buttonNext.removeStyleName("disabled");
+    buttonNext.addStyleName("active");
     FlowPanel next = new FlowPanel();
-    next.add(buttonNext);
+    prev.add(buttonNext);
     next.addStyleName("gallery-nav-next");
     container.add(next);
     
     final Label counter = new Label("Counting...");
     counter.addStyleName("gallery-nav-counter");
-    if (request != 1) {
+    if (request != REQUEST_FEATURED) {
       container.add(counter);
       counter.setText("");      
     }
-    
+
+    /**
     buttonPrev.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
         switch (request) {
+<<<<<<< HEAD
         case 1: 
           if (appFeaturedCounter - NUMAPPSTOSHOW >= 0) {
+=======
+        case REQUEST_FEATURED:
+          if (appFeaturedCounter - offset >= 0) {
+>>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appFeaturedCounter -= NUMAPPSTOSHOW;
             gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
@@ -249,8 +269,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appFeaturedCounter = " + appFeaturedCounter);
           }
           break;   
+<<<<<<< HEAD
         case 2: 
           if (appRecentCounter - NUMAPPSTOSHOW >= 0) {
+=======
+        case REQUEST_RECENT:
+          if (appRecentCounter - offset >= 0) {
+>>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appRecentCounter -= NUMAPPSTOSHOW;
             gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
@@ -260,8 +285,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appRecentCounter = " + appRecentCounter);
           }
           break;  
+<<<<<<< HEAD
         case 3: 
           if (appSearchCounter - NUMAPPSTOSHOW >= 0) {
+=======
+        case REQUEST_SEARCH:
+          if (appSearchCounter - offset >= 0) {
+>>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appSearchCounter -= NUMAPPSTOSHOW;
             gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
@@ -271,8 +301,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appSearchCounter = " + appSearchCounter);
           }
           break;  
+<<<<<<< HEAD
         case 5:
           if (appPopularCounter - NUMAPPSTOSHOW >= 0) {
+=======
+        case REQUEST_MOSTDOWNLOADED:
+          if (appPopularCounter - offset >= 0) {
+>>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appPopularCounter -= NUMAPPSTOSHOW;
             gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
@@ -285,51 +320,61 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         }
       }
     });    
+    */
+
     buttonNext.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
         switch (request) {
-          case 1: 
+          case REQUEST_FEATURED:
             if (!appFeaturedExhausted) {
               // If the next page still has apps to retrieve, do it
               appFeaturedCounter += NUMAPPSTOSHOW;
               gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
-              buttonNext.setText(activeNext);
+              buttonNext.removeStyleName("disabled");
+              buttonNext.addStyleName("active");
             } else {
-              buttonNext.setText(disabledNext);
+              buttonNext.removeStyleName("active");
+              buttonNext.setStyleName("disabled");
               OdeLog.log("next appFeaturedCounter = " + appFeaturedCounter);
             }
             break;    
-          case 2: 
+          case REQUEST_RECENT:
             if (!appRecentExhausted) {
               // If the next page still has apps to retrieve, do it
               appRecentCounter += NUMAPPSTOSHOW;
               gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
-              buttonNext.setText(activeNext);
+              buttonNext.removeStyleName("disabled");
+              buttonNext.addStyleName("active");
             } else {
-              buttonNext.setText(disabledNext);
+              buttonNext.removeStyleName("active");
+              buttonNext.setStyleName("disabled");
               OdeLog.log("next appRecentCounter = " + appRecentCounter);
             }
             break;   
-          case 3: 
+          case REQUEST_SEARCH:
             if (!appSearchExhausted) {
               // If the next page still has apps to retrieve, do it
               appSearchCounter += NUMAPPSTOSHOW;
               gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
-              buttonNext.setText(activeNext);
+              buttonNext.removeStyleName("disabled");
+              buttonNext.addStyleName("active");
             } else {
-              buttonNext.setText(disabledNext);
+              buttonNext.removeStyleName("active");
+              buttonNext.setStyleName("disabled");
               OdeLog.log("next appSearchCounter = " + appSearchCounter);
             }
             break;   
-          case 5:
+          case REQUEST_MOSTDOWNLOADED:
             if (!appPopularExhausted) {
               // If the next page still has apps to retrieve, do it
               appPopularCounter += NUMAPPSTOSHOW;
               gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
-              buttonNext.setText(activeNext);
+              buttonNext.removeStyleName("disabled");
+              buttonNext.addStyleName("active");
             } else {
-              buttonNext.setText(disabledNext);
+              buttonNext.removeStyleName("active");
+              buttonNext.setStyleName("disabled");
               OdeLog.log("next appPopularCounter = " + appPopularCounter);
             }
             break;   
@@ -376,42 +421,41 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private void refreshApps(List<GalleryApp> apps, int requestId) {
     OdeLog.log("#### we are now refreshing app list"+apps.size());
     switch (requestId) {
-      case 1: 
+      case REQUEST_FEATURED:
         if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appFeaturedExhausted = true;
         } else {
           appFeaturedExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(apps, appFeaturedContent, true); 
-        break;   
-      case 2: 
+        galleryGF.generateHorizontalAppList(apps, appFeaturedContent, false);
+        break;
+      case REQUEST_RECENT:
         if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appRecentExhausted = true;
         } else {
           appRecentExhausted = false;
         }
-        OdeLog.log("#### we are now calling generateHoriz for recent");
-        galleryGF.generateHorizontalAppList(apps, appRecentContent, true); 
-        break;    
-      case 3: 
+        galleryGF.generateHorizontalAppList(apps, appRecentContent, false);
+        break;
+      case REQUEST_SEARCH:
         if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appSearchExhausted = true;
         } else {
           appSearchExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(apps, appSearchContent, true); 
-        break;   
-      case 5: 
+        galleryGF.generateHorizontalAppList(apps, appSearchContent, true);
+        break;
+      case REQUEST_MOSTDOWNLOADED: 
         if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appPopularExhausted = true;
         } else {
           appPopularExhausted = false;
         }
-        galleryGF.generateHorizontalAppList(apps, appPopularContent, true); 
+        galleryGF.generateHorizontalAppList(apps, appPopularContent, false);
         break;
     }
   }

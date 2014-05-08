@@ -1524,30 +1524,48 @@ textarea::-webkit-input-placeholder {
   display: inline-block;
   width: 425px;
 }
-.gallery-nav-prev {
-  text-align: left;
-}
+.gallery-nav-prev,
 .gallery-nav-next {
-  text-align: right;
+  text-align: left;
 }
 .gallery-nav-prev .gwt-Label,
 .gallery-nav-next .gwt-Label {
   display: inline-block;
   text-transform: uppercase;
-  color: #777;
   padding: 5px;
   width: 100px;
 }
-.gallery-nav-prev .gwt-Label {
+.gallery-nav-prev .gwt-Label,
+.gallery-nav-next .gwt-Label  {
   margin-left: 5px;
 }
-.gallery-nav-next .gwt-Label {
-  margin-right: 5px;
+.gallery-nav-prev .active,
+.gallery-nav-next .active {
+  color: #777;
 }
-.gallery-nav-prev .gwt-Label:hover,
-.gallery-nav-next .gwt-Label:hover {
+.gallery-nav-prev .disabled,
+.gallery-nav-next .disabled {
+  color: #ddd;
+}
+.gallery-nav-prev .active:hover,
+.gallery-nav-next .active:hover {
   cursor: pointer;
   background-color: #FFF;
+}
+.gallery-nav-prev .disabled:hover,
+.gallery-nav-next .disabled:hover {
+  cursor: default;
+  background: none;
+}
+.gallery-nav-return {
+  padding: 30px 0 0;
+  float: right;
+}
+.gallery-nav-return .gwt-Label {
+  color: #b3c833;
+}
+.gallery-nav-return:hover {
+  cursor: pointer;
 }
 .gallery-app-collection {
   
@@ -1985,11 +2003,11 @@ textarea::-webkit-input-placeholder {
   color: #b3c833;
   font-weight: 300;
 }
+.gallery-nav-return .gwt-Label,
 .app-description,
 .app-actions .gwt-TabPanelBottom .gwt-Label,
 .app-info-container .primary-prompt,
 .app-actions .primary-prompt {
-  /* margin: 15px 0; */
   font-weight: 300;
   font-size: 14px;
   line-height: 1.75;
