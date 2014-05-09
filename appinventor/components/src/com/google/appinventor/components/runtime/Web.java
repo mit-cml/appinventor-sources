@@ -765,7 +765,6 @@ public class Web extends AndroidNonvisibleComponent implements Component {
    * @return the decoded object
    * @throws IllegalArgumentException if the XML text can't be legally parsed
    */
-  // VisibleForTesting
   static Object decodeXmlText(String xmlText) throws IllegalArgumentException {
     try {
       return XmlUtil.getObjectFromXml(xmlText);
