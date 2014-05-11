@@ -532,28 +532,35 @@ Blockly.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in th
 Blockly.LANG_TEXT_SPLIT_HELPURL = '';
 Blockly.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
 Blockly.LANG_TEXT_SPLIT_INPUT_AT = 'at';
+Blockly.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'at (list)';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'split at first';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'split at first of any';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'split';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'split at any';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Splits the text into two pieces separated by the first occurrence of \'at\'.\n'
-      + 'Returns a two-element list with the two pieces. Returns a one-element list with original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Divides the given text into two pieces using the location of the first occurrence of \n'
+      + 'the text \'at\' as the dividing point, and returns a two-item list consisting of the piece \n'
+      + 'before the dividing point and the piece after the dividing point. \n'
+      + 'Splitting "apple,banana,cherry,dogfood" with a comma as the splitting point \n'
+      + 'returns a list of two items: the first is the text "apple" and the second is the text \n'
+      + '"banana,cherry,dogfood". \n'
+      + 'Notice that the comma after "apple" does not appear in the result, \n'
+      + 'because that is the dividing point.';
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Splits the text into two pieces separated by the first\n'
-      + 'occurrence of any of the elements in the list \'at\'\n'
-      + 'and returns these pieces. Returns a one-element list with original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divides the given text into a two-item list, using the first location of any item \n'
+      + 'in the list \'at\' as the dividing point. \n\n'
+      + 'Splitting "I love apples bananas apples grapes" by the list "(ba,ap)" returns \n'
+      + 'a list of two items, the first being "I love" and the second being \n'
+      + '"ples bananas apples grapes."';
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Split the text into pieces separated by the\n'
-      + 'occurrences of \'at\' and return the list of these pieces.\n'
-      + 'Returns a one-element list with the original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divides text into pieces using the text \'at\' as the dividing points and produces a list of the results.  \n'
+      + 'Splitting "one,two,three,four" at "," (comma) returns the list "(one two three four)". \n'
+      + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato", returns the list "(one two three four)".'
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Split the text into pieces separated by the\n'
-      + 'occurrences of any of the elements in the list \'at\' and\n'
-      + 'return the list of these pieces. Returns a one-element list\n'
-      + 'with the original text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divides the given text into a list, using any of the items in the list \'at\' as the \n'
+      + 'dividing point, and returns a list of the results. \n'
+      + 'Splitting "appleberry,banana,cherry,dogfood" with \'at\' as the two-element list whose \n'
+      + 'first item is a comma and whose second item is "rry" returns a list of four items: \n'
+      + '"(applebe banana che dogfood)".'
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatany';
 
 /*.LANG_TEXT_PRINT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';

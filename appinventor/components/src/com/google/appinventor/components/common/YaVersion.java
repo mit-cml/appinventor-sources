@@ -258,6 +258,7 @@ public class YaVersion {
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 93:
   // - Label was incremented to 3
+  // - FILE_COMPONENT_VERSION was incremented to 1.
 
     public static final int YOUNG_ANDROID_VERSION = 93;
 
@@ -434,6 +435,9 @@ public class YaVersion {
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
   public static final int DATEPICKER_COMPONENT_VERSION = 1;
+
+  // For FILE_COMPONENT_VERSION 1:
+  public static final int FILE_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.

@@ -52,7 +52,7 @@ public final class Label extends AndroidViewComponent {
   private int textColor;
 
   // Label Format
-  private int LabelFormat;
+  private boolean HTMLFormat;
 
   private static final String LOG_TAG = "Label";
 
@@ -76,7 +76,7 @@ public final class Label extends AndroidViewComponent {
     FontSize(Component.FONT_DEFAULT_SIZE);
     Text("");
     TextColor(Component.COLOR_BLACK);
-    LabelFormat(Component.LABEL_FORMAT_DEFAULT);
+    HTMLFormat(false);
   }
 
   @Override
@@ -283,8 +283,8 @@ public final class Label extends AndroidViewComponent {
       defaultValue = "")
   @SimpleProperty
   public void Text(String text) {
-    int fmt = LabelFormat;
-    if (fmt == 1) {
+    boolean fmt = HTMLFormat;
+    if (fmt) {
       TextViewUtil.setTextHTML(view, text);
     } else {
       TextViewUtil.setText(view, text);
@@ -295,29 +295,29 @@ public final class Label extends AndroidViewComponent {
   /**
    * Returns the label's text's format
    *
-   * @return  one of {@link Component#LABEL_FORMAT_DEFAULT},
-   *          {@link Component#LABEL_FORMAT_HTML}
+   * @return {@code true} indicates that the label format is html text
+   *         {@code false} lines that the label format is plain text
    */
   @SimpleProperty(
       category = PropertyCategory.APPEARANCE,
-      userVisible = false)
-  public int LabelFormat() {
-    return LabelFormat;
+      description = "If true, then this label will show html text else it will show plain text.")
+  public boolean HTMLFormat() {
+    return HTMLFormat;
   }
 
   /**
    * Specifies the label's text's format
    *
-   * @param typeface  one of {@link Component#LABEL_FORMAT_DEFAULT},
-   *                  {@link Component#LABEL_FORMAT_HTML}
+   * @return {@code true} indicates that the label format is html text
+   *         {@code false} lines that the label format is plain text
    */
-  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_LABEL_FORMAT,
-      defaultValue = Component.LABEL_FORMAT_DEFAULT + "")
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
+      defaultValue = "False")
   @SimpleProperty(
       userVisible = false)
-  public void LabelFormat(int fmt) {
-    LabelFormat = fmt;
-    if (fmt == 1) {
+  public void HTMLFormat(boolean fmt) {
+    HTMLFormat = fmt;
+    if (fmt) {
       String txt = TextViewUtil.getText(view);
       TextViewUtil.setTextHTML(view, txt);
     } else {

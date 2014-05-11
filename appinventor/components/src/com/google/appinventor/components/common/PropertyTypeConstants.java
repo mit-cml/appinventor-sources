@@ -178,10 +178,4 @@ public class PropertyTypeConstants {
    */
   public static final String PROPERTY_TYPE_TEXT_RECEIVING = "text_receiving";
 
-  /**
-   * Choices of Text Formatting options. {@link
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextFormatChoicePropertyEditor}.
-   */
-  public static final String PROPERTY_TYPE_LABEL_FORMAT = "label_format";
-
 }
