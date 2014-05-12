@@ -45,7 +45,7 @@ public final class PrivacyEditor extends Composite {
     
     // Initialize UI
     pVertPanel = new VerticalPanel();      
-    pVertPanel.setSpacing(20);
+    pVertPanel.setSpacing(15);
     
     backButton = new Button(MESSAGES.backToDevButton());
     backButton.addClickHandler(new ClickHandler() {
@@ -56,7 +56,7 @@ public final class PrivacyEditor extends Composite {
     });
     pVertPanel.add(backButton);
     
-    optinText = new HTML("<b>This is where you can opt in or out of the automatic privacy description generation feature. To opt in, please check the box below:</b>");
+    optinText = new HTML("<b>This is where you can opt in or out of the automatic privacy description generation feature.<br/>To opt in, please check the box below:</b>");
     pVertPanel.add(optinText);
     
     optInCheckbox = new CheckBox(" " + MESSAGES.optIntoPrivacyNoticeCheckbox()) {

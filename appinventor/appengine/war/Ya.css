@@ -1314,7 +1314,8 @@ textarea::-webkit-input-placeholder {
  */
  
 .privacy-HTML {
-  width: 500px;
+  margin-top: 0;
+  width: 600px;
   height: 300px;
   border: 1px solid black;
   background-color: white;
