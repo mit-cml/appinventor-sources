@@ -139,10 +139,10 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
         Resource component = iter.nextStatement().getObject().asResource();
         String compLabel = ontModel.getProperty(component, RDFS.label).getString();
         String compDescription = ontModel.getProperty(component, aiDescription).getString();
-        summary += "<li><a href=\"#" + compLabel.split(" ")[0] + "\">" + compLabel + "</a>, which " + compDescription + ".";
+        summary += "<li><a href=\"#privacy-" + compLabel.split(" ")[0] + "\">" + compLabel + "</a>, which " + compDescription + ".";
         
         // create a section for detailed annotations of the component
-        details += "<h3 id=\"" + compLabel.split(" ")[0] + "\">Details for " + compLabel + "</h3>";
+        details += "<h3 id=\"privacy-" + compLabel.split(" ")[0] + "\">Details for " + compLabel + "</h3>";
         details += "<ul>";
         details += "<li>" + compLabel + " " + compDescription;
         StmtIterator propIter = ontModel.listStatements(component, null, (RDFNode) null);

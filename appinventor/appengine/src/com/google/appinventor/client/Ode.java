@@ -522,7 +522,13 @@ public class Ode implements EntryPoint {
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
       public void onValueChange(ValueChangeEvent<String> event) {
-        openProject(event.getValue());
+        String eventName = event.getValue();
+        // if the eventName begins with "privacy", then we know it is
+        // not a ode.openproject rpc call, rather just a in-page 
+        // navigation for the privacy editor preview windoe
+        if (!eventName.split("-")[0].equalsIgnoreCase("privacy")) {
+          openProject(eventName);
+        }
       }
     });
 
