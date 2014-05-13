@@ -258,8 +258,11 @@ public class YaVersion {
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
   // For YOUNG_ANDROID_VERSION 93:
   // - FILE_COMPONENT_VERSION was incremented to 1.
-
-    public static final int YOUNG_ANDROID_VERSION = 93;
+  // For YOUNG_ANDROID_VERSION 94:
+  // - BALL_COMPONENT_VERSION was incremented to 6.
+  // - IMAGESPRITE_COMPONENT_VERSION was incremented to 7.
+  
+    public static final int YOUNG_ANDROID_VERSION = 94;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -358,7 +361,9 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For BALL_COMPONENT_VERSION 5:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int BALL_COMPONENT_VERSION = 5;
+  // For BALL_COMPONENT_VERSION 6:
+  // - The Bounding property was added (for all sprites). 
+  public static final int BALL_COMPONENT_VERSION = 6;
 
   public static final int BARCODESCANNER_COMPONENT_VERSION = 1;
 
@@ -501,7 +506,9 @@ public class YaVersion {
   // - The TouchUp, TouchDown, and Flung events were added. (for all sprites)
   // For IMAGESPRITE_COMPONENT_VERSION 6:
   // - Callback parameters speed and heading were added to Flung. (for all sprites)
-  public static final int IMAGESPRITE_COMPONENT_VERSION = 6;
+  // For IMAGESPRITE_COMPONENT_VERSION 7:
+  // - The Bounding property was added (for all sprites). 
+  public static final int IMAGESPRITE_COMPONENT_VERSION = 7;
 
   // For LABEL_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
