@@ -412,6 +412,10 @@ public final class YoungAndroidFormUpgrader {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 5;
     }
+    if (srcCompVersion < 6) {
+      // The bounding property was added to sprites.
+      srcCompVersion = 6;
+    }
     return srcCompVersion;
   }
 
@@ -751,6 +755,10 @@ public final class YoungAndroidFormUpgrader {
     if (srcCompVersion < 6) {
       // The callback parameters speed and heading were added to Flung.
       srcCompVersion = 6;
+    }
+    if (srcCompVersion < 7) {
+      // The bounding property was added to sprites.
+      srcCompVersion = 7;
     }
     return srcCompVersion;
   }

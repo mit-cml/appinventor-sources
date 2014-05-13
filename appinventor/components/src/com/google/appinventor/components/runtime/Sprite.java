@@ -69,7 +69,11 @@ public abstract class Sprite extends VisibleComponent
   protected double yTop;       // uppermost y-coordinate
   protected double zLayer;     // z-coordinate, higher values go in front
   protected float speed;       // magnitude in pixels
+  protected int bounding;      // bounded or unbounded
 
+  // more convenient representation of bounding property
+  private boolean bounded;
+  
   /**
    * The angle, in degrees above the positive x-axis, specified by the user.
    * This is private in order to enforce that changing it also changes
@@ -113,8 +117,9 @@ public abstract class Sprite extends VisibleComponent
     timerInternal = new TimerInternal(this, DEFAULT_ENABLED, DEFAULT_INTERVAL, handler);
 
     // Set default property values.
-    Heading(0);  // Default initial heading
+    Bounding(Component.SPRITE_BOUNDING_BOUNDED);
     Enabled(DEFAULT_ENABLED);
+    Heading(0);  // Default initial heading
     Interval(DEFAULT_INTERVAL);
     Speed(DEFAULT_SPEED);
     Visible(DEFAULT_VISIBLE);
@@ -142,7 +147,46 @@ public abstract class Sprite extends VisibleComponent
   }
 
   // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z)
+ 
+  /**
+   * Sets the bounding of the sprite.
+   *
+   * @param bounding either {@link Component#SPRITE_BOUNDING_BOUNDED} or
+   *        {@link Component#SPRITE_BOUNDING_UNBOUNDED}
+   *        
+   * @throws IllegalArgumentException if bounding is not a legal value.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      description = "whether the sprite can extend beyond the boundaries of the canvas.")
+  @DesignerProperty(
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_SPRITE_BOUNDING,
+      defaultValue = Component.SPRITE_BOUNDING_BOUNDED + "")
+  public void Bounding(int bounding) {
+    this.bounding = bounding;
+    
+    if (bounding == Component.SPRITE_BOUNDING_BOUNDED) {
+      bounded = true;
+    } else if (bounding == Component.SPRITE_BOUNDING_UNBOUNDED) {
+      bounded = false;
+    } else {
+      throw new IllegalArgumentException("Illegal value for bounding property.");
+    }
+  }
 
+  /**
+   * Returns the bounding of the sprite.
+   *
+   * @return  one of {@link Component#SPRITE_BOUNDING_BOUNDED},
+   *          {@link Component#SPRITE_BOUNDING_UNBOUNDED}
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR,
+      userVisible = false)
+  public int Bounding() {
+    return bounding;
+  }
+  
   /**
    * Enabled property getter method.
    *
@@ -777,11 +821,13 @@ public abstract class Sprite extends VisibleComponent
       return Component.DIRECTION_NONE;
     }
 
-    // Move the sprite back into bounds.  Note that we don't just reverse the
-    // last move, since that might have been multiple pixels, and we'd only need
-    // to undo part of it.
-    MoveIntoBounds();
-
+    // Move the sprite back into bounds, unless the sprite is unbounded.  Note 
+    // that we don't just reverse the last move, since that might have been 
+    // multiple pixels, and we'd only need to undo part of it.
+    if (bounded) {
+      MoveIntoBounds();
+    }
+    
     // Determine the appropriate return value.
     if (west) {
       if (north) {
