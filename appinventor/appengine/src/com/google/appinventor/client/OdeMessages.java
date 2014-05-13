@@ -508,6 +508,16 @@ public interface OdeMessages extends Messages {
   @Description("Text for text alignment choice 'right'")
   String rightTextAlignment();
 
+  // Used in editor/youngandroid/properties/YoungAndroidSpriteBoundedChoicePropertyEditor.java
+
+  @DefaultMessage("bounded")
+  @Description("Text for sprite bounding choice 'bounded'")
+  String spriteBoundingBounded();
+
+  @DefaultMessage("unbounded")
+  @Description("Text for sprite bounding choice 'unbounded'")
+  String spriteBoundingUnbounded();
+  
   // Used in
   // editor/youngandroid/properties/YoungAndroidHorizontalAlignmentChoicePropertyEditor.java
 
