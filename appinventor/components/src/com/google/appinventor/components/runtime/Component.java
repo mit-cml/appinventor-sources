@@ -48,10 +48,10 @@ public interface Component {
   static final int BUTTON_SHAPE_OVAL = 3;
 
   /*
-   * Sprite Bounding Choices.
+   * Sprite Edge Behavior Choices.
    */
-  static final int SPRITE_BOUNDING_BOUNDED = 0;
-  static final int SPRITE_BOUNDING_UNBOUNDED = 1;
+  static final int SPRITE_EDGE_BEHAVIOR_BOUNDED = 0;
+  static final int SPRITE_EDGE_BEHAVIOR_UNBOUNDED = 1;
   
   /*
    * Color constants.

@@ -413,7 +413,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 5;
     }
     if (srcCompVersion < 6) {
-      // The bounding property was added to sprites.
+      // The edge behavior property was added to sprites.
       srcCompVersion = 6;
     }
     return srcCompVersion;
@@ -757,7 +757,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 6;
     }
     if (srcCompVersion < 7) {
-      // The bounding property was added to sprites.
+      // The edge behavior property was added to sprites.
       srcCompVersion = 7;
     }
     return srcCompVersion;

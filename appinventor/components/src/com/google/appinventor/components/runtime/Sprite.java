@@ -69,9 +69,9 @@ public abstract class Sprite extends VisibleComponent
   protected double yTop;       // uppermost y-coordinate
   protected double zLayer;     // z-coordinate, higher values go in front
   protected float speed;       // magnitude in pixels
-  protected int bounding;      // bounded or unbounded
+  protected int edgeBehavior;  // bounded or unbounded
 
-  // more convenient representation of bounding property
+  // more convenient representation of edge behavior property
   private boolean bounded;
   
   /**
@@ -117,7 +117,7 @@ public abstract class Sprite extends VisibleComponent
     timerInternal = new TimerInternal(this, DEFAULT_ENABLED, DEFAULT_INTERVAL, handler);
 
     // Set default property values.
-    Bounding(Component.SPRITE_BOUNDING_BOUNDED);
+    EdgeBehavior(Component.SPRITE_EDGE_BEHAVIOR_BOUNDED);
     Enabled(DEFAULT_ENABLED);
     Heading(0);  // Default initial heading
     Interval(DEFAULT_INTERVAL);
@@ -149,10 +149,10 @@ public abstract class Sprite extends VisibleComponent
   // Properties (Enabled, Heading, Interval, Speed, Visible, X, Y, Z)
  
   /**
-   * Sets the bounding of the sprite.
+   * Sets the edge behavior of the sprite.
    *
-   * @param bounding either {@link Component#SPRITE_BOUNDING_BOUNDED} or
-   *        {@link Component#SPRITE_BOUNDING_UNBOUNDED}
+   * @param bounding either {@link Component#SPRITE_EDGE_BEHAVIOR_BOUNDED} or
+   *        {@link Component#SPRITE_EDGE_BEHAVIOR_UNBOUNDED}
    *        
    * @throws IllegalArgumentException if bounding is not a legal value.
    */
@@ -160,14 +160,14 @@ public abstract class Sprite extends VisibleComponent
       category = PropertyCategory.BEHAVIOR,
       description = "whether the sprite can extend beyond the boundaries of the canvas.")
   @DesignerProperty(
-      editorType = PropertyTypeConstants.PROPERTY_TYPE_SPRITE_BOUNDING,
-      defaultValue = Component.SPRITE_BOUNDING_BOUNDED + "")
-  public void Bounding(int bounding) {
-    this.bounding = bounding;
+      editorType = PropertyTypeConstants.PROPERTY_TYPE_SPRITE_EDGE_BEHAVIOR,
+      defaultValue = Component.SPRITE_EDGE_BEHAVIOR_BOUNDED + "")
+  public void EdgeBehavior(int bounding) {
+    this.edgeBehavior = bounding;
     
-    if (bounding == Component.SPRITE_BOUNDING_BOUNDED) {
+    if (bounding == Component.SPRITE_EDGE_BEHAVIOR_BOUNDED) {
       bounded = true;
-    } else if (bounding == Component.SPRITE_BOUNDING_UNBOUNDED) {
+    } else if (bounding == Component.SPRITE_EDGE_BEHAVIOR_UNBOUNDED) {
       bounded = false;
     } else {
       throw new IllegalArgumentException("Illegal value for bounding property.");
@@ -184,7 +184,7 @@ public abstract class Sprite extends VisibleComponent
       category = PropertyCategory.BEHAVIOR,
       userVisible = false)
   public int Bounding() {
-    return bounding;
+    return edgeBehavior;
   }
   
   /**

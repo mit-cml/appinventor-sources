@@ -56,11 +56,11 @@ public class PropertyTypeConstants {
   public static final String PROPERTY_TYPE_BUTTON_SHAPE = "button_shape";
 
   /**
-   * Sprite bounding.
+   * Sprite edge behavior.
    * @see
-   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteBoundingChoicePropertyEditor
+   * com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidSpriteEdgeBehaviorChoicePropertyEditor
    */
-  public static final String PROPERTY_TYPE_SPRITE_BOUNDING = "sprite_bounding";
+  public static final String PROPERTY_TYPE_SPRITE_EDGE_BEHAVIOR = "sprite_edge_behavior";
   
   /**
    * Any of the colors specified in {@link

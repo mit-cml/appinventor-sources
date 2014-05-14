@@ -511,12 +511,12 @@ public interface OdeMessages extends Messages {
   // Used in editor/youngandroid/properties/YoungAndroidSpriteBoundingChoicePropertyEditor.java
 
   @DefaultMessage("bounded")
-  @Description("Text for sprite bounding choice 'bounded'")
-  String spriteBoundingBounded();
+  @Description("Text for sprite edge behavior choice 'bounded'")
+  String spriteEdgeBehaviorBounded();
 
   @DefaultMessage("unbounded")
-  @Description("Text for sprite bounding choice 'unbounded'")
-  String spriteBoundingUnbounded();
+  @Description("Text for sprite edge behavior choice 'unbounded'")
+  String spriteEdgeBehaviorUnbounded();
   
   // Used in
   // editor/youngandroid/properties/YoungAndroidHorizontalAlignmentChoicePropertyEditor.java
