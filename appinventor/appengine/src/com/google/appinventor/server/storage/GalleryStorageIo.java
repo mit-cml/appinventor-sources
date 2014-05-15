@@ -155,7 +155,7 @@ public interface GalleryStorageIo {
    * mark an report as resolved
    * @param reportId the id of the app
    */
-  boolean markReportAsResolved(long reportId);
+  boolean markReportAsResolved(long reportId, long galleryId);
   /**
    * deactivate app
    * @param galleryId the id of the gallery app

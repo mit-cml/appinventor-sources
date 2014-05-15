@@ -383,8 +383,8 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param reportId the id of the app
    */
   @Override
-  public boolean markReportAsResolved(long reportId) {
-    return galleryStorageIo.markReportAsResolved(reportId);
+  public boolean markReportAsResolved(long reportId, long galleryId) {
+    return galleryStorageIo.markReportAsResolved(reportId, galleryId);
   }
 
   /**

@@ -152,7 +152,7 @@ public interface GalleryServiceAsync {
   /**
    * @see GalleryService#markReportAsResolved(long reportId);
    */
-  void markReportAsResolved(long reportId, AsyncCallback<Boolean> callback);
+  void markReportAsResolved(long reportId, long galleryId, AsyncCallback<Boolean> callback);
   /**
    * check if gallery app is activated
    * @see GalleryService#isGalleryAppActivatd(long galleryId)

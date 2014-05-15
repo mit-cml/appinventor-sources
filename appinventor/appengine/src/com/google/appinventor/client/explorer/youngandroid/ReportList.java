@@ -315,7 +315,22 @@ public class ReportList extends Composite  {
     rw.deactiveAppButton.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-          deactiveAppPopup(r, rw);
+          if(rw.appActive == true){
+              deactiveAppPopup(r, rw);
+          }else{
+
+              final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
+              MESSAGES.galleryError()) {
+                @Override
+                public void onSuccess(Boolean success) {
+                  if(!success)
+                    return;
+                  rw.deactiveAppButton.setText("Deactivate App");//revert button
+                  rw.appActive = true;
+                }
+              };
+              Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
+          }
         }
     });
 
@@ -351,7 +366,7 @@ public class ReportList extends Composite  {
               }
             }
           };
-        Ode.getInstance().getGalleryService().markReportAsResolved(r.getReportId(), callback);
+        Ode.getInstance().getGalleryService().markReportAsResolved(r.getReportId(), r.getApp().getGalleryAppId(), callback);
       }
     });
   }
@@ -435,8 +450,6 @@ public class ReportList extends Composite  {
       templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
-      new TemplateAction(msgText, 1, report.getApp().getTitle()).execute();
-
       msgPanel.add(templateButton);
       msgPanel.add(sentFrom);
       msgPanel.add(sentTo);
@@ -498,7 +511,7 @@ public class ReportList extends Composite  {
       final Label sentTo = new Label("Sent To: " + r.getOffender().getUserName());
       final TextArea msgText = new TextArea();
       msgText.addStyleName("action-textarea");
-      final Button sendMsgAndDRApp = new Button("Send Message & ");
+      final Button sendMsgAndDRApp = new Button("Deactivate App & Send Message");
       sendMsgAndDRApp.addStyleName("action-button");
       final Button cancel = new Button("Cancel");
       cancel.addStyleName("action-button");
@@ -511,6 +524,7 @@ public class ReportList extends Composite  {
       templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
+      // automatically choose first template
       new TemplateAction(msgText, 1, r.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
@@ -530,21 +544,6 @@ public class ReportList extends Composite  {
             popup.hide();
           }
       });
-
-      final OdeAsyncCallback<Boolean> isActivatedCallback = new OdeAsyncCallback<Boolean>(
-        // failure message
-        MESSAGES.galleryError()) {
-          @Override
-          public void onSuccess(Boolean active) {
-            if(active){
-              sendMsgAndDRApp.setText("Send Message & Reactivate App");
-             }
-            else {
-              sendMsgAndDRApp.setText("Send Message & Deactivate App");
-            }
-          }
-      };
-      Ode.getInstance().getGalleryService().isGalleryAppActivated(r.getApp().getGalleryAppId(), isActivatedCallback);
 
       OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
         // failure message
@@ -571,11 +570,9 @@ public class ReportList extends Composite  {
                               if(rw.appActive == true){
                                 rw.deactiveAppButton.setText("Reactivate App");//revert button
                                 rw.appActive = false;
-                                sendMsgAndDRApp.setText("Send Message & Reactivate App");
                               }else{
                                 rw.deactiveAppButton.setText("Deactivate App");//revert button
                                 rw.appActive = true;
-                                sendMsgAndDRApp.setText("Send Message & Deactivate App");
                               }
                             }
                          };

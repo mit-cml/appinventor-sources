@@ -55,7 +55,7 @@ public class GallerySearchIndex {
   public void indexApp (GalleryApp app) {
     // take the title, description, and the user name and index it
     // need to build up a string with all meta data
-    String indexWords = app.getTitle()+" "+app.getDescription();
+    String indexWords = app.getTitle()+" "+app.getDescription() + " " + app.getDeveloperName();
     // now create the doc
     Document doc = Document.newBuilder()
       .setId(String.valueOf(app.getGalleryAppId()))

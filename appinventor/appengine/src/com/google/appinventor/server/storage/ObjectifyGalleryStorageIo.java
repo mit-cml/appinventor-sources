@@ -705,6 +705,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppReportData reportData = new GalleryAppReportData();
           long date = System.currentTimeMillis();
+          reportData.id = null;  // let Objectify auto-generate the GalleryAppReportData id
           reportData.reportText = reportText;
           reportData.reporterId = reporterId;
           reportData.offenderId = offenderId;
@@ -854,7 +855,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param reportId the id of the app
    */
   @Override
-  public boolean markReportAsResolved(final long reportId){
+  public boolean markReportAsResolved(final long reportId, final long galleryId){
     final Result<Boolean> success = new Result<Boolean>();
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -862,7 +863,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           datastore = ObjectifyService.begin();
           success.t = false;
-          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class)) {
+          Key<GalleryAppData> galleryKey = galleryKey(galleryId);
+          for (GalleryAppReportData reportData : datastore.query(GalleryAppReportData.class).ancestor(galleryKey)) {
             if(reportData.id == reportId){
               reportData.resolved = !reportData.resolved;
               datastore.put(reportData);

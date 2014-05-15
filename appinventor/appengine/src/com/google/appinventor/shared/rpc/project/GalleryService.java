@@ -212,7 +212,7 @@ public interface GalleryService extends RemoteService {
    * mark an report as resolved
    * @param reportId the id of the report
    */
-  boolean markReportAsResolved(long reportId);
+  boolean markReportAsResolved(long reportId, long galleryId);
 
   /**
    * deactivate gallery app
