@@ -1,6 +1,6 @@
 // -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2009-2011 Google, All Rights reserved
-// Copyright 2011-2012 MIT, All rights reserved
+// Copyright 2011-2014 MIT, All rights reserved
 // Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
@@ -108,17 +108,6 @@ public class CustomAutocomplete extends TextBoxBase {
   @SimpleEvent
   @Override
   public void GotFocus() {
-
-//     Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
-//     deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
-//     If there's a phone where it does not work, we'll get the error at PuntContactSelection
-//     Note that there is still a general problem with contact picking on Motoblur.
-//
-//    if (SdkLevel.getLevel() > SdkLevel.LEVEL_DONUT) {
-//      container.$form().dispatchErrorOccurredEvent(this, "EmailAddress",
-//          ErrorMessages.ERROR_FUNCTIONALITY_NOT_SUPPORTED_EMAIL_PICKER);
-//    }
-
     EventDispatcher.dispatchEvent(this, "GotFocus");
   }
 }

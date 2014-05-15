@@ -10,7 +10,7 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
 /**
  * Mock EmailPicker component.
  *
- * @author sharon@google.com (Sharon Perl)
+ * @author manishkk74@gmail.com (Manish Khanchandani)
  */
 public final class MockCustomAutocomplete extends MockTextBoxBase {
 
