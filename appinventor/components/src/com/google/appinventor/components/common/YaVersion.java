@@ -260,7 +260,9 @@ public class YaVersion {
   // - FILE_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 94:
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
-    public static final int YOUNG_ANDROID_VERSION = 94;
+  // For YOUNG_ANDROID_VERSION 95
+  // - CUSTOMAUTOCOMPLETE_COMPONENT_VERSION as added
+    public static final int YOUNG_ANDROID_VERSION = 95;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -435,6 +437,8 @@ public class YaVersion {
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
   public static final int DATEPICKER_COMPONENT_VERSION = 1;
+
+  public static final int CUSTOMAUTOCOMPLETE_COMPONENT_VERSION = 1;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;

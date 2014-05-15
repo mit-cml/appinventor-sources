@@ -320,6 +320,12 @@ public interface Images extends Resources {
   ImageResource twitterComponent();
 
   /**
+   * Designer palette item: customAutocomplete Component
+   */
+  @Source("com/google/appinventor/images/customAutocomplete.png")
+  ImageResource customAutocompleteComponent();
+
+  /**
    * Designer palette item: TimePicker Component
    */
   @Source("com/google/appinventor/images/timePicker.png")
