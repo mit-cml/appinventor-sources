@@ -69,7 +69,7 @@ public final class ProjectListBox extends TabPanel {
   
     
     this.add(projectsContainer, MESSAGES.projectListBoxCaption());
-    this.add(studiosContainer, MESSAGES.studioListBoxCaption());
+//    this.add(studiosContainer, MESSAGES.studioListBoxCaption());
     this.add(profileContainer, MESSAGES.profilePageBoxCaption());
     this.selectTab(0);
     

@@ -905,7 +905,12 @@ panel
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
         //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
-        gallery.loadSourceFile(app);
+        actionButton.setEnabled(false);
+        boolean success = gallery.loadSourceFile(app);
+
+        if(success){
+          actionButton.setText(MESSAGES.galleryAppOpening());
+        }
         /*
         // Send the app author a message regarding people trying out this app
         final OdeAsyncCallback<Void> messageSentCallback = new OdeAsyncCallback<Void>(
@@ -917,8 +922,8 @@ panel
           };
         Ode.getInstance().getGalleryService().sendMessageFromSystem(
             "0", app.getDeveloperId(), "An user downloaded your app", messageSentCallback);
-        gallery.appWasDownloaded(app.getGalleryAppId());
         */
+        gallery.appWasDownloaded(app.getGalleryAppId());
       }
     });
     actionButton.addStyleName("app-action-button");
@@ -934,6 +939,8 @@ panel
     actionButton.addClickHandler(new ClickHandler() {
       
       public void onClick(ClickEvent event) {
+         actionButton.setEnabled(false);
+         actionButton.setText(MESSAGES.galleryAppPublishing());
          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
               MESSAGES.galleryError()) {
             @Override

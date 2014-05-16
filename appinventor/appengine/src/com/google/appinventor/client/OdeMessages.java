@@ -172,6 +172,80 @@ public interface OdeMessages extends Messages {
   @Description("Label of the reporter field on moderation page")
   String moderationReporterHeader();
 
+  // Used in ReportList.java
+  @DefaultMessage("Inappropriate App Content: Remove")
+  @Description("Label of the Inappropriate App Content Remove on message template of reportlist")
+  String inappropriateAppContentRemoveTitle();
+
+  @DefaultMessage("Inappropriate App Content")
+  @Description("Label of the Inappropriate App Content on message template of reportlist")
+  String inappropriateAppContentTitle();
+
+  @DefaultMessage("Inappropriate User Profile Content")
+  @Description("Label of the Inappropriate User Profile Content on message template of reportlist")
+  String inappropriateUserProfileContentTitle();
+
+  @DefaultMessage("Choose Template")
+  @Description("Label of the Choose Template Label on message template of reportlist")
+  String labelChooseTemplate();
+
+  @DefaultMessage("Sent From: ")
+  @Description("Label of the Sent From on message of reportlist")
+  String messageSentFrom();
+
+  @DefaultMessage("Sent To: ")
+  @Description("Label of the Sent To on message of reportlist")
+  String messageSentTo();
+
+  @DefaultMessage("Send Message")
+  @Description("Label of the Send Message of reportlist")
+  String buttonSendMessage();
+
+  @DefaultMessage("Deactivate App")
+  @Description("Label of the Deactivate App on message of reportlist")
+  String labelDeactivateApp();
+
+  @DefaultMessage("Reactivate App")
+  @Description("Label of the Reactivate App on message of reportlist")
+  String labelReactivateApp();
+
+  @DefaultMessage("Deactivate App & Send Message")
+  @Description("Label of the Deactivate App & Send Message on message of reportlist")
+  String labelDeactivateAppAndSendMessage();
+
+  @DefaultMessage("Mark As Resolved")
+  @Description("Label of the Mark As Resolved of reportlist")
+  String labelmarkAsResolved();
+
+  @DefaultMessage("Mark As Unresolved")
+  @Description("Label of the Mark As Unresolved of reportlist")
+  String labelmarkAsUnresolved();
+
+  @DefaultMessage("Cancel")
+  @Description("Label of the Cancel Action on message of reportlist")
+  String labelCancel();
+
+  @DefaultMessage("Your App \"")
+  @Description("Label of the Text of Your App of reportlist")
+  String yourAppMessage();
+
+  @DefaultMessage("\" has been removed from the gallery due to inappropriate content. "
+          + "Please review the guidelines at ..."
+          + "If you feel this action has been taken in error, or you would like to discuss the issue, "
+          + "please use the App Inventor forum at: \n")
+  @Description("Label of the Text of Template 1 of reportlist")
+  String inappropriateAppContentRemoveMessage();
+
+  @DefaultMessage("\" has inappropriate content. "
+          + "Please review the guidelines at ..."
+          + "and modify your app accordingly. ")
+  @Description("Label of the Text of Template 2 of reportlist")
+  String inappropriateAppContentMessage();
+
+  @DefaultMessage("Your profile contains inappropriate content. Please modify your profile.\n")
+  @Description("Label of the Text of Template 3 of reportlist")
+  String inappropriateUserProfileContentMessage();
+
   // Used in MotdFetcher.java
 
   @DefaultMessage("Failed to contact server to get the MOTD.")
@@ -1241,6 +1315,13 @@ public interface OdeMessages extends Messages {
   String projectUploadWizardCaption();
 
   // Used in GalleryPage.java
+  @DefaultMessage("Opening ...")
+  @Description("Text for gallery page opening feedback")
+  String galleryAppOpening();
+
+  @DefaultMessage("Publishing ...")
+  @Description("Text for gallery page publishing feedback.")
+  String galleryAppPublishing();
 
   @DefaultMessage("Click to like this app!")
   @Description("Text for gallery page like button (not liked yet).")

@@ -19,14 +19,15 @@ import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.OdeAsyncCallback;
+import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.collect.Lists;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseDownHandler;
-
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.Command;
@@ -76,6 +77,12 @@ public class ReportList extends Composite  {
 
   // UI elements
   private final Grid table;
+
+  public static final OdeMessages MESSAGES = GWT.create(OdeMessages.class);
+
+  public static final int MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE = 1;
+  public static final int MESSAGE_INAPPROPRIATE_APP_CONTENT = 2;
+  public static final int MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT = 3;
 
   /**
    * Creates a new ProjectList
@@ -301,11 +308,11 @@ public class ReportList extends Composite  {
       @Override
       public void onSuccess(Boolean active) {
         if(active){
-          rw.deactiveAppButton.setText("Deactivate App");
+          rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());
           rw.appActive = true;
         }
         else {
-          rw.deactiveAppButton.setText("Reactivate App");
+          rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());
           rw.appActive = false;
         }
       }
@@ -325,7 +332,7 @@ public class ReportList extends Composite  {
                 public void onSuccess(Boolean success) {
                   if(!success)
                     return;
-                  rw.deactiveAppButton.setText("Deactivate App");//revert button
+                  rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
                   rw.appActive = true;
                 }
               };
@@ -435,24 +442,24 @@ public class ReportList extends Composite  {
 
       final FlowPanel msgPanel = new FlowPanel();
       msgPanel.addStyleName("app-actions");
-      final Label sentFrom = new Label("Sent From: ");
-      final Label sentTo = new Label("Sent To: " + report.getOffender().getUserName());
+      final Label sentFrom = new Label(MESSAGES.messageSentFrom());
+      final Label sentTo = new Label(MESSAGES.messageSentTo() + report.getOffender().getUserName());
       final TextArea msgText = new TextArea();
       msgText.addStyleName("action-textarea");
-      final Button sendMsg = new Button("Send Message");
+      final Button sendMsg = new Button(MESSAGES.buttonSendMessage());
       sendMsg.addStyleName("action-button");
 
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
       // Messages Template 1
-      templateItems.add(new DropDownItem("template1", "Inappropriate App Content: Remove", new TemplateAction(msgText, 1, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", "Inappropriate App Content", new TemplateAction(msgText, 2, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template3", "Inappropriate User profile content", new TemplateAction(msgText, 3, null)));
-      
-      templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
+      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
+
+      templateButton = new DropDownButton("template", MESSAGES.labelChooseTemplate(), templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
       
-      new TemplateAction(msgText, 2, report.getApp().getTitle()).execute();
+      new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
       msgPanel.add(sentFrom);
@@ -470,7 +477,7 @@ public class ReportList extends Composite  {
         MESSAGES.serverUnavailable()) {
           @Override
           public void onSuccess(final User currentUser) {
-            sentFrom.setText("Sent From: " + currentUser.getUserName());
+            sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
             sendMsg.addClickHandler(new ClickHandler() {
               public void onClick(ClickEvent event) {
                 final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
@@ -511,26 +518,26 @@ public class ReportList extends Composite  {
 
       final FlowPanel msgPanel = new FlowPanel();
       msgPanel.addStyleName("app-actions");
-      final Label sentFrom = new Label("Sent From: ");
-      final Label sentTo = new Label("Sent To: " + report.getOffender().getUserName());
+      final Label sentFrom = new Label(MESSAGES.messageSentFrom());
+      final Label sentTo = new Label(MESSAGES.messageSentTo() + report.getOffender().getUserName());
       final TextArea msgText = new TextArea();
       msgText.addStyleName("action-textarea");
-      final Button sendMsgAndDRApp = new Button("Deactivate App & Send Message");
+      final Button sendMsgAndDRApp = new Button(MESSAGES.labelDeactivateAppAndSendMessage());
       sendMsgAndDRApp.addStyleName("action-button");
-      final Button cancel = new Button("Cancel");
+      final Button cancel = new Button(MESSAGES.labelCancel());
       cancel.addStyleName("action-button");
 
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
       // Messages Template 1
-      templateItems.add(new DropDownItem("template1", "Inappropriate App Content: Remove", new TemplateAction(msgText, 1, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", "Inappropriate App Content", new TemplateAction(msgText, 2, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template3", "Inappropriate User profile content", new TemplateAction(msgText, 3, null)));
-      templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
+      templateItems.add(new DropDownItem("template1", MESSAGES.inappropriateAppContentRemoveTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", MESSAGES.inappropriateAppContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", MESSAGES.inappropriateUserProfileContentTitle(), new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT, null)));
+      templateButton = new DropDownButton("template", MESSAGES.labelChooseTemplate(), templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
       // automatically choose first template
-      new TemplateAction(msgText, 1, report.getApp().getTitle()).execute();
+      new TemplateAction(msgText, MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE, report.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
       msgPanel.add(sentFrom);
@@ -555,7 +562,7 @@ public class ReportList extends Composite  {
         MESSAGES.serverUnavailable()) {
           @Override
           public void onSuccess(final User currentUser) {
-            sentFrom.setText("Sent From: " + currentUser.getUserName());
+            sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
             sendMsgAndDRApp.addClickHandler(new ClickHandler() {
               public void onClick(ClickEvent event) {
                 final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
@@ -573,10 +580,10 @@ public class ReportList extends Composite  {
                                 return;
                               popup.hide();
                               if(rw.appActive == true){
-                                rw.deactiveAppButton.setText("Reactivate App");//revert button
+                                rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
                                 rw.appActive = false;
                               }else{
-                                rw.deactiveAppButton.setText("Deactivate App");//revert button
+                                rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
                                 rw.appActive = true;
                               }
                             }
@@ -657,21 +664,15 @@ public class ReportList extends Composite  {
     }
     @Override
     public void execute() {
-      if(type == 1){
-        msgText.setText("Your app \"" + customText  + "\" has been removed from the gallery due to inappropriate content. "
-                + "Please review the guidelines at ..."
-                + "If you feel this action has been taken in error, or you would like to discuss the issue, "
-                + "please use the App Inventor forum at: \n");
-        templateButton.setCaption("Inappropriate App Content: Remove");
-      }else if(type == 2){
-         msgText.setText("Your app \"" + customText  + "\" has inappropriate content. "
-                + "Please review the guidelines at ..."
-                + "and modify your app accordingly. ");
-        templateButton.setCaption("Inappropriate app content");
-       
-      }else if(type == 3){
-        msgText.setText("Your profile contains inappropriate content. Please modify your profile.\n");
-        templateButton.setCaption("Inappropriate User profile content"); 
+      if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE){
+        msgText.setText("Your app \"" + customText  + MESSAGES.inappropriateAppContentRemoveMessage());
+        templateButton.setCaption(MESSAGES.inappropriateAppContentRemoveTitle());
+      }else if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT){
+         msgText.setText("Your app \"" + customText + MESSAGES.inappropriateAppContentMessage());
+        templateButton.setCaption(MESSAGES.inappropriateAppContentTitle());
+      }else if(type == MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT){
+        msgText.setText(MESSAGES.inappropriateUserProfileContentMessage());
+        templateButton.setCaption(MESSAGES.inappropriateUserProfileContentTitle());
       }
       
     }

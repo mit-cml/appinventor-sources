@@ -218,15 +218,16 @@ public class GalleryClient {
  /**
   * loadSourceFile opens the app as a new app inventor project
   * @param gApp the app to open
+  * @return True if success, otherwise false
   */
-  public void loadSourceFile(GalleryApp gApp) {
+  public boolean loadSourceFile(GalleryApp gApp) {
     final String projectName=gApp.getProjectName();
     final String sourceURL=gApp.getSourceURL();
     final long galleryId = gApp.getGalleryAppId();
     
     // first check name to see if valid and unique...
     if (!TextValidators.checkNewProjectName(projectName))
-      return;  // the above function takes care of error messages
+      return false;  // the above function takes care of error messages
     // Callback for updating the project explorer after the project is created on the back-end
     final Ode ode = Ode.getInstance();
 
@@ -249,6 +250,8 @@ public class GalleryClient {
     };
     // this is really what's happening here, we call server to load project
     ode.getProjectService().newProjectFromGallery(projectName, sourceURL, galleryId, callback);
+
+    return true;
   } 
 
 

@@ -1050,6 +1050,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     galleryApp.setUpdateDate(appData.dateModified);
     galleryApp.setActive(appData.active);
 
+    galleryApp.setLikes(getNumLikes(appData.id));
   }
 
   private static String collectGalleryAppErrorInfo(final String galleryAppId) {
