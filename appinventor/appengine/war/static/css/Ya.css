@@ -1808,6 +1808,14 @@ textarea::-webkit-input-placeholder {
   margin-left: 10px;
 }
 
+.ode-PropertiesPanel td img {
+  margin-top: 8px;
+}
+
+.ode-PropertyHeader img {
+  margin-top: 8px;
+}
+
 /* Gallery Toolbar*/
 .ya-GalleryToolbar {
   background-color: #8fc202;

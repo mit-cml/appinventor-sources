@@ -63,6 +63,9 @@ public final class EditableProperty extends Property {
   // Additional arguments for the editor
   private final String[] editorArgs;
 
+  // Property description for use in properties panel help dialogs
+  private final String description;
+
   /**
    * Creates a new property.
    *
@@ -76,7 +79,7 @@ public final class EditableProperty extends Property {
    * @param type  type of property; see {@code TYPE_*} constants
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
-      String caption, PropertyEditor editor, int type, String editorType, String[] editorArgs) {
+      String caption, String description, PropertyEditor editor, int type, String editorType, String[] editorArgs) {
     super(name, defaultValue);
 
     this.properties = properties;
@@ -85,13 +88,14 @@ public final class EditableProperty extends Property {
     this.caption = caption;
     this.editorType = editorType;
     this.editorArgs = editorArgs;
+    this.description = description;
 
     editor.setProperty(this);
   }
 
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
       int type) {
-    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, "", null);
+    this(properties, name, defaultValue, name, null, new TextPropertyEditor(), type, "", null);
   }
 
   /**
@@ -106,7 +110,7 @@ public final class EditableProperty extends Property {
    */
   public EditableProperty(EditableProperties properties, String name, String defaultValue,
       int type, String editorType, String[] editorArgs) {
-    this(properties, name, defaultValue, name, new TextPropertyEditor(), type, editorType, editorArgs);
+    this(properties, name, defaultValue, name, null, new TextPropertyEditor(), type, editorType, editorArgs);
   }
 
   /**
@@ -198,4 +202,7 @@ public final class EditableProperty extends Property {
     this.type = aType;
   }
 
+  public String getDescription() {
+    return description;
+  }
 }
