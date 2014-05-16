@@ -20,6 +20,8 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 
+import com.google.appinventor.client.explorer.youngandroid.GalleryList;
+
 import java.io.IOException;
 
 import com.google.appinventor.client.explorer.project.Project;
@@ -255,8 +257,8 @@ public class GalleryClient {
   */
   public void appWasChanged() {
     // for now, let's update the recent list and the popular list (in case one was deleted)
-    GetMostRecent(0,5);
-    GetMostDownloaded(0,5);
+    GetMostRecent(0,GalleryList.NUMAPPSTOSHOW);
+    GetMostDownloaded(0,GalleryList.NUMAPPSTOSHOW);
   }
 
 

@@ -108,11 +108,13 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private boolean appFeaturedExhausted = false;
   private boolean appPopularExhausted = false;
   private boolean appSearchExhausted = false;
-  private final int offset = 10;
+  
   private final String activeNext = "More Apps";
   private final String activePrev = "Previous Apps";
   private final String disabledNext = "";
   private final String disabledPrev = "";
+
+  public static final int NUMAPPSTOSHOW = 10;
 
   /**
    * Creates a new GalleryList
@@ -169,8 +171,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     
     // Calls to gallery get methods will eventually trigger call back to methods
     // at bottom of this file
-    gallery.GetFeatured(0, offset, 0);
-    gallery.GetMostDownloaded(0, offset);
+    gallery.GetFeatured(0, NUMAPPSTOSHOW, 0);
+    gallery.GetMostDownloaded(0, NUMAPPSTOSHOW);
   }
 
 
@@ -202,12 +204,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       sb.addClickHandler(new ClickHandler() {
         //  @Override
         public void onClick(ClickEvent event) {
-          gallery.FindApps(searchText.getText(), 0, offset, 0);
+          gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
         }
       }); 
     }
 
-    gallery.GetMostRecent(appRecentCounter, offset);
+    gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
     container.add(content);
 
     // Add regular GUI components
@@ -237,10 +239,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       public void onClick(ClickEvent event) {
         switch (request) {
         case 1: 
-          if (appFeaturedCounter - offset >= 0) {
+          if (appFeaturedCounter - NUMAPPSTOSHOW >= 0) {
             // If the previous page still has apps to retrieve, do it
-            appFeaturedCounter -= offset;
-            gallery.GetFeatured(appFeaturedCounter, offset, 0);
+            appFeaturedCounter -= NUMAPPSTOSHOW;
+            gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
             buttonPrev.setText(activePrev);
           } else {
             buttonPrev.setText(disabledPrev);
@@ -248,10 +250,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           }
           break;   
         case 2: 
-          if (appRecentCounter - offset >= 0) {
+          if (appRecentCounter - NUMAPPSTOSHOW >= 0) {
             // If the previous page still has apps to retrieve, do it
-            appRecentCounter -= offset;
-            gallery.GetMostRecent(appRecentCounter, offset);
+            appRecentCounter -= NUMAPPSTOSHOW;
+            gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
             buttonPrev.setText(activePrev);
           } else {
             buttonPrev.setText(disabledPrev);
@@ -259,10 +261,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           }
           break;  
         case 3: 
-          if (appSearchCounter - offset >= 0) {
+          if (appSearchCounter - NUMAPPSTOSHOW >= 0) {
             // If the previous page still has apps to retrieve, do it
-            appSearchCounter -= offset;
-            gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
+            appSearchCounter -= NUMAPPSTOSHOW;
+            gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
             buttonPrev.setText(activePrev);
           } else {
             buttonPrev.setText(disabledPrev);
@@ -270,10 +272,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           }
           break;  
         case 5:
-          if (appPopularCounter - offset >= 0) {
+          if (appPopularCounter - NUMAPPSTOSHOW >= 0) {
             // If the previous page still has apps to retrieve, do it
-            appPopularCounter -= offset;
-            gallery.GetMostDownloaded(appPopularCounter, offset);
+            appPopularCounter -= NUMAPPSTOSHOW;
+            gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
             buttonPrev.setText(activePrev);
           } else {
             buttonPrev.setText(disabledPrev);
@@ -290,8 +292,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           case 1: 
             if (!appFeaturedExhausted) {
               // If the next page still has apps to retrieve, do it
-              appFeaturedCounter += offset;
-              gallery.GetFeatured(appFeaturedCounter, offset, 0);
+              appFeaturedCounter += NUMAPPSTOSHOW;
+              gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
               buttonNext.setText(activeNext);
             } else {
               buttonNext.setText(disabledNext);
@@ -301,8 +303,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           case 2: 
             if (!appRecentExhausted) {
               // If the next page still has apps to retrieve, do it
-              appRecentCounter += offset;
-              gallery.GetMostRecent(appRecentCounter, offset);
+              appRecentCounter += NUMAPPSTOSHOW;
+              gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
               buttonNext.setText(activeNext);
             } else {
               buttonNext.setText(disabledNext);
@@ -312,8 +314,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           case 3: 
             if (!appSearchExhausted) {
               // If the next page still has apps to retrieve, do it
-              appSearchCounter += offset;
-              gallery.FindApps(searchText.getText(), appSearchCounter, offset, 0);
+              appSearchCounter += NUMAPPSTOSHOW;
+              gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
               buttonNext.setText(activeNext);
             } else {
               buttonNext.setText(disabledNext);
@@ -323,8 +325,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           case 5:
             if (!appPopularExhausted) {
               // If the next page still has apps to retrieve, do it
-              appPopularCounter += offset;
-              gallery.GetMostDownloaded(appPopularCounter, offset);
+              appPopularCounter += NUMAPPSTOSHOW;
+              gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
               buttonNext.setText(activeNext);
             } else {
               buttonNext.setText(disabledNext);
@@ -358,7 +360,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     sb.addClickHandler(new ClickHandler() {
       //  @Override
       public void onClick(ClickEvent event) {
-        gallery.FindApps(searchText.getText(), 0, offset, 0);
+        gallery.FindApps(searchText.getText(), 0, NUMAPPSTOSHOW, 0);
       }
     });    
   }
@@ -375,7 +377,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     OdeLog.log("#### we are now refreshing app list"+apps.size());
     switch (requestId) {
       case 1: 
-        if (apps.size() < offset) {
+        if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appFeaturedExhausted = true;
         } else {
@@ -384,7 +386,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(apps, appFeaturedContent, true); 
         break;   
       case 2: 
-        if (apps.size() < offset) {
+        if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appRecentExhausted = true;
         } else {
@@ -394,7 +396,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(apps, appRecentContent, true); 
         break;    
       case 3: 
-        if (apps.size() < offset) {
+        if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appSearchExhausted = true;
         } else {
@@ -403,7 +405,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(apps, appSearchContent, true); 
         break;   
       case 5: 
-        if (apps.size() < offset) {
+        if (apps.size() < NUMAPPSTOSHOW) {
           // That means there's not enough apps to show (reaches the end)
           appPopularExhausted = true;
         } else {

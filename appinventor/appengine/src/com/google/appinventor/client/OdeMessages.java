@@ -287,7 +287,6 @@ public interface OdeMessages extends Messages {
   String feedbackLink();
 
   @DefaultMessage("Gallery")
-
   @Description("Name of Gallery tab")
   String tabNameGallery();
 
@@ -334,6 +333,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Messages")
   @Description("Title for user's message inbox")
   String messageInboxTitle();
+
+  @DefaultMessage("Send a Message")
+  @Description("Title for moderator send message dialog")
+  String messageSendTitle();
 
   // Used in boxes/AssetListBox.java
 

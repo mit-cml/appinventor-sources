@@ -237,7 +237,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       // USER PROFILE IN PUBLIC (NON-EDITABLE) STATE
 //      imageUploadBoxInner.clear();
       // Set up the user info stuff
-      userLinkLabel.setText("More info link:");
+      userLinkLabel.setText("More info:");
       profileInfo.add(userContentHeader);
       profileInfo.add(userLinkLabel);
       profileInfo.add(userLinkDisplay);
@@ -352,6 +352,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
         }
         link.setText(linktext);
         link.setHref(linktext);
+        link.setTarget("_blank");
       }
     }
   }

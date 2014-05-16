@@ -419,7 +419,7 @@ public class ReportList extends Composite  {
       popup.setStyleName("ode-InboxContainer");
       final FlowPanel content = new FlowPanel();
       content.addStyleName("ode-Inbox");
-      Label title = new Label(MESSAGES.messageInboxTitle());
+      Label title = new Label(MESSAGES.messageSendTitle());
       title.addStyleName("InboxTitle");
       content.add(title);
 
@@ -445,10 +445,14 @@ public class ReportList extends Composite  {
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
       // Messages Template 1
-      templateItems.add(new DropDownItem("template1", "Inappropriate App Content", new TemplateAction(msgText, 1, report.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", "Inappropriate User profile content", new TemplateAction(msgText, 2, null)));
+      templateItems.add(new DropDownItem("template1", "Inappropriate App Content: Remove", new TemplateAction(msgText, 1, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", "Inappropriate App Content", new TemplateAction(msgText, 2, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", "Inappropriate User profile content", new TemplateAction(msgText, 3, null)));
+      
       templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
+      
+      new TemplateAction(msgText, 2, report.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
       msgPanel.add(sentFrom);
@@ -485,13 +489,13 @@ public class ReportList extends Composite  {
         };
       Ode.getInstance().getUserInfoService().getUserInformation(callback);
     }
-  private void deactiveAppPopup(final GalleryAppReport r, final ReportWidgets rw){
+  private void deactiveAppPopup(final GalleryAppReport report, final ReportWidgets rw){
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
       popup.setStyleName("ode-InboxContainer");
       final FlowPanel content = new FlowPanel();
       content.addStyleName("ode-Inbox");
-      Label title = new Label(MESSAGES.messageInboxTitle());
+      Label title = new Label(MESSAGES.messageSendTitle());
       title.addStyleName("InboxTitle");
       content.add(title);
 
@@ -508,7 +512,7 @@ public class ReportList extends Composite  {
       final FlowPanel msgPanel = new FlowPanel();
       msgPanel.addStyleName("app-actions");
       final Label sentFrom = new Label("Sent From: ");
-      final Label sentTo = new Label("Sent To: " + r.getOffender().getUserName());
+      final Label sentTo = new Label("Sent To: " + report.getOffender().getUserName());
       final TextArea msgText = new TextArea();
       msgText.addStyleName("action-textarea");
       final Button sendMsgAndDRApp = new Button("Deactivate App & Send Message");
@@ -519,13 +523,14 @@ public class ReportList extends Composite  {
       // Account Drop Down Button
       List<DropDownItem> templateItems = Lists.newArrayList();
       // Messages Template 1
-      templateItems.add(new DropDownItem("template1", "Inappropriate App Content", new TemplateAction(msgText, 1, r.getApp().getTitle())));
-      templateItems.add(new DropDownItem("template2", "Inappropriate User profile content", new TemplateAction(msgText, 2, null)));
+      templateItems.add(new DropDownItem("template1", "Inappropriate App Content: Remove", new TemplateAction(msgText, 1, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template2", "Inappropriate App Content", new TemplateAction(msgText, 2, report.getApp().getTitle())));
+      templateItems.add(new DropDownItem("template3", "Inappropriate User profile content", new TemplateAction(msgText, 3, null)));
       templateButton = new DropDownButton("template", "Choose Template" , templateItems, true);
       templateButton.setStyleName("ode-TopPanelButton");
 
       // automatically choose first template
-      new TemplateAction(msgText, 1, r.getApp().getTitle()).execute();
+      new TemplateAction(msgText, 1, report.getApp().getTitle()).execute();
 
       msgPanel.add(templateButton);
       msgPanel.add(sentFrom);
@@ -576,10 +581,10 @@ public class ReportList extends Composite  {
                               }
                             }
                          };
-                      Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
+                      Ode.getInstance().getGalleryService().deactivateGalleryApp(report.getApp().getGalleryAppId(), callback);
                     }
                   };
-                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), r.getOffender().getUserId(), msgText.getText(), messagesCallback);
+                  Ode.getInstance().getGalleryService().sendMessageFromSystem(currentUser.getUserId(), report.getOffender().getUserId(), msgText.getText(), messagesCallback);
               }
             });
           }
@@ -657,11 +662,18 @@ public class ReportList extends Composite  {
                 + "Please review the guidelines at ..."
                 + "If you feel this action has been taken in error, or you would like to discuss the issue, "
                 + "please use the App Inventor forum at: \n");
-        templateButton.setCaption("Inappropriate App Content");
+        templateButton.setCaption("Inappropriate App Content: Remove");
       }else if(type == 2){
+         msgText.setText("Your app \"" + customText  + "\" has inappropriate content. "
+                + "Please review the guidelines at ..."
+                + "and modify your app accordingly. ");
+        templateButton.setCaption("Inappropriate app content");
+       
+      }else if(type == 3){
         msgText.setText("Your profile contains inappropriate content. Please modify your profile.\n");
-        templateButton.setCaption("Inappropriate User profile content");
+        templateButton.setCaption("Inappropriate User profile content"); 
       }
+      
     }
   }
 }

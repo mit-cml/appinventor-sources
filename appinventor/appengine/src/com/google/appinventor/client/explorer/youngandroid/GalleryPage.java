@@ -932,7 +932,7 @@ panel
   private void initPublishButton() {
     actionButton = new Button(PUBLISHBUTTONTEXT);
     actionButton.addClickHandler(new ClickHandler() {
-      // Open up source file if clicked the action button
+      
       public void onClick(ClickEvent event) {
          final OdeAsyncCallback<GalleryApp> callback = new OdeAsyncCallback<GalleryApp>(
               MESSAGES.galleryError()) {
@@ -949,8 +949,8 @@ panel
                   // tell the project list to change project's button to "Update"
                   Ode.getInstance().getProjectManager().publishProject(app.getProjectId(),
                       gApp.getGalleryAppId());
-                  Ode.getInstance().switchToGalleryAppView(app, GalleryPage.VIEWAPP);
-
+                  Ode.getInstance().switchToGalleryAppView(gApp, GalleryPage.VIEWAPP);
+                  // above was app, switched to gApp which is the newly published thing
                   final OdeAsyncCallback<Long> attributionCallback = new OdeAsyncCallback<Long>(
                           MESSAGES.galleryError()) {
                         @Override
