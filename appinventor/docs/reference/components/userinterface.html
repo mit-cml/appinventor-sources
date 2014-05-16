@@ -438,10 +438,10 @@
                   <h1>User Interface Components - App Inventor for Android</h1>
                   <h2> Table of Contents </h2>
                   <ul>
+                    <li> <a href="#Autocomplete">Autocomplete</a></li>
                     <li> <a href="#Button"> Button </a> </li>
                     <li> <a href="#CheckBox"> CheckBox </a> </li>
                     <li> <a href="#Clock"> Clock </a></li>
-                    <li> <a href="#CustomAutocomplete">CustomAutocomplete</a></li>
                     <li> <a href="#DatePicker"> DatePicker </a> </li>
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
@@ -456,6 +456,58 @@
                     <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
+                  
+                  <h2 id="Autocomplete">Autocomplete</h2>
+<p>An Autocomplete is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many elements, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>
+ <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>
+<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is 'default' (shaded 3-D look).</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Comma separated list of choices to use</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>Whether the user can enter text into this input box.  By default, this is true.</dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd>Whether the font for the text should be bold.  By default, it is not.</dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd>Whether the text should appear in italics.  By default, it does not.</dd>
+  <dt><code>FontSize</code></dt>
+  <dd>The font size for the text.  By default, it is 14.0 points.</dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd>The font for the text.  The value can be changed in the Designer.</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Hint</code></dt>
+  <dd>Text that should appear faintly in the input box to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.</dd>
+  <dt><code>Text</code></dt>
+  <dd>The text in the input box, which can be set by the programmer in the Designer or Blocks Editor, or it can be entered by the user (unless the <code>Enabled</code> property is false).</dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd>Whether the text should be left justified, centered, or right justified.  By default, text is left justified.</dd>
+  <dt><code>TextColor</code></dt>
+  <dd>The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Event raised when this component is selected for input, such as by
+ the user touching it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Event raised when this component is no longer selected for input, such
+ as if the user touches a different text box.</dd>
+  <dt><code>HideKeyboard()</code></dt>
+  <dd>Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the keyboard when the users presses the Done key.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
                   <h2 id="Button"> Button </h2>
                   <img src="images/button.png" alt="" />
                   <p> Buttons are components that users touch to perform some
@@ -648,57 +700,6 @@
                     <dt> <code> FormatTime(Calendar instant) </code> </dt>
                     <dd> Text describing time time of an instant </dd>
                   </dl>
-                  <h2 id="CustomAutocomplete">CustomAutocomplete</h2>
-<p>A CustomAutocomplete is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many elements, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>
- <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>
-<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.</p>
-
-<h3>Properties</h3>
-<dl>
-  <dt><code>BackgroundColor</code></dt>
-  <dd>The background color of the input box.  You can choose a color by name in the Designer or in the Blocks Editor.  The default background color is 'default' (shaded 3-D look).</dd>
-  <dt><code>ElementsFromString</code></dt>
-  <dd>Comma separated list of choices to use</dd>
-  <dt><code>Enabled</code></dt>
-  <dd>Whether the user can enter text into this input box.  By default, this is true.</dd>
-  <dt><code>FontBold</code> (designer only)</dt>
-  <dd>Whether the font for the text should be bold.  By default, it is not.</dd>
-  <dt><code>FontItalic</code> (designer only)</dt>
-  <dd>Whether the text should appear in italics.  By default, it does not.</dd>
-  <dt><code>FontSize</code></dt>
-  <dd>The font size for the text.  By default, it is 14.0 points.</dd>
-  <dt><code>FontTypeface</code> (designer only)</dt>
-  <dd>The font for the text.  The value can be changed in the Designer.</dd>
-  <dt><code>Height</code></dt>
-  <dd></dd>
-  <dt><code>Hint</code></dt>
-  <dd>Text that should appear faintly in the input box to provide a hint as to what the user should enter.  This can only be seen if the <code>Text</code> property is empty.</dd>
-  <dt><code>Text</code></dt>
-  <dd>The text in the input box, which can be set by the programmer in the Designer or Blocks Editor, or it can be entered by the user (unless the <code>Enabled</code> property is false).</dd>
-  <dt><code>TextAlignment</code> (designer only)</dt>
-  <dd>Whether the text should be left justified, centered, or right justified.  By default, text is left justified.</dd>
-  <dt><code>TextColor</code></dt>
-  <dd>The color for the text.  You can choose a color by name in the Designer or in the Blocks Editor.  The default text color is black.</dd>
-  <dt><code>Visible</code></dt>
-  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
-  <dt><code>Width</code></dt>
-  <dd></dd>
-</dl>
-
-<h3>Events</h3>
-<dl>
-  <dt><code>GotFocus()</code></dt>
-  <dd>Event raised when this component is selected for input, such as by
- the user touching it.</dd>
-  <dt><code>LostFocus()</code></dt>
-  <dd>Event raised when this component is no longer selected for input, such
- as if the user touches a different text box.</dd>
-  <dt><code>HideKeyboard()</code></dt>
-  <dd>Hide the keyboard. Only multiline text boxes need this. Single line text boxes close the keyboard when the users presses the Done key.</dd>
-</dl>
-
-<h3>Methods</h3>
-none
                   <h2 id="DatePicker">DatePicker</h2>
 
                   <p><p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p></p>

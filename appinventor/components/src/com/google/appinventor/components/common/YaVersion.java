@@ -261,7 +261,7 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 94:
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 95
-  // - CUSTOMAUTOCOMPLETE_COMPONENT_VERSION as added
+  // - AUTOCOMPLETE_COMPONENT_VERSION as added
     public static final int YOUNG_ANDROID_VERSION = 95;
 
   // ............................... Blocks Language Version Number ...............................
@@ -352,6 +352,8 @@ public class YaVersion {
   //   animation to transition to next activity.
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
 
+  public static final int AUTOCOMPLETE_COMPONENT_VERSION = 1;
+
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
   // - The heading property was changed from int to double (for all sprites)
@@ -437,8 +439,6 @@ public class YaVersion {
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
   public static final int DATEPICKER_COMPONENT_VERSION = 1;
-
-  public static final int CUSTOMAUTOCOMPLETE_COMPONENT_VERSION = 1;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;

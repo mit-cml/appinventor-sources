@@ -12,19 +12,19 @@ import com.google.appinventor.client.editor.simple.SimpleEditor;
  *
  * @author manishkk74@gmail.com (Manish Khanchandani)
  */
-public final class MockCustomAutocomplete extends MockTextBoxBase {
+public final class MockAutocomplete extends MockTextBoxBase {
 
   /**
    * Component type name.
    */
-  public static final String TYPE = "CustomAutocomplete";
+  public static final String TYPE = "Autocomplete";
 
   /**
    * Creates a new MockEmailPicker component.
    *
    * @param editor  editor of source file the component belongs to
    */
-  public MockCustomAutocomplete(SimpleEditor editor) {
-    super(editor, TYPE, images.customAutocompleteComponent());
+  public MockAutocomplete(SimpleEditor editor) {
+    super(editor, TYPE, images.autocompleteComponent());
   }
 }

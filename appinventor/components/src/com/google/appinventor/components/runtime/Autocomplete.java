@@ -32,8 +32,8 @@ import android.view.inputmethod.InputMethodManager;
  * @author manishkk74@gmail.com (Manish Khanchandani)
  */
 
-@DesignerComponent(version = YaVersion.CUSTOMAUTOCOMPLETE_COMPONENT_VERSION,
-    description = "A CustomAutocomplete is a kind of text box.  " +
+@DesignerComponent(version = YaVersion.AUTOCOMPLETE_COMPONENT_VERSION,
+    description = "An Autocomplete is a kind of text box.  " +
     "If the user begins entering the text " +
     ", the phone will show a dropdown menu of " +
     "choices that complete the entry.  If there are many elements, the " +
@@ -51,17 +51,17 @@ import android.view.inputmethod.InputMethodManager;
     "complete.",
     category = ComponentCategory.USERINTERFACE)
 @SimpleObject
-public class CustomAutocomplete extends TextBoxBase {
+public class Autocomplete extends TextBoxBase {
 
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
 
   /**
-   * Create a new CustomAutocomplete component.
+   * Create a new Autocomplete component.
    *
    * @param container the parent container.
    */
-  public CustomAutocomplete(ComponentContainer container) {
+  public Autocomplete(ComponentContainer container) {
     super(container, new AutoCompleteTextView(container.$context()));
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_dropdown_item_1line);
     ((AutoCompleteTextView) super.view).setAdapter(adapter);
