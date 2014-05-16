@@ -10,6 +10,7 @@ import com.google.appinventor.components.annotations.DesignerProperty;
 import com.google.appinventor.components.annotations.SimpleEvent;
 import com.google.appinventor.components.annotations.SimpleObject;
 import com.google.appinventor.components.annotations.SimpleProperty;
+import com.google.appinventor.components.annotations.SimpleFunction;
 import com.google.appinventor.components.annotations.PropertyCategory;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
@@ -20,8 +21,10 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
 import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
+import android.content.Context;
 import android.widget.AutoCompleteTextView;
 import android.widget.ArrayAdapter;
+import android.view.inputmethod.InputMethodManager;
 
 /**
  * Text box using auto-completion to pick out a text values defined in elements list..
@@ -30,7 +33,7 @@ import android.widget.ArrayAdapter;
  */
 
 @DesignerComponent(version = YaVersion.CUSTOMAUTOCOMPLETE_COMPONENT_VERSION,
-    description = "An CustomAutocomplete is a kind of text box.  " +
+    description = "A CustomAutocomplete is a kind of text box.  " +
     "If the user begins entering the text " +
     ", the phone will show a dropdown menu of " +
     "choices that complete the entry.  If there are many elements, the " +
@@ -76,7 +79,7 @@ public class CustomAutocomplete extends TextBoxBase {
   /**
    * Elements property setter method
    */
-  @SimpleProperty(description = "adds the passed text element to the Spinner list",
+  @SimpleProperty(description = "adds the passed text element to the list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
     items = ElementsUtil.elements(itemList, "Spinner");
@@ -87,7 +90,7 @@ public class CustomAutocomplete extends TextBoxBase {
    * ElementsFromString property setter method
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(description = "sets the Spinner list to the elements passed in the " +
+  @SimpleProperty(description = "sets the Elements list to the elements passed in the " +
       "comma-separated string", category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring){
     items = ElementsUtil.elementsFromString(itemstring);
@@ -109,5 +112,17 @@ public class CustomAutocomplete extends TextBoxBase {
   @Override
   public void GotFocus() {
     EventDispatcher.dispatchEvent(this, "GotFocus");
+  }
+
+  /**
+   * Hide the soft keyboard
+   */
+  @SimpleFunction(
+      description = "Hide the keyboard.  Only multiline text boxes need this. " +
+      "Single line text boxes close the keyboard when the users presses the Done key.")
+  public void HideKeyboard() {
+    InputMethodManager imm =
+      (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
+    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
   }
 }
