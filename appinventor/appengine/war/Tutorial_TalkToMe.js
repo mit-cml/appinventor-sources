@@ -18,7 +18,7 @@ var Tutorial_TalkToMe = {
 	steps:
 		[
 			{
-				text: "Welcome to App Inventor! To get started, we'll be guiding you to build an app that allows your phone to talk to you with the press of a button.",
+				text: "Welcome to App Inventor! To get started, we'll be guiding you through the process of building an app that allows your phone to talk to you with the press of a button.",
 				validate: function(formName){
 					return true;
 				},
@@ -27,7 +27,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/3 
 			},
 			{
-				text: "This window is called the <b>Design tab</b>. This is where you design what your app looks like. ",
+				text: "This entire screen is called the <em>Design tab</em>. It contains the Palette, Viewer and list of Components. This is where you design what your app looks like. ",
 				validate: function(formName){
 					return true;
 				},
@@ -36,7 +36,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/3 
 			},
 			{
-				text: "This part of the window is called the <em>Viewer</em>. Drag components from the Palette to the Viewer to see what your app will look like.",
+				text: "This part of the screen is called the <em>Viewer</em>. You can drag components from the Palette to the Viewer to see what your app will look like.",
 				validate: function(formName){
 					return true;
 				},
@@ -45,7 +45,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/3 
 			},
 			{
-				text: "This is the <em>Palette</em>. The Palette is made of several drawers: User Interface, Media, Layout, Drawing and Animation, Sensors, and more. Find components and drag them to the Viewer to add them to your app.",
+				text: "This is the <em>Palette</em>. The Palette is made of several drawers: User Interface, Media, Layout, Drawing and Animation, Sensors, and more. You can find components and drag them to the Viewer to add them to your app.",
 				validate: function(formName){
 					return true;
 				},
@@ -73,7 +73,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth*2/3-175 
 			},
 			{
-				text: "Open the Media drawer in the Palette. Click and hold a TextToSpeech. Drag it from the Palette to the Viewer. This component will show up in the Non-Visible components area below the phone screen. Note that this component is found in the Media drawer.",
+				text: "Open the Media drawer in the Palette. Click and hold a TextToSpeech. Drag it from the Palette to the Viewer. This component will show up in the Non-Visible components area below the phone screen.",
 				validate: function(formName){
 					return Tutorial.testForComponent("TextToSpeech");
 				},
@@ -92,7 +92,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/3 
 			},
 			{
-				text: "This is the Workspace. Drag blocks from the drawers to the Workspace to build relationships and behavior.",
+				text: "This is the Workspace. You can drag blocks from the drawers to the Workspace to build relationships and behavior.",
 				validate: function(formName){
 					return true;
 				},
@@ -101,7 +101,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/3 
 			},
 			{
-				text: "These are Built-In Blocks. Find blocks for general behaviors you may want to add to your app. ",
+				text: "These are Built-In Blocks. You can find blocks for general behaviors you may want to add to your app. ",
 				validate: function(formName){
 					return true;
 				},
@@ -110,7 +110,7 @@ var Tutorial_TalkToMe = {
 				left: window.innerWidth/6 
 			},
 			{
-				text: "These are Component Blocks. Find blocks for behaviors for specific components. ",
+				text: "These are Component Blocks. You can find blocks for behaviors for specific components. ",
 				validate: function(formName){
 					return true;
 				},
@@ -190,7 +190,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Clicking on the text block will allow you to type a message. Type the message: Congratulations! You've made your first app!",
+				text: "Clicking on the text block will allow you to type a message. Type the message: Congratulations! You've built your first app!",
 				validate: function(formName){
 					var blocklies=Blocklies[formName];
 					var truth=false;
@@ -217,7 +217,7 @@ var Tutorial_TalkToMe = {
 				url: ""
 			},
 			{
-				text: "Congratulations! You made your first app! If you’d like to make a new project, click on Projects --> Start new project or click <a href='http://appinventor.mit.edu/explore/ai2/tutorials.html'>here</a> to view some of our web tutorials.",
+				text: "Congratulations! You made your first app! If you'd like to make a new project, click on Projects --> Start new project or click <a href='http://appinventor.mit.edu/explore/ai2/tutorials.html'>here</a> to view some of our web tutorials.",
 				validate: function(formName){
 					return true;
 				},

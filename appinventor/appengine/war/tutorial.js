@@ -15,6 +15,10 @@ var Tutorial = {
 		div.style.left=left+"px";
 		div.style.top=top+"px";
 	},
+	changeImage: function(img_src){
+		var e=document.getElementById("Tutorial_frame");
+		e.src=img_src;
+	},
 	/**Use to switch between steps **/
 	nextStep: function(formName){
 		if (Tutorial.currentStepIndex==Tutorial.currentTutorial.steps.length-1){
@@ -24,6 +28,7 @@ var Tutorial = {
 			Tutorial.currentStepIndex+=1;
 			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
 			Tutorial.changePosition(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].top,Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].left);
+			Tutorial.changeImage(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].url);
 		}
 	},
 	backStep: function(formName){
