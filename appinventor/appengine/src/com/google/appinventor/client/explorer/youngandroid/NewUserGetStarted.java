@@ -69,7 +69,7 @@ public static void displayDialog(){
     VerticalPanel dialogVPanel = new VerticalPanel();
     HorizontalPanel hPanel = new HorizontalPanel();
     hPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
-    dialogVPanel.add(frame);
+    // dialogVPanel.add(frame);
     dialogVPanel.add(hPanel);
 
     dialogVPanel.setWidth("300px");
