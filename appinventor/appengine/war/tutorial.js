@@ -28,7 +28,7 @@ var Tutorial = {
 			Tutorial.currentStepIndex+=1;
 			Tutorial.changeText(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].text);
 			Tutorial.changePosition(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].top,Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].left);
-			Tutorial.changeImage(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].url);
+			//Tutorial.changeImage(Tutorial.currentTutorial.steps[Tutorial.currentStepIndex].url);
 		}
 	},
 	backStep: function(formName){
