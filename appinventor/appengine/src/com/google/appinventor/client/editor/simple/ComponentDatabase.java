@@ -382,10 +382,12 @@ class ComponentDatabase implements ComponentDatabaseInterface {
   private void findComponentProperties(ComponentDefinition component,
       JSONArray propertiesArray, JSONArray blockPropertiesArray) {
     Map<String, String> descriptions = new HashMap<String, String>();
+    Map<String, String> categoryMap = new HashMap<String, String>();
     for (JSONValue block : blockPropertiesArray.getElements()) {
       Map<String, JSONValue> properties = block.asObject().getProperties();
-      descriptions.put(properties.get("name").asString().getString(),
-          properties.get("description").asString().getString());
+      String name = properties.get("name").asString().getString();
+      categoryMap.put(name, properties.get("category").asString().getString());
+      descriptions.put(name, properties.get("description").asString().getString());
     }
     for (JSONValue propertyValue : propertiesArray.getElements()) {
       Map<String, JSONValue> properties = propertyValue.asObject().getProperties();
@@ -400,11 +402,15 @@ class ComponentDatabase implements ComponentDatabaseInterface {
       }
 
       String name = properties.get("name").asString().getString();
+      String category = categoryMap.get(name);
+      if ( category == null ) {
+        category = "Unspecified";
+      }
       component.add(new PropertyDefinition(name,
           properties.get("defaultValue").asString().getString(),
           name, properties.get("editorType").asString().getString(),
           editorArgsList.toArray(new String[0]),
-          descriptions.get(name)));
+          category, descriptions.get(name)));
     }
   }
 
