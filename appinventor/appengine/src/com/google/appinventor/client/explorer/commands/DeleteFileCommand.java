@@ -54,7 +54,7 @@ public class DeleteFileCommand extends ChainableCommand {
 
         // When we tell the project service to delete either the form (.scm) file or the blocks
         // (.bky) file, it will delete both of them, and also the yail (.yail) file.
-        ode.getProjectService().deleteFile(projectId, node.getFileId(),
+        ode.getProjectService().deleteFile(ode.getSessionId(), projectId, node.getFileId(),
             new OdeAsyncCallback<Long>(
         // message on failure
             MESSAGES.deleteFileError()) {
@@ -82,7 +82,7 @@ public class DeleteFileCommand extends ChainableCommand {
           }
         });
       } else {  // asset file
-        ode.getProjectService().deleteFile(
+        ode.getProjectService().deleteFile(ode.getSessionId(),
             node.getProjectId(), node.getFileId(),
             new OdeAsyncCallback<Long>(
                 // message on failure

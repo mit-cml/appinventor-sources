@@ -23,6 +23,8 @@ import com.google.appinventor.client.explorer.SourceStructureExplorerItem;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.dnd.DropTarget;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidBlocksNode;
 import com.google.appinventor.shared.youngandroid.YoungAndroidSourceAnalyzer;
 import com.google.common.collect.Maps;
@@ -154,9 +156,18 @@ public final class YaBlocksEditor extends FileEditor
 
   @Override
   public void loadFile(final Command afterFileLoaded) {
-    OdeAsyncCallback<String> callback = new OdeAsyncCallback<String>(MESSAGES.loadError()) {
+    final long projectId = getProjectId();
+    final String fileId = getFileId();
+    OdeAsyncCallback<ChecksumedLoadFile> callback = new OdeAsyncCallback<ChecksumedLoadFile>(MESSAGES.loadError()) {
       @Override
-      public void onSuccess(String blkFileContent) {
+      public void onSuccess(ChecksumedLoadFile result) {
+        String blkFileContent;
+        try {
+          blkFileContent = result.getContent();
+        } catch (ChecksumedFileException e) {
+          this.onFailure(e);
+          return;
+        }
         blocksArea.loadBlocksContent(blkFileContent);
         loadComplete = true;
         selectedDrawer = null;
@@ -164,8 +175,15 @@ public final class YaBlocksEditor extends FileEditor
           afterFileLoaded.execute();
         }
       }
+      @Override
+      public void onFailure(Throwable caught) {
+        if (caught instanceof ChecksumedFileException) {
+          Ode.getInstance().recordCorruptProject(projectId, fileId, caught.getMessage());
+        }
+        super.onFailure(caught);
+      }
     };
-    Ode.getInstance().getProjectService().load(getProjectId(), getFileId(), callback);
+    Ode.getInstance().getProjectService().load2(projectId, fileId, callback);
   }
 
   @Override
@@ -553,6 +571,24 @@ public final class YaBlocksEditor extends FileEditor
   @Override
   public void startRepl(boolean alreadyRunning, boolean forEmulator, boolean forUsb) {
     blocksArea.startRepl(alreadyRunning, forEmulator, forUsb);
+  }
+
+  /*
+   * Perform a Hard Reset of the Emulator
+   */
+  public void hardReset() {
+    blocksArea.hardReset();
+  }
+
+  // Static Function. Find the associated editor for formName and
+  // set its "damaged" bit. This will cause the editor manager's scheduleAutoSave
+  // method to ignore this blocks file and not save it out.
+
+  public static void setBlocksDamaged(String formName) {
+    YaBlocksEditor editor = formToBlocksEditor.get(formName);
+    if (editor != null) {
+      editor.setDamaged(true);
+    }
   }
 
 }

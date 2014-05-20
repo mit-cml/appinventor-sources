@@ -91,7 +91,7 @@ public class TopPanel extends Composite {
     guideLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        Window.open("http://dev-explore.appinventor.mit.edu/library", "_ai2", null);
+        Window.open("http://appinventor.mit.edu/explore/library", "_ai2", "scrollbars=1");
       }
     });
 
@@ -105,7 +105,7 @@ public class TopPanel extends Composite {
     feedbackLink.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent event) {
-        Window.open("http://something.example.com", "_blank", null);
+        Window.open("http://something.example.com", "_blank", "scrollbars=1");
       }
     });
 
@@ -120,7 +120,7 @@ public class TopPanel extends Composite {
       gallery.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent clickEvent) {
-          Window.open("http://gallery.appinventor.mit.edu", "_blank", null);
+          Window.open("http://gallery.appinventor.mit.edu", "_blank", "scrollbars=1");
         }
       });
 
@@ -205,7 +205,7 @@ public class TopPanel extends Composite {
     logo.addClickHandler(new ClickHandler() {
       @Override
       public void onClick(ClickEvent clickEvent) {
-        Window.open("http://dev-explore.appinventor.mit.edu", "_ai2", null);
+        Window.open("http://appinventor.mit.edu", "_ai2", "scrollbars=1");
       }
     });
     panel.add(logo);

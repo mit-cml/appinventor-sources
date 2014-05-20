@@ -97,7 +97,7 @@
          by Git.  We use the version or to check against the buildserver
          version.   We use the fingerprint only in the logs as an debugging aid. -->
     <exec executable="git" outputproperty="git.build.version">
-        <arg line = "describe " />
+        <arg line = "describe --dirty" />
     </exec>
     <filter token="git.build.version" value="${git.build.version}" />
 

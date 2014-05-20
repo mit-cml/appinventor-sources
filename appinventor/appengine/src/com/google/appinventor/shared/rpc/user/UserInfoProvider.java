@@ -67,4 +67,9 @@ public interface UserInfoProvider {
    * @return user type
    */
   int getType();
+
+  String getSessionId();
+
+  void setSessionId(String SessionId);
+
 }

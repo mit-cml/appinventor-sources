@@ -5,6 +5,7 @@
 
 package com.google.appinventor.client.explorer.commands;
 
+import com.google.appinventor.client.editor.youngandroid.BlocklyPanel;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 import com.google.appinventor.client.output.OdeLog;
@@ -28,8 +29,6 @@ import com.google.gwt.user.client.ui.VerticalPanel;
  * @author markf@google.com (Mark Friedman)
  */
 public class ShowBarcodeCommand extends ChainableCommand {
-  private static final String CHARTSERVER_BARCODE_URI =
-      "http://chart.apis.google.com/chart?cht=qr&chs=200x200&chl=";
 
   // The build target
   private String target;
@@ -54,8 +53,8 @@ public class ShowBarcodeCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     // Display a barcode for an url pointing at our server's download servlet
-    String barcodeUrl = CHARTSERVER_BARCODE_URI + GWT.getModuleBaseURL()
-        + ServerLayout.genRelativeDownloadPath(node.getProjectId(), target);
+    String barcodeUrl = GWT.getHostPageBaseURL()
+      + "b/" + Ode.getInstance().getNonce();
     OdeLog.log("Barcode url is: " + barcodeUrl);
     new BarcodeDialogBox(node.getName(), barcodeUrl).center();
   }
@@ -78,13 +77,12 @@ public class ShowBarcodeCommand extends ChainableCommand {
       cancelButton.addClickHandler(buttonHandler);
       Button okButton = new Button(MESSAGES.okButton());
       okButton.addClickHandler(buttonHandler);
-      Image barcodeImage = new Image(appInstallUrl);
+      HTML barcodeQrcode = new HTML("<center>" + BlocklyPanel.getQRCode(appInstallUrl) + "</center>");
       HorizontalPanel buttonPanel = new HorizontalPanel();
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
       HTML warningLabel = new HTML(MESSAGES.barcodeWarning(
-          Ode.getInstance().getUser().getUserEmail(),
-          "<a href=\"" + Ode.APP_INVENTOR_DOCS_URL +
-          "/learn/userfaq.html\" target=\"_blank\">",
+          "<a href=\"" + "http://appinventor.mit.edu/explore/ai2/share.html" +
+          "\" target=\"_blank\">",
           "</a>"));
       warningLabel.setWordWrap(true);
       warningLabel.setWidth("200px");  // set width to get the text to wrap
@@ -99,7 +97,7 @@ public class ShowBarcodeCommand extends ChainableCommand {
       buttonPanel.add(okButton);
       buttonPanel.setSize("100%", "24px");
       VerticalPanel contentPanel = new VerticalPanel();
-      contentPanel.add(barcodeImage);
+      contentPanel.add(barcodeQrcode);
       contentPanel.add(buttonPanel);
       contentPanel.add(warningPanel);
 //      contentPanel.setSize("320px", "100%");

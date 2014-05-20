@@ -17,22 +17,37 @@ import android.view.View;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 
+import android.util.Log;
+
+
+
 /**
- * EmailAddressAdapter provides email address completion from contacts, 
+ * EmailAddressAdapter provides email address completion from contacts,
  * for use as a list adapter.
- * 
- * <p>Note that most of this code was copied from 
+ *
+ * <p>Note that most of this code was copied from
  * partner/google/apps/Gmail/src/com/google/android/gm/EmailAddressAdapter.java
- * 
+ *
  * @author sharon@google.com (Sharon Perl)
+ * @author hal@mit.edu (Hal Abelson)
  */
 
+// TODO(halabelson): Get rid of the use of android.provder.Contacts (deprecated) and
+// replace by android.provider.contactsContract and associated methods
+
+
 public class EmailAddressAdapter extends ResourceCursorAdapter {
+
+  private static final boolean DEBUG = false;
+  private static final String TAG = "EmailAddressAdapter";
+
   public static final int NAME_INDEX = 1;
   public static final int DATA_INDEX = 2;
 
   private static final String SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
   private ContentResolver contentResolver;
+
+  private Context context;
 
   private static final String[] PROJECTION = {
     ContactMethods._ID,     // 0
@@ -43,6 +58,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
+    this.context = context;
   }
 
   @Override
@@ -86,20 +102,32 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
     String where = null;
 
+    android.net.Uri db = ContactMethods.CONTENT_EMAIL_URI;
+
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
 
       StringBuilder s = new StringBuilder();
-      s.append("(people.name LIKE ");
+      s.append("(name LIKE ");
       s.append(filter);
-      s.append(") OR (contact_methods.data LIKE ");
+      s.append(") OR (display_name LIKE ");
       s.append(filter);
       s.append(")");
 
       where = s.toString();
     }
 
-    return contentResolver.query(ContactMethods.CONTENT_EMAIL_URI, PROJECTION, 
+    // Note(hal): This lists the column names in the table being accessed, since they aren't
+    // obvious to me from the documentation
+    if (DEBUG) {
+      Cursor c = context.getContentResolver().query(db, null, null, null, null, null);
+      Log.d(TAG, "listing columns");
+      for (int i = 0; i<c.getColumnCount(); i++) {
+        Log.d(TAG, "column " + i + "=" + c.getColumnName(i));
+      }
+    }
+
+    return contentResolver.query(db, PROJECTION,
         where, null, SORT_ORDER);
   }
 }

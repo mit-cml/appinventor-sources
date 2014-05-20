@@ -42,11 +42,12 @@ import java.util.MissingResourceException;
     iconName = "images/textToSpeech.png")
 @SimpleObject
 public class TextToSpeech extends AndroidNonvisibleComponent
-    implements Component, OnStopListener, OnResumeListener {
+    implements Component, OnStopListener, OnResumeListener, OnDestroyListener {
 
   private static final Map<String, Locale> iso3LanguageToLocaleMap = Maps.newHashMap();
   private static final Map<String, Locale> iso3CountryToLocaleMap = Maps.newHashMap();
-
+  private float pitch = 1.0f;
+  private float speechRate = 1.0f;
   private static final String LOG_TAG = "TextToSpeech";
 
   static {
@@ -114,6 +115,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
     // Set up listeners
     form.registerForOnStop(this);
     form.registerForOnResume(this);
+    form.registerForOnDestroy(this);
 
     // Make volume buttons control media, not ringer.
     form.setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -135,8 +137,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * TextToSpeech component to.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the language for TextToSpeech")
   public void Language(String language) {
     Locale locale;
     switch (language.length()) {
@@ -166,6 +167,71 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   }
 
   /**
+     * Sets the speech pitch for the TextToSpeech. 1.0 is the normal pitch, lower values lower the tone of
+     * the synthesized voice, greater values increase it.
+     *
+     * @param pitch a pitch level between 0 and 2
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the Pitch for tts. The values should " +
+            "be between 0 and 2 where lower values lower the tone of synthesized voice and greater values " +
+            "increases it")
+    public void Pitch(float pitch) {
+        if (pitch < 0 || pitch > 2) {
+            Log.i(LOG_TAG, "Pitch value should be between 0 and 2, but user specified: " + pitch);
+            return;
+        }
+
+        this.pitch = pitch;
+
+        /* Lowest pitch value should be > 0. If 0, we just set to .1f
+         * Rather than having user specify .1, we just check and if 0, we set to .1
+         */
+        tts.setPitch(pitch==0?.1f:pitch);
+    }
+
+    /**
+     * Reports the current value of speech pitch
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of Pitch")
+    public float Pitch() {
+        return this.pitch;
+    }
+
+    /**
+     * Sets the speech rate
+     *
+     * @param speechRate Speech rate 1.0 is the normal speech rate, lower values slow down the
+     *                   speech (0.5 is half the normal speech rate), greater values
+     *                   accelerate it (2.0 is twice the normal speech rate).
+     */
+    @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_FLOAT, defaultValue = "1.0")
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Sets the SpeechRate for tts. " +
+            "The values should be between 0 and 2 where lower values slow down the pitch and greater values " +
+            "accelerate it")
+    public void SpeechRate(float speechRate) {
+        if (speechRate < 0 || speechRate > 2) {
+            Log.i(LOG_TAG, "speechRate value should be between 0 and 2, but user specified: " + speechRate);
+            return;
+        }
+
+        this.speechRate = speechRate;
+
+        /* Lowest value should be > 0. If 0, we just set to .1f
+         * Rather than having user specify .1, we just check and if 0, we set to .1
+         */
+        tts.setSpeechRate(speechRate == 0 ? .1f : speechRate);
+    }
+
+    /**
+     * Reports the current value of speechRate
+     */
+    @SimpleProperty(category = PropertyCategory.BEHAVIOR, description = "Returns current value of SpeechRate")
+    public float SpeechRate() {
+        return this.speechRate;
+  }
+
+  /**
    * Gets the language for this TextToSpeech component.  This will be either an ISO2 (i.e. 2 letter)
    * or ISO3 (i.e. 3 letter) code depending on which kind of code the property was set with.
    *
@@ -183,8 +249,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
    * TextToSpeech component to.
    */
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING, defaultValue = "")
-  @SimpleProperty(
-      category = PropertyCategory.BEHAVIOR)
+  @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void Country(String country) {
     Locale locale;
     switch (country.length()) {
@@ -256,6 +321,7 @@ public class TextToSpeech extends AndroidNonvisibleComponent
 
   @Override
   public void onStop() {
+    // tts.onStop in fact does nothing, but we'll keep this onStop here for flexibility
     tts.onStop();
   }
 
@@ -263,4 +329,10 @@ public class TextToSpeech extends AndroidNonvisibleComponent
   public void onResume() {
     tts.onResume();
   }
+
+  @Override
+  public void onDestroy() {
+    tts.onDestroy();
+  }
+
 }

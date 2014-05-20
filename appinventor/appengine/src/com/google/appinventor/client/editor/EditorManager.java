@@ -13,7 +13,9 @@ import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.editor.youngandroid.YaBlocksEditor;
 import com.google.appinventor.client.editor.youngandroid.YailGenerationException;
 import com.google.appinventor.client.explorer.project.Project;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.settings.project.ProjectSettings;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.common.collect.Maps;
@@ -55,6 +57,11 @@ public final class EditorManager {
   private boolean autoSaveIsScheduled;
   private long autoSaveRequestTime;
 
+  private class DateHolder {
+    long date;
+    long projectId;
+  }
+
   /**
    * Creates the editor manager.
    */
@@ -69,7 +76,13 @@ public final class EditorManager {
       public void run() {
         // When the timer goes off, save all dirtyProjectSettings and
         // dirtyFileEditors.
-        saveDirtyEditors(null);
+        Ode.getInstance().lockScreens(true); // Lock out changes
+        saveDirtyEditors(new Command() {
+            @Override
+            public void execute() {
+              Ode.getInstance().lockScreens(false); // I/O finished, unlock
+            }
+          });
       }
     };
   }
@@ -173,7 +186,11 @@ public final class EditorManager {
    */
   public void scheduleAutoSave(FileEditor fileEditor) {
     // Add the file editor to the dirtyFileEditors list.
-    dirtyFileEditors.add(fileEditor);
+    if (!fileEditor.isDamaged()) { // Don't save damaged files
+      dirtyFileEditors.add(fileEditor);
+    } else {
+      OdeLog.log("Not saving blocks for " + fileEditor.getFileId() + " because it is damaged.");
+    }
     scheduleAutoSaveTimer();
   }
 
@@ -236,6 +253,7 @@ public final class EditorManager {
     // save operation. So the initial value of pendingSaveOperations is the size of
     // projectSettingsToSave plus 1.
     final AtomicInteger pendingSaveOperations = new AtomicInteger(projectSettingsToSave.size() + 1);
+    final DateHolder dateHolder = new DateHolder();
     Command callAfterSavingCommand = new Command() {
       @Override
       public void execute() {
@@ -244,12 +262,17 @@ public final class EditorManager {
           if (afterSaving != null) {
             afterSaving.execute();
           }
+          // Set the project modification date to the returned date
+          // for one of the saved files (it doens't really matter which one).
+          if ((dateHolder.date != 0) && (dateHolder.projectId != 0)) { // We have a date back from the server
+            Ode.getInstance().updateModificationDate(dateHolder.projectId, dateHolder.date);
+          }
         }
       }
     };
 
     // Save all files at once (asynchronously).
-    saveMultipleFilesAtOnce(filesToSave, callAfterSavingCommand);
+    saveMultipleFilesAtOnce(filesToSave, callAfterSavingCommand, dateHolder);
 
     // Save project settings one at a time (asynchronously).
     for (ProjectSettings projectSettings : projectSettingsToSave) {
@@ -293,7 +316,8 @@ public final class EditorManager {
       }
     }
    
-    Ode.getInstance().getProjectService().save(yailFiles,
+    Ode.getInstance().getProjectService().save(Ode.getInstance().getSessionId(),
+        yailFiles,
         new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
       @Override
       public void onSuccess(Long date) {
@@ -314,20 +338,24 @@ public final class EditorManager {
 
 
   /**
-   * Saves multiple files to the ODE server and calls the afterSavingFiles
-   * command after they have all been saved successfully.
+   * This code used to send the contents of all changed files to the server
+   * in the same RPC transaction. However we are now sending them separately
+   * so that we can have more fine grained control over handling errors that
+   * happen only on one file. In particular, we need to handle the case where
+   * a trivial blocks workspace is attempting to be written over a non-trival
+   * file.
    *
-   * If any errors occur while saving, the afterSavingFiles command will not be
-   * executed.
-   * If filesWithContent is empty, the afterSavingFiles command is called
-   * immediately, not asynchronously.
+   * If any unhandled errors occur while saving, the afterSavingFiles
+   * command will not be executed.  If filesWithContent is empty, the
+   * afterSavingFiles command is called immediately, not
+   * asynchronously.
    *
    * @param filesWithContent  the files that need to be saved
    * @param afterSavingFiles  optional command to be executed after file
    *                          editors are saved.
    */
   private void saveMultipleFilesAtOnce(
-      final List<FileDescriptorWithContent> filesWithContent, final Command afterSavingFiles) {
+      final List<FileDescriptorWithContent> filesWithContent, final Command afterSavingFiles, final DateHolder dateHolder) {
     if (filesWithContent.isEmpty()) {
       // No files needed saving.
       // Execute the afterSavingFiles command if one was given.
@@ -336,27 +364,39 @@ public final class EditorManager {
       }
 
     } else {
-      Ode.getInstance().getProjectService().save(filesWithContent,
-          new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
-        @Override
-        public void onSuccess(Long date) {
-          // Call the project editor's onSave method for each file that was saved and update the
-          // project's modification date.
-          for (FileDescriptorWithContent fileDescriptor : filesWithContent) {
-            long projectId = fileDescriptor.getProjectId();
-            ProjectEditor projectEditor = openProjectEditors.get(projectId);
-            if (projectEditor != null) {
-              projectEditor.onSave(fileDescriptor.getFileId());
+      for (FileDescriptorWithContent fileDescriptor : filesWithContent ) {
+        final long projectId = fileDescriptor.getProjectId();
+        final String fileId = fileDescriptor.getFileId();
+        final String content = fileDescriptor.getContent();
+        Ode.getInstance().getProjectService().save2(Ode.getInstance().getSessionId(),
+          projectId, fileId, false, content, new OdeAsyncCallback<Long>(MESSAGES.saveErrorMultipleFiles()) {
+            @Override
+            public void onSuccess(Long date) {
+              if (dateHolder.date != 0) {
+                // This sets the project modification time to that of one of
+                // the successful file saves. It doesn't really matter which
+                // file date we use, they will all be close. However it is important
+                // to use some files date because that will be based on the server's
+                // time. If we used the local clients time, then we may be off if the
+                // client's computer's time isn't set correctly.
+                dateHolder.date = date;
+                dateHolder.projectId = projectId;
+              }
+              if (afterSavingFiles != null) {
+                afterSavingFiles.execute();
+              }
             }
-            Ode.getInstance().updateModificationDate(projectId, date);
-          }
-
-          // Execute the afterSavingFiles command if one was given.
-          if (afterSavingFiles != null) {
-            afterSavingFiles.execute();
-          }
-        }
-      });
+            @Override
+            public void onFailure(Throwable caught) {
+              // Here is where we handle BlocksTruncatedException
+              if (caught instanceof BlocksTruncatedException) {
+                Ode.getInstance().blocksTruncatedDialog(projectId, fileId, content, this);
+              } else {
+                super.onFailure(caught);
+              }
+            }
+          });
+      }
     }
   }
 }

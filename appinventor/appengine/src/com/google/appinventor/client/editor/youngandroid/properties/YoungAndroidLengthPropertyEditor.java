@@ -46,8 +46,8 @@ public class YoungAndroidLengthPropertyEditor extends AdditionalChoicePropertyEd
     fillParentRadioButton = new RadioButton(radioButtonGroup, MESSAGES.fillParentCaption());
     customLengthRadioButton = new RadioButton(radioButtonGroup);
     customLengthField = new TextBox();
-    customLengthField.setVisibleLength(3);
-    customLengthField.setMaxLength(3);
+    customLengthField.setVisibleLength(4);
+    customLengthField.setMaxLength(4);
 
     Panel customRow = new HorizontalPanel();
     customRow.add(customLengthRadioButton);

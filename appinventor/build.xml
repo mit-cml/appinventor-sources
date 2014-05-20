@@ -21,6 +21,11 @@
     <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="PlayApp"/>
   </target>
 
+  <target name="comps">
+    <ant inheritAll="false" useNativeBasedir="true" dir="components"/>
+    <ant inheritAll="false" useNativeBasedir="true" dir="buildserver" target="installplay"/>
+  </target>
+
   <target name="noplay">
     <ant inheritAll="false" useNativeBasedir="true" dir="appengine"/>
     <ant inheritAll="false" useNativeBasedir="true" dir="blocklyeditor"/>
@@ -100,8 +105,8 @@
         <pathelement location="lib/keyczar/keyczar-0.66-080111-java-1.6.jar" />
         <pathelement location="lib/objectify-3.0/objectify-3.0.jar" />
         <pathelement location="lib/tablelayout/TableLayout-jdk1.5-2007-04-21.jar" />
-        <pathelement location="lib/twitter/twitter4j-core-3.0.3.jar" />
-        <pathelement location="lib/twitter/twitter4j-media-support-3.0.3.jar" />
+        <pathelement location="lib/twitter/twitter4j-core-3.0.5.jar" />
+        <pathelement location="lib/twitter/twitter4j-media-support-3.0.5.jar" />
         <pathelement location="lib/QRGenerator/core.jar" />
         <pathelement location="lib/QRGenerator/javase.jar" />
         <fileset dir="buildserver/lib" includes="**/*.jar"/>
@@ -129,16 +134,6 @@
         <!-- prevent error importing GitBuildId if it has been generated -->
         <pathelement location="common/build/classes/CommonVersion" />
       </classpath>
-      <!-- Ignore non-standard tags used in blockslib.  -->
-      <tag name="assumptions" />
-      <tag name="effect" />
-      <tag name="effects" />
-      <tag name="expects" />
-      <tag name="modifies" />
-      <tag name="override" />
-      <tag name="requires" />
-      <tag name="specfield" />
-      <tag name="warning" />
       <!-- TODO(opensource) - Add more <link> elements that correspond to the jars on the
            classpath above,so our javadoc will link appropriate online javadoc for libraries we
            depend on. -->

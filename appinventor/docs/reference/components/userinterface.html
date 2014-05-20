@@ -420,7 +420,7 @@
           <ul>
             <li><a href="http://appinventor.mit.edu">Home</a></li>
             <li><a href="http://appinventor.mit.edu/explore/news-events">Blog ▾</a></li>
-            <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+            <li><a href="http://appinventor.mit.edu/explore/library">Support
                 ▾</a></li>
           </ul>
         </div>
@@ -441,14 +441,18 @@
                     <li> <a href="#Button"> Button </a> </li>
                     <li> <a href="#CheckBox"> CheckBox </a> </li>
                     <li> <a href="#Clock"> Clock </a> </li>
+                    <li> <a href="#DatePicker"> DatePicker </a> </li>
                     <li> <a href="#Image"> Image </a> </li>
                     <li> <a href="#Label"> Label </a> </li>
                     <li> <a href="#ListPicker"> ListPicker </a> </li>
+                    <li> <a href="#ListView"> ListView </a> </li>
                     <li> <a href="#Notifier"> Notifier </a> </li>
                     <li> <a href="#PasswordTextBox"> PasswordTextBox </a> </li>
                     <li> <a href="#Screen"> Screen </a> </li>
                     <li> <a href="#Slider"> Slider </a> </li>
+                    <li> <a href="#Spinner"> Spinner </a> </li>
                     <li> <a href="#TextBox"> TextBox </a> </li>
+                    <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
                   <h2 id="Button"> Button </h2>
@@ -643,27 +647,101 @@
                     <dt> <code> FormatTime(Calendar instant) </code> </dt>
                     <dd> Text describing time time of an instant </dd>
                   </dl>
-                  <h2 id="Image"> Image </h2>
-                  <img width="100" src="images/image.png" alt="" />
-                  <p> You use image components to represent images that users
-                    select and
-                    manipulate. </p>
-                  <p> An image component displays an image. You can specify the
-                    picture
-                    to display and other aspects of the image's appearance in
-                    the Designer
-                    or in the Blocks Editor. </p>
-                  <h3> Properties </h3>
+
+                  <h2 id="DatePicker">DatePicker</h2>
+
+                  <p><p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p></p>
+
+                  <h3>Properties</h3>
                   <dl>
-                    <dt> <code> Picture </code> </dt>
-                    <dd> Picture displayed by this image. </dd>
-                    <dt> <code> Visible </code> </dt>
-                    <dd> If true, image is displayed. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dd> Image height (y-size). </dd>
-                    <dt> <code> Width </code> </dt>
-                    <dd> Image width (x-size). </dd>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code><em>Day</em></code></dt>
+                    <dd>the Day of the month that was last picked using the DatePicker.</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Month</em></code></dt>
+                    <dd>the number of the Month that was last picked using the DatePicker. Note that months start in 0 = January, 11 = December.</dd>
+                    <dt><code><em>MonthInText</em></code></dt>
+                    <dd>Returns the name of the Month that was last picked using the DatePicker, in textual format.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Year</em></code></dt>
+                    <dd>the Year that was last picked using the DatePicker</dd>
                   </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterDateSet()</code></dt>
+                    <dd>Event that runs after the user chooses a Date in the dialog</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
+
+                 <h2 id="Image">Image</h2>
+
+                 <p>Component for displaying images.  The picture to
+                 display, and other aspects of the Image's appearance,
+                 can be specified in the Designer or in the Blocks
+                 Editor.</p>
+
+                 <h3>Properties</h3>
+                 <dl>
+                   <dt><code>Animation</code></dt>
+                   <dd>This is a limited form of animation that can
+                   attach a small number of motion types to images.
+                   The allowable motions are ScrollRightSlow,
+                   ScrollRight, ScrollRightFast, ScrollLeftSlow,
+                   ScrollLeft, ScrollLeftFast, and Stop</dd>
+                   <dt><code>Height</code></dt>
+                   <dd></dd>
+                   <dt><code>Picture</code></dt>
+                   <dd></dd>
+                   <dt><code>Visible</code></dt>
+                   <dd>Specifies whether the component should be
+                   visible on the screen. Value is true if the
+                   component is showing and false if hidden.</dd>
+                   <dt><code>Width</code></dt>
+                   <dd></dd>
+                 </dl>
+
+                 <h3>Events</h3>
+                 none
+
+                 <h3>Methods</h3>
+                 none
+
                   <h2 id="Label"> Label </h2>
                   <img src="images/label.png" alt="" />
                   <p> Labels are components used to show text. </p>
@@ -698,133 +776,154 @@
                     <dt> <code> Visible </code> </dt>
                     <dd> If set, label is visible. </dd>
                   </dl>
-                  <h2 id="ListPicker"> ListPicker </h2>
-                  <img src="images/listpicker.png" alt="" />
-                  <p> Users tap a list picker component to select one item from a list of text strings. </p>
-                  When a user taps a list picker, it displays a list of text items for the user to choose from. The text items can be specified through the Designer or Blocks Editor by setting the <code> ElementsFromString </code> property to their comma-separated concatenation (for example, <code> choice 1, choice 2, choice 3 </code> ) or by setting the <code> Elements </code> property to a <code> List </code> in the Blocks Editor.
-                  <p> Other properties, including <code> TextAlignment </code> and <code> BackgroundColor </code> , affect the appearance of the button and whether it can be tapped ( <code> Enabled </code> ). </p>
-                  <h3> Properties </h3>
-                  <dl>
-                    <dt> <code> Selection </code> </dt>
-                    <dd> Selected list element. </dd>
-                    <dt> <code> Items </code> </dt>
-                    <dd> Comma-separated list of items to display in component.  </dd>
-                    <dt> <code> ElementsFromString </code> </dt>
-                    <dd> (Description to come.) </dd>
-                    <dt> <code> BackgroundColor </code> </dt>
-                    <dd> Color for list picker background. </dd>
-                    <dt> <code> FontBold </code> </dt>
-                    <dd> If set, list picker text is displayed in bold. </dd>
-                    <dt> <code> FontItalic </code> </dt>
-                    <dd> If set, list picker text is displayed in italics. </dd>
-                    <dt> <code> FontSize </code> </dt>
-                    <dd> Point size for list picker text. </dd>
-                    <dt> <code> FontTypeface </code> </dt>
-                    <dd> Font family for list picker text. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dd> List picker height (y-size). </dd>
-                    <dt><code>Image</code></dt>
-                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
-                    <dt><code>Selection</code></dt>
-                    <dd><p>The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.</p></dd>
-                    <dt><code>SelectionIndex</code></dt>
-                    <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
-                    <dt><code>Shape</code> (designer only)</dt>
-                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
-                    <dt><code>ShowFeedback</code></dt>
-                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
-                    <dt><code>ShowFilterBar</code></dt>
-                    <dd>Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not</dd>
-                    <dt> <code> Text </code> </dt>
-                    <dd> Title text to display on list picker. </dd>
-                    <dt> <code> TextAlignment </code> </dt>
-                    <dd> Left, center, or right. </dd>
-                    <dt> <code> TextColor </code> </dt>
-                    <dd> Color for list picker text. </dd>
-                    <dt> <code> Visible </code> </dt>
-                    <dd> If set, list picker is visible. </dd>
-                    <dt> <code> Width </code> </dt>
-                    <dd> List picker width (x-size). </dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                    <dt> <code> AfterPicking() </code> </dt>
-                    <dd> User selected an item from the list picker. </dd>
-                    <dt> <code> BeforePicking() </code> </dt>
-                    <dd> User has tapped the list picker but hasn't yet selected
-                      an item. </dd>
-                    <dt> <code> GotFocus() </code> </dt>
-                    <dd> List picker became the focused component. </dd>
-                    <dt> <code> LostFocus() </code> </dt>
-                    <dd> List picker is no longer the focused component. </dd>
-                  </dl>
-                  <h2 id="Notifier"> Notifier </h2>
-                  <img src="images/notifier.png" alt="Picture of Notifier component" />
-                  <p> A notifier is a non-visible component that can show
-                    verious kinds
-                    of alerts and can log information. Use a notifier to display
-                    notices
-                    and alerts to users of your app, and also to log
-                    information that can
-                    help you debug your app. </p>
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> ShowMessageDialog(Text message, Text title,
-                        Text
-                        buttonText) </code> </dt>
-                    <dd> Pops up a notice that remains until the user taps a
-                      button with
-                      the given text. The arguments are the message to be shown,
-                      the title of
-                      the notice, and the label on the button. </dd>
-                    <dt> <code> ShowChooseDialog(Text message, Text title, Text
-                        button1Text, Text button2Text) </code> </dt>
-                    <dd> Pops up a notice the user must respond to by tapping
-                      one of two
-                      buttons with the given text. The arguments are the message
-                      to be shown,
-                      the title of the notice, and the labels on the left and
-                      right buttons,
-                      respectively. The <code> AfterChoosing </code> event is
-                      signalled
-                      after the user taps one of the buttons. </dd>
-                    <dt> <code> ShowTextDialog(Text message, Text title) </code>
-                    </dt>
-                    <dd> Pops up a notice which the user must respond to by
-                      entering some
-                      text. The arguments are the message to be shown and the
-                      title of the
-                      notice. The <code> AfterTextInput </code> event is
-                      signalled after
-                      the user enters the text. </dd>
-                    <dt> <code> ShowAlert(Text message </code> </dt>
-                    <dd> Pops up a temporary notice, which vanishes after a few
-                      seconds.
-                      The argument is the text of the notice. </dd>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dt> <code> LogError(Text message) </code> </dt>
-                    <dd> These methods are for use in debugging. They write
-                      messages to
-                      the various logs on the Android device. The logs can be
-                      read with the
-                      use of Android debugging tools, like the Android Debug
-                      Bridge (ADB). </dd>
-                  </dl>
-                  <h3> Events </h3>
-                  <dl>
-                    <dt> <code> AfterChoosing(Text choice) </code> </dt>
-                    <dd> Signaled after the user has made a choice in response
-                      to <code>
-                        ShowChooseDialog </code> . The argument is the text on
-                      the button that
-                      the user tapped. </dd>
-                    <dt> <code> AfterTextInput(Text response) </code> </dt>
-                    <dd> Signaled after the user has responded to <code>
-                        ShowTextDialog </code>
-                      . The argument is the text on the button that the user
-                      entered. </dd>
-                  </dl>
+
+
+
+<h2 id="ListPicker">ListPicker</h2>
+
+<p><p>A button that, when clicked on, displays a list of texts for the user to choose among. The texts can be specified through the Designer or Blocks Editor by setting the <code>ElementsFromString</code> property to their string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p><p>Setting property ShowFilterBar to true, will make the list searchable.  Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code>Elements</code></dt>
+  <dd>List of Choices to Display (as a list)</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Comma separated list of choices to use</dd>
+  <dt><code>Enabled</code></dt>
+  <dd>Whether the ListPicker can be tapped</dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd>If set, list picker text is displayed in bold. </dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd>If set, list picker text is displayed in italics. </dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd>Point size for list picker text. </dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd>Font family for list picker text. </dd>
+  <dt><code>Height</code></dt>
+  <dd>Box height (y-size). </dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code>Selection</code></dt>
+  <dd>The selected item.  When directly changed by the programmer, the SelectionIndex property is also changed to the first item in the ListPicker with the given value.  If the value does not appear, SelectionIndex will be set to 0.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListPicker, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Returns current state of ShowFilterBar indicating if Search Filter Bar will be displayed on ListPicker or not</dd>
+  <dt><code>Text</code></dt>
+  <dd>Title text to display on list picker.</dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd>Left, center, or right. </dd>
+  <dt><code>TextColor</code></dt>
+  <dd>Color for text. </dd>
+  <dt><code>Title</code></dt>
+  <dd>Optional title displayed at the top of the list of choices.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Box width (x-size). </dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="ListView">ListView</h2>
+
+<p><p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. <br> Warning: This component will not work correctly on Screens that are scrollable. </p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>Set a list of text elements to build your list.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>Build a list with a series of text elements separated by commas such as: Cheese,Fruit,Bacon,Radish. Each word before the comma will be an element in the list.</dd>
+  <dt><code>Height</code></dt>
+  <dd>Determines the height of the list on the view.</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the text last selected in the ListView.</dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1.  If no item is selected, the value will be 0.  If an attempt is made to set this to a number less than 1 or greater than the number of items in the ListView, SelectionIndex will be set to 0, and Selection will be set to the empty text.</dd>
+  <dt><code>ShowFilterBar</code></dt>
+  <dd>Sets visibility of ShowFilterBar. True will show the bar, False will hide it.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd>Determines the width of the list on the view.</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the an element has been chosen in the list. The selected element is available in the Selection property.</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
+<h2 id="Notifier">Notifier</h2>
+
+<p>The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color="blue"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Specifies the background color for alerts (not dialogs).</dd>
+  <dt><code>NotifierLength</code> (designer only)</dt>
+  <dd>specifies the length of time that the alert is shown -- either "short" or "long".</dd>
+  <dt><code>TextColor</code></dt>
+  <dd>Specifies the text color for alerts (not dialogs).</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterChoosing(text choice)</code></dt>
+  <dd>Event after the user has made a selection for ShowChooseDialog.</dd>
+  <dt><code>AfterTextInput(text response)</code></dt>
+  <dd>Event raised after the user has responded to ShowTextDialog.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>LogError(text message)</code></dt>
+  <dd>Writes an error message to the Android system log. See the Google Android documentation for how to access the log.</dd>
+  <dt><code>LogInfo(text message)</code></dt>
+  <dd>Writes an information message to the Android log.</dd>
+  <dt><code>LogWarning(text message)</code></dt>
+  <dd>Writes a warning message to the Android log. See the Google Android documentation for how to access the log.</dd>
+  <dt><code>ShowAlert(text notice)</code></dt>
+  <dd>Display a temporary notification</dd>
+  <dt><code>ShowChooseDialog(text message, text title, text button1Text, text button2Text, boolean cancelable)</code></dt>
+  <dd>Shows a dialog box with two buttons, from which the user can choose.  If cancelable is true there will be an additional CANCEL button. Pressing a button will raise the AfterChoosing event.  The "choice" parameter to AfterChoosing will be the text on the button that was pressed, or "Cancel" if the  CANCEL button was pressed.</dd>
+  <dt><code>ShowMessageDialog(text message, text title, text buttonText)</code></dt>
+  <dd>Display an alert dialog with a single button that dismisses the alert.</dd>
+  <dt><code>ShowTextDialog(text message, text title, boolean cancelable)</code></dt>
+  <dd>Shows a dialog box where the user can enter text, after which the AfterTextInput event will be raised.  If cancelable is true there will be an additional CANCEL button. Entering text will raise the AfterTextInput event.  The "response" parameter to AfterTextInput will be the text that was entered, or "Cancel" if the CANCEL button was pressed.</dd>
+</dl>
+
                   <h2 id="PasswordTextBox"> PasswordTextBox </h2>
                   <img src="images/passwordtextbox.png" alt="" />
                   <p> Users enter passwords in a password text box component,
@@ -881,60 +980,61 @@
                   </dl>
 </dl>
 
-                    <h2 id="Screen"> Screen </h2>
-                    <p> The screen does not appear in the palette like other components, but if comes automatically with the project. Each project has exactly one screen, named Screen1.  This name cannot be changed.  </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> BackgroundColor </code> </dt>
-                      <dd> Color for screen background.  </dd>
-                      <dt> <code> BackgroundImage </code> </dt>
-                      <dd> An image that forms the screen's background.  </dd>
+<h2 id="Screen">Screen</h2>
+
+<p>Top-level component containing all other components in the program</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>AboutScreen</code></dt>
+  <dd>Information about the screen.  It appears when "About this Application" is selected from the system menu. Use it to tell users about your app.  In multiple screen apps, each screen has its own AboutScreen info.</dd>
+  <dt><code>AlignHorizontal</code></dt>
+  <dd>A number that encodes how contents of the screen are aligned  horizontally. The choices are: 1 = left aligned, 2 = horizontally centered,  3 = right aligned.</dd>
+  <dt><code>AlignVertical</code></dt>
+  <dd>A number that encodes how the contents of the arrangement are aligned vertically. The choices are: 1 = aligned at the top, 2 = vertically centered, 3 = aligned at the bottom. Vertical alignment has no effect if the screen is scrollable.</dd>
+  <dt><code>BackgroundColor</code></dt>
+  <dd></dd>
+  <dt><code>BackgroundImage</code></dt>
+  <dd>The screen background image.</dd>
   <dt><code>CloseScreenAnimation</code></dt>
   <dd>The animation for closing current screen and returning  to the previous screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
-                      <dt> <code class="c2"> Height </code> </dt>
-                      <dd> Screen height (y-size).  </dd>
-                      <dt> <code> Icon </code> </dt>
-                      <dd> An image to be used as the icon for the installed application on the phone. This should be a PNG or a JPG image; 48x48 is a good size.  <i> Warning: </i> Specifying images other than PNG or JPG, for example GIF or .ico files, may prevent App Inventor from being able to package the application.  </dd>
+  <dt><code><em>Height</em></code></dt>
+  <dd>Screen height (y-size).</dd>
+  <dt><code>Icon</code> (designer only)</dt>
+  <dd></dd>
   <dt><code>OpenScreenAnimation</code></dt>
   <dd>The animation for switching to another screen. Valid options are default, fade, zoom, slidehorizontal, slidevertical, and none</dd>
   <dt><code>ScreenOrientation</code></dt>
   <dd>The requested screen orientation. Commonly used values are unspecified (-1), landscape (0), portrait (1), sensor (4), and user (2).  See the Android developer docuemntation for ActivityInfo.Screen_Orientation for the complete list of possible settings.</dd>
-                      <dt> <code> Scrollable </code> </dt>
-                      <dd> This is set by a checkbox in the designer. When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.  </dd>
-                      <dt> <code> Title </code> </dt>
-                      <dd> Title for the screen (text). This will appear at the upper left of the phone when the application runs. A natural choice for the title is the title of the App, but you could make it something else, or even change it while the app is running.  </dd>
-                      <dt> <code> VersionCode </code> </dt>
-                      <dd> An integer value which must be incremented each time a new Android Application Package File (APK) is created for the Google Play Store.  </dd>
-                      <dt> <code> VersionName </code> </dt>
-                      <dd> A string which can be changed to allow Google Play Store users to distinguish between different versions of the App.  </dd>
-                      <dt> <code class="c2"> Width </code> </dt>
-                      <dd> Screen width (x-size).  </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt><code>BackPressed()</code></dt>
-                      <dd>Device back button pressed.</dd>
-                      <dt> <code> ErrorOccurred(component component, text functionName, number errorNumber, text message) </code> </dt>
-                      <dd> Signaled when an error occurs. The ErrorOccurred event is currently used for a small set of errors including:
-                        <ul>
-                          <li> Errors that occur in the LEGO MINDSTORMS Nxt* components </li>
-                          <li> Errors that occur in the Bluetooth components </li>
-                          <li> Errors that occur in the Twitter component </li>
-                          <li> Errors that occur in the SoundRecorder component </li>
-                          <li> ActivityStarter - when StartActivity is called, but there is no activity that corresponds to the activity properties.  </li>
-                          <li> LocationSensor - when LatitudeFromAddress or LongitudeFromAddress fails </li>
-                          <li> Player - when setting the Source property fails </li>
-                          <li> Sound - when setting the Source property fails or when the Play function fails </li>
-                          <li> VideoPlayer - when setting the Source property fails </li>
-                        </ul>
-                        For those errors, the system will show a notification by default, with an error number and a message. You can use this event handler to prescribe an error behavior different than the default, by testing errorNumber and taking the appropriate action.  </dd>
-                      <dt> <code> Initialize() </code> </dt>
-                      <dd> Signaled when the application starts. It can be used setting initial values and performing other setup operations.  </dd>
-                      <dt><code>OtherScreenClosed(text otherScreenName, any result)</code></dt>
-                      <dd>Event raised when another screen has closed and control has returned to this screen.</dd>
-                      <dt><code>ScreenOrientationChanged()</code></dt>
-                      <dd>Screen orientation changed</dd>
-                    </dl>
+  <dt><code>Scrollable</code></dt>
+  <dd>When checked, there will be a vertical scrollbar on the screen, and the height of the application can exceed the physical height of the device. When unchecked, the application height is constrained to the height of the device.</dd>
+  <dt><code>Title</code></dt>
+  <dd>The caption for the form, which apears in the title bar</dd>
+  <dt><code>VersionCode</code> (designer only)</dt>
+  <dd>An integer value which must be incremented each time a new Android Application Package File (APK) is created for the Google Play Store.</dd>
+  <dt><code>VersionName</code> (designer only)</dt>
+  <dd>A string which can be changed to allow Google Play Store users to distinguish between different versions of the App.</dd>
+  <dt><code><em>Width</em></code></dt>
+  <dd>Screen width (x-size).</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>BackPressed()</code></dt>
+  <dd>Device back button pressed.</dd>
+  <dt><code>ErrorOccurred(component component, text functionName, number errorNumber, text message)</code></dt>
+  <dd>Event raised when an error occurs. Only some errors will raise this condition.  For those errors, the system will show a notification by default.  You can use this event handler to prescribe an error behavior different than the default.</dd>
+  <dt><code>Initialize()</code></dt>
+  <dd>Screen starting</dd>
+  <dt><code>OtherScreenClosed(text otherScreenName, any result)</code></dt>
+  <dd>Event raised when another screen has closed and control has returned to this screen.</dd>
+  <dt><code>ScreenOrientationChanged()</code></dt>
+  <dd>Screen orientation changed</dd>
+</dl>
+
+<h3>Methods</h3>
+none
+
 
 <h2 id="Slider">Slider</h2>
                   <img alt="" src="images/slider.png" />
@@ -959,6 +1059,42 @@
 <dd>Indicates that position of the slider thumb has changed.</dd>
 </dl><h3 id="slidermethods">Methods</h3>
 <p>none</p>
+
+<h2 id="Spinner">Spinner</h2>
+
+<p><p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>Elements</code></dt>
+  <dd>returns a list of text elements to be picked from.</dd>
+  <dt><code>ElementsFromString</code></dt>
+  <dd>sets the Spinner list to the elements passed in the comma-separated string</dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Prompt</code></dt>
+  <dd>Text with the current title for the Spinner window</dd>
+  <dt><code>Selection</code></dt>
+  <dd>Returns the current selected item in the spinner </dd>
+  <dt><code>SelectionIndex</code></dt>
+  <dd>The index of the currently selected item, starting at 1. If no item is selected, the value will be 0.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterSelecting(text selection)</code></dt>
+  <dd>Event called after the user selects an item from the dropdown list.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>DisplayDropdown()</code></dt>
+  <dd>displays the dropdown list for selection, same action as when the user clicks on the spinner.</dd>
+</dl>
 
                   <h2 id="TextBox"> TextBox </h2>
                   <img src="images/textbox.png" alt="" />
@@ -1084,6 +1220,63 @@
                       line text boxes close the keyboard when the users presses
                       the Done key. </dd>
                   </dl>
+
+                  <h2 id="TimePicker">TimePicker</h2>
+                  <p><p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p></p>
+
+                  <h3>Properties</h3>
+                  <dl>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd></dd>
+                    <dt><code>FontBold</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontItalic</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontSize</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>Height</code></dt>
+                    <dd></dd>
+                    <dt><code><em>Hour</em></code></dt>
+                    <dd>The hour of the last time set using the time picker. The hour is in a 24 hour format. If the last time set was 11:53 pm, this property will return 23.</dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+                    <dt><code><em>Minute</em></code></dt>
+                    <dd>The minute of the last time set using the time picker</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd></dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd></dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd></dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
+                  </dl>
+
+                  <h3>Events</h3>
+                  <dl>
+                    <dt><code>AfterTimeSet()</code></dt>
+                    <dd>This event is run when a user has set the time in the popup dialog.</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible
+                   to click it.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no
+                   longer possible to click it.</dd>
+                  </dl>
+
+                  <h3>Methods</h3>
+                  none
+
                   <h2 id="WebViewer"> WebViewer </h2>
                   <img src="images/webviewer.png" alt="Picture of WebViewer component" />
                   <p> Component for viewing Web pages. The Home URL can be
@@ -1123,13 +1316,18 @@
                       to access the geolocation API. If False, then assume
                       permission is
                       granted. </dd>
-                    <dt> <code> UsesLocation </code> </dt>
-                    <dd> Whether or not to give the application permission to
-                      use the
-                      Javascript geolocation API. </dd>
+                    <dt><code>UsesLocation</code> (designer only)</dt>
+                    <dd>Whether or not to give the application permission to use the
+                      Javascript geolocation API. This property is available only in the
+                      designer.</dd>
                     <dt> <code> Visible </code> </dt>
                     <dd> Whether the component is visible </dd>
-                    <dt> <code> Width </code> </dt>
+                    <dt><code>WebViewString</code></dt>
+                    <dd>Gets the WebView's String, which is viewable
+                      through Javascript in the WebView as the
+                      window.AppInventor object</dd>
+                    <dt><code>Width</code></dt>
+                    <dd></dd>
                   </dl>
                   <h3> Events </h3>
                   none
@@ -1180,7 +1378,7 @@
               <p style="text-align: center;">© 2012-2013 <a target="_blank" class="ext"
                   href="http://web.mit.edu/">Massachusetts
                   Institute of Technology</a><span class="ext"></span></p>
-              <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+              <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact
                   Us</a></p>
             </div>
           </div>

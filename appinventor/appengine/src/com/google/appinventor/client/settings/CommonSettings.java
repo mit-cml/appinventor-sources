@@ -79,6 +79,12 @@ public abstract class CommonSettings {
           settings.updateAfterDecoding();
         }
       }
+    } else {
+      // New User, no settings, use defaults
+      for (String category : settingsMap.keySet()) {
+        Settings settings = settingsMap.get(category);
+        settings.updateAfterDecoding();
+      }
     }
   }
 

@@ -33,6 +33,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
 
   // which type the user has
   private int type;
+  private String sessionId;        // Used to ensure only one account active at a time
 
   public final static String usercachekey = "f682688a-1065-4cda-8515-a8bd70200ac9"; // UUID
   // This UUID is prepended to any key lookup for User objects. Memcache is a common
@@ -48,7 +49,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
    * @param email user email address
    * @param tosAccepted TOS accepted?
    */
-  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin, int type) {
+  public User(String id, String email, String name, String link, boolean tosAccepted, boolean isAdmin, int type, String sessionId) {
     this.id = id;
     this.email = email;
     if (name==null)
@@ -59,6 +60,7 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     this.isAdmin = isAdmin;
     this.link = link;
     this.type = type;
+    this.sessionId = sessionId;
   }
 
   /**
@@ -209,9 +211,6 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
     }
     return false;
   }
-  public User copy() {
-    return new User(id, email, name, link, tosAccepted, isAdmin, type);
-  }
 
   public static String getDefaultName(String email)
   {
@@ -222,10 +221,31 @@ public class User implements IsSerializable, UserInfoProvider, Serializable {
       return parts[0];
     } else {
       return email;
-    } 
+    }
   }
-    
+
   public String getDefaultName() {
     return getDefaultName(this.email);
+  }
+
+  /**
+   * Get the unique session id associated with this user
+   * This is used to ensure that only one session is opened
+   * per uers. Old sessions are invalidated.
+   *
+   * @return sessionId
+   */
+  @Override
+  public String getSessionId() {
+    return sessionId;
+  }
+
+  @Override
+  public void setSessionId(String sessionId) {
+    this.sessionId = sessionId;
+  }
+
+  public User copy() {
+    return new User(id, email, name, link, tosAccepted, isAdmin, type, sessionId);
   }
 }

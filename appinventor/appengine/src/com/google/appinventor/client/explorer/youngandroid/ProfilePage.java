@@ -152,7 +152,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
               initImageComponents(userId);
             }
           };
-        Ode.getInstance().getUserInfoService().getUserInformation(userCallback);
+        Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userCallback);
     } else {
       // this is checking out an already existing user's profile...
 //      OdeLog.log("#### user id directly set to " + incomingUserId);
@@ -313,7 +313,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
          }
     };
     if (editStatus == PRIVATE) {
-      Ode.getInstance().getUserInfoService().getUserInformation(userInformationCallback);
+      Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userInformationCallback);
     } else {
       // Public state
       Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);

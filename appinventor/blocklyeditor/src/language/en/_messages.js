@@ -40,6 +40,11 @@ Blockly.MSG_RENAME_VARIABLE_TITLE = 'Rename all "%1" variables to:';
 Blockly.MSG_VARIABLE_CATEGORY = 'Variables';
 Blockly.MSG_PROCEDURE_CATEGORY = 'Procedures';
 
+// Warnings/Errors
+Blockly.ERROR_BLOCK_CANNOT_BE_IN_DEFINTION = "This block cannot be in a definition";
+Blockly.ERROR_SELECT_VALID_ITEM_FROM_DROPDOWN = "Select a valid item in the drop down.";
+Blockly.ERROR_DUPLICATE_EVENT_HANDLER = "This is a duplicate event handler for this component.";
+
 // Colour Blocks.
 Blockly.LANG_COLOUR_PICKER_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/colors#basic';
 Blockly.LANG_COLOUR_PICKER_TOOLTIP = 'Click the square to pick a color.';
@@ -162,7 +167,7 @@ Blockly.LANG_CONTROLS_CHOOSE_TITLE = 'if'
 Blockly.LANG_CONTROLS_CHOOSE_INPUT_TEST = '';
 Blockly.LANG_CONTROLS_CHOOSE_INPUT_THEN_RETURN = 'then';
 Blockly.LANG_CONTROLS_CHOOSE_INPUT_ELSE_RETURN = 'else';
-Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'if'; 
+Blockly.LANG_CONTROLS_CHOOSE_COLLAPSED_TEXT = 'if';
 Blockly.LANG_CONTROLS_CHOOSE_TOOLTIP = 'If the condition being tested is true,'
   + 'return the result of evaluating the expression attached to the \'then-return\' slot;'
   + 'otherwise return the result of evaluating the expression attached to the \'else-return\' slot;'
@@ -179,7 +184,7 @@ Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL = 'http://appinventor.mit.edu/expl
 Blockly.LANG_CONTROLS_EVAL_BUT_COLLAPSED_TEXT = 'eval but ignore'
 Blockly.LANG_CONTROLS_EVAL_BUT_IGNORE_TOOLTIP = 'Runs the connected block of code and ignores the return value (if any). Useful if need to call a procedure with a return value but don\'t need the value.';
 
-/* [lyn, 10/14/13] Removed for now. May come back some day. 
+/* [lyn, 10/14/13] Removed for now. May come back some day.
 Blockly.LANG_CONTROLS_NOTHING_TITLE = 'nothing';
 Blockly.LANG_CONTROLS_NOTHING_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/control#nothing';
 Blockly.LANG_CONTROLS_NOTHING_TOOLTIP = 'Returns nothing. Used to initialize variables or can be plugged into a return socket if no value needed to return. this is equivalent to null or None.';
@@ -527,28 +532,35 @@ Blockly.LANG_TEXT_CONTAINS_TOOLTIP = 'Tests whether the piece is contained in th
 Blockly.LANG_TEXT_SPLIT_HELPURL = '';
 Blockly.LANG_TEXT_SPLIT_INPUT_TEXT = 'text';
 Blockly.LANG_TEXT_SPLIT_INPUT_AT = 'at';
+Blockly.LANG_TEXT_SPLIT_INPUT_AT_LIST = 'at (list)';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST = 'split at first';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY = 'split at first of any';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT = 'split';
 Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY = 'split at any';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Splits the text into two pieces separated by the first occurrence of \'at\'.\n'
-      + 'Returns a two-element list with the two pieces. Returns a one-element list with original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST = 'Divides the given text into two pieces using the location of the first occurrence of \n'
+      + 'the text \'at\' as the dividing point, and returns a two-item list consisting of the piece \n'
+      + 'before the dividing point and the piece after the dividing point. \n'
+      + 'Splitting "apple,banana,cherry,dogfood" with a comma as the splitting point \n'
+      + 'returns a list of two items: the first is the text "apple" and the second is the text \n'
+      + '"banana,cherry,dogfood". \n'
+      + 'Notice that the comma after "apple" does not appear in the result, \n'
+      + 'because that is the dividing point.';
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitat';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Splits the text into two pieces separated by the first\n'
-      + 'occurrence of any of the elements in the list \'at\'\n'
-      + 'and returns these pieces. Returns a one-element list with original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST_OF_ANY = 'Divides the given text into a two-item list, using the first location of any item \n'
+      + 'in the list \'at\' as the dividing point. \n\n'
+      + 'Splitting "I love apples bananas apples grapes" by the list "(ba,ap)" returns \n'
+      + 'a list of two items, the first being "I love" and the second being \n'
+      + '"ples bananas apples grapes."';
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_FIRST_OF_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatfirstofany';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Split the text into pieces separated by the\n'
-      + 'occurrences of \'at\' and return the list of these pieces.\n'
-      + 'Returns a one-element list with the original\n'
-      + 'text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT = 'Divides text into pieces using the text \'at\' as the dividing points and produces a list of the results.  \n'
+      + 'Splitting "one,two,three,four" at "," (comma) returns the list "(one two three four)". \n'
+      + 'Splitting "one-potato,two-potato,three-potato,four" at "-potato", returns the list "(one two three four)".'
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#split';
-Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Split the text into pieces separated by the\n'
-      + 'occurrences of any of the elements in the list \'at\' and\n'
-      + 'return the list of these pieces. Returns a one-element list\n'
-      + 'with the original text if \'at\' is not contained in the text.';
+Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_ANY = 'Divides the given text into a list, using any of the items in the list \'at\' as the \n'
+      + 'dividing point, and returns a list of the results. \n'
+      + 'Splitting "appleberry,banana,cherry,dogfood" with \'at\' as the two-element list whose \n'
+      + 'first item is a comma and whose second item is "rry" returns a list of four items: \n'
+      + '"(applebe banana che dogfood)".'
 Blockly.LANG_TEXT_SPLIT_HELPURL_SPLIT_AT_ANY = 'http://appinventor.mit.edu/explore/ai2/support/blocks/text#splitatany';
 
 /*.LANG_TEXT_PRINT_HELPURL = 'http://www.liv.ac.uk/HPC/HTMLF90Course/HTMLF90CourseNotesnode91.html';
@@ -617,7 +629,7 @@ Blockly.LANG_LISTS_IS_IN_TOOLTIP = 'Returns true if the the thing is an item in 
   + 'false if not.';
 
 Blockly.LANG_LISTS_POSITION_IN_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#indexinlist';
-Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'position in list';
+Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION = 'index in list';
 Blockly.LANG_LISTS_POSITION_IN_INPUT_THING = 'thing';
 Blockly.LANG_LISTS_POSITION_IN_INPUT_LIST = 'list';
 Blockly.LANG_LISTS_POSITION_IN_TOOLTIP = 'Find the position of the thing in the list. If it\'s not in '
@@ -720,7 +732,7 @@ Blockly.LANG_LISTS_INSERT_INPUT_ITEM = 'item';
 Blockly.LANG_LISTS_INSERT_TOOLTIP = 'Insert an item into a list at the specified position.';
 
 Blockly.LANG_LISTS_IS_EMPTY_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/lists#islistempty';
-Blockly.LANG_LISTS_TITLE_IS_EMPTY = 'is empty';
+Blockly.LANG_LISTS_TITLE_IS_EMPTY = 'is list empty?';
 Blockly.LANG_LISTS_INPUT_LIST = 'list';
 Blockly.LANG_LISTS_IS_EMPTY_TOOLTIP = 'Returns true if the list is empty.';
 
@@ -782,7 +794,7 @@ Blockly.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT = 'local';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP = 'Allows you to create variables that are only accessible in the do part of this block.';
 
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#return';
-/* // These don't differ between the statement and expression 
+/* // These don't differ between the statement and expression
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TITLE_INIT = 'initialize local';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_INPUT_NAME = 'name';
 Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_INPUT_TO = 'to';
@@ -900,7 +912,7 @@ Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL = '/reference/components/u
 Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL = '/reference/components/userinterface.html#labelevents';
 Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL = '/reference/components/userinterface.html#labelmethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL = '/reference/components/userinterface.html#ListPicker';
+Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_HELPURL = '/reference/components/userinterface.html#ListPicker';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL = '/reference/components/userinterface.html#listpickerproperties';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL = '/reference/components/userinterface.html#listpickerevents';
 Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL = '/reference/components/userinterface.html#listpickermethods';
@@ -913,7 +925,7 @@ Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL = '/reference/components/u
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL = '/reference/components/userinterface.html#PasswordTextBox';
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL = '/reference/components/userinterface.html#pwdboxproperties';
 Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL = '/reference/components/userinterface.html#pwdboxevents';
-Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX__METHODS_HELPURL = '/reference/components/userinterface.html#pwdboxmethods';
+Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_METHODS_HELPURL = '/reference/components/userinterface.html#pwdboxmethods';
 
 Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL = '/reference/components/userinterface.html#Screen';
 Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL = '/reference/components/userinterface.html#screenproperties';
@@ -954,6 +966,7 @@ Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL = '/reference/components/
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL = '/reference/components/media.html#Camera';
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL = '/reference/components/media.html#cameraproperties';
 Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL = '/reference/components/media.html#cameraevents';
+Blockly.LANG_COMPONENT_BLOCK_CAMERA_METHODS_HELPURL = '/reference/components/media.html#cameramethods';
 
 Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL = '/reference/components/media.html#ImagePicker';
 Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL = '/reference/components/media.html#imagepickerproperties';
@@ -980,10 +993,10 @@ Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL = '/reference/c
 Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL = '/reference/components/media.html#speechrecognizerevents';
 Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL = '/reference/components/media.html#speechrecognizermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_HELPURL = "/reference/components/media.html#TextToSpeech";
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_PROPERTIES_HELPURL = '/reference/components/media.html#texttospeechproperties';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_EVENTS_HELPURL = '/reference/components/media.html#texttospeechevents';
-Blockly.LANG_COMPONENT_BLOCK_TEXTOSPEECH_METHODS_HELPURL = '/reference/components/media.html#texttospeechmethods';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL = "/reference/components/media.html#TextToSpeech";
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL = '/reference/components/media.html#texttospeechproperties';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL = '/reference/components/media.html#texttospeechevents';
+Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL = '/reference/components/media.html#texttospeechmethods';
 
 Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL = '/reference/components/media.html#VideoPlayer';
 Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL = '/reference/components/media.html#videoplayerproperties';
@@ -1007,25 +1020,25 @@ Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL = '/reference/components
 Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL = '/reference/components/animation.html#imagespritemethods';
 
 //Sensor components
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensor.html#AccelerometerSensor";
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#accelerometersensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#accelerometersensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#accelerometersensormethods';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL = "/reference/components/sensors.html#AccelerometerSensor";
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#accelerometersensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#accelerometersensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#accelerometersensormethods';
 
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensor.html#BarcodeScanner";
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensor.html#barcodescannerproperties';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensor.html#barcodescannerevents';
-Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensor.html#barcodescannermethods';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL = "/reference/components/sensors.html#BarcodeScanner";
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL = '/reference/components/sensors.html#barcodescannerproperties';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL = '/reference/components/sensors.html#barcodescannerevents';
+Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL = '/reference/components/sensors.html#barcodescannermethods';
 
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensor.html#LocationSensor";
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#locationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#locationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#locationsensormethods';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL = "/reference/components/sensors.html#LocationSensor";
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#locationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#locationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#locationsensormethods';
 
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensor.html#OrientationSensor";
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensor.html#orientationsensorproperties';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensor.html#orientationsensorevents';
-Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensor.html#orientationsensormethods';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL = "/reference/components/sensors.html#OrientationSensor";
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL = '/reference/components/sensors.html#orientationsensorproperties';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL = '/reference/components/sensors.html#orientationsensorevents';
+Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL = '/reference/components/sensors.html#orientationsensormethods';
 
 //Social components
 Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL = "/reference/components/social.html#ContactPicker";
@@ -1139,4 +1152,6 @@ Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL = "/reference/components/internal.ht
 Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = '/reference/components/internal.html#votingproperties';
 Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = '/reference/components/internal.html#votingevents';
 Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = '/reference/components/internal.html#votingmethods';
+
+
 

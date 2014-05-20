@@ -419,7 +419,7 @@
                 <li><a href="http://appinventor.mit.edu">Home</a></li>
                 <li><a href="http://appinventor.mit.edu/explore/news-events">Blog
                     ▾</a></li>
-                <li><a href="http://appinventor.mit.edu/explore/ai2/user-guide">Support
+                <li><a href="http://appinventor.mit.edu/explore/library">Support
                     ▾</a></li>
               </ul>
             </nav>
@@ -448,6 +448,7 @@
                       </li>
                       <li> <a href="#TextToSpeech"> TextToSpeech </a> </li>
                       <li> <a href="#VideoPlayer"> VideoPlayer </a> </li>
+                      <li> <a href="#YandexTranslate"> YandexTranslate </a></li>
                     </ul>
                     <h2 id="Camcorder"> Camcorder </h2>
                     <img alt="" src="images/camcorder.png">
@@ -481,7 +482,9 @@
                       path can be used, for example, as the Picture property of
                       an Image component. </p>
                     <h3> Properties </h3>
-                    none
+                    <dt><code>UseFront</code></dt>
+                      <dd>Specifies whether the front-facing camera should be used (when available). If the device does not have a front-facing camera, this option will be ignored and the camera will open normally.</dd>
+                    </dl>
                     <h3> Methods </h3>
                     <dl>
                       <dt> <code> TakePicture() </code> </dt>
@@ -495,147 +498,143 @@
                         <code> image </code> is the path that can be used to
                         locate the image on the phone. </dd>
                     </dl>
-                    <h2 id="ImagePicker"> ImagePicker </h2>
-                    <img alt="" src="images/imagepicker.png">
-                    <p> Use an image picker component to choose an image from
-                      your image gallery. </p>
-                    <p> An image picker is a kind of button. When the user taps
-                      an image picker, the device's image gallery appears, and
-                      the user can choose an image. After the user picks an
-                      image, the property <code> ImagePath </code> is set to a
-                      text string that represents that image. You can then use
-                      that result, for example, to set the image of a button. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code class="c2"> ImagePath </code> </dt>
-                      <dd> The image the user chose, represented as a text
-                        string that gives the location of the images. </dd>
-                      <dt> <code> Enabled </code> </dt>
-                      <dd> If true, image picker can be used. </dd>
-                      <dt> <code> BackgroundColor </code> </dt>
-                      <dd> Color for image picker background. </dd>
-                      <dt> <code> Enabled </code> </dt>
-                      <dd> If set, user can tap image picker to cause action. </dd>
-                      <dt> <code> FontBold </code> </dt>
-                      <dd> If set, image picker button text is displayed in
-                        bold. </dd>
-                      <dt> <code> FontItalic </code> </dt>
-                      <dd> If set, image picker button text is displayed in
-                        italics. </dd>
-                      <dt> <code> FontSize </code> </dt>
-                      <dd> Point size for image picker button text. </dd>
-                      <dt> <code> FontTypeface </code> </dt>
-                      <dd> Font family for image picker button text. </dd>
-                      <dt> <code> Height </code> </dt>
-                      <dd> image picker button height (y-size). </dd>
-                      <dt> <code> Width </code> </dt>
-                      <dd> image picker button width (x-size). </dd>
-                      <dt> <code> Image </code> </dt>
-                      <dd> Image to display on image picker button. </dd>
-                      <dt> <code> Text </code> </dt>
-                      <dd> Text to display on image picker button. </dd>
-                      <dt> <code> TextAlignment </code> </dt>
-                      <dd> Left, center, or right. </dd>
-                      <dt> <code> TextColor </code> </dt>
-                      <dd> Color for image picker button text. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> AfterPicking() </code> </dt>
-                      <dd> User selected an item from the image picker. </dd>
-                      <dt> <code> BeforePicking() </code> </dt>
-                      <dd> User has tapped the image picker but hasn't yet
-                        selected an item. </dd>
-                      <dt> <code> GotFocus() </code> </dt>
-                      <dd> Image picker became the focused component. </dd>
-                      <dt> <code> LostFocus() </code> </dt>
-                      <dd> Image picker is no longer the focused component. </dd>
-                    </dl>
-                    <h2 id="Player"> Player </h2>
-                    <img alt="" src="images/player.png">
-                    <p> Use a player component to play an audio or video file,
-                      or to vibrate the phone. </p>
-                    <p> Player is a non-visible component that plays audio or
-                      video and controls phone vibration. The name of a media
-                      file is specified in the <code> Source </code> property,
-                      which can be set in the Designer or in the Blocks Editor.
-                      To use a Player for streaming, set the <code> Source </code>
-                      inside the Blocks Editor to a text block with the URL. The
-                      length of time for a vibration is specified in the Blocks
-                      Editor in milliseconds (thousandths of a second). The
-                      volume should be an integer between 0 and 100. </p>
-                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
-                        Android Supported Media Formats </a> for more
-                      information on which types of files you can use. </p>
-                    <p> Use a player component for playing long sound files,
-                      video files, and vibrating the phone. For playing short
-                      sound files, such as sound effects, use a <code> Sound </code>
-                      component instead. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> IsLooping </code> </dt>
-                      <dd> If set, the media is looping. </dd>
-                      <dt> <code> IsPlaying </code> </dt>
-                      <dd> Whether the media is playing. </dd>
-                      <dt> <code> Source </code> </dt>
-                      <dd> Audio or video file associated with this player. </dd>
-                      <dt> <code> Volume </code> </dt>
-                      <dd> A number between 0 and 100. </dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Pause() </code> </dt>
-                      <dd> Pauses playing the audio or video file. </dd>
-                      <dt> <code> Start() </code> </dt>
-                      <dd> Starts playing the audio or video file. </dd>
-                      <dt> <code> Stop() </code> </dt>
-                      <dd> Stops playing the audio or video file. </dd>
-                      <dt> <code> Vibrate(number milliseconds) </code> </dt>
-                      <dd> Activate the phone's vibration motor for the given
-                        number of milliseconds. </dd>
-                    </dl>
-                    <h3> Events </h3>
-                    <dl>
-                      <dt> <code> Completed() </code> </dt>
-                      <dd> Media has finished playing. </dd>
-                    </dl>
-                    <h2 id="Sound"> Sound </h2>
-                    <img alt="" src="images/sound.png">
-                    <p> Use a sound component to play an audio file, or to
-                      vibrate the phone. </p>
-                    <p> Sound is a non-visible component that plays sound files
-                      and vibrates for the number of milliseconds (thousandths
-                      of a second) specified in the Blocks Editor. The name of
-                      the sound file to play can be specified either in the
-                      Designer or in the Blocks Editor. </p>
-                    <p> See <a href="http://developer.android.com/guide/appendix/media-formats.html">
-                        Android Supported Media Formats </a> for more
-                      information on which types of files you can use. </p>
-                    <p> This component is best for short sound files, such as
-                      sound effects, while the <code> Player </code> component
-                      is more efficient for longer sounds, such as songs. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> Source </code> </dt>
-                      <dd> Audio file associated with this sound. </dd>
-                      <dt> <code> MinimumInterval </code> </dt>
-                      <dd> Minimum time before sound is repeated. </dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Pause() </code> </dt>
-                      <dd> Pauses playing the audio file. </dd>
-                      <dt> <code> Play() </code> </dt>
-                      <dd> Starts playing the audio file. </dd>
-                      <dt> <code> Resume() </code> </dt>
-                      <dd> Resumes playing a paused audio file. </dd>
-                      <dt> <code> Stop() </code> </dt>
-                      <dd> Stops playing the audio file. </dd>
-                      <dt> <code> Vibrate(number millisecs) </code> </dt>
-                      <dd> Activate the phone's vibration motor for the given
-                        number of milliseconds. </dd>
-                    </dl>
-                    <h2 id="SoundRecorder"> SoundRecorder </h2>
+
+
+<h2 id="ImagePicker">ImagePicker</h2>
+
+<p>A special-purpose button. When the user taps an image picker, the
+device's image gallery appears, and the user can choose an
+image. After an image is picked, it is saved on the SD card and
+the <code>ImageFile</code> property will be the name of the file where
+the image is stored. In order to not fill up storage, a maximum of 10
+images will be stored.  Picking more images will delete previous
+images, in order from oldest to newest.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>BackgroundColor</code></dt>
+  <dd>Returns the button's background color</dd>
+  <dt><code>Enabled</code></dt>
+  <dd></dd>
+  <dt><code>FontBold</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontItalic</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontSize</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>FontTypeface</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Image</code></dt>
+  <dd>Specifies the path of the button's image.  If there is both an Image and a BackgroundColor, only the Image will be visible.</dd>
+  <dt><code><em>Selection</em></code></dt>
+  <dd>Path to the file containing the image that was selected.</dd>
+  <dt><code>Shape</code> (designer only)</dt>
+  <dd>Specifies the button's shape (default, rounded, rectangular, oval). The shape will not be visible if an Image is being displayed.</dd>
+  <dt><code>ShowFeedback</code></dt>
+  <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+  <dt><code>Text</code></dt>
+  <dd></dd>
+  <dt><code>TextAlignment</code> (designer only)</dt>
+  <dd></dd>
+  <dt><code>TextColor</code></dt>
+  <dd></dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>AfterPicking()</code></dt>
+  <dd>Simple event to be raised after the picker activity returns its
+ result and the properties have been filled in.</dd>
+  <dt><code>BeforePicking()</code></dt>
+  <dd>Simple event to raise when the component is clicked but before the
+ picker activity is started.</dd>
+  <dt><code>GotFocus()</code></dt>
+  <dd>Indicates the cursor moved over the button so it is now possible
+ to click it.</dd>
+  <dt><code>LostFocus()</code></dt>
+  <dd>Indicates the cursor moved away from the button so it is now no
+ longer possible to click it.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Open()</code></dt>
+  <dd>Opens the picker, as though the user clicked on it.</dd>
+</dl>
+
+<h2 id="Player">Player</h2>
+
+<p>Multimedia component that plays audio and controls phone vibration.  The name of a multimedia field is specified in the <code>Source</code> property, which can be set in the Designer or in the Blocks Editor.  The length of time for a vibration is specified in the Blocks Editor in milliseconds (thousandths of a second).
+<p>For supported audio formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p>
+<p>This component is best for long sound files, such as songs, while the <code>Sound</code> component is more efficient for short files, such as sound effects.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>IsPlaying</em></code></dt>
+  <dd>Reports whether the media is playing</dd>
+  <dt><code>Loop</code></dt>
+  <dd>If true, the player will loop when it plays. Setting Loop while the player is playing will affect the current playing.</dd>
+  <dt><code>Source</code></dt>
+  <dd></dd>
+  <dt><code>Volume</code></dt>
+  <dd>Sets the volume to a number between 0 and 100</dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>Completed()</code></dt>
+  <dd>Indicates that the media has reached the end</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Pause()</code></dt>
+  <dd>Suspends playing the media if it is playing.</dd>
+  <dt><code>Start()</code></dt>
+  <dd>Plays the media.  If it was previously paused, the playing is resumed.
+ If it was previously stopped, it starts from the beginning.</dd>
+  <dt><code>Stop()</code></dt>
+  <dd>Stops playing the media and seeks to the beginning of the song.</dd>
+  <dt><code>Vibrate(number milliseconds)</code></dt>
+  <dd>Vibrates for specified number of milliseconds.</dd>
+</dl>
+
+<h2 id="Sound">Sound</h2>
+
+<p><p>A multimedia component that plays sound files and optionally vibrates for the number of milliseconds (thousandths of a second) specified in the Blocks Editor.  The name of the sound file to play can be specified either in the Designer or in the Blocks Editor.</p> <p>For supported sound file formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p><p>This <code>Sound</code> component is best for short sound files, such as sound effects, while the <code>Player</code> component is more efficient for longer sounds, such as songs.</p></p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>MinimumInterval</code></dt>
+  <dd>The minimum interval between sounds.  If you play a sound, all further Play() calls will be ignored until the interval has elapsed.</dd>
+  <dt><code>Source</code></dt>
+  <dd>The name of the sound file.  Only certain formats are supported.  See http://developer.android.com/guide/appendix/media-formats.html.</dd>
+</dl>
+
+<h3>Events</h3>
+none
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>Pause()</code></dt>
+  <dd>Pauses playing the sound if it is being played.</dd>
+  <dt><code>Play()</code></dt>
+  <dd>Plays the sound.</dd>
+  <dt><code>Resume()</code></dt>
+  <dd>Resumes playing the sound after a pause.</dd>
+  <dt><code>Stop()</code></dt>
+  <dd>Stops playing the sound if it is being played.</dd>
+  <dt><code>Vibrate(number millisecs)</code></dt>
+  <dd>Vibrates for the specified number of milliseconds.</dd>
+</dl>
+
+                  <h2 id="SoundRecorder"> SoundRecorder </h2>
                     <img src="images/soundRecorder.png" alt="Picture of Sound Recorder component">
                     <p> Multimedia component that records audio. </p>
                     <h3> Properties </h3>
@@ -711,6 +710,11 @@
                       <dd> The language code for speech production. </dd>
                       <dt> <code class="c2"> Result </code> </dt>
                       <dd> Details to come. </dd>
+                        <dt><code>Pitch</code></dt>
+                        <dd>Sets the Pitch for tts. The values should be between 0 and 2 where lower values lower the tone of synthesized voice and greater values increases it</dd>
+                        <dd></dd>
+                        <dt><code>SpeechRate</code></dt>
+                        <dd>Sets the SpeechRate for tts. The values should be between 0 and 2 where lower values slow down the pitch and greater values accelerate it</dd>
                     </dl>
                     <h3> Methods </h3>
                     <dl>
@@ -810,48 +814,64 @@
                         </ul>
                       </li>
                     </ul>
-                    <h2 id="VideoPlayer"> VideoPlayer </h2>
-                    <img alt="" src="images/videoplayer.png">
-                    <p> Use a VideoPlayer component to play a video file. </p>
-                    <p> Video player is a media component that plays videos. A
-                      video player appears in your app as a rectangle. If the
-                      user taps the rectangle, media controls appear:
-                      play/pause, skip ahead, and skip backward. Your app can
-                      control playback behavior by calling the <code> Start </code>
-                      , <code> Pause </code> , and <code> SeekTo </code>
-                      methods. </p>
-                    <p> Video files should be in Windows Media Video (.wmv),
-                      3GPP (.3gp), or MPEG-4 (.mp4) format. For more details
-                      about formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html">
-                        Android Supported Media Formats </a> . </p>
-                    <p> App Inventor accepts video files up to 1 MB in size and
-                      limits the total size of an app to 5 MB, not all of which
-                      is available for media files. If your media files are too
-                      large, you might get errors when packaging or installing
-                      your app, in which case you should reduce the number of
-                      media files or their sizes. Video editing software, such
-                      as Windows Movie Maker or Apple iMovie, can help you
-                      decrease the size of videos by shortening them or
-                      re-encoding them into more compact formats. </p>
-                    <h3> Properties </h3>
-                    <dl>
-                      <dt> <code> Source </code> </dt>
-                      <dd> Video file associated with this player. </dd>
-                      <dt> <code> Visible </code> </dt>
-                      <dd> If set, VideoPlayer is visible. </dd>
-                    </dl>
-                    <h3> Methods </h3>
-                    <dl>
-                      <dt> <code> Pause() </code> </dt>
-                      <dd> Pauses playing the video file. </dd>
-                      <dt> <code> Start() </code> </dt>
-                      <dd> Starts playing the video file. </dd>
-                      <dt> <code> SeekTo(number millisecs) </code> </dt>
-                      <dd> Seeks to the requested time (specified in
-                        milliseconds) in the video. </dd>
-                      <dt> <code> GetDuration() </code> </dt>
-                      <dd> Returns the duration of the video in milliseconds. </dd>
-                    </dl>
+<h2 id="VideoPlayer">VideoPlayer</h2>
+
+<p>A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in Windows Media Video (.wmv) format, 3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal formats, see <a href="http://developer.android.com/guide/appendix/media-formats.html" target="_blank">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.</p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code>FullScreen</code></dt>
+  <dd></dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>Source</code></dt>
+  <dd>The "path" to the video.  Usually, this will be the name of the video file, which should be added in the Designer.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>Volume</code></dt>
+  <dd>Sets the volume to a number between 0 and 100. Values less than 0 will be treated as 0, and values greater than 100 will be treated as 100.</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+<dl>
+  <dt><code>Completed()</code></dt>
+  <dd>Indicates that the video has reached the end</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>number GetDuration()</code></dt>
+  <dd>Returns duration of the video in milliseconds.</dd>
+  <dt><code>Pause()</code></dt>
+  <dd>Pauses playback of the video.  Playback can be resumed at the same location by calling the <code>Start</code> method.</dd>
+  <dt><code>SeekTo(number ms)</code></dt>
+  <dd>Seeks to the requested time (specified in milliseconds) in the video. Note that if the video is paused, the frame shown will not be updated by the seek.</dd>
+  <dt><code>Start()</code></dt>
+  <dd>Starts playback of the video.</dd>
+</dl>
+
+<h2 id="YandexTranslate">YandexTranslate</h2>
+
+<p>Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So"en-es" will translate from English to Spanish while "es-ru" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just "es" will attempt to detect the source language and translate it to Spanish.<p /> This component is powered by the Yandex translation service.  See http://api.yandex.com/translate/ for more information, including the list of available languages and the meanings of the language codes and status codes. <p />Note: Translation happens asynchronously in the background. When the translation is complete, the "GotTranslation" event is triggered.</p>
+
+<h3>Properties</h3>
+none
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GotTranslation(text responseCode, text translation)</code></dt>
+  <dd>Event triggered when the Yandex.Translate service returns the translated text. This event also provides a response code for error handling. If the responseCode is not 200, then something went wrong with the call, and the translation will not be available.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>RequestTranslation(text languageToTranslateTo, text textToTranslate)</code></dt>
+  <dd>By providing a target language to translate to (for instance, 'es' for Spanish, 'en' for English, or 'ru' for Russian), and a word or sentence to translate, this method will request a translation to the Yandex.Translate service.
+Once the text is translated by the external service, the event GotTranslation will be executed.
+Note: Yandex.Translate will attempt to detect the source language. You can also specify prepending it to the language translation. I.e., es-ru will specify Spanish to Russian translation.</dd>
+</dl>
                   </div>
                 </div>
               </section>
@@ -873,7 +893,7 @@
                 <p style="text-align: center;">© 2012-2013 <a href="http://web.mit.edu/"
                     class="ext" target="_blank">Massachusetts Institute of
                     Technology</a><span class="ext"></span></p>
-                <p style="text-align: center;"><a href="http://dev-explore.appinventor.mit.edu/contact">Contact
+                <p style="text-align: center;"><a href="http://appinventor.mit.edu/explore/contact">Contact
                     Us</a></p>
               </div>
             </div>

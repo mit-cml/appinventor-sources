@@ -322,6 +322,8 @@ Blockly.Block.prototype.dispose = function(healStack, animate) {
     this.svg_.dispose();
     this.svg_ = null;
   }
+  // Remove any associated errors or warnings.
+  Blockly.WarningHandler.checkDisposedBlock.call(this);
 };
 
 /**
@@ -497,7 +499,8 @@ Blockly.Block.prototype.onMouseDown_ = function(e) {
 Blockly.Block.prototype.onMouseUp_ = function(e) {
   Blockly.resetWorkspaceArrangements();
   Blockly.terminateDrag_();
-  if (Blockly.selected && Blockly.highlightedConnection_) {
+  if (Blockly.selected && Blockly.highlightedConnection_
+      && !Blockly.highlightedConnection_.sourceBlock_.getRootBlock().collapsed) {
     // Connect two blocks together.
     Blockly.localConnection_.connect(Blockly.highlightedConnection_);
     if (this.svg_) {
@@ -528,6 +531,8 @@ Blockly.Block.prototype.onMouseUp_ = function(e) {
     Blockly.highlightedConnection_.unhighlight();
     Blockly.highlightedConnection_ = null;
   }
+  Blockly.mainWorkspace.render();
+  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
 };
 
 /**

@@ -38,9 +38,12 @@ public class SaveAllEditorsCommand extends ChainableCommand {
   @Override
   public void execute(final ProjectNode node) {
     // Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
-    Ode.getInstance().getEditorManager().saveDirtyEditors(new Command() {
+    final Ode ode = Ode.getInstance();
+    ode.lockScreens(true);      // Lock out screen switching
+    ode.getEditorManager().saveDirtyEditors(new Command() {
       @Override
       public void execute() {
+        ode.lockScreens(false); // Screen switch OK now
         ErrorReporter.reportInfo(MESSAGES.savedProject(
             DateTimeFormat.getMediumDateTimeFormat().format(new Date())));
         executeNextCommand(node);

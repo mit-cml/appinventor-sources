@@ -494,7 +494,8 @@ public class ReportList extends Composite  {
             });
           }
         };
-      Ode.getInstance().getUserInfoService().getUserInformation(callback);
+      Ode ode = Ode.getInstance();
+      ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
     }
   private void deactiveAppPopup(final GalleryAppReport report, final ReportWidgets rw){
       // Create a PopUpPanel with a button to close it
@@ -596,7 +597,8 @@ public class ReportList extends Composite  {
             });
           }
         };
-      Ode.getInstance().getUserInfoService().getUserInformation(callback);
+      Ode ode = Ode.getInstance();
+      ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
     }
   /**
    *
@@ -650,7 +652,8 @@ public class ReportList extends Composite  {
         });
       }
     };
-    Ode.getInstance().getUserInfoService().getUserInformation(callback);
+    Ode ode = Ode.getInstance();
+    ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
     panel.add(button);
   }
   private class TemplateAction implements Command {

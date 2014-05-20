@@ -234,17 +234,45 @@ public class YaVersion {
   // For YOUNG_ANDROID_VERSION 81:
   // - NOTIFIER_COMPONENT_VERSION was incremented to 3.
   // For YOUNG_ANDROID_VERSION 82:
-  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3;
+  // - ACCELEROMETERSENSOR_COMPONENT_VERSION was incremented to 3.
+  // For YOUNG_ANDROID_VERSION 83:
+  // - LISTPICKER_COMPONENT_VERSION was incremented to 8.
+  // For YOUNG_ANDROID_VERSION 84:
+  // - FORM_COMPONENT_VERSION was incremented to 12.
+  // For YOUNG_ANDROID_VERSION 85:
+  // - CAMERA_COMPONENT_VERSION was incremented to 2.
+  // For YOUNG_ANDROID_VERSION 86:
+  // - VIDEOPLAYER_COMPONENT_VERSION was incremented to 5.
+  // - The Sharing Component was added
+  // For YOUNG_ANDROID_VERSION 87:
+  // - WEBVIEWER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 88:
+  // - SPINNER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 89:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 90:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 91:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 92:
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 93:
+  // - FILE_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 94:
+  // - YANDEX_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 95:
+  // - BUTTON_COMPONENT_VERSION was incremented to 6.
 
-    public static final int YOUNG_ANDROID_VERSION = 82;
+  public static final int YOUNG_ANDROID_VERSION = 95;
 
   // ............................... Blocks Language Version Number ...............................
 
   // NOTE(lizlooney,user) - when the blocks language changes:
   // 1. Increment YOUNG_ANDROID_VERSION above.
   // 2. Increment BLOCKS_LANGUAGE_VERSION here
-  // 3. Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
+  // 3. ***Add code in yacodeblocks.BlockSaveFile#upgradeLanguage to upgrade the .blk file contents
   // 4. Add code in YoungAndroidFormUpgrader to upgrade the source file
+  // *** BlockSaveFile is no longer used in App Inventor 2 (Feb. 2014)
 
   // For BLOCKS_LANGUAGE_VERSION 2:
   // - Allow arguments of different procedures and events to have the same names.
@@ -288,6 +316,7 @@ public class YaVersion {
   // - Marked close-screen-with-result as a bad block
   // - Added close-screen-with-value
   // - Added close-screen-with-plain-text
+
   public static final int BLOCKS_LANGUAGE_VERSION = 17;
 
   // ................................. Component Version Numbers ..................................
@@ -365,11 +394,16 @@ public class YaVersion {
   // - The Shape property was added.
   // For BUTTON_COMPONENT_VERSION 5:
   // - The ShowFeedback property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 5;
+  // For BUTTON_COMPONENT_VERSION 6:
+  // - Added TouchUp and TouchDown events
+  // - FontSize, FontBold, FontItalic properties made visible in block editor
+  public static final int BUTTON_COMPONENT_VERSION = 6;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
-  public static final int CAMERA_COMPONENT_VERSION = 1;
+  // For CAMERA_COMPONENT_VERSION 2:
+  // - The UseFront property was added.
+   public static final int CAMERA_COMPONENT_VERSION = 2;
 
   // For CANVAS_COMPONENT_VERSION 2:
   // - The LineWidth property was added.
@@ -406,6 +440,11 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
+  public static final int DATEPICKER_COMPONENT_VERSION = 1;
+
+  // For FILE_COMPONENT_VERSION 1:
+  public static final int FILE_COMPONENT_VERSION = 1;
+
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
   // For FORM_COMPONENT_VERSION 3:
@@ -429,7 +468,9 @@ public class YaVersion {
   // - The BackPressed event was added.
   // For FORM_COMPONENT_VERSION 11:
   // - OpenScreenAnimation and CloseScreenAnimation are now properties.
-  public static final int FORM_COMPONENT_VERSION = 11;
+  // For FORM_COMPONENT_VERSION 12:
+  // - AboutScreen property was added
+  public static final int FORM_COMPONENT_VERSION = 12;
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
@@ -500,7 +541,10 @@ public class YaVersion {
   //   with the parent Form's open screen animation.
   // For LISTPICKER_COMPONENT_VERSION 7:
   // - Added ShowFilterBar property
-  public static final int LISTPICKER_COMPONENT_VERSION = 7;
+  // For LISTPICKER_COMPONENT_VERSION 8:
+  // - Added title property
+
+  public static final int LISTPICKER_COMPONENT_VERSION = 8;
 
   // For LOCATIONSENSOR_COMPONENT_VERSION 2:
   // - The TimeInterval and DistanceInterval properties were added.
@@ -552,6 +596,8 @@ public class YaVersion {
 
   public static final int PLAYER_COMPONENT_VERSION = 5;
 
+  public static final int SHARING_COMPONENT_VERSION = 1;
+
   // For SOUND_COMPONENT_VERSION 2:
   // - The Sound.SoundError event was added.
   // For SOUND_COMPONENT_VERSION 3:
@@ -573,7 +619,8 @@ public class YaVersion {
   // - The MultiLine property was added.
   public static final int TEXTBOX_COMPONENT_VERSION = 4;
 
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
+  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -585,6 +632,8 @@ public class YaVersion {
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
+
+  public static final int TIMEPICKER_COMPONENT_VERSION = 1;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 
@@ -629,7 +678,9 @@ public class YaVersion {
   // For VIDEOPLAYER_COMPONENT_VERSION 4:
   // - The VideoPlayer.width and VideoPlayer.height variables were marked as user visible.
   // - The FullScreen property was added to the VideoPlayer.
-  public static final int VIDEOPLAYER_COMPONENT_VERSION = 4;
+  // For VIDEOPLAYER_COMPONENT_VERSION 5:
+  // - The Volume property (setter only) was added to the VideoPlayer.
+  public static final int VIDEOPLAYER_COMPONENT_VERSION = 5;
 
   public static final int VOTING_COMPONENT_VERSION = 1;
 
@@ -646,10 +697,46 @@ public class YaVersion {
   // - The CanGoForward and CanGoBack methods were added
   // For WEBVIEWER_COMPONENT_VERSION 3:
   // - Add UsesLocation property to set location permissions
-  public static final int WEBVIEWER_COMPONENT_VERSION = 3;
+  // For WEBVIEWER_COMPONENT_VERSION 4:
+  // - Add WebViewString
+  public static final int WEBVIEWER_COMPONENT_VERSION = 4;
 
   // For SLIDER_COMPONENT_VERSION 1:
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
+
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
+
+  // For listView component Version
+  public static final int LISTVIEW_COMPONENT_VERSION = 1;
+
+  // For YANDEX_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int YANDEX_COMPONENT_VERSION = 1;
+
+  // Companion Versions and Update Information
+
+  // The PREFERRED_COMPANION is displayed to the end-user if
+  // they ask (via the Help->About menu) and if they are told
+  // that they need to update their companion
+  //
+  // ACCEPTABLE_COMPANIONS is a list of Companion VersionNames
+  // which are usable with this version of the system.
+  //
+  // COMPANION_UPDATE_URL is the URL used by the Companion
+  // Update Mechanism to find the Companion to download.
+  // Note: This new Companion needs to be signed by the same
+  // key as the Companion it is replacing, as the Package Manager
+  // is invoked from the running Companion.
+
+  public static final String PREFERRED_COMPANION = "2.18ai2zx1";
+  public static final String COMPANION_UPDATE_URL = "";
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2",
+                                                          "2.17ai2zx1", "2.18ai2", "2.18ai2zx1" };
+
+  // Splash Screen Values
+  public static final int SPLASH_SURVEY = 1;
+
 
 }

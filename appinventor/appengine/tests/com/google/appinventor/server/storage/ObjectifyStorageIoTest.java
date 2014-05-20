@@ -19,9 +19,11 @@ import com.google.appengine.api.files.RecordReadChannel;
 import com.google.appengine.api.files.RecordWriteChannel;
 import com.google.appinventor.server.LocalDatastoreTestCase;
 import com.google.appinventor.server.storage.StoredData.ProjectData;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.RawFile;
 import com.google.appinventor.shared.rpc.project.TextFile;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.storage.StorageUtil;
@@ -210,8 +212,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
       storageIo.getUser(USER_ID);
       storageIo.createProject(USER_ID, project, SETTINGS);
     } catch (RuntimeException e) {
-      assertEquals(3, failingFileService.numBlobsCreated());
-      assertEquals(3, storageIo.numBlobsDeleted());
+      assertEquals(2, failingFileService.numBlobsCreated());
+      assertEquals(2, storageIo.numBlobsDeleted());
     }
   }
 
@@ -231,11 +233,11 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     } catch (RuntimeException e) {
       fail();
     }
-    assertEquals(5, failingFileService.numBlobsCreated());
+    assertEquals(4, failingFileService.numBlobsCreated());
     assertEquals(1, storageIo.numBlobsDeleted());
   }
 
-  public void testUploadBeforeAdd() {
+  public void testUploadBeforeAdd() throws BlocksTruncatedException {
     final String USER_ID = "800";
     storage.getUser(USER_ID);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
@@ -247,7 +249,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
       // File upload should be preceded by add
     }
     try {
-      storage.uploadRawFile(projectId, FILE_NAME1, USER_ID, "does not matter".getBytes());
+      storage.uploadRawFile(projectId, FILE_NAME1, USER_ID, true, "does not matter".getBytes());
       fail("Allowed upload before add");
     } catch (IllegalStateException ignored) {
       // File upload should be preceded by add
@@ -293,12 +295,13 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testUpdateModificationTime() {
+  public void testUpdateModificationTime() throws BlocksTruncatedException {
     final String USER_ID = "1100";
     storage.getUser(USER_ID);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
-    long creationDate = storage.getProjectDateCreated(USER_ID, projectId);
-    long modificationDate = storage.getProjectDateModified(USER_ID, projectId);
+    UserProject uproject = storage.getUserProject(USER_ID, projectId);
+    long creationDate = uproject.getDateCreated();
+    long modificationDate = uproject.getDateModified();
     assertEquals(creationDate, modificationDate);
     long oldModificationDate = modificationDate;
 
@@ -337,7 +340,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
 
     storage.addOutputFilesToProject(USER_ID, projectId, FILE_NAME_OUTPUT);
     modificationDate = storage.uploadRawFile(projectId, FILE_NAME_OUTPUT, USER_ID,
-        FILE_CONTENT_OUTPUT);
+        true, FILE_CONTENT_OUTPUT);
     assertTrue(oldModificationDate < modificationDate);
     oldModificationDate = modificationDate;
     modificationDate = storage.getProjectDateModified(USER_ID, projectId);
@@ -353,14 +356,14 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     oldModificationDate = modificationDate;
   }
 
-  public void testAddRemoveFile() {
+  public void testAddRemoveFile() throws BlocksTruncatedException {
     final String USER_ID = "1200";
     storage.getUser(USER_ID);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, FILE_NAME1);
     storage.uploadFile(projectId, FILE_NAME1, USER_ID, FILE_CONTENT1, StorageUtil.DEFAULT_CHARSET);
     storage.addOutputFilesToProject(USER_ID, projectId, FILE_NAME_OUTPUT);
-    storage.uploadRawFile(projectId, FILE_NAME_OUTPUT, USER_ID, FILE_CONTENT_OUTPUT);
+    storage.uploadRawFile(projectId, FILE_NAME_OUTPUT, USER_ID, true, FILE_CONTENT_OUTPUT);
 
     assertTrue(storage.getProjectSourceFiles(USER_ID, projectId).contains(FILE_NAME1));
     assertTrue(storage.getProjectOutputFiles(USER_ID, projectId).contains(FILE_NAME_OUTPUT));
@@ -406,7 +409,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     assertFalse(storage.getUserFiles(USER_ID).contains(FILE_NAME_OUTPUT));
   }
 
-  public void testUnsupportedEncoding() {
+  public void testUnsupportedEncoding() throws BlocksTruncatedException {
     final String USER_ID = "1100";
     storage.getUser(USER_ID);
     long projectId = createProject(USER_ID, PROJECT_NAME, FAKE_PROJECT_TYPE, FORM_QUALIFIED_NAME);
@@ -452,18 +455,18 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     }
   }
 
-  public void testBlobFiles() {
+  public void testBlobFiles() throws BlocksTruncatedException {
     final String USER_ID = "1300";
     storage.getUser(USER_ID);
     long projectId = createProject(
         USER_ID, PROJECT_NAME, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
         FORM_QUALIFIED_NAME);
     storage.addSourceFilesToProject(USER_ID, projectId, false, ASSET_FILE_NAME1);
-    storage.uploadRawFile(projectId, ASSET_FILE_NAME1, USER_ID, ASSET_FILE_CONTENT1);
+    storage.uploadRawFile(projectId, ASSET_FILE_NAME1, USER_ID, true, ASSET_FILE_CONTENT1);
     storage.addSourceFilesToProject(USER_ID, projectId, false, BLOCK_FILE_NAME);
-    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, true, BLOCK_FILE_CONTENT);
     storage.addOutputFilesToProject(USER_ID, projectId, APK_FILE_NAME1);
-    storage.uploadRawFile(projectId, APK_FILE_NAME1, USER_ID, APK_FILE_CONTENT);
+    storage.uploadRawFile(projectId, APK_FILE_NAME1, USER_ID, true, APK_FILE_CONTENT);
 
     assertTrue(storage.getProjectSourceFiles(USER_ID, projectId).contains(ASSET_FILE_NAME1));
     assertTrue(storage.getProjectOutputFiles(USER_ID, projectId).contains(APK_FILE_NAME1));
@@ -475,7 +478,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         storage.downloadRawFile(USER_ID, projectId, BLOCK_FILE_NAME)));
     assertTrue(storage.isBlobFile(projectId, ASSET_FILE_NAME1));
     assertTrue(storage.isBlobFile(projectId, APK_FILE_NAME1));
-    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
+    assertTrue(!storage.isBlobFile(projectId, BLOCK_FILE_NAME)); // small block files now in datastore
 
     storage.removeSourceFilesFromProject(USER_ID, projectId, false, ASSET_FILE_NAME1);
     storage.removeOutputFilesFromProject(USER_ID, projectId, APK_FILE_NAME1);
@@ -488,11 +491,11 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
     // TODO(sharon): should test large blob files (e.g., >2MB (chunk size), >4MB (row size));
   }
 
-  public void testOldBlockFilesInDatastoreStillWork() {
+  public void testOldBlockFilesInDatastoreStillWork() throws BlocksTruncatedException {
     // Create new storage object that forces storage in the datastore
     ObjectifyStorageIo oldStyleStorage = new ObjectifyStorageIo() {
       @Override
-      boolean useBlobstoreForFile(String fileName) {
+      boolean useBlobstoreForFile(String fileName, int length) {
         return false;
       }
     };
@@ -503,7 +506,7 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
         USER_ID, PROJECT_NAME, YoungAndroidProjectNode.YOUNG_ANDROID_PROJECT_TYPE,
         FORM_QUALIFIED_NAME);
     oldStyleStorage.addSourceFilesToProject(USER_ID, projectId, false, BLOCK_FILE_NAME);
-    oldStyleStorage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+    oldStyleStorage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, true, BLOCK_FILE_CONTENT);
     assertTrue(Arrays.equals(BLOCK_FILE_CONTENT,
                                        oldStyleStorage.downloadRawFile(
                                            USER_ID, projectId, BLOCK_FILE_NAME)));
@@ -514,8 +517,8 @@ public class ObjectifyStorageIoTest extends LocalDatastoreTestCase {
                                        storage.downloadRawFile(
                                            USER_ID, projectId, BLOCK_FILE_NAME)));
     // Test that ordinary storage objects will still store the data in blobstore
-    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
-    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME));
+//    storage.uploadRawFile(projectId, BLOCK_FILE_NAME, USER_ID, BLOCK_FILE_CONTENT);
+//    assertTrue(storage.isBlobFile(projectId, BLOCK_FILE_NAME)); // small block files go to datastore now
  }
 
   public void testGetProject() {

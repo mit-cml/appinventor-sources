@@ -906,6 +906,25 @@ select.ode-PropertyEditor[disabled] {
   background-color: #E8E8E8;
 }
 
+/* class for the ListView Mock component */
+.listViewComponentStyle {
+  width: 315px;
+  display: block;
+  overflow: auto;
+}
+
+.listViewItemStyle {
+  border-bottom: 1px solid gray;
+  min-height: 40px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* class for the ListView Mock component */
+.spinnerComponentStyle {
+  outline: 1px solid lightgray;
+}
+
 /* Component Help */
 
 .ode-ComponentHelpPopup {
@@ -1029,6 +1048,19 @@ select.ode-PropertyEditor[disabled] {
   border-left: 4px solid #8fc202;
   border-right: 4px solid #8fc202;
   border-bottom: 4px solid #8fc202;
+}
+
+.ode-DialogBox .gwt-CheckBox {
+  font-size: 12px;
+}
+
+.ode-DialogBox .gwt-CheckBox label {
+  padding-left: 4px;
+}
+
+.ode-DialogBox .gwt-CheckBox input[type="checkbox"] {
+  margin: 0;
+  padding-left: 4px;
 }
 
 .ode-DialogBox .dialogTop {

@@ -24,12 +24,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * <p>Superclass of sprites able to move and interact with other sprites.</p>
+ * Superclass of sprites able to move and interact with other sprites.
  *
- * <p>While the Simple programmer sees the x- and y-coordinates as integers,
+ * While the Simple programmer sees the x- and y-coordinates as integers,
  * they are maintained internally as doubles so fractional changes (caused
  * by multiplying the speed by a cosine or sine value) have the chance to
- * add up.</p>
+ * add up.
  *
  * @author spertus.google.com (Ellen Spertus)
  */
@@ -198,9 +198,9 @@ public abstract class Sprite extends VisibleComponent
    * @return degrees above the positive x-axis
    */
   @SimpleProperty(
-    description = "<p>Returns the sprite's heading in degrees above the positive " +
+    description = "Returns the sprite's heading in degrees above the positive " +
     "x-axis.  Zero degrees is toward the right of the screen; 90 degrees is toward the " +
-    "top of the screen.</p>")
+    "top of the screen.")
   public double Heading() {
     return userHeading;
   }
@@ -211,9 +211,9 @@ public abstract class Sprite extends VisibleComponent
    * @return  timer interval in ms
    */
   @SimpleProperty(
-      description = "<p>The interval in milliseconds at which the sprite's " +
+      description = "The interval in milliseconds at which the sprite's " +
       "position is updated.  For example, if the interval is 50 and the speed is 10, " +
-      "then the sprite will move 10 pixels every 50 milliseconds.</p>",
+      "then the sprite will move 10 pixels every 50 milliseconds.",
       category = PropertyCategory.BEHAVIOR)
   public int Interval() {
     return timerInternal.Interval();
@@ -254,8 +254,8 @@ public abstract class Sprite extends VisibleComponent
    *         milliseconds.
    */
   @SimpleProperty(
-    description = "<p>The speed at which the sprite moves.  The sprite moves " +
-    "this many pixels every interval.</p>")
+    description = "he speed at which the sprite moves.  The sprite moves " +
+    "this many pixels every interval.")
   public float Speed() {
     return speed;
   }
@@ -266,7 +266,7 @@ public abstract class Sprite extends VisibleComponent
    * @return  {@code true} if the sprite is visible, {@code false} otherwise
    */
   @SimpleProperty(
-      description = "<p>True if the sprite is visible.</p>",
+      description = "True if the sprite is visible.",
       category = PropertyCategory.APPEARANCE)
   public boolean Visible() {
     return visible;
@@ -288,8 +288,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   @SimpleProperty(
-      description = "<p>The horizontal coordinate of the left edge of the sprite, " +
-      "increasing as the sprite moves to the right.</p>")
+      description = "The horizontal coordinate of the left edge of the sprite, " +
+      "increasing as the sprite moves to the right.")
   public double X() {
     return xLeft;
   }
@@ -313,8 +313,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   @SimpleProperty(
-      description = "<p>The vertical coordinate of the top of the sprite, " +
-      "increasing as the sprite moves down.</p>")
+      description = "The vertical coordinate of the top of the sprite, " +
+      "increasing as the sprite moves down.")
   public double Y() {
     return yTop;
   }
@@ -337,8 +337,8 @@ public abstract class Sprite extends VisibleComponent
   }
 
   @SimpleProperty(
-      description = "<p>How the sprite should be layered relative to other sprits, " +
-      "with higher-numbered layers in front of lower-numbered layers.</p>")
+      description = "How the sprite should be layered relative to other sprits, " +
+      "with higher-numbered layers in front of lower-numbered layers.")
   public double Z() {
     return zLayer;
   }
@@ -348,11 +348,11 @@ public abstract class Sprite extends VisibleComponent
   // Flung, TouchUp, and TouchDown.
 
   /**
-   * <p>Posts a dispatch for the specified event.  This guarantees that event
+   * Posts a dispatch for the specified event.  This guarantees that event
    * handlers run with serial semantics, e.g., appear atomic relative to
-   * each other.</p>
+   * each other.
    *
-   * <p>This method is overridden in tests.</p>
+   * This method is overridden in tests.
    *
    * @param sprite the instance on which the event takes place
    * @param eventName the name of the event
@@ -450,7 +450,7 @@ public abstract class Sprite extends VisibleComponent
   }
 
   /**
-   * When the user touches the sprite and then immediately lifts finger: provides 
+   * When the user touches the sprite and then immediately lifts finger: provides
    * the (x,y) position of the touch, relative to the upper left of the canvas
    *
    * @param x  x-coordinate of touched point
@@ -471,10 +471,10 @@ public abstract class Sprite extends VisibleComponent
    * @param x  x-coordinate of touched point
    * @param y  y-coordinate of touched point
    * * @param speed  the speed of the fling sqrt(xspeed^2 + yspeed^2)
-   * @param heading  the heading of the fling 
+   * @param heading  the heading of the fling
    * @param xvel  the speed in x-direction of the fling
    * @param yvel  the speed in y-direction of the fling
-   
+
    */
   @SimpleEvent
   public void Flung(float x, float y, float speed, float heading, float xvel, float yvel) {
@@ -527,8 +527,8 @@ public abstract class Sprite extends VisibleComponent
    *    {@link com.google.appinventor.components.runtime.Component#DIRECTION_WEST}, or
    *    {@link com.google.appinventor.components.runtime.Component#DIRECTION_NORTHWEST}.
    */
-  @SimpleFunction(description = "<p>Makes this sprite bounce, as if off a wall.  " +
-      "For normal bouncing, the edge argument should be the one returned by EdgeReached.</p>")
+  @SimpleFunction(description = "Makes this sprite bounce, as if off a wall.  " +
+      "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
   public void Bounce(int edge) {
     MoveIntoBounds();
 
@@ -597,8 +597,8 @@ public abstract class Sprite extends VisibleComponent
    * @param y the y-coordinate
    */
   @SimpleFunction(
-    description = "<p>Moves the sprite so that its left top corner is at " +
-    "the specfied x and y coordinates.</p>")
+    description = "Moves the sprite so that its left top corner is at " +
+    "the specfied x and y coordinates.")
   public void MoveTo(double x, double y) {
     xLeft = x;
     yTop = y;
@@ -611,9 +611,9 @@ public abstract class Sprite extends VisibleComponent
    * @param target the other sprite to point towards
    */
   @SimpleFunction(
-    description = "<p>Turns the sprite to point towards a designated " +
+    description = "Turns the sprite to point towards a designated " +
     "target sprite. The new heading will be parallel to the line joining " +
-    "the centerpoints of the two sprites.</p>")
+    "the centerpoints of the two sprites.")
   public void PointTowards(Sprite target) {
     Heading(-Math.toDegrees(Math.atan2(
         // we adjust for the fact that the sprites' X() and Y()
@@ -629,25 +629,25 @@ public abstract class Sprite extends VisibleComponent
    * @param y parameter of the point to turn to
    */
   @SimpleFunction(
-    description = "<p>Turns the sprite to point towards the point " +
-    "with coordinates as (x, y).</p>")
+    description = "Turns the sprite to point towards the point " +
+    "with coordinates as (x, y).")
   public void PointInDirection(double x, double y) {
     Heading(-Math.toDegrees(Math.atan2(
         // we adjust for the fact that the sprite's X() and Y()
         // is not the center point.
         y - Y() - Height() / 2,
         x - X() - Width() / 2)));
-  } 
+  }
 
   // Internal methods supporting move-related functionality
 
   /**
-   * <p>Responds to a move or change of this sprite by redrawing the
+   * Responds to a move or change of this sprite by redrawing the
    * enclosing Canvas and checking for any consequences that need
    * handling.  Specifically, this (1) notifies the Canvas of a change
    * so it can detect any collisions, etc., and (2) raises the
    * {@link #EdgeReached(int)} event if the Sprite has reached the edge of the
-   * Canvas.</p>
+   * Canvas.
    */
   protected void registerChange() {
     // This was added to fix bug 2262218, where Ball.CollidedWith() was called

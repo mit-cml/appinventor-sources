@@ -24,6 +24,8 @@ public abstract class FileEditor extends Composite {
   // FileNode associated with this file editor
   protected final FileNode fileNode;
 
+  private boolean damaged = false;
+
   /**
    * Creates a {@code FileEditor} instance.
    *
@@ -142,4 +144,13 @@ public abstract class FileEditor extends Composite {
    * Invoked after a save operation completes successfully.
    */
   public abstract void onSave();
+
+  public void setDamaged(boolean damaged) {
+    this.damaged = damaged;
+  }
+
+  public boolean isDamaged() {
+    return damaged;
+  }
+
 }

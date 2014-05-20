@@ -43,7 +43,6 @@ Blockly.Language.lists_create_with = {
     this.repeatingInputName = 'ADD';
     this.appendCollapsedInput().appendTitle('make a list', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -104,7 +103,6 @@ Blockly.Language.lists_add_items = {
     this.repeatingInputName = 'ITEM';
     this.appendCollapsedInput().appendTitle('add items list', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   mutationToDom: Blockly.mutationToDom,
   domToMutation: Blockly.domToMutation,
   decompose: function(workspace){
@@ -151,7 +149,6 @@ Blockly.Language.lists_is_in = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_IS_IN_TOOLTIP);
     this.appendCollapsedInput().appendTitle('in list', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_IS_IN_TITLE_IS_IN }]
 };
 
@@ -167,7 +164,6 @@ Blockly.Language.lists_length = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_LENGTH_TOOLTIP);
     this.appendCollapsedInput().appendTitle('length', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_LENGTH_INPUT_LENGTH }]
 };
 
@@ -182,7 +178,6 @@ Blockly.Language.lists_is_empty = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_IS_EMPTY_TOOLTIP);
     this.appendCollapsedInput().appendTitle('is empty?', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_TITLE_IS_EMPTY }]
 };
 
@@ -197,7 +192,6 @@ Blockly.Language.lists_pick_random_item = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_PICK_RANDOM_TOOLTIP);
     this.appendCollapsedInput().appendTitle('pick random', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_PICK_RANDOM_TITLE_PICK_RANDOM }]
 };
 
@@ -214,7 +208,6 @@ Blockly.Language.lists_position_in = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_POSITION_IN_TOOLTIP);
     this.appendCollapsedInput().appendTitle('index', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_POSITION_IN_TITLE_POSITION }]
 };
 
@@ -231,7 +224,6 @@ Blockly.Language.lists_select_item = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_SELECT_ITEM_TOOLTIP);
     this.appendCollapsedInput().appendTitle('select', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_SELECT_ITEM_TITLE_SELECT }]
 };
 
@@ -249,7 +241,6 @@ Blockly.Language.lists_insert_item = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_INSERT_TOOLTIP);
     this.appendCollapsedInput().appendTitle('insert', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_INSERT_TITLE_INSERT_LIST }]
 };
 
@@ -267,7 +258,6 @@ Blockly.Language.lists_replace_item = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_REPLACE_ITEM_TOOLTIP);
     this.appendCollapsedInput().appendTitle('replace', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_REPLACE_ITEM_TITLE_REPLACE }]
 };
 
@@ -284,7 +274,6 @@ Blockly.Language.lists_remove_item = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_REMOVE_ITEM_TOOLTIP);
     this.appendCollapsedInput().appendTitle('remove', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_REMOVE_ITEM_TITLE_REMOVE }]
 };
 
@@ -301,7 +290,6 @@ Blockly.Language.lists_append_list = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_APPEND_LIST_TOOLTIP);
     this.appendCollapsedInput().appendTitle('append', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_APPEND_LIST_TITLE_APPEND }]
 };
 
@@ -317,7 +305,6 @@ Blockly.Language.lists_copy = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_COPY_TOOLTIP);
     this.appendCollapsedInput().appendTitle('copy', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_COPY_TITLE_COPY }]
 };
 
@@ -332,7 +319,6 @@ Blockly.Language.lists_is_list = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_IS_LIST_TOOLTIP);
     this.appendCollapsedInput().appendTitle('list?', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_IS_LIST_TITLE_IS_LIST }]
 };
 
@@ -347,7 +333,6 @@ Blockly.Language.lists_to_csv_row = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_TO_CSV_ROW_TOOLTIP);
     this.appendCollapsedInput().appendTitle('to csv row', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_TO_CSV_ROW_TITLE_TO_CSV }]
 };
 
@@ -362,7 +347,6 @@ Blockly.Language.lists_to_csv_table = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_TO_CSV_TABLE_TOOLTIP);
     this.appendCollapsedInput().appendTitle('to csv table', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_TO_CSV_TABLE_TITLE_TO_CSV }]
 };
 
@@ -377,7 +361,6 @@ Blockly.Language.lists_from_csv_row = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_FROM_CSV_ROW_TOOLTIP);
     this.appendCollapsedInput().appendTitle('from csv row', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_FROM_CSV_ROW_TITLE_FROM_CSV }]
 };
 
@@ -392,7 +375,6 @@ Blockly.Language.lists_from_csv_table = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_FROM_CSV_TABLE_TOOLTIP);
     this.appendCollapsedInput().appendTitle('from csv table', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_FROM_CSV_TABLE_TITLE_FROM_CSV }]
 };
 
@@ -409,6 +391,5 @@ Blockly.Language.lists_lookup_in_pairs = {
     Blockly.Language.setTooltip(this, Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TOOLTIP);
     this.appendCollapsedInput().appendTitle('lookup', 'COLLAPSED_TEXT');
   },
-  onchange: Blockly.WarningHandler.checkErrors,
   typeblock: [{ translatedName: Blockly.LANG_LISTS_LOOKUP_IN_PAIRS_TITLE_LOOKUP_IN_PAIRS }]
 };

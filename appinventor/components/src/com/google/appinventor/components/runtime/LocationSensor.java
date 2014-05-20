@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,16 +39,16 @@ import java.util.List;
  *
  */
 @DesignerComponent(version = YaVersion.LOCATIONSENSOR_COMPONENT_VERSION,
-    description = "<p>Non-visible component providing location information, " +
+    description = "Non-visible component providing location information, " +
     "including longitude, latitude, altitude (if supported by the device), " +
     "and address.  This can also perform \"geocoding\", converting a given " +
     "address (not necessarily the current one) to a latitude (with the " +
     "<code>LatitudeFromAddress</code> method) and a longitude (with the " +
-    "<code>LongitudeFromAddress</code> method).</p>" +
+    "<code>LongitudeFromAddress</code> method).</p>\n" +
     "<p>In order to function, the component must have its " +
     "<code>Enabled</code> property set to True, and the device must have " +
     "location sensing enabled through either wireless networks or GPS " +
-    "satellites (if outside).</p>",
+    "satellites (if outside).",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/locationSensor.png")
@@ -148,7 +149,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
 
   private int timeInterval;
   private int distanceInterval;
-  
+
   private MyLocationListener myLocationListener;
 
   private LocationProvider locationProvider;
@@ -196,7 +197,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
     locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     locationCriteria = new Criteria();
     myLocationListener = new MyLocationListener();
-    
+    allProviders = new ArrayList<String>();
+
   }
 
   // Events
@@ -258,40 +260,40 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates whether the sensor should allow the developer to 
-   * manually change the provider (GPS, GSM, Wifi, etc.) 
+   * Indicates whether the sensor should allow the developer to
+   * manually change the provider (GPS, GSM, Wifi, etc.)
    * from which location updates are received.
    */
   @SimpleProperty
   public void ProviderLocked(boolean lock) {
       providerLocked = lock;
   }
-  
+
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_SENSOR_TIME_INTERVAL,
       defaultValue = "60000")
   @SimpleProperty
   public void TimeInterval(int interval) {
-      
+
       // make sure that the provided value is a valid one.
       // choose 1000000 miliseconds to be the upper limit
       if (interval < 0 || interval > 1000000)
-    	  return;
-      
+          return;
+
       timeInterval = interval;
-      
+
       // restart listening for location updates, using the new time interval
       if (enabled) {
-    	  RefreshProvider();
+          RefreshProvider();
       }
   }
 
   @SimpleProperty(
       description = "Determines the minimum time interval, in milliseconds, that the sensor will try " +
-	  "to use for sending out location updates. However, location updates will only be received " +
-	  "when the location of the phone actually changes, and use of the specified time interval " +
-	  "is not guaranteed. For example, if 1000 is used as the time interval, location updates will " +
-	  "never be fired sooner than 1000ms, but they may be fired anytime after.",
-	  category = PropertyCategory.BEHAVIOR)
+          "to use for sending out location updates. However, location updates will only be received " +
+          "when the location of the phone actually changes, and use of the specified time interval " +
+          "is not guaranteed. For example, if 1000 is used as the time interval, location updates will " +
+          "never be fired sooner than 1000ms, but they may be fired anytime after.",
+          category = PropertyCategory.BEHAVIOR)
   public int TimeInterval() {
       return timeInterval;
   }
@@ -300,17 +302,17 @@ public class LocationSensor extends AndroidNonvisibleComponent
       defaultValue = "5")
   @SimpleProperty
   public void DistanceInterval(int interval) {
-      
+
       // make sure that the provided value is a valid one.
       // choose 1000 meters to be the upper limit
       if (interval < 0 || interval > 1000)
-    	  return;
-      
+          return;
+
       distanceInterval = interval;
-      
+
       // restart listening for location updates, using the new distance interval
       if (enabled) {
-    	  RefreshProvider();
+          RefreshProvider();
       }
   }
 
@@ -324,7 +326,7 @@ public class LocationSensor extends AndroidNonvisibleComponent
   public int DistanceInterval() {
       return distanceInterval;
   }
-  
+
   /**
    * Indicates whether longitude and latitude information is available.  (It is
    * always the case that either both or neither are.)
@@ -444,15 +446,15 @@ public class LocationSensor extends AndroidNonvisibleComponent
         // getFromLocation can throw an IOException or an IllegalArgumentException
         // a bad result can give an indexOutOfBoundsException
         // are there others?
-        if (e instanceof IllegalArgumentException 
+        if (e instanceof IllegalArgumentException
             || e instanceof IOException
-            || e instanceof IndexOutOfBoundsException ) {         
-          Log.e("LocationSensor", "Exception thrown by getting current address " + e.getMessage());     
+            || e instanceof IndexOutOfBoundsException ) {
+          Log.e("LocationSensor", "Exception thrown by getting current address " + e.getMessage());
         } else {
           // what other exceptions can happen here?
-          Log.e("LocationSensor", 
+          Log.e("LocationSensor",
               "Unexpected exception thrown by getting current address " + e.getMessage());
-        } 
+        }
       }
     }
     return "No address available";

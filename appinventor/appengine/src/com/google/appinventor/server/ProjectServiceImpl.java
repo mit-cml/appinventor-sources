@@ -5,11 +5,16 @@
 
 package com.google.appinventor.server;
 
+import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
+import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
+import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
+import com.google.appinventor.shared.rpc.project.ChecksumedLoadFile;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
@@ -195,23 +200,27 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
   /**
    * Stores a string with the project settings.
+   * @param sessionId session id
    * @param projectId  project ID
    * @param settings  project settings
    */
   @Override
-  public void storeProjectSettings(long projectId, String settings) {
+  public void storeProjectSettings(String sessionId, long projectId, String settings) throws InvalidSessionException {
+    validateSessionId(sessionId);
     String userId = userInfoProvider.getUserId();
     getProjectRpcImpl(userId, projectId).storeProjectSettings(userId, projectId, settings);
   }
 
   /**
    * Deletes a file in the given project.
+   * @param sessionId session id
    * @param projectId  project ID
    * @param fileId  ID of file to delete
    * @return modification date for project
    */
   @Override
-  public long deleteFile(long projectId, String fileId) {
+  public long deleteFile(String sessionId, long projectId, String fileId) throws InvalidSessionException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFile(userId, projectId, fileId);
   }
@@ -219,12 +228,14 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Deletes all files that are contained directly in the given directory. Files
    * in subdirectories are not deleted.
+   * @param sessionId session id
    * @param projectId project ID
    * @param directory path of the directory
    * @return modification date for project
    */
   @Override
-  public long deleteFiles(long projectId, String directory) {
+  public long deleteFiles(String sessionId, long projectId, String directory) throws InvalidSessionException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).deleteFiles(userId, projectId,
         directory);
@@ -245,6 +256,40 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public String load(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).load(userId, projectId, fileId);
+  }
+
+  /**
+   * Loads the file information associated with a node in the project tree. The
+   * actual return value depends on the file kind. Source (text) files should
+   * typically return their contents. Image files will be more likely to return
+   * the URL that the browser can find them at.
+   *
+   * This version returns a ChecksumedLoadFile which contains the file content
+   * and a MD5 checksum.
+   *
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be loaded
+   *
+   * @return  implementation dependent
+   */
+  @Override
+  public ChecksumedLoadFile load2(long projectId, String fileId) throws ChecksumedFileException {
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).load2(userId, projectId, fileId);
+  }
+
+  /**
+   * Attempt to record the project Id and error message when we detect a corruption
+   * while loading a project.
+   *
+   * @param projectId project id
+   * @param message Error message from the thrown exception
+   *
+   */
+  @Override
+  public void recordCorruption(long projectId, String fileId, String message) {
+    final String userId = userInfoProvider.getUserId();
+    getProjectRpcImpl(userId, projectId).recordCorruption(userId, projectId, fileId, message);
   }
 
   /**
@@ -300,6 +345,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   /**
    * Saves the content of the file associated with a node in the project tree.
    *
+   * @param sessionId session id
    * @param projectId  project ID
    * @param fileId  project node whose source should be saved
    * @param content  content to be saved
@@ -308,7 +354,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @see #load(long, String)
    */
   @Override
-  public long save(long projectId, String fileId, String content) {
+  public long save(String sessionId, long projectId, String fileId, String content) throws InvalidSessionException {
+    validateSessionId(sessionId);
     // Log parameters except for content
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).save(userId, projectId, fileId,
@@ -316,14 +363,41 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Saves the content of the file associated with a node in the project tree.
+   * This version takes a "force" argument which if false will result in an
+   * exception of a trivial (empty) blocks workspace is attempted to be saved
+   *
+   * @param sessionId session id
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be saved
+   * @param force whether to write an empty blocks workspace
+   * @param content  content to be saved
+   * @return modification date for project
+   *
+   * @see #load(long, String)
+   */
+  @Override
+  public long save2(String sessionId, long projectId, String fileId, boolean force, String content) throws InvalidSessionException,
+      BlocksTruncatedException {
+    validateSessionId(sessionId);
+    // Log parameters except for content
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).save2(userId, projectId, fileId, force,
+        content);
+  }
+
+  /**
    * Saves the contents of multiple files.
    *
+   * @param sessionId session id
    * @param filesAndContent  list containing file descriptors and their
    *                         associated content
    * @return modification date for last modified project of list
    */
   @Override
-  public long save(List<FileDescriptorWithContent> filesAndContent) {
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException,
+      BlocksTruncatedException {
+    validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     long date = 0;
     for (FileDescriptorWithContent fileAndContent : filesAndContent) {
@@ -343,11 +417,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return  results of build
    */
   @Override
-  public RpcResult build(long projectId, String target) {
+  public RpcResult build(long projectId, String nonce, String target) {
     // Dispatch
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).build(
-        userInfoProvider.getUser(), projectId, target);
+      userInfoProvider.getUser(), projectId, nonce, target);
   }
 
   /**
@@ -382,15 +456,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   private UserProject makeUserProject(String userId, long projectId) {
-    // TODO(user): note that multiple calls like this on the data store
-    // can be really inefficient. Make a storagIo.getProject() method to get
-    // all of this at once?
-    return new UserProject(projectId, storageIo.getProjectName(userId, projectId),
-                           storageIo.getProjectType(userId, projectId),
-                           storageIo.getProjectDateCreated(userId, projectId),
-                           storageIo.getProjectDateModified(userId, projectId),
-                           storageIo.getProjectGalleryId(userId, projectId),
-                           storageIo.getProjectAttributionId(projectId));
+    return storageIo.getUserProject(userId, projectId);
   }
 
   /*
@@ -399,7 +465,7 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   private CommonProjectService getProjectRpcImpl(final String userId, long projectId) {
     String projectType = storageIo.getProjectType(userId, projectId);
     if (!projectType.isEmpty()) {
-      return getProjectRpcImpl(userId, storageIo.getProjectType(userId, projectId));
+      return getProjectRpcImpl(userId, projectType);
     } else {
       throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(),
           "user=" + userId + ", project=" + projectId,
@@ -421,7 +487,6 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
   }
-  
 
   /**
    * This service is passed a URL to an aia file in GCS, of the form
@@ -430,8 +495,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * It also sets the attributionId of the project to point to the galleryID
    * it is remixing.
    */
-  @Override 
-  public UserProject newProjectFromGallery(String projectName, String aiaPath, 
+  @Override
+  public UserProject newProjectFromGallery(String projectName, String aiaPath,
       long attributionId) {
     boolean lockForRead = false;
     try {
@@ -445,47 +510,70 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
 
       byte[] buffer = new byte[8000];
       int bytesRead = 0;
-      ByteArrayOutputStream bao = new ByteArrayOutputStream();   
-           
+      ByteArrayOutputStream bao = new ByteArrayOutputStream();
+
       while ((bytesRead = gcsis.read(buffer)) != -1) {
-        bao.write(buffer, 0, bytesRead); 
+        bao.write(buffer, 0, bytesRead);
       }
 
       InputStream bais = new ByteArrayInputStream(bao.toByteArray());
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past newInputStream");
-      
+
       // close the gcs
       readChannel.close();
       // now use byte stream to process aia file
-      FileImporter fileImporter = new FileImporterImpl(); 
+      FileImporter fileImporter = new FileImporterImpl();
       UserProject userProject = fileImporter.importProject(userInfoProvider.getUserId(),
         projectName, bais);
       LOG.log(Level.INFO, "#### in newProjectFromGallery, past importProject");
-     
+
       // set the attribution id of the project
       storageIo.setProjectAttributionId(userInfoProvider.getUserId(), userProject.getProjectId(),attributionId);
       //To-Do: this is a temperory fix for the error that getAttributionId before setAttributionId
       userProject.setAttributionId(attributionId);
 
       return userProject;
-      } catch (FileNotFoundException e) {  
+      } catch (FileNotFoundException e) {
         e.printStackTrace();
          throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
           e);
       } catch (IOException e) {
         e.printStackTrace();
-        
+
         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath+":"+projectName,
           e);
       } catch (FileImporterException e) {
         e.printStackTrace();
-        
+
         throw CrashReport.createAndLogError(LOG, getThreadLocalRequest(), aiaPath,
           e);
       }
-      
-    
-  
+  }
+
+  @Override
+  public void log(String message) {
+    LOG.warning(message);
+  }
+
+  private void validateSessionId(String sessionId) throws InvalidSessionException {
+    String storedSessionId = userInfoProvider.getSessionId();
+    if (storedSessionId == null) {
+      LOG.info("storedSessionId is null");
+    } else {
+      LOG.info("storedSessionId = " + storedSessionId);
+    }
+    if (sessionId == null) {
+      LOG.info("sessionId is null");
+    } else {
+      LOG.info("sessionId = " + sessionId);
+    }
+    if (sessionId.equals("force")) { // If we are forcing our way -- no check
+      return;
+    }
+    if (!storedSessionId.equals(sessionId))
+      if (AppInventorFeatures.requireOneLogin()) {
+        throw new InvalidSessionException("A more recent login has occurred since we started. No further changes will be saved.");
+      }
   }
 
 }

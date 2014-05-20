@@ -1,4 +1,0 @@
-#|
-$JSON
-{"YaVersion":"41","Source":"Form","Properties":{"$Name":"CalicoCat","$Type":"Form","$Version":"6","Uuid":"0","Title":"Calico Cat","$Components":[{"$Name":"Label1","$Type":"Label","$Version":"2","Uuid":"769206104","FontSize":"30.0","Text":"Do you like this cat?"},{"$Name":"Image1","$Type":"Image","$Version":"1","Uuid":"-1519293648","Picture":"CalicoCat.jpg"},{"$Name":"HorizontalArrangement1","$Type":"HorizontalArrangement","$Version":"1","Uuid":"-1897192282","Width":"-2","$Components":[{"$Name":"ButtonYes","$Type":"Button","$Version":"3","Uuid":"-2139593418","Text":"Yes","Width":"-2"},{"$Name":"ButtonNo","$Type":"Button","$Version":"3","Uuid":"4773662","Text":"No","Width":"-2"},{"$Name":"ButtonNoComment","$Type":"Button","$Version":"3","Uuid":"-1292171729","Text":"No Comment","Width":"-2"}]}]}}
-|#

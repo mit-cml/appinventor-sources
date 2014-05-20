@@ -65,6 +65,8 @@ public final class AnimationUtil {
       ApplyHorizontalScrollAnimation(view, true, 4000);
     } else if (animation.equals("ScrollLeftFast")) {
       ApplyHorizontalScrollAnimation(view, true, 1000);
+    } else if (animation.equals("Stop")) {
+      view.clearAnimation();
     }
   }
 

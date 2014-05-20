@@ -79,8 +79,11 @@ Blockly.Language.component_event = {
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
-    this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
+    // [lyn, 12/23/2013] checkIsInDefinition is bogus check that can never happen!
+    // this.errors = [{name:"checkIsInDefinition"}];
+
+    // [lyn, 12/23/2013] Move this out of domToMutation into top-level component_event
+    // this.onchange = Blockly.WarningHandler.checkErrors;
 
   },
   // [lyn, 10/24/13] Allow switching between horizontal and vertical display of arguments
@@ -238,7 +241,10 @@ Blockly.Language.component_event = {
   },
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
-  }
+  },
+  // [lyn, 12/31/2013] Next two fields used to check for duplicate component event handlers
+  errors: [{name:"checkIfIAmADuplicateEventHandler"}],
+  onchange: Blockly.WarningHandler.checkErrors
 };
 
 /**
@@ -310,7 +316,6 @@ Blockly.Language.component_method = {
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     if(!this.isGeneric) {
       this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getMethodTypeObject().name, 'COLLAPSED_TEXT');
@@ -326,7 +331,7 @@ Blockly.Language.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodType.name);
+      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodName);
       if (this.type.indexOf(oldname) != -1) {
         this.type = this.type.replace(oldname, newname);
       }
@@ -379,7 +384,7 @@ Blockly.Language.component_method = {
     //If the block was copy+pasted from another block, instanaceName is set to the original block
     if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName)
       this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
-    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.methodType.name);
+    this.getTitle_('COLLAPSED_TEXT').setText(this.typeName + '.' + this.methodName);
   }
 };
 
@@ -513,7 +518,6 @@ Blockly.Language.component_set_get = {
         this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle( (this.isGeneric ? this.typeName : this.instanceName) + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
 
@@ -680,7 +684,6 @@ Blockly.Language.component_component_block = {
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIsInDefinition"}];
-    this.onchange = Blockly.WarningHandler.checkErrors;
 
     this.appendCollapsedInput().appendTitle(this.instanceName, 'COLLAPSED_TEXT');
   },
@@ -743,7 +746,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL,
   "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL,
   "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_HELPURL,
+  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_HELPURL,
   "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL,
   "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL,
   "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL,
@@ -781,7 +784,7 @@ Blockly.ComponentBlock.HELPURLS = {
   "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL,
   "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL,
   "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNITION_HELPURL,
+  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL,
   "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL,
   "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL,
   "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL,
@@ -799,7 +802,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL,
   "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL,
   "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_PROPERTIES_HELPURL,
+  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL,
   "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL,
   "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL,
   "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL,
@@ -837,7 +840,7 @@ Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
   "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL,
   "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL,
   "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNITION_PROPERTIES_HELPURL,
+  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL,
   "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL,
   "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL,
   "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL,
@@ -855,7 +858,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "CheckBox": Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL,
   "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL,
   "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKET_EVENTS_HELPURL,
+  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL,
   "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL,
   "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL,
   "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL,
@@ -878,12 +881,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL,
   "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL,
   "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
-  "HorizontalArrangment": Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_EVENTS_HELPURL,
-  "TableArrangement": Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_EVENTS_HELPURL,
-  "VerticalArrangement": Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_EVENTS_HELPURL,
   "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL,
-  "NxtDirectCommands": Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_EVENTS_HELPURL,
-  "NxtDrive": Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_EVENTS_HELPURL,
   "NxtLightSensor": Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL,
   "NxtSoundSensor": Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL,
   "NxtTouchSensor": Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_EVENTS_HELPURL,
@@ -893,7 +891,7 @@ Blockly.ComponentBlock.EVENTS_HELPURLS = {
   "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL,
   "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL,
   "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNITION_EVENTS_HELPURL,
+  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL,
   "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL,
   "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL,
   "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL,
@@ -932,9 +930,6 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
    "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL,
    "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL,
    "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
-   "HorizontalArrangment": Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_METHODS_HELPURL,
-   "TableArrangement": Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_METHODS_HELPURL,
-   "VerticalArrangement": Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_METHODS_HELPURL,
    "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL,
    "NxtDirectCommands": Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL,
    "NxtDrive": Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL,
@@ -947,7 +942,7 @@ Blockly.ComponentBlock.METHODS_HELPURLS = {
    "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL,
    "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL,
    "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL,
-   "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNITION_METHODS_HELPURL,
+   "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL,
    "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL,
    "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL,
    "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL,

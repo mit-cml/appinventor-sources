@@ -5,12 +5,16 @@
 
 package com.google.appinventor.server.storage;
 
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.Motd;
+import com.google.appinventor.shared.rpc.Nonce;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
+import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -66,6 +70,15 @@ public interface StorageIo {
    * @param userId user id
    */
   void setTosAccepted(String userId);
+
+  /**
+   * Sets the user's session id value which is used to ensure only
+   * one valid session exists for a user
+   *
+   * @param userId user id
+   * @param sessionId the session id (uuid) value
+   */
+  void setUserSessionId(String userId, String sessionId);
 
   /**
    * Returns a string with the user's settings.
@@ -188,6 +201,15 @@ public interface StorageIo {
   String getProjectType(String userId, long projectId);
 
   /**
+   * Returns the ProjectData object complete.
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project id
+   * @return new UserProject object
+   */
+
+  UserProject getUserProject(String userId, long projectId);
+
+  /**
    * Returns a project name.
    *
    * @param userId a user Id (the request is made on behalf of this user)
@@ -214,6 +236,7 @@ public interface StorageIo {
    */
   String getProjectHistory(String userId, long projectId);
 
+  // JIS XXX
   /**
    * Returns the date the project was created.
    * @param userId a user Id (the request is made on behalf of this user)
@@ -388,17 +411,41 @@ public interface StorageIo {
    * @param encoding encoding of content
    * @return modification date for project
    */
-  long uploadFile(long projectId, String fileId, String userId, String content, String encoding);
+  long uploadFile(long projectId, String fileId, String userId, String content, String encoding)
+      throws BlocksTruncatedException;
+
+  /**
+   * Uploads a file. -- This version uses "force" to write even a trivial workspace file
+   * @param projectId  project ID
+   * @param fileId  file ID
+   * @param userId the user who owns the file
+   * @param content  file content
+   * @param encoding encoding of content
+   * @return modification date for project
+   */
+  long uploadFileForce(long projectId, String fileId, String userId, String content, String encoding);
 
   /**
    * Uploads a file.
    * @param projectId  project ID
    * @param fileId  file ID
    * @param userId the user who owns the file
+   * @param force write file even if it is a trivial workspace
    * @param content  file content
    * @return modification date for project
    */
-  long uploadRawFile(long projectId, String fileId, String userId, byte[] content);
+  long uploadRawFile(long projectId, String fileId, String userId, boolean force, byte[] content)
+      throws BlocksTruncatedException;
+
+  /**
+   * Uploads a file. -- forces the save even with trivial workspace
+   * @param projectId  project ID
+   * @param fileId  file ID
+   * @param userId the user who owns the file
+   * @param content  file content
+   * @return modification date for project
+   */
+  long uploadRawFileForce(long projectId, String fileId, String userId, byte[] content);
 
   /**
    * Deletes a file.
@@ -419,6 +466,17 @@ public interface StorageIo {
    * @return  text file content
    */
   String downloadFile(String userId, long projectId, String fileId, String encoding);
+
+  /**
+   * Records a "corruption" record so we can analyze if corruption is
+   * happening.
+   *
+   * @param userId a user Id (the request is made on behalf of this user)
+   * @param projectId  project ID
+   * @param message The message from the exception on the client
+   */
+
+  void recordCorruption(String userId, long projectId, String fileId, String message);
 
   /**
    * Downloads raw file data.
@@ -494,5 +552,11 @@ public interface StorageIo {
 
   void storeFeedback(final String notes, final String foundIn, final String faultData,
     final String comments, final String datestamp, final String email, final String projectId);
+
+  Nonce getNoncebyValue(String nonceValue);
+  void storeNonce(final String nonceValue, final String userId, final long projectId);
+
+  // Cleanup expired nonces
+  void cleanupNonces();
 
 }

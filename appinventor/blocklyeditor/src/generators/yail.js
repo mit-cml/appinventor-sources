@@ -491,10 +491,11 @@ Blockly.Yail.quotifyForREPL = function(s) {
  */
 
 Blockly.Yail.quote_ = function(string) {
-  // TODO: This is a quick hack.  Replace with goog.string.quote
-  string = string.replace(/\"/g, '\\"')
-                 .replace(/'/g, '\\\'');
-  return '"' + string + '"';
+  string = Blockly.Yail.quotifyForREPL(string);
+  if (!string) {                // quotifyForREPL can return null for
+    string = '""';              // empty string
+  }
+  return string;
 };
 
 /**

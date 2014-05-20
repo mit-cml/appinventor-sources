@@ -64,6 +64,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -246,7 +247,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       String projectName = properties.getProperty("name");
       String qualifiedName = properties.getProperty("main");
       String newContent = getProjectPropertiesFileContents(projectName, qualifiedName, newIcon, newVCode, newVName, newUsesLocation);
-      storageIo.uploadFile(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
+      storageIo.uploadFileForce(projectId, PROJECT_PROPERTIES_FILE_NAME, userId,
           newContent, StorageUtil.DEFAULT_CHARSET);
     }
   }
@@ -389,7 +390,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
             // codeblocks file around for now (for debugging) but don't send it to the client.
             String blocklyFileContents = convertCodeblocksToBlockly(userId, projectId, fileId);
             storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
-            storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
+            storageIo.uploadFileForce(projectId, blocklyFileName, userId, blocklyFileContents,
                 StorageUtil.DEFAULT_CHARSET);
             sourceNode = new YoungAndroidBlocksNode(blocklyFileName);
           }
@@ -440,17 +441,17 @@ public final class YoungAndroidProjectService extends CommonProjectService {
 
         String formFileContents = getInitialFormPropertiesFileContents(qualifiedFormName);
         storageIo.addSourceFilesToProject(userId, projectId, false, formFileName);
-        storageIo.uploadFile(projectId, formFileName, userId, formFileContents,
+        storageIo.uploadFileForce(projectId, formFileName, userId, formFileContents,
             StorageUtil.DEFAULT_CHARSET);
 
         String blocklyFileContents = getInitialBlocklySourceFileContents(qualifiedFormName);
         storageIo.addSourceFilesToProject(userId, projectId, false, blocklyFileName);
-        storageIo.uploadFile(projectId, blocklyFileName, userId, blocklyFileContents,
+        storageIo.uploadFileForce(projectId, blocklyFileName, userId, blocklyFileContents,
             StorageUtil.DEFAULT_CHARSET);
 
         String yailFileContents = "";  // start empty
         storageIo.addSourceFilesToProject(userId, projectId, false, yailFileName);
-        return storageIo.uploadFile(projectId, yailFileName, userId, yailFileContents,
+        return storageIo.uploadFileForce(projectId, yailFileName, userId, yailFileContents,
             StorageUtil.DEFAULT_CHARSET);
       } else {
         throw new IllegalStateException("One or more files to be added already exists.");
@@ -494,15 +495,21 @@ public final class YoungAndroidProjectService extends CommonProjectService {
    *
    * @param user the User that owns the {@code projectId}.
    * @param projectId  project id to be built
+   * @param nonce random string used to find resulting APK from unauth context
    * @param target  build target (optional, implementation dependent)
    *
    * @return an RpcResult reflecting the call to the Build Server
    */
   @Override
-  public RpcResult build(User user, long projectId, String target) {
+  public RpcResult build(User user, long projectId, String nonce, String target) {
     String userId = user.getUserId();
     String projectName = storageIo.getProjectName(userId, projectId);
     String outputFileDir = BUILD_FOLDER + '/' + target;
+
+    // Store the userId and projectId based on the nonce
+
+    storageIo.storeNonce(nonce, userId, projectId);
+
     // Delete the existing build output files, if any, so that future attempts to get it won't get
     // old versions.
     List<String> buildOutputFiles = storageIo.getProjectOutputFiles(userId, projectId);
@@ -531,11 +538,7 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       bufferedOutputStream.close();
 
       int responseCode = 0;
-      try {
-          responseCode = connection.getResponseCode();
-      } catch (IOException e) {
-          throw new CouldNotFetchException();
-      }
+      responseCode = connection.getResponseCode();
       if (responseCode != HttpURLConnection.HTTP_OK) {
         // Put the HTTP response code into the RpcResult so the client code in BuildCommand.java
         // can provide an appropriate error message to the user.
@@ -574,13 +577,18 @@ public final class YoungAndroidProjectService extends CommonProjectService {
           buildErrorMsg("MalformedURLException", buildServerUrl, userId, projectId), e);
       return new RpcResult(false, "", e.getMessage());
     } catch (IOException e) {
+      // As of App Engine 1.9.0 we get these when UrlFetch is asked to send too much data
+      Throwable wrappedException = e;
+      int zipFileLength = zipFile.getContent().length;
+      if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
+        String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
+        wrappedException = new IllegalArgumentException(
+          "Sorry, can't package projects larger than 5MB."
+          + " Yours is " + lengthMbs + "MB.", e);
+      }
       CrashReport.createAndLogError(LOG, null,
-          buildErrorMsg("IOException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", e.getMessage());
-    } catch (CouldNotFetchException e) {
-        CrashReport.createAndLogError(LOG, null,
-                buildErrorMsg("CouldNotFetchException", buildServerUrl, userId, projectId), e);
-      return new RpcResult(false, "", " Can not contact the BuildServer at " + buildServerUrl.getHost());
+          buildErrorMsg("IOException", buildServerUrl, userId, projectId), wrappedException);
+      return new RpcResult(false, "", wrappedException.getMessage());
     } catch (EncryptionException e) {
       CrashReport.createAndLogError(LOG, null,
           buildErrorMsg("EncryptionException", buildServerUrl, userId, projectId), e);
@@ -592,9 +600,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       if (e instanceof ApiProxy.RequestTooLargeException && zipFile != null) {
         int zipFileLength = zipFile.getContent().length;
         if (zipFileLength >= (5 * 1024 * 1024) /* 5 MB */) {
+          String lengthMbs = format((zipFileLength * 1.0)/(1024*1024));
           wrappedException = new IllegalArgumentException(
               "Sorry, can't package projects larger than 5MB."
-              + " Yours is " + zipFileLength + " bytes.", e);
+              + " Yours is " + lengthMbs + "MB.", e);
         } else {
           wrappedException = new IllegalArgumentException(
               "Sorry, project was too large to package (" + zipFileLength + " bytes)");
@@ -741,14 +750,10 @@ public final class YoungAndroidProjectService extends CommonProjectService {
       }
   }
 
-  /**
-   * Special Exception for the open connect
-   */
-  class CouldNotFetchException extends Exception {
-      String mistake;
-      public CouldNotFetchException() {
-          super();
-          mistake = "Could not fetch the Build Server URL";
-      }
+  // Nicely format floating number using only two decimal places
+  private String format(double input) {
+    DecimalFormat formatter = new DecimalFormat("###.##");
+    return formatter.format(input);
   }
 }
+

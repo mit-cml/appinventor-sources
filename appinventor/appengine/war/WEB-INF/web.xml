@@ -52,6 +52,7 @@
       <url-pattern>/learn/*</url-pattern>
       <url-pattern>/about/*</url-pattern>
       <url-pattern>/forum/*</url-pattern>
+      <url-pattern>/b/*</url-pattern>
 <!--      <url-pattern>/rendezvous/*</url-pattern> -->
     </web-resource-collection>
   </security-constraint>
@@ -88,6 +89,16 @@
   <servlet-mapping>
     <servlet-name>rendezvousServlet</servlet-name>
     <url-pattern>/rendezvous/*</url-pattern>
+  </servlet-mapping>
+
+  <!-- Nonce based APK download -->
+  <servlet>
+    <servlet-name>buildOutputServlet</servlet-name>
+    <servlet-class>com.google.appinventor.server.BuildOutputServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>buildOutputServlet</servlet-name>
+    <url-pattern>/b/*</url-pattern>
   </servlet-mapping>
 
   <!-- download -->

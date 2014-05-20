@@ -1,4 +1,6 @@
-// Copyright 2012 MIT All rights reserved
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 
 package com.google.appinventor.components.runtime;
 
@@ -25,8 +27,8 @@ import com.google.appinventor.components.runtime.util.SdkLevel;
  *
  */
 @DesignerComponent(version = YaVersion.NEARFIELD_COMPONENT_VERSION,
-    description = "<p>Non-visible component to provide NFC capabilities." +
-    "For now this component supports the reading and writing of text" +
+    description = "<p>Non-visible component to provide NFC capabilities.  " +
+    "For now this component supports the reading and writing of text tags only " +
     "(if supported by the device)</p>" +
     "<p>In order to read and write text tags, the component must have its " +
     "<code>ReadMode</code> property set to True or False respectively.</p>",
@@ -43,7 +45,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
 
   private NfcAdapter nfcAdapter;
   private boolean readMode = true;
-  private int writeType; 
+  private int writeType;
   private String tagContent = "";
   private String textToWrite = "";
 
@@ -181,7 +183,7 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
 
   public void onPause() {
     Log.d(TAG, "OnPause method started.");
-    if(SdkLevel.getLevel() >= SdkLevel.LEVEL_GINGERBREAD){
+    if (nfcAdapter != null) {
       GingerbreadUtil.disableNFCAdapter(activity, nfcAdapter);
     }
     //nfcAdapter.disableForegroundDispatch(activity);
@@ -196,6 +198,6 @@ implements OnStopListener, OnResumeListener, OnPauseListener, OnNewIntentListene
 
   @Override
   public void onStop() {
-    // TODO Auto-generated method stub		
+    // TODO Auto-generated method stub
   }
 }

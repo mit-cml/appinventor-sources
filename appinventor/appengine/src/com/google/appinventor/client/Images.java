@@ -95,7 +95,7 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/camera.png")
   ImageResource camera();
-  
+
   /**
    * Designer palette item: camcorder declaration
    */
@@ -113,6 +113,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/checkbox.png")
   ImageResource checkbox();
+
+  /**
+   * Designer palette item: TimePicker Component
+   */
+  @Source("com/google/appinventor/images/datePicker.png")
+  ImageResource datePickerComponent();
 
   /**
    * Designer palette item: form component
@@ -230,6 +236,12 @@ public interface Images extends Resources {
   ImageResource listpicker();
 
   /**
+   * Designer palette item: ListView component
+   */
+  @Source("com/google/appinventor/images/listView.png")
+  ImageResource listview();
+
+  /**
    * Designer palette item: PhoneCall component
    */
   @Source("com/google/appinventor/images/phoneCall.png")
@@ -308,10 +320,22 @@ public interface Images extends Resources {
   ImageResource twitterComponent();
 
   /**
+   * Designer palette item: TimePicker Component
+   */
+  @Source("com/google/appinventor/images/timePicker.png")
+  ImageResource timePickerComponent();
+
+  /**
    * Designer palette item: TinyDB Component
    */
   @Source("com/google/appinventor/images/tinyDB.png")
   ImageResource tinyDB();
+
+  /**
+   * Designer palette item: File Component
+   */
+  @Source("com/google/appinventor/images/file.png")
+  ImageResource file();
 
   /**
    * Designer palette item: TinyWebDB Component
@@ -434,4 +458,23 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/procedures.png")
   ImageResource procedures();
+
+  /**
+   * Designer palette item: Sharing Component
+   */
+  @Source("com/google/appinventor/images/sharing.png")
+  ImageResource sharingComponent();
+
+  /**
+    * Designer palette item: Spinner
+    */
+  @Source("com/google/appinventor/images/spinner.png")
+  ImageResource spinner();
+
+  /**
+    * Designer palette item: YandexTranslate
+    */
+  @Source("com/google/appinventor/images/yandex.png")
+  ImageResource yandex();
+
 }

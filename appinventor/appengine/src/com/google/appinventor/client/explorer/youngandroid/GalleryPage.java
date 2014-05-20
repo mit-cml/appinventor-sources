@@ -544,7 +544,7 @@ panel
               authorName.setText(currentUser.getUserName());
             }
           };
-        Ode.getInstance().getUserInfoService().getUserInformation(userCallback);
+        ode.getUserInfoService().getUserInformation(ode.getSessionId(), userCallback);
     } else {
       authorName.setText(app.getDeveloperName());
       authorName.addClickHandler(new ClickHandler() {

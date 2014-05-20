@@ -190,7 +190,7 @@ public final class YoungAndroidWebStartSupport extends WebStartSupport {
         if (!sourceFiles.contains(fileName)) {
           getStorageIo().addSourceFilesToProject(userId, projectId, false, fileName);
         }
-        getStorageIo().uploadFile(projectId, fileName, userId, content, StorageUtil.DEFAULT_CHARSET);
+        getStorageIo().uploadFileForce(projectId, fileName, userId, content, StorageUtil.DEFAULT_CHARSET);
         // TODO(sharon): technically this should probably return HttpServletResponse.SC_CREATED (201)
         // I'm not sure whether it really matters.
         resp.setStatus(HttpServletResponse.SC_OK);

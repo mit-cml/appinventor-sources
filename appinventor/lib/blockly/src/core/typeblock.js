@@ -414,6 +414,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
   var inputHandler = new goog.ui.ac.InputHandler(null, null, false);
 
   Blockly.TypeBlock.ac_ = new goog.ui.ac.AutoComplete(matcher, renderer, inputHandler);
+  Blockly.TypeBlock.ac_.setMaxMatches(100); //Renderer has a set height of 294px and a scroll bar.
   inputHandler.attachAutoComplete(Blockly.TypeBlock.ac_);
   inputHandler.attachInputs(goog.dom.getElement(inputText));
 
@@ -426,7 +427,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
         //If the input passed is not a block, check if it is a number or a pre-populated text block
         var numberReg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
         var numberMatch = numberReg.exec(blockName);
-        var textReg = new RegExp('^[\"|\'].+', 'g');
+        var textReg = new RegExp('^[\"|\']+', 'g');
         var textMatch = textReg.exec(blockName);
         if (numberMatch && numberMatch.length > 0){
           blockToCreate = {
@@ -467,7 +468,6 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
           xmlString += '</mutation></block></xml>';
           var xml = Blockly.Xml.textToDom(xmlString);
           block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
-
         } else {
           block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
@@ -489,7 +489,7 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
       } else {
         throw new Error('Type Block not correctly set up for: ' + blockToCreateName);
       }
-
+      Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
       block.render();
       var blockSelected = Blockly.selected;
       var selectedX, selectedY, selectedXY;
@@ -614,6 +614,13 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
 
   var matches = this.getPrefixMatches(token, maxMatches);
 
+  //Because we allow for similar matches, Button.Text will always appear before Text
+  //So we handle the 'text' case as a special case here
+  if (token === 'text' || token === 'Text'){
+    goog.array.remove(matches, 'Text');
+    goog.array.insertAt(matches, 'Text', 0);
+  }
+
   // Added code to handle any number typed in the widget (including negatives and decimals)
   var reg = new RegExp('^-?[0-9]\\d*(\.\\d+)?$', 'g');
   var match = reg.exec(token);
@@ -622,7 +629,7 @@ Blockly.TypeBlock.ac.AIArrayMatcher.prototype.requestMatchingRows = function(tok
   }
 
   // Added code to handle default values for text fields (they start with " or ')
-  var textReg = new RegExp('^[\"|\'].+', 'g');
+  var textReg = new RegExp('^[\"|\']+', 'g');
   var textMatch = textReg.exec(token);
   if (textMatch && textMatch.length === 1){
     matches.push(token);

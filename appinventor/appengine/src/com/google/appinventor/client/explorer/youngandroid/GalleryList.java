@@ -253,13 +253,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
       //  @Override
       public void onClick(ClickEvent event) {
         switch (request) {
-<<<<<<< HEAD
-        case 1: 
-          if (appFeaturedCounter - NUMAPPSTOSHOW >= 0) {
-=======
         case REQUEST_FEATURED:
           if (appFeaturedCounter - offset >= 0) {
->>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appFeaturedCounter -= NUMAPPSTOSHOW;
             gallery.GetFeatured(appFeaturedCounter, NUMAPPSTOSHOW, 0);
@@ -269,13 +264,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appFeaturedCounter = " + appFeaturedCounter);
           }
           break;   
-<<<<<<< HEAD
-        case 2: 
-          if (appRecentCounter - NUMAPPSTOSHOW >= 0) {
-=======
         case REQUEST_RECENT:
           if (appRecentCounter - offset >= 0) {
->>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appRecentCounter -= NUMAPPSTOSHOW;
             gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
@@ -285,13 +275,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appRecentCounter = " + appRecentCounter);
           }
           break;  
-<<<<<<< HEAD
-        case 3: 
-          if (appSearchCounter - NUMAPPSTOSHOW >= 0) {
-=======
         case REQUEST_SEARCH:
           if (appSearchCounter - offset >= 0) {
->>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appSearchCounter -= NUMAPPSTOSHOW;
             gallery.FindApps(searchText.getText(), appSearchCounter, NUMAPPSTOSHOW, 0);
@@ -301,13 +286,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
             OdeLog.log("prev appSearchCounter = " + appSearchCounter);
           }
           break;  
-<<<<<<< HEAD
-        case 5:
-          if (appPopularCounter - NUMAPPSTOSHOW >= 0) {
-=======
         case REQUEST_MOSTDOWNLOADED:
           if (appPopularCounter - offset >= 0) {
->>>>>>> Fixed message, profile and app page error
             // If the previous page still has apps to retrieve, do it
             appPopularCounter -= NUMAPPSTOSHOW;
             gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);

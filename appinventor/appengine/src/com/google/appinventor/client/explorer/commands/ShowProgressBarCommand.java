@@ -86,10 +86,7 @@ public class ShowProgressBarCommand extends ChainableCommand {
       public void onSuccess(RpcResult result) {
         minPB.addMessages(node.getName(),result);
         if (result.succeeded()) {
-          if(serviceName != "BarcodeAction") {
-            minPB.show();
-          } else {
-            minPB.hide();}
+            minPB.hide();
         } else if (progressBarShow != 2 ) {
           // Build isn't done yet
           Timer timer = new Timer() {
@@ -111,7 +108,6 @@ public class ShowProgressBarCommand extends ChainableCommand {
 
   class ProgressBarDialogBox extends DialogBox{
     public ClickHandler buttonHandler;
-    public Button cancelButton = new Button(MESSAGES.cancelButton());
     public Button dismissButton = new Button(MESSAGES.dismissButton());
     public HTML warningLabel;
     public VerticalPanel contentPanel;
@@ -129,30 +125,30 @@ public class ShowProgressBarCommand extends ChainableCommand {
       buttonHandler = new ClickHandler() {
           @Override
             public void onClick(ClickEvent event) {
-            hide();
-            progressBarShow++;
+               hide();
+               progressBarShow++;
           }
-        };
+       };
 
-      //declare the cancel and ok buttons
-      cancelButton.addClickHandler(buttonHandler);
+      //declare the ok button
       dismissButton.addClickHandler(buttonHandler);
       buttonPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_CENTER);
+      dismissButton.setVisible(false); // we don't need the button unless we get an error
 
       //warning label
       warningLabel = new HTML("");
       warningLabel.setWordWrap(true);
-      warningLabel.setWidth("200px");  // set width to get the text to wrap
+      warningLabel.setWidth("60em");  // set width to get the text to wrap
 
       //warning panel
       warningPanel.setHorizontalAlignment(HorizontalPanel.ALIGN_LEFT);
       warningPanel.add(warningLabel);
 
-      // buttonPanel.add(cancelButton);
+      // button panel
       buttonPanel.add(dismissButton);
       buttonPanel.setSize("100%", "24px");
 
-      //content pannel
+      //content panel
       contentPanel = new VerticalPanel();
       contentPanel.add(mpb);
       contentPanel.add(warningPanel);
@@ -204,9 +200,12 @@ public class ShowProgressBarCommand extends ChainableCommand {
             }
           }
         } catch (NumberFormatException e) {
+          // If the result is an error message, then the number parse will fail,
+          // so we pick up the case of a compilation failure here.
           mpb.setProgress(0);
-          warningLabel.setHTML("<br />Error occured."
-                               + "<br />Check the debugging messages.");
+          // show the dismiss button to dismiss error
+          dismissButton.setVisible(true);
+          warningLabel.setHTML(MESSAGES.unableToCompile(result.getOutput()));
         }
       }
     }

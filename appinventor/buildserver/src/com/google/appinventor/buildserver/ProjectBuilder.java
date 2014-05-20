@@ -112,7 +112,7 @@ public final class ProjectBuilder {
   }
 
     Result build(String userName, ZipFile inputZip, File outputDir, boolean isForRepl, boolean isForWireless,
-               int childProcessRam) {
+               int childProcessRam, String dexCachePath) {
     try {
       // Download project files into a temporary directory
       File projectRoot = createNewTempDir();
@@ -162,7 +162,7 @@ public final class ProjectBuilder {
         // Invoke YoungAndroid compiler
         boolean success =
             Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
-                             keyStorePath, childProcessRam);
+                             keyStorePath, childProcessRam, dexCachePath);
         console.close();
         userErrors.close();
 

@@ -14,6 +14,7 @@ import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.PropertyTypeConstants;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.components.runtime.errors.YailRuntimeError;
+import com.google.appinventor.components.runtime.util.ElementsUtil;
 import com.google.appinventor.components.runtime.util.YailList;
 
 import android.app.Activity;
@@ -47,12 +48,15 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   static final String LIST_ACTIVITY_RESULT_INDEX = LIST_ACTIVITY_CLASS + ".index";
   static final String LIST_ACTIVITY_ANIM_TYPE = LIST_ACTIVITY_CLASS + ".anim";
   static final String LIST_ACTIVITY_SHOW_SEARCH_BAR = LIST_ACTIVITY_CLASS + ".search";
+  static final String LIST_ACTIVITY_TITLE = LIST_ACTIVITY_CLASS + ".title";
 
   private YailList items;
   private String selection;
   private int selectionIndex;
   private boolean showFilter =false;
   private static final boolean DEFAULT_ENABLED = false;
+  private String title = "";    // The Title to display the List Picker with
+                                // if left blank, the App Name is used instead
 
   /**
    * Create a new ListPicker component.
@@ -70,10 +74,10 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
    * Selection property getter method.
    */
   @SimpleProperty(
-      description = "<p>The selected item.  When directly changed by the " +
+      description = "The selected item.  When directly changed by the " +
       "programmer, the SelectionIndex property is also changed to the first " +
       "item in the ListPicker with the given value.  If the value does not " +
-      "appear, SelectionIndex will be set to 0.</p>",
+      "appear, SelectionIndex will be set to 0.",
       category = PropertyCategory.BEHAVIOR)
   public String Selection() {
     return selection;
@@ -88,32 +92,24 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   public void Selection(String value) {
     selection = value;
     // Now, we need to change SelectionIndex to correspond to Selection.
-    // If multiple Selections have the same SelectionIndex, use the first.
-    // If none do, arbitrarily set the SelectionIndex to its default value
-    // of 0.
-    for (int i = 0; i < items.size(); i++) {
-      // The comparison is case-sensitive to be consistent with yail-equal?.
-      if (items.getString(i).equals(value)) {
-        selectionIndex = i + 1;
-        return;
-      }
-    }
-    selectionIndex = 0;
+    selectionIndex = ElementsUtil.setSelectedIndexFromValue(value, items);
   }
 
   @DesignerProperty(
     editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
-    defaultValue = DEFAULT_ENABLED ? "True" : "False")  @SimpleProperty
+    defaultValue = DEFAULT_ENABLED ? "True" : "False")
+  @SimpleProperty
   public void ShowFilterBar(boolean showFilter) {
     this.showFilter = showFilter;
   }
 
   @SimpleProperty(category = PropertyCategory.BEHAVIOR,
-    description = "Returns current state of ShowFilterBar indicating if " +
-    "Search Filter Bar will be displayed on ListPicker or not")
+      description = "Returns current state of ShowFilterBar indicating if " +
+          "Search Filter Bar will be displayed on ListPicker or not")
   public boolean ShowFilterBar() {
     return showFilter;
   }
+
   /**
    * Selection index property getter method.
    */
@@ -135,14 +131,9 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   // results if Selection is set to an incompatible value.
   @SimpleProperty
   public void SelectionIndex(int index) {
-    if (index <= 0 || index > items.size()) {
-      selectionIndex = 0;
-      selection = "";
-    } else {
-      selectionIndex = index;
-      // YailLists are 0-based, but we want to be 1-based.
-      selection = items.getString(selectionIndex - 1);
-    }
+    selectionIndex = ElementsUtil.selectionIndex(index, items);
+    // Now, we need to change Selection to correspond to SelectionIndex.
+    selection = ElementsUtil.setSelectionFromIndex(index, items);
   }
 
   /**
@@ -163,13 +154,7 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   // TODO(user): we need a designer property for lists
   @SimpleProperty
   public void Elements(YailList itemList) {
-    Object[] objects = itemList.toStringArray();
-    for (int i = 0; i < objects.length; i++) {
-      if (!(objects[i] instanceof String)) {
-        throw new YailRuntimeError("Items passed to ListPicker must be Strings", "Error");
-      }
-    }
-    items = itemList;
+    items = ElementsUtil.elements(itemList, "ListPicker");
   }
 
   /**
@@ -185,11 +170,31 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
   // avoid the comma-separated business.
   @SimpleProperty(category = PropertyCategory.BEHAVIOR)
   public void ElementsFromString(String itemstring) {
-    if (itemstring.length() == 0) {
-      items = new YailList();
-    } else {
-      items = YailList.makeList((Object[]) itemstring.split(" *, *"));
-    }
+    items = ElementsUtil.elementsFromString(itemstring);
+  }
+
+  /**
+   * Title property getter method.
+   *
+   * @return  list picker title
+   */
+    @SimpleProperty(category = PropertyCategory.APPEARANCE,
+                    description = "Optional title displayed at the top of the list of choices.")
+  public String Title() {
+    return title;
+  }
+
+  /**
+   * Title property setter method: sets a new caption for the list picker in the
+   * list picker activity's title bar.
+   *
+   * @param title  new list picker caption
+   */
+  @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_STRING,
+      defaultValue = "")
+  @SimpleProperty
+  public void Title(String title) {
+    this.title = title;
   }
 
   @Override
@@ -198,6 +203,9 @@ public class ListPicker extends Picker implements ActivityResultListener, Delete
     intent.setClassName(container.$context(), LIST_ACTIVITY_CLASS);
     intent.putExtra(LIST_ACTIVITY_ARG_NAME, items.toStringArray());
     intent.putExtra(LIST_ACTIVITY_SHOW_SEARCH_BAR, String.valueOf(showFilter)); //convert to string
+    if (!title.equals("")) {
+      intent.putExtra(LIST_ACTIVITY_TITLE, title);
+    }
     // Get the current Form's opening transition anim type,
     // and pass it to the list picker activity. For consistency,
     // the closing animation will be the same (but in reverse)

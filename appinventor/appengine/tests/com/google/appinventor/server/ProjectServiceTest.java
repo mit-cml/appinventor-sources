@@ -7,12 +7,14 @@ package com.google.appinventor.server;
 
 import static com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters.YOUNG_ANDROID_FORM_NAME;
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 
 import com.google.appinventor.common.testutils.TestUtils;
 import com.google.appinventor.components.common.YaVersion;
 import com.google.appinventor.server.encryption.KeyczarEncryptor;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.ProjectNode;
@@ -103,8 +105,10 @@ public class ProjectServiceTest {
 
     PowerMock.mockStatic(LocalUser.class);
     localUserMock = PowerMock.createMock(LocalUser.class);
+    expect(localUserMock.getSessionId()).andReturn("test-session").anyTimes();
+    localUserMock.setSessionId("test-session");
+    expectLastCall().times(1);
     expect(LocalUser.getInstance()).andReturn(localUserMock).anyTimes();
-
     KeyczarEncryptor.rootPath.setForTest(KEYSTORE_ROOT_PATH);
   }
 
@@ -116,6 +120,7 @@ public class ProjectServiceTest {
     projectServiceImpls = Maps.newHashMap();
     projectServiceImpls.put(USER_ID_ONE, projectServiceImpl);
     projectServiceImpls.put(USER_ID_TWO, projectServiceImpl2);
+    localUserMock.setSessionId("test-session");
   }
 
   @After
@@ -166,7 +171,7 @@ public class ProjectServiceTest {
         user1Project1Source1FileId);
 
     long oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
-    long modificationDate = projectServiceImpl.save(user1Project1, user1Project1Source1FileId,
+    long modificationDate = projectServiceImpl.save("test-session", user1Project1, user1Project1Source1FileId,
         YOUNG_ANDROID_COMMENT + user1Project1Source1);
     assertEquals(YOUNG_ANDROID_COMMENT + user1Project1Source1,
         projectServiceImpl.load(user1Project1, user1Project1Source1FileId));
@@ -208,7 +213,7 @@ public class ProjectServiceTest {
     filesWithContent.add(new FileDescriptorWithContent(user1Project2, user1Project2Source1FileId,
         u1p2s1));
     checkModificationDateMatchesStored(oldModificationDate, USER_ID_ONE, user1Project1);
-    modificationDate = projectServiceImpl.save(filesWithContent);
+    modificationDate = projectServiceImpl.save("test-session", filesWithContent);
     assertTrue(oldModificationDate < modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project2);
     oldModificationDate = modificationDate;
@@ -229,7 +234,7 @@ public class ProjectServiceTest {
     assertEquals(u1p2s1, fileWithContent.getContent());
 
     oldModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, user1Project1);
-    modificationDate = projectServiceImpl.deleteFile(user1Project1, user1Project1Source1FileId);
+    modificationDate = projectServiceImpl.deleteFile("test-session", user1Project1, user1Project1Source1FileId);
     assertTrue(oldModificationDate < modificationDate);
     checkModificationDateMatchesStored(modificationDate, USER_ID_ONE, user1Project1);
     oldModificationDate = modificationDate;
@@ -310,8 +315,9 @@ public class ProjectServiceTest {
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject1).isEmpty());
     // No user files yet (e.g. the keystore)
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
-    long project1CreationDate = storageIo.getProjectDateCreated(USER_ID_ONE, yaProject1);
-    long project1ModificationDate = storageIo.getProjectDateModified(USER_ID_ONE, yaProject1);
+    UserProject uproject = storageIo.getUserProject(USER_ID_ONE, yaProject1);
+    long project1CreationDate = uproject.getDateCreated();
+    long project1ModificationDate = uproject.getDateModified();
     assertTrue(project1ModificationDate >= project1CreationDate);
 
     // Make a copy of project 1.
@@ -335,9 +341,9 @@ public class ProjectServiceTest {
     assertEquals(expectedYaFiles2, getTextFiles(USER_ID_ONE, yaProject2));
     assertTrue(getNonTextFiles(USER_ID_ONE, yaProject2).isEmpty());
     assertTrue(getUserFiles(USER_ID_ONE).isEmpty());
-    long project1CopyCreationDate = storageIo.getProjectDateCreated(USER_ID_ONE, yaProject2);
-    long project1CopyModificationDate =
-        storageIo.getProjectDateModified(USER_ID_ONE, yaProject2);
+    UserProject uproject1 = storageIo.getUserProject(USER_ID_ONE, yaProject2);
+    long project1CopyCreationDate = uproject1.getDateCreated();
+    long project1CopyModificationDate = uproject1.getDateModified();
     assertTrue(project1CopyCreationDate > project1CreationDate);
     assertTrue(project1CopyCreationDate > project1ModificationDate);
     assertTrue(project1CopyModificationDate >= project1CopyCreationDate);
@@ -363,8 +369,12 @@ public class ProjectServiceTest {
 
     String scmFileId = "src/com/domain/noname/" + projectName + "/"
         + YOUNG_ANDROID_FORM_NAME + ".scm";
-    storageIo.uploadFile(projectId, scmFileId,
-        userId, YOUNG_ANDROID_PROJECT_SCM_SOURCE, StorageUtil.DEFAULT_CHARSET);
+    try {
+      storageIo.uploadFile(projectId, scmFileId,
+          userId, YOUNG_ANDROID_PROJECT_SCM_SOURCE, StorageUtil.DEFAULT_CHARSET);
+    } catch (BlocksTruncatedException e) {
+      // Won't happen
+    }
 
     return projectId;
   }
@@ -476,7 +486,7 @@ public class ProjectServiceTest {
     String storedSettings =
         "{\"" + SettingsConstants.PROJECT_YOUNG_ANDROID_SETTINGS + "\":" +
         "{\"" + SettingsConstants.YOUNG_ANDROID_SETTINGS_ICON + "\":\"KittyIcon.png\"}}";
-    projectServiceImpl.storeProjectSettings(projectId, storedSettings);
+    projectServiceImpl.storeProjectSettings("test-session", projectId, storedSettings);
     loadedSettings = projectServiceImpl.loadProjectSettings(projectId);
     assertEquals(storedSettings, loadedSettings);
     PowerMock.verifyAll();
