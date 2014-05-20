@@ -70,9 +70,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     ContactsContract.CommonDataKinds.Phone.TYPE,
   };
 
- // private static final int ID_INDEX = 0;
- // private static final int NAME_INDEX = 1;
-
   protected final Activity activityContext;
   private final Uri intentUri;
 
@@ -90,7 +87,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
    * @param container the parent container.
    */
   public ContactPicker(ComponentContainer container) {
-    //this(container, Contacts.People.CONTENT_URI);
     this(container, ContactsContract.Contacts.CONTENT_URI);
   }
 
@@ -125,10 +121,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public String EmailAddress() {
-    // TODO(halabelson): Update this code to stop using android.provider.contacts and swith
-    // to android.provider.ContactContracts
-    // Note(niki) this should now be done.
-
     // Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
     // deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
     // If there's a phone where it does not work, we'll get the error at PuntContactSelection
@@ -193,7 +185,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
         try {
           contactCursor = activityContext.getContentResolver().query(contactUri,
               CONTACT_PROJECTION, null, null, null);
-          
+
           if (contactCursor.moveToFirst()) {
             final int ID_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts._ID);
             final int NAME_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
@@ -211,29 +203,20 @@ public class ContactPicker extends Picker implements ActivityResultListener {
             emailCursor = activityContext.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
                 EMAIL_PROJECTION, Data.CONTACT_ID + "=?", new String[] {id}, null);
 
-            
             String emailToStore = "";
             List<String> emailListToStore = new ArrayList<String>();
-            
-            Log.d("ContactPicker", this.intentUri + "what" + guardCursorGetString(contactCursor, PHOTO_INDEX));
 
-            // Currently gets the first email address based on order in DB query.
             if (emailCursor.moveToFirst()) {
               final int ADDRESS_INDEX = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
-              //final int TYPE_INDEX = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE);
               emailToStore = guardCursorGetString(emailCursor, ADDRESS_INDEX);
               while (!emailCursor.isAfterLast()) {
                 emailListToStore.add(guardCursorGetString(emailCursor, ADDRESS_INDEX));
+                emailCursor.moveToNext();
               }
-                
-              emailCursor.moveToNext(); 
             }
-            
-            emailAddressList = emailListToStore;
-            emailAddress = emailListToStore.get(0);
-            //emailAddress = getEmailAddress(emailId);    
 
-            Log.i("ContactPicker", "got past email" + guardCursorGetString(contactCursor, PHOTO_INDEX));
+            emailAddress = emailToStore;
+            emailAddressList = emailListToStore;
 
 
             // Get the first phone number and entire list of phone numbers associated with the contact.
@@ -243,23 +226,22 @@ public class ContactPicker extends Picker implements ActivityResultListener {
             String phoneToStore = "";
             List<String> phoneListToStore = new ArrayList<String>();
 
-            // Currently gets the first phone number based on order in DB query.
             if (phoneCursor.moveToFirst()) {
               final int PHONE_INDEX = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
               phoneToStore = guardCursorGetString(phoneCursor, PHONE_INDEX);
               while (!phoneCursor.isAfterLast()) {
                 phoneListToStore.add(guardCursorGetString(phoneCursor, PHONE_INDEX));
+                phoneCursor.moveToNext();
               }
-
-              phoneCursor.moveToNext();
             }
+
             phoneNumber = phoneToStore;
             phoneNumberList = phoneListToStore;
+
 
             Log.i("ContactPicker",
                 "Contact name = " + contactName + ", email address = " + emailAddress +
                 ", phone number = " + phoneNumber + ", contactPhotoUri = " +  contactPictureUri);
-                      
           }
         } catch (Exception e) {
           // There was an exception in trying to extract the cursor from the activity context.
@@ -268,10 +250,13 @@ public class ContactPicker extends Picker implements ActivityResultListener {
           Log.i("ContactPicker", "checkContactUri failed: D");
           puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
         } finally {
-          if(contactCursor != null){
+          if (contactCursor != null) {
             contactCursor.close();
           }
-          if(emailCursor != null){
+          if (emailCursor != null) {
+            emailCursor.close();
+          }
+          if (phoneCursor != null) {
             emailCursor.close();
           }
         }
@@ -303,15 +288,8 @@ public class ContactPicker extends Picker implements ActivityResultListener {
       return false;
     }
     String UriSpecific = suspectUri.getSchemeSpecificPart();
-  /*  if (UriSpecific.startsWith("//com.android.contacts/contact")) {
-      Log.i("ContactPicker", "checkContactUri failed: B");
-      // We trap this specific pattern in order be able to show the
-      // error about search.  This error will occur with contactPicker but not
-      // PhoneNumberPicker
-      puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_SEARCH_IN_CONTACT_PICKING);
-      return false;
-    } else */
-    if (!(UriSpecific.startsWith(requiredPattern))) {
+
+    if (!UriSpecific.startsWith(requiredPattern)) {
       Log.i("ContactPicker", "checkContactUri failed: C");
       Log.i("Contact Picker", suspectUri.getPath());
       puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
@@ -329,42 +307,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     contactPictureUri = "";
     container.$form().dispatchErrorOccurredEvent(this, "", errorNumber);
   }
-
-
-  //Not used anymore
-//  protected String getEmailAddress(String emailId) {
-//    Log.i("ContactPicker", "getEmailAddress emailId=" + emailId);
-//    int id;
-//    try {
-//      id = Integer.parseInt(emailId);
-//    } catch (NumberFormatException e) {
-//      Log.i("ContactPicker", "excepted");
-//      return "";
-//    }
-//
-//    Log.i("ContactPicker", "getEmailAddress emailId=" + emailId + " id=" + id);
-//    
-//    String data = "";
-//    String where = "contact_methods._id = " + id;
-//    String[] projection = {
-//      Contacts.ContactMethods.DATA
-//    };
-//    Cursor cursor = activityContext.getContentResolver().query(
-//        Contacts.ContactMethods.CONTENT_EMAIL_URI,
-//        projection, where, null, null);
-//    try {
-//      if (cursor.moveToFirst()) {
-//        data = guardCursorGetString(cursor, 0);
-//      }
-//    } finally {
-//      cursor.close();
-//    }
-//    // this extra check for null might be redundant, but we given that there are mysterious errors
-//    // on some phones, we'll leave it in just to be extra careful
-//    Log.i("ContactPicker", "data="+data);
-//    return ensureNotNull(data);
-//  }
-
 
   // If the selection returns null, this should be passed back as a
   // an empty string to prevent errors if the app tries to convert this
@@ -389,7 +331,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     return ensureNotNull(result);
   }
 
-  protected String ensureNotNull (String value) {
+  protected String ensureNotNull(String value) {
     if (value == null) {
       return "";
     } else {

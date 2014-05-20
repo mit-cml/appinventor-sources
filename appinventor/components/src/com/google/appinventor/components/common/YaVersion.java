@@ -428,7 +428,7 @@ public class YaVersion {
   // For CONTACTPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
   // For CONTACTPICKER_COMPONENT_VERSION 5:
-  // - Phone number was added to the data associated with a contact.
+  // - Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
   public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:

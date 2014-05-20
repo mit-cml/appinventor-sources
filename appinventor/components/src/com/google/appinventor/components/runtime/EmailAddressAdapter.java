@@ -30,10 +30,6 @@ import android.util.Log;
  * @author hal@mit.edu (Hal Abelson)
  */
 
-// TODO(halabelson): Get rid of the use of android.provder.Contacts (deprecated) and
-// replace by android.provider.contactsContract and associated methods
-// Update(niki): Should be finished
-
 public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private static final boolean DEBUG = false;
@@ -45,14 +41,13 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private Context context;
 
-  private static final String [] PROJECTION = {
+  private static final String[] PROJECTION = {
     Data._ID,
     Data.DISPLAY_NAME,
     Email.ADDRESS,
-    Data.MIMETYPE
+    Data.MIMETYPE,
   };
-  
-  
+
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
@@ -61,10 +56,10 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   @Override
   public final String convertToString(Cursor cursor) {
-    
+
     int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
     int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
-    
+
     String name = cursor.getString(NAME_INDEX);
     String address = cursor.getString(EMAIL_INDEX);
 
@@ -72,12 +67,12 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   }
 
   private final String makeDisplayString(Cursor cursor) {
-    
+
     int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
     int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
     StringBuilder s = new StringBuilder();
     boolean flag = false;
-    
+
     String name = cursor.getString(NAME_INDEX);
     String address = cursor.getString(EMAIL_INDEX);
 
@@ -106,7 +101,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   @Override
   public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-    
+
     String where = null;
     android.net.Uri db = Data.CONTENT_URI;
 
@@ -114,7 +109,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     s.append("(" + Data.MIMETYPE + "='" + Email.CONTENT_ITEM_TYPE + "')");
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
-      
+
       s.append(" AND ");
       s.append("(display_name LIKE ");
       s.append(filter);
@@ -123,7 +118,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
       s.append(")");
     }
     where = s.toString();
-    
+
     // Note(hal): This lists the column names in the table being accessed, since they aren't
     // obvious to me from the documentation
     if (DEBUG) {
@@ -133,7 +128,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
         Log.d(TAG, "column " + i + "=" + c.getColumnName(i));
       }
     }
-    
+
     return contentResolver.query(db, PROJECTION,
         where, null, SORT_ORDER);
   }

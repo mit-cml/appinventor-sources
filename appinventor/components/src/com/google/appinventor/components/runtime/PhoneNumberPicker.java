@@ -54,13 +54,6 @@ import android.util.Log;
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class PhoneNumberPicker extends ContactPicker {
 
-/*  private static final String[] PROJECTION = {
-    Contacts.PeopleColumns.NAME,
-    Contacts.PhonesColumns.NUMBER,
-    Contacts.Phones.PERSON_ID,
-    Contacts.People.PRIMARY_EMAIL_ID,
-  };*/
-
   private static final String[] NAME_PROJECTION = {
     Data.CONTACT_ID,
     ContactsContract.Contacts.DISPLAY_NAME,
@@ -80,11 +73,6 @@ public class PhoneNumberPicker extends ContactPicker {
     Email.TYPE,
   };
 
-/*  private static final int NAME_INDEX = 0;
-  private static final int NUMBER_INDEX = 1;
-  private static final int PERSON_INDEX = 2;
-  private static final int EMAIL_INDEX = 3;
-*/
   private String phoneNumber;
 
   /**
@@ -93,7 +81,6 @@ public class PhoneNumberPicker extends ContactPicker {
    * @param container the parent container.
    */
   public PhoneNumberPicker(ComponentContainer container) {
-    //super(container, Contacts.Phones.CONTENT_URI);
     super(container, Phone.CONTENT_URI);
   }
 
@@ -129,64 +116,65 @@ public class PhoneNumberPicker extends ContactPicker {
         // This test is not good enough.  The lookup code below does not work with
         // Motorola Blur (Droid Global), even though the URI has the correct form.
         // Hopefully, moving to the new contact scheme will solve this problem.
-        // update: did it solve the problem?
+        // Update: did it solve the problem?
         Cursor contactCursor = null;
         Cursor phoneCursor = null;
         Cursor emailCursor = null;
         try {
-          
+
           String id = "";
-          
+
           contactCursor = activityContext.getContentResolver().query(phoneUri,
               NAME_PROJECTION, null, null, null);
           if (contactCursor.moveToFirst()) {
             final int ID_INDEX = contactCursor.getColumnIndex(Data.CONTACT_ID);
             final int NAME_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
             final int PHOTO_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI);
-            
+
             id = guardCursorGetString(contactCursor, ID_INDEX);
             contactName = guardCursorGetString(contactCursor, NAME_INDEX);
             contactPictureUri = guardCursorGetString(contactCursor, PHOTO_INDEX);
-            
+
           }
-          
+
           phoneCursor = activityContext.getContentResolver().query(phoneUri,
               PHONE_PROJECTION, null, null, null);
           //Get the first nonempty phone number
-          if(phoneCursor.moveToFirst()){
-            final int NUMBER_INDEX = phoneCursor.getColumnIndex(Phone.NUMBER);       
+          if (phoneCursor.moveToFirst()) {
+            final int NUMBER_INDEX = phoneCursor.getColumnIndex(Phone.NUMBER);
             phoneNumber = guardCursorGetString(phoneCursor, NUMBER_INDEX);
           }
 
           emailAddress = "";
-          emailCursor = activityContext.getContentResolver().query(Email.CONTENT_URI, 
+          emailCursor = activityContext.getContentResolver().query(Email.CONTENT_URI,
               EMAIL_PROJECTION, Data.CONTACT_ID + "=?", new String [] {id}, null);
 
           //Get the first nonempty email
-          if(emailCursor.moveToFirst()){
+          if (emailCursor.moveToFirst()) {
             final int EMAIL_INDEX = emailCursor.getColumnIndex(Email.ADDRESS);
-            
-            while(!emailCursor.isAfterLast()){
-              
+
+            while (!emailCursor.isAfterLast()) {
+
               emailAddress = guardCursorGetString(emailCursor, EMAIL_INDEX);
 
-              if(emailAddress != null && emailAddress.length() > 0){
+              if (emailAddress != null && emailAddress.length() > 0) {
                 break;
               }
 
-              emailCursor.moveToNext();        
+              emailCursor.moveToNext();
             }
           }
-          
+
           Log.i("PhoneNumberPicker",
               "Contact name = " + contactName + ", phone number = " + phoneNumber +
-              ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri); 
+              ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
 
         } catch (Exception e) {
           // There was an exception in trying to compute the cursor from the activity context.
           // It's bad form to catch an arbitrary exception, but if there is an error here
           // it's unclear what's going on.
           puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
+
         } finally {
           if(contactCursor != null) {
             contactCursor.close();
@@ -202,6 +190,4 @@ public class PhoneNumberPicker extends ContactPicker {
       AfterPicking();
     }  //ends if (requestCode ....
   }
-
-
 }

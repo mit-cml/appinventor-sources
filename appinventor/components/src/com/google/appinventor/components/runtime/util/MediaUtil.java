@@ -179,7 +179,7 @@ public class MediaUtil {
 
       case CONTACT_URI:
         // Open the photo for the contact.
-        InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(form.getContentResolver(), 
+        InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(form.getContentResolver(),
             Uri.parse(mediaPath));
 
         if (is != null) {
@@ -265,7 +265,7 @@ public class MediaUtil {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
-    
+
     MediaSource mediaSource = determineMediaSource(form, mediaPath);
 
     // Unlike other types of media, we don't cache image files from the internet to temp files.

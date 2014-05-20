@@ -587,7 +587,7 @@ public final class YoungAndroidFormUpgrader {
       srcCompVersion = 4;
     }
     if (srcCompVersion < 5) {
-      // The PhoneNumber property was added.
+      // The PhoneNumber, PhoneNumberList, and EmailAddressList properties were added.
       srcCompVersion = 5;
     }
     return srcCompVersion;
