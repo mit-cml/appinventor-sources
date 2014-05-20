@@ -256,8 +256,10 @@ public class YaVersion {
   // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 92:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 93;
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 5
 
-    public static final int YOUNG_ANDROID_VERSION = 92;
+    public static final int YOUNG_ANDROID_VERSION = 93;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -425,7 +427,9 @@ public class YaVersion {
   // - The method Open was added.
   // For CONTACTPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 4;
+  // For CONTACTPICKER_COMPONENT_VERSION 5:
+  // - Phone number was added to the data associated with a contact.
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

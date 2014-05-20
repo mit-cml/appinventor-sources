@@ -9,16 +9,14 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.provider.Contacts.ContactMethods;
-import android.provider.Contacts.People;
+import android.provider.ContactsContract.CommonDataKinds.Email;
+import android.provider.ContactsContract.Data;
 import android.text.TextUtils;
 import android.text.util.Rfc822Token;
 import android.view.View;
 import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
-
 import android.util.Log;
-
 
 
 /**
@@ -34,27 +32,27 @@ import android.util.Log;
 
 // TODO(halabelson): Get rid of the use of android.provder.Contacts (deprecated) and
 // replace by android.provider.contactsContract and associated methods
-
+// Update(niki): Should be finished
 
 public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private static final boolean DEBUG = false;
   private static final String TAG = "EmailAddressAdapter";
 
-  public static final int NAME_INDEX = 1;
-  public static final int DATA_INDEX = 2;
 
-  private static final String SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
+  private static final String SORT_ORDER = Data.TIMES_CONTACTED + " DESC, " + Data.DISPLAY_NAME;
   private ContentResolver contentResolver;
 
   private Context context;
 
-  private static final String[] PROJECTION = {
-    ContactMethods._ID,     // 0
-    ContactMethods.NAME,    // 1
-    ContactMethods.DATA     // 2
+  private static final String [] PROJECTION = {
+    Data._ID,
+    Data.DISPLAY_NAME,
+    Email.ADDRESS,
+    Data.MIMETYPE
   };
-
+  
+  
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
@@ -63,17 +61,25 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   @Override
   public final String convertToString(Cursor cursor) {
+    
+    int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
+    int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
+    
     String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(DATA_INDEX);
+    String address = cursor.getString(EMAIL_INDEX);
 
     return new Rfc822Token(name, address, null).toString();
   }
 
   private final String makeDisplayString(Cursor cursor) {
+    
+    int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
+    int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
     StringBuilder s = new StringBuilder();
     boolean flag = false;
+    
     String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(DATA_INDEX);
+    String address = cursor.getString(EMAIL_INDEX);
 
     if (!TextUtils.isEmpty(name)) {
       s.append(name);
@@ -100,23 +106,24 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   @Override
   public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
+    
     String where = null;
+    android.net.Uri db = Data.CONTENT_URI;
 
-    android.net.Uri db = ContactMethods.CONTENT_EMAIL_URI;
-
+    StringBuilder s = new StringBuilder();
+    s.append("(" + Data.MIMETYPE + "='" + Email.CONTENT_ITEM_TYPE + "')");
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
-
-      StringBuilder s = new StringBuilder();
-      s.append("(name LIKE ");
+      
+      s.append(" AND ");
+      s.append("(display_name LIKE ");
       s.append(filter);
-      s.append(") OR (display_name LIKE ");
-      s.append(filter);
+     // s.append(") OR (display_name LIKE ");
+     // s.append(filter);
       s.append(")");
-
-      where = s.toString();
     }
-
+    where = s.toString();
+    
     // Note(hal): This lists the column names in the table being accessed, since they aren't
     // obvious to me from the documentation
     if (DEBUG) {
@@ -126,7 +133,7 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
         Log.d(TAG, "column " + i + "=" + c.getColumnName(i));
       }
     }
-
+    
     return contentResolver.query(db, PROJECTION,
         where, null, SORT_ORDER);
   }

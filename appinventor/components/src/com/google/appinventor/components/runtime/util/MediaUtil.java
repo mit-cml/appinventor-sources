@@ -18,7 +18,7 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.Contacts;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -179,8 +179,9 @@ public class MediaUtil {
 
       case CONTACT_URI:
         // Open the photo for the contact.
-        InputStream is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
+        InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(form.getContentResolver(), 
             Uri.parse(mediaPath));
+
         if (is != null) {
           return is;
         }
@@ -264,7 +265,7 @@ public class MediaUtil {
     if (mediaPath == null || mediaPath.length() == 0) {
       return null;
     }
-
+    
     MediaSource mediaSource = determineMediaSource(form, mediaPath);
 
     // Unlike other types of media, we don't cache image files from the internet to temp files.
