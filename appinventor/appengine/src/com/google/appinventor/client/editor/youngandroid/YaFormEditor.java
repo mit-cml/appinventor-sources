@@ -799,6 +799,7 @@ public final class YaFormEditor extends SimpleEditor implements FormChangeListen
             name,
             property.getDefaultValue(),
             property.getCaption(),
+            property.getCategory(),
             property.getDescription(),
             PropertiesUtil.createPropertyEditor(property.getEditorType(),
                 property.getDefaultValue(), this, property.getEditorArgs()),
