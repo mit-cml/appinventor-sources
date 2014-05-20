@@ -22,6 +22,9 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Data;
 import android.util.Log;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Component enabling a user to select a contact.
  *
@@ -77,6 +80,9 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   protected String emailAddress;
   protected String contactPictureUri;
   protected String phoneNumber;
+
+  protected List emailAddressList;
+  protected List phoneNumberList;
 
   /**
    * Create a new ContactPicker component.
@@ -135,12 +141,30 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   }
 
   /**
+   * EmailAddressList property getter method.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR)
+  public List EmailAddressList() {
+    return ensureNotNull(emailAddressList);
+  }
+
+  /**
    * PhoneNumber property getter method.
    */
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public String PhoneNumber() {
     return ensureNotNull(phoneNumber);
+  }
+
+  /**
+   * PhoneNumberList property getter method.
+   */
+  @SimpleProperty(
+      category = PropertyCategory.BEHAVIOR)
+  public List PhoneNumberList() {
+    return ensureNotNull(phoneNumberList);
   }
 
   @Override
@@ -182,49 +206,55 @@ public class ContactPicker extends Picker implements ActivityResultListener {
             contactPictureUri = guardCursorGetString(contactCursor, THUMBNAIL_INDEX);
 
             Log.i("ContactPicker", "photo_uri=" + guardCursorGetString(contactCursor, PHOTO_INDEX));
+
+            // Get the first email address and entire list of email addresses associated with the contact.
             emailCursor = activityContext.getContentResolver().query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, 
                 EMAIL_PROJECTION, Data.CONTACT_ID + "=?", new String[] {id}, null);
 
-            Log.d("ContactPicker", this.intentUri + "what" + guardCursorGetString(contactCursor, PHOTO_INDEX));
             
             String emailToStore = "";
+            List<String> emailListToStore = new ArrayList<String>();
             
+            Log.d("ContactPicker", this.intentUri + "what" + guardCursorGetString(contactCursor, PHOTO_INDEX));
+
             // Currently gets the first email address based on order in DB query.
             if (emailCursor.moveToFirst()) {
               final int ADDRESS_INDEX = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.ADDRESS);
               //final int TYPE_INDEX = emailCursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.TYPE);
-              
+              emailToStore = guardCursorGetString(emailCursor, ADDRESS_INDEX);
               while (!emailCursor.isAfterLast()) {
-                emailToStore = guardCursorGetString(emailCursor, ADDRESS_INDEX);
-                if (emailToStore.length() > 0) {
-                  break;
-                }
+                emailListToStore.add(guardCursorGetString(emailCursor, ADDRESS_INDEX));
+              }
                 
-                emailCursor.moveToNext();
-              } 
+              emailCursor.moveToNext(); 
             }
-            emailAddress = emailToStore;
-            //emailAddress = getEmailAddress(emailId);            
             
+            emailAddressList = emailListToStore;
+            emailAddress = emailListToStore.get(0);
+            //emailAddress = getEmailAddress(emailId);    
+
+            Log.i("ContactPicker", "got past email" + guardCursorGetString(contactCursor, PHOTO_INDEX));
+
+
+            // Get the first phone number and entire list of phone numbers associated with the contact.
             phoneCursor = activityContext.getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                 PHONE_PROJECTION, Data.CONTACT_ID + "=?", new String[] {id}, null);
 
             String phoneToStore = "";
+            List<String> phoneListToStore = new ArrayList<String>();
 
             // Currently gets the first phone number based on order in DB query.
             if (phoneCursor.moveToFirst()) {
               final int PHONE_INDEX = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-
+              phoneToStore = guardCursorGetString(phoneCursor, PHONE_INDEX);
               while (!phoneCursor.isAfterLast()) {
-                phoneToStore = guardCursorGetString(phoneCursor, PHONE_INDEX);
-                if (phoneToStore.length() > 0) {
-                  break;
-                }
-
-                phoneCursor.moveToNext();
+                phoneListToStore.add(guardCursorGetString(phoneCursor, PHONE_INDEX));
               }
+
+              phoneCursor.moveToNext();
             }
             phoneNumber = phoneToStore;
+            phoneNumberList = phoneListToStore;
 
             Log.i("ContactPicker",
                 "Contact name = " + contactName + ", email address = " + emailAddress +
@@ -362,6 +392,14 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   protected String ensureNotNull (String value) {
     if (value == null) {
       return "";
+    } else {
+      return value;
+    }
+  }
+
+  protected List ensureNotNull(List value) {
+    if (value == null) {
+      return new ArrayList();
     } else {
       return value;
     }
