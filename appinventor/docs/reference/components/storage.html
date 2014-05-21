@@ -441,10 +441,38 @@
 <h1>Storage - App Inventor for Android</h1>
 <h2>Table of Contents</h2>
 <ul>
+  <li> <a href="#File"> File </a> </li>
   <li> <a href="#FusionTablesControl"> FusionTablesControl </a> </li>
   <li> <a href="#TinyDB"> TinyDB </a> </li>
   <li> <a href="#TinyWebDB"> TinyWebDB </a> </li>
 </ul>
+
+<h2 id="File">File</h2>
+
+<p>Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.</p>
+
+<h3>Properties</h3>
+none
+
+<h3>Events</h3>
+<dl>
+  <dt><code>GotText(text text)</code></dt>
+  <dd>Event indicating that the contents from the file have been read.</dd>
+</dl>
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>AppendToFile(text text, text fileName)</code></dt>
+  <dd>Appends text to the end of a file storage, creating the file if it does not exist. See the help text under SaveFile for information about where files are written.</dd>
+  <dt><code>Delete(text fileName)</code></dt>
+  <dd>Deletes a file from storage. Prefix the filename with / to delete a specific file in the SD card, for instance /myFile.txt. will delete the file /sdcard/myFile.txt. If the file does not begin with a /, then the file located in the programs private storage will be deleted. Starting the file with // is an error because assets files cannot be deleted.</dd>
+  <dt><code>ReadFrom(text fileName)</code></dt>
+  <dd>Reads text from a file in storage. Prefix the filename with / to read from a specific file on the SD card. for instance /myFile.txt will read the file /sdcard/myFile.txt. To read assets packaged with an application (also works for the Companion) start the filename with // (two slashes). If a filename does not start with a slash, it will be read from the applications private storage (for packaged apps) and from /sdcard/AppInventor/data for the Companion.</dd>
+  <dt><code>SaveFile(text text, text fileName)</code></dt>
+  <dd>Saves text to a file. If the filename begins with a slash (/) the file is written to the sdcard. For example writing to /myFile.txt will write the file to /sdcard/myFile.txt. If the filename does not start with a slash, it will be written in the programs private data directory where it will not be accessible to other programs on the phone. There is a special exception for the AI Companion where these files are written to /sdcard/AppInventor/data to facilitate debugging. Note that this block will overwrite a file if it already exists.
+If you want to add content to a file use the append block.</dd>
+</dl>
+
 <h2 id="FusiontablesControl"> FusiontablesControl </h2>
 <img alt="Picture of Fusion Tables component" src="images/fusiontables.png">
 <p> Google Fusion Tables lets you store, share, query and visualize

@@ -332,6 +332,12 @@ public interface Images extends Resources {
   ImageResource tinyDB();
 
   /**
+   * Designer palette item: File Component
+   */
+  @Source("com/google/appinventor/images/file.png")
+  ImageResource file();
+
+  /**
    * Designer palette item: TinyWebDB Component
    */
   @Source("com/google/appinventor/images/tinyWebDB.png")
@@ -464,5 +470,11 @@ public interface Images extends Resources {
     */
   @Source("com/google/appinventor/images/spinner.png")
   ImageResource spinner();
+
+  /**
+    * Designer palette item: YandexTranslate
+    */
+  @Source("com/google/appinventor/images/yandex.png")
+  ImageResource yandex();
 
 }
