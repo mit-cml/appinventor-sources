@@ -56,6 +56,8 @@ public class Autocomplete extends TextBoxBase {
   private ArrayAdapter<String> adapter;
   private YailList items = new YailList();
 
+  AutoCompleteTextView actv;
+
   /**
    * Create a new Autocomplete component.
    *
@@ -64,7 +66,8 @@ public class Autocomplete extends TextBoxBase {
   public Autocomplete(ComponentContainer container) {
     super(container, new AutoCompleteTextView(container.$context()));
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_dropdown_item_1line);
-    ((AutoCompleteTextView) super.view).setAdapter(adapter);
+    actv = (AutoCompleteTextView) super.view;
+    actv.setAdapter(adapter);
   }
 
   /**
@@ -82,7 +85,7 @@ public class Autocomplete extends TextBoxBase {
   @SimpleProperty(description = "adds the passed text element to the list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
-    items = ElementsUtil.elements(itemList, "Spinner");
+    items = ElementsUtil.elements(itemList, "Autocomplete");
     setAdapterData(itemList.toStringArray());
   }
 
@@ -124,5 +127,14 @@ public class Autocomplete extends TextBoxBase {
     InputMethodManager imm =
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+
+  /**
+   * showDropDown: displays the dropdown
+   */
+  @SimpleFunction(
+      description = "showDropDown: displays the dropdown")
+  public void showDropDown() {
+    actv.showDropDown();
   }
 }

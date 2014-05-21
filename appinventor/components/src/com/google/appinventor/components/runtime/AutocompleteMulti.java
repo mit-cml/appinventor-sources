@@ -34,10 +34,11 @@ import android.widget.MultiAutoCompleteTextView;
  */
 
 @DesignerComponent(version = YaVersion.AUTOCOMPLETE_COMPONENT_VERSION,
-    description = "An Autocomplete is a kind of text box.  " +
+    description = "An AutocompleteMulti is a kind of text box.  " +
     "If the user begins entering the text " +
     ", the phone will show a dropdown menu of " +
-    "choices that complete the entry.  If there are many elements, the " +
+    "choices that complete the entry.  You can add multiple items in autocompletemulti, each " +
+    " separated by comma. If there are many elements, the " +
     "dropdown can take several seconds to appear, and can show intermediate results " +
     "while the matches are being computed. <p>The initial contents " +
     "of the text box and the contents< after user entry is in the <code>Text</code> " +
@@ -58,6 +59,8 @@ public class AutocompleteMulti extends TextBoxBase {
 
   private YailList items = new YailList();
 
+  MultiAutoCompleteTextView mactv;
+
   /**
    * Create a new Autocomplete component.
    *
@@ -66,8 +69,9 @@ public class AutocompleteMulti extends TextBoxBase {
   public AutocompleteMulti(ComponentContainer container) {
     super(container, new MultiAutoCompleteTextView(container.$context()));
     adapter = new ArrayAdapter<String>(container.$context(), android.R.layout.simple_dropdown_item_1line);
-    ((MultiAutoCompleteTextView) super.view).setAdapter(adapter);
-    ((MultiAutoCompleteTextView) super.view).setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+    mactv = (MultiAutoCompleteTextView) super.view;
+    mactv.setAdapter(adapter);
+    mactv.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
   }
 
   /**
@@ -85,7 +89,7 @@ public class AutocompleteMulti extends TextBoxBase {
   @SimpleProperty(description = "adds the passed text element to the list",
       category = PropertyCategory.BEHAVIOR)
   public void Elements(YailList itemList){
-    items = ElementsUtil.elements(itemList, "Spinner");
+    items = ElementsUtil.elements(itemList, "AutocompleteMulti");
     setAdapterData(itemList.toStringArray());
   }
 
@@ -127,5 +131,14 @@ public class AutocompleteMulti extends TextBoxBase {
     InputMethodManager imm =
       (InputMethodManager) container.$context().getSystemService(Context.INPUT_METHOD_SERVICE);
     imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+  }
+
+  /**
+   * showDropDown: displays the dropdown
+   */
+  @SimpleFunction(
+      description = "showDropDown: displays the dropdown")
+  public void showDropDown() {
+    mactv.showDropDown();
   }
 }
