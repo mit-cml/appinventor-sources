@@ -56,7 +56,13 @@ public final class PrivacyEditor extends Composite {
     });
     pVertPanel.add(backButton);
     
-    optinText = new HTML("<b>This is where you can opt in or out of the automatic privacy description generation feature.<br/>To opt in, please check the box below:</b>");
+    String instruction = "Privacy description is a document that describes privacy-sensitive behaviors of your mobile application. </br>" +
+                         "It informs users what components are in your app and how they are used. It offers general transparency </br>" +
+                         "to end users. PrivacyInformer is a tool that automatically generates a privacy description document for your </br>" +
+                         "mobile app, and offers user an option to view it in your app. Once you opt in, this privacy description will </br>" +
+                         "be automatically maintained and updated as you make changes to your project.</br><br>" +
+                         "To opt in, please check the box below:";
+    optinText = new HTML(instruction);
     pVertPanel.add(optinText);
     
     optInCheckbox = new CheckBox(" " + MESSAGES.optIntoPrivacyNoticeCheckbox()) {

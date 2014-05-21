@@ -39,7 +39,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static final Logger LOG = Logger.getLogger(PrivacyEditorServiceImpl.class.getName());
   
   // Custom Defined Constants
-  private static final String BASE_NS = "http://www.example.org/privacyDescription#";
+  private static final String BASE_NS = "http://ai2.appinventor.mit.edu/privacyDescription/";
   private static final String TEMPLATE_LOC ="privacy_templates/"; // template location with respective to current classpath
   private static final String AI_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#";
   private static final String COMPONENT_NS = "http://dig.csail.mit.edu/2014/PrivacyInformer/";
@@ -55,14 +55,14 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
   private static final JSONParser JSON_PARSER = new ServerJsonParser();
   private static Model model = ModelFactory.createDefaultModel();
   private static Model ontModel = ModelFactory.createDefaultModel();
+  private static String project_ns = "";
   
   @Override
   public String getPrivacyTTL(long projectId) {
-    // reset model statements and prefixes
+    // reset model statements
     model.removeAll();
     ontModel.removeAll();
-    model.setNsPrefix("", BASE_NS);
-    model.setNsPrefix("ai", AI_NS);
+    project_ns = "";
     
     // get templates
     List<String> templates = getTemplates(getClass());
@@ -71,11 +71,16 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     // get userId based on projectId
     final String userId = userInfoProvider.getUserId();
     
-    // create a unique URI based on the project name and email address
-    // populate it with basic RDF.type
+    // create a unique namespace for this privacy description  based on the project name and email address
     String projectName = storageIo.getProjectName(userId, projectId);
     String userEmail = userInfoProvider.getUserEmail();
-    String privacyDescriptionURI = BASE_NS + projectName + "_" + userEmail.split("@")[0];
+    project_ns = BASE_NS + projectName + "_" + userEmail.split("@")[0] + "_" + projectId + "#";
+    
+    // set the prefixes
+    model.setNsPrefix("", project_ns);
+    model.setNsPrefix("ai", AI_NS);
+    
+    String privacyDescriptionURI = project_ns + "me";
     Resource privacyDescription = model.createResource(privacyDescriptionURI).addProperty(RDF.type, ResourceFactory.createResource( AI_NS + "PrivacyDescription"));
     
     // get the project source files 
@@ -105,7 +110,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
     // Write the model statements to an out string
     StringWriter out = new StringWriter();
     model.write(out, "TTL");
-    
+    //System.out.println(out.toString());
     return out.toString();
   }
 
@@ -181,17 +186,29 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
           Resource subject = cur.getSubject().asResource();
           Resource object = cur.getObject().asResource();
           
-          Resource subjectSubclass = model.getProperty(subject, RDF.type).getResource();
-          Resource objectSubclass = model.getProperty(object, RDF.type).getResource();
+          String subjectLabelStr = subject.getURI();
+          String objectLabelStr = object.getURI();
           
-          Resource subjectClass = ontModel.getProperty(subjectSubclass, RDFS.subClassOf).getResource();
-          Resource objectClass = ontModel.getProperty(objectSubclass, RDFS.subClassOf).getResource();
+          Resource subjectType = model.getProperty(subject, RDF.type).getResource();
+          Resource objectType = model.getProperty(object, RDF.type).getResource();
           
-          // find the label for the subject and object
-          Statement subjectLabel = ontModel.getProperty(subjectSubclass, RDFS.label);
-          Statement objectLabel = ontModel.getProperty(objectSubclass, RDFS.label);
-          String subjectLabelStr = (subjectLabel==null) ? subjectSubclass.getURI() : subjectLabel.getString();
-          String objectLabelStr = (objectLabel==null) ? objectSubclass.getURI() : objectLabel.getString();
+          Statement subjectClass = ontModel.getProperty(subjectType, RDFS.subClassOf);
+          Statement objectClass = ontModel.getProperty(objectType, RDFS.subClassOf);
+          
+          // if subjectClass or objectClass is null, this means the specific event, method, or property
+          // has not been defined in the privacy template of the component. In this case, we just
+          // use the URI of the instance for now
+          if (subjectClass != null) {
+            // find the label for the subject
+            Statement subjectLabel = ontModel.getProperty(subjectType, RDFS.label);
+            subjectLabelStr = (subjectLabel==null) ? subject.getURI() : subjectLabel.getString();
+          }
+          
+          if (objectClass != null) {
+            // find the label for the object
+            Statement objectLabel = ontModel.getProperty(objectType, RDFS.label);
+            objectLabelStr = (objectLabel==null) ? object.getURI() : objectLabel.getString();
+          }
           
           /* 
            * Classes are either ai:ComponentEvent, ai:ComponentMethod or ai:ComponentProperty
@@ -202,11 +219,13 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
            *   
            */
           
-          if (subjectClass.equals(aiComponentEvent) && objectClass.equals(aiComponentMethod)) {
+          if (subjectClass == null || objectClass == null) { // template does not contain the subject or object
+            interactions += "<li>" + subjectLabelStr + " connects to " + objectLabelStr;
+          } else if (subjectClass.getResource().equals(aiComponentEvent) && objectClass.getResource().equals(aiComponentMethod)) {
             interactions += "<li>when " + subjectLabelStr + ", " + "the " + objectLabelStr + " is called."; 
-          } else if (subjectClass.equals(aiComponentEvent) && objectClass.equals(aiComponentProperty)) {
+          } else if (subjectClass.getResource().equals(aiComponentEvent) && objectClass.getResource().equals(aiComponentProperty)) {
             interactions += "<li>when " + subjectLabelStr + ", " + "the " + objectLabelStr + " is accessed.";
-          } else if (subjectClass.equals(aiComponentMethod) && objectClass.equals(aiComponentProperty)) {
+          } else if (subjectClass.getResource().equals(aiComponentMethod) && objectClass.getResource().equals(aiComponentProperty)) {
             interactions += "<li>" + subjectLabelStr + " is called with " + objectLabelStr + " as the parameter.";
           } else { // non-traditional interaction
             interactions += "<li>" + subjectLabelStr + " connects to " + objectLabelStr;
@@ -279,7 +298,7 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       ArrayList<String> comp1 = relationship.get(0);
       ArrayList<String> comp2 = relationship.get(1);
       
-      // add component 1 to the privacy description
+      // add components to the privacy description
       Resource parentPredInstance = addComponentDetails(comp1);
       Resource childPredInstance = addComponentDetails(comp2);
       
@@ -303,8 +322,8 @@ public class PrivacyEditorServiceImpl extends OdeRemoteServiceServlet implements
       return null;
     }
     
-    Resource predicateInstance = model.createResource(BASE_NS + comp_name + predicate_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + predicate_name));
-    Resource parentInstance = model.createResource(BASE_NS + comp_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + comp_type + "Component"))
+    Resource predicateInstance = model.createResource(project_ns + comp_name + "_" + predicate_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + predicate_name));
+    Resource parentInstance = model.createResource(project_ns + comp_name).addProperty(RDF.type, ResourceFactory.createResource(COMPONENT_NS + comp_type + "#" + comp_type + "Component"))
                                                                        .addProperty(ResourceFactory.createProperty(AI_NS, predicate_type), predicateInstance);
     return predicateInstance; 
   }

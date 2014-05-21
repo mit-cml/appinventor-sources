@@ -362,7 +362,7 @@ public interface OdeMessages extends Messages {
   String viewerBoxCaption();
 
   //Used in boxes/PrivacyViewerBox.java
-  @DefaultMessage("Privacy Description Generator")
+  @DefaultMessage("PrivacyInformer: Privacy Description Generator")
   @Description("Caption for a privacy description generator viewer box.")
   String privacyViewerBoxCaption();
  
