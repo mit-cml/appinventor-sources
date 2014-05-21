@@ -262,10 +262,10 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 95:
   // - BUTTON_COMPONENT_VERSION was incremented to 6.
-  // For YOUNG_ANDROID_VERSION 96;
+  // For YOUNG_ANDROID_VERSION 96:
   // - CONTACTPICKER_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 95;
+  public static final int YOUNG_ANDROID_VERSION = 96;
 
   // ............................... Blocks Language Version Number ...............................
 
