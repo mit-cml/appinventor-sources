@@ -9,8 +9,8 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
-import android.provider.ContactsContract.CommonDataKinds.Email;
-import android.provider.ContactsContract.Data;
+import android.provider.Contacts.ContactMethods;
+import android.provider.Contacts.People;
 import android.text.TextUtils;
 import android.text.util.Rfc822Token;
 import android.view.View;
@@ -18,6 +18,8 @@ import android.widget.ResourceCursorAdapter;
 import android.widget.TextView;
 import android.util.Log;
 
+import com.google.appinventor.components.runtime.util.EclairUtil;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 /**
  * EmailAddressAdapter provides email address completion from contacts,
@@ -35,46 +37,69 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   private static final boolean DEBUG = false;
   private static final String TAG = "EmailAddressAdapter";
 
+  public static final int OLD_NAME_INDEX = 1;
+  public static final int OLD_DATA_INDEX = 2;
 
-  private static final String SORT_ORDER = Data.TIMES_CONTACTED + " DESC, " + Data.DISPLAY_NAME;
+  private static String SORT_ORDER;
+
   private ContentResolver contentResolver;
 
   private Context context;
 
-  private static final String[] PROJECTION = {
-    Data._ID,
-    Data.DISPLAY_NAME,
-    Email.ADDRESS,
-    Data.MIMETYPE,
+  private static final String[] OLD_PROJECTION = {
+    ContactMethods._ID,    // 0
+    ContactMethods.NAME,   // 1
+    ContactMethods.DATA,   // 2
   };
+
+  private static final String[] NEW_PROJECTION = EclairUtil.getEmailAdapterProjection();
 
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
     contentResolver = context.getContentResolver();
     this.context = context;
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      SORT_ORDER = EclairUtil.getTimesContacted() + " DESC, " + EclairUtil.getDisplayName();
+    } else {
+      SORT_ORDER = People.TIMES_CONTACTED + " DESC, " + People.NAME;
+    }
   }
 
   @Override
   public final String convertToString(Cursor cursor) {
 
-    int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
-    int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
+    int NEW_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
+    int NEW_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
+    String name = "";
+    String address = "";
 
-    String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(EMAIL_INDEX);
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      name = cursor.getString(NEW_NAME_INDEX);
+      address = cursor.getString(NEW_EMAIL_INDEX);
+    } else {
+      name = cursor.getString(OLD_NAME_INDEX);
+      address = cursor.getString(OLD_DATA_INDEX);
+    }
 
     return new Rfc822Token(name, address, null).toString();
   }
 
   private final String makeDisplayString(Cursor cursor) {
 
-    int NAME_INDEX = cursor.getColumnIndex(Data.DISPLAY_NAME);
-    int EMAIL_INDEX = cursor.getColumnIndex(Email.ADDRESS);
+    int NEW_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
+    int NEW_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
     StringBuilder s = new StringBuilder();
     boolean flag = false;
+    String name = "";
+    String address = "";
 
-    String name = cursor.getString(NAME_INDEX);
-    String address = cursor.getString(EMAIL_INDEX);
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      name = cursor.getString(NEW_NAME_INDEX);
+      address = cursor.getString(NEW_EMAIL_INDEX);
+    } else {
+      name = cursor.getString(OLD_NAME_INDEX);
+      address = cursor.getString(OLD_DATA_INDEX);
+    }
 
     if (!TextUtils.isEmpty(name)) {
       s.append(name);
@@ -103,19 +128,27 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
 
     String where = null;
-    android.net.Uri db = Data.CONTENT_URI;
-
+    android.net.Uri db = null;
     StringBuilder s = new StringBuilder();
-    s.append("(" + Data.MIMETYPE + "='" + Email.CONTENT_ITEM_TYPE + "')");
+
     if (constraint != null) {
       String filter = DatabaseUtils.sqlEscapeString(constraint.toString() + '%');
 
-      s.append(" AND ");
-      s.append("(display_name LIKE ");
-      s.append(filter);
-     // s.append(") OR (display_name LIKE ");
-     // s.append(filter);
-      s.append(")");
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+        db = EclairUtil.getDataContentUri();
+        s.append("(" + EclairUtil.getDataMimeType() + "='" + EclairUtil.getEmailType() + "')");
+        s.append(" AND ");
+        s.append("(display_name LIKE ");
+        s.append(filter);
+        s.append(")");
+      } else {
+        db = ContactMethods.CONTENT_EMAIL_URI;
+        s.append("(name LIKE ");
+        s.append(filter);
+        s.append(") OR (display_name LIKE ");
+        s.append(filter);
+        s.append(")");
+      }
     }
     where = s.toString();
 
@@ -129,8 +162,13 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
       }
     }
 
-    return contentResolver.query(db, PROJECTION,
-        where, null, SORT_ORDER);
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      return contentResolver.query(db, NEW_PROJECTION,
+          where, null, SORT_ORDER);
+    } else {
+      return contentResolver.query(db, OLD_PROJECTION,
+          where, null, SORT_ORDER);
+    }
   }
 }
 

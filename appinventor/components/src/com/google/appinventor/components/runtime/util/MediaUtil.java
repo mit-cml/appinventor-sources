@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.util.EclairUtil;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -18,7 +19,7 @@ import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.ContactsContract;
+import android.provider.Contacts;
 import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
@@ -179,9 +180,14 @@ public class MediaUtil {
 
       case CONTACT_URI:
         // Open the photo for the contact.
-        InputStream is = ContactsContract.Contacts.openContactPhotoInputStream(form.getContentResolver(),
+        InputStream is = null;
+        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+          is = EclairUtil.openContactPhotoInputStreamHelper(form.getContentResolver(),
             Uri.parse(mediaPath));
-
+        } else {
+          is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
+            Uri.parse(mediaPath));
+        }
         if (is != null) {
           return is;
         }

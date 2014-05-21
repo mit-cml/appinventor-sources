@@ -12,16 +12,16 @@ import com.google.appinventor.components.annotations.SimpleProperty;
 import com.google.appinventor.components.annotations.UsesPermissions;
 import com.google.appinventor.components.common.ComponentCategory;
 import com.google.appinventor.components.common.YaVersion;
+import com.google.appinventor.components.runtime.util.EclairUtil;
 import com.google.appinventor.components.runtime.util.ErrorMessages;
+import com.google.appinventor.components.runtime.util.SdkLevel;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.provider.ContactsContract;
-import android.provider.ContactsContract.Data;
-import android.provider.ContactsContract.CommonDataKinds.Email;
-import android.provider.ContactsContract.CommonDataKinds.Phone;
+import android.provider.Contacts;
 import android.util.Log;
 
 /**
@@ -30,8 +30,6 @@ import android.util.Log;
  * @author sharon@google.com (Sharon Perl)
  * @author markf@google.com (Mark Friedman)
  */
-
-
 @DesignerComponent(version = YaVersion.PHONENUMBERPICKER_COMPONENT_VERSION,
     description = "A button that, when clicked on, displays a list of " +
     "the contacts' phone numbers to choose among. After the user has made a " +
@@ -54,19 +52,18 @@ import android.util.Log;
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class PhoneNumberPicker extends ContactPicker {
 
-  private static final String[] NAME_PROJECTION = {
-    Data.CONTACT_ID,
-    ContactsContract.Contacts.DISPLAY_NAME,
-    ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
+  private static final String[] NAME_PROJECTION = EclairUtil.getNameProjection();
+  private static final String[] DATA_PROJECTION = EclairUtil.getDataProjection();
+  private static final String[] PROJECTION = {
+    Contacts.PeopleColumns.NAME,
+    Contacts.PhonesColumns.NUMBER,
+    Contacts.Phones.PERSON_ID,
+    Contacts.People.PRIMARY_EMAIL_ID,
   };
-
-  private static final String[] DATA_PROJECTION = {
-    Data.MIMETYPE,
-    Email.ADDRESS,
-    Email.TYPE,
-    Phone.NUMBER,
-    Phone.TYPE,
-  };
+  private static final int NAME_INDEX = 0;
+  private static final int NUMBER_INDEX = 1;
+  private static final int PERSON_INDEX = 2;
+  private static final int EMAIL_INDEX = 3;
 
   private String phoneNumber;
 
@@ -76,7 +73,7 @@ public class PhoneNumberPicker extends ContactPicker {
    * @param container the parent container.
    */
   public PhoneNumberPicker(ComponentContainer container) {
-    super(container, Phone.CONTENT_URI);
+      super(container, Contacts.Phones.CONTENT_URI);
   }
 
   /**
@@ -107,78 +104,101 @@ public class PhoneNumberPicker extends ContactPicker {
     if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
       Log.i("PhoneNumberPicker", "received intent is " + data);
       Uri phoneUri = data.getData();
-      if (checkContactUri(phoneUri, "//com.android.contacts/data")) {
-        // This test is not good enough.  The lookup code below does not work with
-        // Motorola Blur (Droid Global), even though the URI has the correct form.
-        // Hopefully, moving to the new contact scheme will solve this problem.
-        // Update: did it solve the problem?
-        Cursor contactCursor = null;
-        Cursor dataCursor = null;
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+        if (checkContactUri(phoneUri, "//com.android.contacts/data")) {
+          Cursor contactCursor = null;
+          Cursor dataCursor = null;
+          try {
+            String id = "";
 
-        try {
+            contactCursor = activityContext.getContentResolver().query(phoneUri,
+                NAME_PROJECTION, null, null, null);
+            if (contactCursor.moveToFirst()) {
+              final int CONTACT_ID_INDEX = EclairUtil.getContactIdIndex(contactCursor);
+              final int NAME_INDEX = EclairUtil.getNameIndex(contactCursor);
+              final int PHOTO_INDEX = EclairUtil.getThumbnailIndex(contactCursor);
 
-          String id = "";
+              id = guardCursorGetString(contactCursor, CONTACT_ID_INDEX);
+              contactName = guardCursorGetString(contactCursor, NAME_INDEX);
+              contactPictureUri = guardCursorGetString(contactCursor, PHOTO_INDEX);
 
-          contactCursor = activityContext.getContentResolver().query(phoneUri,
-              NAME_PROJECTION, null, null, null);
-          if (contactCursor.moveToFirst()) {
-            final int ID_INDEX = contactCursor.getColumnIndex(Data.CONTACT_ID);
-            final int NAME_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
-            final int PHOTO_INDEX = contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_THUMBNAIL_URI);
-
-            id = guardCursorGetString(contactCursor, ID_INDEX);
-            contactName = guardCursorGetString(contactCursor, NAME_INDEX);
-            contactPictureUri = guardCursorGetString(contactCursor, PHOTO_INDEX);
-
-          }
-
-          dataCursor = activityContext.getContentResolver().query(
-              Data.CONTENT_URI,
-              DATA_PROJECTION,
-              Data.CONTACT_ID + "=? AND (" + Data.MIMETYPE + "=? OR " + Data.MIMETYPE + "=?)",
-              new String[] {id, Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE},
-              null);
-
-          phoneNumber = "";
-          emailAddress = "";
-
-          if (dataCursor.moveToFirst()) {
-            final int PHONE_INDEX = dataCursor.getColumnIndex(Phone.NUMBER);
-            final int EMAIL_INDEX = dataCursor.getColumnIndex(Email.ADDRESS);
-            final int MIME_INDEX = dataCursor.getColumnIndex(Data.MIMETYPE);
-
-            while (!dataCursor.isAfterLast()) {
-              String type = guardCursorGetString(dataCursor, MIME_INDEX);
-              if (type.contains(Phone.CONTENT_ITEM_TYPE) && (phoneNumber == "")) {
-                phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
-              } else if (type.contains(Email.CONTENT_ITEM_TYPE) && (emailAddress == "")) {
-                emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
-              }
-              dataCursor.moveToNext();
             }
 
-          }
+            dataCursor = EclairUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
 
-          Log.i("PhoneNumberPicker",
-              "Contact name = " + contactName + ", phone number = " + phoneNumber +
-              ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
+            phoneNumber = "";
+            emailAddress = "";
 
-        } catch (Exception e) {
-          // There was an exception in trying to compute the cursor from the activity context.
-          // It's bad form to catch an arbitrary exception, but if there is an error here
-          // it's unclear what's going on.
-          puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
+            if (dataCursor.moveToFirst()) {
+              final int PHONE_INDEX = EclairUtil.getPhoneIndex(dataCursor);
+              final int EMAIL_INDEX = EclairUtil.getEmailIndex(dataCursor);
+              final int MIME_INDEX = EclairUtil.getMimeIndex(dataCursor);
 
-        } finally {
-          if (contactCursor != null) {
-            contactCursor.close();
+              // Get the first (default) email and phone number associated with the contact.
+              while (!dataCursor.isAfterLast()) {
+                String type = guardCursorGetString(dataCursor, MIME_INDEX);
+                if (type.contains(EclairUtil.getPhoneType()) && (phoneNumber == "")) {
+                  phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
+                } else if (type.contains(EclairUtil.getEmailType()) && (emailAddress == "")) {
+                  emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
+                }
+                dataCursor.moveToNext();
+              }
+            }
+            Log.i("PhoneNumberPicker",
+                "Contact name = " + contactName + ", phone number = " + phoneNumber +
+                ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
+
+          } catch (Exception e) {
+            // There was an exception in trying to compute the cursor from the activity context.
+            // It's bad form to catch an arbitrary exception, but if there is an error here
+            // it's unclear what's going on.
+            puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
+
+          } finally {
+            if (contactCursor != null) {
+              contactCursor.close();
+            }
+            if (dataCursor != null){
+              dataCursor.close();
+            }
           }
-          if (dataCursor != null){
-            dataCursor.close();
+        } // ends if (checkContactUri ...
+        AfterPicking();
+      } else {
+        if (checkContactUri(phoneUri, "//contacts/phones")) {
+          // This test is not good enough.  The lookup code below does not work with
+          // Motorola Blur (Droid Global), even though the URI has the correct form.
+          // Hopefully, moving to the new contact scheme will solve this problem.
+          Cursor cursor = null;
+          try {
+            cursor = activityContext.getContentResolver().query(phoneUri,
+                PROJECTION, null, null, null);
+            if (cursor.moveToFirst()) {
+              contactName = guardCursorGetString(cursor, NAME_INDEX);
+              phoneNumber = guardCursorGetString(cursor, NUMBER_INDEX);
+              int contactId = cursor.getInt(PERSON_INDEX);
+              Uri cUri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI, contactId);
+              contactPictureUri = cUri.toString();
+              String emailId = guardCursorGetString(cursor, EMAIL_INDEX);
+              emailAddress = getEmailAddress(emailId);
+              Log.i("PhoneNumberPicker",
+                  "Contact name = " + contactName + ", phone number = " + phoneNumber +
+                  ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
+            }
+          } catch (Exception e) {
+            // There was an exception in trying to compute the cursor from the activity context.
+            // It's bad form to catch an arbitrary exception, but if there is an error here
+            // it's unclear what's going on.
+            puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
+          } finally {
+            if (cursor != null) {
+              cursor.close();
+            }
           }
-        }
-      } // ends if (checkContactUri ...
-      AfterPicking();
-    }  //ends if (requestCode ....
+        } // ends if (checkContactUri ...
+        AfterPicking();
+      }  //ends if (requestCode ....
+    }
   }
 }
