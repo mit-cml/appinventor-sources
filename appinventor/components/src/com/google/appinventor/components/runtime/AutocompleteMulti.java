@@ -37,7 +37,7 @@ import android.widget.MultiAutoCompleteTextView;
     description = "An AutocompleteMulti is a kind of text box.  " +
     "If the user begins entering the text " +
     ", the phone will show a dropdown menu of " +
-    "choices that complete the entry.  You can add multiple items in autocompletemulti, each " +
+    "choices that complete the entry. You can add multiple items in autocompletemulti, each " +
     " separated by comma. If there are many elements, the " +
     "dropdown can take several seconds to appear, and can show intermediate results " +
     "while the matches are being computed. <p>The initial contents " +
