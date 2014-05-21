@@ -145,7 +145,20 @@ public final class ErrorMessages {
   //Sharing Errors
   public static final int ERROR_FILE_NOT_FOUND_FOR_SHARING = 2001;
 
-  // Please start the next group of error numbers at 2101.
+  // File errors
+  public static final int ERROR_CANNOT_FIND_FILE = 2101;
+  public static final int ERROR_CANNOT_READ_FILE = 2102;
+  public static final int ERROR_CANNOT_CREATE_FILE = 2103;
+  public static final int ERROR_CANNOT_WRITE_TO_FILE = 2104;
+  public static final int ERROR_CANNOT_DELETE_ASSET = 2105;
+  public static final int ERROR_CANNOT_WRITE_ASSET = 2106;
+
+  // Yandex.Translate errors
+  public static final int ERROR_TRANSLATE_NO_KEY_FOUND = 2201;
+  public static final int ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE = 2202;
+  public static final int ERROR_TRANSLATE_JSON_RESPONSE = 2203;
+
+  // Please start the next group of error numbers at 2301.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -382,6 +395,20 @@ public final class ErrorMessages {
     //Sharing errors
     errorMessages.put(ERROR_FILE_NOT_FOUND_FOR_SHARING,
         "The File %s could not be found on your device.");
+    //File Errors
+    errorMessages.put(ERROR_CANNOT_FIND_FILE, "The file %s could not be found");
+    errorMessages.put(ERROR_CANNOT_READ_FILE, "The file %s could not be opened");
+    errorMessages.put(ERROR_CANNOT_CREATE_FILE, "The file %s could not be created");
+    errorMessages.put(ERROR_CANNOT_WRITE_TO_FILE, "Cannot write to file %s");
+    errorMessages.put(ERROR_CANNOT_DELETE_ASSET, "Cannot delete asset file at %s");
+    errorMessages.put(ERROR_CANNOT_WRITE_ASSET, "Cannot write asset file at %s");
+    //Yandex.Translate translate Errors
+    errorMessages.put(ERROR_TRANSLATE_NO_KEY_FOUND, "Missing API key for the Yandex.Translate " +
+        "service.");
+    errorMessages.put(ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE, "The translation service is not " +
+        "available; Please try again later.");
+    errorMessages.put(ERROR_TRANSLATE_JSON_RESPONSE, "The response from the Yandex.Translate " +
+        "service cannot be parsed; Please try again later.");
   }
 
   private ErrorMessages() {

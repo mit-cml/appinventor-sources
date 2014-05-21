@@ -264,7 +264,7 @@ public class FileUtil {
    *  Checks that external storage is mounted writeable. If it isn't,
    *  throws an exception.
    */
-  private static void checkExternalStorageWriteable() throws FileException {
+  public static void checkExternalStorageWriteable() throws FileException {
     String state = Environment.getExternalStorageState();
     if (Environment.MEDIA_MOUNTED.equals(state)) {
       return;

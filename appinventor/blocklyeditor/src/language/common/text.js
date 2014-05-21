@@ -313,8 +313,8 @@ Blockly.Language.text_contains = {
 };
 
 Blockly.Language.text_split = {
-  // Splits at first
-  // TODO: (Hal) Make this handle type change for the dropdown.
+  // This includes all four split variants (modes). The name and type of the 'AT' arg
+  // changes to match the selected mode.
   category : Blockly.LANG_CATEGORY_TEXT,
   helpUrl : function() {
       var mode = this.getTitleValue('OP');
@@ -329,38 +329,51 @@ Blockly.Language.text_split = {
       .appendTitle('text');
     this.appendValueInput('AT')
       .setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT))
-      .appendTitle('at')
+      .appendTitle(Blockly.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME')
       .setAlign(Blockly.ALIGN_RIGHT);
-    var thisBlock = this;
-    this.setTooltip(function() {
-      var mode = thisBlock.getTitleValue('OP');
-      return Blockly.Language.text_split.TOOLTIPS[mode];
-    });
-    this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
+   // This line seems to be necessary to create some kind of collapsed text, even if it's the
+   // wrong mode.  (Why does it end up showing the correct title?)
+   this.appendCollapsedInput().appendTitle(this.getTitleValue('OP'), 'COLLAPSED_TEXT');
+  },
+// adjust for the mode when the block is read in
+domToMutation: function(xmlElement) {
+    var mode = xmlElement.getAttribute('mode');
+    Blockly.Language.text_split.adjustToMode(mode, this);
+  },
+  // put the mode in the DOM so it can be read in by domToMutation
+  // WARNING:  Note that the 'mode' tag below is lowercase.  It would not work
+  // to make it uppercase ('MODE').  There's a bug somewhere (in the browser?) that
+  // writes tags as lowercase.  So writing the date with tag 'MODE' and attempting
+  // to read with tag 'MODE' wil not work.
+  mutationToDom: function() {
+    var container = document.createElement('mutation');
+    var savedMode = this.getTitleValue('OP');
+    container.setAttribute('mode', savedMode);
+    return container;
   },
   typeblock: [{
-    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
-    dropDown: {
-      titleName: 'OP',
-      value: 'SPLITATFIRST'
-    }
-  },{
-    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY,
-    dropDown: {
-      titleName: 'OP',
-      value: 'SPLITATFIRSTOFANY'
-    }
-  },{
     translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT,
     dropDown: {
       titleName: 'OP',
       value: 'SPLIT'
     }
   },{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLITATFIRST'
+    }
+  },{
     translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_ANY,
     dropDown: {
       titleName: 'OP',
       value: 'SPLITATANY'
+    }
+  },{
+    translatedName: Blockly.LANG_TEXT_SPLIT_OPERATOR_SPLIT_AT_FIRST_OF_ANY,
+    dropDown: {
+      titleName: 'OP',
+      value: 'SPLITATFIRSTOFANY'
     }
   }],
   prepareCollapsedText: function(){
@@ -369,18 +382,29 @@ Blockly.Language.text_split = {
   }
 };
 
-Blockly.Language.text_split.dropdown_onchange = function(value) {
-
-  if(value == 'SPLITATFIRST' || value == 'SPLIT') {
-    this.sourceBlock_.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
-  } else if(value == 'SPLITATFIRSTOFANY' || value == 'SPLITATANY') {
-    this.sourceBlock_.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
-  }
+// Change the name and type of ARG2 and set tooltop depending on mode
+Blockly.Language.text_split.adjustToMode = function(mode, block) {
+  if (mode == 'SPLITATFIRST' || mode == 'SPLIT') {
+    block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
+    block.setTitleValue(Blockly.LANG_TEXT_SPLIT_INPUT_AT, 'ARG2_NAME');
+  } else if (mode == 'SPLITATFIRSTOFANY' || mode == 'SPLITATANY') {
+    block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
+    block.setTitleValue(Blockly.LANG_TEXT_SPLIT_INPUT_AT_LIST, 'ARG2_NAME');
+  };
+  block.setTooltip(Blockly.Language.text_split.TOOLTIPS[mode]);
 };
 
-Blockly.Language.text_split.OPERATORS = [ [ 'split at first', 'SPLITATFIRST' ],
-    [ 'split at first of any', 'SPLITATFIRSTOFANY' ], [ 'split', 'SPLIT' ],
-    [ 'split at any', 'SPLITATANY' ] ];
+Blockly.Language.text_split.dropdown_onchange = function(mode) {
+  Blockly.Language.text_split.adjustToMode(mode, this.sourceBlock_)
+};
+
+// The order here determines the order in the dropdown
+Blockly.Language.text_split.OPERATORS = [
+  [ 'split', 'SPLIT' ],
+  [ 'split at first', 'SPLITATFIRST' ],
+  [ 'split at any', 'SPLITATANY' ],
+  [ 'split at first of any', 'SPLITATFIRSTOFANY' ]
+];
 
 Blockly.Language.text_split.TOOLTIPS = {
   SPLITATFIRST : Blockly.LANG_TEXT_SPLIT_TOOLTIP_SPLIT_AT_FIRST,

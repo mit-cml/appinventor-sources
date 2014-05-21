@@ -32,6 +32,7 @@ public final class MockSpinner extends MockVisibleComponent {
     spinnerWidget = new ListBox();
     spinnerWidget.addItem("add items...");
     spinnerWidget.setStylePrimaryName("ode-SimpleMockComponent");
+    spinnerWidget.addStyleName("spinnerComponentStyle");
     initComponent(spinnerWidget);
     refreshForm();
   }

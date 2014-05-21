@@ -256,8 +256,14 @@ public class YaVersion {
   // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 92:
   // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 93:
+  // - FILE_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 94:
+  // - YANDEX_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 95:
+  // - BUTTON_COMPONENT_VERSION was incremented to 6.
 
-    public static final int YOUNG_ANDROID_VERSION = 92;
+  public static final int YOUNG_ANDROID_VERSION = 95;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -388,7 +394,10 @@ public class YaVersion {
   // - The Shape property was added.
   // For BUTTON_COMPONENT_VERSION 5:
   // - The ShowFeedback property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 5;
+  // For BUTTON_COMPONENT_VERSION 6:
+  // - Added TouchUp and TouchDown events
+  // - FontSize, FontBold, FontItalic properties made visible in block editor
+  public static final int BUTTON_COMPONENT_VERSION = 6;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -432,6 +441,9 @@ public class YaVersion {
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
   public static final int DATEPICKER_COMPONENT_VERSION = 1;
+
+  // For FILE_COMPONENT_VERSION 1:
+  public static final int FILE_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -699,6 +711,10 @@ public class YaVersion {
   // For listView component Version
   public static final int LISTVIEW_COMPONENT_VERSION = 1;
 
+  // For YANDEX_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int YANDEX_COMPONENT_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if
@@ -714,9 +730,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.17ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.18ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2", "2.17ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2",
+                                                          "2.17ai2zx1", "2.18ai2", "2.18ai2zx1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;
