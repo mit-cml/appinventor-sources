@@ -453,6 +453,12 @@ public final class Compiler {
           "android:configChanges=\"orientation|keyboardHidden\" " +
           "android:screenOrientation=\"behind\">\n");
       out.write("    </activity>\n");
+      
+      // FullScreenWebView Activity
+      out.write("    <activity android:name=\"" + FULL_WEBVIEW_ACTIVITY_CLASS + "\" " +
+          "android:configChanges=\"orientation|keyboardHidden\" " +
+          "android:screenOrientation=\"behind\">\n");
+      out.write("    </activity>\n");
 
       // BroadcastReceiver for Texting Component
       if (componentTypes.contains("Texting")) {
