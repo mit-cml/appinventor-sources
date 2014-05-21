@@ -60,17 +60,12 @@ public class PhoneNumberPicker extends ContactPicker {
     ContactsContract.Contacts.PHOTO_THUMBNAIL_URI,
   };
 
-  private static final String[] PHONE_PROJECTION = {
-    Data.CONTACT_ID,
-    Phone.NUMBER,
-    Phone.TYPE,
-  };
-
-  private static final String[] EMAIL_PROJECTION = {
-    Data.CONTACT_ID,
-    Email.CONTACT_ID,
+  private static final String[] DATA_PROJECTION = {
+    Data.MIMETYPE,
     Email.ADDRESS,
     Email.TYPE,
+    Phone.NUMBER,
+    Phone.TYPE,
   };
 
   private String phoneNumber;
@@ -118,8 +113,8 @@ public class PhoneNumberPicker extends ContactPicker {
         // Hopefully, moving to the new contact scheme will solve this problem.
         // Update: did it solve the problem?
         Cursor contactCursor = null;
-        Cursor phoneCursor = null;
-        Cursor emailCursor = null;
+        Cursor dataCursor = null;
+
         try {
 
           String id = "";
@@ -137,32 +132,31 @@ public class PhoneNumberPicker extends ContactPicker {
 
           }
 
-          phoneCursor = activityContext.getContentResolver().query(phoneUri,
-              PHONE_PROJECTION, null, null, null);
-          //Get the first nonempty phone number
-          if (phoneCursor.moveToFirst()) {
-            final int NUMBER_INDEX = phoneCursor.getColumnIndex(Phone.NUMBER);
-            phoneNumber = guardCursorGetString(phoneCursor, NUMBER_INDEX);
-          }
+          dataCursor = activityContext.getContentResolver().query(
+              Data.CONTENT_URI,
+              DATA_PROJECTION,
+              Data.CONTACT_ID + "=? AND (" + Data.MIMETYPE + "=? OR " + Data.MIMETYPE + "=?)",
+              new String[] {id, Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE},
+              null);
 
+          phoneNumber = "";
           emailAddress = "";
-          emailCursor = activityContext.getContentResolver().query(Email.CONTENT_URI,
-              EMAIL_PROJECTION, Data.CONTACT_ID + "=?", new String [] {id}, null);
 
-          //Get the first nonempty email
-          if (emailCursor.moveToFirst()) {
-            final int EMAIL_INDEX = emailCursor.getColumnIndex(Email.ADDRESS);
+          if (dataCursor.moveToFirst()) {
+            final int PHONE_INDEX = dataCursor.getColumnIndex(Phone.NUMBER);
+            final int EMAIL_INDEX = dataCursor.getColumnIndex(Email.ADDRESS);
+            final int MIME_INDEX = dataCursor.getColumnIndex(Data.MIMETYPE);
 
-            while (!emailCursor.isAfterLast()) {
-
-              emailAddress = guardCursorGetString(emailCursor, EMAIL_INDEX);
-
-              if (emailAddress != null && emailAddress.length() > 0) {
-                break;
+            while (!dataCursor.isAfterLast()) {
+              String type = guardCursorGetString(dataCursor, MIME_INDEX);
+              if (type.contains(Phone.CONTENT_ITEM_TYPE) && (phoneNumber == null)) {
+                phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
+              } else if (type.contains(Email.CONTENT_ITEM_TYPE && (emailAddress == null)) {
+                emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
               }
-
-              emailCursor.moveToNext();
+              dataCursor.moveToNext();
             }
+
           }
 
           Log.i("PhoneNumberPicker",
@@ -176,14 +170,11 @@ public class PhoneNumberPicker extends ContactPicker {
           puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
 
         } finally {
-          if(contactCursor != null) {
+          if (contactCursor != null) {
             contactCursor.close();
           }
-          if(emailCursor != null){
-            emailCursor.close();
-          }
-          if(phoneCursor != null){
-            phoneCursor.close();
+          if (dataCursor != null){
+            dataCursor.close();
           }
         }
       } // ends if (checkContactUri ...
