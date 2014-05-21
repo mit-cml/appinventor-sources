@@ -149,9 +149,9 @@ public class PhoneNumberPicker extends ContactPicker {
 
             while (!dataCursor.isAfterLast()) {
               String type = guardCursorGetString(dataCursor, MIME_INDEX);
-              if (type.contains(Phone.CONTENT_ITEM_TYPE) && (phoneNumber == null)) {
+              if (type.contains(Phone.CONTENT_ITEM_TYPE) && (phoneNumber == "")) {
                 phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
-              } else if (type.contains(Email.CONTENT_ITEM_TYPE && (emailAddress == null)) {
+              } else if (type.contains(Email.CONTENT_ITEM_TYPE) && (emailAddress == "")) {
                 emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
               }
               dataCursor.moveToNext();

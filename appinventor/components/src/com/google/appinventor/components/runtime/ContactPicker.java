@@ -40,6 +40,9 @@ import java.util.List;
     "the chosen contact: <ul>\n" +
     "<li> <code>ContactName</code>: the contact's name </li>\n "  +
     "<li> <code>EmailAddress</code>: the contact's primary email address </li>\n " +
+    "<li> <code>EmailAddressList</code>: a list of the contact's email addresses </li>\n " +
+    "<li> <code>PhoneNumber</code>: the contact's primary phone number </li>\n " +
+    "<li> <code>PhoneNumberList</code>: a list of the contact's phone numbers </li>\n " +
     "<li> <code>Picture</code>: the name of the file containing the contact's " +
     "image, which can be used as a <code>Picture</code> property value for " +
     "the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n" +
