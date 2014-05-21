@@ -1,0 +1,29 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix orientation: <http://dig.csail.mit.edu/2014/PrivacyInformer/OrientationSensor#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# OrientationSensor is a component
+# It is also a sensor
+# It is used to gather data
+# It measures orientation in 3 dimensions
+# 1. whether the device is level (left side tilted down or right side tilted down)
+# 2. whether the device is level (top side tilted down or bottom side tilted down) 
+# 3. where the top of the device is pointing; north, east, south, or west
+
+# Component Description
+orientation:OrientationSensorComponent  
+    a   owl:Class;
+    rdfs:subClassOf ai:Component;
+    rdfs:label  "orientation sensor";
+    ai:description  "detects orientation of the device in three dimensions";
+    ai:category     ai:Sensors;
+    ai:details      "orientation sensor detects whether the device is level in three dimensions";
+
+# Privacy Implication and Common Usage
+    ai:example      "Fitbit", "TrackMe";
+    ai:purpose      ai:DataGathering . 
+
+# Instance Definitions

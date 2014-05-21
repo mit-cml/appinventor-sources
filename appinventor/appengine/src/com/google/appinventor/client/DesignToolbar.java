@@ -18,6 +18,7 @@ import com.google.appinventor.client.widgets.Toolbar;
 import com.google.appinventor.common.version.AppInventorFeatures;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
+import com.google.appinventor.client.explorer.project.Project;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.Scheduler;
@@ -99,6 +100,8 @@ public class DesignToolbar extends Toolbar {
   private static final String WIDGET_NAME_SCREENS_DROPDOWN = "ScreensDropdown";
   private static final String WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR = "SwitchToBlocksEditor";
   private static final String WIDGET_NAME_SWITCH_TO_FORM_EDITOR = "SwitchToFormEditor";
+  private static final String WIDGET_NAME_SWITCH_TO_PRIVACY_EDITOR = "SwitchToPrivacyEditor";
+  private static final String WIDGET_NAME_SETTINGS = "Settings";
 
   // Enum for type of view showing in the design tab
   public enum View {
@@ -153,7 +156,9 @@ public class DesignToolbar extends Toolbar {
         MESSAGES.switchToFormEditorButton(), new SwitchToFormEditorAction()), true);
     addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_BLOCKS_EDITOR,
         MESSAGES.switchToBlocksEditorButton(), new SwitchToBlocksEditorAction()), true);
-
+    addButton(new ToolbarItem(WIDGET_NAME_SWITCH_TO_PRIVACY_EDITOR,
+        MESSAGES.switchToPrivacyEditorButton(), new SwitchToPrivacyEditorAction()), true);
+    
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(Ode.DESIGNER);
@@ -274,6 +279,7 @@ public class DesignToolbar extends Toolbar {
     }
     // Inform the Blockly Panel which project/screen (aka form) we are working on
     BlocklyPanel.setCurrentForm(projectId + "_" + newScreenName);
+
   }
 
   private class SwitchToBlocksEditorAction implements Command {
@@ -309,6 +315,18 @@ public class DesignToolbar extends Toolbar {
       }
     }
   }
+  
+  private class SwitchToPrivacyEditorAction implements Command {
+      @Override
+      public void execute() {
+        if (currentProject == null) {
+          OdeLog.wlog("DesignToolbar.currentProject is null. "
+              + "Ignoring SwitchToPrivacyEditorAction.execute().");
+          return;
+        }
+        Ode.getInstance().switchToPrivacyView();
+      }
+    }
 
   public void addProject(long projectId, String projectName) {
     if (!projectMap.containsKey(projectId)) {
@@ -455,5 +473,5 @@ public class DesignToolbar extends Toolbar {
   public DesignProject getCurrentProject() {
     return currentProject;
   }
-
+  
 }

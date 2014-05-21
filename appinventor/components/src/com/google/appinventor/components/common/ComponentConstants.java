@@ -60,6 +60,11 @@ public class ComponentConstants {
   public static final int TEXT_RECEIVING_OFF = 1;
   public static final int TEXT_RECEIVING_FOREGROUND = 2;
   public static final int TEXT_RECEIVING_ALWAYS = 3;
+  
+  /**
+   * Used to record the name of privacy description 
+   */
+  public static final String PRIVACY_DESCRIPTION = "privacy.html";
 
   /**
    * ListView component.

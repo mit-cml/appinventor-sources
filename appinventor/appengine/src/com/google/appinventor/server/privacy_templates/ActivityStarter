@@ -1,0 +1,21 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix activitystarter: <http://dig.csail.mit.edu/2014/PrivacyInformer/ActivityStarter#> .
+
+# activitystarter is a component
+# It is a connectivity component 
+
+# Component Description
+activitystarter:ActivityStarterComponent
+    a   owl:Class;
+    rdfs:label  "ActivityStarter component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "launches an activity such as camera, web search or opening a browser page";
+    ai:category     ai:Connectivity;
+
+# Privacy Implication and Common Usage
+    ai:access       android:Internet. 
+

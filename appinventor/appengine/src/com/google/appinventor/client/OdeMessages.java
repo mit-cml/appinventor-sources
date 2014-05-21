@@ -107,6 +107,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Designer")
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
+  
+  @DefaultMessage("Privacy Description")
+  @Description("Label of the button for switching to the privacy description generator")
+  String switchToPrivacyEditorButton();
 
   @DefaultMessage("App ( provide QR code for .apk )")
   @Description("Label of item for building a project and show barcode")
@@ -357,6 +361,11 @@ public interface OdeMessages extends Messages {
   @Description("Caption for a viewer box.")
   String viewerBoxCaption();
 
+  //Used in boxes/PrivacyViewerBox.java
+  @DefaultMessage("PrivacyInformer: Privacy Description Generator")
+  @Description("Caption for a privacy description generator viewer box.")
+  String privacyViewerBoxCaption();
+ 
   // Used in SaveAllEditorsCommand.java
 
   @DefaultMessage("Saved project at {0}")
@@ -1264,5 +1273,15 @@ public interface OdeMessages extends Messages {
   "<br /> The compiler error output was <br /> {0}.")
   @Description("Compilation error, with error message.")
   String unableToCompile(String errorMesssage);
+
+  // Used in Privacy Description Generator
+  @DefaultMessage("Back to Development View")
+  @Description("Text on 'Back' button to go back to the designer/blocks view.")
+  String backToDevButton();
+  
+  @DefaultMessage("I would like to enable the automatic privacy description generation feature for this project.")
+  @Description("Checkbox controlling whether the developer has opted into the privacy description feature.")
+  String optIntoPrivacyNoticeCheckbox();
+  
 
 }

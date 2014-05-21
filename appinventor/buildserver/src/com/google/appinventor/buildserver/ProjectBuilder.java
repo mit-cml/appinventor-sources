@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -158,10 +159,13 @@ public final class ProjectBuilder {
 
         Set<String> componentTypes =
             (isForRepl || isForWireless) ? getAllComponentTypes() : getComponentTypes(sourceFiles);
-
+        
+        // Figure out whether there is a privacy description in the source zip to attach
+        File privacyDescriptionHTML = findPrivacyDescriptionHTML(sourceFiles);
+        
         // Invoke YoungAndroid compiler
         boolean success =
-            Compiler.compile(project, componentTypes, console, console, userErrors, isForRepl, isForWireless,
+            Compiler.compile(project, componentTypes, /* whether to attach a privacy */ privacyDescriptionHTML, console, console, userErrors, isForRepl, isForWireless,
                              keyStorePath, childProcessRam, dexCachePath);
         console.close();
         userErrors.close();
@@ -199,6 +203,22 @@ public final class ProjectBuilder {
       e.printStackTrace();
       return Result.createFailingResult("", "Server error performing build");
     }
+  }
+  
+  private File findPrivacyDescriptionHTML(List<String> sourceFiles) {
+    // find the file privacy.html
+    for (String file : sourceFiles) {
+      if (file.endsWith("privacy.html")) {
+        File privacyDescription = new File(file);
+        if (!privacyDescription.exists()) {
+          LOG.warning("Privacy Description file - " + privacyDescription + " does not exist");
+          return null;
+        } else {
+          return privacyDescription;
+        }
+      }
+    }
+    return null;
   }
 
   private void genYailFilesIfNecessary(List<String> sourceFiles)

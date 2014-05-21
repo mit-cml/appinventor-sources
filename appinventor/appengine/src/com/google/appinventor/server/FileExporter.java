@@ -50,7 +50,8 @@ public interface FileExporter {
    */
   ProjectSourceZip exportProjectSourceZip(String userId, long projectId,
                                           boolean includeProjectHistory,
-                                          boolean includeAndroidKeystore, @Nullable String zipName)
+                                          boolean includeAndroidKeystore, 
+                                          boolean attachPrivacy,  @Nullable String zipName)
       throws IOException;
 
   /**

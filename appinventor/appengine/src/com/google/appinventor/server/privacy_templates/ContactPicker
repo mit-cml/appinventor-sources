@@ -1,0 +1,23 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix contactpicker: <http://dig.csail.mit.edu/2014/PrivacyInformer/ContactPicker#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# contactpicker is component
+
+# Component Description
+contactpicker:ContactPickerComponent  
+    a   owl:Class;
+    rdfs:label  "Contact Picker component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "shows a list of all contacts";
+    ai:category     ai:Social;
+
+# Privacy Implication and Common Usage
+    ai:dataUsage    ai:SocialNetworking;
+    ai:examples     "Skype";
+    ai:purpose      ai:DataAccess.
+
+# Instance Definitions

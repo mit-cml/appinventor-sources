@@ -63,6 +63,9 @@ public final class Compiler {
 
   private static final String WEBVIEW_ACTIVITY_CLASS =
       "com.google.appinventor.components.runtime.WebViewActivity";
+  
+  private static final String FULL_WEBVIEW_ACTIVITY_CLASS =
+      "com.google.appinventor.components.runtime.util.FullScreenWebview";
 
   public static final String RUNTIME_FILES_DIR = "/files/";
 
@@ -444,6 +447,12 @@ public final class Compiler {
         out.write("      </intent-filter>\n");
         out.write("    </activity>\n");
       }
+      
+      // FullScreenWebView Activity
+      out.write("    <activity android:name=\"" + FULL_WEBVIEW_ACTIVITY_CLASS + "\" " +
+          "android:configChanges=\"orientation|keyboardHidden\" " +
+          "android:screenOrientation=\"behind\">\n");
+      out.write("    </activity>\n");
 
       // BroadcastReceiver for Texting Component
       if (componentTypes.contains("Texting")) {
@@ -490,6 +499,7 @@ public final class Compiler {
    * @throws IOException
    */
   public static boolean compile(Project project, Set<String> componentTypes,
+                                /* whether to attach a privacy */ File privacyDescription,
                                 PrintStream out, PrintStream err, PrintStream userErrors,
                                 boolean isForRepl, boolean isForWireless, String keystoreFilePath,
                                 int childProcessRam, String dexCacheDir) throws IOException, JSONException {
@@ -550,7 +560,15 @@ public final class Compiler {
     if (!compiler.attachComponentAssets()) {
       return false;
     }
-
+    
+    // Add privacy description to assets if available
+    if (privacyDescription != null) {
+      out.println("________Attaching privacy description");
+      if (!compiler.attachPrivacyDescription(privacyDescription)) {
+        return false;
+      }
+    }
+    
     // Create class files.
     out.println("________Compiling source files");
     File classesDir = createDirectory(buildDir, "classes");
@@ -620,6 +638,25 @@ public final class Compiler {
         ((System.currentTimeMillis() - start) / 1000.0) + " seconds");
 
     return true;
+  }
+
+  private boolean attachPrivacyDescription(File privacyDescription) {
+    try {
+      Files.copy(privacyDescription, new File(project.getAssetsDirectory(), privacyDescription.getName()));
+      // the default privacy description file name is privacy.html, but privacy.ttl should be there as well
+      String privacyTTLName = privacyDescription.getAbsolutePath().substring(0, privacyDescription.getAbsolutePath().lastIndexOf(".")) + ".ttl";
+      File privacyTTL = new File(privacyTTLName);
+      if (!privacyTTL.exists()) {
+        LOG.warning("Privacy Description TTL file - " + privacyTTL + " does not exist");
+      } else {
+        Files.copy(privacyTTL, new File(project.getAssetsDirectory(), privacyTTL.getName()));
+      }
+      return true;
+    } catch (IOException e1) {
+      // TODO Auto-generated catch block
+      e1.printStackTrace();
+      return false;
+    }
   }
 
   /*

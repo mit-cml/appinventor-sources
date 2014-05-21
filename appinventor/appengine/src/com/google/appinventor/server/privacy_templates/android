@@ -1,0 +1,94 @@
+# 
+#   Android Ontology for use in PrivacyInformer 
+# 
+#   Created by Daniela Miao (dmiao@mit.edu) 
+# 
+#   March 2014
+# 
+
+@prefix : <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+
+# 
+# Top-level class for all Android components
+#
+
+:Component
+    rdfs:label "Android component"; 
+    a rdfs:Class .
+
+# 
+#   Instances for Android components 
+#   (mostly focused on permissions/software rather than smartphone hardware) 
+#
+
+:AccelerometerSensor
+    rdfs:label "accelerometer sensor on the phone";
+    a   :Component .
+
+:Bluetooth 
+    rdfs:label "Bluetooth component (including pairing and sending data over Bluetooth)";
+    a   :Component .
+
+:Calendar
+    rdfs:label "calendar content";
+    a   :Component .
+
+:CallLog
+    rdfs:label "call log/history";
+    a   :Component .
+
+:Camera
+    rdfs:label "camera component on the phone used to take pictures";
+    a   :Component .
+
+:CoarseLocation 
+    rdfs:label "approximate location";
+    a   :Component .
+
+:Contacts
+    rdfs:label "contact list on the phone";
+    a   :Component .
+
+:DataStorage
+    rdfs:label "storage on the phone (including SD card)";
+    a   :Component .
+
+:FineLocation 
+    rdfs:label "exact/fine location";
+    a   :Component .
+
+:Internet
+    rdfs:label "Internet connection";
+    a   :Component .
+
+:LightSensor
+    rdfs:label "light sensor on the phone";
+    a   :Component .
+
+:OrientationSensor
+    rdfs:label "orientation sensor (gyroscope) on the phone";
+    a   :Component .
+
+:PhoneCallFeature
+    rdfs:label "phone calling feature";
+    a   :Component .
+
+:PhoneProfile
+    rdfs:label "user profile and related information on the phone";
+    a   :Component .
+
+:PowerState
+    rdfs:label "power state such as whether phone is on, locked or off";
+    a   :Component .
+
+:ProximitySensor
+    rdfs:label "proximity sensor on the phone";
+    a   :Component .
+
+:TextMessages
+    rdfs:label "text messages (SMS and MMS) on the phone";
+    a   :Component .
+
