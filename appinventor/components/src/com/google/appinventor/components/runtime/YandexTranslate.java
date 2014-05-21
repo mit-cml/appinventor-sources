@@ -26,17 +26,18 @@ import java.net.URL;
 @DesignerComponent(version = YaVersion.YANDEX_COMPONENT_VERSION,
     description = "Use this component to translate words and sentences between different " +
         "languages. This component needs Internet access, as it will request " +
-        "translations to the Yandex.Translate service. Provide the source and " +
+        "translations to the Yandex.Translate service. Specify the source and " +
         "target language in the form source-target using two letter language " +
         "codes. So\"en-es\" will translate from English to Spanish while " +
-        "\"es-ru\" will translate from Spanish to Russian. Etc. If you leave " +
+        "\"es-ru\" will translate from Spanish to Russian. If you leave " +
         "out the source language, the service will attempt to detect the source " +
         "language. So providing just \"es\" will attempt to detect the source " +
-        "language and translate it to Spanish. This component is powered by the " +
-        "Yandex translation service more information is available at " +
-        "http://api.yandex.com/translate/.\n" +
-        "Note: Translation happens asynchronously in the background. When the " +
-        "translation is complete, the \"GotTranslation\" even is triggered.",
+        "language and translate it to Spanish.<p /> This component is powered by the " +
+        "Yandex translation service.  See http://api.yandex.com/translate/ " +
+        "for more information, including the list of available languages and the " +
+        "meanings of the language codes and status codes. " +
+        "<p />Note: Translation happens asynchronously in the background. When the " +
+        "translation is complete, the \"GotTranslation\" event is triggered.",
     category = ComponentCategory.MEDIA,
     nonVisible = true,
     iconName = "images/yandex.png")
@@ -182,7 +183,7 @@ public final class YandexTranslate extends AndroidNonvisibleComponent {
    */
   @SimpleEvent(description = "Event triggered when the Yandex.Translate service returns the " +
       "translated text. This event also provides a response code for error handling. If the " +
-      "responseCode is not 200, then something happened with the call and the translation will " +
+      "responseCode is not 200, then something went wrong with the call, and the translation will " +
       "not be available.")
   public void GotTranslation(String responseCode, String translation) {
     EventDispatcher.dispatchEvent(this, "GotTranslation", responseCode, translation);

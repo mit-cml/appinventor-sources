@@ -144,42 +144,21 @@ public abstract class ButtonBase extends AndroidViewComponent
     {
         //NOTE: We ALWAYS return false because we want to indicate that this listener has not
         //been consumed. Using this approach, other listeners (e.g. OnClick) can process as normal.
-
-        //If user has disabled the visual feedback, then don't even proceed any further
-        if (!ShowFeedback()) {
-            return false;
-        }
-        //If regular button with no background image or default shape,
-        // then we use the normal button visual feedback.
-        boolean shouldOverlay=true;
-        if (backgroundImageDrawable == null) {
-            shouldOverlay=false;
-        }
-
-        //If using other than default Shape, then we want to overlay
-        if (shape != Component.BUTTON_SHAPE_DEFAULT){
-            shouldOverlay=true;
-        }
-
-        //If a background color has been assigned, then we should perform overlay
-        if (BackgroundColor() != 0 ) {
-            shouldOverlay=true;
-        }
-
-        if (!shouldOverlay) {
-            return false;
-        }
-
         if (me.getAction() == MotionEvent.ACTION_DOWN) {
             //button pressed, provide visual feedback AND return false
-            view.getBackground().setAlpha(70); // translucent
-            view.invalidate();
-
+            if (ShowFeedback()) {
+               view.getBackground().setAlpha(70); // translucent
+               view.invalidate();
+            }
+            TouchDown();
         } else if (me.getAction() == MotionEvent.ACTION_UP ||
             me.getAction() == MotionEvent.ACTION_CANCEL) {
             //button released, set button back to normal AND return false
-            view.getBackground().setAlpha(255); // opaque
-            view.invalidate();
+            if (ShowFeedback()) {
+               view.getBackground().setAlpha(255); // opaque
+               view.invalidate();
+            }
+            TouchUp();
         }
 
         return false;
@@ -188,6 +167,22 @@ public abstract class ButtonBase extends AndroidViewComponent
   @Override
   public View getView() {
     return view;
+  }
+
+  /**
+   * Indicates when a button is touch down
+   */
+  @SimpleEvent
+  public void TouchDown() {
+    EventDispatcher.dispatchEvent(this, "TouchDown");
+  }
+
+  /**
+   * Indicates when a button touch ends
+   */
+  @SimpleEvent
+  public void TouchUp() {
+    EventDispatcher.dispatchEvent(this, "TouchUp");
   }
 
   /**
@@ -441,8 +436,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  {@code true} indicates bold, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontBold() {
     return bold;
   }
@@ -456,7 +450,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public void FontBold(boolean bold) {
     this.bold = bold;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -501,8 +495,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  {@code true} indicates italic, {@code false} normal
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public boolean FontItalic() {
     return italic;
   }
@@ -516,7 +509,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_BOOLEAN,
       defaultValue = "False")
   @SimpleProperty(
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public void FontItalic(boolean italic) {
     this.italic = italic;
     TextViewUtil.setFontTypeface(view, fontTypeface, bold, italic);
@@ -528,8 +521,7 @@ public abstract class ButtonBase extends AndroidViewComponent
    * @return  font size in pixel
    */
   @SimpleProperty(
-      category = PropertyCategory.APPEARANCE,
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public float FontSize() {
     return TextViewUtil.getFontSize(view);
   }
@@ -542,7 +534,7 @@ public abstract class ButtonBase extends AndroidViewComponent
   @DesignerProperty(editorType = PropertyTypeConstants.PROPERTY_TYPE_NON_NEGATIVE_FLOAT,
       defaultValue = Component.FONT_DEFAULT_SIZE + "")
   @SimpleProperty(
-      userVisible = false)
+      category = PropertyCategory.APPEARANCE)
   public void FontSize(float size) {
     TextViewUtil.setFontSize(view, size);
   }
