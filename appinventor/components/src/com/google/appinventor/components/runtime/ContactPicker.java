@@ -61,7 +61,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   private static final String[] PROJECTION = {
     Contacts.PeopleColumns.NAME,
     Contacts.People.PRIMARY_EMAIL_ID,
-    };
+  };
 
   private static final int NAME_INDEX = 0;
   private static final int EMAIL_INDEX = 1;

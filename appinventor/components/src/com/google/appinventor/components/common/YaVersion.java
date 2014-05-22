@@ -438,6 +438,7 @@ public class YaVersion {
   // - The Shape property was added.
   // For CONTACTPICKER_COMPONENT_VERSION 5:
   // - Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
+  // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
   public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:

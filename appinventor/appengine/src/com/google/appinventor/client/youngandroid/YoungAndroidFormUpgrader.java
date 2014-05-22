@@ -594,6 +594,7 @@ public final class YoungAndroidFormUpgrader {
     }
     if (srcCompVersion < 5) {
       // The PhoneNumber, PhoneNumberList, and EmailAddressList properties were added.
+      // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
       srcCompVersion = 5;
     }
     return srcCompVersion;

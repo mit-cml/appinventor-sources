@@ -73,7 +73,7 @@ public class PhoneNumberPicker extends ContactPicker {
    * @param container the parent container.
    */
   public PhoneNumberPicker(ComponentContainer container) {
-      super(container, Contacts.Phones.CONTENT_URI);
+    super(container, Contacts.Phones.CONTENT_URI);
   }
 
   /**

@@ -153,8 +153,8 @@ public class MediaUtil {
         if (findCaseinsensitivePath(form, mediaPath) == null){
           throw e;
         } else {
-        String path = findCaseinsensitivePath(form, mediaPath);
-        return form.getAssets().open(path);
+          String path = findCaseinsensitivePath(form, mediaPath);
+          return form.getAssets().open(path);
         }
     }
   }
@@ -183,10 +183,10 @@ public class MediaUtil {
         InputStream is = null;
         if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
           is = EclairUtil.openContactPhotoInputStreamHelper(form.getContentResolver(),
-            Uri.parse(mediaPath));
+              Uri.parse(mediaPath));
         } else {
           is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
-            Uri.parse(mediaPath));
+              Uri.parse(mediaPath));
         }
         if (is != null) {
           return is;

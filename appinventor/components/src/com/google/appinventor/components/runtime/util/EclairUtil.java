@@ -275,11 +275,11 @@ public class EclairUtil {
    */
   public static Cursor getDataCursor(String id, Activity activityContext, String[] dataProjection) {
     Cursor dataCursor = activityContext.getContentResolver().query(
-                Data.CONTENT_URI,
-                dataProjection,
-                Data.CONTACT_ID + "=? AND (" + Data.MIMETYPE + "=? OR " + Data.MIMETYPE + "=?)",
-                new String[] {id, Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE},
-                null);
+        Data.CONTENT_URI,
+        dataProjection,
+        Data.CONTACT_ID + "=? AND (" + Data.MIMETYPE + "=? OR " + Data.MIMETYPE + "=?)",
+        new String[] {id, Phone.CONTENT_ITEM_TYPE, Email.CONTENT_ITEM_TYPE},
+        null);
     return dataCursor;
   }
 

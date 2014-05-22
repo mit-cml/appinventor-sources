@@ -37,8 +37,8 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   private static final boolean DEBUG = false;
   private static final String TAG = "EmailAddressAdapter";
 
-  public static final int OLD_NAME_INDEX = 1;
-  public static final int OLD_DATA_INDEX = 2;
+  public static final int PRE_ECLAIR_NAME_INDEX = 1;
+  public static final int PRE_ECLAIR_DATA_INDEX = 2;
 
   private static String SORT_ORDER;
 
@@ -46,13 +46,13 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private Context context;
 
-  private static final String[] OLD_PROJECTION = {
+  private static final String[] PRE_ECLAIR_PROJECTION = {
     ContactMethods._ID,    // 0
     ContactMethods.NAME,   // 1
     ContactMethods.DATA,   // 2
   };
 
-  private static final String[] NEW_PROJECTION = EclairUtil.getEmailAdapterProjection();
+  private static final String[] POST_ECLAIR_PROJECTION = EclairUtil.getEmailAdapterProjection();
 
   public EmailAddressAdapter(Context context) {
     super(context, android.R.layout.simple_dropdown_item_1line, null);
@@ -68,17 +68,17 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
   @Override
   public final String convertToString(Cursor cursor) {
 
-    int NEW_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
-    int NEW_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
+    int POST_ECLAIR_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
+    int POST_ECLAIR_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
     String name = "";
     String address = "";
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
-      name = cursor.getString(NEW_NAME_INDEX);
-      address = cursor.getString(NEW_EMAIL_INDEX);
+      name = cursor.getString(POST_ECLAIR_NAME_INDEX);
+      address = cursor.getString(POST_ECLAIR_EMAIL_INDEX);
     } else {
-      name = cursor.getString(OLD_NAME_INDEX);
-      address = cursor.getString(OLD_DATA_INDEX);
+      name = cursor.getString(PRE_ECLAIR_NAME_INDEX);
+      address = cursor.getString(PRE_ECLAIR_DATA_INDEX);
     }
 
     return new Rfc822Token(name, address, null).toString();
@@ -86,19 +86,19 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
 
   private final String makeDisplayString(Cursor cursor) {
 
-    int NEW_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
-    int NEW_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
+    int POST_ECLAIR_NAME_INDEX = cursor.getColumnIndex(EclairUtil.getDisplayName());
+    int POST_ECLAIR_EMAIL_INDEX = cursor.getColumnIndex(EclairUtil.getEmailAddress());
     StringBuilder s = new StringBuilder();
     boolean flag = false;
     String name = "";
     String address = "";
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
-      name = cursor.getString(NEW_NAME_INDEX);
-      address = cursor.getString(NEW_EMAIL_INDEX);
+      name = cursor.getString(POST_ECLAIR_NAME_INDEX);
+      address = cursor.getString(POST_ECLAIR_EMAIL_INDEX);
     } else {
-      name = cursor.getString(OLD_NAME_INDEX);
-      address = cursor.getString(OLD_DATA_INDEX);
+      name = cursor.getString(PRE_ECLAIR_NAME_INDEX);
+      address = cursor.getString(PRE_ECLAIR_DATA_INDEX);
     }
 
     if (!TextUtils.isEmpty(name)) {
@@ -163,10 +163,10 @@ public class EmailAddressAdapter extends ResourceCursorAdapter {
     }
 
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
-      return contentResolver.query(db, NEW_PROJECTION,
+      return contentResolver.query(db, POST_ECLAIR_PROJECTION,
           where, null, SORT_ORDER);
     } else {
-      return contentResolver.query(db, OLD_PROJECTION,
+      return contentResolver.query(db, PRE_ECLAIR_PROJECTION,
           where, null, SORT_ORDER);
     }
   }
