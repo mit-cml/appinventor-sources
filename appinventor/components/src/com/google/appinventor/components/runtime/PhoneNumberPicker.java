@@ -104,101 +104,110 @@ public class PhoneNumberPicker extends ContactPicker {
     if (requestCode == this.requestCode && resultCode == Activity.RESULT_OK) {
       Log.i("PhoneNumberPicker", "received intent is " + data);
       Uri phoneUri = data.getData();
-      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
-        if (checkContactUri(phoneUri, "//com.android.contacts/data")) {
-          Cursor contactCursor = null;
-          Cursor dataCursor = null;
-          try {
-            String id = "";
 
+      String desiredPhoneUri = "";
+      if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+        desiredPhoneUri = "//com.android.contacts/data";
+      } else {
+        desiredPhoneUri = "//contacts/phones";
+      }
+
+      if (checkContactUri(phoneUri, desiredPhoneUri)) {
+        Cursor contactCursor = null;
+        Cursor dataCursor = null;
+        try {
+          if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
             contactCursor = activityContext.getContentResolver().query(phoneUri,
                 NAME_PROJECTION, null, null, null);
-            if (contactCursor.moveToFirst()) {
-              final int CONTACT_ID_INDEX = EclairUtil.getContactIdIndex(contactCursor);
-              final int NAME_INDEX = EclairUtil.getNameIndex(contactCursor);
-              final int PHOTO_INDEX = EclairUtil.getThumbnailIndex(contactCursor);
-
-              id = guardCursorGetString(contactCursor, CONTACT_ID_INDEX);
-              contactName = guardCursorGetString(contactCursor, NAME_INDEX);
-              contactPictureUri = guardCursorGetString(contactCursor, PHOTO_INDEX);
-
-            }
+            String id = postEclairGetContactNameAndPicture(contactCursor);
 
             dataCursor = EclairUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
-
-            phoneNumber = "";
-            emailAddress = "";
-
-            if (dataCursor.moveToFirst()) {
-              final int PHONE_INDEX = EclairUtil.getPhoneIndex(dataCursor);
-              final int EMAIL_INDEX = EclairUtil.getEmailIndex(dataCursor);
-              final int MIME_INDEX = EclairUtil.getMimeIndex(dataCursor);
-
-              // Get the first (default) email and phone number associated with the contact.
-              while (!dataCursor.isAfterLast()) {
-                String type = guardCursorGetString(dataCursor, MIME_INDEX);
-                if (type.contains(EclairUtil.getPhoneType()) && (phoneNumber == "")) {
-                  phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
-                } else if (type.contains(EclairUtil.getEmailType()) && (emailAddress == "")) {
-                  emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
-                }
-                dataCursor.moveToNext();
-              }
-            }
-            Log.i("PhoneNumberPicker",
-                "Contact name = " + contactName + ", phone number = " + phoneNumber +
-                ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
-
-          } catch (Exception e) {
-            // There was an exception in trying to compute the cursor from the activity context.
-            // It's bad form to catch an arbitrary exception, but if there is an error here
-            // it's unclear what's going on.
-            puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
-
-          } finally {
-            if (contactCursor != null) {
-              contactCursor.close();
-            }
-            if (dataCursor != null){
-              dataCursor.close();
-            }
-          }
-        } // ends if (checkContactUri ...
-        AfterPicking();
-      } else {
-        if (checkContactUri(phoneUri, "//contacts/phones")) {
-          // This test is not good enough.  The lookup code below does not work with
-          // Motorola Blur (Droid Global), even though the URI has the correct form.
-          // Hopefully, moving to the new contact scheme will solve this problem.
-          Cursor cursor = null;
-          try {
-            cursor = activityContext.getContentResolver().query(phoneUri,
+            postEclairGetContactEmailAndPhone(dataCursor);
+          } else {
+            contactCursor = activityContext.getContentResolver().query(phoneUri,
                 PROJECTION, null, null, null);
-            if (cursor.moveToFirst()) {
-              contactName = guardCursorGetString(cursor, NAME_INDEX);
-              phoneNumber = guardCursorGetString(cursor, NUMBER_INDEX);
-              int contactId = cursor.getInt(PERSON_INDEX);
-              Uri cUri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI, contactId);
-              contactPictureUri = cUri.toString();
-              String emailId = guardCursorGetString(cursor, EMAIL_INDEX);
-              emailAddress = getEmailAddress(emailId);
-              Log.i("PhoneNumberPicker",
-                  "Contact name = " + contactName + ", phone number = " + phoneNumber +
-                  ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
-            }
-          } catch (Exception e) {
-            // There was an exception in trying to compute the cursor from the activity context.
-            // It's bad form to catch an arbitrary exception, but if there is an error here
-            // it's unclear what's going on.
-            puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
-          } finally {
-            if (cursor != null) {
-              cursor.close();
-            }
+            preEclairGetContactInfo(contactCursor);
           }
-        } // ends if (checkContactUri ...
-        AfterPicking();
-      }  //ends if (requestCode ....
+          Log.i("PhoneNumberPicker",
+              "Contact name = " + contactName + ", phone number = " + phoneNumber +
+              ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
+        } catch (Exception e) {
+          // There was an exception in trying to compute the cursor from the activity context.
+          // It's bad form to catch an arbitrary exception, but if there is an error here
+          // it's unclear what's going on.
+          puntContactSelection(ErrorMessages.ERROR_PHONE_UNSUPPORTED_CONTACT_PICKER);
+        } finally {
+          if (contactCursor != null) {
+            contactCursor.close();
+          }
+          if (dataCursor != null){
+            dataCursor.close();
+          }
+        }
+      } // ends if (checkContactUri ...
+      AfterPicking();
+    } // ends if (requestCode ...
+  }
+
+
+  /**
+   * For versions before Eclair, we get all the contact info from the same table.
+   */
+  public void preEclairGetContactInfo(Cursor cursor) {
+    if (cursor.moveToFirst()) {
+      contactName = guardCursorGetString(cursor, NAME_INDEX);
+      phoneNumber = guardCursorGetString(cursor, NUMBER_INDEX);
+      int contactId = cursor.getInt(PERSON_INDEX);
+      Uri cUri = ContentUris.withAppendedId(Contacts.People.CONTENT_URI, contactId);
+      contactPictureUri = cUri.toString();
+      String emailId = guardCursorGetString(cursor, EMAIL_INDEX);
+      emailAddress = getEmailAddress(emailId);
+      Log.i("PhoneNumberPicker",
+          "Contact name = " + contactName + ", phone number = " + phoneNumber +
+          ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
+    }
+  }
+
+  /**
+   * Assigns contactName and contactPictureUri for Eclair and up.
+   * Returns id for getting emailAddress and phoneNumber.
+   */
+  public String postEclairGetContactNameAndPicture(Cursor contactCursor) {
+    String id = "";
+    if (contactCursor.moveToFirst()) {
+      final int CONTACT_ID_INDEX = EclairUtil.getContactIdIndex(contactCursor);
+      final int NAME_INDEX = EclairUtil.getNameIndex(contactCursor);
+      final int PHOTO_INDEX = EclairUtil.getThumbnailIndex(contactCursor);
+
+      id = guardCursorGetString(contactCursor, CONTACT_ID_INDEX);
+      contactName = guardCursorGetString(contactCursor, NAME_INDEX);
+      contactPictureUri = guardCursorGetString(contactCursor, PHOTO_INDEX);
+    }
+    return id;
+  }
+
+  /**
+   * Assigns emailAddress, phoneNumber, emailAddressList, and phoneNumberList
+   * for Eclair and up.
+   */
+  public void postEclairGetContactEmailAndPhone(Cursor dataCursor) {
+    phoneNumber = "";
+    emailAddress = "";
+    if (dataCursor.moveToFirst()) {
+      final int PHONE_INDEX = EclairUtil.getPhoneIndex(dataCursor);
+      final int EMAIL_INDEX = EclairUtil.getEmailIndex(dataCursor);
+      final int MIME_INDEX = EclairUtil.getMimeIndex(dataCursor);
+
+      // Get the first (default) email and phone number associated with the contact.
+      while (!dataCursor.isAfterLast()) {
+        String type = guardCursorGetString(dataCursor, MIME_INDEX);
+        if (type.contains(EclairUtil.getPhoneType()) && (phoneNumber == "")) {
+          phoneNumber = guardCursorGetString(dataCursor, PHONE_INDEX);
+        } else if (type.contains(EclairUtil.getEmailType()) && (emailAddress == "")) {
+          emailAddress = guardCursorGetString(dataCursor, EMAIL_INDEX);
+        }
+        dataCursor.moveToNext();
+      }
     }
   }
 }

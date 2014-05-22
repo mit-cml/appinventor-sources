@@ -24,6 +24,7 @@ import android.provider.Contacts;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -238,16 +239,16 @@ public class ContactPicker extends Picker implements ActivityResultListener {
       String emailId = guardCursorGetString(contactCursor, EMAIL_INDEX);
       emailAddress = getEmailAddress(emailId);
       String phoneId = guardCursorGetString(contactCursor, PHONE_INDEX);
+      phoneNumber = getPhoneNumber(phoneId);
       contactPictureUri = contactUri.toString();
-      Log.i("ContactPicker",
-          "Contact name = " + contactName + ", email address = " + emailAddress +
-          ", contactPhotoUri = " +  contactPictureUri);
+      phoneNumberList = Arrays.asList(phoneNumber);
+      emailAddressList = Arrays.asList(emailAddress);
     }
   }
 
   /**
    * Assigns contactName and contactPictureUri for Eclair and up.
-   * Returns id for use in the Data table.
+   * Returns id for getting emailAddress and phoneNumber.
    */
   public String postEclairGetContactNameAndPicture(Cursor contactCursor) {
     String id = "";
