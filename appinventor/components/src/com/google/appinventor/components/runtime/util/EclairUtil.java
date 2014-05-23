@@ -217,13 +217,6 @@ public class EclairUtil {
     return contactCursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI);
   }
 
-  /**
-   * Determine whether a contact has a phone number for ContactPicker.
-   */
-  public static int hasPhoneNumber(Cursor contactCursor) {
-    return contactCursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER);
-  }
-
   public static int getPhoneIndex(Cursor dataCursor) {
     return dataCursor.getColumnIndex(Phone.NUMBER);
   }

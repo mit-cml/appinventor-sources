@@ -271,7 +271,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
       final int NAME_INDEX = EclairUtil.getNameIndex(contactCursor);
       final int THUMBNAIL_INDEX = EclairUtil.getThumbnailIndex(contactCursor);
       final int PHOTO_INDEX = EclairUtil.getPhotoIndex(contactCursor);
-      final int HAS_PHONE_NUMBER = EclairUtil.hasPhoneNumber(contactCursor);
       id = guardCursorGetString(contactCursor, ID_INDEX);
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
       contactPictureUri = guardCursorGetString(contactCursor, THUMBNAIL_INDEX);
