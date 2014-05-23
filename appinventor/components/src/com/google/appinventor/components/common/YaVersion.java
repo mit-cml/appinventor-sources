@@ -262,8 +262,10 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 95:
   // - BUTTON_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 96:
+  // - CONTACTPICKER_COMPONENT_VERSION was incremented to 5
 
-  public static final int YOUNG_ANDROID_VERSION = 95;
+  public static final int YOUNG_ANDROID_VERSION = 96;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -434,7 +436,10 @@ public class YaVersion {
   // - The method Open was added.
   // For CONTACTPICKER_COMPONENT_VERSION 4:
   // - The Shape property was added.
-  public static final int CONTACTPICKER_COMPONENT_VERSION = 4;
+  // For CONTACTPICKER_COMPONENT_VERSION 5:
+  // - Added PhoneNumber, PhoneNumberList, and EmailAddressList to ContactPicker.
+  // - For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
+  public static final int CONTACTPICKER_COMPONENT_VERSION = 5;
 
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.

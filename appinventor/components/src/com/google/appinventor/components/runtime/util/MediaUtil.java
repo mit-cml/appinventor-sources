@@ -7,6 +7,7 @@ package com.google.appinventor.components.runtime.util;
 
 import com.google.appinventor.components.runtime.Form;
 import com.google.appinventor.components.runtime.ReplForm;
+import com.google.appinventor.components.runtime.util.EclairUtil;
 
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
@@ -152,8 +153,8 @@ public class MediaUtil {
         if (findCaseinsensitivePath(form, mediaPath) == null){
           throw e;
         } else {
-        String path = findCaseinsensitivePath(form, mediaPath);
-        return form.getAssets().open(path);
+          String path = findCaseinsensitivePath(form, mediaPath);
+          return form.getAssets().open(path);
         }
     }
   }
@@ -179,8 +180,14 @@ public class MediaUtil {
 
       case CONTACT_URI:
         // Open the photo for the contact.
-        InputStream is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
-            Uri.parse(mediaPath));
+        InputStream is = null;
+        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+          is = EclairUtil.openContactPhotoInputStreamHelper(form.getContentResolver(),
+              Uri.parse(mediaPath));
+        } else {
+          is = Contacts.People.openContactPhotoInputStream(form.getContentResolver(),
+              Uri.parse(mediaPath));
+        }
         if (is != null) {
           return is;
         }
