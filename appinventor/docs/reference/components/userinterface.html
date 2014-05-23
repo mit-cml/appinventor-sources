@@ -1295,83 +1295,62 @@ none
                   <h3>Methods</h3>
                   none
 
-                  <h2 id="WebViewer"> WebViewer </h2>
-                  <img src="images/webviewer.png" alt="Picture of WebViewer component" />
-                  <p> Component for viewing Web pages. The Home URL can be
-                    specified in
-                    the Designer or in the Blocks Editor. The view can be set to
-                    follow
-                    links when they are tapped, and users can fill in Web forms.
-                    Warning:
-                    This is not a full browser. For example, pressing the
-                    phone's hardware
-                    Back key will exit the app, rather than move back in the
-                    browser
-                    history. </p>
-                  <h3> Properties </h3>
-                  <dl>
-                    <dt> <code> <em> CurrentPageTitle </em> </code> </dt>
-                    <dd> Title of the page currently viewed </dd>
-                    <dt> <code> <em> CurrentUrl </em> </code> </dt>
-                    <dd> URL of the page currently viewed. This could be
-                      different from
-                      the Home URL if new pages were visited by following links.
-                    </dd>
-                    <dt> <code> FollowLinks </code> </dt>
-                    <dd> Determines whether to follow links when they are tapped
-                      in the
-                      WebViewer. If you follow links, you can use GoBack and
-                      GoForward to
-                      navigate the browser history. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dt> <code> HomeUrl </code> </dt>
-                    <dd> URL of the page the WebViewer should initially open to.
-                      Setting
-                      this will load the page. </dd>
-                    <dt> <code> PromptforPermission </code> </dt>
-                    <dd> If True, then prompt the user of the WebView to give
-                      permission
-                      to access the geolocation API. If False, then assume
-                      permission is
-                      granted. </dd>
-                    <dt><code>UsesLocation</code> (designer only)</dt>
-                    <dd>Whether or not to give the application permission to use the
-                      Javascript geolocation API. This property is available only in the
-                      designer.</dd>
-                    <dt> <code> Visible </code> </dt>
-                    <dd> Whether the component is visible </dd>
-                    <dt><code>WebViewString</code></dt>
-                    <dd>Gets the WebView's String, which is viewable
-                      through Javascript in the WebView as the
-                      window.AppInventor object</dd>
-                    <dt><code>Width</code></dt>
-                    <dd></dd>
-                  </dl>
-                  <h3> Events </h3>
-                  none
-                  <h3> Methods </h3>
-                  <dl>
-                    <dt> <code> boolean CanGoBack() </code> </dt>
-                    <dd> Returns true if the WebViewer can go back in the
-                      history list. </dd>
-                    <dt> <code> boolean CanGoForward() </code> </dt>
-                    <dd> Returns true if the WebViewer can go forward in the
-                      history
-                      list. </dd>
-                    <dt> <code> GoBack() </code> </dt>
-                    <dd> Go back to the previous page in the history list. Does
-                      nothing
-                      if there is no previous page. </dd>
-                    <dt> <code> GoForward() </code> </dt>
-                    <dd> Go forward to the next page in the history list. Does
-                      nothing if
-                      there is no next page. </dd>
-                    <dt> <code> GoHome() </code> </dt>
-                    <dd> Loads the home URL page. This happens automatically
-                      when the
-                      home URL is changed. </dd>
-                    <dt> <code> GoToUrl(text url) </code> </dt>
-                    <dd> Load the page at the given URL. </dd>
+<h2 id="WebViewer"> WebViewer </h2>
+<img src="images/webviewer.png" alt="Picture of WebViewer component" />
+
+<p>Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone's hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write("The answer is" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to "hello", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString("hello from Javascript")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. </p>
+
+<h3>Properties</h3>
+<dl>
+  <dt><code><em>CurrentPageTitle</em></code></dt>
+  <dd>Title of the page currently viewed</dd>
+  <dt><code><em>CurrentUrl</em></code></dt>
+  <dd>URL of the page currently viewed.   This could be different from the Home URL if new pages were visited by following links.</dd>
+  <dt><code>FollowLinks</code></dt>
+  <dd>Determines whether to follow links when they are tapped in the WebViewer.  If you follow links, you can use GoBack and GoForward to navigate the browser history. </dd>
+  <dt><code>Height</code></dt>
+  <dd></dd>
+  <dt><code>HomeUrl</code></dt>
+  <dd>URL of the page the WebViewer should initially open to.  Setting this will load the page.</dd>
+  <dt><code>PromptforPermission</code></dt>
+  <dd>If True, then prompt the user of the WebView to give permission to access the geolocation API. If False, then assume permission is granted.</dd>
+  <dt><code>UsesLocation</code> (designer only)</dt>
+  <dd>Whether or not to give the application permission to use the Javascript geolocation API. This property is available only in the designer.</dd>
+  <dt><code>Visible</code></dt>
+  <dd>Specifies whether the component should be visible on the screen. Value is true if the component is showing and false if hidden.</dd>
+  <dt><code>WebViewString</code></dt>
+  <dd>Gets the WebView's String, which is viewable through Javascript in the WebView as the window.AppInventor object</dd>
+  <dt><code>Width</code></dt>
+  <dd></dd>
+</dl>
+
+<h3>Events</h3>
+none
+
+<h3>Methods</h3>
+<dl>
+  <dt><code>boolean CanGoBack()</code></dt>
+  <dd>Returns true if the WebViewer can go back in the history list.</dd>
+  <dt><code>boolean CanGoForward()</code></dt>
+  <dd>Returns true if the WebViewer can go forward in the history list.</dd>
+  <dt><code>ClearLocations()</code></dt>
+  <dd>Clear stored location permissions.</dd>
+  <dt><code>GoBack()</code></dt>
+  <dd>Go back to the previous page in the history list.  Does nothing if there is no previous page.</dd>
+  <dt><code>GoForward()</code></dt>
+  <dd>Go forward to the next page in the history list.   Does nothing if there is no next page.</dd>
+  <dt><code>GoHome()</code></dt>
+  <dd>Loads the home URL page.  This happens automatically when the home URL is changed.</dd>
+  <dt><code>GoToUrl(text url)</code></dt>
+  <dd>Load the page at the given URL.</dd>
+</dl>
+
+
+
+
+
+
+
                   </dl>
                   <!-- Content ----------------------- -->
                 </div>
