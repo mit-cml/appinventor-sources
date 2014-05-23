@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +47,15 @@ Blockly.FieldLabel = function(text) {
 goog.inherits(Blockly.FieldLabel, Blockly.Field);
 
 /**
+ * Clone this FieldLabel.
+ * @return {!Blockly.FieldLabel} The result of calling the constructor again
+ *   with the current values of the arguments used during construction.
+ */
+Blockly.FieldLabel.prototype.clone = function() {
+  return new Blockly.FieldLabel(this.getText());
+};
+
+/**
  * Editable fields are saved by the XML renderer, non-editable fields are not.
  */
 Blockly.FieldLabel.prototype.EDITABLE = false;
@@ -63,7 +73,7 @@ Blockly.FieldLabel.prototype.init = function(block) {
 
   // Configure the field to be transparent with respect to tooltips.
   this.textElement_.tooltip = this.sourceBlock_;
-  Blockly.Tooltip && Blockly.Tooltip.bindMouseEvents(this.textElement_);
+  Blockly.Tooltip.bindMouseEvents(this.textElement_);
 };
 
 /**

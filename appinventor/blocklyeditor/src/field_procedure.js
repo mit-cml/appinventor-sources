@@ -1,5 +1,19 @@
-Blockly.FieldProcedure = {};
-Blockly.AIProcedure = {};
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+/**
+ * @license
+ * @fileoverview Visual blocks editor for App Inventor
+ * Methods to handle serialization of the blocks workspace
+ *
+ * @author sharon@google.com (Sharon Perl)
+ */
+
+'use strict';
+
+goog.provide('Blockly.FieldProcedure');
+goog.provide('Blockly.AIProcedure');
+
 
 Blockly.FieldProcedure.defaultValue = ["","none"]
 
@@ -33,7 +47,7 @@ Blockly.AIProcedure.getProcedureNames = function(returnValue) {
   var topBlocks = Blockly.mainWorkspace.getTopBlocks();
   var procNameArray = [Blockly.FieldProcedure.defaultValue];
   for(var i=0;i<topBlocks.length;i++){
-    var procName = topBlocks[i].getTitleValue('NAME')
+    var procName = topBlocks[i].getFieldValue('NAME')
     if(topBlocks[i].type == "procedures_defnoreturn" && !returnValue) {
       procNameArray.push([procName,procName]);
     } else if (topBlocks[i].type == "procedures_defreturn" && returnValue) {
@@ -77,16 +91,19 @@ Blockly.AIProcedure.getAllProcedureDeclarationBlocksExcept = function (block) {
 
 Blockly.AIProcedure.getAllProcedureDeclarationNames = function () {
   var procBlocks = Blockly.AIProcedure.getAllProcedureDeclarationBlocks();
-  return procBlocks.map(function (decl) { return decl.getTitleValue('NAME'); });
+  return procBlocks.map(function (decl) { return decl.getFieldValue('NAME'); });
 };
 
 Blockly.AIProcedure.removeProcedureValues = function(name, workspace) {
-  var blockArray = Blockly.mainWorkspace.getAllBlocks();
-  for(var i=0;i<blockArray.length;i++){
-    var block = blockArray[i];
-    if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn") {
-      if(block.getTitleValue('PROCNAME') == name) {
-        block.removeProcedureValue();
+  if (workspace  // [lyn, 04/13/14] ensure workspace isn't undefined
+      && workspace === Blockly.mainWorkspace) {
+    var blockArray = Blockly.workspace.getAllBlocks();
+    for(var i=0;i<blockArray.length;i++){
+      var block = blockArray[i];
+      if(block.type == "procedures_callreturn" || block.type == "procedures_callnoreturn") {
+        if(block.getFieldValue('PROCNAME') == name) {
+          block.removeProcedureValue();
+        }
       }
     }
   }
@@ -102,7 +119,7 @@ Blockly.AIProcedure.renameProcedure = function (newName) {
 
   // [lyn, 10/28/13] Prevent two procedures from having the same name.
   var procBlocks = Blockly.AIProcedure.getAllProcedureDeclarationBlocksExcept(this.sourceBlock_);
-  var procNames = procBlocks.map(function (decl) { return decl.getTitleValue('NAME'); });
+  var procNames = procBlocks.map(function (decl) { return decl.getFieldValue('NAME'); });
   newName = Blockly.FieldLexicalVariable.nameNotIn(newName, procNames);
   // Rename any callers.
   var blocks = this.sourceBlock_.workspace.getAllBlocks();

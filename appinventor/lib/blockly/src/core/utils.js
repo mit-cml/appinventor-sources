@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,24 +73,19 @@ Blockly.removeClass_ = function(element, className) {
 
 /**
  * Bind an event to a function call.
- * @param {!Element} element Element upon which to listen.
+ * @param {!Node} node Node upon which to listen.
  * @param {string} name Event name to listen to (e.g. 'mousedown').
  * @param {Object} thisObject The value of 'this' in the function.
  * @param {!Function} func Function to call when event is triggered.
  * @return {!Array.<!Array>} Opaque data that can be passed to unbindEvent_.
  * @private
  */
-Blockly.bindEvent_ = function(element, name, thisObject, func) {
-  var bindData = [];
-  var wrapFunc;
-  if (!element.addEventListener) {
-    throw 'Element is not a DOM node with addEventListener.';
-  }
-  wrapFunc = function(e) {
+Blockly.bindEvent_ = function(node, name, thisObject, func) {
+  var wrapFunc = function(e) {
     func.apply(thisObject, arguments);
   };
-  element.addEventListener(name, wrapFunc, false);
-  bindData.push([element, name, wrapFunc]);
+  node.addEventListener(name, wrapFunc, false);
+  var bindData = [[node, name, wrapFunc]];
   // Add equivalent touch event.
   if (name in Blockly.bindEvent_.TOUCH_MAP) {
     wrapFunc = function(e) {
@@ -104,9 +100,9 @@ Blockly.bindEvent_ = function(element, name, thisObject, func) {
       // Stop the browser from scrolling/zooming the page
       e.preventDefault();
     };
-    element.addEventListener(Blockly.bindEvent_.TOUCH_MAP[name],
+    node.addEventListener(Blockly.bindEvent_.TOUCH_MAP[name],
                              wrapFunc, false);
-    bindData.push([element, Blockly.bindEvent_.TOUCH_MAP[name], wrapFunc]);
+    bindData.push([node, Blockly.bindEvent_.TOUCH_MAP[name], wrapFunc]);
   }
   return bindData;
 };
@@ -119,12 +115,10 @@ Blockly.bindEvent_ = function(element, name, thisObject, func) {
 Blockly.bindEvent_.TOUCH_MAP = {};
 if ('ontouchstart' in document.documentElement) {
   Blockly.bindEvent_.TOUCH_MAP = {
-    mousedown: 'touchstart',
-    mousemove: 'touchmove',
-    mouseup: 'touchend'
+    'mousedown': 'touchstart',
+    'mousemove': 'touchmove',
+    'mouseup': 'touchend'
   };
-} else {
-  Blockly.bindEvent_.TOUCH_MAP = {};
 }
 
 /**
@@ -137,33 +131,45 @@ if ('ontouchstart' in document.documentElement) {
 Blockly.unbindEvent_ = function(bindData) {
   while (bindData.length) {
     var bindDatum = bindData.pop();
-    var element = bindDatum[0];
+    var node = bindDatum[0];
     var name = bindDatum[1];
     var func = bindDatum[2];
-    element.removeEventListener(name, func, false);
+    node.removeEventListener(name, func, false);
   }
   return func;
 };
 
 /**
- * Fire a synthetic event.
- * @param {!Element} element The event's target element.
+ * Fire a synthetic event synchronously.
+ * @param {!EventTarget} node The event's target node.
  * @param {string} eventName Name of event (e.g. 'click').
  */
-Blockly.fireUiEvent = function(element, eventName) {
+Blockly.fireUiEventNow = function(node, eventName) {
   var doc = document;
   if (doc.createEvent) {
     // W3
     var evt = doc.createEvent('UIEvents');
     evt.initEvent(eventName, true, true);  // event type, bubbling, cancelable
-    element.dispatchEvent(evt);
+    node.dispatchEvent(evt);
   } else if (doc.createEventObject) {
     // MSIE
     var evt = doc.createEventObject();
-    element.fireEvent('on' + eventName, evt);
+    node.fireEvent('on' + eventName, evt);
   } else {
     throw 'FireEvent: No event creation mechanism.';
   }
+};
+
+/**
+ * Fire a synthetic event asynchronously.
+ * @param {!EventTarget} node The event's target node.
+ * @param {string} eventName Name of event (e.g. 'click').
+ */
+Blockly.fireUiEvent = function(node, eventName) {
+  var fire = function() {
+    Blockly.fireUiEventNow(node, eventName);
+  }
+  setTimeout(fire, 0);
 };
 
 /**
@@ -288,8 +294,8 @@ Blockly.isRightButton = function(e) {
  */
 Blockly.convertCoordinates = function(x, y, toSvg) {
   if (toSvg) {
-    x -= window.scrollX;
-    y -= window.scrollY;
+    x -= window.scrollX || window.pageXOffset;
+    y -= window.scrollY || window.pageYOffset;
   }
   var svgPoint = Blockly.svg.createSVGPoint();
   svgPoint.x = x;
@@ -300,8 +306,8 @@ Blockly.convertCoordinates = function(x, y, toSvg) {
   }
   var xy = svgPoint.matrixTransform(matrix);
   if (!toSvg) {
-    xy.x += window.scrollX;
-    xy.y += window.scrollY;
+    xy.x += window.scrollX || window.pageXOffset;
+    xy.y += window.scrollY || window.pageYOffset;
   }
   return xy;
 };
@@ -313,13 +319,15 @@ Blockly.convertCoordinates = function(x, y, toSvg) {
  * @return {!Object} Object with .x and .y properties.
  */
 Blockly.mouseToSvg = function(e) {
-  return Blockly.convertCoordinates(e.clientX + window.scrollX,
-      e.clientY + window.scrollY, true);
+  var scrollX = window.scrollX || window.pageXOffset;
+  var scrollY = window.scrollY || window.pageYOffset;
+  return Blockly.convertCoordinates(e.clientX + scrollX,
+                                    e.clientY + scrollY, true);
 };
 
 /**
  * Given an array of strings, return the length of the shortest one.
- * @param {!Array<string>} array Array of strings.
+ * @param {!Array.<string>} array Array of strings.
  * @return {number} Length of shortest string.
  */
 Blockly.shortestStringLength = function(array) {
@@ -336,7 +344,7 @@ Blockly.shortestStringLength = function(array) {
 /**
  * Given an array of strings, return the length of the common prefix.
  * Words may not be split.  Any space after a word is included in the length.
- * @param {!Array<string>} array Array of strings.
+ * @param {!Array.<string>} array Array of strings.
  * @param {?number} opt_shortest Length of shortest string.
  * @return {number} Length of common prefix.
  */
@@ -371,7 +379,7 @@ Blockly.commonWordPrefix = function(array, opt_shortest) {
 /**
  * Given an array of strings, return the length of the common suffix.
  * Words may not be split.  Any space after a word is included in the length.
- * @param {!Array<string>} array Array of strings.
+ * @param {!Array.<string>} array Array of strings.
  * @param {?number} opt_shortest Length of shortest string.
  * @return {number} Length of common suffix.
  */

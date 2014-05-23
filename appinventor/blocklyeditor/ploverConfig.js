@@ -6,12 +6,16 @@
     //blockly.js must come first
     '../lib/blockly/src/core/blockly.js',
 
-    //language/en/*.js has to come next (for constants)
-    './src/language/en/_messages.js',
+    //msg/js/*.js has to come next (for constants)
+    './src/msg/_messages.js',
+
+    // Lyn's instrumentation code
+    "./src/instrument.js",
 
     //the rest of the blockly .js files can come in any order
 
     '../lib/blockly/src/core/block.js',
+    '../lib/blockly/src/core/blocks.js',
     '../lib/blockly/src/core/block_svg.js',
     //'../lib/blockly/src/core/blockly.js',
     '../lib/blockly/src/core/bubble.js',
@@ -33,10 +37,12 @@
     '../lib/blockly/src/core/icon.js',
     '../lib/blockly/src/core/inject.js',
     '../lib/blockly/src/core/input.js',
-    '../lib/blockly/src/core/language.js',
+//    '../lib/blockly/src/core/msg.js',
     '../lib/blockly/src/core/mutator.js',
     '../lib/blockly/src/core/names.js',
     '../lib/blockly/src/core/procedures.js',
+    '../lib/blockly/src/core/realtime.js',
+    '../lib/blockly/src/core/realtime-client-utils.js',
     '../lib/blockly/src/core/scrollbar.js',
     //'../lib/blockly/src/core/toolbox.js',
     '../lib/blockly/src/core/tooltip.js',
@@ -49,7 +55,7 @@
     '../lib/blockly/src/core/xml.js',
     '../lib/blockly/src/core/typeblock.js',
 
-    //finally, include any of our own .js file in any order
+    //finally, include any of our own .js file in any orde
     "./src/blocklyeditor.js",
     "./src/blockColors.js",
     "./src/component.js",
@@ -69,17 +75,17 @@
     "./src/field_global_flydown.js",
     "./src/field_procedure_flydown.js",
 
-    //language files
-    './src/language/common/control.js',
-    './src/language/common/logic.js',
-    './src/language/common/text.js',
-    './src/language/common/lists.js',
-    './src/language/common/math.js',
-    './src/language/common/utilities.js',
-    './src/language/common/procedures.js',
-    './src/language/common/lexical-variables.js',
-    './src/language/common/colors.js',
-    './src/language/common/components.js',
+    //blocks files
+    './src/blocks/control.js',
+    './src/blocks/logic.js',
+    './src/blocks/text.js',
+    './src/blocks/lists.js',
+    './src/blocks/math.js',
+    './src/blocks/utilities.js',
+    './src/blocks/procedures.js',
+    './src/blocks/lexical-variables.js',
+    './src/blocks/colors.js',
+    './src/blocks/components.js',
 
     //generator files
     "./src/generators/yail.js",

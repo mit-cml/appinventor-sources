@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +33,9 @@ goog.require('Blockly.Field');
  * Class for a checkbox field.
  * @param {string} state The initial state of the field ('TRUE' or 'FALSE').
  * @param {Function} opt_changeHandler A function that is executed when a new
- *     option is selected.
+ *     option is selected.  Its sole argument is the new checkbox state.  If
+ *     it returns a value, this becomes the new checkbox state, unless the
+ *     value is null, in which case the change is aborted.
  * @extends {Blockly.Field}
  * @constructor
  */
@@ -50,6 +53,15 @@ Blockly.FieldCheckbox = function(state, opt_changeHandler) {
   this.setValue(state);
 };
 goog.inherits(Blockly.FieldCheckbox, Blockly.Field);
+
+/**
+ * Clone this FieldCheckbox.
+ * @return {!Blockly.FieldCheckbox} The result of calling the constructor again
+ *   with the current values of the arguments used during construction.
+ */
+Blockly.FieldCheckbox.prototype.clone = function() {
+  return new Blockly.FieldCheckbox(this.getValue(), this.changeHandler_);
+};
 
 /**
  * Mouse cursor style when over the hotspot that initiates editability.

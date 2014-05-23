@@ -1,22 +1,50 @@
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
+ * @license
  * @fileoverview Visual blocks editor for App Inventor
  * Methods to handle serialization of the blocks workspace
  * 
  * @author sharon@google.com (Sharon Perl)
  */
 
-Blockly.SaveFile = {};
+'use strict';
+
+goog.provide('Blockly.SaveFile');
+
+goog.require('Blockly.Instrument');
 
 Blockly.SaveFile.load = function(blocksContent) {
+  Blockly.Instrument.initializeStats("Blockly.SaveFile.load");
+  Blockly.Instrument.timer(
+  function () {
   // We leave it to our caller to catch JavaScriptException and deal with
   // errors loading the block space.
+
   if (blocksContent.length != 0) {
-    blocksContent=Blockly.Versioning.translateVersion(blocksContent)
+    blocksContent = Blockly.Versioning.translateVersion(blocksContent);
     var xml = Blockly.Xml.textToDom(blocksContent);
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+    if (Blockly.Instrument.useIsRenderingOn) {
+      try {
+        Blockly.Block.isRenderingOn = false;
+        Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+      } finally { // Guarantee that rendering is turned on going forward.
+        Blockly.Block.isRenderingOn = true;
+      }
+    } else {
+      Blockly.Block.isRenderingOn = true;
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+    }
   }
+  },
+  function (result, timeDiff) {
+    Blockly.Instrument.stats.totalTime = timeDiff;
+    Blockly.Instrument.stats.blockCount = Blockly.Instrument.stats.domToBlockInnerCalls;
+    Blockly.Instrument.stats.topBlockCount = Blockly.Instrument.stats.domToBlockCalls;
+    Blockly.Instrument.displayStats("Blockly.SaveFile.load");
+  }
+  );
 };
 
 /**

@@ -1,22 +1,28 @@
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
+ * @license
  * @fileoverview Visual blocks editor for App Inventor
  * Set of drawers for holding factory blocks (blocks that create
  * other blocks when dragged onto the workspace). The set of drawers
  * includes the built-in drawers that we get from the blocks language, as
  * well as a drawer per component instance that was added to this workspace.
  *
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author Sharon Perl (sharon@google.com)
  */
 
-Blockly.Drawer = {};
+'use strict';
+
+goog.provide('Blockly.Drawer');
+
+goog.require('Blockly.Flyout');
 
 // Some block drawers need to be initialized after all the javascript source is loaded because they
 // use utility functions that may not yet be defined at the time their source is read in. They
 // can do this by adding a field to Blockly.DrawerInit whose value is their initialization function.
 // For example, see language/common/math.js.
-if (!Blockly.DrawerInit) Blockly.DrawerInit = {};
 
 /**
  * Create the dom for the drawer. Creates a flyout Blockly.Drawer.flyout_,
@@ -60,8 +66,8 @@ Blockly.Drawer.PREFIX_ = 'cat_';
 Blockly.Drawer.buildTree_ = function() {
   var tree = {};
   // Populate the tree structure.
-  for (var name in Blockly.Language) {
-    var block = Blockly.Language[name];
+  for (var name in Blockly.Blocks) {
+    var block = Blockly.Blocks[name];
     // Blocks without a category are fragments used by the mutator dialog.
     if (block.category) {
       var cat = Blockly.Drawer.PREFIX_ + window.encodeURI(block.category);
@@ -281,8 +287,8 @@ Blockly.Drawer.procedureCallersXMLString = function(returnsValue) {
 }
 
 Blockly.Drawer.compareDeclarationsByName = function (decl1, decl2) {
-  var name1 = decl1.getTitleValue('NAME').toLocaleLowerCase();
-  var name2 = decl2.getTitleValue('NAME').toLocaleLowerCase();
+  var name1 = decl1.getFieldValue('NAME').toLocaleLowerCase();
+  var name2 = decl2.getFieldValue('NAME').toLocaleLowerCase();
   return name1.localeCompare(name2);
 }
 
@@ -299,7 +305,7 @@ Blockly.Drawer.procedureCallerBlockString = function(procDeclBlock) {
   var declType = procDeclBlock.type;
   var callerType = (declType == 'procedures_defreturn') ? 'procedures_callreturn' : 'procedures_callnoreturn';
   var blockString = '<block type="' + callerType + '" inline="false">'
-  var procName = procDeclBlock.getTitleValue('NAME');
+  var procName = procDeclBlock.getFieldValue('NAME');
   blockString += '<title name="PROCNAME">' + procName + '</title>';
   var mutationDom = procDeclBlock.mutationToDom();
   mutationDom.setAttribute('name', procName); // Decl doesn't have name attribute, but caller does
@@ -355,7 +361,7 @@ Blockly.Drawer.getDefaultXMLString = function(blockType,mutatorAttributes) {
 }
 
 Blockly.Drawer.defaultBlockXMLStrings = {
-  controls_forRange : {xmlString:
+  controls_forRange: {xmlString:
   '<xml>' +
     '<block type="controls_forRange">' +
       '<value name="START"><block type="math_number"><title name="NUM">1</title></block></value>' +
@@ -364,7 +370,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
     '</block>' +
   '</xml>' },
 
-   math_random_int : {xmlString:
+   math_random_int: {xmlString:
   '<xml>' +
     '<block type="math_random_int">' +
     '<value name="FROM"><block type="math_number"><title name="NUM">1</title></block></value>' +
@@ -384,7 +390,7 @@ Blockly.Drawer.defaultBlockXMLStrings = {
       '</value>' +
     '</block>' +
   '</xml>'},
-  lists_create_with:{xmlString:
+  lists_create_with: {xmlString:
   '<xml>' +
     '<block type="lists_create_with">' +
       '<mutation items="0"></mutation>' +

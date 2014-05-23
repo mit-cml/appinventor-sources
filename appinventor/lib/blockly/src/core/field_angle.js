@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2013 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +65,21 @@ Blockly.FieldAngle = function(text, opt_changeHandler) {
 goog.inherits(Blockly.FieldAngle, Blockly.FieldTextInput);
 
 /**
+ * Clone this FieldAngle.
+ * @return {!Blockly.FieldAngle} The result of calling the constructor again
+ *   with the current values of the arguments used during construction.
+ */
+Blockly.FieldAngle.prototype.clone = function() {
+  return new Blockly.FieldAngle(this.getText(), this.changeHandler_);
+};
+
+/**
+ * Round angles to the nearest 15 degrees when using mouse.
+ * Set to 0 to disable rounding.
+ */
+Blockly.FieldAngle.ROUND = 15;
+
+/**
  * Half the width of protractor image.
  */
 Blockly.FieldAngle.HALF = 100 / 2;
@@ -101,7 +117,10 @@ Blockly.FieldAngle.prototype.dispose_ = function() {
  * @private
  */
 Blockly.FieldAngle.prototype.showEditor_ = function() {
-  Blockly.FieldAngle.superClass_.showEditor_.call(this);
+  var noFocus =
+      goog.userAgent.MOBILE || goog.userAgent.ANDROID || goog.userAgent.IPAD;
+  // Mobile browsers have issues with in-line textareas (focus & keyboards).
+  Blockly.FieldAngle.superClass_.showEditor_.call(this, noFocus);
   var div = Blockly.WidgetDiv.DIV;
   if (!div.firstChild) {
     // Mobile interface uses window.prompt.
@@ -121,8 +140,12 @@ Blockly.FieldAngle.prototype.showEditor_ = function() {
     'r': Blockly.FieldAngle.RADIUS,
     'class': 'blocklyAngleCircle'
   }, svg);
-  this.gauge_ =
-      Blockly.createSvgElement('path', {'class': 'blocklyAngleGuage'}, svg);
+  this.gauge_ = Blockly.createSvgElement('path',
+      {'class': 'blocklyAngleGauge'}, svg);
+  this.line_ = Blockly.createSvgElement('line',
+      {'x1': Blockly.FieldAngle.HALF,
+      'y1': Blockly.FieldAngle.HALF,
+      'class': 'blocklyAngleLine'}, svg);
   // Draw markers around the edge.
   for (var a = 0; a < 360; a += 15) {
     Blockly.createSvgElement('line', {
@@ -143,7 +166,7 @@ Blockly.FieldAngle.prototype.showEditor_ = function() {
       Blockly.bindEvent_(circle, 'mousemove', this, this.onMouseMove);
   this.moveWrapper2_ =
       Blockly.bindEvent_(this.gauge_, 'mousemove', this, this.onMouseMove);
-  this.updateGraph();
+  this.updateGraph_();
 };
 
 /**
@@ -166,7 +189,15 @@ Blockly.FieldAngle.prototype.onMouseMove = function(e) {
   } else if (dy > 0) {
     angle += 360;
   }
-  angle = String(Math.round(angle));
+  if (Blockly.FieldAngle.ROUND) {
+    angle = Math.round(angle / Blockly.FieldAngle.ROUND) *
+        Blockly.FieldAngle.ROUND;
+  }
+  if (angle >= 360) {
+    // Rounding may have rounded up to 360.
+    angle -= 360;
+  }
+  angle = String(angle);
   Blockly.FieldTextInput.htmlInput_.value = angle;
   this.setText(angle);
 };
@@ -177,7 +208,7 @@ Blockly.FieldAngle.prototype.onMouseMove = function(e) {
  */
 Blockly.FieldAngle.prototype.setText = function(text) {
   Blockly.FieldAngle.superClass_.setText.call(this, text);
-  this.updateGraph();
+  this.updateGraph_();
   // Insert degree symbol.
   if (Blockly.RTL) {
     this.textElement_.insertBefore(this.symbol_, this.textElement_.firstChild);
@@ -189,28 +220,32 @@ Blockly.FieldAngle.prototype.setText = function(text) {
 };
 
 /**
- * Ensure that only an angle may be entered.
- * @param {string} text The user's text.
- * @return {?string} A string representing a valid angle, or null if invalid.
+ * Redraw the graph with the current angle.
+ * @private
  */
-Blockly.FieldAngle.prototype.updateGraph = function() {
-  if (this.gauge_) {
-    var angleRadians = Number(this.getText()) / 180 * Math.PI;
-    if (isNaN(angleRadians)) {
-      this.gauge_.setAttribute('d',
-          'M ' + Blockly.FieldAngle.HALF + ', ' + Blockly.FieldAngle.HALF);
-    } else {
-      var x = Blockly.FieldAngle.HALF + Math.cos(angleRadians) *
-          Blockly.FieldAngle.RADIUS;
-      var y = Blockly.FieldAngle.HALF + Math.sin(angleRadians) *
-          -Blockly.FieldAngle.RADIUS;
-      var largeFlag = (angleRadians > Math.PI) ? 1 : 0;
-      this.gauge_.setAttribute('d',
-          'M ' + Blockly.FieldAngle.HALF + ', ' + Blockly.FieldAngle.HALF +
-          ' h ' + Blockly.FieldAngle.RADIUS +
-          ' A ' + Blockly.FieldAngle.RADIUS + ',' + Blockly.FieldAngle.RADIUS +
-          ' 0 ' + largeFlag + ' 0 ' + x + ',' + y + ' z');
-    }
+Blockly.FieldAngle.prototype.updateGraph_ = function() {
+  if (!this.gauge_) {
+    return;
+  }
+  var angleRadians = Number(this.getText()) / 180 * Math.PI;
+  if (isNaN(angleRadians)) {
+    this.gauge_.setAttribute('d',
+        'M ' + Blockly.FieldAngle.HALF + ', ' + Blockly.FieldAngle.HALF);
+    this.line_.setAttribute('x2', Blockly.FieldAngle.HALF);
+    this.line_.setAttribute('y2', Blockly.FieldAngle.HALF);
+  } else {
+    var x = Blockly.FieldAngle.HALF + Math.cos(angleRadians) *
+        Blockly.FieldAngle.RADIUS;
+    var y = Blockly.FieldAngle.HALF + Math.sin(angleRadians) *
+        -Blockly.FieldAngle.RADIUS;
+    var largeFlag = (angleRadians > Math.PI) ? 1 : 0;
+    this.gauge_.setAttribute('d',
+        'M ' + Blockly.FieldAngle.HALF + ', ' + Blockly.FieldAngle.HALF +
+        ' h ' + Blockly.FieldAngle.RADIUS +
+        ' A ' + Blockly.FieldAngle.RADIUS + ',' + Blockly.FieldAngle.RADIUS +
+        ' 0 ' + largeFlag + ' 0 ' + x + ',' + y + ' z');
+    this.line_.setAttribute('x2', x);
+    this.line_.setAttribute('y2', y);
   }
 };
 

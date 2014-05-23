@@ -1,38 +1,32 @@
-//Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
+ * @license
  * @fileoverview Methods for manipulating App Inventor components - adding, removing,
  * renaming, etc.
  *
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
  */
+
 'use strict';
 
+goog.provide('Blockly.Component');
+goog.provide('Blockly.ComponentTypes');
+goog.provide('Blockly.ComponentInstances');
+
 goog.require('Blockly.TypeBlock');
-
-if (!Blockly.Component) {
-  Blockly.Component = {};
-}
-
-if (!Blockly.Language) {
-  Blockly.Language = {};
-}
-
 
 Blockly.Component.add = function(name, uid) {
   if (Blockly.ComponentInstances.haveInstance(name, uid)) {
     return;
   }
-
   Blockly.TypeBlock.needsReload.components = true;
   //get type name for instance
   var typeName = Blockly.Component.instanceNameToTypeName(name);
   Blockly.ComponentInstances.addInstance(name, uid, typeName);
-
-
 };
-
-
 
 /**
  * Rename component with given uid and instance name oldname to newname
@@ -55,7 +49,6 @@ Blockly.Component.rename = function(oldname, newname, uid) {
     console.log("Renaming, No such Component instance " + oldname + " aborting");
     return;
   }
-
   // Create an entry in Blockly.ComponentInstances for the block's newname and delete oldname (below)
   Blockly.ComponentInstances[newname] = {}
   Blockly.ComponentInstances[newname].uid = uid;
@@ -68,7 +61,7 @@ Blockly.Component.rename = function(oldname, newname, uid) {
   console.log("Revised Blockly.ComponentInstances, Blockly.Language, Blockly.Yail for " + newname);
 
   // Revise names, types, and block titles for all blocks containing newname in Blockly.mainWorkspace
-  blocks = Blockly.mainWorkspace.getAllBlocks();
+  var blocks = Blockly.mainWorkspace.getAllBlocks();
   for (var x = 0, block; block = blocks[x]; x++) {
     if (!block.category) {
       continue;
@@ -214,7 +207,6 @@ Blockly.Component.buildComponentMap = function(warnings, errors, forRepl, compil
  *   ]
  * }
  */
-Blockly.ComponentTypes = {};
 
 Blockly.ComponentTypes.haveType = function(typeName) {
   return Blockly.ComponentTypes[typeName] != undefined;
@@ -268,7 +260,6 @@ Blockly.ComponentTypes.populateTypes = function() {
  *        'Canvas1_DrawCircle', 'Canvas1_getproperty', 'Canvas1_setproperty', ...]
  * Blockly.ComponentInstances is populated by the Blockly.Component.add method.
  */
-Blockly.ComponentInstances = {};
 
 Blockly.ComponentInstances.addInstance = function(name, uid, typeName) {
   Blockly.ComponentInstances[name] = {};
