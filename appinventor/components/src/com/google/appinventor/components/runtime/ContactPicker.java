@@ -23,6 +23,7 @@ import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
 
+import java.lang.ClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -57,12 +58,12 @@ import java.util.List;
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class ContactPicker extends Picker implements ActivityResultListener {
 
-  private static final String[] CONTACT_PROJECTION = EclairUtil.getContactProjection();
-  private static final String[] DATA_PROJECTION = EclairUtil.getDataProjection();
+  private static String[] CONTACT_PROJECTION;
+  private static String[] DATA_PROJECTION;
   private static final String[] PROJECTION = {
     Contacts.PeopleColumns.NAME,
     Contacts.People.PRIMARY_EMAIL_ID,
-    Contacts.People.PRIMARY_PHONE_ID,
+    Contacts.PhonesColumns.NUMBER,
   };
 
   private static final int NAME_INDEX = 0;
@@ -92,6 +93,19 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   protected ContactPicker(ComponentContainer container, Uri intentUri) {
     super(container);
     activityContext = container.$context();
+
+    // Since API 3 and 4 lack the entire class ContactsContract, we can't import EclairUtil directly.
+    if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+      // ClassLoader c = ContactPicker.class.getClassLoader();
+      // EclairUtil = c.loadClass("com.google.appinventor.components.runtime.util.EclairUtil");
+      // EclairUtil = Class.forName("com.google.appinventor.components.runtime.util.EclairUtil");
+      // EclairUtil ec = new com.google.appinventor.components.runtime.util.EclairUtil();
+      // Class EclairUtil = ec.getClass();
+      // Class EclairUtil = com.google.appinventor.components.runtime.util.EclairUtil;
+    } else {
+      // EclairUtil = Class.forName("com.google.appinventor.components.runtime.util.MockEclairUtil");
+    }
+
     if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR && intentUri.equals(Contacts.People.CONTENT_URI)) {
       this.intentUri = EclairUtil.getContentUri();
     } else if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR && intentUri.equals(Contacts.Phones.CONTENT_URI)) {
@@ -126,7 +140,7 @@ public class ContactPicker extends Picker implements ActivityResultListener {
   @SimpleProperty(
       category = PropertyCategory.BEHAVIOR)
   public String EmailAddress() {
-    // Note(halabelson):  I am commenting out this test.  Android provider.Constacts was
+    // Note(halabelson):  I am commenting out this test.  Android provider.Contacts was
     // deprecated in Donut, but email picking still seems to work on newer versions of the SDK.
     // If there's a phone where it does not work, we'll get the error at PuntContactSelection
     // Note that there is still a general problem with contact picking on Motoblur.
@@ -196,11 +210,13 @@ public class ContactPicker extends Picker implements ActivityResultListener {
         Cursor dataCursor = null;
         try {
           if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+            CONTACT_PROJECTION = EclairUtil.getContactProjection();
             contactCursor = activityContext.getContentResolver().query(contactUri,
                 CONTACT_PROJECTION, null, null, null);
 
             String id = postEclairGetContactNameAndPicture(contactCursor);
 
+            DATA_PROJECTION = EclairUtil.getDataProjection();
             dataCursor = EclairUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
             postEclairGetContactEmailAndPhone(dataCursor);
           } else {
@@ -238,11 +254,10 @@ public class ContactPicker extends Picker implements ActivityResultListener {
       contactName = guardCursorGetString(contactCursor, NAME_INDEX);
       String emailId = guardCursorGetString(contactCursor, EMAIL_INDEX);
       emailAddress = getEmailAddress(emailId);
-      String phoneId = guardCursorGetString(contactCursor, PHONE_INDEX);
-      phoneNumber = getPhoneNumber(phoneId);
+      phoneNumber = guardCursorGetString(contactCursor, PHONE_INDEX);
       contactPictureUri = contactUri.toString();
-      phoneNumberList = Arrays.asList(phoneNumber);
-      emailAddressList = Arrays.asList(emailAddress);
+      phoneNumberList = phoneNumber.equals("") ? new ArrayList() : Arrays.asList(phoneNumber);
+      emailAddressList = emailAddress.equals("") ? new ArrayList() : Arrays.asList(emailAddress);
     }
   }
 
@@ -371,37 +386,6 @@ public class ContactPicker extends Picker implements ActivityResultListener {
     };
     Cursor cursor = activityContext.getContentResolver().query(
         Contacts.ContactMethods.CONTENT_EMAIL_URI,
-        projection, where, null, null);
-    try {
-      if (cursor.moveToFirst()) {
-        data = guardCursorGetString(cursor, 0);
-      }
-    } finally {
-      cursor.close();
-    }
-    // this extra check for null might be redundant, but we given that there are mysterious errors
-    // on some phones, we'll leave it in just to be extra careful
-    return ensureNotNull(data);
-  }
-
-  /**
-   * Phone number getter for pre-Eclair.
-   */
-  protected String getPhoneNumber(String phoneId) {
-    int id;
-    try {
-      id = Integer.parseInt(phoneId);
-    } catch (NumberFormatException e) {
-      return "";
-    }
-
-    String data = "";
-    String where = "phone._id = " + id;
-    String[] projection = {
-      Contacts.Phones.NUMBER,
-    };
-    Cursor cursor = activityContext.getContentResolver().query(
-        Contacts.Phones.CONTENT_URI,
         projection, where, null, null);
     try {
       if (cursor.moveToFirst()) {

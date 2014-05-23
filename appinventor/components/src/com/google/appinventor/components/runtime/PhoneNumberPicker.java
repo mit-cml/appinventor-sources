@@ -24,6 +24,9 @@ import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
 
+import java.util.Arrays;
+import java.util.ArrayList;
+
 /**
  * Component enabling a user to select a contact's phone number.
  *
@@ -52,8 +55,8 @@ import android.util.Log;
 @UsesPermissions(permissionNames = "android.permission.READ_CONTACTS")
 public class PhoneNumberPicker extends ContactPicker {
 
-  private static final String[] NAME_PROJECTION = EclairUtil.getNameProjection();
-  private static final String[] DATA_PROJECTION = EclairUtil.getDataProjection();
+  private static String[] NAME_PROJECTION;
+  private static String[] DATA_PROJECTION;
   private static final String[] PROJECTION = {
     Contacts.PeopleColumns.NAME,
     Contacts.PhonesColumns.NUMBER,
@@ -117,10 +120,12 @@ public class PhoneNumberPicker extends ContactPicker {
         Cursor dataCursor = null;
         try {
           if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+            NAME_PROJECTION = EclairUtil.getNameProjection();
             contactCursor = activityContext.getContentResolver().query(phoneUri,
                 NAME_PROJECTION, null, null, null);
             String id = postEclairGetContactNameAndPicture(contactCursor);
 
+            DATA_PROJECTION = EclairUtil.getDataProjection();
             dataCursor = EclairUtil.getDataCursor(id, activityContext, DATA_PROJECTION);
             postEclairGetContactEmailAndPhone(dataCursor);
           } else {
@@ -128,6 +133,11 @@ public class PhoneNumberPicker extends ContactPicker {
                 PROJECTION, null, null, null);
             preEclairGetContactInfo(contactCursor);
           }
+          // Since PhoneNumberPicker inherits from ContactPicker, this provides minimal
+          // behavior for the phone and email list properties.
+          phoneNumberList = phoneNumber.equals("") ? new ArrayList() : Arrays.asList(phoneNumber);
+          emailAddressList = emailAddress.equals("") ? new ArrayList() : Arrays.asList(emailAddress);
+
           Log.i("PhoneNumberPicker",
               "Contact name = " + contactName + ", phone number = " + phoneNumber +
               ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
@@ -162,9 +172,6 @@ public class PhoneNumberPicker extends ContactPicker {
       contactPictureUri = cUri.toString();
       String emailId = guardCursorGetString(cursor, EMAIL_INDEX);
       emailAddress = getEmailAddress(emailId);
-      Log.i("PhoneNumberPicker",
-          "Contact name = " + contactName + ", phone number = " + phoneNumber +
-          ", emailAddress = " + emailAddress + ", contactPhotoUri = " +  contactPictureUri);
     }
   }
 
