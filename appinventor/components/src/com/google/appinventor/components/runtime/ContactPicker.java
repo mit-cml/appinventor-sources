@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.provider.Contacts;
 import android.util.Log;
 
-import java.lang.ClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
