@@ -455,50 +455,64 @@
                     <li> <a href="#TimePicker"> TimePicker </a> </li>
                     <li> <a href="#WebViewer"> WebViewer </a> </li>
                   </ul>
-                  <h2 id="Button"> Button </h2>
-                  <img src="images/button.png" alt="" />
-                  <p> Buttons are components that users touch to perform some
-                    action in
-                    your app. </p>
-                  <p> Buttons detect when users tap them. Many aspects of a
-                    button's
-                    appearance can be changed. You can use the <code> Enabled </code>
-                    property to choose whether a button can be tapped. </p>
-                  <h3> Properties </h3>
+                  <h2 id="Button">Button</h2>
+                  <p>Button with the ability to detect clicks.  Many
+                    aspects of its appearance can be changed, as well as
+                    whether it is clickable (<code>Enabled</code>), can
+                    be changed in the Designer or in the Blocks
+                    Editor.</p>
+                  <h3>Properties</h3>
                   <dl>
-                    <dt> <code> BackgroundColor </code> </dt>
-                    <dd> Color for button background. </dd>
-                    <dt> <code> Enabled </code> </dt>
-                    <dd> If set, user can tap button to cause action. </dd>
-                    <dt> <code> FontBold </code> </dt>
-                    <dd> If set, button text is displayed in bold. </dd>
-                    <dt> <code> FontItalic </code> </dt>
-                    <dd> If set, button text is displayed in italics. </dd>
-                    <dt> <code> FontSize </code> </dt>
-                    <dd> Point size for button text. </dd>
-                    <dt> <code> FontTypeface </code> </dt>
-                    <dd> Font family for button text. </dd>
-                    <dt> <code> Height </code> </dt>
-                    <dd> Button height (y-size). </dd>
-                    <dt> <code> Width </code> </dt>
-                    <dd> Button width (x-size). </dd>
-                    <dt> <code> Image </code> </dt>
-                    <dd> Image to display on button. </dd>
-                    <dt> <code> Text </code> </dt>
-                    <dd> Text to display on button. </dd>
-                    <dt> <code> TextAlignment </code> </dt>
-                    <dd> Left, center, or right. </dd>
-                    <dt> <code> TextColor </code> </dt>
-                    <dd> Color for button text. </dd>
+                    <dt><code>BackgroundColor</code></dt>
+                    <dd>Returns the button's background color</dd>
+                    <dt><code>Enabled</code></dt>
+                    <dd>If set, user can tap check box to cause action.</dd>
+                    <dt><code>FontBold</code></dt>
+                    <dd>If set, button text is displayed in bold.</dd>
+                    <dt><code>FontItalic</code></dt>
+                    <dd>If set, button text is displayed in italics.</dd>
+                    <dt><code>FontSize</code></dt>
+                    <dd>Point size for button text.</dd>
+                    <dt><code>FontTypeface</code> (designer only)</dt>
+                    <dd>Font family for button text.</dd>
+                    <dt><code>Height</code></dt>
+                    <dd>Button height (y-size).</dd>
+                    <dt><code>Image</code></dt>
+                    <dd>Image to display on button.</dd>
+                    <dt><code>Shape</code> (designer only)</dt>
+                    <dd>Specifies the button's shape (default,
+                      rounded, rectangular, oval). The shape will not be
+                      visible if an Image is being displayed.</dd>
+                    <dt><code>ShowFeedback</code></dt>
+                    <dd>Specifies if a visual feedback should be shown  for a button that as an image as background.</dd>
+                    <dt><code>Text</code></dt>
+                    <dd>Text to display on button.</dd>
+                    <dt><code>TextAlignment</code> (designer only)</dt>
+                    <dd>Left, center, or right.</dd>
+                    <dt><code>TextColor</code></dt>
+                    <dd>Color for button text.</dd>
+                    <dt><code>Visible</code></dt>
+                    <dd>Specifies whether the component should be
+                      visible on the screen. Value is true if the
+                      component is showing and false if hidden.</dd>
+                    <dt><code>Width</code></dt>
+                    <dd>Button width (x-size).</dd>
                   </dl>
-                  <h3> Events </h3>
+
+                  <h3>Events</h3>
                   <dl>
-                    <dt> <code> Click() </code> </dt>
-                    <dd> User tapped and released the button. </dd>
-                    <dt> <code> GotFocus() </code> </dt>
-                    <dd> Button became the focused component. </dd>
-                    <dt> <code> LostFocus() </code> </dt>
-                    <dd> Button stopped being the focused component. </dd>
+                    <dt><code>Click()</code></dt>
+                    <dd>User tapped and released the button.</dd>
+                    <dt><code>GotFocus()</code></dt>
+                    <dd>Indicates the cursor moved over the button so it is now possible to click it.</dd>
+                    <dt><code>LongClick()</code></dt>
+                    <dd>User held the button down.</dd>
+                    <dt><code>LostFocus()</code></dt>
+                    <dd>Indicates the cursor moved away from the button so it is now no longer possible to click it.</dd>
+                    <dt><code>TouchDown()</code></dt>
+                    <dd>Indicates that the button was pressed down.</dd>
+                    <dt><code>TouchUp()</code></dt>
+                    <dd>Indicates that a button has been released.</dd>
                   </dl>
                   <h2 id="CheckBox"> CheckBox </h2>
                   <img src="images/checkbox.png" alt="" />
