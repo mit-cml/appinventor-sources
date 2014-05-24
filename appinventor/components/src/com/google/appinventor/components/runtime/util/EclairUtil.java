@@ -99,4 +99,8 @@ public class EclairUtil {
     permissions.clearAll();
   }
 
+  public static String getInstallerPackageName(String pname, Activity form) {
+    return form.getPackageManager().getInstallerPackageName(pname);
+  }
+
 }
