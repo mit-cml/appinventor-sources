@@ -95,7 +95,7 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/camera.png")
   ImageResource camera();
-  
+
   /**
    * Designer palette item: camcorder declaration
    */
@@ -320,10 +320,10 @@ public interface Images extends Resources {
   ImageResource twitterComponent();
 
   /**
-   * Designer palette item: iSENSE Component
+   * Designer palette item: TimePicker Component
    */
-  @Source("com/google/appinventor/images/isense.png")
-  ImageResource iSENSEComponent();
+  @Source("com/google/appinventor/images/timePicker.png")
+  ImageResource timePickerComponent();
 
   /**
    * Designer palette item: TinyDB Component
@@ -476,5 +476,11 @@ public interface Images extends Resources {
     */
   @Source("com/google/appinventor/images/yandex.png")
   ImageResource yandex();
+
+  /**
+   * Designer palette item: iSENSE Component
+   */
+  @Source("com/google/appinventor/images/isense.png")
+  ImageResource iSENSEComponent();
 
 }
