@@ -591,7 +591,7 @@ Blockly.ReplMgr.startAdbDevice = function(rs, usb) {
     if (usb) {
         message = 'Connecting via USB Cable';
     } else {
-        message = 'Starting the Android Emulator';
+        message = 'Starting the Android Emulator<br/>Please wait: This might take a minute or two.';
     }
     progdialog = new Blockly.ReplMgr.Dialog("Connecting...", message, "Cancel", null, 0, function() {
         progdialog.hide();

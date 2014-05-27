@@ -10,6 +10,7 @@ import com.google.appinventor.server.project.CommonProjectService;
 import com.google.appinventor.server.project.youngandroid.YoungAndroidProjectService;
 import com.google.appinventor.server.storage.StorageIo;
 import com.google.appinventor.server.storage.StorageIoInstanceHolder;
+import com.google.appinventor.shared.rpc.BlocksTruncatedException;
 import com.google.appinventor.shared.rpc.InvalidSessionException;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.ChecksumedFileException;
@@ -308,6 +309,30 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   }
 
   /**
+   * Saves the content of the file associated with a node in the project tree.
+   * This version takes a "force" argument which if false will result in an
+   * exception of a trivial (empty) blocks workspace is attempted to be saved
+   *
+   * @param sessionId session id
+   * @param projectId  project ID
+   * @param fileId  project node whose source should be saved
+   * @param force whether to write an empty blocks workspace
+   * @param content  content to be saved
+   * @return modification date for project
+   *
+   * @see #load(long, String)
+   */
+  @Override
+  public long save2(String sessionId, long projectId, String fileId, boolean force, String content) throws InvalidSessionException,
+      BlocksTruncatedException {
+    validateSessionId(sessionId);
+    // Log parameters except for content
+    final String userId = userInfoProvider.getUserId();
+    return getProjectRpcImpl(userId, projectId).save2(userId, projectId, fileId, force,
+        content);
+  }
+
+  /**
    * Saves the contents of multiple files.
    *
    * @param sessionId session id
@@ -316,7 +341,8 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
    * @return modification date for last modified project of list
    */
   @Override
-  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException {
+  public long save(String sessionId, List<FileDescriptorWithContent> filesAndContent) throws InvalidSessionException,
+      BlocksTruncatedException {
     validateSessionId(sessionId);
     final String userId = userInfoProvider.getUserId();
     long date = 0;
@@ -406,6 +432,11 @@ public class ProjectServiceImpl extends OdeRemoteServiceServlet implements Proje
   public long addFile(long projectId, String fileId) {
     final String userId = userInfoProvider.getUserId();
     return getProjectRpcImpl(userId, projectId).addFile(userId, projectId, fileId);
+  }
+
+  @Override
+  public void log(String message) {
+    LOG.warning(message);
   }
 
   private void validateSessionId(String sessionId) throws InvalidSessionException {

@@ -60,4 +60,11 @@ public class ComponentConstants {
   public static final int TEXT_RECEIVING_OFF = 1;
   public static final int TEXT_RECEIVING_FOREGROUND = 2;
   public static final int TEXT_RECEIVING_ALWAYS = 3;
+
+  /**
+   * ListView component.
+   */
+  public static final int LISTVIEW_PREFERRED_WIDTH = 315;
+  public static final int LISTVIEW_PREFERRED_HEIGHT = 40;
+  public static final int LISTVIEW_FILTER_PREFERRED_HEIGHT = 30;
 }

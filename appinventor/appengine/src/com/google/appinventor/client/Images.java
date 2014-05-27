@@ -115,6 +115,12 @@ public interface Images extends Resources {
   ImageResource checkbox();
 
   /**
+   * Designer palette item: TimePicker Component
+   */
+  @Source("com/google/appinventor/images/datePicker.png")
+  ImageResource datePickerComponent();
+
+  /**
    * Designer palette item: form component
    */
   @Source("com/google/appinventor/images/form.png")
@@ -230,6 +236,12 @@ public interface Images extends Resources {
   ImageResource listpicker();
 
   /**
+   * Designer palette item: ListView component
+   */
+  @Source("com/google/appinventor/images/listView.png")
+  ImageResource listview();
+
+  /**
    * Designer palette item: PhoneCall component
    */
   @Source("com/google/appinventor/images/phoneCall.png")
@@ -318,6 +330,12 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/tinyDB.png")
   ImageResource tinyDB();
+
+  /**
+   * Designer palette item: File Component
+   */
+  @Source("com/google/appinventor/images/file.png")
+  ImageResource file();
 
   /**
    * Designer palette item: TinyWebDB Component
@@ -446,4 +464,17 @@ public interface Images extends Resources {
    */
   @Source("com/google/appinventor/images/sharing.png")
   ImageResource sharingComponent();
+
+  /**
+    * Designer palette item: Spinner
+    */
+  @Source("com/google/appinventor/images/spinner.png")
+  ImageResource spinner();
+
+  /**
+    * Designer palette item: YandexTranslate
+    */
+  @Source("com/google/appinventor/images/yandex.png")
+  ImageResource yandex();
+
 }

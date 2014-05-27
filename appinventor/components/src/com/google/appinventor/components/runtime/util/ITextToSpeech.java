@@ -57,4 +57,18 @@ public interface ITextToSpeech {
    */
   public void onDestroy();
 
+  /**
+   * Sets the speech pitch for the TextToSpeech
+   * @param pitch 1.0 is the normal pitch, lower values lower the tone of the synthesized voice,
+   *              greater values increase it.
+   */
+  public void setPitch(float pitch);
+
+  /**
+   * Sets the speech rate
+   * @param speechRate Speech rate. 1.0 is the normal speech rate, lower values slow down the
+*                   speech (0.5 is half the normal speech rate), greater values
+   *                   accelerate it (2.0 is twice the normal speech rate).
+   */
+  public void setSpeechRate(float speechRate);
 }

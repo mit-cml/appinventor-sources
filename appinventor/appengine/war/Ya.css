@@ -830,6 +830,25 @@ select.ode-PropertyEditor[disabled] {
   background-color: #E8E8E8;
 }
 
+/* class for the ListView Mock component */
+.listViewComponentStyle {
+  width: 315px;
+  display: block;
+  overflow: auto;
+}
+
+.listViewItemStyle {
+  border-bottom: 1px solid gray;
+  min-height: 40px;
+  display: table-cell;
+  vertical-align: middle;
+}
+
+/* class for the ListView Mock component */
+.spinnerComponentStyle {
+  outline: 1px solid lightgray;
+}
+
 /* Component Help */
 
 .ode-ComponentHelpPopup {

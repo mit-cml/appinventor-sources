@@ -45,7 +45,7 @@ public final class Button extends ButtonBase {
   /**
    * Indicates a user has clicked on the button.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "User tapped and released the button.")
   public void Click() {
     EventDispatcher.dispatchEvent(this, "Click");
   }
@@ -60,7 +60,7 @@ public final class Button extends ButtonBase {
   /**
    * Indicates a user has long clicked on the button.
    */
-  @SimpleEvent
+  @SimpleEvent(description = "User held the button down.")
   public boolean LongClick() {
     return EventDispatcher.dispatchEvent(this, "LongClick");
   }

@@ -77,7 +77,7 @@ public class ReceiveBuildServlet extends OdeServlet {
           String filePath = buildFileDirPath + "/" + fileName;
           LOG.info("Saving build output files: " + filePath);
           storageIo.addOutputFilesToProject(userId, projectId, filePath);
-          storageIo.uploadRawFile(projectId, filePath, userId, fileBytes);
+          storageIo.uploadRawFileForce(projectId, filePath, userId, fileBytes);
         }
       }
     } finally {

@@ -216,6 +216,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Slider")) {
         srcCompVersion = upgradeSliderProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("TextToSpeech")) {
+        srcCompVersion = upgradeTextToSpeechProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("Button")) {
         srcCompVersion = upgradeButtonProperties(componentProperties, srcCompVersion);
 
@@ -473,6 +476,16 @@ public final class YoungAndroidFormUpgrader {
     return srcCompVersion;
   }
 
+  private static int upgradeTextToSpeechProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // Added speech pitch and rate
+      srcCompVersion = 2;
+    }
+
+    return srcCompVersion;
+  }
+
   private static int upgradeButtonProperties(Map<String, JSONValue> componentProperties,
       int srcCompVersion) {
     if (srcCompVersion < 2) {
@@ -495,6 +508,12 @@ public final class YoungAndroidFormUpgrader {
       // The ShowFeedback property was added.
       // No properties need to be modified to upgrade to version 5.
       srcCompVersion = 5;
+    }
+    if (srcCompVersion < 6) {
+      // - Added TouchUp and TouchDown events
+      // - FontSize, FontBold, FontItalic properties made visible in block editor
+      // No properties need to be modified to upgrade to version 6.
+      srcCompVersion = 6;
     }
     return srcCompVersion;
   }

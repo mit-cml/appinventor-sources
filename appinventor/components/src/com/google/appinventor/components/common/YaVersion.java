@@ -246,8 +246,24 @@ public class YaVersion {
   // - The Sharing Component was added
   // For YOUNG_ANDROID_VERSION 87:
   // - WEBVIEWER_COMPONENT_VERSION was incremented to 4
+  // For YOUNG_ANDROID_VERSION 88:
+  // - SPINNER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 89:
+  // - LISTVIEW_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 90:
+  // - TEXTTOSPEECH_COMPONENT_VERSION was incremented to 2
+  // For YOUNG_ANDROID_VERSION 91:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 92:
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 1
+  // For YOUNG_ANDROID_VERSION 93:
+  // - FILE_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 94:
+  // - YANDEX_COMPONENT_VERSION was incremented to 1.
+  // For YOUNG_ANDROID_VERSION 95:
+  // - BUTTON_COMPONENT_VERSION was incremented to 6.
 
-    public static final int YOUNG_ANDROID_VERSION = 87;
+  public static final int YOUNG_ANDROID_VERSION = 95;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -378,7 +394,10 @@ public class YaVersion {
   // - The Shape property was added.
   // For BUTTON_COMPONENT_VERSION 5:
   // - The ShowFeedback property was added.
-  public static final int BUTTON_COMPONENT_VERSION = 5;
+  // For BUTTON_COMPONENT_VERSION 6:
+  // - Added TouchUp and TouchDown events
+  // - FontSize, FontBold, FontItalic properties made visible in block editor
+  public static final int BUTTON_COMPONENT_VERSION = 6;
 
   public static final int CAMCORDER_COMPONENT_VERSION = 1;
 
@@ -420,6 +439,11 @@ public class YaVersion {
   // For EMAILPICKER_COMPONENT_VERSION 2:
   // - The Alignment property was renamed to TextAlignment.
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
+
+  public static final int DATEPICKER_COMPONENT_VERSION = 1;
+
+  // For FILE_COMPONENT_VERSION 1:
+  public static final int FILE_COMPONENT_VERSION = 1;
 
   // For FORM_COMPONENT_VERSION 2:
   // - The Screen.Scrollable property was added.
@@ -595,7 +619,8 @@ public class YaVersion {
   // - The MultiLine property was added.
   public static final int TEXTBOX_COMPONENT_VERSION = 4;
 
-  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 1;
+  // For TEXTTOSPEECH_COMPONENT_VERSION, added speech pitch and rate
+  public static final int TEXTTOSPEECH_COMPONENT_VERSION = 2;
 
   // For TEXTING_COMPONENT_VERSION 2:
   // Texting over Wifi was implemented using Google Voice
@@ -607,6 +632,8 @@ public class YaVersion {
   // - receivingEnabled is now an integer in the range 1-3
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
+
+  public static final int TIMEPICKER_COMPONENT_VERSION = 1;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 
@@ -678,6 +705,16 @@ public class YaVersion {
   // - Initial version.
   public static final int SLIDER_COMPONENT_VERSION = 1;
 
+  // For SPINNER_COMPONENT_VERSION 1:
+  public static final int SPINNER_COMPONENT_VERSION = 1;
+
+  // For listView component Version
+  public static final int LISTVIEW_COMPONENT_VERSION = 1;
+
+  // For YANDEX_COMPONENT_VERSION 1:
+  // - Initial version.
+  public static final int YANDEX_COMPONENT_VERSION = 1;
+
   // Companion Versions and Update Information
 
   // The PREFERRED_COMPANION is displayed to the end-user if
@@ -693,9 +730,10 @@ public class YaVersion {
   // key as the Companion it is replacing, as the Package Manager
   // is invoked from the running Companion.
 
-  public static final String PREFERRED_COMPANION = "2.17ai2zx1";
+  public static final String PREFERRED_COMPANION = "2.19ai2zx1";
   public static final String COMPANION_UPDATE_URL = "";
-  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2", "2.17ai2zx1" };
+  public static final String [] ACCEPTABLE_COMPANIONS = { "2.15ai2", "2.15ai2zx1", "2.16ai2", "2.16ai2zx1", "2.17ai2",
+                                                          "2.17ai2zx1", "2.19ai2", "2.19ai2zx1" };
 
   // Splash Screen Values
   public static final int SPLASH_SURVEY = 1;

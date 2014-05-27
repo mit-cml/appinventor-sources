@@ -426,19 +426,24 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
-      // ListPickerActivity
-      out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +
-          "android:configChanges=\"orientation|keyboardHidden\" " +
-          "android:screenOrientation=\"behind\">\n");
-      out.write("    </activity>\n");
-      // WebViewActivity
-      out.write("    <activity android:name=\"" + WEBVIEW_ACTIVITY_CLASS + "\" " +
-          "android:configChanges=\"orientation|keyboardHidden\" " +
-          "android:screenOrientation=\"behind\">\n");
-      out.write("      <intent-filter>\n");
-      out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
-      out.write("      </intent-filter>\n");
-      out.write("    </activity>\n");
+      // Add ListPickerActivity to the manifest only if a ListPicker component is used in the app
+      if (componentTypes.contains("ListPicker")){
+        out.write("    <activity android:name=\"" + LIST_ACTIVITY_CLASS + "\" " +
+            "android:configChanges=\"orientation|keyboardHidden\" " +
+            "android:screenOrientation=\"behind\">\n");
+        out.write("    </activity>\n");
+      }
+
+      // Add WebViewActivity to the manifest only if a WebViewer component is used in the app
+      if (componentTypes.contains("WebViewer")){
+        out.write("    <activity android:name=\"" + WEBVIEW_ACTIVITY_CLASS + "\" " +
+            "android:configChanges=\"orientation|keyboardHidden\" " +
+            "android:screenOrientation=\"behind\">\n");
+        out.write("      <intent-filter>\n");
+        out.write("        <action android:name=\"android.intent.action.MAIN\" />\n");
+        out.write("      </intent-filter>\n");
+        out.write("    </activity>\n");
+      }
 
       // BroadcastReceiver for Texting Component
       if (componentTypes.contains("Texting")) {
