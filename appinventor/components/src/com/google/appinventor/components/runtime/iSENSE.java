@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import kawa.standard.Scheme;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -148,9 +150,10 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
           for (int j = 0; j < projectFields.size(); j++) {
             if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
               try {
-                jData.put("" + projectFields.get(j).field_id, new JSONArray().put(Data.get(i + 1)));
+                String sdata = SanitizeString(Data.get(i + 1).toString());
+                jData.put("" + projectFields.get(j).field_id, new JSONArray().put(sdata));
               } catch (JSONException e) {
-                UploadDataSetFailed();
+                UploadDataSetResult(-1);
                 e.printStackTrace();
                 return;
               }
@@ -162,12 +165,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
         if (LoginType == iSENSE_LOGIN_TYPE_EMAIL) {
           RPerson user = api.createSession(Email, Password);
           if (user == null) {
-            handler.post(new Runnable() {
-              public void run() {
-                LoginFailed();
-                UploadDataSetFailed();
-              }
-            });
+            UploadDataSetResult(-1);
             return;
           }
           dataset = api.uploadDataSet(ProjectID, jData, DataSetName);
@@ -237,13 +235,6 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     return YailList.makeList(fdata);
   }
 
-  @SimpleFunction(description = "test")
-  public void readyaillist(final YailList test) {
-    for (int i = 0; i < test.size(); i++) {
-      Log.i("iSENSE", "Yaillist" + i + ": " + test.get(i + 1));
-    }
-  }
-
   @SimpleFunction(description = "Gets the current time. It is formated correctly for iSENSE")
   public String GetTime() {
     Calendar cal = Calendar.getInstance();
@@ -282,8 +273,19 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     EventDispatcher.dispatchEvent(this, "UploadPhotoToDataSetFailed");
   }
 
-  @SimpleEvent(description = "iSENSE Login Failed")
-  public void LoginFailed() {
-    EventDispatcher.dispatchEvent(this, "LoginFailed");
+  // Sanitize a string
+  // fraction gets converted to a number
+  // string gets returned
+  private String SanitizeString(final String str) {
+    Log.i("test", "test:" + str);
+    Scheme scheme = new Scheme();
+    String scheme_str = "(if (number? " + str + ") (exact->inexact " + str + ") \"" + str + "\")";
+    try {
+      return scheme.eval(scheme_str).toString();
+    } catch (Throwable e) {
+      e.printStackTrace();
+    }
+    return null;
   }
+
 }
