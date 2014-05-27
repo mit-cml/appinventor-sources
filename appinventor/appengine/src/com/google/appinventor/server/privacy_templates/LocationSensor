@@ -1,0 +1,47 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix location: <http://dig.csail.mit.edu/2014/PrivacyInformer/LocationSensor#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# LocationSensor is a component
+# It is also a sensor
+# It is used to gather data
+# It does not require User, but android permission access
+# Implemented using android.hardware.SensorListener
+# It measure latitude, longitude and altitude (if supported) 
+
+# Component Description
+location:LocationSensorComponent  
+    a   owl:Class;
+    rdfs:label  "location sensor";
+    rdfs:subClassOf ai:Component;
+    ai:description  "senses the Android device's location with latitude and longitude values and can also convert physical addresses to lat/long values";
+    ai:category     ai:Sensors;
+    ai:details      "altitude can also be measured when the device supports it",
+                    "implemented using android.hardware.SensorListener";
+
+# Privacy Implication and Common Usage
+    ai:access       android:CoarseLocation, android:FineLocation;
+    ai:example      "Google Maps", "TrackMe";
+    ai:dataUsage    ai:DetectLocation;
+    ai:purpose      ai:DataGathering; 
+    ai:requires     android:CoarseLocation, android:FineLocation .
+
+# Instance Definitions
+location:Latitude   rdfs:subClassOf   ai:ComponentProperty; 
+                    rdfs:label  "device's latitude " .
+location:Longitude  rdfs:subClassOf   ai:ComponentProperty;
+                    rdfs:label  "device's longitude " .
+location:Altitude   rdfs:subClassOf   ai:ComponentProperty;
+                    rdfs:label  "device's altitude " .
+
+location:LatitudeFromAddress    rdfs:subClassOf   ai:ComponentMethod;
+                                rdfs:label  "location sensor method that converts from a physical address to the corresponding latitude value " .
+
+location:LongitudeFromAddress   rdfs:subClassOf   ai:ComponentMethod;
+                                rdfs:label  "location sensor method that converts from a physical address to the corresponding longitude value " .
+
+location:LocationChanged   rdfs:subClassOf   ai:ComponentEvent;
+                           rdfs:label  "location sensor detects a change " .

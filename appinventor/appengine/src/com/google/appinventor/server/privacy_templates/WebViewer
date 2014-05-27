@@ -1,0 +1,24 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix webviewer: <http://dig.csail.mit.edu/2014/PrivacyInformer/WebViewer#> .
+
+# webviewer is a component
+# It is a user interface component 
+# It is used to display web pages 
+# It requires access to the Internet
+
+# Component Description
+webviewer:WebViewerComponent
+    a   owl:Class;
+    rdfs:label  "webviewer component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "enables viewing of web pages via a given URL";
+    ai:category     ai:UserInterface;
+
+# Privacy Implication and Common Usage
+    ai:access       android:Internet; 
+    ai:purpose      ai:DataSending, ai:DataReceiving;
+    ai:requires     android:Internet .

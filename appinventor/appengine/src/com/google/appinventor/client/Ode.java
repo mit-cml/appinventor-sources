@@ -12,6 +12,7 @@ import com.google.appinventor.client.boxes.BlockSelectorBox;
 import com.google.appinventor.client.boxes.MessagesOutputBox;
 import com.google.appinventor.client.boxes.OdeLogBox;
 import com.google.appinventor.client.boxes.PaletteBox;
+import com.google.appinventor.client.boxes.PrivacyViewerBox;
 import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.boxes.PropertiesBox;
 import com.google.appinventor.client.boxes.SourceStructureBox;
@@ -45,6 +46,8 @@ import com.google.appinventor.shared.rpc.help.HelpService;
 import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
+import com.google.appinventor.shared.rpc.privacy.PrivacyEditorService;
+import com.google.appinventor.shared.rpc.privacy.PrivacyEditorServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
@@ -146,8 +149,9 @@ public class Ode implements EntryPoint {
   private AssetManager assetManager;
 
   // Remembers the current View
-  private static final int DESIGNER = 0;
-  private static final int PROJECTS = 1;
+  public static final int PROJECTS = 0;
+  public static final int DESIGNER = 1;
+  public static final int PRIVACY = 2;
   private static int currentView = DESIGNER;
 
   /*
@@ -169,6 +173,7 @@ public class Ode implements EntryPoint {
   private int projectsTabIndex;
   private int designTabIndex;
   private int debuggingTabIndex;
+  private int privacyTabIndex;
   private TopPanel topPanel;
   private StatusPanel statusPanel;
   private HorizontalPanel workColumns;
@@ -194,6 +199,9 @@ public class Ode implements EntryPoint {
 
   // Web service for get motd information
   private final GetMotdServiceAsync getMotdService = GWT.create(GetMotdService.class);
+  
+  // Web service for privacy editor related services
+  private final PrivacyEditorServiceAsync privacySvc = GWT.create(PrivacyEditorService.class);
 
   private boolean windowClosing;
 
@@ -295,6 +303,24 @@ public class Ode implements EntryPoint {
     // boxes from overlapping each other.
     resizeWorkArea((WorkAreaPanel) deckPanel.getWidget(debuggingTabIndex));
   }
+  
+  /**
+   * Switch to the Privacy Notice Editor tab
+   */
+  public void switchToPrivacyView() {
+    // set currentView
+    currentView = PRIVACY;
+    
+    // save the project so Privacy Description Preview is accurate
+    editorManager.saveDirtyEditors(null);
+    
+    // refresh the contents of the privacy viewer box
+    // TODO is this hacky? Maybe refresh the content of the preview window only?
+    PrivacyViewerBox.getViewerBox().show(currentFileEditor.getProjectRootNode());
+    
+    // show privacy show
+    deckPanel.showWidget(privacyTabIndex);
+  }
 
   public void openPreviousProject() {
     if (userSettings == null) {
@@ -355,6 +381,8 @@ public class Ode implements EntryPoint {
       // the project. This will cause the projects source files to be fetched
       // asynchronously, and loaded into file editors.
       ViewerBox.getViewerBox().show(projectRootNode);
+      PrivacyViewerBox.getViewerBox().show(projectRootNode);
+      
       // Note: we can't call switchToDesignView until the Screen1 file editor
       // finishes loading. We leave that to setCurrentFileEditor(), which
       // will get called at the appropriate time.
@@ -368,7 +396,7 @@ public class Ode implements EntryPoint {
       }
       assetManager.loadAssets(project.getProjectId());
     }
-    getTopToolbar().updateFileMenuButtons(1);
+    getTopToolbar().updateFileMenuButtons(DESIGNER);
   }
 
   /**
@@ -494,7 +522,13 @@ public class Ode implements EntryPoint {
     History.addValueChangeHandler(new ValueChangeHandler<String>() {
       @Override
       public void onValueChange(ValueChangeEvent<String> event) {
-        openProject(event.getValue());
+        String eventName = event.getValue();
+        // if the eventName begins with "privacy", then we know it is
+        // not a ode.openproject rpc call, rather just a in-page 
+        // navigation for the privacy editor preview windoe
+        if (!eventName.split("-")[0].equalsIgnoreCase("privacy")) {
+          openProject(eventName);
+        }
       }
     });
 
@@ -661,6 +695,17 @@ public class Ode implements EntryPoint {
 
       resizeWorkArea(debuggingTab);
     }
+    
+    // Privacy Editor Tab
+    VerticalPanel privacyVertPanel = new VerticalPanel();
+    privacyVertPanel.setWidth("100%");
+    privacyVertPanel.setHeight("100%");
+    
+    Box privacyViewerbox = PrivacyViewerBox.getViewerBox();
+    privacyVertPanel.add(privacyViewerbox);
+    
+    privacyTabIndex = deckPanel.getWidgetCount();
+    deckPanel.add(privacyVertPanel);
 
     // We do not select the designer tab here because at this point there is no current project.
     // Instead, we select the projects tab. If the user has a previously opened project, we will
@@ -1083,6 +1128,16 @@ public class Ode implements EntryPoint {
       dialogBox.show();
     }
     return dialogBox;
+  }
+
+  /**
+   * Obtains a reference to the Privacy Editor service used
+   * for interacting with backend privacy notice analysis.
+   * @see PrivacyEditorServiceImpl
+   * @return
+   */
+  public PrivacyEditorServiceAsync getPrivacyEditorService() {
+    return privacySvc;
   }
 
   /**

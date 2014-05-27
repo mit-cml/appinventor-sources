@@ -1,0 +1,50 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix accelerometer: <http://dig.csail.mit.edu/2014/PrivacyInformer/AccelerometerSensor#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# Accelerometer is a component
+# It is also a sensor
+# It is used to gather data
+# It does not require User, but android permission access
+# Implemented using android.hardware.SensorListener
+# It measure X, Y, Z acceleration
+# X measures when phone is tilted sideways
+# Y measures when phone is tilted up and down
+# Z measures phone's acceleration compared to the Earth's gravity
+# Acceleration units are in International Standard (m/s^2)
+
+# Component Description
+accelerometer:AccelerometerSensorComponent  
+    a   owl:Class;
+    rdfs:subClassOf ai:Component;
+    rdfs:label  "accelerometer sensor";
+    ai:description  "detects shaking and measures acceleration in three dimensions";
+    ai:category     ai:Sensors;
+    ai:details      "X measures when phone is tilted sideways",
+                    "Y measures when phone is tilted up and down",
+                    "Z measures phone's acceleration compared to the Earth's gravity",
+                    "units are in International Standard (m/s^2)",
+                    "implemented using android.hardware.SensorListener";
+
+# Privacy Implication and Common Usage
+    ai:access       android:AccelerometerSensor; 
+    ai:example      "Fitbit", "TrackMe";
+    ai:dataUsage    ai:MeasuresAcceleration, ai:DetectMotion;
+    ai:purpose      ai:DataGathering; 
+    ai:requires     android:AccelerometerSensor .
+
+# Instance Definitions
+accelerometer:XAccel    rdfs:subClassOf   ai:ComponentProperty; 
+                        rdfs:label  "accelerometer's X acceleration " .
+accelerometer:YAccel    rdfs:subClassOf   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Y acceleration " .
+accelerometer:ZAccel    rdfs:subClassOf   ai:ComponentProperty;
+                        rdfs:label  "accelerometer's Z acceleration " .
+
+accelerometer:AccelerationChanged   rdfs:subClassOf   ai:ComponentEvent;
+                                    rdfs:label  "accelerometer detects a change in device acceleration" .
+accelerometer:Shaking   rdfs:subClassOf   ai:ComponentEvent;
+                        rdfs:label  "accelerometer detects device shaking" .

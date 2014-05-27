@@ -1,0 +1,20 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix imagepicker: <http://dig.csail.mit.edu/2014/PrivacyInformer/ImagePicker#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# imagepicker is component
+
+# Component Description
+imagepicker:ImagePickerComponent  
+    a   owl:Class;
+    rdfs:label  "imagepicker component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "shows a list of images from the device's gallery";
+    ai:category     ai:Media.
+
+# Privacy Implication and Common Usage
+
+# Instance Definitions

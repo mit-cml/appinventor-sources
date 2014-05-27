@@ -289,7 +289,6 @@ public class TopToolbar extends Composite {
     @Override
     public void execute() {
       Ode.getInstance().switchToProjectsView();
-      Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
     }
   }
 

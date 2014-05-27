@@ -1,0 +1,21 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix sharing: <http://dig.csail.mit.edu/2014/PrivacyInformer/Sharing#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+
+# sharing is a component
+
+# Component Description
+sharing:Sharing  
+    a   owl:Class;
+    rdfs:subClassOf ai:Component;
+    rdfs:label  "Sharing component";
+    ai:description  "enables sharing files or messages between the application and other application on the device";
+    ai:category     ai:Social;
+
+# Privacy Implication and Common Usage
+    ai:example      "Bump".
+
+# Instance Definitions

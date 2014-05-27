@@ -1,0 +1,39 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix web: <http://dig.csail.mit.edu/2014/PrivacyInformer/Web#> .
+
+# Web is a component
+# It is a connectivity component 
+# It is used to send and receive data via HTTP 
+# It requires access to the Internet
+# It supports GET, POST, PUT and DELETE
+# Example of usage is usually to send and receive data from specified sites 
+
+# Component Description
+web:WebComponent
+    a   owl:Class;
+    rdfs:label  "web component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "provides funtionality for HTTP GET and POST requests";
+    ai:category     ai:Connectivity;
+    ai:details      "can be used for HTTP GET, POST, PUT and DELETE";
+
+# Privacy Implication and Common Usage
+    ai:access       android:Internet; 
+    ai:examples     "DropBox", "FileUpload";
+    ai:purpose      ai:DataSending, ai:DataReceiving;
+    ai:requires     android:Internet .
+
+# Properties, Methods and Events definitions
+web:URL     rdfs:subClassOf   ai:ComponentProperty; 
+            rdfs:label  "URL of the web component " .
+                
+web:PostText    rdfs:subClassOf   ai:ComponentMethod;
+                rdfs:label  "web component's POST method " .
+
+web:GotText     rdfs:subClassOf   ai:ComponentEvent;
+                rdfs:label  "web component detects text has been received " . 
+

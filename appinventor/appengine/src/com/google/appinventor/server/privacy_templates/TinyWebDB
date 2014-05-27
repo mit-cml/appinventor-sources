@@ -1,0 +1,26 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix ai: <http://dig.csail.mit.edu/2014/PrivacyInformer/appinventor#> .
+@prefix android: <http://dig.csail.mit.edu/2014/PrivacyInformer/android#> .
+@prefix tinywebdb: <http://dig.csail.mit.edu/2014/PrivacyInformer/TinyWebDB#> .
+
+# TinyWebDB is a component
+# It is a storage component 
+# It is used to send and receive data via a web 
+# It requires access to the Internet
+
+# Component Description
+tinywebdb:TinyWebDBComponent
+    a   owl:Class;
+    rdfs:label  "TinyWebDB component";
+    rdfs:subClassOf ai:Component;
+    ai:description  "communicates with a web service to store and retrieve information"; 
+    ai:category     ai:Storage;
+
+# Privacy Implication and Common Usage
+    ai:access       android:Internet; 
+    ai:examples     "DropBox", "FileUpload";
+    ai:purpose      ai:DataSending, ai:DataReceiving;
+    ai:requires     android:Internet .
+
