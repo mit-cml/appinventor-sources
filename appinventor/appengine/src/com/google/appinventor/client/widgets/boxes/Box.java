@@ -7,7 +7,9 @@ package com.google.appinventor.client.widgets.boxes;
 
 import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.widgets.ContextMenu;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.properties.json.JSONObject;
@@ -19,6 +21,7 @@ import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockPanel;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Image;
@@ -184,7 +187,7 @@ public abstract class Box extends HandlerPanel {
         }
       });
       panel.add(button);
-      panel.setCellHorizontalAlignment(button, VerticalPanel.ALIGN_CENTER);
+      panel.setCellVerticalAlignment(button, DockPanel.ALIGN_MIDDLE);
     }
   }
 
@@ -240,7 +243,7 @@ public abstract class Box extends HandlerPanel {
    *                         until user has "seen" it (interacts with the box)
    */
   protected Box(String caption, int height, boolean minimizable, boolean removable,
-      boolean startMinimized, boolean bodyPadding, boolean highlightCaption) {
+      boolean startMinimized, boolean bodyPadding, boolean highlightCaption, boolean hasButton, Button button) {
     this.height = height;
     this.restoreHeight = height;
     this.startMinimized = startMinimized;
@@ -248,19 +251,24 @@ public abstract class Box extends HandlerPanel {
 
     captionLabel = new Label(caption, false);
     captionAlreadySeen = false;
+    if (hasButton){
+      captionLabel.setHeight("30px");
+      captionLabel.setStyleName("ode-Box-header-caption-large");
+      captionLabel.removeStyleName("ode-Box-content");
+    }
     if (highlightCaption) {
-      captionLabel.setStylePrimaryName("ode-Box-header-caption-highlighted");
+      //captionLabel.setStylePrimaryName("ode-Box-header-caption-highlighted");
     } else {
-      captionLabel.setStylePrimaryName("ode-Box-header-caption");
+      //captionLabel.setStylePrimaryName("ode-Box-header-caption");
     }
     header = new HandlerPanel();
     header.add(captionLabel);
     header.setWidth("100%");
-
+    
     headerContainer = new DockPanel();
     headerContainer.setStylePrimaryName("ode-Box-header");
     headerContainer.setWidth("100%");
-    headerContainer.add(header, DockPanel.LINE_START);
+    headerContainer.add(header, DockPanel.CENTER);
 
     Images images = Ode.getImageBundle();
 
@@ -352,11 +360,18 @@ public abstract class Box extends HandlerPanel {
           });
       headerContainer.add(menuButton, DockPanel.LINE_END);
       headerContainer.setCellWidth(menuButton,
-          (menuButton.getOffsetWidth() + HEADER_CONTROL_PADDING) + "px");
+          (menuButton.getOffsetWidth() + 20 + HEADER_CONTROL_PADDING) + "px");
     } else {
       menuButton = null;
     }
-
+    
+    if (hasButton) {
+      button.setWidth("100px");
+      headerContainer.add(button, DockPanel.LINE_END);
+      headerContainer.setCellWidth(button,
+          (button.getOffsetWidth() + HEADER_CONTROL_PADDING) + "px");
+      headerContainer.setCellVerticalAlignment(button,DockPanel.ALIGN_MIDDLE);
+    }
     body = new SimplePanel();
     body.setSize("100%", "100%");
 
@@ -375,6 +390,11 @@ public abstract class Box extends HandlerPanel {
     setStylePrimaryName("ode-Box");
     setWidget(boxContainer);
   }
+  
+  protected Box(String caption, int height, boolean minimizable, boolean removable,
+      boolean startMinimized, boolean bodyPadding, boolean highlightCaption){
+    this(caption, height, minimizable, removable, startMinimized, bodyPadding, highlightCaption, false, null);
+  }
 
   protected Box(String caption, int height, boolean minimizable, boolean removable,
       boolean startMinimized, boolean highlightCaption) {
@@ -388,6 +408,11 @@ public abstract class Box extends HandlerPanel {
 
   protected Box(String caption, int height, boolean minimizable, boolean removable) {
     this(caption, height, minimizable, removable, false, true, false);
+  }
+  
+  protected Box(String caption, int height, boolean minimizable, boolean removable, Button button) {
+    this(caption, height, minimizable, removable, false, true, false, true, button);
+    
   }
 
   @Override
