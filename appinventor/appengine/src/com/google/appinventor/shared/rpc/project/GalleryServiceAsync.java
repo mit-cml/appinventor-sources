@@ -21,7 +21,7 @@ public interface GalleryServiceAsync {
    * @see GalleryService#publishApp(long, String, String, String)
    */
   void publishApp(long projectId, String title, String projectName, String description,
-      AsyncCallback<GalleryApp> callback);
+      String moreInfo, String credit, AsyncCallback<GalleryApp> callback);
    /**
    * @see GalleryService#updateApp(GalleryApp)
    */
@@ -61,25 +61,29 @@ public interface GalleryServiceAsync {
   void appWasDownloaded(long galleryId, AsyncCallback<java.lang.Void> arg2);
 
   /**
+   * @see GalleryService#getNumApps()
+   */
+
+  void getNumApps(AsyncCallback<Integer> callback);
+  /**
    * @see GalleryService#getRecentApps(int start, int count)
    */
-  void getRecentApps(int start, int count, AsyncCallback<List<GalleryApp>> callback);
-  
+  void getRecentApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
    /**
    * @see GalleryService#getMostDownloadedApps(int start, int count)
    */
-  void getMostDownloadedApps(int start, int count, AsyncCallback<List<GalleryApp>> callback);
+  void getMostDownloadedApps(int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
   /**
    * @see GalleryService#getDeveloperApps(String userId, int start, int count)
    */
-  void getDeveloperApps(String userId, int start, int count, AsyncCallback<List<GalleryApp>> callback);
+  void getDeveloperApps(String userId, int start, int count, AsyncCallback<GalleryAppListResult> callback);
   
   /**
    * @see GalleryService#findApps(String keywords, int start, int count)
    */
-  void findApps(String keywords, int start, int count, AsyncCallback<List<GalleryApp>> callback);
+  void findApps(String keywords, int start, int count, AsyncCallback<GalleryAppListResult> callback);
 
    /**
    * @see GalleryService#getApp(int start, int count)

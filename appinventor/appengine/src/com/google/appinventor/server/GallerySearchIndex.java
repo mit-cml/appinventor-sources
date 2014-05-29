@@ -3,29 +3,25 @@ import com.google.appengine.api.search.Document;
 import com.google.appengine.api.search.Field;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
-
 import com.google.appengine.api.search.Index;
 import com.google.appengine.api.search.IndexSpec;
 import com.google.appengine.api.search.SearchServiceFactory;
 import com.google.appengine.api.search.PutException;
 import com.google.appengine.api.search.StatusCode;
-
 import com.google.appengine.api.search.Query;
 import com.google.appengine.api.search.QueryOptions;
-
 import com.google.appengine.api.search.Results;
 import com.google.appengine.api.search.ScoredDocument;
 import com.google.appengine.api.search.SearchException;
 import com.google.appengine.api.search.DeleteException;
-
 import com.google.appinventor.server.storage.GalleryStorageIo;
 import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.googlecode.objectify.NotFoundException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -83,8 +79,16 @@ public class GallerySearchIndex {
     }
 
   }
-  
-  public List<GalleryApp> find (String searchWords) {
+  /**
+   * Return a wrapped class which contains a list of matched results based on
+   * keywords and total number of results in database
+   * @param searchWords
+   * @param start
+   * @param count
+   * @return
+   */
+  public GalleryAppListResult find (String searchWords, int start, int count) {
+    //TODO page sliced has not implemented yet
     List<GalleryApp> apps = new ArrayList<GalleryApp>();
     try {
       Query query = Query.newBuilder()
@@ -97,7 +101,6 @@ public class GallerySearchIndex {
           .build(searchWords);
       LOG.info("Sending query " + query);
       Results<ScoredDocument> results = getIndex().search(query);
-
 
       // Iterate over the documents in the results
       for (ScoredDocument document : results) {
@@ -120,7 +123,7 @@ public class GallerySearchIndex {
       }
 
     }
-    return apps;
+    return new GalleryAppListResult(apps, apps.size());
   }
 
   private Index getIndex() {

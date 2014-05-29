@@ -1,8 +1,11 @@
 package com.google.appinventor.client;
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+
 import java.util.List;
+
 import com.google.appinventor.shared.rpc.project.UserProject;
 
 public interface GalleryRequestListener {
@@ -19,7 +22,7 @@ public interface GalleryRequestListener {
    *
    */
    
-   public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID);
+   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID);
    public void onCommentsRequestCompleted(List<GalleryComment> comments);
    public void onSourceLoadCompleted(UserProject projectInfo);
 }

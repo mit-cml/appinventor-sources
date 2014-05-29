@@ -1742,7 +1742,7 @@ textarea::-webkit-input-placeholder {
   border: 0;
   border-radius: 0;
   border-color: none;
-  margin-right: 15px;	
+  margin-right: 15px;
 }
 .gallery-search .gwt-Button {
   border-radius: 0;
@@ -1862,6 +1862,7 @@ textarea::-webkit-input-placeholder {
   margin: 15px 0;
   display: block;
 }
+.projectRenameTitle,
 .InboxTitle,
 .app-title,
 .gallery-app-details .app-comments-header {
@@ -1876,11 +1877,57 @@ textarea::-webkit-input-placeholder {
   margin: 10px 0;
   padding: 10px;
   color: #bebebe;
-  font-size: 16px;
+  font-size: 14px;
   border: 1px dashed;
+  resize: none;
+}
+.app-otherinfo-textlabel,
+.app-otherinfo-textdisplay,
+.app-otherinfo-textlink {
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.app-otherinfo-textdisplay {
+  width: 50%;
+  color: #555;
+  vertical-align:top;
+}
+.app-otherinfo-textlink {
+  color: #b3c833;
+  border-bottom: 1px dotted #b3c833;
+  font-weight: 300; font-size: 14px;
+}
+.app-otherinfo-textlink:hover {
+  background-color: #b3c833;
+  color: white;
+  cursor: pointer;
+}
+.app-otherinfo-textlabel {
+  width: 110px;
+  color: #999;
+}
+.app-otherinfo-textbox {
+  width: 100%;
+  height: 50px;
+  margin: 10px 0;
+  padding: 10px;
+  color: #bebebe;
+  font-size: 14px;
+  border: 1px dashed;
+  resize: none;
+}
+.app-otherinfo-textbox::-webkit-input-placeholder {
+  font-size: 13px;
+  padding-left:10px;
+}
+.app-otherinfo-textbox:focus {
+  border: 1px solid;
+  color: #444;
+  font-size: 14px;
 }
 .gallery-app-details .app-comments-textarea {
-  width: 580px; /* 600-10-10 */	
+  width: 580px; /* 600-10-10 */
 }
 .app-desc-textarea {
   width: 410px; /* 430-10-10 */

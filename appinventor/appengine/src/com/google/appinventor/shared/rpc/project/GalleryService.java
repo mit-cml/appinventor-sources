@@ -31,7 +31,7 @@ public interface GalleryService extends RemoteService {
    * @return a {@link GalleryApp} for new galleryApp
    */
   GalleryApp publishApp(long projectId, String projectName, String title,
-                         String description);
+    String moreInfo, String credit, String description);
   /**
    * update a gallery app
    * @param app info about app being updated
@@ -66,38 +66,49 @@ public interface GalleryService extends RemoteService {
   void deleteApp(long galleryId);
 
   /**
-   * Returns a list of most recently updated galleryApps
-   * @param start starting index
-   * @param count number of apps to return
-   * @return list of GalleryApps
+   * Returns the total number of gallery apps
+   * @return num of GalleryApps
    */
-  List<GalleryApp> getRecentApps(int start, int count);
-  
-  /**
-   * Returns a list of most downloaded gallery apps
-   * @param start starting index
-   * @param count number of apps to return
-   * @return list of GalleryApps
-   */
-  List<GalleryApp> getMostDownloadedApps(int start, int count);
+  Integer getNumApps();
 
   /**
-   * Returns a list of galleryApps by a particular developer
+   * Returns a wrapped class which contains list of most recently
+   * updated galleryApps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  GalleryAppListResult getRecentApps(int start, int count);
+
+  /**
+   * Returns a wrapped class which contains a list of most downloaded
+   * gallery apps and total number of results in database
+   * @param start starting index
+   * @param count number of apps to return
+   * @return list of GalleryApps
+   */
+  GalleryAppListResult getMostDownloadedApps(int start, int count);
+
+  /**
+   * Returns a wrapped class which contains a list of galleryApps
+   * by a particular developer and total number of results in database
    * @param userId id of the developer
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
-  List<GalleryApp> getDeveloperApps(String userId, int start, int count);
-  
+  GalleryAppListResult getDeveloperApps(String userId, int start, int count);
+
   /**
-   * Returns a list of galleryApps
+   * Returns a wrapped class which contains a list of galleryApps and
+   * total number of results in database
    * @param keywords keywords to search for
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
-  List<GalleryApp> findApps(String keywords, int start, int count);
+
+  GalleryAppListResult findApps(String keywords, int start, int count);
 
   /**
    * Returns a GalleryApp object for the given id

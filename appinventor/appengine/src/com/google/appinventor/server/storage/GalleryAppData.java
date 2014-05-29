@@ -22,9 +22,11 @@ import javax.persistence.Id;
  
 public class GalleryAppData {
   @Id Long id;
-  String title;   // user entered, can have spaces
+  String title;        // user entered, can have spaces
   String projectName;  // we keep this as the .aia file name
-  String description;
+  String description;  // user entered
+  String moreInfo;     // user entered
+  String credit;       // user entered
 
   // Date app published
   @Indexed public long dateCreated;

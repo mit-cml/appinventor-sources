@@ -30,6 +30,7 @@ import com.google.appinventor.server.storage.GalleryAppReportData;
 import com.google.appinventor.server.storage.GalleryAppAttributionData;
 import com.google.appinventor.server.GallerySearchIndex;
 import com.google.appinventor.shared.rpc.Motd;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -146,8 +147,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   @Override
   public GalleryApp createGalleryApp(final String title, 
-      final String projectName, final String description, final long projectId,
-      final String userId) {
+      final String projectName, final String description, final String moreInfo,
+      final String credit, final long projectId, final String userId) {
 
     final Result<GalleryAppData> galleryAppData = new Result<GalleryAppData>();
     try {
@@ -166,6 +167,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           appData.title = title;
           appData.projectName = projectName;
           appData.description = description;
+          appData.moreInfo = moreInfo;
+          appData.credit = credit;
           appData.projectId = projectId;
           appData.userId = userId;
           appData.active = true;
@@ -198,13 +201,24 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
   }
 
   /**
-   * Returns an array of recently published GalleryApps
+   * Returns total number of GalleryApps
+   * @return number of GalleryApps
+   */
+  @Override
+  public Integer getNumGalleryApps() {
+    Objectify datastore = ObjectifyService.begin();
+    int num = datastore.query(GalleryAppData.class).count();
+    return num;
+  }
+  /**
+   * Returns a wrapped class which contains list of most recently
+   * updated galleryApps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */
   @Override
-  public List<GalleryApp> getRecentGalleryApps(int start, final int count) {
+  public GalleryAppListResult getRecentGalleryApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
@@ -217,16 +231,18 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
     }
-    return apps;
+    int totalCount = datastore.query(GalleryAppData.class).order("-dateModified").filter("active", true).count();
+    return new GalleryAppListResult(apps, totalCount);
   }
   /**
-   * Returns an array of most downloaded GalleryApps
+   * Returns a wrapped class which contains a list of most downloaded 
+   * gallery apps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */
   @Override
-  public List<GalleryApp> getMostDownloadedApps(int start, final int count) {
+  public GalleryAppListResult getMostDownloadedApps(int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
@@ -239,17 +255,19 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
     }
-    return apps;
+    int totalCount = datastore.query(GalleryAppData.class).order("-numDownloads").filter("active", true).count();
+    return new GalleryAppListResult(apps, totalCount);
   }
 
   /**
-   * Returns a list of apps created by a particular developer
+   * Returns a wrapped class which contains a list of galleryApps
+   * by a particular developer and total number of results in database
    * @param userId id of developer
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */  @Override
-  public List<GalleryApp> getDeveloperApps(String userId, int start, final int count) {
+  public GalleryAppListResult getDeveloperApps(String userId, int start, final int count) {
     final List<GalleryApp> apps = new ArrayList<GalleryApp>();
     // if i try to run this in runjobwithretries it tells me can't run
     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
@@ -261,7 +279,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       makeGalleryApp(appData, gApp);
       apps.add(gApp);
     }
-    return apps;
+    int totalCount = datastore.query(GalleryAppData.class).filter("userId",userId).filter("active", true).count();
+    return new GalleryAppListResult(apps, totalCount);
   }
 
  /**
@@ -297,7 +316,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    */
   @Override
   public void updateGalleryApp(final long galleryId, final String title,  final String description, 
-    final String userId) {
+    final String moreInfo, final String credit, final String userId) {
     
     try {
       runJobWithRetries(new JobRetryHelper() {
@@ -305,8 +324,12 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
         public void run(Objectify datastore) {
           GalleryAppData galleryAppData = datastore.find(galleryKey(galleryId));
           if (galleryAppData != null) {
-            galleryAppData.title= title;
-            galleryAppData.description=description;
+            long date = System.currentTimeMillis();
+            galleryAppData.title = title;
+            galleryAppData.description = description;
+            galleryAppData.moreInfo = moreInfo;
+            galleryAppData.credit = credit;
+            galleryAppData.dateModified = date;
             datastore.put(galleryAppData);
           }
         }
@@ -380,6 +403,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
             GalleryAppData appData = datastore.find(galleryKey(galleryId));
             if(appData != null){
               appData.active = false;
+              datastore.put(appData);
             }
           }
         });
@@ -1049,6 +1073,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     galleryApp.setCreationDate(appData.dateCreated);
     galleryApp.setUpdateDate(appData.dateModified);
     galleryApp.setActive(appData.active);
+    galleryApp.setMoreInfo(appData.moreInfo);
+    galleryApp.setCredit(appData.credit);
 
     galleryApp.setLikes(getNumLikes(appData.id));
   }

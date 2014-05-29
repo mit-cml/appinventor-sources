@@ -9,11 +9,13 @@ import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.GalleryClient;
@@ -30,6 +32,7 @@ import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.user.cellview.client.CellList;
+import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.ButtonBase;
 import com.google.gwt.user.client.ui.Composite;
@@ -40,8 +43,10 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Panel;
+import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.event.dom.client.ErrorHandler;
@@ -55,6 +60,7 @@ import java.util.List;
 
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
+import com.google.appinventor.client.wizards.youngandroid.RemixedYoungAndroidProjectWizard;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
 
@@ -81,6 +87,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private static final String PUBLISHBUTTONTEXT="Publish";
   private static final String UPDATEBUTTONTEXT="Update";
   private static final String REMOVEBUTTONTEXT="Remove";
+  private static final String EDITBUTTONTEXT="Edit";
   private boolean imageUploaded = false;
 
   private VerticalPanel panel;  // the main panel
@@ -96,6 +103,7 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private FlowPanel appAuthor;
   private FlowPanel appMeta;
   private FlowPanel appDates;
+  private FlowPanel appOtherInfo;
   private FlowPanel appPrimaryWrapper;
   private FlowPanel appSecondaryWrapper;
   private TabPanel appActionTabs;
@@ -123,11 +131,14 @@ public class GalleryPage extends Composite implements GalleryRequestListener {
   private Label appChanged;
   private TextArea titleText;
   private TextArea desc;
+  private TextBox moreInfoText;
+  private TextArea creditText;
   private FlowPanel descBox;
   private FlowPanel titleBox;
   private Label likeCount;
   private Button actionButton;
   private Button removeButton;
+  private Button editButton;
 
 /* Here is the organization of this page:
 panel
@@ -209,9 +220,8 @@ panel
     appInfo.add(appDates);
     initAppDates(appDates);
 
-    if (!newOrUpdateApp()) {
-      initRemixFromButton();
-    }
+    appInfo.add(appOtherInfo);
+    initOtherInfo(appOtherInfo);
 
      // App details - app description
     appInfo.add(descBox);
@@ -290,6 +300,7 @@ panel
     appAuthor = new FlowPanel();
     appMeta = new FlowPanel();
     appDates = new FlowPanel();
+    appOtherInfo = new FlowPanel();
     appPrimaryWrapper = new FlowPanel();
     appSecondaryWrapper = new FlowPanel();
     appDescPanel = new FlowPanel();
@@ -310,6 +321,8 @@ panel
     titleBox = new FlowPanel();
     desc = new TextArea();
     titleText = new TextArea();
+    moreInfoText = new TextBox();
+    creditText = new TextArea();
   }
 
 
@@ -343,6 +356,7 @@ panel
 
     upload = new FileUpload();
     upload.addStyleName("app-image-upload");
+    upload.getElement().setAttribute("accept", "image/*");
     // Set the correct handler for servlet side capture
     upload.setName(ServerLayout.UPLOAD_FILE_FORM_ELEMENT);
     upload.addChangeHandler(new ChangeHandler (){
@@ -467,8 +481,10 @@ panel
       initPublishButton();
     else if (editStatus == UPDATEAPP)
       initUpdateButton();
-    else // Public view state
+    else{ // Public view state
       initTryitButton();
+      initEdititButton();
+    }
   }
 
 
@@ -481,7 +497,7 @@ panel
       // GUI for editable title container
       if (editStatus==NEWAPP) {
         // If it's new app, give a textual hint telling user this is title
-        titleText.setText(app.getTitle() + "'s title");
+        titleText.setText(app.getTitle());
       } else if (editStatus==UPDATEAPP) {
         // If it's not new, just set whatever's in the data field already
         titleText.setText(app.getTitle());
@@ -544,7 +560,7 @@ panel
               authorName.setText(currentUser.getUserName());
             }
           };
-        ode.getUserInfoService().getUserInformation(ode.getSessionId(), userCallback);
+        ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userCallback);
     } else {
       authorName.setText(app.getDeveloperName());
       authorName.addClickHandler(new ClickHandler() {
@@ -616,6 +632,92 @@ panel
     container.addStyleName("app-dates");
   }
 
+  /**
+   * Helper method called by constructor to initialize the app's other information fields
+   * @param container   The container that date fields reside
+   */
+  private void initOtherInfo(Panel container) {
+    if (newOrUpdateApp()) {
+      // GUI for editable title container
+      // Set the placeholders of textbox/area
+      moreInfoText.setVisibleLength(400);
+      moreInfoText.getElement().setPropertyString("placeholder", MESSAGES.galleryMoreInfoHint());
+      creditText.getElement().setPropertyString("placeholder", MESSAGES.galleryCreditHint());
+      if (editStatus==NEWAPP) {
+        // If it's new app, it will show the placeholder hint
+      } else if (editStatus==UPDATEAPP) {
+        // If it's not new, just set whatever's in the data field already
+        moreInfoText.setText(app.getMoreInfo());
+        creditText.setText(app.getCredit());
+      }
+      moreInfoText.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+          app.setMoreInfo(moreInfoText.getText());
+        }
+      });
+      creditText.addValueChangeHandler(new ValueChangeHandler<String>() {
+        @Override
+        public void onValueChange(ValueChangeEvent<String> event) {
+         app.setCredit(creditText.getText());
+        }
+      });
+      moreInfoText.addStyleName("app-otherinfo-textbox");
+      creditText.addStyleName("app-desc-textarea");
+      container.add(moreInfoText);
+      container.add(creditText);
+    } else {
+      //"more info" link
+      String linktext = makeValidLink(app.getMoreInfo());
+      if(linktext != null){
+        Label moreInfoLabel = new Label(MESSAGES.galleryMoreInfoLabel());
+        moreInfoLabel.addStyleName("app-otherinfo-textlabel");
+        container.add(moreInfoLabel);
+
+        Anchor userLinkDisplay = new Anchor();
+        userLinkDisplay.addStyleName("app-otherinfo-textdisplay");
+        userLinkDisplay.setText(linktext);
+        userLinkDisplay.setHref(linktext);
+        userLinkDisplay.setTarget("_blank");
+        container.add(userLinkDisplay);
+      }
+      //"remixed from" field
+      container.add(initRemixFromButton());
+
+      //"credits" field
+      if(app.getCredit() != null && app.getCredit().length() > 0){
+        Label creditLabel = new Label(MESSAGES.galleryCreditLabel());
+        creditLabel.addStyleName("app-otherinfo-textlabel");
+        container.add(creditLabel);
+
+        Label creditText = new Label(app.getCredit());
+        creditText.addStyleName("app-otherinfo-textdisplay");
+        container.add(creditText);
+      }
+    }
+  }
+
+  /**
+   * Helper method to validify a hyperlink
+   * @param link    the GWT anchor object to validify
+   * @param linktext    the actual http link that the anchor should point to
+   * @return linktext a valid http link or null.
+   */
+  private String makeValidLink(String linktext) {
+    if (linktext == null) {
+      return null;
+    } else {
+      if (linktext.isEmpty()) {
+        return null;
+      } else {
+        // Validate link format, fill in http part
+        if (!linktext.toLowerCase().startsWith("http")) {
+          linktext = "http://" + linktext;
+        }
+        return linktext;
+      }
+    }
+  }
 
   /**
    * Helper method called by constructor to initialize the app's description
@@ -623,8 +725,8 @@ panel
    * @param c2   The container that description resides (public state)
    */
   private void initAppDesc(Panel c1, Panel c2) {
+    desc.getElement().setPropertyString("placeholder", MESSAGES.galleryDescriptionHint());
     if (newOrUpdateApp()) {
-      desc.setText(app.getDescription());
       desc.addValueChangeHandler(new ValueChangeHandler<String>() {
         @Override
         public void onValueChange(ValueChangeEvent<String> event) {
@@ -693,8 +795,6 @@ panel
     appSecondaryWrapper.add(appActionTabs);
     appActionTabs.addStyleName("app-actions");
     appActionTabs.add(appDescPanel, "Description");
-//    appActionTabs.add(appLikePanel, "Likes");
-//    appActionTabs.add(appRemixPanel, "Remixes");
     appActionTabs.add(appReportPanel, "Report");
     appActionTabs.selectTab(0);
     appActionTabs.addStyleName("app-actions-tabs");
@@ -717,15 +817,14 @@ panel
   /**
    * Helper method called by constructor to initialize the remix button
    */
-  private void initRemixFromButton(){
+  private FlowPanel initRemixFromButton(){
+    FlowPanel container = new FlowPanel();
     final Label remixedFrom = new Label(MESSAGES.galleryRemixedFrom());
-    remixedFrom.addStyleName("primary-prompt");
-    remixedFrom.addStyleName("inline");
+    remixedFrom.addStyleName("app-otherinfo-textlabel");
     final Label parentApp = new Label();
-    parentApp.addStyleName("primary-link");
-    parentApp.addStyleName("inline");
-    appInfo.add(remixedFrom);
-    appInfo.add(parentApp);
+    parentApp.addStyleName("app-otherinfo-textlink");
+    container.add(remixedFrom);
+    container.add(parentApp);
     remixedFrom.setVisible(false);
     parentApp.setVisible(false);
 
@@ -769,7 +868,6 @@ panel
       MESSAGES.galleryError()) {
         @Override
         public void onSuccess(final List<GalleryApp> apps) {
-          //Ode.getInstance().switchToGalleryInheritanceView(apps);
           OdeLog.log("#### in GalleryPage remixedTo onSuccess " + apps.size());
           if (apps.size() != 0) {
             // Display remixes at the sidebar on the same page
@@ -779,6 +877,8 @@ panel
         }
       };
     Ode.getInstance().getGalleryService().remixedTo(app.getGalleryAppId(), callback);
+
+    return container;
   }
 
 
@@ -914,6 +1014,31 @@ panel
         isLikedCallback);
   }
 
+  /**
+   * Helper method called by constructor to initialize the edit it button
+   * Only seen by app owner.
+   */
+  private void initEdititButton() {
+    final OdeAsyncCallback<User> currentUserInfomationCallBack = new OdeAsyncCallback<User>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(User user) {
+          if(app.getDeveloperId().equals(user.getUserId())){
+            editButton = new Button(EDITBUTTONTEXT);
+            editButton.addClickHandler(new ClickHandler() {
+              // Open up source file if clicked the action button
+              public void onClick(ClickEvent event) {
+                Ode.getInstance().switchToGalleryAppView(app, GalleryPage.UPDATEAPP);
+              }
+            });
+            editButton.addStyleName("app-action-button");
+            appAction.add(editButton);
+          }
+        }
+      };
+    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), currentUserInfomationCallBack);
+  }
 
   /**
    * Helper method called by constructor to initialize the try it button
@@ -923,32 +1048,19 @@ panel
     actionButton.addClickHandler(new ClickHandler() {
       // Open up source file if clicked the action button
       public void onClick(ClickEvent event) {
-        //gallery.loadSourceFile(app.getProjectName(),app.getSourceURL());
         actionButton.setEnabled(false);
-        boolean success = gallery.loadSourceFile(app);
-
-        if(success){
-          actionButton.setText(MESSAGES.galleryAppOpening());
-        }
         /*
-        // Send the app author a message regarding people trying out this app
-        final OdeAsyncCallback<Void> messageSentCallback = new OdeAsyncCallback<Void>(
-            // failure message
-            MESSAGES.galleryError()) {
-              @Override
-              public void onSuccess(Void result) {
-              }
-          };
-        Ode.getInstance().getGalleryService().sendMessageFromSystem(
-            "0", app.getDeveloperId(), "An user downloaded your app", messageSentCallback);
-        */
-        gallery.appWasDownloaded(app.getGalleryAppId());
+         *  open a popup window that will prompt to ask user to enter
+         *  a new project name(if "new name" is not valid, user may need to
+         *  enter again). After that, "loadSourceFil" and "appWasDownloaded"
+         *  will be called. 
+         */
+    	new RemixedYoungAndroidProjectWizard(app, actionButton).center();
       }
     });
     actionButton.addStyleName("app-action-button");
     appAction.add(actionButton);
   }
-
 
   /**
    * Helper method called by constructor to initialize the publish button
@@ -995,7 +1107,7 @@ panel
           };
           // call publish with the default app data...
           Ode.getInstance().getGalleryService().publishApp(app.getProjectId(),
-              app.getTitle(), app.getProjectName(), app.getDescription(), callback);
+              app.getTitle(), app.getProjectName(), app.getDescription(), app.getMoreInfo(), app.getCredit(), callback);
       }
     });
     actionButton.addStyleName("app-action-button");
@@ -1069,10 +1181,10 @@ panel
    * @param apps: list of returned gallery apps from callback.
    * @param requestId: determines the specific type of app data.
    */
-  private void refreshApps(List<GalleryApp> apps, int requestId) {
+  private void refreshApps(GalleryAppListResult appResults, int requestId) {
     switch (requestId) {
       case GalleryClient.REQUEST_BYDEVELOPER:
-        galleryGF.generateSidebar(apps, sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), false, true);
+        galleryGF.generateSidebar(appResults.getApps(), sidebarTabs, appsByAuthor, "By Author", MESSAGES.galleryAppsByAuthorSidebar() + " " + app.getDeveloperName(), false, true);
         break;
 //      case GalleryClient.REQUEST_BYTAG: /* We are not implementing tags at initial launch */
 //        String tagTitle = "Tagged with " + tagSelected;
@@ -1087,9 +1199,9 @@ panel
    * gallery page to listen to
    */
   @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)   {
-   if (apps != null)
-      refreshApps(apps, requestId);
+  public void onAppListRequestCompleted(GalleryAppListResult appResults, int requestId)   {
+   if (appResults != null && appResults.getApps() != null)
+      refreshApps(appResults, requestId);
     else
       Window.alert("apps was null");
   }
@@ -1111,7 +1223,6 @@ panel
   public void onSourceLoadCompleted(UserProject projectInfo) {
 
   }
-
 
   /**
    * Create a final object of this class to hold a modifiable result value that

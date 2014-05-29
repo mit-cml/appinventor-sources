@@ -7,6 +7,7 @@
 package com.google.appinventor.client.boxes;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.output.OdeLog;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.logging.Level;
 import com.google.appinventor.client.explorer.youngandroid.GalleryInheritanceList;
 import com.google.appinventor.client.widgets.boxes.Box;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.gwt.user.client.ui.FlowPanel;
 
 
@@ -65,8 +67,8 @@ public final class GalleryInheritanceListBox extends FlowPanel {
   public GalleryInheritanceList getGalleryInheritanceList() {
      return plist;
   }
-  public void setAppAttributionList(List<GalleryApp> apps)
+  public void setAppAttributionList(GalleryAppListResult appsResult)
   {
-	plist.showRemixedToList(apps);
+	plist.showRemixedToList(appsResult);
   }
 }

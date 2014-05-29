@@ -52,13 +52,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
-
-
-
-
-
 /**
  * The report list shows all reports in a table.
  *

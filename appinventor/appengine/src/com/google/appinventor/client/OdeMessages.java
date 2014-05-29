@@ -225,6 +225,10 @@ public interface OdeMessages extends Messages {
   @Description("Label of the Cancel Action on message of reportlist")
   String labelCancel();
 
+  @DefaultMessage("Confirm")
+  @Description("Label of the Confirm Action on message of reportlist")
+  String labelConfirm();
+
   @DefaultMessage("Your App \"")
   @Description("Label of the Text of Your App of reportlist")
   String yourAppMessage();
@@ -1311,6 +1315,27 @@ public interface OdeMessages extends Messages {
   String projectUploadWizardCaption();
 
   // Used in GalleryPage.java
+
+  @DefaultMessage("Tutorial/Video: ")
+  @Description("Text for gallery page more info link label")
+  String galleryMoreInfoLabel();
+
+  @DefaultMessage("Credits: ")
+  @Description("Text for gallery page credit label")
+  String galleryCreditLabel();
+
+  @DefaultMessage("If this app has a tutorial or video, enter the URL here")
+  @Description("Text for gallery page more info link hint")
+  String galleryMoreInfoHint();
+
+  @DefaultMessage("Are you remixing the code of another app? Credit them here")
+  @Description("Text for gallery page credit hint")
+  String galleryCreditHint();
+
+  @DefaultMessage("Input the description of the app here")
+  @Description("Text for gallery page description hint")
+  String galleryDescriptionHint();
+
   @DefaultMessage("Opening ...")
   @Description("Text for gallery page opening feedback")
   String galleryAppOpening();
@@ -1339,7 +1364,7 @@ public interface OdeMessages extends Messages {
   @Description("Text prefix for the gallery app last changed date.")
   String galleryAppChangedPrefix();
 
-  @DefaultMessage("This app is remixed from ")
+  @DefaultMessage("Remixed from: ")
   @Description("Text prefix for the gallery app remixed from label.")
   String galleryRemixedFrom();
 
@@ -1413,11 +1438,20 @@ public interface OdeMessages extends Messages {
   @Description("Error message reported when the file selected for upload is not a project archive.")
   String notProjectArchiveError();
 
+  // Used in ProfilePage.java
+  @DefaultMessage("Edit Profile")
+  @Description("Edit Profile Button, only seen by profile owner")
+  String buttonEditProfile();
+
   // Used in GalleryList.java
 
   @DefaultMessage("Server error: gallery cannot be accessed")
   @Description("Error message reported when the gallery cannot be accessed.")
   String galleryError();
+
+  @DefaultMessage("No Results Found")
+  @Description("Label feedback for no results found after searching.")
+  String noResultsFound();
 
   // Used in wizards/Wizard.java
 
@@ -1434,6 +1468,12 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Create new App Inventor project")
   @Description("Caption for the wizard to create a new Young Android project")
   String newYoungAndroidProjectWizardCaption();
+
+  // Used in wizards/youngandroid/RemixedYoungAndroidProjectWizard.java
+
+  @DefaultMessage("Name this App Inventor project")
+  @Description("Caption for the wizard to name the opening Young Android project")
+  String remixedYoungAndroidProjectWizardCaption();
 
   @DefaultMessage("Project name:")
   @Description("Label for the project name input text box")

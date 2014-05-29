@@ -12,6 +12,7 @@ import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.widgets.TextButton;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.common.collect.Lists;
 import com.google.gwt.i18n.client.DateTimeFormat;
@@ -292,14 +293,14 @@ public class TopPanel extends Composite {
       content.add(msgPanel);
 
       // Retrieve list of unread dl and likes from this user's apps
-      final OdeAsyncCallback<List<GalleryApp>> appUnreadCallback =
-          new OdeAsyncCallback<List<GalleryApp>>(
+      final OdeAsyncCallback<GalleryAppListResult> appUnreadCallback =
+          new OdeAsyncCallback<GalleryAppListResult>(
           // failure message
           MESSAGES.galleryError()) {
             @Override
-            public void onSuccess(List<GalleryApp> apps) {
+            public void onSuccess(GalleryAppListResult appsResult) {
               // get the new unread list so gui updates
-              for (final GalleryApp app : apps) {
+              for (final GalleryApp app : appsResult.getApps()) {
                 // Only add if this app actually has unread data
                 if (app.getUnreadDownloads() + app.getUnreadLikes() > 0) {
                   msgCount[0]++;

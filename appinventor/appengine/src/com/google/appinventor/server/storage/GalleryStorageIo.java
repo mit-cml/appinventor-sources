@@ -7,6 +7,7 @@ package com.google.appinventor.server.storage;
 
 
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
@@ -46,7 +47,7 @@ public interface GalleryStorageIo {
    * @param userId if of user publishing this app
    * @return a {@link GalleryApp} for gallery App
    */
-  GalleryApp createGalleryApp(String title, String projectName, String description, long projectId, String userId);
+  GalleryApp createGalleryApp(String title, String projectName, String description, String moreInfo, String credit, long projectId, String userId);
 
   /**
    * updates gallery app
@@ -55,33 +56,41 @@ public interface GalleryStorageIo {
    * @param description new description of app
    * @param userId if of user publishing this app
    */
-  void updateGalleryApp(long galleryId, String title, String description, String userId);
-
+  void updateGalleryApp(long galleryId, String title, String description, String moreInfo, String credit, String userId);
 
   /**
-   * Returns an array of recently published GalleryApps
+   * Returns total number of GalleryApps
+   * @return number of GalleryApps
+   */
+  Integer getNumGalleryApps();
+
+  /**
+   * Returns a wrapped class which contains list of most recently 
+   * updated galleryApps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */
-  List<GalleryApp> getRecentGalleryApps(int start, int count);
-   
+  GalleryAppListResult getRecentGalleryApps(int start, int count);
+
   /**
-   * Returns an array of most downloaded GalleryApps
+   * Returns a wrapped class which contains a list of most downloaded 
+   * gallery apps and total number of results in database
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */
-  List<GalleryApp> getMostDownloadedApps(int start, int count);
+  GalleryAppListResult getMostDownloadedApps(int start, int count);
 
   /**
-   * Returns a list of apps created by a particular developer
+   * Returns a wrapped class which contains a list of galleryApps
+   * by a particular developer and total number of results in database
    * @param userId id of developer
    * @param start starting index of apps you want
    * @param count number of apps you want
    * @return list of {@link GalleryApp}
    */
-  List<GalleryApp> getDeveloperApps(String userId, int start, int count);
+  GalleryAppListResult getDeveloperApps(String userId, int start, int count);
 
   /**
    * records that an app has been downloaded

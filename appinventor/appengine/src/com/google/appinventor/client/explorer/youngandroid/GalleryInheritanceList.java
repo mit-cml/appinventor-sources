@@ -8,18 +8,18 @@ package com.google.appinventor.client.explorer.youngandroid;
 import com.google.appinventor.client.Ode;
 
 import static com.google.appinventor.client.Ode.MESSAGES;
+
 import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
-
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.GalleryGuiFactory;
 import com.google.appinventor.client.GalleryRequestListener;
 import com.google.appinventor.client.OdeAsyncCallback;
-
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
@@ -43,7 +43,6 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import com.google.gwt.user.client.ui.Image;
 
 import java.io.Console;
@@ -60,10 +59,8 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
-
 import com.google.appinventor.shared.rpc.project.youngandroid.NewYoungAndroidProjectParameters;
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidProjectNode;
 import com.google.gwt.user.client.Window;
@@ -169,8 +166,8 @@ public class GalleryInheritanceList extends Composite implements GalleryRequestL
     //gallery.GetMostDownloaded(0, offset);
   }
 
-  public void showRemixedToList(List<GalleryApp> apps){
-    gallery.GetRemixedToList(apps);
+  public void showRemixedToList(GalleryAppListResult appsResult){
+    gallery.GetRemixedToList(appsResult);
   }
 
 
@@ -292,10 +289,10 @@ public class GalleryInheritanceList extends Composite implements GalleryRequestL
     return selectedApps;
   }
 
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestId)
+  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId)
   {
-    if (apps != null)
-      refreshApps(apps, requestId);
+    if (appsResult != null && appsResult.getApps() != null)
+      refreshApps(appsResult.getApps(), requestId);
     else
       Window.alert("apps was null");
   }

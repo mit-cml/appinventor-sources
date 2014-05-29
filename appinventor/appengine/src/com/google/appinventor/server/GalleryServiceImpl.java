@@ -11,6 +11,10 @@ import com.google.appengine.api.files.FileService;
 import com.google.appengine.api.files.FileServiceFactory;
 import com.google.appengine.api.files.FileWriteChannel;
 import com.google.appengine.api.files.GSFileOptions.GSFileOptionsBuilder;
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
 import com.google.appengine.tools.cloudstorage.GcsFileOptions;
 import com.google.appengine.tools.cloudstorage.GcsInputChannel;
 import com.google.appengine.tools.cloudstorage.GcsService;
@@ -26,6 +30,7 @@ import com.google.appinventor.server.storage.GalleryStorageIoInstanceHolder;
 import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
@@ -39,6 +44,7 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
@@ -47,6 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -89,17 +96,12 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @return a {@link GalleryApp} for new galleryApp
    */
   @Override
-  public GalleryApp publishApp(long projectId, String title, String projectName, String description) {
+  public GalleryApp publishApp(long projectId, String title, String projectName, String description, String moreInfo, String credit) {
     final String userId = userInfoProvider.getUserId();
-    GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, projectId, userId);
+    GalleryApp app = galleryStorageIo.createGalleryApp(title, projectName, description, moreInfo, credit, projectId, userId);
     storeAIA(app.getGalleryAppId(),projectId, projectName);
     // see if there is a new image for the app. If so, its in cloud using projectId, need to move
     // to cloud using gallery id
-
-//    Logger.getAnonymousLogger().info("#######################");
-//    Logger.getAnonymousLogger().info("This is URL for /gallery/app/#/aia:" + String.valueOf(app.getGalleryAppId()));
-//    Logger.getAnonymousLogger().info("This is URL for /gallery/project/#/image:" + String.valueOf(projectId));
-//    Logger.getAnonymousLogger().info("#######################");
     setGalleryAppImage(app);
 
     // put meta data in search index
@@ -126,7 +128,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   @Override
   public void updateAppMetadata(GalleryApp app) {
     final String userId = userInfoProvider.getUserId();
-    galleryStorageIo.updateGalleryApp(app.getGalleryAppId(), app.getTitle(), app.getDescription(),  userId);
+    galleryStorageIo.updateGalleryApp(app.getGalleryAppId(), app.getTitle(), app.getDescription(), app.getMoreInfo(), app.getCredit(), userId);
     // put meta data in search index
     GallerySearchIndex.getInstance().indexApp(app);
   }
@@ -148,34 +150,44 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    */
   @Override
   public void indexAll(int count) {
-    List<GalleryApp> apps= getRecentApps(1,count);
+    List<GalleryApp> apps= getRecentApps(1,count).getApps();
     for (GalleryApp app:apps) {
       GallerySearchIndex.getInstance().indexApp(app);
     }
   }
 
+  /**
+   * Returns total number of galleryApps
+   * @return number of galleryApps
+   */
+  @Override
+  public Integer getNumApps() {
+    return galleryStorageIo.getNumGalleryApps();
+  }
 
   /**
-   * Returns a list of most recently updated galleryApps
+   * Returns a wrapped class which contains list of most recently 
+   * updated galleryApps and total number of results in database
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
   @Override
-  public List<GalleryApp> getRecentApps(int start,int count) {
+  public GalleryAppListResult getRecentApps(int start,int count) {
     return galleryStorageIo.getRecentGalleryApps(start,count);
  
   }
 
   /**
-   * Returns a list of galleryApps by a particular developer
+   * Returns a wrapped class which contains a list of galleryApps 
+   * by a particular developer and total number of results in database
    * @param userId id of the developer
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
   @Override
-  public List<GalleryApp> getDeveloperApps(String userId, int start,int count) {
+  public GalleryAppListResult getDeveloperApps(String userId, int start,int count) {
     return galleryStorageIo.getDeveloperApps(userId, start,count);
  
   }
@@ -192,26 +204,27 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     return galleryStorageIo.getGalleryApp(galleryId);
   }
   /**
-   * Returns a list of galleryApps
+   * Returns a wrapped class which contains a list of galleryApps and
+   * total number of results in database
    * @param keywords keywords to search for
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
   @Override
-  public List<GalleryApp> findApps(String keywords, int start, int count) {
-    
-    return GallerySearchIndex.getInstance().find(keywords);
+  public GalleryAppListResult findApps(String keywords, int start, int count) {
+    return GallerySearchIndex.getInstance().find(keywords, start, count);
   }
 
   /**
-   * Returns a list of most downloaded gallery apps
+   * Returns a wrapped class which contains a list of most downloaded 
+   * gallery apps and total number of results in database
    * @param start starting index
    * @param count number of apps to return
    * @return list of GalleryApps
    */
   @Override
-  public List<GalleryApp> getMostDownloadedApps(int start, int count) {
+  public GalleryAppListResult getMostDownloadedApps(int start, int count) {
     return galleryStorageIo.getMostDownloadedApps(start,count);
   }
 
@@ -502,6 +515,22 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       // close the project image file
       readChannel.close();
 
+      // if image is greater than 200 X 200, it will be scaled (200 X 200).
+      // otherwise, it will be stored as origin.
+      byte[] oldImageData = bao.toByteArray();
+      byte[] newImageData;
+      ImagesService imagesService = ImagesServiceFactory.getImagesService();
+      Image oldImage = ImagesServiceFactory.makeImage(oldImageData);
+      //if image size is too big, scale it to a smaller size.
+      if(oldImage.getWidth() > 200 && oldImage.getHeight() > 200){
+          Transform resize = ImagesServiceFactory.makeResize(200, 200);
+          Image newImage = imagesService.applyTransform(resize, oldImage);
+          newImageData = newImage.getImageData();
+      }else{
+          newImageData = oldImageData;
+      }
+
+
       // set up the cloud file (options)
       // After publish, copy the /projects/projectId image into /apps/appId
       String galleryKey = app.getImageKey();
@@ -509,7 +538,7 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
       GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
           .acl("public-read").cacheControl("no-cache").build();
       GcsOutputChannel writeChannel = gcsService.createOrReplace(outfilename, options);
-      writeChannel.write(ByteBuffer.wrap(bao.toByteArray()));
+      writeChannel.write(ByteBuffer.wrap(newImageData));
     
       // Now finalize
       writeChannel.close();

@@ -8,18 +8,17 @@ import com.google.gwt.http.client.Request;
 import com.google.gwt.http.client.RequestCallback;
 import com.google.gwt.http.client.RequestException;
 import com.google.gwt.http.client.Response;
-
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.wizards.NewProjectWizard.NewProjectCommand;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.client.youngandroid.TextValidators;
-
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
-
 import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 
 import java.io.IOException;
@@ -74,14 +73,14 @@ public class GalleryClient {
   public void FindApps(String keywords, int start, int count, int sortOrder) {
      // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.gallerySearchError()) {
     @Override
-    public void onSuccess(List<GalleryApp> apps) {
+    public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(apps, REQUEST_SEARCH); 
+        listener.onAppListRequestCompleted(appsResult, REQUEST_SEARCH);
       }
     }
     };
@@ -98,14 +97,14 @@ public class GalleryClient {
   public void GetAppsByDeveloper(int start, int count, String developerId) {
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryDeveloperAppError()) {
     @Override
-    public void onSuccess(List<GalleryApp> apps) {
+    public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(apps, REQUEST_BYDEVELOPER); 
+        listener.onAppListRequestCompleted(appsResult, REQUEST_BYDEVELOPER);
       }
     }
     };
@@ -129,14 +128,14 @@ public class GalleryClient {
   public void GetMostRecent(int start, int count) { 
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryRecentAppsError()) {
     @Override
-    public void onSuccess(List<GalleryApp> apps) {
+    public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(apps, REQUEST_RECENT);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_RECENT);
       } 
     }
     };
@@ -152,14 +151,14 @@ public class GalleryClient {
   public void GetMostDownloaded(int start, int count) {
     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<List<GalleryApp>> callback = new OdeAsyncCallback<List<GalleryApp>>(
+    final OdeAsyncCallback<GalleryAppListResult> callback = new OdeAsyncCallback<GalleryAppListResult>(
     // failure message
     MESSAGES.galleryDownloadedAppsError()) {
     @Override
-    public void onSuccess(List<GalleryApp> apps) {
+    public void onSuccess(GalleryAppListResult appsResult) {
       // the server has returned us something
       for (GalleryRequestListener listener:listeners) {
-        listener.onAppListRequestCompleted(apps, REQUEST_MOSTDOWNLOADED);
+        listener.onAppListRequestCompleted(appsResult, REQUEST_MOSTDOWNLOADED);
       } 
     }
     };
@@ -171,9 +170,9 @@ public class GalleryClient {
   /**
    * GetRemixedToList gets children list that apps remixed to then tells listeners
    */
-  public void GetRemixedToList(List<GalleryApp> apps) {
+  public void GetRemixedToList(GalleryAppListResult appsResult) {
     for (GalleryRequestListener listener:listeners) {
-      listener.onAppListRequestCompleted(apps, REQUEST_REMIXED_TO);
+      listener.onAppListRequestCompleted(appsResult, REQUEST_REMIXED_TO);
     }
   }
 
@@ -220,9 +219,9 @@ public class GalleryClient {
   * @param gApp the app to open
   * @return True if success, otherwise false
   */
-  public boolean loadSourceFile(GalleryApp gApp) {
-    final String projectName=gApp.getProjectName();
-    final String sourceURL=gApp.getSourceURL();
+  public boolean loadSourceFile(GalleryApp gApp, String newProjectName) {
+    final String projectName = newProjectName;
+    final String sourceURL = gApp.getSourceURL();
     final long galleryId = gApp.getGalleryAppId();
     
     // first check name to see if valid and unique...

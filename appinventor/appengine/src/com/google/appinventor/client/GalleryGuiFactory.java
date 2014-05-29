@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,26 +19,24 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
-
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
-
 import com.google.appinventor.client.explorer.youngandroid.GalleryPage;
 
 public class GalleryGuiFactory implements GalleryRequestListener {
-	GalleryClient gallery = null;
+  GalleryClient gallery = null;
 
-	/*
-	 * Generates a new GalleryGuiFactory instance.
-	 */
-	public GalleryGuiFactory() {
-      gallery = GalleryClient.getInstance();
-      gallery.addListener(this);
-	}
+  /*
+   * Generates a new GalleryGuiFactory instance.
+   */
+  public GalleryGuiFactory() {
+    gallery = GalleryClient.getInstance();
+    gallery.addListener(this);
+  }
 
-	/*
-	 * Class representing the GUI of a single gallery app.
-	 */
+  /*
+   * Class representing the GUI of a single gallery app.
+   */
   private class GalleryAppWidget {
     final Label nameLabel;
     final Label authorLabel;
@@ -328,7 +327,7 @@ public class GalleryGuiFactory implements GalleryRequestListener {
   }
 
   @Override
-  public void onAppListRequestCompleted(List<GalleryApp> apps, int requestID) {
+  public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestID) {
     // TODO Auto-generated method stub
     
   }

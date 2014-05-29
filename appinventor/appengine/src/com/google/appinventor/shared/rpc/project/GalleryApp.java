@@ -30,6 +30,8 @@ public class GalleryApp implements IsSerializable {
     this.creationDate = 0L;
     this.updateDate = 0L;
     this.active = true;
+    this.moreInfo = "no info";
+    this.credit = "no credit";
   }
 
 
@@ -119,6 +121,8 @@ public class GalleryApp implements IsSerializable {
   private long attributionId;  // the gallery id which this app inherits from.
                                // it takes from the project which inherits from a gellery app.
   private boolean active;
+  private String moreInfo;
+  private String credit;
 
   public long getProjectAttributionId() {
     return attributionId;
@@ -247,6 +251,18 @@ public class GalleryApp implements IsSerializable {
   }
   public void setActive(boolean active) {
     this.active = active;
+  }
+  public String getMoreInfo() {
+    return moreInfo;
+  }
+  public void setMoreInfo(String moreInfo) {
+    this.moreInfo = moreInfo;
+  }
+  public String getCredit() {
+    return credit;
+  }
+  public void setCredit(String credit) {
+    this.credit = credit;
   }
 
   /* URL is in GCS, of form: /gs/galleryai2/gallery/apps/6046115656892416/aia

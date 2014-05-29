@@ -9,19 +9,25 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+
+
 //import com.google.appengine.api.memcache.*;
 //import com.google.appengine.tools.cloudstorage.GcsFilename;
 //import com.google.appengine.tools.cloudstorage.GcsService;
 //import com.google.appengine.tools.cloudstorage.GcsServiceFactory;
 //import com.google.appengine.tools.cloudstorage.RetryParams;
 import com.google.appinventor.client.Ode;
+
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.boxes.ProjectListBox;
 import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.utils.Uploader;
 import com.google.appinventor.shared.rpc.ServerLayout;
 import com.google.appinventor.shared.rpc.UploadResponse;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.UserProject;
 import com.google.appinventor.shared.rpc.user.User;
@@ -47,10 +53,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TabPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
-
 import com.google.gwt.event.dom.client.ErrorHandler;
 import com.google.gwt.event.dom.client.ErrorEvent;
-
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 
@@ -118,6 +122,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   Label userContentHeader = new Label();
   Label usernameLabel = new Label();
   Label userLinkLabel = new Label();
+  Button editProfile = new Button(MESSAGES.buttonEditProfile());
   final TextBox userNameBox = new TextBox();
   final TextBox userLinkBox = new TextBox();
   final Label userNameDisplay = new Label();
@@ -137,7 +142,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    * @param editStatus  the edit status (0 is private, 1 is public)
    *
    */
-  public ProfilePage(String incomingUserId, final int editStatus) {
+  public ProfilePage(final String incomingUserId, final int editStatus) {
 
     // Replace the global variable
     if (incomingUserId.equalsIgnoreCase("-1")) {
@@ -148,21 +153,19 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
             @Override
             public void onSuccess(final User currentUser) {
               userId = currentUser.getUserId();
-//              OdeLog.log("#### get current user id = " + userId);
               initImageComponents(userId);
             }
           };
         Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), userCallback);
     } else {
       // this is checking out an already existing user's profile...
-//      OdeLog.log("#### user id directly set to " + incomingUserId);
       userId = incomingUserId;
     }
     profileStatus = editStatus;
 
     // If we're editing or updating, add input form for image
     if (editStatus == PRIVATE) {
-      // This should only set up image after userId is returned above
+    // This should only set up image after userId is returned above
     } else  { // we are just viewing this page so setup the image
       initReadOnlyImage();
     }
@@ -191,6 +194,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       userContentHeader.setText("Edit your profile");
       usernameLabel.setText("Your display name");
       userLinkLabel.setText("More info link");
+      editProfile.setVisible(false);
 
       profileSummit.addClickHandler(new ClickHandler() {
         @Override
@@ -241,6 +245,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       profileInfo.add(userContentHeader);
       profileInfo.add(userLinkLabel);
       profileInfo.add(userLinkDisplay);
+      profileInfo.add(editProfile);
     }
 
     // Add GUI layers in the "main content" container
@@ -261,6 +266,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
     userLinkLabel.addStyleName("profile-textlabel");
     userLinkBox.addStyleName("profile-textbox");
     userLinkDisplay.addStyleName("profile-textdisplay");
+    editProfile.addStyleName("profile-submit");
 
     profileSummit.addStyleName("profile-submit");
     imageUpload.addStyleName("app-image-upload");
@@ -304,8 +310,6 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
               // In this case it'll return the user of [userId]
               userContentHeader.setText(user.getUserName());
               makeValidLink(userLinkDisplay, user.getUserLink());
-
-
             }
             // once we get the user info and id we can show the right image
 //            updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
@@ -318,18 +322,41 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
       // Public state
       Ode.getInstance().getUserInfoService().getUserInformation(userId, userInformationCallback);
       // Retrieve apps by this author for sidebar
-      final OdeAsyncCallback<List<GalleryApp>> byAuthorCallback = new OdeAsyncCallback<List<GalleryApp>>(
+      final OdeAsyncCallback<GalleryAppListResult> byAuthorCallback = new OdeAsyncCallback<GalleryAppListResult>(
           // failure message
           MESSAGES.galleryError()) {
             @Override
-            public void onSuccess(List<GalleryApp> apps) {
+            public void onSuccess(GalleryAppListResult appsResult) {
               FlowPanel appsByAuthor = new FlowPanel();
-              galleryGF.generateSidebar(apps, sidebarTabs, appsByAuthor, "Apps By Author", 
+              galleryGF.generateSidebar(appsResult.getApps(), sidebarTabs, appsByAuthor, "Apps By Author",
                   MESSAGES.galleryAppsByAuthorSidebar() + " this user", false, true);
             }
         };
       Ode.getInstance().getGalleryService().getDeveloperApps(userId, 0,5, byAuthorCallback);
     }
+
+    //TODO this callback should combine with previous ones. Leave it out for now
+    final OdeAsyncCallback<User> currentUserInfomationCallBack = new OdeAsyncCallback<User>(
+    // failure message
+      MESSAGES.galleryError()) {
+        @Override
+        public void onSuccess(User user) {
+          if(incomingUserId.equals(user.getUserId())){
+            editProfile.setVisible(true);
+            editProfile.addClickHandler(new ClickHandler() {
+              @Override
+              public void onClick(ClickEvent clickEvent) {
+                ode.switchToProjectsView();
+                ProjectListBox.getProjectListBox().selectTab(1);
+              }
+            });
+          }else{
+            editProfile.setVisible(false);
+          }
+        }
+    };
+    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), currentUserInfomationCallBack);
+
   }
 
 

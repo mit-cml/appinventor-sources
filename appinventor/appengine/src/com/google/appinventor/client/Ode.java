@@ -55,14 +55,13 @@ import com.google.appinventor.shared.rpc.help.HelpServiceAsync;
 import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
+import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
 import com.google.appinventor.shared.rpc.project.Message;
-
 import com.google.appinventor.shared.rpc.project.GalleryService;
 import com.google.appinventor.shared.rpc.project.GalleryServiceAsync;
-
 import com.google.appinventor.shared.rpc.project.youngandroid.YoungAndroidSourceNode;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.appinventor.shared.rpc.user.UserInfoService;
@@ -104,8 +103,8 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+
 import java.util.Random;
 
 /**
@@ -349,10 +348,10 @@ public class Ode implements EntryPoint {
   /**
    * Switch to the Gallery Inheritance tab
    */
-  public void switchToGalleryInheritanceView(List<GalleryApp> apps) {
+  public void switchToGalleryInheritanceView(GalleryAppListResult appsResult) {
     currentView = GALLERYINHERITANCE;
     //GalleryInheritanceListBox.getGalleryInheritanceListBox().setAppAttributionList(apps);
-    GalleryInheritanceListBox.getGalleryInheritanceListBox().getGalleryInheritanceList().showRemixedToList(apps);
+    GalleryInheritanceListBox.getGalleryInheritanceListBox().getGalleryInheritanceList().showRemixedToList(appsResult);
     deckPanel.showWidget(galleryInheritanceTabIndex);
   }
   /**
