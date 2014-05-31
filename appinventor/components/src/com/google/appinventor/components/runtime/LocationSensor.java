@@ -47,8 +47,10 @@ import java.util.List;
     "<code>LongitudeFromAddress</code> method).</p>\n" +
     "<p>In order to function, the component must have its " +
     "<code>Enabled</code> property set to True, and the device must have " +
-    "location sensing enabled through either wireless networks or GPS " +
-    "satellites (if outside).",
+    "location sensing enabled through wireless networks or GPS " +
+    "satellites (if outdoors).</p>\n" +
+    "Location information might not be immediately available when an app starts.  You'll have to wait a short time for " +
+    "a location provider to be found and used, or wait for the OnLocationChanged event",
     category = ComponentCategory.SENSORS,
     nonVisible = true,
     iconName = "images/locationSensor.png")
@@ -198,7 +200,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
     locationCriteria = new Criteria();
     myLocationListener = new MyLocationListener();
     allProviders = new ArrayList<String>();
-
+    // Do some initialization depending on the initial enabled state
+    Enabled(enabled);
   }
 
   // Events
@@ -214,7 +217,8 @@ public class LocationSensor extends AndroidNonvisibleComponent
   }
 
   /**
-   * Indicates that the status of the provider has changed.
+   * Indicates that the status of the location provider service has changed, such as when a
+   * provider is lost or a new provider starts being used.
    */
   @SimpleEvent
   public void StatusChanged(String provider, String status) {
