@@ -38,7 +38,7 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * A user interface enabling users to merge two App Inventor projects.
- *
+ * 
  * @author feeney.kate@gmail.com (Kate Feeney)
  */
 public class AIMerger extends JFrame {
@@ -127,7 +127,7 @@ public class AIMerger extends JFrame {
       if (mainProject.isValid()) {
         mainProjectDisplayP.setVisible(true);
         updateMainProjectView();
-        // Set the lower center panel to visible if the lower right panel is already visible.
+        // Set the lower center panel to visible if the lower right panel is already visible. 
         mergeButtonP.setVisible(secondProjectDisplayP.isVisible());
       } else {
         mainProjectDisplayP.setVisible(false);
@@ -144,7 +144,7 @@ public class AIMerger extends JFrame {
       if (secondProject.isValid()) {
         secondProjectDisplayP.setVisible(true);
         updateSecondProjectView();
-        // Set the lower center panel to visible if the lower left panel is already visible.
+        // Set the lower center panel to visible if the lower left panel is already visible. 
         mergeButtonP.setVisible(mainProjectDisplayP.isVisible());
       } else {
         secondProjectDisplayP.setVisible(false);
@@ -167,8 +167,8 @@ public class AIMerger extends JFrame {
         // List to hold files to be included in the new project from the second project.
         List<String> filesFromSecondProject = new ArrayList<String>();
 
-        // Temporary list to hold the name of the screens from the main project that have been
-        // checked to be included in the new project.
+        // Temporary list to hold the name of the screens from the main project that have been 
+        // checked to be included in the new project. 
         List<String> mainProjectCheckedScreens = mainProjectScreensCBL.getChecked();
         // Add checked screens to the list of files to include from the main project.
         if (!mainProjectCheckedScreens.isEmpty()) {
@@ -176,13 +176,13 @@ public class AIMerger extends JFrame {
             if (mainProjectCheckedScreens.contains(aiScreen.getName())) {
               String path = aiScreen.getPath();
               filesFromMainProject.add(path);
-              filesFromMainProject.add(path.substring(0, path.lastIndexOf(".scm")).concat(".bky"));
+              filesFromMainProject.add(path.substring(0, path.lastIndexOf(".scm")).concat(".blk"));
             }
           }
         }
 
-        // Temporary list to hold the name of the assets from the main project that have been
-        // checked to be included in the new project.
+        // Temporary list to hold the name of the assets from the main project that have been 
+        // checked to be included in the new project. 
         List<String> mainProjectCheckedAssets = mainProjectAssetsCBL.getChecked();
         // Add checked assets to the list of files to include from the main project.
         if (!mainProjectCheckedAssets.isEmpty()) {
@@ -193,8 +193,8 @@ public class AIMerger extends JFrame {
           }
         }
 
-        // Temporary list to hold the name of the screens from the second project that have been
-        // checked to be included in the new project.
+        // Temporary list to hold the name of the screens from the second project that have been 
+        // checked to be included in the new project. 
         List<String> secondProjectCheckedScreens = secondProjectScreensCBL.getChecked();
         // Add checked screens to the list of files to include from the second project.
         if (!secondProjectCheckedScreens.isEmpty()) {
@@ -203,13 +203,13 @@ public class AIMerger extends JFrame {
               String path = aiScreen.getPath();
               filesFromSecondProject.add(path);
               filesFromSecondProject
-              .add(path.substring(0, path.lastIndexOf(".scm")).concat(".bky"));
+              .add(path.substring(0, path.lastIndexOf(".scm")).concat(".blk"));
             }
           }
         }
 
-        // Temporary list to hold the name of the assets from the second project that have been
-        // checked to be included in the new project.
+        // Temporary list to hold the name of the assets from the second project that have been 
+        // checked to be included in the new project. 
         List<String> secondProjectCheckedAssets = secondProjectAssetsCBL.getChecked();
         // Add checked assets to the list of files to include from the second project.
         if (!secondProjectCheckedAssets.isEmpty()) {
@@ -365,11 +365,11 @@ public class AIMerger extends JFrame {
     String projectPath = null;
     int validPath = mergeProjectFS.showSaveDialog(myCP);
     if (validPath != JFileChooser.ERROR_OPTION || validPath != JFileChooser.CANCEL_OPTION) {
-      // Make sure the file is an aia file.
+      // Make sure the file is a zip file.
       File projectFile = mergeProjectFS.getSelectedFile();
       projectPath = projectFile.getPath();
-      if (!projectPath.toLowerCase().endsWith(".aia")) {
-        projectPath = projectPath.concat(".aia");
+      if (!projectPath.toLowerCase().endsWith(".zip")) {
+        projectPath = projectPath.concat(".zip");
         projectFile = new File(projectPath);
       }
 
@@ -389,9 +389,9 @@ public class AIMerger extends JFrame {
           return getFileToSaveTo();
         }
       }
-      // The projects name is the name of the aia file.
+      // The projects name is the name of the zip file.
       String projectName = projectPath.substring(projectPath.lastIndexOf(File.separator) + 1,
-          projectPath.lastIndexOf(".aia"));
+          projectPath.lastIndexOf(".zip"));
       // The projects name must start with a letter and can only contain letters,
       // numbers and underscores.
       if (!Character.isLetter(projectName.charAt(0)) || !projectName.matches("^[a-zA-Z0-9_]*$")) {
@@ -513,7 +513,7 @@ public class AIMerger extends JFrame {
   }
 
   public AIMerger() {
-    super("App Inventor Merger v1.1 -- for App Inventor 2");
+    super("App Inventor Merger v1.1");
 
     // Set the size and location of the application's window based on the screen size.
     Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -607,8 +607,8 @@ public class AIMerger extends JFrame {
 
     // Location and size of the panel that displays the projects.
     projectDisplayPanelLocation = new Point(20, secondProjectTF.getLocation().y + BORDER_THICKNESS);
-    projectDisplayPanelSize = new Dimension((int) (screenSize.width * WIDTH_PERCENT_OF_SCREEN) -
-        BORDER_THICKNESS, (int) (screenSize.height * HEIGHT_PERCENT_OF_SCREEN) -
+    projectDisplayPanelSize = new Dimension((int) (screenSize.width * WIDTH_PERCENT_OF_SCREEN) - 
+        BORDER_THICKNESS, (int) (screenSize.height * HEIGHT_PERCENT_OF_SCREEN) - 
         projectDisplayPanelLocation.y - BORDER_THICKNESS);
 
     // Panel that holds the components of the main project.
@@ -686,9 +686,9 @@ public class AIMerger extends JFrame {
     // Panel that holds the components of the second project.
     secondProjectDisplayP = new JPanel();
     secondProjectDisplayP.setVisible(false);
-    secondProjectDisplayP.setSize(projectDisplayPanelSize.width / 3,
+    secondProjectDisplayP.setSize(projectDisplayPanelSize.width / 3, 
         projectDisplayPanelSize.height);
-    secondProjectDisplayP.setLocation(2 * projectDisplayPanelSize.width / 3 + 20,
+    secondProjectDisplayP.setLocation(2 * projectDisplayPanelSize.width / 3 + 20, 
         projectDisplayPanelLocation.y);
     secondProjectDisplayP.setLayout(new BoxLayout(secondProjectDisplayP, BoxLayout.Y_AXIS));
     secondProjectDisplayP.setBorder(new EmptyBorder(5, 20, 20, 20));

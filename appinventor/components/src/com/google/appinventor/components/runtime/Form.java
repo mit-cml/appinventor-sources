@@ -1350,10 +1350,16 @@ public class Form extends Activity
         doNothing);
   }
 
+  private String yandexTranslateTagline = "";
+
+  void setYandexTranslateTagline(){
+    yandexTranslateTagline = "<p><small>Powered by Yandex.Translate</small></p>";
+  }
+
   private void showAboutApplicationNotification() {
     String title = "About This App";
     String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    String message = aboutScreen + tagline;
+    String message = aboutScreen + tagline + yandexTranslateTagline;
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
