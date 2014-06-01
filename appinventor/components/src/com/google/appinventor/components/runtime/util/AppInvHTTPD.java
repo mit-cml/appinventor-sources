@@ -209,7 +209,14 @@ public class AppInvHTTPD extends NanoHTTPD {
       Response res;
       try {
         PackageInfo pInfo = form.getPackageManager().getPackageInfo(form.getPackageName(), 0);
-        String installer = form.getPackageManager().getInstallerPackageName("edu.mit.appinventor.aicompanion3");
+        String installer;
+        if (SdkLevel.getLevel() >= SdkLevel.LEVEL_ECLAIR) {
+          installer = EclairUtil.getInstallerPackageName("edu.mit.appinventor.aicompanion3", form);
+        } else {
+          installer = "Not Known";  // So we *will* auto-update old phones, no way to find out
+                                    // from wence they came!
+        }
+
         // installer will be "com.android.vending" if installed from the play store.
         String versionName = pInfo.versionName;
         if (installer == null)

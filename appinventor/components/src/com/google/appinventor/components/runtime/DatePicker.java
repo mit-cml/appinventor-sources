@@ -31,7 +31,8 @@ import java.util.Calendar;
 public class DatePicker extends ButtonBase {
 
   private DatePickerDialog date;
-  private int year, month, day;
+  //month is the property that AI devs see, and it's always javaMonth + 1; month is 0-based in Java
+  private int year, month, javaMonth, day;
   private String [] localizedMonths = new DateFormatSymbols().getMonths();
 
   /**
@@ -44,9 +45,11 @@ public class DatePicker extends ButtonBase {
     //Set the current date on creation
     final Calendar c = Calendar.getInstance();
     year = c.get(Calendar.YEAR);
-    month = c.get(Calendar.MONTH);
+    javaMonth = c.get(Calendar.MONTH);
+    month = javaMonth + 1;
     day = c.get(Calendar.DAY_OF_MONTH);
-    date = new DatePickerDialog(this.container.$context(), datePickerListener, year, month, day);
+    date = new DatePickerDialog(this.container.$context(), datePickerListener, year, javaMonth,
+        day);
   }
 
   /**
@@ -64,7 +67,7 @@ public class DatePicker extends ButtonBase {
    * @return the year in numeric format
    */
   @SimpleProperty(description = "the number of the Month that was last picked using the " +
-      "DatePicker. Note that months start in 0 = January, 11 = December.",
+      "DatePicker. Note that months start in 1 = January, 12 = December.",
       category = PropertyCategory.APPEARANCE)
   public int Month() {
     return month;
@@ -78,7 +81,7 @@ public class DatePicker extends ButtonBase {
       "DatePicker, in textual format.",
       category = PropertyCategory.APPEARANCE)
   public String MonthInText() {
-    return localizedMonths[month];
+    return localizedMonths[javaMonth];
   }
 
   /**
@@ -108,9 +111,10 @@ public class DatePicker extends ButtonBase {
         public void onDateSet(android.widget.DatePicker datePicker, int selectedYear,
                               int selectedMonth, int selectedDay) {
           year = selectedYear;
-          month = selectedMonth;
+          javaMonth = selectedMonth;
+          month = javaMonth + 1;
           day = selectedDay;
-          date.updateDate(year, month, day);
+          date.updateDate(year, javaMonth, day);
           AfterDateSet();
         }
       };

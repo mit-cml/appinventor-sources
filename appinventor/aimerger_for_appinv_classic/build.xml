@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="AIMergerApp" name="AIMergerApp">
+	<description> App Inventor build AIMerger Tool </description>
+
+	<!-- ===================================================================== 
+		Import common directory, task, and target definitions. 
+		===================================================================== -->
+	<import file="../build-common.xml" />
+
+	<!-- ===================================================================== 
+		AIMerger Tool: builds ../build/AIMerger/AIMerger.jar 
+		===================================================================== -->
+	<property name="AIMergerApp.pkg" value="edu/mills/feeney/thesis/aimerger" />
+	<property name="AIMergerApp-class.dir" location="${class.dir}/AIMergerApp" />
+
+	<target name="AIMergerApp">
+		<mkdir dir="${AIMergerApp-class.dir}" />
+		<copy todir="${AIMergerApp-class.dir}/${AIMergerApp.pkg}/img">
+			<fileset dir="${src.dir}/${AIMergerApp.pkg}/img" includes="*" />
+		</copy>
+		<ai.javac destdir="${AIMergerApp-class.dir}">
+			<include name="${AIMergerApp.pkg}/**/*.java" />
+		</ai.javac>
+		<jar destfile="${local.build.dir}/AIMergerApp.jar"
+			filesetmanifest="mergewithoutmain">
+			<manifest>
+				<attribute name="Main-Class"
+					value="edu.mills.feeney.thesis.aimerger.AIMerger" />
+				<attribute name="Class-Path" value="." />
+			</manifest>
+			<fileset dir="${AIMergerApp-class.dir}" />
+		</jar>
+	</target>
+</project>
