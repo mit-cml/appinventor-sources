@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,16 +25,20 @@
  */
 'use strict';
 
-goog.provide('Blockly.CodeGenerator');
 goog.provide('Blockly.Generator');
 
 goog.require('Blockly.Block');
 
 
 /**
- * Name space for the generator singleton.
+ * Class for a code generator that translates the blocks into a language.
+ * @param {string} name Language name of this generator.
+ * @constructor
  */
-Blockly.Generator = {};
+Blockly.Generator = function(name) {
+  this.name_ = name;
+  this.RESERVED_WORDS_ = '';
+};
 
 /**
  * Category to separate generated function names from variables and procedures.
@@ -41,51 +46,31 @@ Blockly.Generator = {};
 Blockly.Generator.NAME_TYPE = 'generated_function';
 
 /**
- * Database of code generators, one for each language.
- */
-Blockly.Generator.languages = {};
-
-/**
- * Return the code generator for the specified language.  Create one if needed.
- * @param {string} name The language's name.
- * @return {!Blockly.CodeGenerator} Generator for this language.
- */
-Blockly.Generator.get = function(name) {
-  if (!(name in Blockly.Generator.languages)) {
-    var generator = new Blockly.CodeGenerator(name);
-    Blockly.Generator.languages[name] = generator;
-  }
-  return Blockly.Generator.languages[name];
-};
-
-/**
  * Generate code for all blocks in the workspace to the specified language.
- * @param {string} name Language name (e.g. 'JavaScript').
  * @return {string} Generated code.
  */
-Blockly.Generator.workspaceToCode = function(name) {
+Blockly.Generator.prototype.workspaceToCode = function() {
   var code = [];
-  var generator = Blockly.Generator.get(name);
-  generator.init();
+  this.init();
   var blocks = Blockly.mainWorkspace.getTopBlocks(true);
   for (var x = 0, block; block = blocks[x]; x++) {
-    var line = generator.blockToCode(block);
-    if (line instanceof Array) {
+    var line = this.blockToCode(block);
+    if (goog.isArray(line)) {
       // Value blocks return tuples of code and operator order.
       // Top-level blocks don't care about operator order.
       line = line[0];
     }
     if (line) {
-      if (block.outputConnection && generator.scrubNakedValue) {
+      if (block.outputConnection && this.scrubNakedValue) {
         // This block is a naked value.  Ask the language's code generator if
         // it wants to append a semicolon, or something.
-        line = generator.scrubNakedValue(line);
+        line = this.scrubNakedValue(line);
       }
       code.push(line);
     }
   }
   code = code.join('\n');  // Blank line between each section.
-  code = generator.finish(code);
+  code = this.finish(code);
   // Final scrubbing of whitespace.
   code = code.replace(/^\s+\n/, '');
   code = code.replace(/\n\s+$/, '\n');
@@ -102,7 +87,7 @@ Blockly.Generator.workspaceToCode = function(name) {
  * @param {string} prefix The common prefix.
  * @return {string} The prefixed lines of code.
  */
-Blockly.Generator.prefixLines = function(text, prefix) {
+Blockly.Generator.prototype.prefixLines = function(text, prefix) {
   return prefix + text.replace(/\n(.)/g, '\n' + prefix + '$1');
 };
 
@@ -111,7 +96,7 @@ Blockly.Generator.prefixLines = function(text, prefix) {
  * @param {!Blockly.Block} block The block from which to start spidering.
  * @return {string} Concatenated list of comments.
  */
-Blockly.Generator.allNestedComments = function(block) {
+Blockly.Generator.prototype.allNestedComments = function(block) {
   var comments = [];
   var blocks = block.getDescendants();
   for (var x = 0; x < blocks.length; x++) {
@@ -128,23 +113,13 @@ Blockly.Generator.allNestedComments = function(block) {
 };
 
 /**
- * Class for a code generator that translates the blocks into a language.
- * @param {string} name Language name of this generator.
- * @constructor
- */
-Blockly.CodeGenerator = function(name) {
-  this.name_ = name;
-  this.RESERVED_WORDS_ = '';
-};
-
-/**
  * Generate code for the specified block (and attached blocks).
  * @param {Blockly.Block} block The block to generate code for.
  * @return {string|!Array} For statement blocks, the generated code.
  *     For value blocks, an array containing the generated code and an
  *     operator order value.  Returns '' if block is null.
  */
-Blockly.CodeGenerator.prototype.blockToCode = function(block) {
+Blockly.Generator.prototype.blockToCode = function(block) {
   if (!block) {
     return '';
   }
@@ -159,8 +134,12 @@ Blockly.CodeGenerator.prototype.blockToCode = function(block) {
     throw 'Language "' + this.name_ + '" does not know how to generate code ' +
         'for block type "' + block.type + '".';
   }
-  var code = func.call(block);
-  if (code instanceof Array) {
+  // First argument to func.call is the value of 'this' in the generator.
+  // Prior to 24 September 2013 'this' was the only way to access the block.
+  // The current prefered method of accessing the block is through the second
+  // argument to func.call, which becomes the first parameter to the generator.
+  var code = func.call(block, block);
+  if (goog.isArray(code)) {
     // Value blocks return tuples of code and operator order.
     return [this.scrub_(block, code[0]), code[1]];
   } else {
@@ -177,7 +156,7 @@ Blockly.CodeGenerator.prototype.blockToCode = function(block) {
  * @return {string} Generated code or '' if no blocks are connected or the
  *     specified input does not exist.
  */
-Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
+Blockly.Generator.prototype.valueToCode = function(block, name, order) {
   if (isNaN(order)) {
     throw 'Expecting valid order from block "' + block.type + '".';
   }
@@ -190,7 +169,7 @@ Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
     // Disabled block.
     return '';
   }
-  if (!(tuple instanceof Array)) {
+  if (!goog.isArray(tuple)) {
     // Value blocks must return code and order of operations info.
     // Statement blocks must only return code.
     throw 'Expecting tuple from value block "' + targetBlock.type + '".';
@@ -201,12 +180,18 @@ Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
     throw 'Expecting valid order from value block "' + targetBlock.type + '".';
   }
   if (code && order <= innerOrder) {
-    // The operators outside this code are stonger than the operators
-    // inside this code.  To prevent the code from being pulled apart,
-    // wrap the code in parentheses.
-    // Technically, this should be handled on a language-by-language basis.
-    // However all known (sane) languages use parentheses for grouping.
-    code = '(' + code + ')';
+    if (order == innerOrder || (order == 0 || order == 99)) {
+      // 0 is the atomic order, 99 is the none order.  No parentheses needed.
+      // In all known languages multiple such code blocks are not order
+      // sensitive.  In fact in Python ('a' 'b') 'c' would fail.
+    } else {
+      // The operators outside this code are stonger than the operators
+      // inside this code.  To prevent the code from being pulled apart,
+      // wrap the code in parentheses.
+      // Technically, this should be handled on a language-by-language basis.
+      // However all known (sane) languages use parentheses for grouping.
+      code = '(' + code + ')';
+    }
   }
   return code;
 };
@@ -217,7 +202,7 @@ Blockly.CodeGenerator.prototype.valueToCode = function(block, name, order) {
  * @param {string} name The name of the input.
  * @return {string} Generated code or '' if no blocks are connected.
  */
-Blockly.CodeGenerator.prototype.statementToCode = function(block, name) {
+Blockly.Generator.prototype.statementToCode = function(block, name) {
   var targetBlock = block.getInputTargetBlock(name);
   var code = this.blockToCode(targetBlock);
   if (!goog.isString(code)) {
@@ -226,16 +211,60 @@ Blockly.CodeGenerator.prototype.statementToCode = function(block, name) {
     throw 'Expecting code from statement block "' + targetBlock.type + '".';
   }
   if (code) {
-    code = Blockly.Generator.prefixLines(/** @type {string} */ (code), '  ');
+    code = this.prefixLines(/** @type {string} */ (code), this.INDENT);
   }
   return code;
 };
+
+/**
+ * The method of indenting.  Defaults to two spaces, but language generators
+ * may override this to increase indent or change to tabs.
+ */
+Blockly.Generator.prototype.INDENT = '  ';
 
 /**
  * Add one or more words to the list of reserved words for this language.
  * @param {string} words Comma-separated list of words to add to the list.
  *     No spaces.  Duplicates are ok.
  */
-Blockly.CodeGenerator.prototype.addReservedWords = function(words) {
+Blockly.Generator.prototype.addReservedWords = function(words) {
   this.RESERVED_WORDS_ += words + ',';
+};
+
+/**
+ * This is used as a placeholder in functions defined using
+ * Blockly.Generator.provideFunction_.  It must not be legal code that could
+ * legitimately appear in a function definition (or comment), and it must
+ * not confuse the regular expression parser.
+ */
+Blockly.Generator.prototype.FUNCTION_NAME_PLACEHOLDER_ = '{leCUI8hutHZI4480Dc}';
+Blockly.Generator.prototype.FUNCTION_NAME_PLACEHOLDER_REGEXP_ =
+    new RegExp(Blockly.Generator.prototype.FUNCTION_NAME_PLACEHOLDER_, 'g');
+
+/**
+ * Define a function to be included in the generated code.
+ * The first time this is called with a given desiredName, the code is
+ * saved and an actual name is generated.  Subsequent calls with the
+ * same desiredName have no effect but have the same return value.
+ *
+ * It is up to the caller to make sure the same desiredName is not
+ * used for different code values.
+ *
+ * The code gets output when Blockly.Generator.finish() is called.
+ *
+ * @param {string} desiredName The desired name of the function (e.g., isPrime).
+ * @param {!Array.<string>} code A list of Python statements.
+ * @return {string} The actual name of the new function.  This may differ
+ *     from desiredName if the former has already been taken by the user.
+ * @private
+ */
+Blockly.Generator.prototype.provideFunction_ = function(desiredName, code) {
+  if (!this.definitions_[desiredName]) {
+    var functionName =
+        this.variableDB_.getDistinctName(desiredName, this.NAME_TYPE);
+    this.functionNames_[desiredName] = functionName;
+    this.definitions_[desiredName] = code.join('\n').replace(
+        this.FUNCTION_NAME_PLACEHOLDER_REGEXP_, functionName);
+  }
+  return this.functionNames_[desiredName];
 };

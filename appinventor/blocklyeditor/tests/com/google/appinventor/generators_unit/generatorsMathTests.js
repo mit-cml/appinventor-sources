@@ -28,7 +28,7 @@ page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(statu
   var passed = page.evaluate(function(){
 
     var expected = arguments[0];
-    var atanTwo = new Blockly.Block(Blockly.mainWorkspace, 'math_atan2');
+    var atanTwo = new Blockly.Block.obtain(Blockly.mainWorkspace, 'math_atan2');
     var yailForBlock = Blockly.Yail.math_atan2.call(atanTwo);
 
     if (yailForBlock.length !== 2)

@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -304,7 +305,7 @@ Blockly.Connection.prototype.bumpAwayFrom_ = function(staticConnection) {
   // Raise it to the top for extra visibility.
   rootBlock.getSvgRoot().parentNode.appendChild(rootBlock.getSvgRoot());
   var dx = (staticConnection.x_ + Blockly.SNAP_RADIUS) - this.x_;
-  var dy = (staticConnection.y_ + Blockly.SNAP_RADIUS * 2) - this.y_;
+  var dy = (staticConnection.y_ + Blockly.SNAP_RADIUS) - this.y_;
   if (reverse) {
     // When reversing a bump due to an uneditable block, bump up.
     dy = -dy;
@@ -468,8 +469,15 @@ Blockly.Connection.prototype.closest = function(maxLimit, dx, dy) {
     }
     // Offering to connect the top of a statement block to an already connected
     // connection is ok, we'll just insert it into the stack.
+
     // Offering to connect the left (male) of a value block to an already
     // connected value pair is ok, we'll splice it in.
+    // However, don't offer to splice into an unmovable block.
+    if (connection.type == Blockly.INPUT_VALUE &&
+        connection.targetConnection &&
+        !connection.targetBlock().isMovable()) {
+      return true;
+    }
 
     // Do type checking.
     if (!thisConnection.checkType_(connection)) {
@@ -540,7 +548,7 @@ Blockly.Connection.prototype.checkType_ = function(otherConnection) {
 Blockly.Connection.prototype.setCheck = function(check) {
   if (check) {
     // Ensure that check is in an array.
-    if (!(check instanceof Array)) {
+    if (!goog.isArray(check)) {
       check = [check];
     }
     this.check_ = check;
@@ -651,7 +659,6 @@ Blockly.Connection.prototype.hideAll = function() {
       if (block.errorIcon) {
         block.errorIcon.setVisible(false);
       }
-
     }
   }
 };
@@ -660,7 +667,7 @@ Blockly.Connection.prototype.hideAll = function() {
  * Unhide this connection, as well as all down-stream connections on any block
  * attached to this connection.  This happens when a block is expanded.
  * Also unhides down-stream comments.
- * @return {!Array.<Blockly.Block>} List of blocks to render.
+ * @return {!Array.<!Blockly.Block>} List of blocks to render.
  */
 Blockly.Connection.prototype.unhideAll = function() {
   if (!this.inDB_) {
@@ -678,7 +685,7 @@ Blockly.Connection.prototype.unhideAll = function() {
   var block = this.targetBlock();
   if (block) {
     var connections;
-    if (block.collapsed) {
+    if (block.isCollapsed()) {
       // This block should only be partially revealed since it is collapsed.
       connections = [];
       block.outputConnection && connections.push(block.outputConnection);
@@ -689,7 +696,7 @@ Blockly.Connection.prototype.unhideAll = function() {
       connections = block.getConnections_(true);
     }
     for (var c = 0; c < connections.length; c++) {
-      renderList = renderList.concat(connections[c].unhideAll());
+      renderList.push.apply(renderList, connections[c].unhideAll());
     }
     if (renderList.length == 0) {
       // Leaf block.

@@ -1,18 +1,15 @@
-/* Copyright 2012 Massachusetts Institute of Technology. All rights reserved. */
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Generating Yail for component-related blocks.
- *
- * Code generation for component-related blocks works a little differently than for built-in
- * blocks. Since we create component instance blocks dynamically, as components are added to a
- * project, we also create their code generation blocks dynamically. The functions below return
- * functions to generate code for blocks of the appropriate types, binding in the names of
- * the component instances for which they are created. See blocklyeditor/src/component.js for the
- * code that uses these functions when new components are added to a project.
- * 
- * @author andrew.f.mckinney@gmail.com (Andrew F. McKinney)
- * @author sharon@google.com (Sharon Perl)
+ * @license
+ * @fileoverview Component blocks yail generators for Blockly, modified for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  */
+
+'use strict';
+
+goog.provide('Blockly.Yail.componentblock');
 
 /**
  * Lyn's History:
@@ -20,8 +17,6 @@
  *     All setters/getters assume such a tag. At least on Kawa-legal first character is necessary to
  *     ensure AI identifiers satisfy Kawa's identifier rules.
  */
-
-Blockly.Yail = Blockly.Generator.get('Yail');
 
 /**
  * Returns a function that takes no arguments, generates Yail for an event handler declaration block
@@ -40,7 +35,7 @@ Blockly.Yail.component_event = function() {
 
 
   var code = Blockly.Yail.YAIL_DEFINE_EVENT
-    + this.getTitleValue("COMPONENT_SELECTOR")
+    + this.getFieldValue("COMPONENT_SELECTOR")
     + Blockly.Yail.YAIL_SPACER
     + this.eventName
     + Blockly.Yail.YAIL_OPEN_COMBINATION
@@ -159,7 +154,7 @@ Blockly.Yail.methodHelper = function(methodBlock, name, methodName, generic) {
         + Blockly.Yail.YAIL_SPACER;
   } else {
     callPrefix = Blockly.Yail.YAIL_CALL_COMPONENT_METHOD; 
-    name = methodBlock.getTitleValue("COMPONENT_SELECTOR");
+    name = methodBlock.getFieldValue("COMPONENT_SELECTOR");
   }
 
   var args = [];
@@ -212,9 +207,9 @@ Blockly.Yail.component_set_get = function() {
  * @returns {Function} property setter code generation function with instanceName bound in
  */
 Blockly.Yail.setproperty = function() {
-  var propertyName = this.getTitleValue("PROP");
+  var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type
-  var assignLabel = Blockly.Yail.YAIL_QUOTE + this.getTitleValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_SPACER
+  var assignLabel = Blockly.Yail.YAIL_QUOTE + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE + propertyName;
   var code = Blockly.Yail.YAIL_SET_AND_COERCE_PROPERTY + assignLabel + Blockly.Yail.YAIL_SPACER;
   // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -233,7 +228,7 @@ Blockly.Yail.setproperty = function() {
  * @returns {Function} property setter code generation function with instanceName bound in
  */
 Blockly.Yail.genericSetproperty = function() {
-  var propertyName = this.getTitleValue("PROP");
+  var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
   var assignLabel = Blockly.Yail.YAIL_QUOTE + this.typeName + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE + propertyName;
@@ -260,11 +255,11 @@ Blockly.Yail.genericSetproperty = function() {
  * @returns {Function} property getter code generation function with instanceName bound in
  */
 Blockly.Yail.getproperty = function(instanceName) {
-  var propertyName = this.getTitleValue("PROP");
+  var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
   var code = Blockly.Yail.YAIL_GET_PROPERTY
     + Blockly.Yail.YAIL_QUOTE
-    + this.getTitleValue("COMPONENT_SELECTOR")
+    + this.getFieldValue("COMPONENT_SELECTOR")
     + Blockly.Yail.YAIL_SPACER
     + Blockly.Yail.YAIL_QUOTE
     + propertyName
@@ -282,7 +277,7 @@ Blockly.Yail.getproperty = function(instanceName) {
  * @returns {Function} property getter code generation function with instanceName bound in
  */
 Blockly.Yail.genericGetproperty = function(typeName) {
-  var propertyName = this.getTitleValue("PROP");
+  var propertyName = this.getFieldValue("PROP");
   var propType = this.getPropertyObject(propertyName).type;
   var code = Blockly.Yail.YAIL_GET_COMPONENT_TYPE_PROPERTY
     // TODO(hal, andrew): check for empty socket and generate error if necessary
@@ -308,6 +303,6 @@ Blockly.Yail.genericGetproperty = function(typeName) {
  * @returns {Function} component getter code generation function with instanceName bound in
  */
 Blockly.Yail.component_component_block = function() {
-  return [Blockly.Yail.YAIL_GET_COMPONENT + this.getTitleValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_CLOSE_COMBINATION,
+  return [Blockly.Yail.YAIL_GET_COMPONENT + this.getFieldValue("COMPONENT_SELECTOR") + Blockly.Yail.YAIL_CLOSE_COMBINATION,
           Blockly.Yail.ORDER_ATOMIC];
 }

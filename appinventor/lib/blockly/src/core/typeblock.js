@@ -10,6 +10,7 @@
 'use strict';
 
 goog.provide('Blockly.TypeBlock');
+goog.require('Blockly.Xml');
 
 goog.require('goog.events');
 goog.require('goog.events.KeyCodes');
@@ -229,8 +230,8 @@ Blockly.TypeBlock.generateOptions = function() {
   var buildListOfOptions = function() {
     var listOfOptions = {};
     var typeblockArray;
-    for (var name in Blockly.Language) {
-      var block = Blockly.Language[name];
+    for (var name in Blockly.Blocks) {
+      var block = Blockly.Blocks[name];
       if(block.typeblock){
         typeblockArray = block.typeblock;
         if(typeof block.typeblock == "function") {
@@ -467,13 +468,13 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
           xmlString += '>';
           xmlString += '</mutation></block></xml>';
           var xml = Blockly.Xml.textToDom(xmlString);
-          block = Blockly.Xml.domToBlock_(Blockly.mainWorkspace, xml.firstChild);
+          block = Blockly.Xml.domToBlock(Blockly.mainWorkspace, xml.firstChild);
         } else {
-          block = new Blockly.Block(Blockly.mainWorkspace, blockToCreateName);
+          block = new Blockly.Block.obtain(Blockly.mainWorkspace, blockToCreateName);
           block.initSvg(); //Need to init the block before doing anything else
           if (block.type && (block.type == "procedures_callnoreturn" || block.type == "procedures_callreturn")) {
             //Need to make sure Procedure Block inputs are updated
-            Blockly.FieldProcedure.onChange.call(block.getTitle_("PROCNAME"), blockToCreate.dropDown.value);
+            Blockly.FieldProcedure.onChange.call(block.getField_("PROCNAME"), blockToCreate.dropDown.value);
           }
         }
 
@@ -481,9 +482,9 @@ Blockly.TypeBlock.createAutoComplete_ = function(inputText){
           block.setTitleValue(blockToCreate.dropDown.value, blockToCreate.dropDown.titleName);
           // change type checking for split blocks
           if(blockToCreate.dropDown.value == 'SPLITATFIRST' || blockToCreate.dropDown.value == 'SPLIT') {
-            block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("text",Blockly.Language.INPUT));
+            block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("text",Blockly.Blocks.Utilities.INPUT));
           } else if(blockToCreate.dropDown.value == 'SPLITATFIRSTOFANY' || blockToCreate.dropDown.value == 'SPLITATANY') {
-            block.getInput("AT").setCheck(Blockly.Language.YailTypeToBlocklyType("list",Blockly.Language.INPUT));
+            block.getInput("AT").setCheck(Blockly.Blocks.Utilities.YailTypeToBlocklyType("list",Blockly.Blocks.Utilities.INPUT));
           }
         }
       } else {

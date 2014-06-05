@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +51,7 @@ Blockly.Variables.allVariables = function(opt_block) {
   } else {
     blocks = Blockly.mainWorkspace.getAllBlocks();
   }
-  var variableHash = {};
+  var variableHash = Object.create(null);
   // Iterate through every block and add each variable to the hash.
   for (var x = 0; x < blocks.length; x++) {
     var func = blocks[x].getVars;
@@ -60,8 +61,7 @@ Blockly.Variables.allVariables = function(opt_block) {
         var varName = blockVariables[y];
         // Variable name may be null if the block is only half-built.
         if (varName) {
-          variableHash[Blockly.Names.PREFIX_ +
-              varName.toLowerCase()] = varName;
+          variableHash[varName.toLowerCase()] = varName;
         }
       }
     }
@@ -109,17 +109,17 @@ Blockly.Variables.flyoutCategory = function(blocks, gaps, margin, workspace) {
     if (variableList[i] === defaultVariable) {
       continue;
     }
-    var getBlock = Blockly.Language.variables_get ?
-        new Blockly.Block(workspace, 'variables_get') : null;
+    var getBlock = Blockly.Blocks['variables_get'] ?
+        Blockly.Block.obtain(workspace, 'variables_get') : null;
     getBlock && getBlock.initSvg();
-    var setBlock = Blockly.Language.variables_set ?
-        new Blockly.Block(workspace, 'variables_set') : null;
+    var setBlock = Blockly.Blocks['variables_set'] ?
+        Blockly.Block.obtain(workspace, 'variables_set') : null;
     setBlock && setBlock.initSvg();
     if (variableList[i] === null) {
       defaultVariable = (getBlock || setBlock).getVars()[0];
     } else {
-      getBlock && getBlock.setTitleValue(variableList[i], 'VAR');
-      setBlock && setBlock.setTitleValue(variableList[i], 'VAR');
+      getBlock && getBlock.setFieldValue(variableList[i], 'VAR');
+      setBlock && setBlock.setFieldValue(variableList[i], 'VAR');
     }
     setBlock && blocks.push(setBlock);
     getBlock && blocks.push(getBlock);

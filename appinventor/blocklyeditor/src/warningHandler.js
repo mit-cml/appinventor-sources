@@ -1,12 +1,18 @@
-// Copyright 2013 Massachusetts Institute of Technology. All rights reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
+ * @license
  * @fileoverview Visual blocks editor for App Inventor
  * Methods to handle warnings in the block editor.
  *
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  */
 
-Blockly.WarningHandler = {};
+'use strict';
+
+goog.provide('Blockly.WarningHandler');
+
 Blockly.WarningHandler.allBlockErrors = [{name:"checkReplErrors"}];
 Blockly.WarningHandler.allBlockWarnings = [{name:"checkBlockAtRoot"},{name:"checkEmptySockets"}];
 Blockly.WarningHandler.showWarningsToggle = false;
@@ -47,11 +53,35 @@ Blockly.WarningHandler.hideWarnings = function() {
   }
 }
 
+Blockly.WarningHandler.cacheGlobalNames = false;
+Blockly.WarningHandler.cachedGlobalNames = [];
+
 Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors = function() {
-  var blockArray = Blockly.mainWorkspace.getAllBlocks();
-  for(var i=0;i<blockArray.length;i++) {
-    var blockErrorResult = Blockly.WarningHandler.checkErrors.call(blockArray[i]);
+  var start = new Date().getTime();
+  var topBlocks = Blockly.mainWorkspace.getTopBlocks();
+  var allBlocks = Blockly.mainWorkspace.getAllBlocks();
+  try {
+    if (Blockly.Instrument.useLynCacheGlobalNames) {
+      // Compute and cache the list of global names once only
+      // so that each call to checkDropDownContainsValidValue needn't recalculate this.
+      Blockly.WarningHandler.cacheGlobalNames = false; // Set to false to actually compute names in next line.
+      Blockly.WarningHandler.cachedGlobalNames = Blockly.FieldLexicalVariable.getGlobalNames();
+      Blockly.WarningHandler.cacheGlobalNames = true;
+    }
+    for(var i=0;i<allBlocks.length;i++) {
+      var blockErrorResult = Blockly.WarningHandler.checkErrors.call(allBlocks[i]);
+    }
+  } finally {
+    // [lyn, 04/13/14] Ensure that these are reset no matter what:
+    Blockly.WarningHandler.cacheGlobalNames = false;
+    Blockly.WarningHandler.cachedGlobalNames = [];
   }
+  var stop = new Date().getTime();
+  var timeDiff = stop - start;
+  Blockly.Instrument.stats.topBlockCount = topBlocks.length;
+  Blockly.Instrument.stats.blockCount = allBlocks.length;
+  Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsCalls++;
+  Blockly.Instrument.stats.checkAllBlocksForWarningsAndErrorsTime += timeDiff;
 }
 
 //Takes a block as the context (this), puts
@@ -65,7 +95,7 @@ Blockly.WarningHandler.checkErrors = function() {
     return Blockly.WarningHandler.warningState.NO_ERROR;
   }
   if(typeof showWarnings == "undefined") {
-    showWarnings = Blockly.WarningHandler.showWarningsToggle;
+    var showWarnings = Blockly.WarningHandler.showWarningsToggle;
   }
 
   if(!this.getSvgRoot() || this.readOnly){
@@ -186,7 +216,7 @@ Blockly.WarningHandler.checkIsInDefinition = function(){
 //Check if the block has an invalid drop down value, if so, create an error
 Blockly.WarningHandler.checkDropDownContainsValidValue = function(params){
   for(var i=0;i<params.dropDowns.length;i++){
-    var dropDown = this.getTitle_(params.dropDowns[i]);
+    var dropDown = this.getField_(params.dropDowns[i]);
     var dropDownList = dropDown.menuGenerator_();
     var text = dropDown.text_;
     var textInDropDown = false;
@@ -399,7 +429,7 @@ Blockly.WarningHandler.checkDisposedBlock = function(){
 //Each function returns true if there is an warning, and sets the warning text on the block
 
 //Check if the block contains any empty sockets
-Blockly.WarningHandler.checkEmptySockets = function(params){
+Blockly.WarningHandler.checkEmptySockets = function(){
   var containsEmptySockets = false;
   for(var i=0;i<this.inputList.length;i++){
     var inputName = this.inputList[i].name;
@@ -425,7 +455,7 @@ Blockly.WarningHandler.checkEmptySockets = function(params){
 }
 
 //Check if the block is a root block that isn't a procedure definition, variable declaration, or event
-Blockly.WarningHandler.checkBlockAtRoot = function(params){
+Blockly.WarningHandler.checkBlockAtRoot = function(){
   var rootBlock = this.getRootBlock();
   if(this == rootBlock && this.blockType != "event" && this.type !="global_declaration" &&
      this.type != "procedures_defnoreturn" && this.type != "procedures_defreturn"){

@@ -3,12 +3,17 @@
 
 /**
  * @fileoverview Helper functions for generating Yail for blocks.
- * 
  * @author andrew.f.mckinney@gmail.com (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
  */
 
-Blockly.Yail = Blockly.Generator.get('Yail');
+'use strict';
+
+goog.provide('Blockly.Yail');
+
+goog.require('Blockly.Generator');
+
+Blockly.Yail = new Blockly.Generator('Yail');
 
 /**
  * List of illegal variable names. This is not intended to be a security feature.  Blockly is 

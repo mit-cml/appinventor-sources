@@ -1,40 +1,25 @@
-/**
- * Visual Blocks Language
- *
- * Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Generating Yail for math blocks.
- * @author andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+ * @license
+ * @fileoverview Math blocks yail generators for Blockly, modified for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  */
 
-// TODO(andrew): Change value.to.code to a function that checks if the slot is
-// empty and signals an error if necessary.
+'use strict';
 
-Blockly.Yail = Blockly.Generator.get('Yail');
+goog.provide('Blockly.Yail.math');
 
-Blockly.Yail.math_number = function() {
+Blockly.Yail['math_number'] = function() {
   // Numeric value.
-  var code = window.parseFloat(this.getTitleValue('NUM'));
+  var code = window.parseFloat(this.getFieldValue('NUM'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail.math_compare = function() {
+Blockly.Yail['math_compare'] = function() {
   // Basic compare operators
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var prim = Blockly.Yail.math_compare.OPERATORS[mode];
   var operator1 = prim[0];
   var operator2 = prim[1];
@@ -64,7 +49,7 @@ Blockly.Yail.math_compare.OPERATORS = {
   GTE: ['>=', '>=', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_arithmetic = function(mode,block) {
+Blockly.Yail['math_arithmetic'] = function(mode,block) {
   // Basic arithmetic operators.
   var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
@@ -86,29 +71,29 @@ Blockly.Yail.math_arithmetic = function(mode,block) {
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail.math_subtract = function() {
+Blockly.Yail['math_subtract'] = function() {
   return Blockly.Yail.math_arithmetic("MINUS",this);
 };
 
-Blockly.Yail.math_division = function() {
+Blockly.Yail['math_division'] = function() {
   return Blockly.Yail.math_arithmetic("DIVIDE",this);
 };
 
-Blockly.Yail.math_power = function() {
+Blockly.Yail['math_power'] = function() {
   return Blockly.Yail.math_arithmetic("POWER",this);
 };
 
-Blockly.Yail.math_add = function() {
+Blockly.Yail['math_add'] = function() {
   return Blockly.Yail.math_arithmetic_list("ADD",this);
 };
 
-Blockly.Yail.math_multiply = function() {
+Blockly.Yail['math_multiply'] = function() {
   return Blockly.Yail.math_arithmetic_list("MULTIPLY",this);
 };
 
-Blockly.Yail.math_arithmetic_list = function(mode,block) {
+Blockly.Yail['math_arithmetic_list'] = function(mode,block) {
   // Basic arithmetic operators.
-  //var mode = this.getTitleValue('OP');
+  //var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_arithmetic.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1];
@@ -141,9 +126,9 @@ Blockly.Yail.math_arithmetic.OPERATORS = {
   POWER: ['expt', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_single = function() {
+Blockly.Yail['math_single'] = function() {
   // Basic arithmetic operators.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_single.OPERATORS[mode];
   var operator1 = tuple[0];
   var operator2 = tuple[1];
@@ -173,28 +158,28 @@ Blockly.Yail.math_single.OPERATORS = {
   FLOOR: ['yail-floor', 'floor', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_abs = function() {
+Blockly.Yail['math_abs'] = function() {
   return Blockly.Yail.math_single.call(this);
 };
 
-Blockly.Yail.math_neg = function() {
+Blockly.Yail['math_neg'] = function() {
   return Blockly.Yail.math_single.call(this);
 };
 
-Blockly.Yail.math_round = function() {
+Blockly.Yail['math_round'] = function() {
   return Blockly.Yail.math_single.call(this);
 };
 
-Blockly.Yail.math_ceiling = function() {
+Blockly.Yail['math_ceiling'] = function() {
   return Blockly.Yail.math_single.call(this);
 };
 
-Blockly.Yail.math_floor = function() {
+Blockly.Yail['math_floor'] = function() {
   return Blockly.Yail.math_single.call(this);
 };
 
 
-Blockly.Yail.math_random_int = function() {
+Blockly.Yail['math_random_int'] = function() {
   // Random integer between [X] and [Y].
   var argument0 = Blockly.Yail.valueToCode(this, 'FROM',
     Blockly.Yail.ORDER_NONE) || 0;
@@ -214,7 +199,7 @@ Blockly.Yail.math_random_int = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.math_random_float = function() {
+Blockly.Yail['math_random_float'] = function() {
   // Random fraction between 0 and 1.
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "random-fraction"
       + Blockly.Yail.YAIL_SPACER;
@@ -227,7 +212,7 @@ Blockly.Yail.math_random_float = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.math_random_set_seed = function() {
+Blockly.Yail['math_random_set_seed'] = function() {
   // Basic is_a_number.
   var argument = Blockly.Yail.valueToCode(this, 'NUM', Blockly.Yail.ORDER_NONE) || 0;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "random-set-seed"
@@ -243,9 +228,9 @@ Blockly.Yail.math_random_set_seed = function() {
   return code;
 };
 
-Blockly.Yail.math_on_list = function() {
+Blockly.Yail['math_on_list'] = function() {
   // Min and Max operators.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_on_list.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1]; 
@@ -274,9 +259,9 @@ Blockly.Yail.math_on_list.OPERATORS = {
   MAX: ['max', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_divide = function() {
+Blockly.Yail['math_divide'] = function() {
   // divide operators.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_divide.OPERATORS[mode];
   var operator = tuple[0];
   var order = tuple[1]; 
@@ -302,9 +287,9 @@ Blockly.Yail.math_divide.OPERATORS = {
   QUOTIENT: ['quotient', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_trig = function() {
+Blockly.Yail['math_trig'] = function() {
   // Basic trig operators.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_trig.OPERATORS[mode];
   var operator1 = tuple[1];
   var operator2 = tuple[0];
@@ -332,15 +317,15 @@ Blockly.Yail.math_trig.OPERATORS = {
   ATAN: ['atan', 'atan-degrees', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_cos = function() {
+Blockly.Yail['math_cos'] = function() {
   return Blockly.Yail.math_trig.call(this);
 };
 
-Blockly.Yail.math_tan = function() {
+Blockly.Yail['math_tan'] = function() {
   return Blockly.Yail.math_trig.call(this);
 };
 
-Blockly.Yail.math_atan2 = function() {
+Blockly.Yail['math_atan2'] = function() {
   // atan2 operators.
   var argument0 = Blockly.Yail.valueToCode(this, 'Y', Blockly.Yail.ORDER_NONE) || 1;
   var argument1 = Blockly.Yail.valueToCode(this, 'X', Blockly.Yail.ORDER_NONE) || 1;
@@ -358,9 +343,9 @@ Blockly.Yail.math_atan2 = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.math_convert_angles = function() {
+Blockly.Yail['math_convert_angles'] = function() {
   // Basic arithmetic operators.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.math_convert_angles.OPERATORS[mode];
   var operator1 = tuple[0];
   var operator2 = tuple[1];
@@ -384,7 +369,7 @@ Blockly.Yail.math_convert_angles.OPERATORS = {
   DEGREES_TO_RADIANS: ['degrees->radians', 'convert degrees to radians', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.math_format_as_decimal = function() {
+Blockly.Yail['math_format_as_decimal'] = function() {
   // format_as_decimal.
   var argument0 = Blockly.Yail.valueToCode(this, 'NUM', Blockly.Yail.ORDER_NONE) || 0;
   var argument1 = Blockly.Yail.valueToCode(this, 'PLACES', Blockly.Yail.ORDER_NONE) || 0;
@@ -402,7 +387,7 @@ Blockly.Yail.math_format_as_decimal = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.math_is_a_number = function() {
+Blockly.Yail['math_is_a_number'] = function() {
   // Basic is_a_number.
   var argument = Blockly.Yail.valueToCode(this, 'NUM', Blockly.Yail.ORDER_NONE) || Blockly.Yail.YAIL_FALSE;
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "is-number?"

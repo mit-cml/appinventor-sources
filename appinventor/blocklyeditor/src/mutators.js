@@ -1,16 +1,26 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+/**
+ * @license
+ * @fileoverview Container block for all mutators for Blockly, modified for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
+ */
 
-if (!Blockly.Language) Blockly.Language = {};
+'use strict';
+
+goog.provide('Blockly.Blocks.mutators');
 
 //container block for all mutators
-Blockly.Language.mutator_container = {
+Blockly.Blocks['mutator_container'] = {
   // Container.
   init: function() {
     this.setColour(210);
     this.appendDummyInput()
-        //.appendTitle(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
-        .appendTitle("","CONTAINER_TEXT");
+        //.appendField(Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TITLE_ADD);
+        .appendField("","CONTAINER_TEXT");
     this.appendStatementInput('STACK');
-    //this.setTooltip(Blockly.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1);
+    //this.setTooltip(Blockly.Msg.LANG_LISTS_CREATE_WITH_CONTAINER_TOOLTIP_1);
     this.contextMenu = false;
   }
 };
@@ -23,8 +33,8 @@ Blockly.mutationToDom = function(workspace) {
 
 Blockly.domToMutation = function(container) {
   if(this.valuesToSave != null){
-    for (name in this.valuesToSave) {
-      this.valuesToSave[name] = this.getTitleValue(name);
+    for (var name in this.valuesToSave) {
+      this.valuesToSave[name] = this.getFieldValue(name);
     }
   }
 
@@ -43,7 +53,7 @@ Blockly.domToMutation = function(container) {
 Blockly.decompose =  function(workspace,itemBlockName,block) {
   var containerBlockName = 'mutator_container';
   //var itemBlockName = 'mutator_item';
-  var containerBlock = new Blockly.Block(workspace,containerBlockName);
+  var containerBlock = new Blockly.Block.obtain(workspace,containerBlockName);
   containerBlock.setColour(block.getColour());
   if(block.updateContainerBlock != null){
     block.updateContainerBlock(containerBlock);
@@ -51,7 +61,7 @@ Blockly.decompose =  function(workspace,itemBlockName,block) {
   containerBlock.initSvg();
   var connection = containerBlock.getInput('STACK').connection;
   for (var x = 0; x < block.itemCount_; x++) {
-    var itemBlock = new Blockly.Block(workspace, itemBlockName);
+    var itemBlock = new Blockly.Block.obtain(workspace, itemBlockName);
     itemBlock.initSvg();
     connection.connect(itemBlock.previousConnection);
     connection = itemBlock.nextConnection;
@@ -61,8 +71,8 @@ Blockly.decompose =  function(workspace,itemBlockName,block) {
 
 Blockly.compose = function(containerBlock) {
   if(this.valuesToSave != null){
-    for (name in this.valuesToSave) {
-      this.valuesToSave[name] = this.getTitleValue(name);
+    for (var name in this.valuesToSave) {
+      this.valuesToSave[name] = this.getFieldValue(name);
     }
   }
   // Disconnect all input blocks and destroy all inputs.

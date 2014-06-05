@@ -1,30 +1,18 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
- * Visual Blocks Language
- *
- * Copyright 2012 Google Inc.
- * http://code.google.com/p/blockly/
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-/**
- * @fileoverview Blocks for lexically scoped variables in App Inventor
+ * @license
+ * @fileoverview Variables blocks for Blockly, modified for MIT App Inventor.
  * @author fturbak@wellesley.edu (Lyn Turbak)
  */
-'use strict';
 
 /**
  * Lyn's History:
+ * [lyn, 03/04/13]
+ *   + Remove notion of collapsed input from local variable declaration statements/expressions,
+ *     which has been eliminated in updated to Blockly v1636.
+ *   + Update appendTitle* to appendField*
  * [lyn, 01/18/13] Remove onchange from lexical_variable_get and lexical_variable_set.
  *    This fixes issue 667 (Variable getter/setter names deleted in copied blocks)
  *    and improves laggy drag problem.
@@ -79,153 +67,131 @@ function myStringify (obj) {
 }
 */
 
+'use strict';
 
-if (!Blockly.Language) Blockly.Language = {};
+goog.provide('Blockly.Blocks.lexicalvariables');
+goog.require('Blockly.Blocks.Utilities');
 goog.require('goog.dom');
 
 /**
  * Prototype bindings for a global variable declaration block
  */
-Blockly.Language.global_declaration = {
+Blockly.Blocks['global_declaration'] = {
   // Global var defn
   category: Blockly.MSG_VARIABLE_CATEGORY,
-  helpUrl: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL,
+  helpUrl: Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL,
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendValueInput('VALUE')
-        .appendTitle(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT)
-        .appendTitle(new Blockly.FieldGlobalFlydown(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_NAME,
-                                                    Blockly.FieldFlydown.DISPLAY_BELOW),
-                     'NAME')
-        .appendTitle(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TO);
-    this.setTooltip(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP);
-    this.appendCollapsedInput()
-        .appendTitle(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT + " " + this.getTitleValue('NAME'),
-                     'COLLAPSED_TEXT');
+        .appendField(Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT)
+        .appendField(new Blockly.FieldGlobalFlydown(Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_NAME,
+                                                    Blockly.FieldFlydown.DISPLAY_BELOW), 'NAME')
+        .appendField(Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TO);
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP);
   },
   getVars: function() {
-    return [this.getTitleValue('NAME')];
+    return [this.getFieldValue('NAME')];
   },
   renameVar: function(oldName, newName) {
-    if (Blockly.Names.equals(oldName, this.getTitleValue('VAR'))) {
-      this.setTitleValue(newName, 'NAME');
+    if (Blockly.Names.equals(oldName, this.getFieldValue('VAR'))) {
+      this.setFieldValue(newName, 'NAME');
     }
   },
-  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }],
-  prepareCollapsedText: function(){
-    this.getTitle_('COLLAPSED_TEXT')
-        .setText(Blockly.LANG_VARIABLES_GLOBAL_DECLARATION_COLLAPSED_TEXT + " " + this.getTitleValue('NAME'));
-  }
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TITLE_INIT }]
 };
 
 /**
  * Prototype bindings for a variable getter block
  */
-Blockly.Language.lexical_variable_get = {
+Blockly.Blocks['lexical_variable_get'] = {
   // Variable getter.
   category: Blockly.MSG_VARIABLE_CATEGORY,
-  helpUrl: Blockly.LANG_VARIABLES_GET_HELPURL, // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.Msg.LANG_VARIABLES_GET_HELPURL,
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
     this.fieldVar_.setBlock(this);
     this.appendDummyInput()
-        .appendTitle(Blockly.LANG_VARIABLES_GET_TITLE_GET)
-        .appendTitle(this.fieldVar_, 'VAR');
+        .appendField(Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET)
+        .appendField(this.fieldVar_, 'VAR');
     this.setOutput(true, null);
-    this.setTooltip(Blockly.LANG_VARIABLES_GET_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
-    this.appendCollapsedInput().appendTitle(this.getTitleValue('VAR'), 'COLLAPSED_TEXT');
   },
   getVars: function() {
-    return [this.getTitleValue('VAR')];
+    return [this.getFieldValue('VAR')];
   },
   renameLexicalVar: function(oldName, newName) {
     // console.log("Renaming lexical variable from " + oldName + " to " + newName);
-    if (oldName === this.getTitleValue('VAR')) {
-        this.setTitleValue(newName, 'VAR');
+    if (oldName === this.getFieldValue('VAR')) {
+        this.setFieldValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_GET_TITLE_GET + ' variable' }],
-  prepareCollapsedText: function(){
-    this.getTitle_('COLLAPSED_TEXT')
-        .setText(this.getTitleValue('VAR'));
-  }
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' variable' }]
 };
 
 /**
  * Prototype bindings for a variable setter block
  */
-Blockly.Language.lexical_variable_set = {
+Blockly.Blocks['lexical_variable_set'] = {
   // Variable setter.
   category: Blockly.MSG_VARIABLE_CATEGORY,
-  helpUrl: Blockly.LANG_VARIABLES_SET_HELPURL, // *** [lyn, 11/10/12] Fix this
+  helpUrl: Blockly.Msg.LANG_VARIABLES_SET_HELPURL, // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.fieldVar_ = new Blockly.FieldLexicalVariable(" ");
     this.fieldVar_.setBlock(this);
     this.appendValueInput('VALUE')
-        .appendTitle(Blockly.LANG_VARIABLES_SET_TITLE_SET)
-        .appendTitle(this.fieldVar_, 'VAR')
-        .appendTitle(Blockly.LANG_VARIABLES_SET_TITLE_TO);
+        .appendField(Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET)
+        .appendField(this.fieldVar_, 'VAR')
+        .appendField(Blockly.Msg.LANG_VARIABLES_SET_TITLE_TO);
     this.setPreviousStatement(true);
     this.setNextStatement(true);
-    this.setTooltip(Blockly.LANG_VARIABLES_SET_TOOLTIP);
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_SET_TOOLTIP);
     this.errors = [{name:"checkIsInDefinition"},{name:"checkDropDownContainsValidValue",dropDowns:["VAR"]}];
-    this.appendCollapsedInput()
-        .appendTitle(Blockly.LANG_VARIABLES_SET_COLLAPSED_TEXT + " " + this.getTitleValue('VAR'),
-                     'COLLAPSED_TEXT');
   },
   getVars: function() {
-    return [this.getTitleValue('VAR')];
+    return [this.getFieldValue('VAR')];
   },
-  renameLexicalVar: Blockly.Language.lexical_variable_get.renameLexicalVar,
-  typeblock: [{ translatedName: Blockly.LANG_VARIABLES_SET_TITLE_SET + ' variable' }],
-  prepareCollapsedText: function(){
-    this.getTitle_('COLLAPSED_TEXT')
-        .setText(Blockly.LANG_VARIABLES_SET_COLLAPSED_TEXT + " " + this.getTitleValue('VAR'));
-  }
+  renameLexicalVar: Blockly.Blocks.lexical_variable_get.renameLexicalVar,
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET + ' variable' }]
 };
 
 /**
  * Prototype bindings for a statement block that declares local names for use in a statement body.
- * [lyn, 10/13/13] Refactored to share more code with Blockly.Language.local_declaration_expression
+ * [lyn, 10/13/13] Refactored to share more code with Blockly.Blocks.local_declaration_expression
  */
-Blockly.Language.local_declaration_statement = {
+Blockly.Blocks['local_declaration_statement'] = {
   // Define a procedure with no return value.
   // category: null,  // Procedures are handled specially.
-  category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
-  helpUrl: Blockly.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL, // *** [lyn, 11/07/12] Fix this
+  category: Blockly.MSG_VARIABLE_CATEGORY,
+  helpUrl: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL,
   bodyInputName: 'STACK',
   init: function() {
     this.initLocals();
     this.appendStatementInput('STACK')
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO);
+        .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_IN_DO);
 
     // Add notch and nub for vertical statement composition
     this.setPreviousStatement(true);
     this.setNextStatement(true);
 
-    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP);
-    this.appendCollapsedInput()
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT + ' '  + this.localNames_.join(', '),
-                    'COLLAPSED_TEXT');
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TOOLTIP);
   },
   initLocals: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
-    this.localNames_ = [Blockly.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME];
+    this.localNames_ = [Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME];
     var declInput = this.appendValueInput('DECL0');
-    declInput.appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
-             .appendTitle(this.parameterFlydown(0), 'VAR0')
-             // .appendTitle(new Blockly.FieldTextInput(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_DEFAULT_NAME))
-             .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
+    declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
+             .appendField(this.parameterFlydown(0), 'VAR0')
+             .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
              .setAlign(Blockly.ALIGN_RIGHT);
 
     // Add mutator for editing local variable names
     this.setMutator(new Blockly.Mutator(['local_mutatorarg']));
   },
   onchange: function () {
-     this.localNames_ = this.declaredNames(); // ensure arguments_ is in sync with paramFlydown fields
+     this.localNames_ = this.declaredNames(); // ensure localNames_ is in sync with paramFlydown fields
    },
   mutationToDom: function() { // Store local names in mutation element of XML for block
     var container = document.createElement('mutation');
@@ -253,12 +219,12 @@ Blockly.Language.local_declaration_statement = {
   addDeclarationInputs_: function(names, inits) {
     // Modify this block to replace existing initializers by new declaration inputs created from names and inits.
     // If inits is undefined, treat all initial expressions as undefined.
-    // Keep existing body and collapsed inputs at end of input list.
+    // Keep existing body at end of input list.
+    // [lyn, 03/04/13] As of change to, Blockly 1636, there is no longer a collapsed input at end.
 
-    // Remember last two inputs
-    var penultimateInput = this.inputList[this.inputList.length - 2]; // Body input for local declaration
-    var lastInput = this.inputList[this.inputList.length - 1]; // Collapsed input
-    var numDecls = this.inputList.length - 2;
+    // Remember last (= body) input
+    var bodyInput = this.inputList[this.inputList.length - 1]; // Body input for local declaration
+    var numDecls = this.inputList.length - 1;
 
     // Modify this local-in-do block according to arrangement of name blocks in mutator editor.
     // Remove all the local declaration inputs ...
@@ -278,19 +244,19 @@ Blockly.Language.local_declaration_statement = {
       //   and covered the plus sign for popping up the mutator. So I put the "local" keyword
       //   on it's own line even though this wastes vertical space. This should be fixed in the future.
       // if (i == 0) {
-      //  declInput.appendTitle("local"); // Only put keyword "local" on top line.
+      //  declInput.appendField("local"); // Only put keyword "local" on top line.
       // }
-      declInput.appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
-               .appendTitle(this.parameterFlydown(i), 'VAR' + i)
-               .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
+      declInput.appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT)
+               .appendField(this.parameterFlydown(i), 'VAR' + i)
+               .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_INPUT_TO)
                .setAlign(Blockly.ALIGN_RIGHT);
       if (inits && inits[i]) { // If there is an initializer, connect it
         declInput.connection.connect(inits[i]);
       }
     }
 
-    // Now put back last two inputs (body and collapsed input)
-    this.inputList = this.inputList.concat(penultimateInput,lastInput);
+    // Now put back last (= body) input
+    this.inputList = this.inputList.concat(bodyInput);
   },
   // [lyn, 10/27/13] Introduced this to correctly handle renaming of mutatorarg in open mutator
   // when procedure parameter flydown name is edited.
@@ -318,7 +284,7 @@ Blockly.Language.local_declaration_statement = {
         }
         if (mutatorarg && mutatorargIndex == paramIndex) {
           // See Subtlety #3 in  procedureParameterChangeHandler in language/common/procedures.js
-          Blockly.Field.prototype.setText.call(mutatorarg.getTitle_("NAME"), newParamName);
+          Blockly.Field.prototype.setText.call(mutatorarg.getField_("NAME"), newParamName);
         }
       }
     }
@@ -329,15 +295,15 @@ Blockly.Language.local_declaration_statement = {
   },
   decompose: function(workspace) {
     // Create "mutator" editor populated with name blocks with local variable names
-    var containerBlock = new Blockly.Block(workspace, 'local_mutatorcontainer');
+    var containerBlock = new Blockly.Block.obtain(workspace, 'local_mutatorcontainer');
     containerBlock.initSvg();
     containerBlock.setDefBlock(this);
     var connection = containerBlock.getInput('STACK').connection;
     for (var i = 0; i < this.localNames_.length; i++) {
-      var localName = this.getTitleValue('VAR' + i);
-      var nameBlock = new Blockly.Block(workspace, 'local_mutatorarg');
+      var localName = this.getFieldValue('VAR' + i);
+      var nameBlock = new Blockly.Block.obtain(workspace, 'local_mutatorarg');
       nameBlock.initSvg();
-      nameBlock.setTitleValue(localName, 'NAME');
+      nameBlock.setFieldValue(localName, 'NAME');
       // Store the old location.
       nameBlock.oldLocation = i;
       connection.connect(nameBlock.previousConnection);
@@ -346,14 +312,14 @@ Blockly.Language.local_declaration_statement = {
     return containerBlock;
   },
   compose: function(containerBlock) {
-    // [lyn, 10/27/13] Modified this so that doesn't rebuild block if names haven't change.
+    // [lyn, 10/27/13] Modified this so that doesn't rebuild block if names haven't changed.
     // This is *essential* to handle Subtlety #3 in localParameterChangeHandler within parameterFlydown.
 
     var newLocalNames = [];
     var initializers = [];
     var mutatorarg = containerBlock.getInputTargetBlock('STACK');
     while (mutatorarg) {
-      newLocalNames.push(mutatorarg.getTitleValue('NAME'));
+      newLocalNames.push(mutatorarg.getFieldValue('NAME'));
       initializers.push(mutatorarg.valueConnection_); // pushes undefined if doesn't exist
       mutatorarg = mutatorarg.nextConnection && mutatorarg.nextConnection.targetBlock();
     }
@@ -401,7 +367,7 @@ Blockly.Language.local_declaration_statement = {
   },
   getVars: function() {
     var varList = [];
-    for (var i = 0, input; input = this.getTitleValue('VAR' + i); i++) {
+    for (var i = 0, input; input = this.getFieldValue('VAR' + i); i++) {
       varList.push(input);
     }
     return varList;
@@ -431,8 +397,8 @@ Blockly.Language.local_declaration_statement = {
         var blocks = this.mutator.workspace_.getAllBlocks();
         for (var x = 0, block; block = blocks[x]; x++) {
           if (block.type == 'local_mutatorarg' &&
-              Blockly.Names.equals(oldName, block.getTitleValue('NAME'))) {
-            block.setTitleValue(newName, 'NAME');
+              Blockly.Names.equals(oldName, block.getFieldValue('NAME'))) {
+            block.setFieldValue(newName, 'NAME');
           }
         }
       }
@@ -440,62 +406,49 @@ Blockly.Language.local_declaration_statement = {
         */
   },
   //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in do' }],
-  prepareCollapsedText: function(){
-    this.getTitle_('COLLAPSED_TEXT')
-        .setText(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_COLLAPSED_TEXT + ' ' + this.localNames_.join(', '));
-  }
+  typeblock: [{ translatedName: 'initialize local in do' }]
 };
 
 
 /**
  * Prototype bindings for an expression block that declares local names for use in an expression body.
- * [lyn, 10/13/13] Refactored to share more code with Blockly.Language.local_declaration_statement
+ * [lyn, 10/13/13] Refactored to share more code with Blockly.Blocks.local_declaration_statement
  */
-Blockly.Language.local_declaration_expression = {
+Blockly.Blocks['local_declaration_expression'] = {
   category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
-  helpUrl: Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL,
-  initLocals: Blockly.Language.local_declaration_statement.initLocals,
+  helpUrl: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL,
+  initLocals: Blockly.Blocks.local_declaration_statement.initLocals,
   bodyInputName: 'RETURN',
   init: function() {
     this.initLocals();
     this.appendIndentedValueInput('RETURN')
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN);
-
+        .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_IN_RETURN);
     // Create plug for expression output
     this.setOutput(true, null);
-
-    this.setTooltip(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP);
-    this.appendCollapsedInput()
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT + ' '  + this.localNames_.join(', '),
-                     'COLLAPSED_TEXT');
+    this.setTooltip(Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_TOOLTIP);
   },
-  mutationToDom: Blockly.Language.local_declaration_statement.mutationToDom,
-  domToMutation: Blockly.Language.local_declaration_statement.domToMutation,
-  addDeclarationInputs_: Blockly.Language.local_declaration_statement.addDeclarationInputs_,
-  parameterFlydown: Blockly.Language.local_declaration_statement.parameterFlydown,
-  blocksInScope: Blockly.Language.local_declaration_statement.blocksInScope,
-  decompose: Blockly.Language.local_declaration_statement.decompose,
-  compose: Blockly.Language.local_declaration_statement.compose,
-  dispose: Blockly.Language.local_declaration_statement.dispose,
-  saveConnections: Blockly.Language.local_declaration_statement.saveConnections,
-  getVars: Blockly.Language.local_declaration_statement.getVars,
-  declaredNames: Blockly.Language.local_declaration_statement.declaredNames,
-  renameVar: Blockly.Language.local_declaration_statement.renameVar,
+  mutationToDom: Blockly.Blocks.local_declaration_statement.mutationToDom,
+  domToMutation: Blockly.Blocks.local_declaration_statement.domToMutation,
+  addDeclarationInputs_: Blockly.Blocks.local_declaration_statement.addDeclarationInputs_,
+  parameterFlydown: Blockly.Blocks.local_declaration_statement.parameterFlydown,
+  blocksInScope: Blockly.Blocks.local_declaration_statement.blocksInScope,
+  decompose: Blockly.Blocks.local_declaration_statement.decompose,
+  compose: Blockly.Blocks.local_declaration_statement.compose,
+  dispose: Blockly.Blocks.local_declaration_statement.dispose,
+  saveConnections: Blockly.Blocks.local_declaration_statement.saveConnections,
+  getVars: Blockly.Blocks.local_declaration_statement.getVars,
+  declaredNames: Blockly.Blocks.local_declaration_statement.declaredNames,
+  renameVar: Blockly.Blocks.local_declaration_statement.renameVar,
   //TODO (user) this has not been internationalized yet
-  typeblock: [{ translatedName: 'initialize local in return' }],
-  prepareCollapsedText: function(){
-    this.getTitle_('COLLAPSED_TEXT')
-        .setText(Blockly.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_COLLAPSED_TEXT + ' ' + this.localNames_.join(', '));
-  }
+  typeblock: [{ translatedName: 'initialize local in return' }]
 };
 
-Blockly.Language.local_mutatorcontainer = {
+Blockly.Blocks['local_mutatorcontainer'] = {
   // Local variable container (for mutator dialog).
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendDummyInput()
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES);
+        .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_CONTAINER_TITLE_LOCAL_NAMES);
     this.appendStatementInput('STACK');
     this.setTooltip('');
     this.contextMenu = false;
@@ -515,7 +468,7 @@ Blockly.Language.local_mutatorcontainer = {
     var paramNames = [];
     var paramBlock = this.getInputTargetBlock('STACK');
     while (paramBlock) {
-      paramNames.push(paramBlock.getTitleValue('NAME'));
+      paramNames.push(paramBlock.getFieldValue('NAME'));
       paramBlock = paramBlock.nextConnection &&
                    paramBlock.nextConnection.targetBlock();
     }
@@ -523,13 +476,13 @@ Blockly.Language.local_mutatorcontainer = {
   }
 };
 
-Blockly.Language.local_mutatorarg = {
+Blockly.Blocks['local_mutatorarg'] = {
   // Procedure argument (for mutator dialog).
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
     this.appendDummyInput()
-        .appendTitle(Blockly.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME)
-        .appendTitle(new Blockly.FieldTextInput(Blockly.LANG_VARIABLES_LOCAL_MUTATOR_ARG_DEFAULT_VARIABLE,
+        .appendField(Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_TITLE_NAME)
+        .appendField(new Blockly.FieldTextInput(Blockly.Msg.LANG_VARIABLES_LOCAL_MUTATOR_ARG_DEFAULT_VARIABLE,
                                                 Blockly.LexicalVariable.renameParam),
                      'NAME');
     this.setPreviousStatement(true);
@@ -561,7 +514,7 @@ Blockly.Language.local_mutatorarg = {
 
   // [lyn, 11/24/12] Check for situation in which mutator arg has been removed from stack,
   onchange: function() {
-    var paramName = this.getTitleValue('NAME');
+    var paramName = this.getFieldValue('NAME');
     if (paramName) { // paramName is null when delete from stack
       // console.log("Mutatorarg onchange: " + paramName);
       var cachedContainer = this.cachedContainerBlock_;
@@ -581,7 +534,7 @@ Blockly.Language.local_mutatorarg = {
           if (secondIndex != -1) {
             // If we get here, there is a duplicate on insertion that must be resolved
             var newName = Blockly.FieldLexicalVariable.nameNotIn(paramName,declaredNames);
-            this.setTitleValue(newName, 'NAME');
+            this.setFieldValue(newName, 'NAME');
           }
         }
       }
