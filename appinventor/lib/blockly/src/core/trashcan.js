@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +26,7 @@
 
 goog.provide('Blockly.Trashcan');
 
+goog.require('Blockly.Instrument'); // lyn's instrumentation code
 goog.require('goog.Timer');
 
 
@@ -85,6 +87,13 @@ Blockly.Trashcan.prototype.MARGIN_BOTTOM_ = 35;
  * @private
  */
 Blockly.Trashcan.prototype.MARGIN_SIDE_ = 35;
+
+/**
+ * Extent of hotspot on all sides beyond the size of the image.
+ * @type {number}
+ * @private
+ */
+Blockly.Trashcan.prototype.MARGIN_HOTSPOT_ = 25;
 
 /**
  * Current open/close state of the lid.
@@ -198,6 +207,7 @@ Blockly.Trashcan.prototype.dispose = function() {
  * @private
  */
 Blockly.Trashcan.prototype.position_ = function() {
+  var start = new Date().getTime();
   var metrics = this.workspace_.getMetrics();
   if (!metrics) {
     // There are no metrics available (workspace is probably not visible).
@@ -213,6 +223,10 @@ Blockly.Trashcan.prototype.position_ = function() {
       (this.BODY_HEIGHT_ + this.LID_HEIGHT_) - this.MARGIN_BOTTOM_;
   this.svgGroup_.setAttribute('transform',
       'translate(' + this.left_ + ',' + this.top_ + ')');
+  var stop = new Date().getTime();
+  var timeDiff = stop - start;
+  Blockly.Instrument.stats.trashCanPositionCalls++; //***lyn
+  Blockly.Instrument.stats.trashCanPositionTime += timeDiff; //***lyn
 };
 
 /**
@@ -233,10 +247,11 @@ Blockly.Trashcan.prototype.onMouseMove = function(e) {
   }
   var mouseXY = Blockly.mouseToSvg(e);
   var trashXY = Blockly.getSvgXY_(this.svgGroup_);
-  var over = (mouseXY.x > trashXY.x) &&
-             (mouseXY.x < trashXY.x + this.WIDTH_) &&
-             (mouseXY.y > trashXY.y) &&
-             (mouseXY.y < trashXY.y + this.BODY_HEIGHT_ + this.LID_HEIGHT_);
+  var over = (mouseXY.x > trashXY.x - this.MARGIN_HOTSPOT_) &&
+             (mouseXY.x < trashXY.x + this.WIDTH_ + this.MARGIN_HOTSPOT_) &&
+             (mouseXY.y > trashXY.y - this.MARGIN_HOTSPOT_) &&
+             (mouseXY.y < trashXY.y + this.BODY_HEIGHT_ + this.LID_HEIGHT_ +
+              this.MARGIN_HOTSPOT_);
   // For bonus points we might want to match the trapezoidal outline.
   if (this.isOpen != over) {
     this.setOpen_(over);

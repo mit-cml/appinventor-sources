@@ -1,13 +1,18 @@
-// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
+ * @license
  * @fileoverview Visual blocks editor for App Inventor
  * Methods to handle converting apps from older versions to current
  *
  * @author wolber@usfca.edu (David Wolber)
  */
 
-Blockly.Versioning = {};
+'use strict';
+
+goog.provide('Blockly.Versioning');
+goog.require('goog.dom.xml');
 
 /**
  * translateVersion is called from Blockly.Versioning.load to translate
@@ -18,7 +23,7 @@ Blockly.Versioning = {};
 
 Blockly.Versioning.translateVersion = function(blocksContent) {
   // get the text into a dom object xmlFromFile
-  parser=new DOMParser();
+  var parser = new DOMParser();
   var domFromFile = parser.parseFromString(blocksContent,"text/xml");
   var xmlFromFile = domFromFile.firstChild;  // get the xml element within doc tag
   // see if we have a version. If not, we need to translate

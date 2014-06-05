@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,10 +30,11 @@ goog.provide('Blockly.Input');
 // goog.require('Blockly.Block');
 goog.require('Blockly.Connection');
 goog.require('Blockly.FieldLabel');
+goog.require('goog.asserts');
 
 
 /**
- * Class for an input with an optional title.
+ * Class for an input with an optional field.
  * @param {number} type The type of the input.
  * @param {string} name Language-neutral identifier which may used to find this
  *     input again.
@@ -44,9 +46,6 @@ Blockly.Input = function(type, name, block, connection) {
   if (type == Blockly.INDENTED_VALUE){
     this.type = Blockly.INPUT_VALUE;
     this.subtype = Blockly.INDENTED_VALUE;
-  } else if (type == Blockly.DUMMY_COLLAPSED_INPUT){
-    this.type = Blockly.DUMMY_INPUT;
-    this.subtype = Blockly.DUMMY_COLLAPSED_INPUT;
   }
   else {
     this.type = type;
@@ -54,40 +53,42 @@ Blockly.Input = function(type, name, block, connection) {
   this.name = name;
   this.sourceBlock_ = block;
   this.connection = connection;
-  this.titleRow = [];
+  this.fieldRow = [];
   this.align = Blockly.ALIGN_LEFT;
+
+  this.visible_ = true;
 };
 
 /**
- * Add an item to the end of the input's title row.
- * @param {*} title Something to add as a title.
+ * Add an item to the end of the input's field row.
+ * @param {string|!Blockly.Field} field Something to add as a field.
  * @param {string} opt_name Language-neutral identifier which may used to find
- *     this title again.  Should be unique to the host block.
+ *     this field again.  Should be unique to the host block.
  * @return {!Blockly.Input} The input being append to (to allow chaining).
  */
-Blockly.Input.prototype.appendTitle = function(title, opt_name) {
-  // Empty string, Null or undefined generates no title, unless title is named.
-  if (!title && !opt_name) {
+Blockly.Input.prototype.appendField = function(field, opt_name) {
+  // Empty string, Null or undefined generates no field, unless field is named.
+  if (!field && !opt_name) {
     return this;
   }
-  // Generate a FieldLabel when given a plain text title.
-  if (goog.isString(title)) {
-    title = new Blockly.FieldLabel(/** @type {string} */ (title));
+  // Generate a FieldLabel when given a plain text field.
+  if (goog.isString(field)) {
+    field = new Blockly.FieldLabel(/** @type {string} */ (field));
   }
   if (this.sourceBlock_.svg_) {
-    title.init(this.sourceBlock_);
+    field.init(this.sourceBlock_);
   }
-  title.name = opt_name;
+  field.name = opt_name;
 
-  if (title.prefixTitle) {
+  if (field.prefixField) {
     // Add any prefix.
-    this.appendTitle(title.prefixTitle);
+    this.appendField(field.prefixField);
   }
-  // Add the title to the title row.
-  this.titleRow.push(title);
-  if (title.suffixTitle) {
+  // Add the field to the field row.
+  this.fieldRow.push(field);
+  if (field.suffixField) {
     // Add any suffix.
-    this.appendTitle(title.suffixTitle);
+    this.appendField(field.suffixField);
   }
 
   //If it's a COLLAPSE_TEXT input, hide it by default
@@ -96,10 +97,86 @@ Blockly.Input.prototype.appendTitle = function(title, opt_name) {
 
   if (this.sourceBlock_.rendered) {
     this.sourceBlock_.render();
-    // Adding a title will cause the block to change shape.
+    // Adding a field will cause the block to change shape.
     this.sourceBlock_.bumpNeighbours_();
   }
   return this;
+};
+
+/**
+ * Add an item to the end of the input's field row.
+ * @param {*} field Something to add as a field.
+ * @param {string} opt_name Language-neutral identifier which may used to find
+ *     this field again.  Should be unique to the host block.
+ * @return {!Blockly.Input} The input being append to (to allow chaining).
+ * @deprecated December 2013
+ */
+Blockly.Input.prototype.appendTitle = function(field, opt_name) {
+  console.log('Deprecated call to appendTitle, use appendField instead.');
+  return this.appendField(field, opt_name);
+};
+
+/**
+ * Remove a field from this input.
+ * @param {string} name The name of the field.
+ * @throws {goog.asserts.AssertionError} if the field is not present.
+ */
+Blockly.Input.prototype.removeField = function(name) {
+  for (var i = 0, field; field = this.fieldRow[i]; i++) {
+    if (field.name === name) {
+      field.dispose();
+      this.fieldRow.splice(i, 1);
+      if (this.sourceBlock_.rendered) {
+        this.sourceBlock_.render();
+        // Removing a field will cause the block to change shape.
+        this.sourceBlock_.bumpNeighbours_();
+      }
+      return;
+    }
+  }
+  goog.asserts.fail('Field "%s" not found.', name);
+};
+
+/**
+ * Gets whether this input is visible or not.
+ * @return {boolean} True if visible.
+ */
+Blockly.Input.prototype.isVisible = function() {
+  return this.visible_;
+};
+
+/**
+ * Sets whether this input is visible or not.
+ * @param {boolean} visible True if visible.
+ * @return {!Array.<!Blockly.Block>} List of blocks to render.
+ */
+Blockly.Input.prototype.setVisible = function(visible) {
+  var renderList = [];
+  if (this.visible_ == visible) {
+    return renderList;
+  }
+  this.visible_ = visible;
+
+  var display = visible ? 'block' : 'none';
+  for (var y = 0, field; field = this.fieldRow[y]; y++) {
+    field.setVisible(visible);
+  }
+  if (this.connection) {
+    // Has a connection.
+    if (visible) {
+      renderList = this.connection.unhideAll();
+    } else {
+      this.connection.hideAll();
+    }
+    var child = this.connection.targetBlock();
+    if (child) {
+      child.svg_.getRootElement().style.display = display;
+      if (!visible) {
+        child.rendered = false;
+      }
+    }
+  }
+  return renderList;
 };
 
 /**
@@ -117,7 +194,7 @@ Blockly.Input.prototype.setCheck = function(check) {
 };
 
 /**
- * Change the alignment of the connection's title(s).
+ * Change the alignment of the connection's field(s).
  * @param {number} align One of Blockly.ALIGN_LEFT, ALIGN_CENTRE, ALIGN_RIGHT.
  *   In RTL mode directions are reversed, and ALIGN_RIGHT aligns to the left.
  * @return {!Blockly.Input} The input being modified (to allow chaining).
@@ -131,11 +208,11 @@ Blockly.Input.prototype.setAlign = function(align) {
 };
 
 /**
- * Initialize the titles on this input.
+ * Initialize the fields on this input.
  */
 Blockly.Input.prototype.init = function() {
-  for (var x = 0; x < this.titleRow.length; x++) {
-    this.titleRow[x].init(this.sourceBlock_);
+  for (var x = 0; x < this.fieldRow.length; x++) {
+    this.fieldRow[x].init(this.sourceBlock_);
   }
 };
 
@@ -143,8 +220,8 @@ Blockly.Input.prototype.init = function() {
  * Sever all links to this input.
  */
 Blockly.Input.prototype.dispose = function() {
-  for (var i = 0, title; title = this.titleRow[i]; i++) {
-    title.dispose();
+  for (var i = 0, field; field = this.fieldRow[i]; i++) {
+    field.dispose();
   }
   if (this.connection) {
     this.connection.dispose();

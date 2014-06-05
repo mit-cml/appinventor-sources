@@ -8,7 +8,12 @@
  * @author jis@mit.edu (Jeffrey I. Schiller)
  */
 
-Blockly.ReplMgr = {};
+'use strict';
+
+goog.provide('Blockly.ReplMgr');
+goog.provide('Blockly.ReplStateObj');
+
+goog.require('Blockly.Component');
 
 Blockly.ReplMgr.yail = null;
 
@@ -27,10 +32,10 @@ goog.require('goog.crypt.base64');
 // Repl "state" definitions
 
 Blockly.ReplMgr.rsState = {
-    IDLE : 0,                   // Not connected nor connection requested
-    RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
-    CONNECTED: 2,               // Connected to Repl
-    WAITING: 3                  // Waiting for the Emulator to start
+  IDLE : 0,                   // Not connected nor connection requested
+  RENDEZVOUS: 1,              // Waiting for the Rendezvous server to answer
+  CONNECTED: 2,               // Connected to Repl
+  WAITING: 3                  // Waiting for the Emulator to start
 };
 
 Blockly.ReplStateObj = function() {};
@@ -933,7 +938,7 @@ Blockly.ReplMgr.makeDialogMessage = function(code) {
     qr.addData(code);
     qr.make();
     var img = qr.createImgTag(6);
-    retval = '<table><tr><td>' + img + '</td><td><font size="+1">Your code is:<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
+    var retval = '<table><tr><td>' + img + '</td><td><font size="+1">Your code is:<br /><br /><font size="+1"><b>' + code + '</b></font></font></td></tr></table>';
     return retval;
 };
 
@@ -1037,7 +1042,7 @@ Blockly.ReplMgr.ehardreset = function(formName) {
 
 Blockly.ReplMgr.makeqrcode = function(instring) {
     var q = this.qrcode(4, 'L'); // First try a type 4 code
-    var retval;
+    //var retval;
     q.addData(instring);
     try {
         q.make();

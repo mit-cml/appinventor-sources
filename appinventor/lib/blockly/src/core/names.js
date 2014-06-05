@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +34,11 @@ goog.provide('Blockly.Names');
  * @constructor
  */
 Blockly.Names = function(reservedWords) {
-  this.reservedDict_ = {};
+  this.reservedDict_ = Object.create(null);
   if (reservedWords) {
     var splitWords = reservedWords.split(',');
     for (var x = 0; x < splitWords.length; x++) {
-      this.reservedDict_[Blockly.Names.PREFIX_ + splitWords[x]] = true;
+      this.reservedDict_[splitWords[x]] = true;
     }
   }
   this.reset();
@@ -53,20 +54,11 @@ Blockly.Names = function(reservedWords) {
  */
 
 /**
- * JavaScript doesn't have a true hashtable, it uses object properties.
- * Since even clean objects have a few properties, prepend this prefix onto
- * names so that they don't collide with any builtins.
- * @const
- * @private
- */
-Blockly.Names.PREFIX_ = '$_';
-
-/**
  * Empty the database and start from scratch.  The reserved words are kept.
  */
 Blockly.Names.prototype.reset = function() {
-  this.db_ = {};
-  this.dbReverse_ = {};
+  this.db_ = Object.create(null);
+  this.dbReverse_ = Object.create(null);
 };
 
 /**
@@ -77,7 +69,7 @@ Blockly.Names.prototype.reset = function() {
  * @return {string} An entity name legal for the exported language.
  */
 Blockly.Names.prototype.getName = function(name, type) {
-  var normalized = Blockly.Names.PREFIX_ + name.toLowerCase() + '_' + type;
+  var normalized = name.toLowerCase() + '_' + type;
   if (normalized in this.db_) {
     return this.db_[normalized];
   }
@@ -99,13 +91,13 @@ Blockly.Names.prototype.getName = function(name, type) {
 Blockly.Names.prototype.getDistinctName = function(name, type) {
   var safeName = this.safeName_(name);
   var i = '';
-  while (this.dbReverse_[Blockly.Names.PREFIX_ + safeName + i] ||
-      (Blockly.Names.PREFIX_ + safeName + i) in this.reservedDict_) {
+  while (this.dbReverse_[safeName + i] ||
+         (safeName + i) in this.reservedDict_) {
     // Collision with existing name.  Create a unique name.
     i = i ? i + 1 : 2;
   }
   safeName += i;
-  this.dbReverse_[Blockly.Names.PREFIX_ + safeName] = true;
+  this.dbReverse_[safeName] = true;
   return safeName;
 };
 

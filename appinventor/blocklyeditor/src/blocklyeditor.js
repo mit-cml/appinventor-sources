@@ -1,13 +1,21 @@
+// -*- mode: java; c-basic-offset: 2; -*-
 // Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Visual blocks editor for App Inventor
+ * @license
+ * @fileoverview Visual blocks editor for MIT App Inventor
  * Initialize the blocks editor workspace.
  *
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
  */
 
-Blockly.BlocklyEditor = {};
+'use strict';
+
+goog.provide('Blockly.BlocklyEditor');
+
+goog.require('Blockly.Drawer');
+goog.require('Blockly.TypeBlock');
 
 Blockly.BlocklyEditor.startup = function(documentBody, formName) {
   var typeblock_config = {
@@ -139,8 +147,13 @@ Blockly.BlocklyEditor.startup = function(documentBody, formName) {
 };
 
 Blockly.BlocklyEditor.render = function() {
+  var start = new Date().getTime();
+  Blockly.Instrument.initializeStats("Blockly.BlocklyEditor.render");
   Blockly.mainWorkspace.render();
-  Blockly.WarningHandler.checkAllBlocksForWarningsAndErrors();
+  var stop = new Date().getTime();
+  var timeDiff = stop - start;
+  Blockly.Instrument.stats.totalTime = timeDiff;
+  Blockly.Instrument.displayStats("Blockly.BlocklyEditor.render");
 }
 
 /**

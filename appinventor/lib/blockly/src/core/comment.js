@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2011 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +28,7 @@ goog.provide('Blockly.Comment');
 
 goog.require('Blockly.Bubble');
 goog.require('Blockly.Icon');
+goog.require('goog.userAgent');
 
 
 /**
@@ -40,6 +42,7 @@ Blockly.Comment = function(block) {
   this.createIcon_();
 };
 goog.inherits(Blockly.Comment, Blockly.Icon);
+
 
 /**
  * Comment text (if bubble is not visible).
@@ -112,6 +115,20 @@ Blockly.Comment.prototype.createEditor_ = function() {
 };
 
 /**
+ * Add or remove editability of the comment.
+ * @override
+ */
+Blockly.Comment.prototype.updateEditable = function() {
+  if (this.isVisible()) {
+    // Toggling visibility will force a rerendering.
+    this.setVisible(false);
+    this.setVisible(true);
+  }
+  // Allow the icon to update.
+  Blockly.Icon.prototype.updateEditable.call(this);
+};
+
+/**
  * Callback function triggered when the bubble has resized.
  * Resize the text area accordingly.
  * @private
@@ -134,6 +151,14 @@ Blockly.Comment.prototype.setVisible = function(visible) {
     // No change.
     return;
   }
+  if ((!this.block_.isEditable() && !this.textarea_) || goog.userAgent.IE) {
+    // Steal the code from warnings to make an uneditable text bubble.
+    // MSIE does not support foreignobject; textareas are impossible.
+    // http://msdn.microsoft.com/en-us/library/hh834675%28v=vs.85%29.aspx
+    // Always treat comments in IE as uneditable.
+    Blockly.Warning.prototype.setVisible.call(this, visible);
+    return;
+  }
   // Save the bubble stats before the visibility switch.
   var text = this.getText();
   var size = this.getBubbleSize();
@@ -141,7 +166,7 @@ Blockly.Comment.prototype.setVisible = function(visible) {
     // Create the bubble.
     this.bubble_ = new Blockly.Bubble(
         /** @type {!Blockly.Workspace} */ (this.block_.workspace),
-        this.createEditor_(), this.block_.svg_.svgGroup_,
+        this.createEditor_(), this.block_.svg_.svgPath_,
         this.iconX_, this.iconY_,
         this.width_, this.height_);
     this.bubble_.registerResizeEvent(this, this.resizeBubble_);
@@ -192,7 +217,7 @@ Blockly.Comment.prototype.getBubbleSize = function() {
  * @param {number} height Height of the bubble.
  */
 Blockly.Comment.prototype.setBubbleSize = function(width, height) {
-  if (this.isVisible()) {
+  if (this.textarea_) {
     this.bubble_.setBubbleSize(width, height);
   } else {
     this.width_ = width;
@@ -205,7 +230,7 @@ Blockly.Comment.prototype.setBubbleSize = function(width, height) {
  * @return {string} Comment text.
  */
 Blockly.Comment.prototype.getText = function() {
-  return this.isVisible() ? this.textarea_.value : this.text_;
+  return this.textarea_ ? this.textarea_.value : this.text_;
 };
 
 /**
@@ -213,7 +238,7 @@ Blockly.Comment.prototype.getText = function() {
  * @param {string} text Comment text.
  */
 Blockly.Comment.prototype.setText = function(text) {
-  if (this.isVisible()) {
+  if (this.textarea_) {
     this.textarea_.value = text;
   } else {
     this.text_ = text;
@@ -227,4 +252,3 @@ Blockly.Comment.prototype.dispose = function() {
   this.block_.comment = null;
   Blockly.Icon.prototype.dispose.call(this);
 };
-
