@@ -40,7 +40,7 @@ Blockly.Blocks['math_compare'] = {
   category: Blockly.Msg.LANG_CATEGORY_MATH,
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_compare.HELPURLS[mode];},
+      return Blockly.Blocks.math_compare.HELPURLS()[mode];},
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
@@ -54,7 +54,7 @@ Blockly.Blocks['math_compare'] = {
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_compare.TOOLTIPS[mode];
+      return Blockly.Blocks.math_compare.TOOLTIPS()[mode];
     });
   },
   // Potential clash with logic equal, using '=' for now
@@ -110,30 +110,35 @@ Blockly.Blocks.math_compare.onchange = function(value){
   }
 };
 
-Blockly.Blocks.math_compare.OPERATORS =
-  [[Blockly.Msg.LANG_MATH_COMPARE_EQ, 'EQ'],
+Blockly.Blocks.math_compare.OPERATORS = function(){
+  return [[Blockly.Msg.LANG_MATH_COMPARE_EQ, 'EQ'],
    [Blockly.Msg.LANG_MATH_COMPARE_NEQ, 'NEQ'],
    [Blockly.Msg.LANG_MATH_COMPARE_LT, 'LT'],
    [Blockly.Msg.LANG_MATH_COMPARE_LTE, 'LTE'],
    [Blockly.Msg.LANG_MATH_COMPARE_GT, 'GT'],
    [Blockly.Msg.LANG_MATH_COMPARE_GTE, 'GTE']];
-
-Blockly.Blocks.math_compare.TOOLTIPS = {
-  EQ: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ,
-  NEQ: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ,
-  LT: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT,
-  LTE: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE,
-  GT: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT,
-  GTE: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE
 };
 
-Blockly.Blocks.math_compare.HELPURLS = {
-  EQ: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ,
-  NEQ: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_NEQ,
-  LT: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_LT,
-  LTE: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_LTE,
-  GT: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GT,
-  GTE: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GTE
+Blockly.Blocks.math_compare.TOOLTIPS = function(){
+	return {
+	  EQ: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_EQ,
+	  NEQ: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_NEQ,
+	  LT: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LT,
+	  LTE: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_LTE,
+	  GT: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GT,
+	  GTE: Blockly.Msg.LANG_MATH_COMPARE_TOOLTIP_GTE
+	}
+};
+
+Blockly.Blocks.math_compare.HELPURLS = function(){
+	return {
+	  EQ: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_EQ,
+	  NEQ: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_NEQ,
+	  LT: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_LT,
+	  LTE: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_LTE,
+	  GT: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GT,
+	  GTE: Blockly.Msg.LANG_MATH_COMPARE_HELPURL_GTE
+	}
 };
 
 Blockly.Blocks['math_add'] = {
@@ -380,7 +385,7 @@ Blockly.Blocks['math_on_list'] = {
     this.setInputsInline(false);
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_on_list.TOOLTIPS[mode];
+      return Blockly.Blocks.math_on_list.TOOLTIPS()[mode];
     });
     this.setMutator(new Blockly.Mutator(['math_mutator_item']));
     this.itemCount_ = 2;
@@ -433,13 +438,16 @@ Blockly.Blocks['math_on_list'] = {
   }]
 };
 
-Blockly.Blocks.math_on_list.OPERATORS =
-  [[Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN, 'MIN'],
-   [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX, 'MAX']];
+Blockly.Blocks.math_on_list.OPERATORS = function() {
+	return [[Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MIN, 'MIN'],
+   [Blockly.Msg.LANG_MATH_ONLIST_OPERATOR_MAX, 'MAX']]
+};
 
-Blockly.Blocks.math_on_list.TOOLTIPS = {
-  MIN: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN,
-  MAX: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX
+Blockly.Blocks.math_on_list.TOOLTIPS = function() {
+	return {
+	  MIN: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MIN,
+	  MAX: Blockly.Msg.LANG_MATH_ONLIST_TOOLTIP_MAX
+	}
 };
 
 
@@ -448,7 +456,7 @@ Blockly.Blocks['math_single'] = {
   category: Blockly.Msg.LANG_CATEGORY_MATH,
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_single.HELPURLS[mode];
+      return Blockly.Blocks.math_single.HELPURLS()[mode];
     },
   init: function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -460,7 +468,7 @@ Blockly.Blocks['math_single'] = {
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_single.TOOLTIPS[mode];
+      return Blockly.Blocks.math_single.TOOLTIPS()[mode];
     });
   },
   typeblock: [{
@@ -514,8 +522,8 @@ Blockly.Blocks['math_single'] = {
   }]
 };
 
-Blockly.Blocks.math_single.OPERATORS =
-  [[Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT, 'ROOT'],
+Blockly.Blocks.math_single.OPERATORS = function(){
+  return [[Blockly.Msg.LANG_MATH_SINGLE_OP_ROOT, 'ROOT'],
    [Blockly.Msg.LANG_MATH_SINGLE_OP_ABSOLUTE, 'ABS'],
    [Blockly.Msg.LANG_MATH_SINGLE_OP_NEG, 'NEG'],
    [Blockly.Msg.LANG_MATH_SINGLE_OP_LN, 'LN'],
@@ -523,26 +531,32 @@ Blockly.Blocks.math_single.OPERATORS =
    [Blockly.Msg.LANG_MATH_ROUND_OPERATOR_ROUND, 'ROUND'],
    [Blockly.Msg.LANG_MATH_ROUND_OPERATOR_CEILING, 'CEILING'],
    [Blockly.Msg.LANG_MATH_ROUND_OPERATOR_FLOOR, 'FLOOR']];
-
-Blockly.Blocks.math_single.TOOLTIPS = {
-  ROOT: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT,
-  ABS: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ABS,
-  NEG: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_NEG,
-  LN: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_LN,
-  EXP: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_EXP,
-  ROUND : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND,
-  CEILING : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_CEILING,
-  FLOOR : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_FLOOR
 };
-Blockly.Blocks.math_single.HELPURLS = {
-  ROOT: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ROOT,
-  ABS: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ABS,
-  NEG: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_NEG,
-  LN: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_LN,
-  EXP: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_EXP,
-  ROUND : Blockly.Msg.LANG_MATH_ROUND_HELPURL_ROUND,
-  CEILING : Blockly.Msg.LANG_MATH_ROUND_HELPURL_CEILING,
-  FLOOR : Blockly.Msg.LANG_MATH_ROUND_HELPURL_FLOOR
+
+Blockly.Blocks.math_single.TOOLTIPS = function(){
+	return {
+	  ROOT: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ROOT,
+	  ABS: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_ABS,
+	  NEG: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_NEG,
+	  LN: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_LN,
+	  EXP: Blockly.Msg.LANG_MATH_SINGLE_TOOLTIP_EXP,
+	  ROUND : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_ROUND,
+	  CEILING : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_CEILING,
+	  FLOOR : Blockly.Msg.LANG_MATH_ROUND_TOOLTIP_FLOOR
+	}
+};
+
+Blockly.Blocks.math_single.HELPURLS = function() {
+	return {
+	  ROOT: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ROOT,
+	  ABS: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_ABS,
+	  NEG: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_NEG,
+	  LN: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_LN,
+	  EXP: Blockly.Msg.LANG_MATH_SINGLE_HELPURL_EXP,
+	  ROUND : Blockly.Msg.LANG_MATH_ROUND_HELPURL_ROUND,
+	  CEILING : Blockly.Msg.LANG_MATH_ROUND_HELPURL_CEILING,
+	  FLOOR : Blockly.Msg.LANG_MATH_ROUND_HELPURL_FLOOR
+	}
 };
 
 Blockly.Blocks['math_abs'] = {
@@ -668,7 +682,7 @@ Blockly.Blocks['math_divide'] = {
   category : Blockly.Msg.LANG_CATEGORY_MATH,
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_divide.HELPURLS[mode];
+      return Blockly.Blocks.math_divide.HELPURLS()[mode];
     },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -684,7 +698,7 @@ Blockly.Blocks['math_divide'] = {
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_divide.TOOLTIPS[mode];
+      return Blockly.Blocks.math_divide.TOOLTIPS()[mode];
     });
   },
   typeblock: [{
@@ -708,20 +722,26 @@ Blockly.Blocks['math_divide'] = {
   }]
 };
 
-Blockly.Blocks.math_divide.OPERATORS =
-  [[Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO, 'MODULO'],
+Blockly.Blocks.math_divide.OPERATORS = function() {
+	return [[Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_MODULO, 'MODULO'],
    [Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_REMAINDER, 'REMAINDER'],
    [ Blockly.Msg.LANG_MATH_DIVIDE_OPERATOR_QUOTIENT, 'QUOTIENT' ]];
-
-Blockly.Blocks.math_divide.TOOLTIPS = {
-  MODULO: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO,
-  REMAINDER: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER,
-  QUOTIENT: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT
 };
-Blockly.Blocks.math_divide.HELPURLS = {
-  MODULO: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_MODULO,
-  REMAINDER: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_REMAINDER,
-  QUOTIENT: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT
+
+Blockly.Blocks.math_divide.TOOLTIPS = function() {
+	return {
+	  MODULO: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_MODULO,
+	  REMAINDER: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_REMAINDER,
+	  QUOTIENT: Blockly.Msg.LANG_MATH_DIVIDE_TOOLTIP_QUOTIENT
+	}
+};
+
+Blockly.Blocks.math_divide.HELPURLS = function() {
+	return {
+	  MODULO: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_MODULO,
+	  REMAINDER: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_REMAINDER,
+	  QUOTIENT: Blockly.Msg.LANG_MATH_DIVIDE_HELPURL_QUOTIENT
+	}
 };
 
 Blockly.Blocks['math_trig'] = {
@@ -729,7 +749,7 @@ Blockly.Blocks['math_trig'] = {
   category : Blockly.Msg.LANG_CATEGORY_MATH,
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_trig.HELPURLS[mode];
+      return Blockly.Blocks.math_trig.HELPURLS()[mode];
     },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -741,7 +761,7 @@ Blockly.Blocks['math_trig'] = {
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_trig.TOOLTIPS[mode];
+      return Blockly.Blocks.math_trig.TOOLTIPS()[mode];
     });
   },
   typeblock: [{
@@ -783,30 +803,35 @@ Blockly.Blocks['math_trig'] = {
   }]
 };
 
-Blockly.Blocks.math_trig.OPERATORS =
-  [[ Blockly.Msg.LANG_MATH_TRIG_SIN, 'SIN' ],
+Blockly.Blocks.math_trig.OPERATORS = function() {
+	return [[ Blockly.Msg.LANG_MATH_TRIG_SIN, 'SIN' ],
    [ Blockly.Msg.LANG_MATH_TRIG_COS, 'COS' ],
    [ Blockly.Msg.LANG_MATH_TRIG_TAN, 'TAN' ],
    [ Blockly.Msg.LANG_MATH_TRIG_ASIN, 'ASIN' ],
    [ Blockly.Msg.LANG_MATH_TRIG_ACOS, 'ACOS' ],
    [ Blockly.Msg.LANG_MATH_TRIG_ATAN, 'ATAN' ]];
+}
 
-Blockly.Blocks.math_trig.TOOLTIPS = {
-  SIN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_SIN,
-  COS : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_COS,
-  TAN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_TAN,
-  ASIN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ASIN,
-  ACOS : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ACOS,
-  ATAN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN
+Blockly.Blocks.math_trig.TOOLTIPS = function() {
+	return {
+	  SIN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_SIN,
+	  COS : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_COS,
+	  TAN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_TAN,
+	  ASIN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ASIN,
+	  ACOS : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ACOS,
+	  ATAN : Blockly.Msg.LANG_MATH_TRIG_TOOLTIP_ATAN
+	}
 };
 
-Blockly.Blocks.math_trig.HELPURLS = {
-  SIN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_SIN,
-  COS : Blockly.Msg.LANG_MATH_TRIG_HELPURL_COS,
-  TAN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_TAN,
-  ASIN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ASIN,
-  ACOS : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ACOS,
-  ATAN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ATAN
+Blockly.Blocks.math_trig.HELPURLS = function() {
+	return {
+	  SIN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_SIN,
+	  COS : Blockly.Msg.LANG_MATH_TRIG_HELPURL_COS,
+	  TAN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_TAN,
+	  ASIN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ASIN,
+	  ACOS : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ACOS,
+	  ATAN : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ATAN
+	}
 };
 
 Blockly.Blocks['math_cos'] = {
@@ -882,7 +907,7 @@ Blockly.Blocks['math_convert_angles'] = {
   category : Blockly.Msg.LANG_CATEGORY_MATH,
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
-      return Blockly.Blocks.math_convert_angles.HELPURLS[mode];
+      return Blockly.Blocks.math_convert_angles.HELPURLS()[mode];
     },
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -895,7 +920,7 @@ Blockly.Blocks['math_convert_angles'] = {
     var thisBlock = this;
     this.setTooltip(function() {
       var mode = thisBlock.getFieldValue('OP');
-      return Blockly.Blocks.math_convert_angles.TOOLTIPS[mode];
+      return Blockly.Blocks.math_convert_angles.TOOLTIPS()[mode];
     });
   },
   typeblock: [{
@@ -915,18 +940,23 @@ Blockly.Blocks['math_convert_angles'] = {
   }]
 };
 
-Blockly.Blocks.math_convert_angles.OPERATORS =
-  [[ Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG, 'RADIANS_TO_DEGREES' ],
-   [ Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD, 'DEGREES_TO_RADIANS' ]];
-
-Blockly.Blocks.math_convert_angles.TOOLTIPS = {
-  RADIANS_TO_DEGREES : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG,
-  DEGREES_TO_RADIANS : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD
+Blockly.Blocks.math_convert_angles.OPERATORS = function() {
+	return [[ Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_RAD_TO_DEG, 'RADIANS_TO_DEGREES' ],
+   [ Blockly.Msg.LANG_MATH_CONVERT_ANGLES_OP_DEG_TO_RAD, 'DEGREES_TO_RADIANS' ]]
 };
 
-Blockly.Blocks.math_convert_angles.HELPURLS = {
-  RADIANS_TO_DEGREES : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG,
-  DEGREES_TO_RADIANS : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD
+Blockly.Blocks.math_convert_angles.TOOLTIPS = function() {
+	return {
+	  RADIANS_TO_DEGREES : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_RAD_TO_DEG,
+	  DEGREES_TO_RADIANS : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_TOOLTIP_DEG_TO_RAD
+	}
+};
+
+Blockly.Blocks.math_convert_angles.HELPURLS = function() {
+  return {
+	  RADIANS_TO_DEGREES : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_RAD_TO_DEG,	
+	  DEGREES_TO_RADIANS : Blockly.Msg.LANG_MATH_CONVERT_ANGLES_HELPURL_DEG_TO_RAD
+  }
 };
 
 Blockly.Blocks['math_format_as_decimal'] = {

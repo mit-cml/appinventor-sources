@@ -13,12 +13,12 @@ public class TranslationDesignerProperties {
   public static String getCorrespondingString(String key) {
     String value = key;
 
-    OdeLog.wlog("getCorrespondingString: key = " + key);
-
 
     // Properties
-    if (key.equals("AboveRangeEventEnabled")) {
-      value = MESSAGES.AboveRangeEventEnabledProperties();
+    if (key.equals("AboutScreen")) {
+      value = MESSAGES.AboutScreenProperties();
+    } else if (key.equals("AboveRangeEventEnabled")) {
+          value = MESSAGES.AboveRangeEventEnabledProperties();
     } else if (key.equals("Action")) {
        value = MESSAGES.ActionProperties();
     } else if (key.equals("ActivityClass")) {
@@ -143,6 +143,8 @@ public class TranslationDesignerProperties {
        value = MESSAGES.QueryProperties();
     } else if (key.equals("Radius")) {
        value = MESSAGES.RadiusProperties();
+    } else if (key.equals("ReadMode")) {
+        value = MESSAGES.ReadModeProperties();
     } else if (key.equals("ReceivingEnabled")) {
        value = MESSAGES.ReceivingEnabledProperties();
     } else if (key.equals("ReleasedEventEnabled")) {
@@ -171,6 +173,10 @@ public class TranslationDesignerProperties {
        value = MESSAGES.ServiceURLProperties();
     } else if (key.equals("Shape")) {
        value = MESSAGES.ShapeProperties();
+    } else if (key.equals("ShowFeedback")) {
+        value = MESSAGES.ShowFeedbackProperties();
+    } else if (key.equals("show tables")) {
+        value = MESSAGES.ShowTablesProperties();
     } else if (key.equals("Source")) {
        value = MESSAGES.SourceProperties();
     } else if (key.equals("Speed")) {
@@ -201,6 +207,8 @@ public class TranslationDesignerProperties {
        value = MESSAGES.TopOfRangeProperties();
     } else if (key.equals("Url")) {
        value = MESSAGES.UrlProperties();
+    } else if (key.equals("UseFront")) {
+        value = MESSAGES.UseFrontProperties();
     } else if (key.equals("UseGPS")) {
        value = MESSAGES.UseGPSProperties();
     } else if (key.equals("UsesLocation")) {
@@ -211,6 +219,10 @@ public class TranslationDesignerProperties {
        value = MESSAGES.VersionCodeProperties();
     } else if (key.equals("VersionName")) {
        value = MESSAGES.VersionNameProperties();
+    } else if (key.equals("showing")) {
+        value = MESSAGES.VisibilityShowingProperties();
+    } else if (key.equals("hidden")) {
+        value = MESSAGES.VisibilityHiddenProperties();
     } else if (key.equals("Visible")) {
        value = MESSAGES.VisibleProperties();
     } else if (key.equals("Volume")) {
@@ -225,6 +237,74 @@ public class TranslationDesignerProperties {
        value = MESSAGES.YProperties();
     } else if (key.equals("Z")) {
        value = MESSAGES.ZProperties();
+    } else if (key.equals("ShowFilterBar")) {
+        value = MESSAGES.ShowFilterBarProperties();
+    } else if (key.equals("NotifierLength")) {
+        value = MESSAGES.NotifierLengthProperties();
+    } else if (key.equals("Loop")) {
+        value = MESSAGES.LoopProperties();
+    } else if (key.equals("Pitch")) {
+        value = MESSAGES.PitchProperties();
+    } else if (key.equals("SpeechRate")) {
+        value = MESSAGES.SpeechRateProperties();
+    } else if (key.equals("Sensitivity")) {
+        value = MESSAGES.SensitivityProperties();
+    } else if (key.equals("TwitPic_API_Key")) {
+        value = MESSAGES.TwitPic_API_KeyProperties();
+    } else if (key.equals("Prompt")) {
+        value = MESSAGES.PromptProperties();
+    } else if (key.equals("ColorLeft")) {
+        value = MESSAGES.ColorLeftProperties();
+    } else if (key.equals("ColorRight")) {
+        value = MESSAGES.ColorRightProperties();
+    } else if (key.equals("MaxValue")) {
+        value = MESSAGES.MaxValueProperties();
+    } else if (key.equals("MinValue")) {
+        value = MESSAGES.MinValueProperties();
+    } else if (key.equals("ThumbPosition")) {
+        value = MESSAGES.ThumbPositionProperties();
+    } else if (key.equals("UseFront")) {
+        value = MESSAGES.UseFrontProperties();
+    } else if (key.equals("Day")) {
+        value = MESSAGES.DayProperties();
+    } else if (key.equals("Month")) {
+        value = MESSAGES.MonthProperties();
+    } else if (key.equals("MonthInText")) {
+        value = MESSAGES.MonthInTextProperties();
+    } else if (key.equals("Year")) {
+        value = MESSAGES.YearProperties();
+    } else if (key.equals("AboutScreen")) {
+        value = MESSAGES.AboutScreenProperties();
+    } else if (key.equals("CloseScreenAnimation")) {
+        value = MESSAGES.CloseScreenAnimationProperties();
+    } else if (key.equals("OpenScreenAnimation")) {
+        value = MESSAGES.OpenScreenAnimationProperties();
+    } else if (key.equals("LastMessage")) {
+        value = MESSAGES.LastMessageProperties();
+    } else if (key.equals("ReadMode")) {
+        value = MESSAGES.ReadModeProperties();
+    } else if (key.equals("TextToWrite")) {
+        value = MESSAGES.TextToWriteProperties();
+    } else if (key.equals("WriteType")) {
+        value = MESSAGES.WriteTypeProperties();
+    } else if (key.equals("CalibrateStrideLength")) {
+        value = MESSAGES.CalibrateStrideLengthProperties();
+    } else if (key.equals("Distance")) {
+        value = MESSAGES.DistanceProperties();
+    } else if (key.equals("ElapsedTime")) {
+        value = MESSAGES.ElapsedTimeProperties();
+    } else if (key.equals("Moving")) {
+        value = MESSAGES.MovingProperties();
+    } else if (key.equals("StopDetectionTimeout")) {
+        value = MESSAGES.StopDetectionTimeoutProperties();
+    } else if (key.equals("StrideLength")) {
+        value = MESSAGES.StrideLengthProperties();
+    } else if (key.equals("UseGPS")) {
+        value = MESSAGES.UseGPSProperties();
+    } else if (key.equals("Hour")) {
+        value = MESSAGES.HourProperties();
+    } else if (key.equals("Minute")) {
+        value = MESSAGES.MinuteProperties();
     }
     return value;
   }

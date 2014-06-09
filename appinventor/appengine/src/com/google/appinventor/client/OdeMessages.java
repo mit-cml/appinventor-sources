@@ -119,22 +119,6 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching to the form editor")
   String switchToFormEditorButton();
 
-  @DefaultMessage("App ( provide QR code for .apk )")
-  @Description("Label of item for building a project and show barcode")
-  String showBarcodeButton();
-
-  @DefaultMessage("App ( save .apk to my computer )")
-  @Description("Label of item for building a project and downloading")
-  String downloadToComputerButton();
-
-  @DefaultMessage("Generate YAIL")
-  @Description("Label of the cascade item for generating YAIL for a project")
-  String generateYailButton();
-
-  @DefaultMessage("Build")
-  @Description("Label of the button leading to build related cascade items")
-  String buildButton();
-
   @DefaultMessage("Packaging ...")
   @Description("Label of the button leading to build related cascade items, when building")
   String isBuildingButton();
@@ -233,14 +217,6 @@ public interface OdeMessages extends Messages {
   @Description("Label showing the ant build date and the git version")
   String gitBuildId(String date, String version);
 
-  @DefaultMessage("Help")
-  @Description("Label for the Help menu")
-  String helpLink();
-
-  @DefaultMessage("About")
-  @Description("Label of the link for About")
-  String aboutLink();
-
   @DefaultMessage("Privacy")
   @Description("Label of the link for Privacy")
   String privacyLink();
@@ -254,7 +230,28 @@ public interface OdeMessages extends Messages {
   String privacyTermsLink();
 
   // Used in TopPanel.java
+  
+  //Project
+  @DefaultMessage("Projects")
+  @Description("Name of Projects tab")
+  String projectsTabName();
+  
+  @DefaultMessage("My projects")
+  @Description("Name of My projects menuitem")
+  String projectMenuItem();
 
+  @DefaultMessage("Start new project ...")
+  @Description("Label of the menu item for creating a new project")
+  String newProjectMenuItem();
+  
+  @DefaultMessage("Import project (.aia) from my computer ...")
+  @Description("Name of Import Project menuitem")
+  String importProjectMenuItem();
+  
+  @DefaultMessage("Delete project")
+  @Description("Name of Delete project menuitem")
+  String deleteProjectMenuItem();
+  
   @DefaultMessage("Save project")
   @Description("Name of Save menuitem")
   String saveMenuItem();
@@ -262,62 +259,146 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Save project as ...")
   @Description("Name of Save as ... menuitem")
   String saveAsMenuItem();
-
-  @DefaultMessage("Import project (.aia) from my computer ...")
-  @Description("Name of Import Project menuitem")
-  String importProjectButton();
+  
+  @DefaultMessage("Checkpoint")
+  @Description("Name of Checkpoint menuitem")
+  String checkpointMenuItem();
 
   @DefaultMessage("Export selected project (.aia) to my computer")
   @Description("Name of Export Project menuitem")
-  String exportProjectButton();
+  String exportProjectMenuItem();
 
   @DefaultMessage("Export all projects")
   @Description("Name of Export all Project menuitem")
-  String exportAllProjectsButton();
+  String exportAllProjectsMenuItem();
+  
+  @DefaultMessage("Export keystore")
+  @Description("Label of the button for export keystore")
+  String downloadKeystoreMenuItem();
 
-  @DefaultMessage("Sign out")
-  @Description("Label of the link for signing out")
-  String signOutLink();
+  @DefaultMessage("Import keystore")
+  @Description("Label of the button for import keystore")
+  String uploadKeystoreMenuItem();
 
-  @DefaultMessage("My Projects")
-  @Description("Name of My Projects tab")
-  String tabNameProjects();
+  @DefaultMessage("Delete keystore")
+  @Description("Label of the button for delete keystore")
+  String deleteKeystoreMenuItem();
 
+  //Connect
+  @DefaultMessage("Connect")
+  @Description("Label of the button leading to Connect related cascade items")
+  String connectTabName();
+  
+  @DefaultMessage("AI Companion")
+  @Description("Message providing details about starting the wireless connection.")
+  String AICompanionMenuItem();
+
+  @DefaultMessage("Emulator")
+  @Description("Message providing details about starting the emulator connection.")
+  String emulatorMenuItem();
+
+  @DefaultMessage("USB")
+  @Description("Message providing details about starting a USB connection.")
+  String usbMenuItem();
+
+  @DefaultMessage("Reset Connection")
+  @Description("Reset all connections.")
+  String resetConnectionsMenuItem();
+
+  @DefaultMessage("Hard Reset")
+  @Description("Hard Reset the Emulator.")
+  String hardResetConnectionsMenuItem();
+
+  //Build
+  @DefaultMessage("Build")
+  @Description("Label of the button leading to build related cascade items")
+  String buildTabName();
+  
+  @DefaultMessage("App ( provide QR code for .apk )")
+  @Description("Label of item for building a project and show barcode")
+  String showBarcodeMenuItem();
+
+  @DefaultMessage("App ( save .apk to my computer )")
+  @Description("Label of item for building a project and downloading")
+  String downloadToComputerMenuItem();
+
+  @DefaultMessage("Generate YAIL")
+  @Description("Label of the cascade item for generating YAIL for a project")
+  String generateYailMenuItem();
+  
+  //Help
+  @DefaultMessage("Help")
+  @Description("Label for the Help menu")
+  String helpTabName();
+
+  @DefaultMessage("About")
+  @Description("Label of the link for About")
+  String aboutMenuItem();
+  
+  @DefaultMessage("Library")
+  @Description("Name of Library link")
+  String libraryMenuItem();
+
+  @DefaultMessage("Get Started")
+  @Description("Name of Getting Started link")
+  String getStartedMenuItem();
+
+  @DefaultMessage("Tutorials")
+  @Description("Name of Tutorials link")
+  String tutorialsMenuItem();
+
+  @DefaultMessage("Troubleshooting")
+  @Description("Name of Troubleshooting link")
+  String troubleshootingMenuItem();
+
+  @DefaultMessage("Forums")
+  @Description("Name of Forums link")
+  String forumsMenuItem();
+  
   @DefaultMessage("Report an Issue")
   @Description("Link for Report an Issue form")
-  String feedbackLink();
+  String feedbackMenuItem();
+  
+  //Admin
+  @DefaultMessage("Admin")
+  @Description("Label of the button leading to admin functionality")
+  String adminTabName();
+  
+  @DefaultMessage("Download User Source")
+  @Description("Label of the button for admins to download a user's project source")
+  String downloadUserSourceMenuItem();
+
+  @DefaultMessage("Switch To Debug Panel")
+  @Description("Label of the button for admins to switch to the debug panel without an explicit error")
+  String switchToDebugMenuItem();
+  
+  //Tabs
+  @DefaultMessage("My Projects")
+  @Description("Name of My Projects tab")
+  String myProjectsTabName();
+  
+  @DefaultMessage("Guide")
+  @Description("Name of Guide link")
+  String guideTabName();
+  
+  @DefaultMessage("Report an Issue")
+  @Description("Link for Report an Issue form")
+  String feedbackTabName();
 
   @DefaultMessage("Gallery")
   @Description("Link for Gallery")
-  String galleryLink();
+  String galleryTabName();
+  
+  //User email dropdown
+  @DefaultMessage("Sign out")
+  @Description("Label of the link for signing out")
+  String signOutLink();
+  
+  //
 
   @DefaultMessage("Design")
   @Description("Name of Design tab")
   String tabNameDesign();
-
-  @DefaultMessage("Library")
-  @Description("Name of Library link")
-  String libraryLink();
-
-  @DefaultMessage("Get Started")
-  @Description("Name of Getting Started link")
-  String getStartedLink();
-
-  @DefaultMessage("Tutorials")
-  @Description("Name of Tutorials link")
-  String tutorialsLink();
-
-  @DefaultMessage("Troubleshooting")
-  @Description("Name of Troubleshooting link")
-  String troubleshootingLink();
-
-  @DefaultMessage("Forums")
-  @Description("Name of Forums link")
-  String forumsLink();
-
-  @DefaultMessage("Guide")
-  @Description("Name of Guide link")
-  String guideLink();
 
   @DefaultMessage("(Debugging)")
   @Description("Name of Debugging tab")
@@ -957,34 +1038,6 @@ public interface OdeMessages extends Messages {
 
   // Used in explorer/youngandroid/Toolbar.java
 
-  @DefaultMessage("Project")
-  @Description("Label for the Project Button")
-  String projectButton();
-
-  @DefaultMessage("Start new project ...")
-  @Description("Label of the menu item for creating a new project")
-  String newMenuItemButton();
-
-  @DefaultMessage("Delete project")
-  @Description("Label of the menu item for deleting a project")
-  String deleteMenuItemButton();
-
-  @DefaultMessage("New Project")
-  @Description("Label of the button for creating a new project")
-  String newButton();
-
-  @DefaultMessage("Export keystore")
-  @Description("Label of the button for export keystore")
-  String downloadKeystoreButton();
-
-  @DefaultMessage("Import keystore")
-  @Description("Label of the button for import keystore")
-  String uploadKeystoreButton();
-
-  @DefaultMessage("Delete keystore")
-  @Description("Label of the button for delete keystore")
-  String deleteKeystoreButton();
-
   @DefaultMessage("It may take a little while for your projects to be downloaded. " +
       "Please be patient...")
   @Description("Warning that downloading projects will take a while")
@@ -993,14 +1046,6 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("More Actions")
   @Description("Label of the button leading to more cascade items")
   String moreActionsButton();
-
-  @DefaultMessage("Download User Source")
-  @Description("Label of the button for admins to download a user's project source")
-  String downloadUserSourceButton();
-
-  @DefaultMessage("Switch To Debug Panel")
-  @Description("Label of the button for admins to switch to the debug panel without an explicit error")
-  String switchToDebugButton();
 
   @DefaultMessage("Download User Source")
   @Description("Title of the dialog box for downloading a user's project source")
@@ -1021,10 +1066,6 @@ public interface OdeMessages extends Messages {
       "match exactly. Both are case sensitive.")
   @Description("Error message reported when user id or project id is missing")
   String invalidUserIdOrProjectIdError();
-
-  @DefaultMessage("Admin")
-  @Description("Label of the button leading to admin functionality")
-  String adminButton();
 
   @DefaultMessage("Please select a project to delete")
   @Description("Error message displayed when no project is selected")
@@ -1322,27 +1363,6 @@ public interface OdeMessages extends Messages {
   @Description("Text messages are always received, and a notification is shown if the App is in the background.")
   String textReceivingChoiceAlways();
 
-  @DefaultMessage("AI Companion")
-  @Description("Message providing details about starting the wireless connection.")
-  String wirelessButton();
-
-  @DefaultMessage("Emulator")
-  @Description("Message providing details about starting the emulator connection.")
-  String emulatorButton();
-
-  // Use in component pallette
-  // Palette components name
-  @DefaultMessage("USB")
-  @Description("Message providing details about starting a USB connection.")
-  String usbButton();
-
-  @DefaultMessage("Reset Connection")
-  @Description("Reset all connections.")
-  String resetConnections();
-
-  @DefaultMessage("Hard Reset")
-  @Description("Hard Reset the Emulator.")
-  String hardResetConnections();
 
   // This error message is displayed as HTML
   @DefaultMessage("App Inventor is unable to compile this project.  " +
@@ -1379,6 +1399,10 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Storage")
   @Description("")
   String storageComponentPallette();
+  
+  @DefaultMessage("Form")
+  @Description("")
+  String FormComponentPallette();
 
   @DefaultMessage("Math")
   @Description("Label on built-in-Math-blocks branch of block selector tree")
@@ -1421,6 +1445,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String clockComponentPallette();
   
+  @DefaultMessage("DatePicker")
+  @Description("")
+  String datePickerComponentPallette();
+  
   @DefaultMessage("Image")
   @Description("")
   String imageComponentPallette();
@@ -1433,13 +1461,29 @@ public interface OdeMessages extends Messages {
   @Description("")
   String listPickerComponentPallette();
   
+  @DefaultMessage("ListView")
+  @Description("")
+  String listViewComponentPallette();
+  
   @DefaultMessage("PasswordTextBox")
   @Description("")
   String passwordTextBoxComponentPallette();
   
+  @DefaultMessage("Slider")
+  @Description("")
+  String sliderComponentPallette();
+  
+  @DefaultMessage("Spinner")
+  @Description("")
+  String spinnerComponentPallette();
+  
   @DefaultMessage("TextBox")
   @Description("")
   String textBoxComponentPallette();
+  
+  @DefaultMessage("timePicker")
+  @Description("")
+  String timePickerComponentPallette();
   
   @DefaultMessage("TinyDB")
   @Description("")
@@ -1470,6 +1514,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String videoPlayerComponentPallette();
   
+  @DefaultMessage("YandexTranslate")
+  @Description("")
+  String yandexTranslateComponentPallette();
+  
   // Animation
   @DefaultMessage("Ball")
   @Description("")
@@ -1496,6 +1544,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String phoneNumberPickerComponentPallette();
   
+  @DefaultMessage("Sharing")
+  @Description("")
+  String sharingComponentPallette();
+  
   @DefaultMessage("Texting")
   @Description("")
   String textingComponentPallette();
@@ -1509,9 +1561,17 @@ public interface OdeMessages extends Messages {
   @Description("")
   String accelerometerSensorComponentPallette();
   
+  @DefaultMessage("BarcodeScanner")
+  @Description("")
+  String barcodeScannerComponentPallette();
+  
   @DefaultMessage("LocationSensor")
   @Description("")
   String locationSensorComponentPallette();
+  
+  @DefaultMessage("NearField")
+  @Description("")
+  String nearFieldComponentPallette();
   
   @DefaultMessage("OrientationSensor")
   @Description("")
@@ -1559,14 +1619,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String nxtUltrasonicSensorComponentPallette();
   
-  // Other stuff
+  // Storage
   @DefaultMessage("ActivityStarter")
   @Description("")
   String activityStarterComponentPallette();
-  
-  @DefaultMessage("BarcodeScanner")
-  @Description("")
-  String barcodeScannerComponentPallette();
   
   @DefaultMessage("BluetoothClient")
   @Description("")
@@ -1596,7 +1652,11 @@ public interface OdeMessages extends Messages {
   @Description("")
   String webComponentPallette();
   
-  // Not ready for prime time
+  // Connectivity
+  @DefaultMessage("File")
+  @Description("")
+  String fileComponentPallette();
+  
   @DefaultMessage("FusiontablesControl")
   @Description("")
   String fusiontablesControlComponentPallette();
@@ -1618,6 +1678,10 @@ public interface OdeMessages extends Messages {
   String webViewerComponentPallette();
   
   // Component Properties 
+  @DefaultMessage("AboutScreen")
+  @Description("")
+  String AboutScreenProperties();
+  
   @DefaultMessage("AboveRangeEventEnabled")
   @Description("")
   String AboveRangeEventEnabledProperties();
@@ -1866,6 +1930,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String RadiusProperties();
   
+  @DefaultMessage("ReadMode")
+  @Description("")
+  String ReadModeProperties();
+  
   @DefaultMessage("ReceivingEnabled")
   @Description("")
   String ReceivingEnabledProperties();
@@ -1913,6 +1981,14 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Shape")
   @Description("")
   String ShapeProperties();
+  
+  @DefaultMessage("ShowFeedback")
+  @Description("")
+  String ShowFeedbackProperties();
+  
+  @DefaultMessage("show tables")
+  @Description("")
+  String ShowTablesProperties();
   
   @DefaultMessage("Source")
   @Description("")
@@ -1970,6 +2046,10 @@ public interface OdeMessages extends Messages {
   @Description("")
   String UrlProperties();
   
+  @DefaultMessage("UseFront")
+  @Description("")
+  String UseFrontProperties();
+  
   @DefaultMessage("UseGPS")
   @Description("")
   String UseGPSProperties();
@@ -2016,11 +2096,11 @@ public interface OdeMessages extends Messages {
 
   @DefaultMessage("showing")
   @Description("")
-  String visibilityShowing();
+  String VisibilityShowingProperties();
 
   @DefaultMessage("hidden")
   @Description("")
-  String visibilityHiddenProperties();
+  String VisibilityHiddenProperties();
   
   @DefaultMessage("ElementsFromString")
   @Description("")
@@ -2041,4 +2121,360 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("UsesLocation")
   @Description("")
   String UsesLocationProperties();
+  
+  @DefaultMessage("ShowFilterBar")
+  @Description("")
+  String ShowFilterBarProperties();
+  
+  @DefaultMessage("NotifierLength")
+  @Description("")
+  String NotifierLengthProperties();
+  
+  @DefaultMessage("Loop")
+  @Description("")
+  String LoopProperties();
+  
+  @DefaultMessage("Pitch")
+  @Description("")
+  String PitchProperties();
+  
+  @DefaultMessage("SpeechRate")
+  @Description("")
+  String SpeechRateProperties();
+  
+  @DefaultMessage("Sensitivity")
+  @Description("")
+  String SensitivityProperties();
+  
+  @DefaultMessage("TwitPic_API_Key")
+  @Description("")
+  String TwitPic_API_KeyProperties();
+  
+  @DefaultMessage("Prompt")
+  @Description("")
+  String PromptProperties();
+  
+  @DefaultMessage("ColorLeft")
+  @Description("")
+  String ColorLeftProperties();
+  
+  @DefaultMessage("ColorRight")
+  @Description("")
+  String ColorRightProperties();
+  
+  @DefaultMessage("MaxValue")
+  @Description("")
+  String MaxValueProperties();
+  
+  @DefaultMessage("MinValue")
+  @Description("")
+  String MinValueProperties();
+  
+  @DefaultMessage("ThumbPosition")
+  @Description("")
+  String ThumbPositionProperties();
+  
+  @DefaultMessage("Day")
+  @Description("")
+  String DayProperties();
+  
+  @DefaultMessage("Month")
+  @Description("")
+  String MonthProperties();
+  
+  @DefaultMessage("MonthInText")
+  @Description("")
+  String MonthInTextProperties();
+  
+  @DefaultMessage("Year")
+  @Description("")
+  String YearProperties();
+  
+  @DefaultMessage("LastMessage")
+  @Description("")
+  String LastMessageProperties();
+  
+  @DefaultMessage("TextToWrite")
+  @Description("")
+  String TextToWriteProperties();
+  
+  @DefaultMessage("WriteType")
+  @Description("")
+  String WriteTypeProperties();
+  
+  @DefaultMessage("ElapsedTime")
+  @Description("")
+  String ElapsedTimeProperties();
+
+  @DefaultMessage("Moving")
+  @Description("")
+  String MovingProperties();
+
+  @DefaultMessage("Hour")
+  @Description("")
+  String HourProperties();
+  
+  @DefaultMessage("Minute")
+  @Description("")
+  String MinuteProperties();
+  
+  @DefaultMessage("Distance")
+  @Description("")
+  String DistanceProperties();
+  
+  //help strings
+  @DefaultMessage("Non-visible component that can detect shaking and measure acceleration approximately in three dimensions using SI units (m/s<sup>2</sup>).  The components are: <ul>\n<li> <strong>xAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when the phone is tilted to the right (i.e.,      its left side is raised), and negative when the phone is tilted      to the left (i.e., its right size is raised).</li>\n <li> <strong>yAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when its bottom is raised, and negative when      its top is raised. </li>\n <li> <strong>zAccel</strong>: Equal to -9.8 (earth\"s gravity in meters per      second per second when the device is at rest parallel to the ground      with the display facing up,      0 when perpindicular to the ground, and +9.8 when facing down.       The value can also be affected by accelerating it with or against      gravity. </li></ul>")
+  @Description("")
+  String AccelerometerSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that can launch an activity using the <code>StartActivity</code> method.<p>Activities that can be launched include: <ul> \n<li> starting other App Inventor for Android apps </li> \n<li> starting the camera application </li> \n<li> performing web search </li> \n<li> opening a browser to a specified web page</li> \n<li> opening the map application to a specified location</li></ul> \nYou can also launch activities that return text data.  See the documentation on using the Activity Starter for examples.</p>")
+  @Description("")
+  String ActivityStarterHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A round \"sprite\" that can be placed on a <code>Canvas</code>, where it can react to touches and drags, interact with other sprites (<code>ImageSprite</code>s and other <code>Ball</code>s) and the edge of the Canvas, and move according to its property values.</p><p>For example, to have a <code>Ball</code> move 4 pixels toward the top of a <code>Canvas</code> every 500 milliseconds (half second), you would set the <code>Speed</code> property to 4 [pixels], the <code>Interval</code> property to 500 [milliseconds], the <code>Heading</code> property to 90 [degrees], and the <code>Enabled</code> property to <code>True</code>.  These and its other properties can be changed at any time.</p><p>The difference between a Ball and an <code>ImageSprite</code> is that the latter can get its appearance from an image file, while a Ball\"s appearance can only be changed by varying its <code>PaintColor</code> and <code>Radius</code> properties.</p>")
+  @Description("")
+  String BallHelpStringComponentPallette();
+
+  @DefaultMessage("Component for using the Barcode Scanner to read a barcode")
+  @Description("")
+  String BarcodeScannerHelpStringComponentPallette();
+
+  @DefaultMessage("Bluetooth client component")
+  @Description("")
+  String BluetoothClientHelpStringComponentPallette();
+
+  @DefaultMessage("Bluetooth server component")
+  @Description("")
+  String BluetoothServerHelpStringComponentPallette();
+
+  @DefaultMessage("Button with the ability to detect clicks.  Many aspects of its appearance can be changed, as well as whether it is clickable (<code>Enabled</code>), can be changed in the Designer or in the Blocks Editor.")
+  @Description("")
+  String ButtonHelpStringComponentPallette();
+
+  @DefaultMessage("A component to record a video using the device\"s camcorder.After the video is recorded, the name of the file on the phone containing the clip is available as an argument to the AfterRecording event. The file name can be used, for example, to set the source property of a VideoPlayer component.")
+  @Description("")
+  String CamcorderHelpStringComponentPallette();
+
+  @DefaultMessage("A component to take a picture using the device\"s camera. After the picture is taken, the name of the file on the phone containing the picture is available as an argument to the AfterPicture event. The file name can be used, for example, to set the Picture property of an Image component.")
+  @Description("")
+  String CameraHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A two-dimensional touch-sensitive rectangular panel on which drawing can be done and sprites can be moved.</p> <p>The <code>BackgroundColor</code>, <code>PaintColor</code>, <code>BackgroundImage</code>, <code>Width</code>, and <code>Height</code> of the Canvas can be set in either the Designer or in the Blocks Editor.  The <code>Width</code> and <code>Height</code> are measured in pixels and must be positive.</p><p>Any location on the Canvas can be specified as a pair of (X, Y) values, where <ul> <li>X is the number of pixels away from the left edge of the Canvas</li><li>Y is the number of pixels away from the top edge of the Canvas</li></ul>.</p> <p>There are events to tell when and where a Canvas has been touched or a <code>Sprite</code> (<code>ImageSprite</code> or <code>Ball</code>) has been dragged.  There are also methods for drawing points, lines, and circles.</p>")
+  @Description("")
+  String CanvasHelpStringComponentPallette();
+
+  @DefaultMessage("Checkbox that raises an event when the user clicks on it. There are many properties affecting its appearance that can be set in the Designer or Blocks Editor.")
+  @Description("")
+  String CheckBoxHelpStringComponentPallette();
+
+  @DefaultMessage("Non-visible component that provides the phone\"s clock, a timer, and time calculations.")
+  @Description("")
+  String ClockHelpStringComponentPallette();
+
+  @DefaultMessage("A button that, when clicked on, displays a list of the contacts to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact\"s name </li>\n <li> <code>EmailAddress</code>: the contact\"s primary email address </li>\n <li> <code>Picture</code>: the name of the file containing the contact\"s image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).\n</p><p>Picking is not supported on all phones.  If it fails, this component will show a notification.  The error behavior can be overridden with the Screen.ErrorOccurred event handler.")
+  @Description("")
+  String ContactPickerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A button that, when clicked on, launches a popup dialog to allow the user to select a date.</p>")
+  @Description("")
+  String DatePickerHelpStringComponentPallette();
+
+  @DefaultMessage("An EmailPicker is a kind of text box.  If the user begins entering the name or email address of a contact, the phone will show a dropdown menu of choices that complete the entry.  If there are many contacts, the dropdown can take several seconds to appear, and can show intermediate results while the matches are being computed. <p>The initial contents of the text box and the contents< after user entry is in the <code>Text</code> property.  If the <code>Text</code> property is initially empty, the contents of the <code>Hint</code> property will be faintly shown in the text box as a hint to the user.</p>\n <p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p>\n<p>Text boxes like this are usually used with <code>Button</code> components, with the user clicking on the button when text entry is complete.")
+  @Description("")
+  String EmailPickerHelpStringComponentPallette();
+
+  @DefaultMessage("Non-visible component for storing and retrieving files. Use this component to write or read files on your device. The default behaviour is to write files to the private data directory associated with your App. The Companion is special cased to write files to /sdcard/AppInventor/data to facilitate debugging. If the file path starts with a slash (/), then the file is created relative to /sdcard. For example writing a file to /myFile.txt will write the file in /sdcard/myFile.txt.")
+  @Description("")
+  String FileHelpStringComponentPallette();
+
+  @DefaultMessage("Top-level component containing all other components in the program")
+  @Description("")
+  String FormHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A non-visible component that communicates with Google Fusion Tables. Fusion Tables let you store, share, query and visualize data tables; this component lets you query, create, and modify these tables.</p> <p>This component uses the <a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">Fusion Tables API V1.0</a>. <p>In order to develop apps that use Fusiontables, you must obtain an API Key.<p>To get an API key, follow these instructions.</p> <ol><li>Go to your <a href=\"https://code.google.com/apis/console/\" target=\"_blank\">Google APIs Console</a> and login if necessary.</li><li>Select the <i>Services</i> item from the menu on the left.</li><li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li><li>Go back to the main menu and select the <i>API Access</i> item. </li></ol><p>Your API Key will be near the bottom of that pane in the section called \"Simple API Access\".You will have to provide that key as the value for the <i>ApiKey</i> property in your Fusiontables app.</p><p>Once you have an API key, set the value of the <i>Query</i> property to a valid Fusiontables SQL query and call <i>SendQuery</i> to execute the query.  App Inventor will send the query to the Fusion Tables server and the <i>GotResult</i> block will fire when a result is returned from the server.Query results will be returned in CSV format, and can be converted to list format using the \"list from csv table\" or \"list from csv row\" blocks.</p><p>Note that you do not need to worry about UTF-encoding the query. But you do need to make sure the query follows the syntax described in <a href=\"https://developers.google.com/fusiontables/docs/v1/getting_started\" target=\"_blank\">the reference manual</a>, which means that things like capitalization for names of columns matters, and that single quotes must be used around column names if there are spaces in them.</p>")
+  @Description("")
+  String FusiontablesControlHelpStringComponentPallette();
+
+  @DefaultMessage("Provides a way for applications to communicate with online game servers")
+  @Description("")
+  String GameClientHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed from left to right.  If you wish to have components displayed one over another, use <code>VerticalArrangement</code> instead.</p>")
+  @Description("")
+  String HorizontalArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("Component for displaying images.  The picture to display, and other aspects of the Image\"s appearance, can be specified in the Designer or in the Blocks Editor.")
+  @Description("")
+  String ImageHelpStringComponentPallette();
+
+  @DefaultMessage("A special-purpose button. When the user taps an image picker, the device\"s image gallery appears, and the user can choose an image. After an image is picked, it is saved on the SD card and the <code>ImageFile</code> property will be the name of the file where the image is stored. In order to not fill up storage, a maximum of 10 images will be stored.  Picking more images will delete previous images, in order from oldest to newest.")
+  @Description("")
+  String ImagePickerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A \"sprite\" that can be placed on a <code>Canvas</code>, where it can react to touches and drags, interact with other sprites (<code>Ball</code>s and other <code>ImageSprite</code>s) and the edge of the Canvas, and move according to its property values.  Its appearance is that of the image specified in its <code>Picture</code> property (unless its <code>Visible</code> property is <code>False</code>.</p> <p>To have an <code>ImageSprite</code> move 10 pixels to the left every 1000 milliseconds (one second), for example, you would set the <code>Speed</code> property to 10 [pixels], the <code>Interval</code> property to 1000 [milliseconds], the <code>Heading</code> property to 180 [degrees], and the <code>Enabled</code> property to <code>True</code>.  A sprite whose <code>Rotates</code> property is <code>True</code> will rotate its image as the sprite\"s <code>Heading</code> changes.  Checking for collisions with a rotated sprite currently checks the sprite\"s unrotated position so that collision checking will be inaccurate for tall narrow or short wide sprites that are rotated.  Any of the sprite properties can be changed at any time under program control.</p> ")
+  @Description("")
+  String ImageSpriteHelpStringComponentPallette();
+
+  @DefaultMessage("A Label displays a piece of text, which is specified through the <code>Text</code> property.  Other properties, all of which can be set in the Designer or Blocks Editor, control the appearance and placement of the text.")
+  @Description("")
+  String LabelHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A button that, when clicked on, displays a list of texts for the user to choose among. The texts can be specified through the Designer or Blocks Editor by setting the <code>ElementsFromString</code> property to their string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p><p>Setting property ShowFilterBar to true, will make the list searchable.  Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>")
+  @Description("")
+  String ListPickerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>This is a visible component that allows to place a list of text elements in your Screen to display. <br> The list can be set using the ElementsFromString property or using the Elements block in the blocks editor. <br> Warning: This component will not work correctly on Screens that are scrollable.</p>")
+  @Description("")
+  String ListViewHelpStringComponentPallette();
+
+  @DefaultMessage("Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform \"geocoding\", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>\n<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>\nLocation information might not be immediately available when an app starts.  You\"ll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event")
+  @Description("")
+  String LocationSensorHelpStringComponentPallette();
+
+  @DefaultMessage("<p>Non-visible component to provide NFC capabilities.  For now this component supports the reading and writing of text tags only (if supported by the device)</p><p>In order to read and write text tags, the component must have its <code>ReadMode</code> property set to True or False respectively.</p>")
+  @Description("")
+  String NearFieldHelpStringComponentPallette();
+
+  @DefaultMessage("The Notifier component displays alert dialogs, messages, and temporary alerts, and creates Android log entries through the following methods: <ul><li> ShowMessageDialog: displays a message which the user must dismiss by pressing a button.</li><li> ShowChooseDialog: displays a message two buttons to let the user choose one of two responses, for example, yes or no, after which the AfterChoosing event is raised.</li><li> ShowTextDialog: lets the user enter text in response to the message, after which the AfterTextInput event is raised. <li> ShowAlert: displays a temporary  alert that goes away by itself after a short time.</li><li> LogError: logs an error message to the Android log. </li><li> LogInfo: logs an info message to the Android log.</li><li> LogWarning: logs a warning message to the Android log.</li><li>The messages in the dialogs (but not the alert) can be formatted using the following HTML tags:&lt;b&gt;, &lt;big&gt;, &lt;blockquote&gt;, &lt;br&gt;, &lt;cite&gt;, &lt;dfn&gt;, &lt;div&gt;, &lt;em&gt;, &lt;small&gt;, &lt;strong&gt;, &lt;sub&gt;, &lt;sup&gt;, &lt;tt&gt;. &lt;u&gt;</li><li>You can also use the font tag to specify color, for example, &lt;font color=\"blue\"&gt;.  Some of the available color names are aqua, black, blue, fuchsia, green, grey, lime, maroon, navy, olive, purple, red, silver, teal, white, and yellow</li></ul>")
+  @Description("")
+  String NotifierHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a color sensor on a LEGO MINDSTORMS NXT robot.")
+  @Description("")
+  String NxtColorSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a low-level interface to a LEGO MINDSTORMS NXT robot, with functions to send NXT Direct Commands.")
+  @Description("")
+  String NxtDirectCommandsHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a LEGO MINDSTORMS NXT robot, with functions that can move and turn the robot.")
+  @Description("")
+  String NxtDriveHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a light sensor on a LEGO MINDSTORMS NXT robot.")
+  @Description("")
+  String NxtLightSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a sound sensor on a LEGO MINDSTORMS NXT robot.")
+  @Description("")
+  String NxtSoundSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to a touch sensor on a LEGO MINDSTORMS NXT robot.")
+  @Description("")
+  String NxtTouchSensorHelpStringComponentPallette();
+
+  @DefaultMessage("A component that provides a high-level interface to an ultrasonic sensor on a LEGO MINDSTORMS NXT robot.")
+  @Description("")
+  String NxtUltrasonicSensorHelpStringComponentPallette();
+
+  @DefaultMessage("<p>Non-visible component providing information about the device\"s physical orientation in three dimensions: <ul> <li> <strong>Roll</strong>: 0 degrees when the device is level, increases to      90 degrees as the device is tilted up on its left side, and      decreases to -90 degrees when the device is tilted up on its right side.      </li> <li> <strong>Pitch</strong>: 0 degrees when the device is level, up to      90 degrees as the device is tilted so its top is pointing down,      up to 180 degrees as it gets turned over.  Similarly, as the device      is tilted so its bottom points down, pitch decreases to -90      degrees, then further decreases to -180 degrees as it gets turned all the way      over.</li> <li> <strong>Azimuth</strong>: 0 degrees when the top of the device is      pointing north, 90 degrees when it is pointing east, 180 degrees      when it is pointing south, 270 degrees when it is pointing west,      etc.</li></ul>     These measurements assume that the device itself is not moving.</p>")
+  @Description("")
+  String OrientationSensorHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A box for entering passwords.  This is the same as the ordinary <code>TextBox</code> component except this does not display the characters typed by the user.</p><p>The value of the text in the box can be found or set through the <code>Text</code> property. If blank, the <code>Hint</code> property, which appears as faint text in the box, can provide the user with guidance as to what to type.</p> <p>Text boxes are usually used with the <code>Button</code> component, with the user clicking on the button when text entry is complete.</p>")
+  @Description("")
+  String PasswordTextBoxHelpStringComponentPallette();
+
+  @DefaultMessage("Component that can count steps.")
+  @Description("")
+  String PedometerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A non-visible component that makes a phone call to the number specified in the <code>PhoneNumber</code> property, which can be set either in the Designer or Blocks Editor. The component has a <code>MakePhoneCall</code> method, enabling the program to launch a phone call.</p><p>Often, this component is used with the <code>ContactPicker</code> component, which lets the user select a contact from the ones stored on the phone and sets the <code>PhoneNumber</code> property to the contact\"s phone number.</p><p>To directly specify the phone number (e.g., 650-555-1212), set the <code>PhoneNumber</code> property to a Text with the specified digits (e.g., \"6505551212\").  Dashes, dots, and parentheses may be included (e.g., \"(650)-555-1212\") but will be ignored; spaces may not be included.</p>")
+  @Description("")
+  String PhoneCallHelpStringComponentPallette();
+
+  @DefaultMessage("A button that, when clicked on, displays a list of the contacts\" phone numbers to choose among. After the user has made a selection, the following properties will be set to information about the chosen contact: <ul>\n<li> <code>ContactName</code>: the contact\"s name </li>\n <li> <code>PhoneNumber</code>: the contact\"s phone number </li>\n <li> <code>EmailAddress</code>: the contact\"s email address </li> <li> <code>Picture</code>: the name of the file containing the contact\"s image, which can be used as a <code>Picture</code> property value for the <code>Image</code> or <code>ImageSprite</code> component.</li></ul>\n</p><p>Other properties affect the appearance of the button (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be clicked on (<code>Enabled</code>).</p>\n<p>Picking is not supported on all phones.  If it fails, this component will show a notification.  This default error behavior can be overridden with the Screen.ErrorOccurred event handler.")
+  @Description("")
+  String PhoneNumberPickerHelpStringComponentPallette();
+
+  @DefaultMessage("Component that returns information about the phone.")
+  @Description("")
+  String PhoneStatusHelpStringComponentPallette();
+
+  @DefaultMessage("Multimedia component that plays audio and controls phone vibration.  The name of a multimedia field is specified in the <code>Source</code> property, which can be set in the Designer or in the Blocks Editor.  The length of time for a vibration is specified in the Blocks Editor in milliseconds (thousandths of a second).\n<p>For supported audio formats, see <a href=\"http://developer.android.com/guide/appendix/media-formats.html\" target=\"_blank\">Android Supported Media Formats</a>.</p>\n<p>This component is best for long sound files, such as songs, while the <code>Sound</code> component is more efficient for short files, such as sound effects.</p>")
+  @Description("")
+  String PlayerHelpStringComponentPallette();
+
+  @DefaultMessage("Sharing is a non-visible component that enables sharing files and/or messages between your app and other apps installed on a device. The component will display a list of the installed apps that can handle the information provided, and will allow the user to choose one to share the content with, for instance a mail app, a social network app, a texting app, and so on.<br>The file path can be taken directly from other components such as the Camera or the ImagePicker, but can also be specified directly to read from storage. Be aware that different devices treat storage differently, so a few things to try if, for instance, you have a file called arrow.gif in the folder <code>Appinventor/assets</code>, would be: <ul><li><code>\"file:///sdcard/Appinventor/assets/arrow.gif\"</code></li> or <li><code>\"/storage/Appinventor/assets/arrow.gif\"</code></li></ul>")
+  @Description("")
+  String SharingHelpStringComponentPallette();
+
+  @DefaultMessage("A Slider is a progress bar that adds a draggable thumb. You can touch the thumb and drag left or right to set the slider thumb position. As the Slider thumb is dragged, it will trigger the PositionChanged event, reporting the position of the Slider thumb. The reported position of the Slider thumb can be used to dynamically update another component attribute, such as the font size of a TextBox or the radius of a Ball.")
+  @Description("")
+  String SliderHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A multimedia component that plays sound files and optionally vibrates for the number of milliseconds (thousandths of a second) specified in the Blocks Editor.  The name of the sound file to play can be specified either in the Designer or in the Blocks Editor.</p> <p>For supported sound file formats, see <a href=\"http://developer.android.com/guide/appendix/media-formats.html\" target=\"_blank\">Android Supported Media Formats</a>.</p><p>This <code>Sound</code> component is best for short sound files, such as sound effects, while the <code>Player</code> component is more efficient for longer sounds, such as songs.</p>")
+  @Description("")
+  String SoundHelpStringComponentPallette();
+
+  @DefaultMessage("<p>Multimedia component that records audio.</p>")
+  @Description("")
+  String SoundRecorderHelpStringComponentPallette();
+
+  @DefaultMessage("Component for using Voice Recognition to convert from speech to text")
+  @Description("")
+  String SpeechRecognizerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A spinner component that displays a pop-up with a list of elements. These elements can be set in the Designer or Blocks Editor by setting the<code>ElementsFromString</code> property to a string-separated concatenation (for example, <em>choice 1, choice 2, choice 3</em>) or by setting the <code>Elements</code> property to a List in the Blocks editor.</p>")
+  @Description("")
+  String SpinnerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed in tabular form.</p>")
+  @Description("")
+  String TableArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A box for the user to enter text.  The initial or user-entered text value is in the <code>Text</code> property.  If blank, the <code>Hint</code> property, which appears as faint text in the box, can provide the user with guidance as to what to type.</p><p>The <code>MultiLine</code> property determines if the text can havemore than one line.  For a single line text box, the keyboard will closeautomatically when the user presses the Done key.  To close the keyboard for multiline text boxes, the app should use  the HideKeyboard method or  rely on the user to press the Back key.</p><p>The <code> NumbersOnly</code> property restricts the keyboard to acceptnumeric input only.</p><p>Other properties affect the appearance of the text box (<code>TextAlignment</code>, <code>BackgroundColor</code>, etc.) and whether it can be used (<code>Enabled</code>).</p><p>Text boxes are usually used with the <code>Button</code> component, with the user clicking on the button when text entry is complete.</p><p>If the text entered by the user should not be displayed, use <code>PasswordTextBox</code> instead.</p>")
+  @Description("")
+  String TextBoxHelpStringComponentPallette();
+
+  @DefaultMessage("Component for using TextToSpeech to speak a message")
+  @Description("")
+  String TextToSpeechHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A component that will, when the <code>SendMessage</code> method is called, send the text message specified in the <code>Message</code> property to the phone number specified in the <code>PhoneNumber</code> property.</p> <p>If the <code>ReceivingEnabled</code> property is set to 1 messages will <b>not</b> be received. If <code>ReceivingEnabled</code> is set to 2 messages will be received only when the application is running. Finally if <code>ReceivingEnabled</code> is set to 3, messages will be received when the application is running <b>and</b> when the application is not running they will be queued and a notification displayed to the user.</p> <p>When a message arrives, the <code>MessageReceived</code> event is raised and provides the sending number and message.</p> <p> An app that includes this component will receive messages even when it is in the background (i.e. when it\"s not visible on the screen) and, moreso, even if the app is not running, so long as it\"s installed on the phone. If the phone receives a text message when the app is not in the foreground, the phone will show a notification in the notification bar.  Selecting the notification will bring up the app.  As an app developer, you\"ll probably want to give your users the ability to control ReceivingEnabled so that they can make the phone ignore text messages.</p> <p>If the GoogleVoiceEnabled property is true, messages can be sent over Wifi using Google Voice. This option requires that the user have a Google Voice account and that the mobile Voice app is installed on the phone. The Google Voice option works only on phones that support Android 2.0 (Eclair) or higher.</p> <p>To specify the phone number (e.g., 650-555-1212), set the <code>PhoneNumber</code> property to a Text string with the specified digits (e.g., 6505551212).  Dashes, dots, and parentheses may be included (e.g., (650)-555-1212) but will be ignored; spaces may not be included.</p> <p>Another way for an app to specify a phone number would be to include a <code>PhoneNumberPicker</code> component, which lets the users select a phone numbers from the ones stored in the the phone\"s contacts.</p>")
+  @Description("")
+  String TextingHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A button that, when clicked on, launches  a popup dialog to allow the user to select a time.</p>")
+  @Description("")
+  String TimePickerHelpStringComponentPallette();
+
+  @DefaultMessage("TinyDB is a non-visible component that stores data for an app. <p> Apps created with App Inventor are initialized each time they run: If an app sets the value of a variable and the user then quits the app, the value of that variable will not be remembered the next time the app is run. In contrast, TinyDB is a <em> persistent </em> data store for the app, that is, the data stored there will be available each time the app is run. An example might be a game that saves the high score and retrieves it each time the game is played. </<p> <p> Data items are strings stored under <em>tags</em> . To store a data item, you specify the tag it should be stored under.  Subsequently, you can retrieve the data that was stored under a given tag. </p><p> There is only one data store per app. Even if you have multiple TinyDB components, they will use the same data store. To get the effect of separate stores, use different keys. Also each app has its own data store. You cannot use TinyDB to pass data between two different apps on the phone, although you <em>can</em> use TinyDb to shares data between the different screens of a multi-screen app. </p> <p>When you are developing apps using the AI Companion, all the apps using that companion will share the same TinyDb.  That sharing will disappear once the apps are packaged.  But, during development, you should be careful to clear the TinyDb each time you start working on a new app.</p>")
+  @Description("")
+  String TinyDBHelpStringComponentPallette();
+
+  @DefaultMessage("Non-visible component that communicates with a Web service to store and retrieve information.")
+  @Description("")
+  String TinyWebDBHelpStringComponentPallette();
+
+  @DefaultMessage("A non-visible component that enables communication with <a href=\"http://www.twitter.com\" target=\"_blank\">Twitter</a>. Once a user has logged into their Twitter account (and the authorization has been confirmed successful by the <code>IsAuthorized</code> event), many more operations are available:<ul><li> Searching Twitter for tweets or labels (<code>SearchTwitter</code>)</li>\n<li> Sending a Tweet (<code>Tweet</code>)     </li>\n<li> Sending a Tweet with an Image (<code>TweetWithImage</code>)     </li>\n<li> Directing a message to a specific user      (<code>DirectMessage</code>)</li>\n <li> Receiving the most recent messages directed to the logged-in user      (<code>RequestDirectMessages</code>)</li>\n <li> Following a specific user (<code>Follow</code>)</li>\n<li> Ceasing to follow a specific user (<code>StopFollowing</code>)</li>\n<li> Getting a list of users following the logged-in user      (<code>RequestFollowers</code>)</li>\n <li> Getting the most recent messages of users followed by the      logged-in user (<code>RequestFriendTimeline</code>)</li>\n <li> Getting the most recent mentions of the logged-in user      (<code>RequestMentions</code>)</li></ul></p>\n <p>You must obtain a Comsumer Key and Consumer Secret for Twitter authorization  specific to your app from http://twitter.com/oauth_clients/new")
+  @Description("")
+  String TwitterHelpStringComponentPallette();
+
+  @DefaultMessage("<p>A formatting element in which to place components that should be displayed one below another.  (The first child component is stored on top, the second beneath it, etc.)  If you wish to have components displayed next to one another, use <code>HorizontalArrangement</code> instead.</p>")
+  @Description("")
+  String VerticalArrangementHelpStringComponentPallette();
+
+  @DefaultMessage("A multimedia component capable of playing videos. When the application is run, the VideoPlayer will be displayed as a rectangle on-screen.  If the user touches the rectangle, controls will appear to play/pause, skip ahead, and skip backward within the video.  The application can also control behavior by calling the <code>Start</code>, <code>Pause</code>, and <code>SeekTo</code> methods.  <p>Video files should be in Windows Media Video (.wmv) format, 3GPP (.3gp), or MPEG-4 (.mp4).  For more details about legal formats, see <a href=\"http://developer.android.com/guide/appendix/media-formats.html\" target=\"_blank\">Android Supported Media Formats</a>.</p><p>App Inventor for Android only permits video files under 1 MB and limits the total size of an application to 5 MB, not all of which is available for media (video, audio, and sound) files.  If your media files are too large, you may get errors when packaging or installing your application, in which case you should reduce the number of media files or their sizes.  Most video editing software, such as Windows Movie Maker and Apple iMovie, can help you decrease the size of videos by shortening them or re-encoding the video into a more compact format.</p><p>You can also set the media source to a URL that points to a streaming video, but the URL must point to the video file itself, not to a program that plays the video.")
+  @Description("")
+  String VideoPlayerHelpStringComponentPallette();
+
+  @DefaultMessage("<p>The Voting component enables users to vote on a question by communicating with a Web service to retrieve a ballot and later sending back users\" votes.</p>")
+  @Description("")
+  String VotingHelpStringComponentPallette();
+
+  @DefaultMessage("Non-visible component that provides functions for HTTP GET, POST, PUT, and DELETE requests.")
+  @Description("")
+  String WebHelpStringComponentPallette();
+
+  @DefaultMessage("Component for viewing Web pages.  The Home URL can be specified in the Designer or in the Blocks Editor.  The view can be set to follow links when they are tapped, and users can fill in Web forms. Warning: This is not a full browser.  For example, pressing the phone\"s hardware Back key will exit the app, rather than move back in the browser history.<p />You can use the WebViewer.WebViewString property to communicate between your app and Javascript code running in the Webviewer page. In the app, you get and set WebViewString.  In the WebViewer, you include Javascript that references the window.AppInventor object, using the methoods </em getWebViewString()</em> and <em>setWebViewString(text)</em>.  <p />For example, if the WebViewer opens to a page that contains the Javascript command <br /> <em>document.write(\"The answer is\" + window.AppInventor.getWebViewString());</em> <br />and if you set WebView.WebVewString to \"hello\", then the web page will show </br ><em>The answer is hello</em>.  <br />And if the Web page contains Javascript that executes the command <br /><em>windowAppInventor.setWebViewString(\"hello from Javascript\")</em>, <br />then the value of the WebViewString property will be <br /><em>hello from Javascript</em>. ")
+  @Description("")
+  String WebViewerHelpStringComponentPallette();
+
+  @DefaultMessage("Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So\"en-es\" will translate from English to Spanish while \"es-ru\" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just \"es\" will attempt to detect the source language and translate it to Spanish.<p /> This component is powered by the Yandex translation service.  See http://api.yandex.com/translate/ for more information, including the list of available languages and the meanings of the language codes and status codes. <p />Note: Translation happens asynchronously in the background. When the translation is complete, the \"GotTranslation\" event is triggered.")
+  @Description("")
+  String YandexTranslateHelpStringComponentPallette();
+
+  
+  
 }

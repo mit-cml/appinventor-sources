@@ -9,6 +9,7 @@ import com.google.appinventor.client.Images;
 import com.google.appinventor.client.Ode;
 import static com.google.appinventor.client.Ode.MESSAGES;
 
+import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.AbstractImagePrototype;
@@ -45,12 +46,12 @@ public final class ComponentHelpWidget extends Image {
       setTitle(scd.getName());
 
       // Create title from component name.
-      Label titleBar = new Label(scd.getName());
+      Label titleBar = new Label(TranslationDesignerPallete.getCorrespondingString(scd.getName()));
       setTitle(scd.getName());
       titleBar.setStyleName("ode-ComponentHelpPopup-TitleBar");
 
       // Create content from help string.
-      HTML helpText = new HTML(scd.getHelpString());
+      HTML helpText = new HTML(TranslationDesignerPallete.getCorrespondingString(scd.getName() + "-helpString"));
       helpText.setStyleName("ode-ComponentHelpPopup-Body");
 
       // Create link to more information.  This would be cleaner if

@@ -8,6 +8,8 @@ package com.google.appinventor.client;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.appinventor.client.output.OdeLog;
+
 public class TranslationContainer {
 
   private Map<String, String> myMap = new HashMap<String, String>();
@@ -30,12 +32,19 @@ public class TranslationContainer {
     myMap.put("Canvas","画布");
     myMap.put("CheckBox","复选框");
     myMap.put("Clock","时钟");
+    myMap.put("DatePicker","日期选择");
     myMap.put("Image","图像");
     myMap.put("Label","便签");
     myMap.put("ListPicker","列表选择器");
+    myMap.put("ListView","列表格式");
+    myMap.put("Notifier", "通告人");
     myMap.put("PasswordTextBox","密码框");
+    myMap.put("Slider","滑");
+    myMap.put("Spinner","转");
     myMap.put("TextBox","文本框");
-    myMap.put("TinyDB","细小数据库");
+    myMap.put("TimePicker","时间选择");
+    myMap.put("WebViewer","网页浏览器");
+
 
     //Media
     myMap.put("Camcorder","摄像机");
@@ -43,7 +52,11 @@ public class TranslationContainer {
     myMap.put("ImagePicker","画像选择器");
     myMap.put("Player","播放器");
     myMap.put("Sound","声音");
+    myMap.put("SoundRecorder","声音记录器");
+    myMap.put("SpeechRecognizer", "语音识别");
+    myMap.put("TextToSpeech", "文本到语音");
     myMap.put("VideoPlayer","媒体播放器");
+    myMap.put("YandexTranslate","Yandex翻译");
 
     //Animation
     myMap.put("Ball","球");
@@ -54,13 +67,16 @@ public class TranslationContainer {
     myMap.put("EmailPicker","邮件选择器");
     myMap.put("PhoneCall","电话");
     myMap.put("PhoneNumberPicker","电话号码选择器");
+    myMap.put("Sharing","分享");
     myMap.put("Texting","信息");
     myMap.put("Twitter","Twitter");
 
     //Sensor
     myMap.put("AccelerometerSensor","加速度传感器");
+    myMap.put("BarcodeScanner", "条码扫描器");
     myMap.put("LocationSensor","位置传感器");
     myMap.put("OrientationSensor","方向传感器");
+    myMap.put("NearField","近范围");
 
     //Screen Arrangement
     myMap.put("HorizontalArrangement", "水平排列");
@@ -76,23 +92,23 @@ public class TranslationContainer {
     myMap.put("NxtTouchSensor", "Nxt触摸传感器");
     myMap.put("NxtUltrasonicSensor", "Nxt超声波传感器");
 
-    //Other stuff
+    //Storage
+    myMap.put("File", "文件");
+    myMap.put("FusiontablesControl","Fusiontables控制");
+    myMap.put("TinyDB","细小数据库");
+    myMap.put("TinyWebDB", "细小网络数据库");
+
+
+    //Connectivity
     myMap.put("ActivityStarter", "活动启动");
-    myMap.put("BarcodeScanner", "条码扫描器");
     myMap.put("BluetoothClient", "蓝牙客户");
     myMap.put("BluetoothServer", "蓝牙服务器");
-    myMap.put("Notifier", "通告人");
-    myMap.put("SpeechRecognizer", "语音识别");
-    myMap.put("TextToSpeech", "文本到语音");
-    myMap.put("TinyWebDB", "细小网络数据库");
     myMap.put("Web", "网络");
-
+    
     //Not ready for prime time
-    myMap.put("FusiontablesControl","Fusiontables控制");
     myMap.put("GameClient","游戏客户端");
-    myMap.put("SoundRecorder","声音记录器");
     myMap.put("Voting","投票");
-    myMap.put("WebViewer","网页浏览器");
+
   };
 
   public String getCorrespondingString(String key) {

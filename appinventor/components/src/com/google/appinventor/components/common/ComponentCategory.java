@@ -48,7 +48,7 @@ import java.util.Map;
     // TODO(user): i18n category names
     USERINTERFACE("User Interface"),
     LAYOUT("Layout"),
-    MEDIA("media"),
+    MEDIA("Media"),
     ANIMATION("Drawing and Animation"),
     SENSORS("Sensors"),
     SOCIAL("Social"),

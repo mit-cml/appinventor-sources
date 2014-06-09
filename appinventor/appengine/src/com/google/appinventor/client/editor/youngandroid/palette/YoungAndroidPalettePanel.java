@@ -5,7 +5,9 @@
 
 package com.google.appinventor.client.editor.youngandroid.palette;
 
+
 import com.google.appinventor.client.TranslationDesignerProperties;
+import com.google.appinventor.client.TranslationDesignerPallete;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
 import com.google.appinventor.client.editor.simple.components.MockComponent;
 import com.google.appinventor.client.editor.simple.palette.DropTargetProvider;
@@ -31,6 +33,7 @@ import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroid
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVerticalAlignmentChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidVisibilityChoicePropertyEditor;
 import com.google.appinventor.client.editor.youngandroid.properties.YoungAndroidTextReceivingPropertyEditor;
+import com.google.appinventor.client.output.OdeLog;
 import com.google.appinventor.client.widgets.properties.FloatPropertyEditor;
 import com.google.appinventor.client.widgets.properties.IntegerPropertyEditor;
 import com.google.appinventor.client.widgets.properties.NonNegativeFloatPropertyEditor;
@@ -86,7 +89,8 @@ public class YoungAndroidPalettePanel extends Composite implements SimplePalette
         VerticalPanel categoryPanel = new VerticalPanel();
         categoryPanel.setWidth("100%");
         categoryPanels.put(category, categoryPanel);
-        stackPalette.add(categoryPanel, category.getName());
+        stackPalette.add(categoryPanel, 
+        				 TranslationDesignerPallete.getCorrespondingString(category.getName()));
       }
     }
 

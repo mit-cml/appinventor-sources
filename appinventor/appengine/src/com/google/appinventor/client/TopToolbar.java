@@ -127,85 +127,85 @@ public class TopToolbar extends Composite {
     List<DropDownItem> helpItems = Lists.newArrayList();
 
     // File -> {New Project; Save; Save As; Checkpoint; |; Delete this Project; My Projects;}
-    fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.tabNameProjects(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_MY_PROJECTS, MESSAGES.projectMenuItem(),
         new SwitchToProjectAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newMenuItemButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_NEW, MESSAGES.newProjectMenuItem(),
         new NewAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_IMPORTPROJECT, MESSAGES.importProjectMenuItem(),
         new ImportProjectAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteMenuItemButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE, MESSAGES.deleteProjectMenuItem(),
         new DeleteAction()));
     fileItems.add(null);
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE, MESSAGES.saveMenuItem(),
         new SaveAction()));
     fileItems.add(new DropDownItem(WIDGET_NAME_SAVE_AS, MESSAGES.saveAsMenuItem(),
         new SaveAsAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_CHECKPOINT, MESSAGES.checkpointMenuItem(),
         new CheckpointAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTPROJECT, MESSAGES.exportProjectMenuItem(),
         new ExportProjectAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_EXPORTALLPROJECTS, MESSAGES.exportAllProjectsMenuItem(),
         new ExportAllProjectsAction()));
     fileItems.add(null);
-    fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_UPLOAD_KEYSTORE, MESSAGES.uploadKeystoreMenuItem(),
         new UploadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_KEYSTORE, MESSAGES.downloadKeystoreMenuItem(),
         new DownloadKeystoreAction()));
-    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreButton(),
+    fileItems.add(new DropDownItem(WIDGET_NAME_DELETE_KEYSTORE, MESSAGES.deleteKeystoreMenuItem(),
         new DeleteKeystoreAction()));
 
     // Connect -> {Connect to Companion; Connect to Emulator; Connect to USB; Reset Connections}
     connectItems.add(new DropDownItem(WIDGET_NAME_WIRELESS_BUTTON,
-        MESSAGES.wirelessButton(), new WirelessAction()));
+        MESSAGES.AICompanionMenuItem(), new WirelessAction()));
     connectItems.add(new DropDownItem(WIDGET_NAME_EMULATOR_BUTTON,
-        MESSAGES.emulatorButton(), new EmulatorAction()));
-    connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbButton(),
+        MESSAGES.emulatorMenuItem(), new EmulatorAction()));
+    connectItems.add(new DropDownItem(WIDGET_NAME_USB_BUTTON, MESSAGES.usbMenuItem(),
         new UsbAction()));
     connectItems.add(null);
-    connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnections(),
+    connectItems.add(new DropDownItem(WIDGET_NAME_RESET_BUTTON, MESSAGES.resetConnectionsMenuItem(),
         new ResetAction()));
-    connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnections(),
+    connectItems.add(new DropDownItem(WIDGET_NAME_HARDRESET_BUTTON, MESSAGES.hardResetConnectionsMenuItem(),
         new HardResetAction()));
 
     // Build -> {Show Barcode; Download to Computer; Generate YAIL only when logged in as an admin}
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeButton(),
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_BARCODE, MESSAGES.showBarcodeMenuItem(),
         new BarcodeAction()));
-    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerButton(),
+    buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_DOWNLOAD, MESSAGES.downloadToComputerMenuItem(),
         new DownloadAction()));
     if (AppInventorFeatures.hasYailGenerationOption() && Ode.getInstance().getUser().getIsAdmin()) {
       buildItems.add(null);
-      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailButton(),
+      buildItems.add(new DropDownItem(WIDGET_NAME_BUILD_YAIL, MESSAGES.generateYailMenuItem(),
           new GenerateYailAction()));
     }
 
     // Help -> {About, Library, Get Started, Tutorials, Troubleshooting, Forums, Report an Issue}
-    helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_ABOUT, MESSAGES.aboutMenuItem(),
         new AboutAction()));
     helpItems.add(null);
-    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_LIBRARY, MESSAGES.libraryMenuItem(),
         new LibraryAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_GETSTARTED, MESSAGES.getStartedMenuItem(),
         new GetStartedAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_TUTORIALS, MESSAGES.tutorialsMenuItem(),
         new TutorialsAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_TROUBLESHOOTING, MESSAGES.troubleshootingMenuItem(),
         new TroubleShootingAction()));
-    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_FORUMS, MESSAGES.forumsMenuItem(),
         new ForumsAction()));
     helpItems.add(null);
-    helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackLink(),
+    helpItems.add(new DropDownItem(WIDGET_NAME_FEEDBACK, MESSAGES.feedbackMenuItem(),
         new FeedbackAction()));
 
     // Create the TopToolbar drop down menus.
-    fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectButton(),
+    fileDropDown = new DropDownButton(WIDGET_NAME_PROJECT, MESSAGES.projectsTabName(),
         fileItems, false);
-    connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectButton(),
+    connectDropDown = new DropDownButton(WIDGET_NAME_CONNECT_TO, MESSAGES.connectTabName(),
         connectItems, false);
-    buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildButton(),
+    buildDropDown = new DropDownButton(WIDGET_NAME_BUILD, MESSAGES.buildTabName(),
         buildItems, false);
-    helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpLink(),
+    helpDropDown = new DropDownButton(WIDGET_NAME_HELP, MESSAGES.helpTabName(),
         helpItems, false);
 
     // Set the DropDown Styles
@@ -224,10 +224,10 @@ public class TopToolbar extends Composite {
     if (Ode.getInstance().getUser().getIsAdmin()) {
       List<DropDownItem> adminItems = Lists.newArrayList();
       adminItems.add(new DropDownItem(WIDGET_NAME_DOWNLOAD_USER_SOURCE,
-          MESSAGES.downloadUserSourceButton(), new DownloadUserSourceAction()));
+          MESSAGES.downloadUserSourceMenuItem(), new DownloadUserSourceAction()));
       adminItems.add(new DropDownItem(WIDGET_NAME_SWITCH_TO_DEBUG,
-          MESSAGES.switchToDebugButton(), new SwitchToDebugAction()));
-      adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminButton(), adminItems,
+          MESSAGES.switchToDebugMenuItem(), new SwitchToDebugAction()));
+      adminDropDown = new DropDownButton(WIDGET_NAME_ADMIN, MESSAGES.adminTabName(), adminItems,
           false);
       adminDropDown.setStyleName("ode-TopPanelButton");
       toolbar.add(adminDropDown);
@@ -665,13 +665,13 @@ public class TopToolbar extends Composite {
 
   private void updateConnectToDropDownButton(boolean isEmulatorRunning, boolean isCompanionRunning, boolean isUsbRunning){
     if (!isEmulatorRunning && !isCompanionRunning && !isUsbRunning) {
-      connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), true);
-      connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), true);
-      connectDropDown.setItemEnabled(MESSAGES.usbButton(), true);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), true);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), true);
     } else {
-      connectDropDown.setItemEnabled(MESSAGES.wirelessButton(), false);
-      connectDropDown.setItemEnabled(MESSAGES.emulatorButton(), false);
-      connectDropDown.setItemEnabled(MESSAGES.usbButton(), false);
+      connectDropDown.setItemEnabled(MESSAGES.AICompanionMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.emulatorMenuItem(), false);
+      connectDropDown.setItemEnabled(MESSAGES.usbMenuItem(), false);
     }
   }
 
@@ -736,25 +736,25 @@ public class TopToolbar extends Composite {
    */
   public void updateFileMenuButtons(int view) {
     if (view == 0) {  // We are in the Projects view
-      fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(),
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(),
           Ode.getInstance().getProjectManager().getProjects() == null);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(),
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(),
           Ode.getInstance().getProjectManager().getProjects().size() > 0);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), false);
-      fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), false);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), false);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), false);
+      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), false);
     } else { // We have to be in the Designer/Blocks view
-      fileDropDown.setItemEnabled(MESSAGES.deleteMenuItemButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsButton(), false);
-      fileDropDown.setItemEnabled(MESSAGES.exportProjectButton(), false);
+      fileDropDown.setItemEnabled(MESSAGES.deleteProjectMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportAllProjectsMenuItem(), false);
+      fileDropDown.setItemEnabled(MESSAGES.exportProjectMenuItem(), false);
       fileDropDown.setItemEnabled(MESSAGES.saveMenuItem(), true);
       fileDropDown.setItemEnabled(MESSAGES.saveAsMenuItem(), true);
-      fileDropDown.setItemEnabled(MESSAGES.checkpointButton(), true);
-      buildDropDown.setItemEnabled(MESSAGES.showBarcodeButton(), true);
-      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerButton(), true);
+      fileDropDown.setItemEnabled(MESSAGES.checkpointMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.showBarcodeMenuItem(), true);
+      buildDropDown.setItemEnabled(MESSAGES.downloadToComputerMenuItem(), true);
     }
     updateKeystoreFileMenuButtons();
   }
@@ -767,15 +767,15 @@ public class TopToolbar extends Composite {
         new AsyncCallback<Boolean>() {
           @Override
           public void onSuccess(Boolean keystoreFileExists) {
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), keystoreFileExists);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), keystoreFileExists);
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), keystoreFileExists);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), keystoreFileExists);
           }
 
           @Override
           public void onFailure(Throwable caught) {
-            // Enable the buttons. If they are clicked, we'll check again if the keystore exists.
-            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreButton(), true);
-            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreButton(), true);
+            // Enable the MenuItems. If they are clicked, we'll check again if the keystore exists.
+            fileDropDown.setItemEnabled(MESSAGES.deleteKeystoreMenuItem(), true);
+            fileDropDown.setItemEnabled(MESSAGES.downloadKeystoreMenuItem(), true);
           }
         });
   }

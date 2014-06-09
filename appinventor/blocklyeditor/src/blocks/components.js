@@ -73,7 +73,7 @@ Blockly.Blocks.component_event = {
 
     this.appendDummyInput('WHENTITLE').appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
-        .appendField('.' + this.eventName);
+        .appendField('.' + this.getEventTypeObject().translatedName);
     this.componentDropDown.setValue(this.instanceName);
     this.setParameterOrientation(horizParams);
     this.setTooltip(this.getEventTypeObject().description);
@@ -115,7 +115,7 @@ Blockly.Blocks.component_event = {
                                .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (var i = 0, param; param = params[i]; i++) {
-            paramInput.appendField(new Blockly.FieldParameterFlydown(param.name, false), // false means not editable
+            paramInput.appendField(new Blockly.FieldParameterFlydown(param.translatedName, false), // false means not editable
                                    'VAR' + i)
                       .appendField(" ");
           }
@@ -140,7 +140,7 @@ Blockly.Blocks.component_event = {
         // Vertically aligned parameters
         for (var i = 0, param; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendField(new Blockly.FieldParameterFlydown(param.name, false),
+              .appendField(new Blockly.FieldParameterFlydown(param.translatedName, false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
@@ -295,18 +295,18 @@ Blockly.Blocks.component_method = {
       this.appendDummyInput()
         .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL)
         .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
-        .appendField('.' + this.getMethodTypeObject().name);
+        .appendField('.' + this.getMethodTypeObject().translatedName);
       this.componentDropDown.setValue(this.instanceName);
     } else {
       this.appendDummyInput()
-        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + this.getMethodTypeObject().name);
+        .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + this.typeName + '.' + this.getMethodTypeObject().translatedName);
       var compInput = this.appendValueInput("COMPONENT")
         .setCheck(this.typeName).appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_FOR_COMPONENT)
         .setAlign(Blockly.ALIGN_RIGHT);
     }
     this.setTooltip(this.getMethodTypeObject().description);
     for (var i = 0, param; param = this.getMethodTypeObject().params[i]; i++) {
-      var newInput = this.appendValueInput("ARG" + i).appendField(param.name);
+      var newInput = this.appendValueInput("ARG" + i).appendField(param.translatedName);
       newInput.setAlign(Blockly.ALIGN_RIGHT);
       var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT)
       newInput.connection.setCheck(blockyType);
@@ -540,7 +540,7 @@ Blockly.Blocks.component_set_get = {
     }
 
     for(var i=0;i<propertyNames.length;i++) {
-      dropDownList.push([propertyNames[i],propertyNames[i]]);
+      dropDownList.push([propertyNames[i]['translated'],propertyNames[i]['english']]);
     }
     return dropDownList;
   },
