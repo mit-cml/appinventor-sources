@@ -537,8 +537,19 @@ Blockly.LexicalVariable.renameParam = function (newName) {
 Blockly.LexicalVariable.checkIdentifier = function(ident) {
   var transformed = ident.trim() // Remove leading and trailing whitespace
                          .replace(/[\s\xa0]+/g, '_'); // Replace nonempty sequences of internal spaces by underscores
-  var regexp = /^[a-zA-Z_\$\?~@][\w_\$\?~@]*$/;
-  var isLegal = transformed.search(regexp) == 0;
+  // [lyn, 06/11/14] Previous definition focused on *legal* characters:
+  //
+  //    var legalRegexp = /^[a-zA-Z_\$\?~@][\w_\$\?~@]*$/;
+  //
+  // Unfortunately this is geared only to English, and prevents i8n names (such as Chinese identifiers).
+  // In order to handle i8n, focus on avoiding illegal chars rather than accepting only legal ones.
+  // This is a quick solution. Needs more careful thought to work for every language. In particular,
+  // need to look at results of Java's Character.isJavaIdentifierStart(int) and
+  // Character.isJavaIdentifierPart(int)
+  // Note: to take complement of character set, put ^ first.
+  // Note: to include '-' in character set, put it first or right after ^
+  var legalRegexp = /^[^-0-9!&%^/>=<`'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ][^-!&%^/>=<'"#:;\\\^\*\+\.\(\)\|\{\}\[\]\ ]*$/
+  var isLegal = transformed.search(legalRegexp) == 0;
   return {isLegal: isLegal, transformed: transformed};
 }
 
