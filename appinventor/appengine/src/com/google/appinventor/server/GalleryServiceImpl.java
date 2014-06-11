@@ -44,6 +44,9 @@ import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 
+import com.google.appinventor.server.flags.Flag;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -86,6 +89,14 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
   // fileExporter used to get the source code from project being published
   private final FileExporter fileExporter = new FileExporterImpl();
+
+  @Override
+  public GallerySettings loadGallerySettings() {
+    String bucket = Flag.createFlag("gallery.bucket", "").get();
+    boolean galleryEnabled = Flag.createFlag("use.gallery",false).get();
+    GallerySettings settings = new GallerySettings(galleryEnabled, bucket);
+    return settings;
+  }
 
   /**
    * Publishes a gallery app
@@ -443,19 +454,23 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     }
     // now stick the aia file into the gcs
     try {
-      String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);
-
+      //String galleryKey = GalleryApp.getSourceKey(galleryId);//String.valueOf(galleryId);
+      GallerySettings settings = loadGallerySettings();
+      String galleryKey = settings.getSourceKey(galleryId);
       // setup cloud
       GcsService gcsService = GcsServiceFactory.createGcsService();
-      GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      
+      //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
+
       GcsFileOptions options = new GcsFileOptions.Builder().mimeType("application/zip")
           .acl("public-read").cacheControl("no-cache").addUserMetadata("title", aiaName).build();
       GcsOutputChannel writeChannel = gcsService.createOrReplace(filename, options);
       writeChannel.write(ByteBuffer.wrap(aiaBytes));
-    
+
       // Now finalize
       writeChannel.close();
-      
+
     } catch (IOException e) {
       // TODO Auto-generated catch block
       LOG.log(Level.INFO, "FAILED GCS");
@@ -465,10 +480,14 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
   private void deleteAIA(long galleryId) {
     try {
-      String galleryKey = GalleryApp.getSourceKey(galleryId);
+      //String galleryKey = GalleryApp.getSourceKey(galleryId);
+      GallerySettings settings = loadGallerySettings();
+      String galleryKey = settings.getSourceKey(galleryId);
+
       // setup cloud
       GcsService gcsService = GcsServiceFactory.createGcsService();
-      GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
       gcsService.delete(filename);
     } catch (IOException e) {
       // TODO Auto-generated catch block
@@ -478,10 +497,13 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
   }
   private void deleteImage(long galleryId) {
     try {
-      String galleryKey = GalleryApp.getImageKey(galleryId);
+      //String galleryKey = GalleryApp.getImageKey(galleryId);
+      GallerySettings settings = loadGallerySettings();
+      String galleryKey = settings.getSourceKey(galleryId);
       // setup cloud
       GcsService gcsService = GcsServiceFactory.createGcsService();
-      GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      GcsFilename filename = new GcsFilename(settings.getBucket(), galleryKey);
       gcsService.delete(filename);
     } catch (IOException e) {
       // TODO Auto-generated catch block
@@ -498,10 +520,13 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
     // don't think that is there, though, so for now read one and write to other
     // First, read the file from projects name
     boolean lockForRead = false;
-    String projectImageKey = app.getProjectImageKey();
+    //String projectImageKey = app.getProjectImageKey();
+    GallerySettings settings = loadGallerySettings();
+    String projectImageKey = settings.getProjectImageKey(app.getProjectId());
     try {
       GcsService gcsService = GcsServiceFactory.createGcsService();
-      GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, projectImageKey);
+      //GcsFilename filename = new GcsFilename(GalleryApp.GALLERYBUCKET, projectImageKey);
+      GcsFilename filename = new GcsFilename(settings.getBucket(), projectImageKey);
       GcsInputChannel readChannel = gcsService.openReadChannel(filename, 0);
       InputStream gcsis = Channels.newInputStream(readChannel);
 
@@ -533,8 +558,11 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 
       // set up the cloud file (options)
       // After publish, copy the /projects/projectId image into /apps/appId
-      String galleryKey = app.getImageKey();
-      GcsFilename outfilename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      //String galleryKey = app.getImageKey();
+      String galleryKey = settings.getImageKey(app.getGalleryAppId());
+      
+      //GcsFilename outfilename = new GcsFilename(GalleryApp.GALLERYBUCKET, galleryKey);
+      GcsFilename outfilename = new GcsFilename(settings.getBucket(), galleryKey);
       GcsFileOptions options = new GcsFileOptions.Builder().mimeType("image/jpeg")
           .acl("public-read").cacheControl("no-cache").build();
       GcsOutputChannel writeChannel = gcsService.createOrReplace(outfilename, options);

@@ -34,8 +34,6 @@ public class GalleryApp implements IsSerializable {
     this.credit = "no credit";
   }
 
-
-  public static final String GALLERYBUCKET = "galleryai2";
   public static final String DEFAULTGALLERYIMAGE="images/genericApp.png";
   public static final String DEFAULTUSERIMAGE="images/android_icon_.png";
 
@@ -263,72 +261,6 @@ public class GalleryApp implements IsSerializable {
   }
   public void setCredit(String credit) {
     this.credit = credit;
-  }
-
-  /* URL is in GCS, of form: /gs/galleryai2/gallery/apps/6046115656892416/aia
-   * Here is what is in gcs docs:
-   * Your object is now visible to App Engine with the file name 
-   * /gs/my_bucket/my_object.
-   * If you set your object to be publicly accessible, your object can be 
-   * accessed using the URL http://storage.googleapis.com/my_bucket/my_object.
-  */
-  public String getSourceURL() {
-    String url = "/gs/" + this.GALLERYBUCKET + "/" + getSourceKey();
-    return url;
-  }
-  public static String getSourceURL(long galleryId) {
-    String url = "/gs/" + GALLERYBUCKET + "/" + getSourceKey(galleryId);
-    return url;
-  }
-  public String getSourceKey() {
-    String key = "gallery/apps/" + getGalleryAppId() + "/aia";
-    return key;
-  }
-  // this static one is called by galleryService when an app is first published
-  static public String getSourceKey(long galleryId) {
-    String key = "gallery/apps/" + galleryId + "/aia";
-    return key;
-  }
-
-  public String getCloudImageURL() {
-    String url = "http://storage.googleapis.com/" + this.GALLERYBUCKET + 
-        "/gallery/apps/" + getGalleryAppId() + "/image";
-    return url;
-  }
-  public static String getImageURL(long galleryId) {
-    return "/gs/" + GALLERYBUCKET + "/" +getImageKey(galleryId);
-  }
-
-  public String getImageKey() {
-    return "gallery/apps/" + getGalleryAppId() + "/image";
-  } 
-
-  public static String getImageKey(long galleryId) {
-    return "gallery/apps/" + galleryId + "/image";
-  } 
-
-  public String getProjectImageURL() {
-    String url = "http://storage.googleapis.com/" + this.GALLERYBUCKET + 
-        "/gallery/projects/" + getProjectId() + "/image";
-    return url;
-  }
-
-
-  public String getProjectImagePath() {
-    String url = "/gs/" + this.GALLERYBUCKET + "/gallery/projects/"
-       + getProjectId() + "/image";
-    return url;
-  }
-
-  public String getProjectImageKey() {
-    String url = "gallery/projects/" + getProjectId() + "/image";
-    return url;
-  }
-
-  static public String getUserImageUrl(String userid) {
-    String url = "http://storage.googleapis.com/" + GALLERYBUCKET + "/user/" +
-          userid + "/image";
-    return url;
   }
 
   public ArrayList<String> getTags() {

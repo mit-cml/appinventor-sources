@@ -18,6 +18,11 @@ import java.util.List;
 public interface GalleryServiceAsync {
 
   /**
+   * @see GalleryService#loadGallerySettings()
+   */
+  void loadGallerySettings(AsyncCallback<GallerySettings> callback);
+
+  /**
    * @see GalleryService#publishApp(long, String, String, String)
    */
   void publishApp(long projectId, String title, String projectName, String description,

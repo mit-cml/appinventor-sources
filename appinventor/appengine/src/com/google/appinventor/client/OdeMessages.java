@@ -1453,6 +1453,12 @@ public interface OdeMessages extends Messages {
   @Description("Label feedback for no results found after searching.")
   String noResultsFound();
 
+  // Used in GalleryClient.java
+
+  @DefaultMessage("Server error: gallery settings could not be accessed")
+  @Description("Error message reported when unable to extract gallery settings from xml.")
+  String gallerySettingsError();
+
   // Used in wizards/Wizard.java
 
   @DefaultMessage("Back")

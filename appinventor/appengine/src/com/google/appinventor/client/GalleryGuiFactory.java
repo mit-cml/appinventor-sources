@@ -59,7 +59,8 @@ public class GalleryGuiFactory implements GalleryRequestListener {
           image.setUrl(GalleryApp.DEFAULTGALLERYIMAGE);
         }
       });
-      image.setUrl(app.getCloudImageURL());
+      //image.setUrl(app.getCloudImageURL());
+      image.setUrl(gallery.getCloudImageURL(app.getGalleryAppId()));
     }
   }
   

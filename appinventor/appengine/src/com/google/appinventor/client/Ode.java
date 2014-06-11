@@ -275,6 +275,7 @@ public class Ode implements EntryPoint {
     return userSettings;
   }
 
+
   /**
    * Returns the asset manager.
    *

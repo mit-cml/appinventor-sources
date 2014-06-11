@@ -349,7 +349,7 @@ panel
     imageUploadPrompt = new Label("Upload your project image!");
     imageUploadPrompt.addStyleName("gallery-editprompt");
     
-    updateAppImage(app.getCloudImageURL(), imageUploadBoxInner);  
+    updateAppImage(gallery.getCloudImageURL(app.getGalleryAppId()), imageUploadBoxInner);
     image.addStyleName("status-updating");
     imageUploadPrompt.addStyleName("app-image-uploadprompt"); 
     imageUploadBoxInner.add(imageUploadPrompt);        
@@ -384,7 +384,7 @@ panel
    */
   private void initReadOnlyImage() {
     OdeLog.log("$$$$ init read only image...");
-    updateAppImage(app.getCloudImageURL(), appHeader);   
+    updateAppImage(gallery.getCloudImageURL(app.getGalleryAppId()), appHeader);
   }
 
 
@@ -413,7 +413,7 @@ panel
               // Update the app image preview after a success upload
               imageUploadBoxInner.clear();
               // updateAppImage(app.getCloudImageURL(), imageUploadBoxInner); 
-              updateAppImage(app.getProjectImageURL(),imageUploadBoxInner); 
+              updateAppImage(gallery.getProjectImageURL(app.getProjectId()),imageUploadBoxInner);
               imageUploaded=true;
               ErrorReporter.hide();
               break;
@@ -532,7 +532,7 @@ panel
     if (editStatus != NEWAPP) {
       final Image authorAvatar = new Image();
       authorAvatar.addStyleName("app-userimage");
-      authorAvatar.setUrl(GalleryApp.getUserImageUrl(app.getDeveloperId()));
+      authorAvatar.setUrl(gallery.getUserImageURL(app.getDeveloperId()));
       // If the user has provided a gallery app image, we'll load it. But if not
       // the error will occur and we'll load default image
       authorAvatar.addErrorHandler(new ErrorHandler() {

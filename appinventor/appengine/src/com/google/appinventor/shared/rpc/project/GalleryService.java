@@ -22,6 +22,13 @@ import java.util.List;
 @RemoteServiceRelativePath(ServerLayout.GALLERY_SERVICE)
 public interface GalleryService extends RemoteService {
 
+
+  /** Load the gallery settings (enabled, bucket) at startup time
+   *
+   * @return the gallery settings
+   */
+  GallerySettings loadGallerySettings();
+
   /**
    * Publishes a gallery app
    * @param projectId id of the project being published

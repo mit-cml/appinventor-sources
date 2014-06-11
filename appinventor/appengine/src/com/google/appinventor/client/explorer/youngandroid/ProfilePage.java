@@ -132,7 +132,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
   private static final Logger LOG = Logger.getLogger(ProfilePage.class.getName());
   private static final Ode ode = Ode.getInstance();
 
-  GalleryClient gallery = null;
+  GalleryClient gallery = GalleryClient.getInstance();
   GalleryGuiFactory galleryGF = new GalleryGuiFactory();
 
   /**
@@ -312,7 +312,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
               makeValidLink(userLinkDisplay, user.getUserLink());
             }
             // once we get the user info and id we can show the right image
-//            updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+//            updateUserImage(GalleryApp.getUserImageURL(userId), imageUploadBoxInner);
 
          }
     };
@@ -398,7 +398,8 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 
 
 //    OdeLog.log("#### got in initImageComponents, GalleryApp.getUserImageUrl(userId) = " + GalleryApp.getUserImageUrl(userId));
-    updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+    if(gallery.getGallerySettings() != null)
+      updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
     imageUploadPrompt.addStyleName("app-image-uploadprompt");
     imageUploadBoxInner.add(imageUploadPrompt);
 
@@ -431,7 +432,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
    * Helper method called by constructor to create the app image for display
    */
   private void initReadOnlyImage() {
-    updateUserImage(GalleryApp.getUserImageUrl(userId), profileHeader);
+    updateUserImage(gallery.getUserImageURL(userId), profileHeader);
   }
 
 
@@ -456,7 +457,7 @@ public class ProfilePage extends Composite/* implements GalleryRequestListener*/
 //              OdeLog.log("$$$$ profile page image upload success");
               ErrorReporter.hide();
               imageUploadBoxInner.clear();
-              updateUserImage(GalleryApp.getUserImageUrl(userId), imageUploadBoxInner);
+              updateUserImage(gallery.getUserImageURL(userId), imageUploadBoxInner);
               break;
             case FILE_TOO_LARGE:
 //              OdeLog.log("$$$$ profile page image upload too large");
