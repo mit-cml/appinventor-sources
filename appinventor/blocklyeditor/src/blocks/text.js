@@ -15,7 +15,7 @@ goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['text'] = {
   // Text value.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -44,7 +44,7 @@ Blockly.Blocks.text.connectionCheck = function(myConnection,otherConnection) {
 Blockly.Blocks['text_join'] = {
   // Create a string made up of any number of elements of any type.
   // TODO: (Andrew) Make this handle multiple arguments.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_JOIN_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -98,7 +98,7 @@ Blockly.Blocks['text_join_item'] = {
 
 Blockly.Blocks['text_length'] = {
   // String length.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_LENGTH_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -113,7 +113,7 @@ Blockly.Blocks['text_length'] = {
 
 Blockly.Blocks['text_isEmpty'] = {
   // Is the string null?
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_ISEMPTY_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -128,7 +128,7 @@ Blockly.Blocks['text_isEmpty'] = {
 
 Blockly.Blocks['text_compare'] = {
   // Compare two texts
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_COMPARE_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -185,7 +185,7 @@ Blockly.Blocks.text_compare.TOOLTIPS = function() {
 
 Blockly.Blocks['text_trim'] = {
   // trim string
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_TRIM_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -200,7 +200,7 @@ Blockly.Blocks['text_trim'] = {
 
 Blockly.Blocks['text_changeCase'] = {
   // Change capitalization.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.text_changeCase.HELPURLS()[mode];
@@ -255,7 +255,7 @@ Blockly.Blocks.text_changeCase.HELPURLS = function() {
 
 Blockly.Blocks['text_starts_at'] = {
   // return index of first occurrence.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_STARTS_AT_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -281,7 +281,7 @@ Blockly.Blocks['text_starts_at'] = {
 
 Blockly.Blocks['text_contains'] = {
   // Is text contained in
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_CONTAINS_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -308,7 +308,7 @@ Blockly.Blocks['text_contains'] = {
 Blockly.Blocks['text_split'] = {
   // This includes all four split variants (modes). The name and type of the 'AT' arg
   // changes to match the selected mode.
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : function() {
     var mode = this.getFieldValue('OP');
     return Blockly.Blocks.text_split.HELPURLS()[mode];
@@ -414,7 +414,7 @@ Blockly.Blocks.text_split.HELPURLS = function() {
 
 Blockly.Blocks['text_split_at_spaces'] = {
   // Split at spaces
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_SPLIT_AT_SPACES_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -429,7 +429,7 @@ Blockly.Blocks['text_split_at_spaces'] = {
 
 Blockly.Blocks['text_segment'] = {
   // Create text segment
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_SEGMENT_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);
@@ -461,7 +461,7 @@ Blockly.Blocks['text_segment'] = {
 
 Blockly.Blocks['text_replace_all'] = {
   // Replace all occurrences of text
-  category : Blockly.Msg.LANG_CATEGORY_TEXT,
+  category : 'Text',
   helpUrl : Blockly.Msg.LANG_TEXT_REPLACE_ALL_HELPURL,
   init : function() {
     this.setColour(Blockly.TEXT_CATEGORY_HUE);

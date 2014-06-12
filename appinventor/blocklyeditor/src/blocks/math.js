@@ -15,7 +15,7 @@ goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['math_number'] = {
   // Numeric value.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl : Blockly.Msg.LANG_MATH_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -679,7 +679,7 @@ Blockly.Blocks['math_floor'] = {
 
 Blockly.Blocks['math_divide'] = {
   // Remainder or quotient of a division.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_divide.HELPURLS()[mode];
@@ -746,7 +746,7 @@ Blockly.Blocks.math_divide.HELPURLS = function() {
 
 Blockly.Blocks['math_trig'] = {
   // Trigonometry operators.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_trig.HELPURLS()[mode];
@@ -836,7 +836,7 @@ Blockly.Blocks.math_trig.HELPURLS = function() {
 
 Blockly.Blocks['math_cos'] = {
   // Trigonometry operators.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_trig.HELPURLS[mode];
@@ -859,7 +859,7 @@ Blockly.Blocks['math_cos'] = {
 
 Blockly.Blocks['math_tan'] = {
   // Trigonometry operators.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_trig.HELPURLS[mode];
@@ -882,7 +882,7 @@ Blockly.Blocks['math_tan'] = {
 
 Blockly.Blocks['math_atan2'] = {
   // Trigonometry operators.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl : Blockly.Msg.LANG_MATH_TRIG_HELPURL_ATAN2,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -904,7 +904,7 @@ Blockly.Blocks['math_atan2'] = {
 
 Blockly.Blocks['math_convert_angles'] = {
   // Trigonometry operators.
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl: function() {
       var mode = this.getFieldValue('OP');
       return Blockly.Blocks.math_convert_angles.HELPURLS()[mode];
@@ -960,7 +960,7 @@ Blockly.Blocks.math_convert_angles.HELPURLS = function() {
 };
 
 Blockly.Blocks['math_format_as_decimal'] = {
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl : Blockly.Msg.LANG_MATH_FORMAT_AS_DECIMAL_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);
@@ -988,7 +988,7 @@ Blockly.Blocks['math_format_as_decimal'] = {
 };
 
 Blockly.Blocks['math_is_a_number'] = {
-  category : Blockly.Msg.LANG_CATEGORY_MATH,
+  category : 'Math',
   helpUrl : Blockly.Msg.LANG_MATH_IS_A_NUMBER_HELPURL,
   init : function() {
     this.setColour(Blockly.MATH_CATEGORY_HUE);

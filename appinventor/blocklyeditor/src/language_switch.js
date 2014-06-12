@@ -18,8 +18,10 @@ goog.require('Blockly.Msg.zh_tw');
 Blockly.language_switch = {
   // Switch between languages
   switchLanguage: function (language) {
-    var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
-    Blockly.mainWorkspace.clear();
+	if (Blockly.mainWorkspace){
+      var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+      Blockly.mainWorkspace.clear();
+	}
     switch (language) {
       case 'zh_TW':
         Blockly.Msg.zh_tw.switch_language_to_chinese_tw.init();
@@ -29,12 +31,6 @@ Blockly.language_switch = {
         Blockly.Msg.en.switch_language_to_english.init();
         console.log('en_US');
         break;
-//      case 'de':
-//        Blockly.Msg.de.switch_language_to_german.init();
-//        break;
-//      case 'vi':
-//        Blockly.Msg.vn.switch_language_to_vietnamese.init();
-//        break;
       case 'en':
         console.log('en');
       default:
@@ -42,7 +38,13 @@ Blockly.language_switch = {
         console.log('default');
         break;
     }
-    Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+	if (Blockly.mainWorkspace){
+      Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+	}
   }
 };
 
+//switch language before blocks are generated
+var language = window.parent.__gwt_Locale;
+console.log("Language = " + language);
+Blockly.language_switch.switchLanguage(language);

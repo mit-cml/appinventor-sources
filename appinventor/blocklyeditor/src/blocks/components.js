@@ -225,7 +225,7 @@ Blockly.Blocks.component_event = {
       eventObjects = Blockly.ComponentTypes[typeName].componentInfo.events;
       for(var k=0;k<eventObjects.length;k++) {
         tb.push({
-          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instanceNames[i] + '.' + eventObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_TITLE_WHEN + instanceNames[i] + '.' + window.parent.BlocklyPanel_getLocalizedEventName(eventObjects[k].name),
           mutatorAttributes: {
             component_type: typeName,
             instance_name: instanceNames[i],
@@ -349,7 +349,7 @@ Blockly.Blocks.component_method = {
       methodObjects = Blockly.ComponentTypes[typeName].componentInfo.methods;
       for(var k=0;k<methodObjects.length;k++) {
         tb.push({
-          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instanceNames[i] + '.' + methodObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_METHOD_TITLE_CALL + instanceNames[i] + '.' + window.parent.BlocklyPanel_getLocalizedMethodName(methodObjects[k].name),
           mutatorAttributes: {
             component_type: typeName,
             instance_name: instanceNames[i],
@@ -364,7 +364,7 @@ Blockly.Blocks.component_method = {
       methodObjects = Blockly.ComponentTypes[componentType].componentInfo.methods;
       for(var k=0;k<methodObjects.length;k++) {
         tb.push({
-          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + componentType + '.' + methodObjects[k].name,
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_METHOD_TITLE_CALL + window.parent.BlocklyPanel_getLocalizedComponentType(componentType) + '.' + window.parent.BlocklyPanel_getLocalizedMethodName(methodObjects[k].name),
           mutatorAttributes: {
             component_type: componentType,
             method_name: methodObjects[k].name,
@@ -410,8 +410,7 @@ Blockly.Blocks.component_set_get = {
   },
 
   domToMutation : function(xmlElement) {
-
-    this.typeName = xmlElement.getAttribute('component_type');
+	this.typeName = xmlElement.getAttribute('component_type');
     this.setOrGet = xmlElement.getAttribute('set_or_get');
     this.propertyName = xmlElement.getAttribute('property_name');
     var isGenericString = xmlElement.getAttribute('is_generic');
@@ -456,7 +455,7 @@ Blockly.Blocks.component_set_get = {
       } else {
         //generic get
         this.appendDummyInput()
-          .appendField(this.typeName + '.')
+          .appendField(window.parent.BlocklyPanel_getLocalizedComponentType(this.typeName) + '.')
           .appendField(dropdown, "PROP");
 
         this.appendValueInput("COMPONENT")
@@ -478,7 +477,7 @@ Blockly.Blocks.component_set_get = {
       } else {
         //generic set
         this.appendDummyInput()
-          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET +  this.typeName + '.')
+          .appendField(Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET +  window.parent.BlocklyPanel_getLocalizedComponentType(this.typeName) + '.')
           .appendField(dropdown, "PROP");
 
         this.appendValueInput("COMPONENT")
@@ -571,7 +570,7 @@ Blockly.Blocks.component_set_get = {
       propertyNames = Blockly.ComponentTypes[typeName].setPropertyList;
       for(var k=0;k<propertyNames.length;k++) {
         tb.push({
-          translatedName: 'set ' + instanceNames[i] + '.' + propertyNames[k],
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET + instanceNames[i] + '.' + window.parent.BlocklyPanel_getLocalizedPropertyName(propertyNames[k]),
           mutatorAttributes: {
             set_or_get: 'set',
             component_type: typeName,
@@ -584,7 +583,7 @@ Blockly.Blocks.component_set_get = {
       propertyNames = Blockly.ComponentTypes[typeName].getPropertyList;
       for(var k=0;k<propertyNames.length;k++) {
         tb.push({
-          translatedName: instanceNames[i] + '.' + propertyNames[k],
+          translatedName: instanceNames[i] + '.' + window.parent.BlocklyPanel_getLocalizedPropertyName(propertyNames[k]),
           mutatorAttributes: {
             set_or_get: 'get',
             component_type: typeName,
@@ -600,7 +599,7 @@ Blockly.Blocks.component_set_get = {
       propertyNames = Blockly.ComponentTypes[componentType].setPropertyList;
       for(var k=0;k<propertyNames.length;k++) {
         tb.push({
-          translatedName: 'set ' + componentType + '.' + propertyNames[k],
+          translatedName: Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET + window.parent.BlocklyPanel_getLocalizedComponentType(componentType) + '.' + window.parent.BlocklyPanel_getLocalizedPropertyName(propertyNames[k]),
           mutatorAttributes: {
             set_or_get: 'set',
             component_type: componentType,
@@ -612,7 +611,7 @@ Blockly.Blocks.component_set_get = {
       propertyNames = Blockly.ComponentTypes[componentType].getPropertyList;
       for(var k=0;k<propertyNames.length;k++) {
         tb.push({
-          translatedName: componentType + '.' + propertyNames[k],
+          translatedName: window.parent.BlocklyPanel_getLocalizedComponentType(componentType) + '.' + window.parent.BlocklyPanel_getLocalizedPropertyName(propertyNames[k]),
           mutatorAttributes: {
             set_or_get: 'get',
             component_type: componentType,

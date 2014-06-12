@@ -15,7 +15,7 @@ goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['lists_create_with'] = {
   // Create a list with any number of elements of any type.
-  category: Blockly.Msg.LANG_CATEGORY_LISTS,
+  category: 'Lists',
   helpUrl: Blockly.Msg.LANG_LISTS_CREATE_WITH_EMPTY_HELPURL,
   init: function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -73,7 +73,7 @@ Blockly.Blocks['lists_create_with_item'] = {
 
 Blockly.Blocks['lists_add_items'] = {
   // Create a list with any number of elements of any type.
-  category: Blockly.Msg.LANG_CATEGORY_LISTS,
+  category: 'Lists',
   helpUrl: Blockly.Msg.LANG_LISTS_ADD_ITEMS_HELPURL,
   init: function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -127,7 +127,7 @@ Blockly.Blocks['lists_add_items_item'] = {
 
 Blockly.Blocks['lists_is_in'] = {
   // Is in list?.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_IS_IN_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -154,7 +154,7 @@ Blockly.Blocks['lists_is_in'] = {
 
 Blockly.Blocks['lists_length'] = {
   // Length of list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_LENGTH_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -170,7 +170,7 @@ Blockly.Blocks['lists_length'] = {
 
 Blockly.Blocks['lists_is_empty'] = {
   // Is the list empty?.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_IS_EMPTY_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -186,7 +186,7 @@ Blockly.Blocks['lists_is_empty'] = {
 
 Blockly.Blocks['lists_pick_random_item'] = {
   // Length of list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_PICK_RANDOM_ITEM_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -202,7 +202,7 @@ Blockly.Blocks['lists_pick_random_item'] = {
 
 Blockly.Blocks['lists_position_in'] = {
   // Postion of item in list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_POSITION_IN_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -229,7 +229,7 @@ Blockly.Blocks['lists_position_in'] = {
 
 Blockly.Blocks['lists_select_item'] = {
   // Select from list an item.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_SELECT_ITEM_TITLE_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -256,7 +256,7 @@ Blockly.Blocks['lists_select_item'] = {
 
 Blockly.Blocks['lists_insert_item'] = {
   // Insert Item in list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_INSERT_ITEM_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -289,7 +289,7 @@ Blockly.Blocks['lists_insert_item'] = {
 
 Blockly.Blocks['lists_replace_item'] = {
   // Replace Item in list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_REPLACE_ITEM_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -322,7 +322,7 @@ Blockly.Blocks['lists_replace_item'] = {
 
 Blockly.Blocks['lists_remove_item'] = {
   // Remove Item in list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_REMOVE_ITEM_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -350,7 +350,7 @@ Blockly.Blocks['lists_remove_item'] = {
 
 Blockly.Blocks['lists_append_list'] = {
   // Append to list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_APPEND_LIST_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -378,7 +378,7 @@ Blockly.Blocks['lists_append_list'] = {
 
 Blockly.Blocks['lists_copy'] = {
   // Make a copy of list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_COPY_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -394,7 +394,7 @@ Blockly.Blocks['lists_copy'] = {
 
 Blockly.Blocks['lists_is_list'] = {
   // Is a list?
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_IS_LIST_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -409,7 +409,7 @@ Blockly.Blocks['lists_is_list'] = {
 
 Blockly.Blocks['lists_to_csv_row'] = {
   // Make a csv row from list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_TO_CSV_ROW_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -425,7 +425,7 @@ Blockly.Blocks['lists_to_csv_row'] = {
 
 Blockly.Blocks['lists_to_csv_table'] = {
   // Make a csv table from list.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_TO_CSV_TABLE_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -441,7 +441,7 @@ Blockly.Blocks['lists_to_csv_table'] = {
 
 Blockly.Blocks['lists_from_csv_row'] = {
   // Make list from csv row.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_FROM_CSV_ROW_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -457,7 +457,7 @@ Blockly.Blocks['lists_from_csv_row'] = {
 
 Blockly.Blocks['lists_from_csv_table'] = {
   // Make list from csv table.
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_FROM_CSV_TABLE_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);
@@ -473,7 +473,7 @@ Blockly.Blocks['lists_from_csv_table'] = {
 
 Blockly.Blocks['lists_lookup_in_pairs'] = {
   // Look up in a list of pairs (key, value).
-  category : Blockly.Msg.LANG_CATEGORY_LISTS,
+  category : 'Lists',
   helpUrl : Blockly.Msg.LANG_LISTS_LOOKUP_IN_PAIRS_HELPURL,
   init : function() {
     this.setColour(Blockly.LIST_CATEGORY_HUE);

@@ -68,17 +68,14 @@
         Blockly.BlocklyEditor.startup(document.body, formName);
         Blockly.ComponentTypes.populateTypes();
         window.parent.BlocklyPanel_initBlocksArea(formName);
-        /*var language = getURLParameter('locale');
-        if (language != null) {
-            window.parent.BlocklyPanel_switchLanguage(formName, language);
-        } else {
-            window.parent.BlocklyPanel_updateLanguage(formName);
-        }*/
-        var language = window.parent.__gwt_Locale;
-        console.log("Language = " + language);
-        window.parent.BlocklyPanel_switchLanguage(formName, language);
+        
+        /*
+        var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
+      	Blockly.mainWorkspace.clear();
+      	Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
+      	*/
+        
         window.parent.BlocklyPanel_checkWarningState(formName);
-        //window.Blockly.language_switch.switchLanguage(language);
       }
     </script>
   </head>

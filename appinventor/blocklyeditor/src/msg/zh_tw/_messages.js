@@ -846,17 +846,19 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_TOOLTIP = '创建一个全局变量，给它的附加块价值。';
 
     Blockly.Msg.LANG_VARIABLES_GET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#get';
-    Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = '得到';
+    Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET = '得到 ';
     // Blockly.Msg.LANG_VARIABLES_GET_INPUT_ITEM = '项目';
-    Blockly.Msg.LANG_VARIABLES_GET_COLLAPSED_TEXT = '得到';
+    Blockly.Msg.LANG_VARIABLES_GET_COLLAPSED_TEXT = '得到 ';
     Blockly.Msg.LANG_VARIABLES_GET_TOOLTIP = '返回此变量的值 ';
 
     Blockly.Msg.LANG_VARIABLES_SET_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#set';
-    Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET = '设置';
+    Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET = '设置 ';
     // Blockly.Msg.LANG_VARIABLES_SET_INPUT_ITEM = '项目';
     Blockly.Msg.LANG_VARIABLES_SET_TITLE_TO = '到';
-    Blockly.Msg.LANG_VARIABLES_SET_COLLAPSED_TEXT = '设置';
+    Blockly.Msg.LANG_VARIABLES_SET_COLLAPSED_TEXT = '设置 ';
     Blockly.Msg.LANG_VARIABLES_SET_TOOLTIP = '设置此变量，以将等于输入';
+    
+    Blockly.Msg.LANG_VARIABLES_VARIABLE = ' 变量';
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#do';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT = '初始化本地';
@@ -953,11 +955,11 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
     		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_GETTER_TITLE_OF_COMPONENT = '的组件';
 
     		Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_HELPURL = '';
-    		Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = '设置';
+    		Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_SET = '设置 ';
     		Blockly.Msg.LANG_COMPONENT_BLOCK_SETTER_TITLE_TO = '到';
 
     		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_HELPURL = '';
-    		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = '设置';
+    		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_SET = '设置 ';
     		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_TO = '到';
     		Blockly.Msg.LANG_COMPONENT_BLOCK_GENERIC_SETTER_TITLE_OF_COMPONENT = '的组件';
 

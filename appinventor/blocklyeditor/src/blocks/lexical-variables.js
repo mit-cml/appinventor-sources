@@ -78,7 +78,7 @@ goog.require('goog.dom');
  */
 Blockly.Blocks['global_declaration'] = {
   // Global var defn
-  category: Blockly.MSG_VARIABLE_CATEGORY,
+  category: 'Variables',
   helpUrl: Blockly.Msg.LANG_VARIABLES_GLOBAL_DECLARATION_HELPURL,
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
@@ -105,7 +105,7 @@ Blockly.Blocks['global_declaration'] = {
  */
 Blockly.Blocks['lexical_variable_get'] = {
   // Variable getter.
-  category: Blockly.MSG_VARIABLE_CATEGORY,
+  category: 'Variables',
   helpUrl: Blockly.Msg.LANG_VARIABLES_GET_HELPURL,
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
@@ -127,7 +127,7 @@ Blockly.Blocks['lexical_variable_get'] = {
         this.setFieldValue(newName, 'VAR');
     }
   },
-  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + ' variable' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_GET_TITLE_GET + Blockly.Msg.LANG_VARIABLES_VARIABLE }]
 };
 
 /**
@@ -135,7 +135,7 @@ Blockly.Blocks['lexical_variable_get'] = {
  */
 Blockly.Blocks['lexical_variable_set'] = {
   // Variable setter.
-  category: Blockly.MSG_VARIABLE_CATEGORY,
+  category: 'Variables',
   helpUrl: Blockly.Msg.LANG_VARIABLES_SET_HELPURL, // *** [lyn, 11/10/12] Fix this
   init: function() {
     this.setColour(Blockly.VARIABLE_CATEGORY_HUE);
@@ -154,7 +154,7 @@ Blockly.Blocks['lexical_variable_set'] = {
     return [this.getFieldValue('VAR')];
   },
   renameLexicalVar: Blockly.Blocks.lexical_variable_get.renameLexicalVar,
-  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET + ' variable' }]
+  typeblock: [{ translatedName: Blockly.Msg.LANG_VARIABLES_SET_TITLE_SET + Blockly.Msg.LANG_VARIABLES_VARIABLE }]
 };
 
 /**
@@ -164,7 +164,7 @@ Blockly.Blocks['lexical_variable_set'] = {
 Blockly.Blocks['local_declaration_statement'] = {
   // Define a procedure with no return value.
   // category: null,  // Procedures are handled specially.
-  category: Blockly.MSG_VARIABLE_CATEGORY,
+  category: 'Variables',
   helpUrl: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL,
   bodyInputName: 'STACK',
   init: function() {
@@ -414,7 +414,7 @@ Blockly.Blocks['local_declaration_statement'] = {
  * [lyn, 10/13/13] Refactored to share more code with Blockly.Blocks.local_declaration_statement
  */
 Blockly.Blocks['local_declaration_expression'] = {
-  category: Blockly.MSG_VARIABLE_CATEGORY,  // *** [lyn, 11/07/12] Abstract over this
+  category: 'Variables',  // *** [lyn, 11/07/12] Abstract over this
   helpUrl: Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_EXPRESSION_HELPURL,
   initLocals: Blockly.Blocks.local_declaration_statement.initLocals,
   bodyInputName: 'RETURN',

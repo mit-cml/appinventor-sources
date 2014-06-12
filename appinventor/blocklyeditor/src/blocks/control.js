@@ -37,7 +37,7 @@ goog.require('Blockly.Blocks.Utilities');
 
 Blockly.Blocks['controls_if'] = {
   // If/elseif/else condition.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_IF_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -235,7 +235,7 @@ Blockly.Blocks['controls_if_else'] = {
 
 Blockly.Blocks['controls_forRange'] = {
   // For range.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -290,7 +290,7 @@ Blockly.Blocks['controls_forRange'] = {
 
 Blockly.Blocks['controls_forEach'] = {
   // For each loop.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_FOREACH_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -391,7 +391,7 @@ Blockly.Blocks.for_lexical_variable_get = {
 
 Blockly.Blocks['controls_while'] = {
   // While condition.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_WHILE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -413,7 +413,7 @@ Blockly.Blocks['controls_while'] = {
 // [lyn, 01/15/2013] Remove DO C-sockets because now handled more modularly by DO-THEN-RETURN block.
 Blockly.Blocks['controls_choose'] = {
   // Choose.
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_CHOOSE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -448,7 +448,7 @@ Blockly.Blocks['controls_choose'] = {
 // but someone removed it from the control drawer. I think it still belongs here.
 Blockly.Blocks['controls_do_then_return'] = {
   // String length.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_PROCEDURES_DOTHENRETURN_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -465,7 +465,7 @@ Blockly.Blocks['controls_do_then_return'] = {
 
 // [lyn, 01/15/2013] Added
 Blockly.Blocks['controls_eval_but_ignore'] = {
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_EVAL_BUT_IGNORE_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -499,7 +499,7 @@ Blockly.Blocks.controls_nothing = {
 
 Blockly.Blocks['controls_openAnotherScreen'] = {
   // Open another screen
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -516,7 +516,7 @@ Blockly.Blocks['controls_openAnotherScreen'] = {
 
 Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
   // Open another screen with start value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_OPEN_ANOTHER_SCREEN_WITH_START_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -536,7 +536,7 @@ Blockly.Blocks['controls_openAnotherScreenWithStartValue'] = {
 
 Blockly.Blocks['controls_getStartValue'] = {
   // Get start value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_GET_START_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -550,7 +550,7 @@ Blockly.Blocks['controls_getStartValue'] = {
 
 Blockly.Blocks['controls_closeScreen'] = {
   // Close screen
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -564,7 +564,7 @@ Blockly.Blocks['controls_closeScreen'] = {
 
 Blockly.Blocks['controls_closeScreenWithValue'] = {
   // Close screen with value
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_VALUE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -580,7 +580,7 @@ Blockly.Blocks['controls_closeScreenWithValue'] = {
 
 Blockly.Blocks['controls_closeApplication'] = {
   // Close application
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_APPLICATION_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -593,7 +593,7 @@ Blockly.Blocks['controls_closeApplication'] = {
 
 Blockly.Blocks['controls_getPlainStartText'] = {
   // Get plain start text
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_GET_PLAIN_START_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -607,7 +607,7 @@ Blockly.Blocks['controls_getPlainStartText'] = {
 
 Blockly.Blocks['controls_closeScreenWithPlainText'] = {
   // Close screen with plain text
-  category : Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category : 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_CLOSE_SCREEN_WITH_PLAIN_TEXT_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);

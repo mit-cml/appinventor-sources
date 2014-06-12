@@ -862,6 +862,8 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_VARIABLES_SET_TITLE_TO = 'to';
     Blockly.Msg.LANG_VARIABLES_SET_COLLAPSED_TEXT = 'set';
     Blockly.Msg.LANG_VARIABLES_SET_TOOLTIP = 'Sets this variable to be equal to the input.';
+    
+    Blockly.Msg.LANG_VARIABLES_VARIABLE = ' variable';
 
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_HELPURL = 'http://appinventor.mit.edu/explore/ai2/support/blocks/variables#do';
     Blockly.Msg.LANG_VARIABLES_LOCAL_DECLARATION_TITLE_INIT = 'initialize local';
