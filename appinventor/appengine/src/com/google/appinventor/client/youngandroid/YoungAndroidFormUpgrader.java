@@ -732,6 +732,13 @@ public final class YoungAndroidFormUpgrader {
       // The ApiKey property and the SendQuery and ForgetLogin methods were added.
       srcCompVersion = 2;
     }
+    if (srcCompVersion < 3) {
+      // No properties need to be modified to upgrade to version 3.
+      // GetRows, InsertRows and GetRowsWithConditions methods were added.
+      // KeyFile, UseServiceAuthentication and ServiceAccountEmail properties
+      // were added.
+      srcCompVersion = 3;
+    }
     return srcCompVersion;
   }
 

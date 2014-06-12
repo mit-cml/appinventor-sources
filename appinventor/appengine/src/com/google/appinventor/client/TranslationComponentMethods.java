@@ -253,6 +253,9 @@ public class TranslationComponentMethods {
     map.put("PutText", MESSAGES.PutTextMethods());
     map.put("PutTextWithEncoding", MESSAGES.PutTextWithEncodingMethods());
     map.put("RequestTranslation", MESSAGES.RequestTranslationMethods());
+    map.put("InsertRow", MESSAGES.InsertRowMethods());
+    map.put("GetRows", MESSAGES.GetRowsMethods());
+    map.put("GetRowsWithConditions", MESSAGES.GetRowsWithConditionsMethods());
 
     return map;
   }

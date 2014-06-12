@@ -133,6 +133,7 @@ public class TranslationComponentProperty {
     map.put("Language", MESSAGES.LanguageProperties());
     map.put("LineWidth", MESSAGES.LineWidthProperties());
     map.put("IsLooping", MESSAGES.IsLoopingProperties());
+    map.put("KeyFile", MESSAGES.KeyFileProperties());
     map.put("Message", MESSAGES.MessageProperties());
     map.put("MinimumInterval", MESSAGES.MinimumIntervalProperties());
     map.put("MultiLine", MESSAGES.MultiLineProperties());
@@ -157,6 +158,7 @@ public class TranslationComponentProperty {
     map.put("Scrollable", MESSAGES.ScrollableProperties());
     map.put("Secure", MESSAGES.SecureProperties());
     map.put("ServiceURL", MESSAGES.ServiceURLProperties());
+    map.put("ServiceAccountEmail", MESSAGES.ServiceAccountEmailProperties());
     map.put("Selection", MESSAGES.SelectionProperties());
     map.put("Source", MESSAGES.SourceProperties());
     map.put("Speed", MESSAGES.SpeedProperties());
@@ -170,6 +172,7 @@ public class TranslationComponentProperty {
     map.put("Title", MESSAGES.TitleProperties());
     map.put("TopOfRange", MESSAGES.TopOfRangeProperties());
     map.put("Url", MESSAGES.UrlProperties());
+    map.put("UseServiceAuthentication", MESSAGES.UseServiceAuthenticationProperties());
     map.put("Visible", MESSAGES.VisibleProperties());
     map.put("Volume", MESSAGES.VolumeProperties());
     map.put("WithinRangeEventEnabled", MESSAGES.WithinRangeEventEnabledProperties());

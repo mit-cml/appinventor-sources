@@ -472,110 +472,125 @@ none
   <dd>Saves text to a file. If the filename begins with a slash (/) the file is written to the sdcard. For example writing to /myFile.txt will write the file to /sdcard/myFile.txt. If the filename does not start with a slash, it will be written in the programs private data directory where it will not be accessible to other programs on the phone. There is a special exception for the AI Companion where these files are written to /sdcard/AppInventor/data to facilitate debugging. Note that this block will overwrite a file if it already exists.
 If you want to add content to a file use the append block.</dd>
 </dl>
+<h2 id="FusiontablesControl">FusiontablesControl</h2>
 
-<h2 id="FusiontablesControl"> FusiontablesControl </h2>
-<img alt="Picture of Fusion Tables component" src="images/fusiontables.png">
-<p> Google Fusion Tables lets you store, share, query and visualize
-data tables; this component lets you query, create, and modify these
-tables, using the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API V1.0</a>. </p>
-To use the component, define a query, call SendQuery to execute the
-query, and GotResult will hand you the result when it is ready.
-<p> Note that you do not need to worry about UTF-encoding the query.
-But you do need to make sure the query follows the syntax described in
-the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">reference manual</a>, which means that things like
-capitalization for names of columns matters, and that single quotes
-must be used around column names if there are spaces in them. </p>
-<p> The results of the query will generally be returned in <a href="http://en.wikipedia.org/wiki/Comma-separated_values" target="_blank">comma-separated values (CSV) format</a>, and can be
-converted to list format using the "list from csv table" or "list from
-csv row" blocks. </p>
+<p>A non-visible component that communicates with Google Fusion
+  Tables. Fusion Tables let you store, share, query and visualize data
+  tables; this component lets you query, create, and modify these
+  tables.</p>
+
+<p>This component uses
+  the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started"
+         target="_blank">Fusion Tables API V1.0</a>. <p>Applications using
+  Fusion Tables must authentication to Google's servers. There are two
+  ways this can be done. The first way uses an API Key which you the
+  developer obtain (see below). With this approach end-users must also
+  login to access a Fusion Table. The second approach is to use a
+  Service Account. With this approach you create credentials and a
+  special "Service Account Email Address" which you obtain from
+  the <a href="https://code.google.com/apis/console/"
+         target="_blank">Google APIs Console</a>. You then tell the Fusion
+  Table Control the name of the Service Account Email address and
+  upload the secret key as an asset to your application and set the
+  KeyFile property to point at this file. Finally you check the
+  "UseServiceAuthentication" checkbox in the designer. When using a
+  Service Account, end-users do not need to login to use Fusion Tables,
+  your service account authenticates all access.</p>
+
 <h3> Using the FusiontablesControl Component </h3>
-<h4>Getting an API Key</h4>
-<p>In order to use the FusiontablesControl Component you need to
-acquire a Google a Google Applications Programming Interface (API) key,
-an <i>API Key</i>. To get an API key, follow these instructions:</p>
+<h4>Creating Fusion Tables</h4>
+<p>You will probably want to create your own Fusion Tables to
+  experiment with as you are developing your apps. This is as easy as
+  creating a Google document, if you are familiar with that process. Here
+  are the steps:</p>
+<ol>
+  <li>On the web, login to your Gmail account or any other Google
+    service (e.g., Drive, YouTube).</li>
+  <li>Select the <i>More &gt; Even more</i> menu and scroll to the
+    bottom of the page of Google services where you will find the <i>Fusion
+      Tables</i> service.</li>
+  <li>You may want to view some of the examples and work through a
+    tutorial to learn the basics.</li>
+  <li>Click the <i>See my tables</i> button (top right of the page).
+    This will bring you to your own page.</li>
+  <li>You should see a list of your own tables or tables that have been
+    shared with you (possibly none). </li>
+  <li>Use the <i>Create</i> button to create a new table. Give it some
+    column names. And save it. </li>
+  <li>Click on the <i>Share</i> button (top right) to modify the
+    table's permissions. </li>
+</ol>
+<h4>Creating a Fusiontables App</h4>
+
+<p>When you drag the <i>FusiontablesControl</i> component onto the
+  Designer, don't forget to set its <i>ApiKey</i> property, which is
+  initially blank. You should copy this from
+  your <a href="https://code.google.com/apis/console/"
+          target="_blank">Google APIs Console</a> and paste it into the property
+  field. </p>
+
+<p>To get an API key, follow these instructions.</p>
 <ol>
   <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a> and login if necessary.</li>
   <li>Select the <i>Services</i> item from the menu on the left.</li>
-  <li>Choose the <i>Fusion Tables</i> service from the list provided
-and turn it on.</li>
+  <li>Choose the <i>Fusiontables</i> service from the list provided and turn it on.</li>
   <li>Go back to the main menu and select the <i>API Access</i> item. </li>
 </ol>
-<p>Your API Key will be at the bottom of that pane in the section
-called "Simple API Access". You will provide your key as the value to
-the <i>ApiKey</i> property in all your Fusiontables apps.</p>
-<h4>Creating Fusion Tables</h4>
-<p>You will probably want to create your own Fusion Tables to
-experiment with as you are developing your apps. This is as easy as
-creating a Google document, if you are familiar with that process. Here
-are the steps:</p>
-<ol>
-  <li>On the web, login to your Gmail account or any other Google
-service (e.g., Drive, YouTube).</li>
-  <li>Select the <i>More &gt; Even more</i> menu and scroll to the
-bottom of the page of Google services where you will find the <i>Fusion
-Tables</i> service.</li>
-  <li>You may want to view some of the examples and work through a
-tutorial to learn the basics.</li>
-  <li>Click the <i>See my tables</i> button (top right of the page).
-This will bring you to your own page.</li>
-  <li>You should see a list of your own tables or tables that have been
-shared with you (possibly none). </li>
-  <li>Use the <i>Create</i> button to create a new table. Give it some
-column names. And save it. </li>
-  <li>Click on the <i>Share</i> button (top right) to modify the
-table's permissions. </li>
-</ol>
-<h4>Creating a Fusiontables App</h4>
-<p>When you drag the <i>FusiontablesControl</i> component onto the
-Designer, don't forget to set its <i>ApiKey</i> property, which is
-initially blank. You should copy this from your <a href="https://code.google.com/apis/console/" target="_blank">Google
-APIs Console</a> and paste it into the property field. </p>
-<h3> Properties </h3>
+<p>Your API Key will be near the bottom of that pane in the section
+  called "Simple API Access".You will have to provide that key as the
+  value for the <i>ApiKey</i> property in your Fusiontables app.</p>
+<p>Once you have an API key, set the value of the <i>Query</i>
+  property to a valid Fusiontables SQL query and call <i>SendQuery</i>
+  to execute the query.  App Inventor will send the query to the
+  Fusion Tables server and the <i>GotResult</i> block will fire when a
+  result is returned from the server.Query results will be returned in
+  CSV format, and can be converted to list format using the "list from
+  csv table" or "list from csv row" blocks.</p>
+<p>Note that you do not need to worry about UTF-encoding the
+  query. But you do need to make sure the query follows the syntax
+  described
+  in <a href="https://developers.google.com/fusiontables/docs/v1/getting_started"
+        target="_blank">the reference manual</a>, which means that
+  things like capitalization for names of columns matters, and that
+  single quotes must be used around column names if there are spaces
+  in them.</p>
+
+
+
+<h3>Properties</h3>
 <dl>
-  <dt> <code> ApiKey </code> : text (read-only) </dt>
-  <dd>
-    <p>Copy and paste your Google API key into this property.</p>
-    <p>In order to develop apps that use Fusiontables, you must obtain
-a Google API Key. To get a key follow these instructions.</p>
-    <ol>
-      <li>Go to your <a href="https://code.google.com/apis/console/" target="_blank">Google APIs Console</a> and login if necessary.</li>
-      <li>Select the <i>Services</i> item from the menu on the left.</li>
-      <li>Choose the <i>Fusiontables</i> service from the list
-provided and turn it on.</li>
-      <li>Go back to the main menu and select the <i>API Access</i>
-item. </li>
-    </ol>
-Your API Key will be near the bottom of that pane in the section called
-"Simple API Access". </dd>
+  <dt><code>ApiKey</code></dt>
+  <dd>Your Google API Key. For help, click on the questionmark (?) next to the FusiontablesControl component in the Palette. </dd>
+  <dt><code>KeyFile</code></dt>
+  <dd>Specifies the path of the private key file.  This key file is used to get access to the FusionTables API.</dd>
+  <dt><code>Query</code></dt>
+  <dd>The query to send to the Fusion Tables API. <p>For legal query formats and examples, see the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API v1.0 reference manual</a>.</p> <p>Note that you do not need to worry about UTF-encoding the query. But you do need to make sure it follows the syntax described in the reference manual, which means that things like capitalization for names of columns matters, and that single quotes need to be used around column names if there are spaces in them.</p> </dd>
+  <dt><code>ServiceAccountEmail</code></dt>
+  <dd>The Service Account Email Address when service account authentication is in use.</dd>
+  <dt><code>UseServiceAuthentication</code></dt>
+  <dd>Indicates whether a service account should be used for authentication</dd>
 </dl>
+
+<h3>Events</h3>
 <dl>
-  <dt> <code> Query </code> : text (read-only) </dt>
-  <dd> The query to send to the Fusion Tables API.
-    <p> For legal query formats and examples, see the <a href="https://developers.google.com/fusiontables/docs/v1/getting_started" target="_blank">Fusion Tables API V1.0</a> reference manual. </p>
-    <p> Note that you do not need to worry about encoding the query,
-but you do have to make sure it follows the syntax described in the
-reference manual, which means that things like capitalization for names
-of columns matters, and that single quotes need to be used around
-column names that contain. </p>
-  </dd>
+  <dt><code>GotResult(text result)</code></dt>
+  <dd>Indicates that the Fusion Tables query has finished processing, with a result.  The result of the query will generally be returned in CSV format, and can be converted to list format using the "list from csv table" or "list from csv row" blocks.</dd>
 </dl>
-<h3> Events </h3>
+
+<h3>Methods</h3>
 <dl>
-  <dt> <code> GotResult(text result) </code> </dt>
-  <dd> Indicates that the Fusion Tables query has finished processing,
-with a result. The result of the query will generally be returned in
-CSV format, and can be converted to list format using the "list from
-csv table" or "list from csv row" blocks. </dd>
-</dl>
-<h3> Methods </h3>
-<dl>
-  <dt> <code> SendQuery() </code> </dt>
-  <dd> Send the query to the Fusion Tables server. </dd>
-</dl>
-<dl>
-  <dt> <code> ForgetLogin() </code> </dt>
-  <dd> Discards the user's account name, forcing them to
-re-authenticate when accessing a Fusion Table. </dd>
+  <dt><code>DoQuery()</code></dt>
+  <dd>DEPRECATED. This block is deprecated as of the end of 2012.  Use SendQuery.</dd>
+  <dt><code>ForgetLogin()</code></dt>
+  <dd>Forget end-users login credentials. Has no effect on service authentication</dd>
+  <dt><code>GetRows(text tableId, text columns)</code></dt>
+  <dd>Gets all the rows from a specified fusion table. The tableId field is the id of therequired fusion table. The columns field is a comma-separeted list of the columns to retrieve.</dd>
+  <dt><code>GetRowsWithConditions(text tableId, text columns, text conditions)</code></dt>
+  <dd>Gets all the rows from a fusion table that meet certain conditions. The tableId field isthe id of the required fusion table. The columns field is a comma-separeted list of the columns toretrieve. The conditions field specifies what rows to retrieve from the table, for example the rows in whicha particular column value is not null.</dd>
+  <dt><code>InsertRow(text tableId, text columns, text values)</code></dt>
+  <dd>Inserts a row into the specified fusion table. The tableId field is the id of thefusion table. The columns is a comma-separated list of the columns to insert values into. The values field specifies what values to insert into each column.</dd>
+  <dt><code>SendQuery()</code></dt>
+  <dd>Send the query to the Fusiontables server.</dd>
 </dl>
 
 <h2 id="TinyDB">TinyDB</h2>

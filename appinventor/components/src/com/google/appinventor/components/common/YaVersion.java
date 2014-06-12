@@ -274,8 +274,10 @@ public class YaVersion {
   // - DATEPICKER_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 101:
   // - FORM_COMPONENT_VERSION was incremented to 13.
+  // For YOUNG_ANDROID_VERSION 102:
+  // - FUSIONTABLESCONTROL_COMPONENT_VERSION was incremented to 3.
 
-  public static final int YOUNG_ANDROID_VERSION = 101;
+  public static final int YOUNG_ANDROID_VERSION = 102;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -497,7 +499,11 @@ public class YaVersion {
 
   // For FUSIONTABLESCONTROL_COMPONENT_VERSION 2:
   // - The Fusiontables API was migrated from SQL to V1
-  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 2;
+  // For FUSIONTABLESCONTROL_COMPONENT_VERSION 3:
+  // - InsertRow, GetRows and GetRowsWithConditions was added.
+  // - KeyFile, UseServiceAuthentication and ServiceAccountEmail
+  //   were added.
+  public static final int FUSIONTABLESCONTROL_COMPONENT_VERSION = 3;
 
   public static final int GAMECLIENT_COMPONENT_VERSION = 1;
 
