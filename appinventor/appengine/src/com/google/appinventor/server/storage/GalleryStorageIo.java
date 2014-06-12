@@ -11,6 +11,7 @@ import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
 import com.google.appinventor.shared.rpc.project.GalleryCommentReport;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.Message;
 
 import java.io.IOException;
@@ -243,15 +244,22 @@ public interface GalleryStorageIo {
   List<GalleryCommentReport> getCommentReports();
 
 
-  void sendMessage(String senderId, String receiverId, String message);
+  long sendMessage(String senderId, String receiverId, String message);
 
   void deleteMessage(long id);
 
   List<Message> getMessages(String receiverId);
 
+  Message getMessage(long msgId);
+
   void readMessage(long timestamp);
 
   void appStatsWasRead(long appId);
 
+  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview);
+
+  List<GalleryModerationAction> getModerationActions(long reportId);
+
   void updateDatabaseField();
+
 }

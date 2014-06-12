@@ -15,12 +15,15 @@ import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppReport;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
+import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.client.GalleryClient;
 import com.google.appinventor.client.widgets.DropDownButton;
 import com.google.appinventor.client.widgets.DropDownButton.DropDownItem;
 import com.google.appinventor.client.OdeAsyncCallback;
 import com.google.appinventor.client.OdeMessages;
 import com.google.appinventor.client.output.OdeLog;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.user.User;
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.GWT;
@@ -39,7 +42,9 @@ import com.google.gwt.user.client.ui.DialogBox;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Grid;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.InlineLabel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.VerticalPanel;
@@ -58,8 +63,10 @@ import java.util.Map;
  * <p> The report text, date created, user reported on and user reporting will be shown in the table.
  *
  * @author wolberd@gmail.com, based on ProjectList.java, lizlooney@google.com (Liz Looney),
+ * @author blu2@dons.usfca.edu
  */
 public class ReportList extends Composite  {
+  public static final int MAX_MESSAGE_PREVIEW_LENGTH = 40;
   private final CheckBox checkBox;
   private final VerticalPanel panel;
   private List<GalleryAppReport> reports;
@@ -97,17 +104,17 @@ public class ReportList extends Composite  {
         } else {
           initializeReports();
         }
-    }
+      }
     });
     checkBoxPanel.add(checkBox);
-    Label checkBoxText = new Label("Show Resolved Reports");
+    Label checkBoxText = new Label(MESSAGES.moderationShowResolvedReports());
     checkBoxPanel.add(checkBoxText);
     panel.add(checkBoxPanel);
 
     selectedGalleryAppReports = new ArrayList<GalleryAppReport>();
     ReportWidgets = new HashMap<GalleryAppReport, ReportWidgets>();
 
-    table = new Grid(1, 8); // The table initially contains just the header row.
+    table = new Grid(1, 9); // The table initially contains just the header row.
     table.addStyleName("ode-ModerationTable");
     table.setWidth("100%");
     table.setCellSpacing(0);
@@ -203,6 +210,7 @@ public class ReportList extends Composite  {
     final Button sendMessageButton;
     final Button deactiveAppButton;
     final Button markAsResolvedButton;
+    final Button seeAllActions;
     boolean appActive;
     boolean appResolved;
 
@@ -230,14 +238,14 @@ public class ReportList extends Composite  {
 
       markAsResolvedButton = new Button("Mark As Resolved");
 
-
+      seeAllActions = new Button(MESSAGES.labelSeeAllActions());
     }
   }
 
   private void refreshTable() {
 
     // Refill the table.
-    table.resize(1 + reports.size(), 8);
+    table.resize(1 + reports.size(), 9);
     int row = 1;
     for (GalleryAppReport report : reports) {
       ReportWidgets rw = ReportWidgets.get(report);
@@ -249,6 +257,7 @@ public class ReportList extends Composite  {
       table.setWidget(row, 5, rw.sendMessageButton);
       table.setWidget(row, 6, rw.deactiveAppButton);
       table.setWidget(row, 7, rw.markAsResolvedButton);
+      table.setWidget(row, 8, rw.seeAllActions);
       prepareGalleryAppReport(report, rw);
       row++;
     }
@@ -327,6 +336,8 @@ public class ReportList extends Composite  {
                     return;
                   rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
                   rw.appActive = true;
+                  storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
+                      GalleryModerationAction.REACTIVATEAPP, null);
                 }
               };
               Ode.getInstance().getGalleryService().deactivateGalleryApp(r.getApp().getGalleryAppId(), callback);
@@ -334,11 +345,11 @@ public class ReportList extends Composite  {
         }
     });
 
-    if(r.getResolved()){//current status is resolved
+    if(r.getResolved()){                                    //report was unresolved, now resolved
       rw.markAsResolvedButton.setText("Mark As Unresolved");//revert button
       rw.appResolved = true;
-    }else{//current status is unresolved
-      rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
+    }else{                                                  //report was resolved, now unresolved
+      rw.markAsResolvedButton.setText("Mark As Resolved");  //revert button
       rw.appResolved = false;
     }
     rw.markAsResolvedButton.addClickHandler(new ClickHandler() {
@@ -350,23 +361,34 @@ public class ReportList extends Composite  {
             @Override
             public void onSuccess(Boolean success) {
               if(success){
+                if(r.getResolved()){//current status was resolved
+                  r.setResolved(false);
+                  rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
+                  rw.appResolved = false;
+                  storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
+                      GalleryModerationAction.MARKASUNRESOLVED, null);
+                }else{//current status was unResolved
+                  r.setResolved(true);
+                  rw.markAsResolvedButton.setText("Mark As UnResolved");//revert button
+                  rw.appResolved = true;
+                  storeModerationAction(r.getReportId(), r.getApp().getGalleryAppId(), GalleryModerationAction.NOTAVAILABLE,
+                      GalleryModerationAction.MARKASRESOLVED, null);
+                }
                 if(checkBox.getValue() == false){//only unresolved reports, remove directly.
                   onReportRemoved(r);
-                }else{//both resolved and unresolved reports
-                  if(r.getResolved()){//current status is resolved
-                    r.setResolved(false);
-                    rw.markAsResolvedButton.setText("Mark As Resolved");//revert button
-                    rw.appResolved = false;
-                  }else{//current status is unResolved
-                    r.setResolved(true);
-                    rw.markAsResolvedButton.setText("Mark As UnResolved");//revert button
-                    rw.appResolved = true;
-                  }
                 }
               }
             }
           };
         Ode.getInstance().getGalleryService().markReportAsResolved(r.getReportId(), r.getApp().getGalleryAppId(), callback);
+      }
+    });
+
+    rw.seeAllActions.addClickHandler(new ClickHandler() {
+      @Override
+      public void onClick(ClickEvent event) {
+        //show actions
+        seeAllActionsPopup(r);
       }
     });
   }
@@ -473,11 +495,13 @@ public class ReportList extends Composite  {
             sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
             sendMsg.addClickHandler(new ClickHandler() {
               public void onClick(ClickEvent event) {
-                final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+                final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
                   MESSAGES.galleryError()) {
                     @Override
-                    public void onSuccess(final Void result) {
+                    public void onSuccess(final Long msgId) {
                       popup.hide();
+                      storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                          GalleryModerationAction.SENDMESSAGE, getMessagePreview(msgText.getText()));
                     }
                   };
                   Ode.getInstance().getGalleryService().sendMessageFromSystem(
@@ -489,7 +513,7 @@ public class ReportList extends Composite  {
         };
       Ode ode = Ode.getInstance();
       ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
-    }
+  }
   private void deactiveAppPopup(final GalleryAppReport report, final ReportWidgets rw){
       // Create a PopUpPanel with a button to close it
       final PopupPanel popup = new PopupPanel(true);
@@ -559,10 +583,10 @@ public class ReportList extends Composite  {
             sentFrom.setText(MESSAGES.messageSentFrom() + currentUser.getUserName());
             sendMsgAndDRApp.addClickHandler(new ClickHandler() {
               public void onClick(ClickEvent event) {
-                final OdeAsyncCallback<Void> messagesCallback = new OdeAsyncCallback<Void>(
+                final OdeAsyncCallback<Long> messagesCallback = new OdeAsyncCallback<Long>(
                   MESSAGES.galleryError()) {
                     @Override
-                    public void onSuccess(final Void result) {
+                    public void onSuccess(final Long msgId) {
                       popup.hide();
 
                       final OdeAsyncCallback<Boolean> callback = new OdeAsyncCallback<Boolean>(
@@ -573,12 +597,17 @@ public class ReportList extends Composite  {
                               if(!success)
                                 return;
                               popup.hide();
-                              if(rw.appActive == true){
+                              if(rw.appActive == true){                                     //app was active, now is deactive
                                 rw.deactiveAppButton.setText(MESSAGES.labelReactivateApp());//revert button
                                 rw.appActive = false;
-                              }else{
+                                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                                    GalleryModerationAction.DEACTIVATEAPP, getMessagePreview(msgText.getText()));
+                              }else{                                                        //app was deactive, now is active
+                                /*This should not be reached, just in case*/
                                 rw.deactiveAppButton.setText(MESSAGES.labelDeactivateApp());//revert button
                                 rw.appActive = true;
+                                storeModerationAction(report.getReportId(), report.getApp().getGalleryAppId(), msgId,
+                                    GalleryModerationAction.REACTIVATEAPP, getMessagePreview(msgText.getText()));
                               }
                             }
                          };
@@ -593,6 +622,89 @@ public class ReportList extends Composite  {
       Ode ode = Ode.getInstance();
       ode.getUserInfoService().getUserInformationFromSessionId(ode.getSessionId(), callback);
     }
+
+  /**
+   * popup window to show all associated moderation actions.
+   * @param report
+   */
+  private void seeAllActionsPopup(GalleryAppReport report){
+    // Create a PopUpPanel with a button to close it
+    final PopupPanel popup = new PopupPanel(true);
+    popup.setStyleName("ode-InboxContainer");
+    final FlowPanel content = new FlowPanel();
+    content.addStyleName("ode-Inbox");
+    Label title = new Label(MESSAGES.titleSeeAllActionsPopup());
+    title.addStyleName("InboxTitle");
+    content.add(title);
+
+    Button closeButton = new Button(MESSAGES.symbolX());
+//    closeButton.addStyleName("ActionButton");
+    closeButton.addStyleName("CloseButton");
+    closeButton.addClickHandler(new ClickHandler() {
+      public void onClick(ClickEvent event) {
+        popup.hide();
+      }
+    });
+    content.add(closeButton);
+
+    final FlowPanel actionPanel = new FlowPanel();
+    actionPanel.addStyleName("app-actions");
+
+    final OdeAsyncCallback<List<GalleryModerationAction>> callback = new OdeAsyncCallback<List<GalleryModerationAction>>(
+      // failure message
+      MESSAGES.galleryError()) {
+        @Override
+          public void onSuccess(List<GalleryModerationAction> moderationActions) {
+            for(final GalleryModerationAction moderationAction : moderationActions){
+              FlowPanel record = new FlowPanel();
+              Label moderatorLabel = new Label();
+              moderatorLabel.setText(moderationAction.getModeratorName());
+              moderatorLabel.addStyleName("moderator-link");
+              moderatorLabel.addClickHandler(new ClickHandler() {
+                @Override
+                public void onClick(ClickEvent event) {
+                  Ode.getInstance().switchToUserProfileView(moderationAction.getModeratorId(), 1 /* 1 for public view*/ );
+                  popup.hide();
+                }
+              });
+              record.add(moderatorLabel);
+              final Label actionLabel = new Label();
+              actionLabel.addStyleName("inline-label");
+              record.add(actionLabel);
+              int actionType= moderationAction.getActonType();
+              switch(actionType){
+                case GalleryModerationAction.SENDMESSAGE:
+                  actionLabel.setText(MESSAGES.moderationActionSendAMessage());
+                  createMessageCollapse(record, moderationAction.getMesaageId(),  moderationAction.getMessagePreview());
+                  break;
+                case GalleryModerationAction.DEACTIVATEAPP:
+                  actionLabel.setText(MESSAGES.moderationActionDeactivateThisAppWithMessage());
+                  createMessageCollapse(record, moderationAction.getMesaageId(),  moderationAction.getMessagePreview());
+                  break;
+                case GalleryModerationAction.REACTIVATEAPP:
+                  actionLabel.setText(MESSAGES.moderationActionReactivateThisApp());
+                  break;
+                case GalleryModerationAction.MARKASRESOLVED:
+                  actionLabel.setText(MESSAGES.moderationActionMarkThisReportAsResolved());
+                  break;
+                case GalleryModerationAction.MARKASUNRESOLVED:
+                  actionLabel.setText(MESSAGES.moderationActionMarkThisReportAsUnresolved());
+                  break;
+                default:
+                  break;
+              }
+              actionPanel.add(record);
+            }
+          }
+       };
+    Ode.getInstance().getGalleryService().getModerationActions(report.getReportId(), callback);
+
+    content.add(actionPanel);
+    popup.setWidget(content);
+    // Center and show the popup
+    popup.center();
+  }
+
   /**
    *
    * this is a template using for update database.
@@ -600,7 +712,7 @@ public class ReportList extends Composite  {
    */
   private void setUpdateDatabaseButton(){
     /*
-	final Button button = new Button("Update Database Field");
+    final Button button = new Button("Update Database Field");
     button.addClickHandler(new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
@@ -661,16 +773,84 @@ public class ReportList extends Composite  {
     @Override
     public void execute() {
       if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT_REMOVE){
-        msgText.setText("Your app \"" + customText  + MESSAGES.inappropriateAppContentRemoveMessage());
+        msgText.setText(MESSAGES.yourAppMessage() + "\"" + customText  + MESSAGES.inappropriateAppContentRemoveMessage());
         templateButton.setCaption(MESSAGES.inappropriateAppContentRemoveTitle());
       }else if(type == MESSAGE_INAPPROPRIATE_APP_CONTENT){
-         msgText.setText("Your app \"" + customText + MESSAGES.inappropriateAppContentMessage());
+         msgText.setText(MESSAGES.yourAppMessage() + "\""  + customText + MESSAGES.inappropriateAppContentMessage());
         templateButton.setCaption(MESSAGES.inappropriateAppContentTitle());
       }else if(type == MESSAGE_INAPPROPRIATE_USER_PROFILE_CONTENT){
         msgText.setText(MESSAGES.inappropriateUserProfileContentMessage());
         templateButton.setCaption(MESSAGES.inappropriateUserProfileContentTitle());
       }
       
+    }
+  }
+
+  void storeModerationAction(final long reportId, final long galleryId, final long messageId, final int actionType, final String messagePreview){
+    OdeAsyncCallback<User> callback = new OdeAsyncCallback<User>(
+        // failure message
+        MESSAGES.serverUnavailable()) {
+          @Override
+          public void onSuccess(final User currentUser) {
+            final OdeAsyncCallback<Void> moderationActionCallback = new OdeAsyncCallback<Void>(
+                // failure message
+                MESSAGES.galleryError()) {
+                  @Override
+                  public void onSuccess(Void result) {
+
+                  }
+              };
+            Ode.getInstance().getGalleryService().storeModerationAction(reportId, galleryId, messageId, currentUser.getUserId(),
+                actionType, currentUser.getUserName(), messagePreview, moderationActionCallback);
+          }
+        };
+    Ode.getInstance().getUserInfoService().getUserInformationFromSessionId(Ode.getInstance().getSessionId(), callback);
+  }
+
+  void createMessageCollapse(final FlowPanel parent, final long msgId, final String preview){
+    if(preview.length() <= MAX_MESSAGE_PREVIEW_LENGTH){
+      return;
+    }
+
+    final Label messageContent = new Label();
+    messageContent.setText(preview);
+    messageContent.addStyleName("inline-label");
+    parent.add(messageContent);
+    final Label actionButton = new Label();
+    actionButton.setText(MESSAGES.seeMoreLink());
+    actionButton.addStyleName("seemore-link");
+    parent.add(actionButton);
+    actionButton.addClickHandler(new ClickHandler() {
+      boolean ifPreview = true;
+      @Override
+      public void onClick(ClickEvent event) {
+        if(ifPreview == true){
+          OdeAsyncCallback<Message> callback = new OdeAsyncCallback<Message>(
+              // failure message
+              MESSAGES.serverUnavailable()) {
+                @Override
+                public void onSuccess(final Message message) {
+                  messageContent.setText(message.getMessage());
+                  messageContent.addStyleName("inline");
+                  actionButton.setText(MESSAGES.hideLink());
+                  ifPreview = false;
+                }
+              };
+          Ode.getInstance().getGalleryService().getMessage(msgId, callback);
+        }else{
+          messageContent.setText(preview);
+          actionButton.setText(MESSAGES.seeMoreLink());
+          ifPreview = true;
+        }
+      }
+    });
+  }
+
+  String getMessagePreview(String message){
+    if(message != null && message.length() > MAX_MESSAGE_PREVIEW_LENGTH){
+      return message.substring(0, MAX_MESSAGE_PREVIEW_LENGTH) + "...";
+    }else{
+      return message;
     }
   }
 }

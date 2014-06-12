@@ -31,6 +31,7 @@ import com.google.appinventor.server.storage.GalleryAppAttributionData;
 import com.google.appinventor.server.GallerySearchIndex;
 import com.google.appinventor.shared.rpc.Motd;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.Project;
 import com.google.appinventor.shared.rpc.project.ProjectSourceZip;
@@ -121,6 +122,7 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     ObjectifyService.register(GalleryAppAttributionData.class);
     ObjectifyService.register(GalleryAppReportData.class);
     ObjectifyService.register(MessageData.class);
+    ObjectifyService.register(GalleryModerationActionData.class);
   }
 
   ObjectifyGalleryStorageIo() {
@@ -1046,11 +1048,67 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
       galleryCommentReport.setUserName(name);
       reports.add(galleryCommentReport);
     }
-
-
     return reports;
   }
 
+  /**
+   * Store moderation actions based on actionType
+   * @param reportId
+   * @param galleryId
+   * @param messageId
+   * @param moderatorId
+   * @param actionType
+   */
+  @Override
+  public void storeModerationAction(final long reportId, final long galleryId, final long messageId, final String moderatorId,
+      final int actionType, final String moderatorName, final String messagePreview){
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          GalleryModerationActionData moderationActionData = new GalleryModerationActionData();
+          long date = System.currentTimeMillis();
+          moderationActionData.date = date;
+          moderationActionData.reportId = reportId;
+          moderationActionData.galleryId = galleryId;
+          moderationActionData.messageId = messageId;
+          moderationActionData.moderatorId = moderatorId;
+          moderationActionData.actionType = actionType;
+          moderationActionData.moderatorName = moderatorName;
+          moderationActionData.messagePreview = messagePreview;
+          moderationActionData.reportKey = galleryReportKey(reportId);
+          datastore.put(moderationActionData);
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.storeModerationAction", e);
+    }
+  }
+
+  /**
+   * get moderation actions associated with given reportId
+   * @param reportId
+   */
+  @Override
+  public List<GalleryModerationAction> getModerationActions(final long reportId){
+    final List<GalleryModerationAction> moderationActions = new ArrayList<GalleryModerationAction>();
+    try {
+      runJobWithRetries(new JobRetryHelper() {
+        @Override
+        public void run(Objectify datastore) {
+          Key<GalleryAppReportData> galleryReportKey = galleryReportKey(reportId);
+          for (GalleryModerationActionData moderationActionData : datastore.query(GalleryModerationActionData.class).ancestor(galleryReportKey).order("-date")) {
+            GalleryModerationAction moderationAction = new GalleryModerationAction(reportId, moderationActionData.galleryId, moderationActionData.messageId,
+                moderationActionData.moderatorId, moderationActionData.actionType, moderationActionData.moderatorName, moderationActionData.messagePreview);
+            moderationActions.add(moderationAction);
+          }
+        }
+      });
+    } catch (ObjectifyException e) {
+        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.getCommentReports", e);
+    }
+    return moderationActions;
+  }
   
   /**
    * Converts a db object GalleryAppData into a shared GalleryApp that can be passed
@@ -1101,6 +1159,10 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     return new Key<MessageData>(MessageData.class, id);
   }
 
+  private Key<GalleryModerationActionData> galleryModerationActionKey(long id) {
+    return new Key<GalleryModerationActionData>(GalleryModerationActionData.class, id);
+  }
+
 
   /**
    * Sends a message to a particular user
@@ -1109,7 +1171,8 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
    * @param message body of message
    */
   @Override
-  public void sendMessage(final String senderId, final String receiverId, final String message) {
+  public long sendMessage(final String senderId, final String receiverId, final String message) {
+    final Result<Long> msgId = new Result<Long>();
     try {
       runJobWithRetries(new JobRetryHelper() {
         @Override
@@ -1122,11 +1185,14 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
           messageData.status = "1"; // notify, which means unread
           messageData.datestamp = date;
           datastore.put(messageData);
+          msgId.t = messageData.id;
         }
       });
     } catch (ObjectifyException e) {
+       msgId.t = null;
        throw CrashReport.createAndLogError(LOG, null, "error in galleryStorageIo.sendMessage", e);
     }
+    return msgId.t;
   }
 
   /**
@@ -1144,25 +1210,45 @@ public class ObjectifyGalleryStorageIo implements  GalleryStorageIo {
     }
   }
 
-   /**
-    * Returns a list of messages to a particular user
-    * @param receiverId id of user receiving messages
-    * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
-    */  @Override
-   public List<Message> getMessages(final String receiverId) {
-     final List<Message> msgs = new ArrayList<Message>();
-     // if i try to run this in runjobwithretries it tells me can't run
-     // non-ancestor query as a transaction. ObjectifyStorageio has some samples
-     // of not using transactions (run with) so i grabbed
-     Objectify datastore = ObjectifyService.begin();
-     for (MessageData msgData : datastore.query(MessageData.class)
-         .filter("receiverId", receiverId)/*.order("-datestamp")*/) {
-       Message msg = new Message(msgData.id, msgData.senderId, msgData.receiverId,
-           msgData.message, msgData.status, msgData.datestamp);
-       msgs.add(msg);
-     }
-     return msgs;
-   }
+  /**
+   * Returns a list of messages to a particular user
+   * @param receiverId id of user receiving messages
+   * TODO: getMessagesCout(final String receiverId) awaiting to be implemented
+   */  @Override
+  public List<Message> getMessages(final String receiverId) {
+    final List<Message> msgs = new ArrayList<Message>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    Objectify datastore = ObjectifyService.begin();
+    for (MessageData msgData : datastore.query(MessageData.class)
+        .filter("receiverId", receiverId)/*.order("-datestamp")*/) {
+      Message msg = new Message(msgData.id, msgData.senderId, msgData.receiverId,
+          msgData.message, msgData.status, msgData.datestamp);
+      msgs.add(msg);
+    }
+    return msgs;
+  }
+
+  /**
+   * Returns the message with a particular msgId
+   * @param msgId id of the message
+   */  @Override
+  public Message getMessage(final long msgId) {
+    final Result<Message> result = new Result<Message>();
+    // if i try to run this in runjobwithretries it tells me can't run
+    // non-ancestor query as a transaction. ObjectifyStorageio has some samples
+    // of not using transactions (run with) so i grabbed
+    Objectify datastore = ObjectifyService.begin();
+    for (MessageData msgData : datastore.query(MessageData.class)
+        .filter("id", msgId)/*.order("-datestamp")*/) {
+      Message msg = new Message(msgData.id, msgData.senderId, msgData.receiverId,
+          msgData.message, msgData.status, msgData.datestamp);
+      result.t = msg;
+      break;
+    }
+    return result.t;
+  }
 
    /**
     * Returns a list of messages to a particular user

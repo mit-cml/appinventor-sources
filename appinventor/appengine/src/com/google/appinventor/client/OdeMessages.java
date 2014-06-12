@@ -221,6 +221,18 @@ public interface OdeMessages extends Messages {
   @Description("Label of the Mark As Unresolved of reportlist")
   String labelmarkAsUnresolved();
 
+  @DefaultMessage("Previous Actions")
+  @Description("Label of the See All Actions of reportlist")
+  String labelSeeAllActions();
+
+  @DefaultMessage("Previous Actions on Report")
+  @Description("Title of the Previous Actions Popup of reportlist")
+  String titleSeeAllActionsPopup();
+
+  @DefaultMessage("X")
+  @Description("Symbol X")
+  String symbolX();
+
   @DefaultMessage("Cancel")
   @Description("Label of the Cancel Action on message of reportlist")
   String labelCancel();
@@ -249,6 +261,38 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Your profile contains inappropriate content. Please modify your profile.\n")
   @Description("Label of the Text of Template 3 of reportlist")
   String inappropriateUserProfileContentMessage();
+
+  @DefaultMessage("see more ...")
+  @Description("Label of the Text of seeing more of reportlist")
+  String seeMoreLink();
+
+  @DefaultMessage("hide")
+  @Description("Label of the Text of hiding of reportlist")
+  String hideLink();
+
+  @DefaultMessage("sends a message")
+  @Description("Label of the Text of sending a message of reportlist")
+  String moderationActionSendAMessage();
+
+  @DefaultMessage("deativates this app with message: ")
+  @Description("Label of the Text of deativating this app with message of reportlist")
+  String moderationActionDeactivateThisAppWithMessage();
+
+  @DefaultMessage("reactivates this app")
+  @Description("Label of the Text of reactivating this app of reportlist")
+  String moderationActionReactivateThisApp();
+
+  @DefaultMessage("marks this report as resolved")
+  @Description("Label of the Text of marking this report as resolved of reportlist")
+  String moderationActionMarkThisReportAsResolved();
+
+  @DefaultMessage("marks this report as unresolved")
+  @Description("Label of the Text of marking this report as unresolved of reportlist")
+  String moderationActionMarkThisReportAsUnresolved();
+
+  @DefaultMessage("Show resolved reports")
+  @Description("Label of the Text of showing resolved reports of reportlist")
+  String moderationShowResolvedReports();
 
   // Used in MotdFetcher.java
 

@@ -2105,13 +2105,19 @@ textarea::-webkit-input-placeholder {
 .app-meta .primary-link {
   font-size: 12px;
 }
-.primary-link {
+.primary-link,
+.moderator-link {
   color: #b3c833;
   border-bottom: 1px dotted #b3c833;
   font-weight: 300; font-size: 14px; line-height: 1.75;
 }
+.moderator-link {
+  display:inline;
+  margin-right:5px;
+}
 .ode-ProjectGalleryLink:hover,
-.primary-link:hover {
+.primary-link:hover,
+.moderator-link:hover {
   background-color: #b3c833;
   color: white;
   cursor: pointer;
@@ -2136,7 +2142,24 @@ textarea::-webkit-input-placeholder {
 }
 .ode-ModerationTable .primary-link {
   color: black;
+}
+.inline-label{
+  display:inline;
+  margin-right:5px;
+}
 
+.seemore-link {
+  color: #b3c833;
+  border-bottom: 1px dotted #b3c833;
+  font-weight: 300; font-size: 14px; line-height: 1.75;
+  display:inline;
+  margin-right:5px;
+}
+
+.seemore-link:hover {
+  color: #980000;
+  cursor: pointer;
+  text-decoration:underline;
 }
 
 
@@ -2151,6 +2174,9 @@ textarea::-webkit-input-placeholder {
 }
 .inline {
   display: inline;
+}
+.inline-block {
+  display: inline-block;
 }
 .clearfix:after {
   content: ".";

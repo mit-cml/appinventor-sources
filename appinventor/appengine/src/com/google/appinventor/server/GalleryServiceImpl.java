@@ -31,6 +31,7 @@ import com.google.appinventor.shared.rpc.RpcResult;
 import com.google.appinventor.shared.rpc.project.FileDescriptor;
 import com.google.appinventor.shared.rpc.project.FileDescriptorWithContent;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GalleryModerationAction;
 import com.google.appinventor.shared.rpc.project.Message;
 import com.google.appinventor.shared.rpc.project.NewProjectParameters;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
@@ -586,23 +587,34 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
    * @param message body of message
    */
   @Override
-  public void sendMessageFromSystem(String senderId, String receiverId, String message) {
+  public long sendMessageFromSystem(String senderId, String receiverId, String message) {
     LOG.info("### SEND MSG FROM SYSTEM");
 //    final String userId = userInfoProvider.getUserId(); // gets current userId
-    galleryStorageIo.sendMessage(senderId, receiverId, message);
+    return galleryStorageIo.sendMessage(senderId, receiverId, message);
   }
 
   /**
-   * Send a system message to user
-   * @param senderId    id of user sending this message
-   * @param receiverId    id of user receiving this message
-   * @param message   body of message
+   * Get messages of user
+   * @param receiverId    id of user receiving messages
+   * @return List<Message>   list of message
    */
   @Override
   public List<Message> getMessages(String receiverId) {
 //    LOG.info("### GET MSGS");
 //    final String userId = userInfoProvider.getUserId(); // gets current userId
     return galleryStorageIo.getMessages(receiverId);
+  }
+
+  /**
+   * Get message based on msgId
+   * @param msgid    id of the message
+   * @return Message  message
+   */
+  @Override
+  public Message getMessage(long msgId) {
+//    LOG.info("### GET MSGS");
+//    final String userId = userInfoProvider.getUserId(); // gets current userId
+    return galleryStorageIo.getMessage(msgId);
   }
 
   /**
@@ -632,6 +644,26 @@ public class GalleryServiceImpl extends OdeRemoteServiceServlet implements Galle
 //    LOG.info("### READ MSGS");
 //    final String userId = userInfoProvider.getUserId(); // gets current userId
     galleryStorageIo.appStatsWasRead(appId);
+  }
+
+  /**
+   * Store moderation actions based on actionType
+   * @param reportId
+   * @param galleryId
+   * @param messageId
+   * @param moderatorId
+   * @param actionType
+   */
+  public void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview){
+    galleryStorageIo.storeModerationAction(reportId, galleryId, messageId, moderatorId, actionType, moderatorName, messagePreview);
+  }
+
+  /**
+   * Get moderation actions based on given reportId
+   * @param reportId
+   */
+  public List<GalleryModerationAction> getModerationActions(long reportId){
+    return galleryStorageIo.getModerationActions(reportId);
   }
 
   /**

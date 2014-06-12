@@ -174,11 +174,30 @@ public interface GalleryServiceAsync {
    */
   void deactivateGalleryApp(long galleryId, AsyncCallback<Boolean> callback);
 
-  void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Void> callback);
+  void sendMessageFromSystem(String senderId, String receiverId, String message, AsyncCallback<Long> callback);
   void getMessages(String receiverId, AsyncCallback<List<Message>> callback);
+  void getMessage(long msgId, AsyncCallback<Message> callback);
   void deleteMessage(long msgId, AsyncCallback<Void> callback);
   void readMessage(long msgId, AsyncCallback<Void> callback);
   void appStatsWasRead(long appId, AsyncCallback<Void> callback);
+
+  /**
+   * see {@link GalleryService#storeModerationAction(long, long, long, String, int)}
+   * @param reportId
+   * @param galleryId
+   * @param messageId
+   * @param moderatorId
+   * @param actionType
+   * @param callback
+   */
+  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview, AsyncCallback<Void> callback);
+
+  /**
+   * see @link {@link GalleryService#getModerationActions(long)}
+   * @param reportId
+   * @return
+   */
+  void getModerationActions(long reportId, AsyncCallback<List<GalleryModerationAction>> callback);
 
   /**
    * update Database Field, should only be used by system admin

@@ -220,8 +220,9 @@ public interface GalleryService extends RemoteService {
    * @param galleryId the id of the app
    */
   List<GalleryApp> remixedTo(long galleryId);
-  void sendMessageFromSystem(String senderId, String receiverId, String message);
+  long sendMessageFromSystem(String senderId, String receiverId, String message);
   List<Message> getMessages(String receiverId);
+  Message getMessage(long msgId);
   void readMessage(long msgId);
   void deleteMessage(long msgId);
   void appStatsWasRead(long appId);
@@ -243,6 +244,23 @@ public interface GalleryService extends RemoteService {
    * @param galleryId the id of the gallery app
    */
   boolean isGalleryAppActivated(long galleryId);
+
+  /**
+   * Store moderation actions based on actionType
+   * @param reportId
+   * @param galleryId
+   * @param messageId
+   * @param moderatorId
+   * @param actionType
+   */
+  void storeModerationAction(long reportId, long galleryId, long messageId, String moderatorId, int actionType, String moderatorName, String messagePreview);
+
+  /**
+   * get moderation actions based on given reportId
+   * @param reportId
+   * @return list of GalleryModerationAction
+   */
+  List<GalleryModerationAction> getModerationActions(long reportId);
 
   /**
    * update Database Field, should only be used by system admin
