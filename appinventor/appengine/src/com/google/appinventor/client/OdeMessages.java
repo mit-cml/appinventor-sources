@@ -2222,6 +2222,1983 @@ public interface OdeMessages extends Messages {
   @Description("")
   String DistanceProperties();
   
+  @DefaultMessage("DirectMessages")
+  @Description("")
+  String DirectMessagesProperties();
+
+  @DefaultMessage("ContactName")
+  @Description("")
+  String ContactNameProperties();
+
+  @DefaultMessage("CurrentAddress")
+  @Description("")
+  String CurrentAddressProperties();
+
+  @DefaultMessage("CurrentPageTitle")
+  @Description("")
+  String CurrentPageTitleProperties();
+
+  @DefaultMessage("CurrentUrl")
+  @Description("")
+  String CurrentUrlProperties();
+
+  @DefaultMessage("Accuracy")
+  @Description("")
+  String AccuracyProperties();
+
+  @DefaultMessage("AddressesAndNames")
+  @Description("")
+  String AddressesAndNamesProperties();
+
+  @DefaultMessage("Altitude")
+  @Description("")
+  String AltitudeProperties();
+
+  @DefaultMessage("Angle")
+  @Description("")
+  String AngleProperties();
+
+  @DefaultMessage("Animation")
+  @Description("")
+  String AnimationProperties();
+
+  @DefaultMessage("Available")
+  @Description("")
+  String AvailableProperties();
+
+  @DefaultMessage("AvailableProviders")
+  @Description("")
+  String AvailableProvidersProperties();
+
+  @DefaultMessage("Azimuth")
+  @Description("")
+  String AzimuthProperties();
+
+  @DefaultMessage("BallotOptions")
+  @Description("")
+  String BallotOptionsProperties();
+
+  @DefaultMessage("BallotQuestion")
+  @Description("")
+  String BallotQuestionProperties();
+
+  @DefaultMessage("EmailAddress")
+  @Description("")
+  String EmailAddressProperties();
+
+  @DefaultMessage("Elements")
+  @Description("")
+  String ElementsProperties();
+
+  @DefaultMessage("Followers")
+  @Description("")
+  String FollowersProperties();
+
+  @DefaultMessage("FriendTimeline")
+  @Description("")
+  String FriendTimelineProperties();
+
+  @DefaultMessage("FullScreen")
+  @Description("")
+  String FullScreenProperties();
+
+  @DefaultMessage("HasAccuracy")
+  @Description("")
+  String HasAccuracyProperties();
+
+  @DefaultMessage("HasAltitude")
+  @Description("")
+  String HasAltitudeProperties();
+
+  @DefaultMessage("HasLongitudeLatitude")
+  @Description("")
+  String HasLongitudeLatitudeProperties();
+
+  @DefaultMessage("Height")
+  @Description("")
+  String HeightProperties();
+
+  @DefaultMessage("InstanceId")
+  @Description("")
+  String InstanceIdProperties();
+
+  @DefaultMessage("InvitedInstances")
+  @Description("")
+  String InvitedInstancesProperties();
+
+  @DefaultMessage("IsAccepting")
+  @Description("")
+  String IsAcceptingProperties();
+
+  @DefaultMessage("IsConnected")
+  @Description("")
+  String IsConnectedProperties();
+
+  @DefaultMessage("IsPlaying")
+  @Description("")
+  String IsPlayingProperties();
+
+  @DefaultMessage("JoinedInstances")
+  @Description("")
+  String JoinedInstancesProperties();
+
+  @DefaultMessage("Latitude")
+  @Description("")
+  String LatitudeProperties();
+
+  @DefaultMessage("Leader")
+  @Description("")
+  String LeaderProperties();
+
+  @DefaultMessage("Longitude")
+  @Description("")
+  String LongitudeProperties();
+
+  @DefaultMessage("Magnitude")
+  @Description("")
+  String MagnitudeProperties();
+
+  @DefaultMessage("Mentions")
+  @Description("")
+  String MentionsProperties();
+
+  @DefaultMessage("ProviderLocked")
+  @Description("")
+  String ProviderLockedProperties();
+
+  @DefaultMessage("ProviderName")
+  @Description("")
+  String ProviderNameProperties();
+
+  @DefaultMessage("PublicInstances")
+  @Description("")
+  String PublicInstancesProperties();
+
+  @DefaultMessage("Players")
+  @Description("")
+  String PlayersProperties();
+
+  @DefaultMessage("RequestHeaders")
+  @Description("")
+  String RequestHeadersProperties();
+
+  @DefaultMessage("Result")
+  @Description("")
+  String ResultProperties();
+
+  @DefaultMessage("ResultType")
+  @Description("")
+  String ResultTypeProperties();
+
+  @DefaultMessage("ResultUri")
+  @Description("")
+  String ResultUriProperties();
+
+  @DefaultMessage("Roll")
+  @Description("")
+  String RollProperties();
+
+  @DefaultMessage("SearchResults")
+  @Description("")
+  String SearchResultsProperties();
+
+  @DefaultMessage("ServiceUrl")
+  @Description("")
+  String ServiceUrlProperties();
+
+  @DefaultMessage("SelectionIndex")
+  @Description("")
+  String SelectionIndexProperties();
+
+  @DefaultMessage("UserChoice")
+  @Description("")
+  String UserChoiceProperties();
+
+  @DefaultMessage("UserEmailAddress")
+  @Description("")
+  String UserEmailAddressProperties();
+
+  @DefaultMessage("UserId")
+  @Description("")
+  String UserIdProperties();
+
+  @DefaultMessage("Username")
+  @Description("")
+  String UsernameProperties();
+
+  @DefaultMessage("XAccel")
+  @Description("")
+  String XAccelProperties();
+
+  @DefaultMessage("YAccel")
+  @Description("")
+  String YAccelProperties();
+
+  @DefaultMessage("ZAccel")
+  @Description("")
+  String ZAccelProperties();
+
+  @DefaultMessage("Width")
+  @Description("")
+  String WidthProperties();
+
+  @DefaultMessage("WebViewString")
+  @Description("")
+  String WebViewStringProperties();
+  
+  //Params
+  @DefaultMessage("xAccel")
+  @Description("")
+  String xAccelParams();
+
+  @DefaultMessage("yAccel")
+  @Description("")
+  String yAccelParams();
+
+  @DefaultMessage("zAccel")
+  @Description("")
+  String zAccelParams();
+
+  @DefaultMessage("result")
+  @Description("")
+  String resultParams();
+
+  @DefaultMessage("other")
+  @Description("")
+  String otherParams();
+
+  @DefaultMessage("component")
+  @Description("")
+  String componentParams();
+
+  @DefaultMessage("startX")
+  @Description("")
+  String startXParams();
+
+  @DefaultMessage("startY")
+  @Description("")
+  String startYParams();
+
+  @DefaultMessage("prevX")
+  @Description("")
+  String prevXParams();
+
+  @DefaultMessage("prevY")
+  @Description("")
+  String prevYParams();
+
+  @DefaultMessage("currentX")
+  @Description("")
+  String currentXParams();
+
+  @DefaultMessage("currentY")
+  @Description("")
+  String currentYParams();
+
+  @DefaultMessage("edge")
+  @Description("")
+  String edgeParams();
+
+  @DefaultMessage("speed")
+  @Description("")
+  String speedParams();
+
+  @DefaultMessage("heading")
+  @Description("")
+  String headingParams();
+
+  @DefaultMessage("xvel")
+  @Description("")
+  String xvelParams();
+
+  @DefaultMessage("yvel")
+  @Description("")
+  String yvelParams();
+
+  @DefaultMessage("target")
+  @Description("")
+  String targetParams();
+
+  @DefaultMessage("address")
+  @Description("")
+  String addressParams();
+
+  @DefaultMessage("uuid")
+  @Description("")
+  String uuidParams();
+
+  @DefaultMessage("numberOfBytes")
+  @Description("")
+  String numberOfBytesParams();
+
+  @DefaultMessage("number")
+  @Description("")
+  String numberParams();
+
+  @DefaultMessage("list")
+  @Description("")
+  String listParams();
+
+  @DefaultMessage("text")
+  @Description("")
+  String textParams();
+
+  @DefaultMessage("clip")
+  @Description("")
+  String clipParams();
+
+  @DefaultMessage("image")
+  @Description("")
+  String imageParams();
+
+  @DefaultMessage("draggedSprite")
+  @Description("")
+  String draggedSpriteParams();
+
+  @DefaultMessage("flungSprite")
+  @Description("")
+  String flungSpriteParams();
+
+  @DefaultMessage("touchedSprite")
+  @Description("")
+  String touchedSpriteParams();
+
+  @DefaultMessage("x")
+  @Description("")
+  String xParams();
+
+  @DefaultMessage("y")
+  @Description("")
+  String yParams();
+
+  @DefaultMessage("r")
+  @Description("")
+  String rParams();
+
+  @DefaultMessage("x1")
+  @Description("")
+  String x1Params();
+
+  @DefaultMessage("x2")
+  @Description("")
+  String x2Params();
+
+  @DefaultMessage("y1")
+  @Description("")
+  String y1Params();
+
+  @DefaultMessage("y2")
+  @Description("")
+  String y2Params();
+
+  @DefaultMessage("angle")
+  @Description("")
+  String angleParams();
+
+  @DefaultMessage("fileName")
+  @Description("")
+  String fileNameParams();
+
+  @DefaultMessage("color")
+  @Description("")
+  String colorParams();
+
+  @DefaultMessage("instant")
+  @Description("")
+  String instantParams();
+
+  @DefaultMessage("days")
+  @Description("")
+  String daysParams();
+
+  @DefaultMessage("hours")
+  @Description("")
+  String hoursParams();
+
+  @DefaultMessage("minutes")
+  @Description("")
+  String minutesParams();
+
+  @DefaultMessage("months")
+  @Description("")
+  String monthsParams();
+
+  @DefaultMessage("seconds")
+  @Description("")
+  String secondsParams();
+
+  @DefaultMessage("weeks")
+  @Description("")
+  String weeksParams();
+
+  @DefaultMessage("years")
+  @Description("")
+  String yearsParams();
+
+  @DefaultMessage("InstantInTime")
+  @Description("")
+  String InstantInTimeParams();
+
+  @DefaultMessage("from")
+  @Description("")
+  String fromParams();
+
+  @DefaultMessage("millis")
+  @Description("")
+  String millisParams();
+
+  @DefaultMessage("functionName")
+  @Description("")
+  String functionNameParams();
+
+  @DefaultMessage("errorNumber")
+  @Description("")
+  String errorNumberParams();
+
+  @DefaultMessage("message")
+  @Description("")
+  String messageParams();
+
+  @DefaultMessage("otherScreenName")
+  @Description("")
+  String otherScreenNameParams();
+
+  @DefaultMessage("animType")
+  @Description("")
+  String animTypeParams();
+
+  @DefaultMessage("sender")
+  @Description("")
+  String senderParams();
+
+  @DefaultMessage("contents")
+  @Description("")
+  String contentsParams();
+
+  @DefaultMessage("instanceId")
+  @Description("")
+  String instanceIdParams();
+
+  @DefaultMessage("playerId")
+  @Description("")
+  String playerIdParams();
+
+  @DefaultMessage("command")
+  @Description("")
+  String commandParams();
+
+  @DefaultMessage("arguments")
+  @Description("")
+  String argumentsParams();
+
+  @DefaultMessage("response")
+  @Description("")
+  String responseParams();
+
+  @DefaultMessage("emailAddress")
+  @Description("")
+  String emailAddressParams();
+
+  @DefaultMessage("type")
+  @Description("")
+  String typeParams();
+
+  @DefaultMessage("count")
+  @Description("")
+  String countParams();
+
+  @DefaultMessage("makePublic")
+  @Description("")
+  String makePublicParams();
+
+  @DefaultMessage("recipients")
+  @Description("")
+  String recipientsParams();
+
+  @DefaultMessage("playerEmail")
+  @Description("")
+  String playerEmailParams();
+
+  @DefaultMessage("latitude")
+  @Description("")
+  String latitudeParams();
+
+  @DefaultMessage("longitude")
+  @Description("")
+  String longitudeParams();
+
+  @DefaultMessage("altitude")
+  @Description("")
+  String altitudeParams();
+
+  @DefaultMessage("provider")
+  @Description("")
+  String providerParams();
+
+  @DefaultMessage("status")
+  @Description("")
+  String statusParams();
+
+  @DefaultMessage("locationName")
+  @Description("")
+  String locationNameParams();
+
+  @DefaultMessage("choice")
+  @Description("")
+  String choiceParams();
+
+  @DefaultMessage("notice")
+  @Description("")
+  String noticeParams();
+
+  @DefaultMessage("title")
+  @Description("")
+  String titleParams();
+
+  @DefaultMessage("buttonText")
+  @Description("")
+  String buttonTextParams();
+
+  @DefaultMessage("cancelable")
+  @Description("")
+  String cancelableParams();
+
+  @DefaultMessage("button1Text")
+  @Description("")
+  String button1TextParams();
+
+  @DefaultMessage("button2Text")
+  @Description("")
+  String button2TextParams();
+
+  @DefaultMessage("source")
+  @Description("")
+  String sourceParams();
+
+  @DefaultMessage("destination")
+  @Description("")
+  String destinationParams();
+
+  @DefaultMessage("sensorPortLetter")
+  @Description("")
+  String sensorPortLetterParams();
+
+  @DefaultMessage("rxDataLength")
+  @Description("")
+  String rxDataLengthParams();
+
+  @DefaultMessage("wildcard")
+  @Description("")
+  String wildcardParams();
+
+  @DefaultMessage("motorPortLetter")
+  @Description("")
+  String motorPortLetterParams();
+
+  @DefaultMessage("mailbox")
+  @Description("")
+  String mailboxParams();
+
+  @DefaultMessage("durationMs")
+  @Description("")
+  String durationMsParams();
+
+  @DefaultMessage("relative")
+  @Description("")
+  String relativeParams();
+
+  @DefaultMessage("sensorType")
+  @Description("")
+  String sensorTypeParams();
+
+  @DefaultMessage("sensorMode")
+  @Description("")
+  String sensorModeParams();
+
+  @DefaultMessage("power")
+  @Description("")
+  String powerParams();
+
+  @DefaultMessage("mode")
+  @Description("")
+  String modeParams();
+
+  @DefaultMessage("regulationMode")
+  @Description("")
+  String regulationModeParams();
+
+  @DefaultMessage("turnRatio")
+  @Description("")
+  String turnRatioParams();
+
+  @DefaultMessage("runState")
+  @Description("")
+  String runStateParams();
+
+  @DefaultMessage("tachoLimit")
+  @Description("")
+  String tachoLimitParams();
+
+  @DefaultMessage("programName")
+  @Description("")
+  String programNameParams();
+
+  @DefaultMessage("distance")
+  @Description("")
+  String distanceParams();
+
+  @DefaultMessage("azimuth")
+  @Description("")
+  String azimuthParams();
+
+  @DefaultMessage("pitch")
+  @Description("")
+  String pitchParams();
+
+  @DefaultMessage("roll")
+  @Description("")
+  String rollParams();
+
+  @DefaultMessage("simpleSteps")
+  @Description("")
+  String simpleStepsParams();
+
+  @DefaultMessage("walkSteps")
+  @Description("")
+  String walkStepsParams();
+
+  @DefaultMessage("seed")
+  @Description("")
+  String seedParams();
+
+  @DefaultMessage("millisecs")
+  @Description("")
+  String millisecsParams();
+
+  @DefaultMessage("sound")
+  @Description("")
+  String soundParams();
+
+  @DefaultMessage("messageText")
+  @Description("")
+  String messageTextParams();
+
+  @DefaultMessage("tag")
+  @Description("")
+  String tagParams();
+
+  @DefaultMessage("valueToStore")
+  @Description("")
+  String valueToStoreParams();
+
+  @DefaultMessage("tagFromWebDB")
+  @Description("")
+  String tagFromWebDBParams();
+
+  @DefaultMessage("valueFromWebDB")
+  @Description("")
+  String valueFromWebDBParams();
+
+  @DefaultMessage("followers2")
+  @Description("")
+  String followers2Params();
+
+  @DefaultMessage("timeline")
+  @Description("")
+  String timelineParams();
+
+  @DefaultMessage("mentions")
+  @Description("")
+  String mentionsParams();
+
+  @DefaultMessage("searchResults")
+  @Description("")
+  String searchResultsParams();
+
+  @DefaultMessage("user")
+  @Description("")
+  String userParams();
+
+  @DefaultMessage("url")
+  @Description("")
+  String urlParams();
+
+  @DefaultMessage("responseCode")
+  @Description("")
+  String responseCodeParams();
+
+  @DefaultMessage("responseType")
+  @Description("")
+  String responseTypeParams();
+
+  @DefaultMessage("responseContent")
+  @Description("")
+  String responseContentParams();
+
+  @DefaultMessage("htmlText")
+  @Description("")
+  String htmlTextParams();
+
+  @DefaultMessage("jsonText")
+  @Description("")
+  String jsonTextParams();
+
+  @DefaultMessage("path")
+  @Description("")
+  String pathParams();
+
+  @DefaultMessage("encoding")
+  @Description("")
+  String encodingParams();
+
+  @DefaultMessage("name")
+  @Description("")
+  String nameParams();
+
+  @DefaultMessage("serviceName")
+  @Description("")
+  String serviceNameParams();
+
+  @DefaultMessage("milliseconds")
+  @Description("")
+  String millisecondsParams();
+
+  @DefaultMessage("messages")
+  @Description("")
+  String messagesParams();
+
+  @DefaultMessage("start")
+  @Description("")
+  String startParams();
+
+  @DefaultMessage("end")
+  @Description("")
+  String endParams();
+
+  @DefaultMessage("frequencyHz")
+  @Description("")
+  String frequencyHzParams();
+
+  @DefaultMessage("secure")
+  @Description("")
+  String secureParams();
+
+  @DefaultMessage("file")
+  @Description("")
+  String fileParams();
+
+  @DefaultMessage("thumbPosition")
+  @Description("")
+  String thumbPositionParams();
+
+  @DefaultMessage("selection")
+  @Description("")
+  String selectionParams();
+
+  @DefaultMessage("valueIfTagNotThere")
+  @Description("")
+  String valueIfTagNotThereParams();
+
+  @DefaultMessage("query")
+  @Description("")
+  String queryParams();
+
+  @DefaultMessage("ImagePath")
+  @Description("")
+  String ImagePathParams();
+
+  @DefaultMessage("ms")
+  @Description("")
+  String msParams();
+
+  @DefaultMessage("translation")
+  @Description("")
+  String translationParams();
+
+  @DefaultMessage("languageToTranslateTo")
+  @Description("")
+  String languageToTranslateToParams();
+
+  @DefaultMessage("textToTranslate")
+  @Description("")
+  String textToTranslateParams();
+  
+  //Events
+  @DefaultMessage("AccelerationChanged")
+  @Description("")
+  String AccelerationChangedEvents();
+
+  @DefaultMessage("AfterActivity")
+  @Description("")
+  String AfterActivityEvents();
+
+  @DefaultMessage("CollidedWith")
+  @Description("")
+  String CollidedWithEvents();
+
+  @DefaultMessage("Dragged")
+  @Description("")
+  String DraggedEvents();
+
+  @DefaultMessage("EdgeReached")
+  @Description("")
+  String EdgeReachedEvents();
+
+  @DefaultMessage("Flung")
+  @Description("")
+  String FlungEvents();
+
+  @DefaultMessage("NoLongerCollidingWith")
+  @Description("")
+  String NoLongerCollidingWithEvents();
+
+  @DefaultMessage("TouchDown")
+  @Description("")
+  String TouchDownEvents();
+
+  @DefaultMessage("TouchUp")
+  @Description("")
+  String TouchUpEvents();
+
+  @DefaultMessage("Touched")
+  @Description("")
+  String TouchedEvents();
+
+  @DefaultMessage("AfterScan")
+  @Description("")
+  String AfterScanEvents();
+
+  @DefaultMessage("ConnectionAccepted")
+  @Description("")
+  String ConnectionAcceptedEvents();
+
+  @DefaultMessage("Click")
+  @Description("")
+  String ClickEvents();
+
+  @DefaultMessage("GotFocus")
+  @Description("")
+  String GotFocusEvents();
+
+  @DefaultMessage("LongClick")
+  @Description("")
+  String LongClickEvents();
+
+  @DefaultMessage("LostFocus")
+  @Description("")
+  String LostFocusEvents();
+
+  @DefaultMessage("AfterRecording")
+  @Description("")
+  String AfterRecordingEvents();
+
+  @DefaultMessage("AfterPicture")
+  @Description("")
+  String AfterPictureEvents();
+
+  @DefaultMessage("Changed")
+  @Description("")
+  String ChangedEvents();
+
+  @DefaultMessage("Timer")
+  @Description("")
+  String TimerEvents();
+
+  @DefaultMessage("AfterPicking")
+  @Description("")
+  String AfterPickingEvents();
+
+  @DefaultMessage("BeforePicking")
+  @Description("")
+  String BeforePickingEvents();
+
+  @DefaultMessage("BackPressed")
+  @Description("")
+  String BackPressedEvents();
+
+  @DefaultMessage("ErrorOccurred")
+  @Description("")
+  String ErrorOccurredEvents();
+
+  @DefaultMessage("Initialize")
+  @Description("")
+  String InitializeEvents();
+
+  @DefaultMessage("OtherScreenClosed")
+  @Description("")
+  String OtherScreenClosedEvents();
+
+  @DefaultMessage("ScreenOrientationChanged")
+  @Description("")
+  String ScreenOrientationChangedEvents();
+
+  @DefaultMessage("GotResult")
+  @Description("")
+  String GotResultEvents();
+
+  @DefaultMessage("FunctionCompleted")
+  @Description("")
+  String FunctionCompletedEvents();
+
+  @DefaultMessage("GotMessage")
+  @Description("")
+  String GotMessageEvents();
+
+  @DefaultMessage("Info")
+  @Description("")
+  String InfoEvents();
+
+  @DefaultMessage("InstanceIdChanged")
+  @Description("")
+  String InstanceIdChangedEvents();
+
+  @DefaultMessage("Invited")
+  @Description("")
+  String InvitedEvents();
+
+  @DefaultMessage("NewInstanceMade")
+  @Description("")
+  String NewInstanceMadeEvents();
+
+  @DefaultMessage("NewLeader")
+  @Description("")
+  String NewLeaderEvents();
+
+  @DefaultMessage("PlayerJoined")
+  @Description("")
+  String PlayerJoinedEvents();
+
+  @DefaultMessage("PlayerLeft")
+  @Description("")
+  String PlayerLeftEvents();
+
+  @DefaultMessage("ServerCommandFailure")
+  @Description("")
+  String ServerCommandFailureEvents();
+
+  @DefaultMessage("ServerCommandSuccess")
+  @Description("")
+  String ServerCommandSuccessEvents();
+
+  @DefaultMessage("UserEmailAddressSet")
+  @Description("")
+  String UserEmailAddressSetEvents();
+
+  @DefaultMessage("WebServiceError")
+  @Description("")
+  String WebServiceErrorEvents();
+
+  @DefaultMessage("LocationChanged")
+  @Description("")
+  String LocationChangedEvents();
+
+  @DefaultMessage("StatusChanged")
+  @Description("")
+  String StatusChangedEvents();
+
+  @DefaultMessage("AfterChoosing")
+  @Description("")
+  String AfterChoosingEvents();
+
+  @DefaultMessage("AfterTextInput")
+  @Description("")
+  String AfterTextInputEvents();
+
+  @DefaultMessage("AboveRange")
+  @Description("")
+  String AboveRangeEvents();
+
+  @DefaultMessage("BelowRange")
+  @Description("")
+  String BelowRangeEvents();
+
+  @DefaultMessage("ColorChanged")
+  @Description("")
+  String ColorChangedEvents();
+
+  @DefaultMessage("WithinRange")
+  @Description("")
+  String WithinRangeEvents();
+
+  @DefaultMessage("Pressed")
+  @Description("")
+  String PressedEvents();
+
+  @DefaultMessage("Released")
+  @Description("")
+  String ReleasedEvents();
+
+  @DefaultMessage("OrientationChanged")
+  @Description("")
+  String OrientationChangedEvents();
+
+  @DefaultMessage("CalibrationFailed")
+  @Description("")
+  String CalibrationFailedEvents();
+
+  @DefaultMessage("GPSAvailable")
+  @Description("")
+  String GPSAvailableEvents();
+
+  @DefaultMessage("GPSLost")
+  @Description("")
+  String GPSLostEvents();
+
+  @DefaultMessage("SimpleStep")
+  @Description("")
+  String SimpleStepEvents();
+
+  @DefaultMessage("StartedMoving")
+  @Description("")
+  String StartedMovingEvents();
+
+  @DefaultMessage("StoppedMoving")
+  @Description("")
+  String StoppedMovingEvents();
+
+  @DefaultMessage("WalkStep")
+  @Description("")
+  String WalkStepEvents();
+
+  @DefaultMessage("Completed")
+  @Description("")
+  String CompletedEvents();
+
+  @DefaultMessage("AfterSoundRecorded")
+  @Description("")
+  String AfterSoundRecordedEvents();
+
+  @DefaultMessage("StartedRecording")
+  @Description("")
+  String StartedRecordingEvents();
+
+  @DefaultMessage("StoppedRecording")
+  @Description("")
+  String StoppedRecordingEvents();
+
+  @DefaultMessage("AfterGettingText")
+  @Description("")
+  String AfterGettingTextEvents();
+
+  @DefaultMessage("BeforeGettingText")
+  @Description("")
+  String BeforeGettingTextEvents();
+
+  @DefaultMessage("AfterSpeaking")
+  @Description("")
+  String AfterSpeakingEvents();
+
+  @DefaultMessage("BeforeSpeaking")
+  @Description("")
+  String BeforeSpeakingEvents();
+
+  @DefaultMessage("MessageReceived")
+  @Description("")
+  String MessageReceivedEvents();
+
+  @DefaultMessage("SendMessage")
+  @Description("")
+  String SendMessageEvents();
+
+  @DefaultMessage("GotValue")
+  @Description("")
+  String GotValueEvents();
+
+  @DefaultMessage("ValueStored")
+  @Description("")
+  String ValueStoredEvents();
+
+  @DefaultMessage("DirectMessagesReceived")
+  @Description("")
+  String DirectMessagesReceivedEvents();
+
+  @DefaultMessage("FollowersReceived")
+  @Description("")
+  String FollowersReceivedEvents();
+
+  @DefaultMessage("FriendTimelineReceived")
+  @Description("")
+  String FriendTimelineReceivedEvents();
+
+  @DefaultMessage("IsAuthorized")
+  @Description("")
+  String IsAuthorizedEvents();
+
+  @DefaultMessage("MentionsReceived")
+  @Description("")
+  String MentionsReceivedEvents();
+
+  @DefaultMessage("SearchSuccessful")
+  @Description("")
+  String SearchSuccessfulEvents();
+
+  @DefaultMessage("GotBallot")
+  @Description("")
+  String GotBallotEvents();
+
+  @DefaultMessage("GotBallotConfirmation")
+  @Description("")
+  String GotBallotConfirmationEvents();
+
+  @DefaultMessage("NoOpenPoll")
+  @Description("")
+  String NoOpenPollEvents();
+
+  @DefaultMessage("GotFile")
+  @Description("")
+  String GotFileEvents();
+
+  @DefaultMessage("GotText")
+  @Description("")
+  String GotTextEvents();
+
+  @DefaultMessage("AfterDateSet")
+  @Description("")
+  String AfterDateSetEvents();
+
+  @DefaultMessage("TagRead")
+  @Description("")
+  String TagReadEvents();
+
+  @DefaultMessage("TagWritten")
+  @Description("")
+  String TagWrittenEvents();
+
+  @DefaultMessage("PositionChanged")
+  @Description("")
+  String PositionChangedEvents();
+
+  @DefaultMessage("AfterSelecting")
+  @Description("")
+  String AfterSelectingEvents();
+
+  @DefaultMessage("AfterTimeSet")
+  @Description("")
+  String AfterTimeSetEvents();
+
+  @DefaultMessage("GotTranslation")
+  @Description("")
+  String GotTranslationEvents();
+
+  @DefaultMessage("Shaking")
+  @Description("")
+  String ShakingEvents();
+
+  //Methods
+  @DefaultMessage("ResolveActivity")
+  @Description("")
+  String ResolveActivityMethods();
+
+  @DefaultMessage("StartActivity")
+  @Description("")
+  String StartActivityMethods();
+
+  @DefaultMessage("Connect")
+  @Description("")
+  String ConnectMethods();
+
+  @DefaultMessage("ConnectWithUUID")
+  @Description("")
+  String ConnectWithUUIDMethods();
+
+  @DefaultMessage("Disconnect")
+  @Description("")
+  String DisconnectMethods();
+
+  @DefaultMessage("IsDevicePaired")
+  @Description("")
+  String IsDevicePairedMethods();
+
+  @DefaultMessage("ReceiveSigned1ByteNumber")
+  @Description("")
+  String ReceiveSigned1ByteNumberMethods();
+
+  @DefaultMessage("ReceiveSigned2ByteNumber")
+  @Description("")
+  String ReceiveSigned2ByteNumberMethods();
+
+  @DefaultMessage("ReceiveSigned4ByteNumber")
+  @Description("")
+  String ReceiveSigned4ByteNumberMethods();
+
+  @DefaultMessage("ReceiveSignedBytes")
+  @Description("")
+  String ReceiveSignedBytesMethods();
+
+  @DefaultMessage("ReceiveText")
+  @Description("")
+  String ReceiveTextMethods();
+
+  @DefaultMessage("ReceiveUnsigned1ByteNumber")
+  @Description("")
+  String ReceiveUnsigned1ByteNumberMethods();
+
+  @DefaultMessage("ReceiveUnsigned2ByteNumber")
+  @Description("")
+  String ReceiveUnsigned2ByteNumberMethods();
+
+  @DefaultMessage("ReceiveUnsigned4ByteNumber")
+  @Description("")
+  String ReceiveUnsigned4ByteNumberMethods();
+
+  @DefaultMessage("ReceiveUnsignedBytes")
+  @Description("")
+  String ReceiveUnsignedBytesMethods();
+
+  @DefaultMessage("Send1ByteNumber")
+  @Description("")
+  String Send1ByteNumberMethods();
+
+  @DefaultMessage("Send2ByteNumber")
+  @Description("")
+  String Send2ByteNumberMethods();
+
+  @DefaultMessage("Send4ByteNumber")
+  @Description("")
+  String Send4ByteNumberMethods();
+
+  @DefaultMessage("SendBytes")
+  @Description("")
+  String SendBytesMethods();
+
+  @DefaultMessage("SendText")
+  @Description("")
+  String SendTextMethods();
+
+  @DefaultMessage("AcceptConnection")
+  @Description("")
+  String AcceptConnectionMethods();
+
+  @DefaultMessage("AcceptConnectionWithUUID")
+  @Description("")
+  String AcceptConnectionWithUUIDMethods();
+
+  @DefaultMessage("BytesAvailableToReceive")
+  @Description("")
+  String BytesAvailableToReceiveMethods();
+
+  @DefaultMessage("StopAccepting")
+  @Description("")
+  String StopAcceptingMethods();
+
+  @DefaultMessage("RecordVideo")
+  @Description("")
+  String RecordVideoMethods();
+
+  @DefaultMessage("TakePicture")
+  @Description("")
+  String TakePictureMethods();
+
+  @DefaultMessage("Clear")
+  @Description("")
+  String ClearMethods();
+
+  @DefaultMessage("DrawCircle")
+  @Description("")
+  String DrawCircleMethods();
+
+  @DefaultMessage("DrawLine")
+  @Description("")
+  String DrawLineMethods();
+
+  @DefaultMessage("DrawPoint")
+  @Description("")
+  String DrawPointMethods();
+
+  @DefaultMessage("DrawText")
+  @Description("")
+  String DrawTextMethods();
+
+  @DefaultMessage("DrawTextAtAngle")
+  @Description("")
+  String DrawTextAtAngleMethods();
+
+  @DefaultMessage("GetBackgroundPixelColor")
+  @Description("")
+  String GetBackgroundPixelColorMethods();
+
+  @DefaultMessage("GetPixelColor")
+  @Description("")
+  String GetPixelColorMethods();
+
+  @DefaultMessage("Save")
+  @Description("")
+  String SaveMethods();
+
+  @DefaultMessage("SaveAs")
+  @Description("")
+  String SaveAsMethods();
+
+  @DefaultMessage("SetBackgroundPixelColor")
+  @Description("")
+  String SetBackgroundPixelColorMethods();
+
+  @DefaultMessage("AddDays")
+  @Description("")
+  String AddDaysMethods();
+
+  @DefaultMessage("AddHours")
+  @Description("")
+  String AddHoursMethods();
+
+  @DefaultMessage("AddMinutes")
+  @Description("")
+  String AddMinutesMethods();
+
+  @DefaultMessage("AddMonths")
+  @Description("")
+  String AddMonthsMethods();
+
+  @DefaultMessage("AddSeconds")
+  @Description("")
+  String AddSecondsMethods();
+
+  @DefaultMessage("AddWeeks")
+  @Description("")
+  String AddWeeksMethods();
+
+  @DefaultMessage("AddYears")
+  @Description("")
+  String AddYearsMethods();
+
+  @DefaultMessage("DayOfMonth")
+  @Description("")
+  String DayOfMonthMethods();
+
+  @DefaultMessage("Duration")
+  @Description("")
+  String DurationMethods();
+
+  @DefaultMessage("FormatDate")
+  @Description("")
+  String FormatDateMethods();
+
+  @DefaultMessage("FormatDateTime")
+  @Description("")
+  String FormatDateTimeMethods();
+
+  @DefaultMessage("FormatTime")
+  @Description("")
+  String FormatTimeMethods();
+
+  @DefaultMessage("GetMillis")
+  @Description("")
+  String GetMillisMethods();
+
+  @DefaultMessage("Hour")
+  @Description("")
+  String HourMethods();
+
+  @DefaultMessage("MakeInstant")
+  @Description("")
+  String MakeInstantMethods();
+
+  @DefaultMessage("MakeInstantFromMillis")
+  @Description("")
+  String MakeInstantFromMillisMethods();
+
+  @DefaultMessage("Minute")
+  @Description("")
+  String MinuteMethods();
+
+  @DefaultMessage("Month")
+  @Description("")
+  String MonthMethods();
+
+  @DefaultMessage("MonthName")
+  @Description("")
+  String MonthNameMethods();
+
+  @DefaultMessage("Now")
+  @Description("")
+  String NowMethods();
+
+  @DefaultMessage("Second")
+  @Description("")
+  String SecondMethods();
+
+  @DefaultMessage("SystemTime")
+  @Description("")
+  String SystemTimeMethods();
+
+  @DefaultMessage("Weekday")
+  @Description("")
+  String WeekdayMethods();
+
+  @DefaultMessage("WeekdayName")
+  @Description("")
+  String WeekdayNameMethods();
+
+  @DefaultMessage("Year")
+  @Description("")
+  String YearMethods();
+
+  @DefaultMessage("Open")
+  @Description("")
+  String OpenMethods();
+
+  @DefaultMessage("CloseScreenAnimation")
+  @Description("")
+  String CloseScreenAnimationMethods();
+
+  @DefaultMessage("OpenScreenAnimation")
+  @Description("")
+  String OpenScreenAnimationMethods();
+
+  @DefaultMessage("DoQuery")
+  @Description("")
+  String DoQueryMethods();
+
+  @DefaultMessage("ForgetLogin")
+  @Description("")
+  String ForgetLoginMethods();
+
+  @DefaultMessage("SendQuery")
+  @Description("")
+  String SendQueryMethods();
+
+  @DefaultMessage("GetInstanceLists")
+  @Description("")
+  String GetInstanceListsMethods();
+
+  @DefaultMessage("GetMessages")
+  @Description("")
+  String GetMessagesMethods();
+
+  @DefaultMessage("Invite")
+  @Description("")
+  String InviteMethods();
+
+  @DefaultMessage("LeaveInstance")
+  @Description("")
+  String LeaveInstanceMethods();
+
+  @DefaultMessage("MakeNewInstance")
+  @Description("")
+  String MakeNewInstanceMethods();
+
+  @DefaultMessage("ServerCommand")
+  @Description("")
+  String ServerCommandMethods();
+
+  @DefaultMessage("SetInstance")
+  @Description("")
+  String SetInstanceMethods();
+
+  @DefaultMessage("SetLeader")
+  @Description("")
+  String SetLeaderMethods();
+
+  @DefaultMessage("Bounce")
+  @Description("")
+  String BounceMethods();
+
+  @DefaultMessage("CollidingWith")
+  @Description("")
+  String CollidingWithMethods();
+
+  @DefaultMessage("MoveIntoBounds")
+  @Description("")
+  String MoveIntoBoundsMethods();
+
+  @DefaultMessage("MoveTo")
+  @Description("")
+  String MoveToMethods();
+
+  @DefaultMessage("PointInDirection")
+  @Description("")
+  String PointInDirectionMethods();
+
+  @DefaultMessage("PointTowards")
+  @Description("")
+  String PointTowardsMethods();
+
+  @DefaultMessage("LatitudeFromAddress")
+  @Description("")
+  String LatitudeFromAddressMethods();
+
+  @DefaultMessage("LongitudeFromAddress")
+  @Description("")
+  String LongitudeFromAddressMethods();
+
+  @DefaultMessage("LogError")
+  @Description("")
+  String LogErrorMethods();
+
+  @DefaultMessage("LogInfo")
+  @Description("")
+  String LogInfoMethods();
+
+  @DefaultMessage("LogWarning")
+  @Description("")
+  String LogWarningMethods();
+
+  @DefaultMessage("ShowAlert")
+  @Description("")
+  String ShowAlertMethods();
+
+  @DefaultMessage("ShowChooseDialog")
+  @Description("")
+  String ShowChooseDialogMethods();
+
+  @DefaultMessage("ShowMessageDialog")
+  @Description("")
+  String ShowMessageDialogMethods();
+
+  @DefaultMessage("ShowTextDialog")
+  @Description("")
+  String ShowTextDialogMethods();
+
+  @DefaultMessage("GetColor")
+  @Description("")
+  String GetColorMethods();
+
+  @DefaultMessage("GetLightLevel")
+  @Description("")
+  String GetLightLevelMethods();
+
+  @DefaultMessage("DeleteFile")
+  @Description("")
+  String DeleteFileMethods();
+
+  @DefaultMessage("DownloadFile")
+  @Description("")
+  String DownloadFileMethods();
+
+  @DefaultMessage("GetBatteryLevel")
+  @Description("")
+  String GetBatteryLevelMethods();
+
+  @DefaultMessage("GetBrickName")
+  @Description("")
+  String GetBrickNameMethods();
+
+  @DefaultMessage("GetCurrentProgramName")
+  @Description("")
+  String GetCurrentProgramNameMethods();
+
+  @DefaultMessage("GetFirmwareVersion")
+  @Description("")
+  String GetFirmwareVersionMethods();
+
+  @DefaultMessage("GetInputValues")
+  @Description("")
+  String GetInputValuesMethods();
+
+  @DefaultMessage("GetOutputState")
+  @Description("")
+  String GetOutputStateMethods();
+
+  @DefaultMessage("KeepAlive")
+  @Description("")
+  String KeepAliveMethods();
+
+  @DefaultMessage("ListFiles")
+  @Description("")
+  String ListFilesMethods();
+
+  @DefaultMessage("LsGetStatus")
+  @Description("")
+  String LsGetStatusMethods();
+
+  @DefaultMessage("LsRead")
+  @Description("")
+  String LsReadMethods();
+
+  @DefaultMessage("MessageRead")
+  @Description("")
+  String MessageReadMethods();
+
+  @DefaultMessage("MessageWrite")
+  @Description("")
+  String MessageWriteMethods();
+
+  @DefaultMessage("PlaySoundFile")
+  @Description("")
+  String PlaySoundFileMethods();
+
+  @DefaultMessage("PlayTone")
+  @Description("")
+  String PlayToneMethods();
+
+  @DefaultMessage("ResetInputScaledValue")
+  @Description("")
+  String ResetInputScaledValueMethods();
+
+  @DefaultMessage("ResetMotorPosition")
+  @Description("")
+  String ResetMotorPositionMethods();
+
+  @DefaultMessage("SetBrickName")
+  @Description("")
+  String SetBrickNameMethods();
+
+  @DefaultMessage("SetInputMode")
+  @Description("")
+  String SetInputModeMethods();
+
+  @DefaultMessage("SetOutputState")
+  @Description("")
+  String SetOutputStateMethods();
+
+  @DefaultMessage("StartProgram")
+  @Description("")
+  String StartProgramMethods();
+
+  @DefaultMessage("StopProgram")
+  @Description("")
+  String StopProgramMethods();
+
+  @DefaultMessage("StopSoundPlayback")
+  @Description("")
+  String StopSoundPlaybackMethods();
+
+  @DefaultMessage("LsWrite")
+  @Description("")
+  String LsWriteMethods();
+
+  @DefaultMessage("MoveBackward")
+  @Description("")
+  String MoveBackwardMethods();
+
+  @DefaultMessage("MoveBackwardIndefinitely")
+  @Description("")
+  String MoveBackwardIndefinitelyMethods();
+
+  @DefaultMessage("MoveForward")
+  @Description("")
+  String MoveForwardMethods();
+
+  @DefaultMessage("MoveForwardIndefinitely")
+  @Description("")
+  String MoveForwardIndefinitelyMethods();
+
+  @DefaultMessage("Stop")
+  @Description("")
+  String StopMethods();
+
+  @DefaultMessage("TurnClockwiseIndefinitely")
+  @Description("")
+  String TurnClockwiseIndefinitelyMethods();
+
+  @DefaultMessage("TurnCounterClockwiseIndefinitely")
+  @Description("")
+  String TurnCounterClockwiseIndefinitelyMethods();
+
+  @DefaultMessage("GetSoundLevel")
+  @Description("")
+  String GetSoundLevelMethods();
+
+  @DefaultMessage("IsPressed")
+  @Description("")
+  String IsPressedMethods();
+
+  @DefaultMessage("GetDistance")
+  @Description("")
+  String GetDistanceMethods();
+
+  @DefaultMessage("Pause")
+  @Description("")
+  String PauseMethods();
+
+  @DefaultMessage("Reset")
+  @Description("")
+  String ResetMethods();
+
+  @DefaultMessage("Resume")
+  @Description("")
+  String ResumeMethods();
+
+  @DefaultMessage("Start")
+  @Description("")
+  String StartMethods();
+
+  @DefaultMessage("MakePhoneCall")
+  @Description("")
+  String MakePhoneCallMethods();
+
+  @DefaultMessage("GetWifiIpAddress")
+  @Description("")
+  String GetWifiIpAddressMethods();
+
+  @DefaultMessage("isConnected")
+  @Description("")
+  String isConnectedMethods();
+
+  @DefaultMessage("setHmacSeedReturnCode")
+  @Description("")
+  String setHmacSeedReturnCodeMethods();
+
+  @DefaultMessage("startHTTPD")
+  @Description("")
+  String startHTTPDMethods();
+
+  @DefaultMessage("Vibrate")
+  @Description("")
+  String VibrateMethods();
+
+  @DefaultMessage("GetText")
+  @Description("")
+  String GetTextMethods();
+
+  @DefaultMessage("HideKeyboard")
+  @Description("")
+  String HideKeyboardMethods();
+
+  @DefaultMessage("Speak")
+  @Description("")
+  String SpeakMethods();
+
+  @DefaultMessage("SendMessage")
+  @Description("")
+  String SendMessageMethods();
+
+  @DefaultMessage("GetValue")
+  @Description("")
+  String GetValueMethods();
+
+  @DefaultMessage("StoreValue")
+  @Description("")
+  String StoreValueMethods();
+
+  @DefaultMessage("Authorize")
+  @Description("")
+  String AuthorizeMethods();
+
+  @DefaultMessage("CheckAuthorized")
+  @Description("")
+  String CheckAuthorizedMethods();
+
+  @DefaultMessage("DeAuthorize")
+  @Description("")
+  String DeAuthorizeMethods();
+
+  @DefaultMessage("DirectMessage")
+  @Description("")
+  String DirectMessageMethods();
+
+  @DefaultMessage("Follow")
+  @Description("")
+  String FollowMethods();
+
+  @DefaultMessage("RequestDirectMessages")
+  @Description("")
+  String RequestDirectMessagesMethods();
+
+  @DefaultMessage("RequestFollowers")
+  @Description("")
+  String RequestFollowersMethods();
+
+  @DefaultMessage("RequestFriendTimeline")
+  @Description("")
+  String RequestFriendTimelineMethods();
+
+  @DefaultMessage("RequestMentions")
+  @Description("")
+  String RequestMentionsMethods();
+
+  @DefaultMessage("SearchTwitter")
+  @Description("")
+  String SearchTwitterMethods();
+
+  @DefaultMessage("SetStatus")
+  @Description("")
+  String SetStatusMethods();
+
+  @DefaultMessage("StopFollowing")
+  @Description("")
+  String StopFollowingMethods();
+
+  @DefaultMessage("GetDuration")
+  @Description("")
+  String GetDurationMethods();
+
+  @DefaultMessage("SeekTo")
+  @Description("")
+  String SeekToMethods();
+
+  @DefaultMessage("DoScan")
+  @Description("")
+  String DoScanMethods();
+
+  @DefaultMessage("RequestBallot")
+  @Description("")
+  String RequestBallotMethods();
+
+  @DefaultMessage("SendBallot")
+  @Description("")
+  String SendBallotMethods();
+
+  @DefaultMessage("BuildPostData")
+  @Description("")
+  String BuildPostDataMethods();
+
+  @DefaultMessage("ClearCookies")
+  @Description("")
+  String ClearCookiesMethods();
+
+  @DefaultMessage("Get")
+  @Description("")
+  String GetMethods();
+
+  @DefaultMessage("HtmlTextDecode")
+  @Description("")
+  String HtmlTextDecodeMethods();
+
+  @DefaultMessage("JsonTextDecode")
+  @Description("")
+  String JsonTextDecodeMethods();
+
+  @DefaultMessage("PostFile")
+  @Description("")
+  String PostFileMethods();
+
+  @DefaultMessage("PostText")
+  @Description("")
+  String PostTextMethods();
+
+  @DefaultMessage("PostTextWithEncoding")
+  @Description("")
+  String PostTextWithEncodingMethods();
+
+  @DefaultMessage("UriEncode")
+  @Description("")
+  String UriEncodeMethods();
+
+  @DefaultMessage("CanGoBack")
+  @Description("")
+  String CanGoBackMethods();
+
+  @DefaultMessage("CanGoForward")
+  @Description("")
+  String CanGoForwardMethods();
+
+  @DefaultMessage("ClearLocations")
+  @Description("")
+  String ClearLocationsMethods();
+
+  @DefaultMessage("GoBack")
+  @Description("")
+  String GoBackMethods();
+
+  @DefaultMessage("GoForward")
+  @Description("")
+  String GoForwardMethods();
+
+  @DefaultMessage("GoHome")
+  @Description("")
+  String GoHomeMethods();
+
+  @DefaultMessage("GoToUrl")
+  @Description("")
+  String GoToUrlMethods();
+
+  @DefaultMessage("AppendToFile")
+  @Description("")
+  String AppendToFileMethods();
+
+  @DefaultMessage("Delete")
+  @Description("")
+  String DeleteMethods();
+
+  @DefaultMessage("ReadFrom")
+  @Description("")
+  String ReadFromMethods();
+
+  @DefaultMessage("SaveFile")
+  @Description("")
+  String SaveFileMethods();
+
+  @DefaultMessage("doFault")
+  @Description("")
+  String doFaultMethods();
+
+  @DefaultMessage("getVersionName")
+  @Description("")
+  String getVersionNameMethods();
+
+  @DefaultMessage("installURL")
+  @Description("")
+  String installURLMethods();
+
+  @DefaultMessage("isDirect")
+  @Description("")
+  String isDirectMethods();
+
+  @DefaultMessage("setAssetsLoaded")
+  @Description("")
+  String setAssetsLoadedMethods();
+
+  @DefaultMessage("shutdown")
+  @Description("")
+  String shutdownMethods();
+
+  @DefaultMessage("ShareFile")
+  @Description("")
+  String ShareFileMethods();
+
+  @DefaultMessage("ShareFileWithMessage")
+  @Description("")
+  String ShareFileWithMessageMethods();
+
+  @DefaultMessage("ShareMessage")
+  @Description("")
+  String ShareMessageMethods();
+
+  @DefaultMessage("Play")
+  @Description("")
+  String PlayMethods();
+
+  @DefaultMessage("DisplayDropdown")
+  @Description("")
+  String DisplayDropdownMethods();
+
+  @DefaultMessage("ClearAll")
+  @Description("")
+  String ClearAllMethods();
+
+  @DefaultMessage("ClearTag")
+  @Description("")
+  String ClearTagMethods();
+
+  @DefaultMessage("GetTags")
+  @Description("")
+  String GetTagsMethods();
+
+  @DefaultMessage("Tweet")
+  @Description("")
+  String TweetMethods();
+
+  @DefaultMessage("TweetWithImage")
+  @Description("")
+  String TweetWithImageMethods();
+
+  @DefaultMessage("BuildRequestData")
+  @Description("")
+  String BuildRequestDataMethods();
+
+  @DefaultMessage("PutFile")
+  @Description("")
+  String PutFileMethods();
+
+  @DefaultMessage("PutText")
+  @Description("")
+  String PutTextMethods();
+
+  @DefaultMessage("PutTextWithEncoding")
+  @Description("")
+  String PutTextWithEncodingMethods();
+
+  @DefaultMessage("RequestTranslation")
+  @Description("")
+  String RequestTranslationMethods();
+  
+  
+  //Mock Components
+  @DefaultMessage("add items...")
+  @Description("")
+  String MockSpinnerAddItems();
+  
   //help strings
   @DefaultMessage("Non-visible component that can detect shaking and measure acceleration approximately in three dimensions using SI units (m/s<sup>2</sup>).  The components are: <ul>\n<li> <strong>xAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when the phone is tilted to the right (i.e.,      its left side is raised), and negative when the phone is tilted      to the left (i.e., its right size is raised).</li>\n <li> <strong>yAccel</strong>: 0 when the phone is at rest on a flat      surface, positive when its bottom is raised, and negative when      its top is raised. </li>\n <li> <strong>zAccel</strong>: Equal to -9.8 (earth\"s gravity in meters per      second per second when the device is at rest parallel to the ground      with the display facing up,      0 when perpindicular to the ground, and +9.8 when facing down.       The value can also be affected by accelerating it with or against      gravity. </li></ul>")
   @Description("")

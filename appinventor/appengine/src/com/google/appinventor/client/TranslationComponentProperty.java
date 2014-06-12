@@ -1,4 +1,5 @@
 package com.google.appinventor.client;
+import static com.google.appinventor.client.Ode.MESSAGES;
 
 import java.util.HashMap;
 import java.util.List;
@@ -6,44 +7,11 @@ import java.util.Map;
 
 public class TranslationComponentProperty {
 
-  public static String languageSetting = "zh_TW";
-  public static Map<String, String> myMap = createMap(languageSetting);
+  public static String languageSetting;
+  public static Map<String, String> myMap = map();
 
   public static enum Language {
     zh_TW, en_US
-  }
-
-  public static void updateMap(String language) {
-    if (!languageSetting.equals(language)) {
-      languageSetting = language;
-      switch (Language.valueOf(language)) {
-        case zh_TW:
-          myMap = chineseMap();
-          break;
-        case en_US:
-          myMap = englishMap();
-          break;
-        default:
-          myMap = englishMap();
-          break;
-      }
-    }
-  }
-
-  public static Map<String, String> createMap(String language) {
-    Map<String, String> map;
-    switch (Language.valueOf(language)) {
-      case zh_TW:
-        map = chineseMap();
-        break;
-      case en_US:
-        map = englishMap();
-        break;
-      default:
-        map = englishMap();
-        break;
-    }
-    return map;
   }
 
   public static String getName(String key) {
@@ -51,439 +19,193 @@ public class TranslationComponentProperty {
   }
 
   /**
-   * The output is a sequence of component descriptions enclosed in square
-   * brackets and separated by commas.
-   * 
-   * Each component description has the following format: 
-   *  { "name": "COMPONENT-TYPE-NAME", 
-   *    "blockProperties": 
-   *      [ { "key": "PROPERTY-NAME",
-   *          "value": "PROPERTY-VALUE"},* 
-   *      ] 
-   *  }
-   */
-  public static String getMapJSON(String typeName, List<String> propertyKeys) {
-    StringBuilder sb = new StringBuilder();
-    sb.append("{ \"name\": \"");
-    sb.append(typeName);
-
-    sb.append("\",\n  \"blockProperties\": [");
-    String separator = "";
-    for (String key : propertyKeys) {
-      if (myMap.containsKey(key)) {
-        sb.append(separator);
-        separator = ",\n    ";
-        sb.append("{ \"key\": \"");
-        sb.append(key);
-        sb.append("\", \"value\": \"");
-        sb.append(myMap.get(key));
-        sb.append("\"}");
-      }
-    }
-    sb.append("]}\n");
-    return sb.toString();
-  }
-
-  /**
-   * Get JSON representation of the translation map
-   * 
-   * @param components
-   *          A dictionary of {typeName: propertyList}
-   */
-  public static String getMapJSON(Map<String, List<String>> components) {
-    StringBuilder sb = new StringBuilder();
-
-    sb.append('[');
-    String separator = "";
-
-    for (String componentTypeName : components.keySet()) {
-      sb.append(separator);
-      sb.append(getMapJSON(componentTypeName, components.get(componentTypeName)));
-      separator = ",\n";
-    }
-
-    sb.append(']');
-    System.err.println(sb.toString());
-    return sb.toString();
-  }
-
-  /**
-   * Get an English translation map.
+   * Get a translation map.
    * 
    * The output map has the following format: Map = {propertyKey1:
    * {propertyKey1, propertyValue1}, ...}
    * 
    * @return map
    */
-  public static HashMap<String, String> englishMap() {
+  public static HashMap<String, String> map() {
     HashMap<String, String> map = new HashMap<String, String>();
     // Properties
-    map.put("AboveRangeEventEnabled", "AboveRangeEventEnabled");
-    map.put("Action", "Action");
-    map.put("ActivityClass", "ActivityClass");
-    map.put("ActivityPackage", "ActivityPackage");
-    map.put("Accuracy", "Accuracy");
-    map.put("AddressesAndNames", "AddressesAndNames");
-    map.put("AlignHorizontal", "AlignHorizontal");
-    map.put("AlignVertical", "AlignVertical");
-    map.put("AllowCookies", "AllowCookies");
-    map.put("Altitude", "Altitude");
-    map.put("Angle", "Angle");
-    map.put("Animation", "Animation");
-    map.put("ApiKey", "ApiKey");
-    map.put("Available", "Available");
-    map.put("AvailableProviders", "AvailableProviders");
-    map.put("Azimuth", "Azimuth");
-    map.put("BackgroundColor", "BackgroundColor");
-    map.put("BackgroundImage", "BackgroundImage");
-    map.put("BallotOptions", "BallotOptions");
-    map.put("BallotQuestion", "BallotQuestion");
-    map.put("BelowRangeEventEnabled", "BelowRangeEventEnabled");
-    map.put("BottomOfRange", "BottomOfRange");
-    map.put("CharacterEncoding", "CharacterEncoding");
-    map.put("Checked", "Checked");
-    map.put("ColorChangedEventEnabled", "ColorChangedEventEnabled");
-    map.put("Country", "Country");
-    map.put("ConsumerKey", "ConsumerKey");
-    map.put("ConsumerSecret", "ConsumerSecret");
-    map.put("ContactName", "ContactName");
-    map.put("CurrentAddress", "CurrentAddress");
-    map.put("CurrentPageTitle", "CurrentPageTitle");
-    map.put("CurrentUrl", "CurrentUrl");
-    map.put("DataType", "DataType");
-    map.put("DataUri", "DataUri");
-    map.put("DelimiterByte", "DelimiterByte");
-    map.put("DetectColor", "DetectColor");
-    map.put("DirectMessages", "DirectMessages");
-    map.put("DistanceInterval", "DistanceInterval");
-    map.put("Elements", "Elements");
-    map.put("ElementsFromString", "ElementsFromString");
-    map.put("EmailAddress", "EmailAddress");
-    map.put("Enabled", "Enabled");
-    map.put("ExtraKey", "ExtraKey");
-    map.put("ExtraValue", "ExtraValue");
-    map.put("Followers", "Followers");
-    map.put("FollowLinks", "FollowLinks");
-    map.put("FontSize", "FontSize");
-    map.put("FriendTimeline", "FriendTimeline");
-    map.put("FullScreen", "FullScreen");
-    map.put("GameId", "GameId");
-    map.put("GenerateColor", "GenerateColor");
-    map.put("GenerateLight", "GenerateLight");
-    map.put("GoogleVoiceEnabled", "GoogleVoiceEnabled");
-    map.put("HasAccuracy", "HasAccuracy");
-    map.put("HasAltitude", "HasAltitude");
-    map.put("HasLongitudeLatitude", "HasLongitudeLatitude");
-    map.put("Heading", "Heading");
-    map.put("Height", "Height");
-    map.put("HighByteFirst", "HighByteFirst");
-    map.put("Hint", "Hint");
-    map.put("HomeUrl", "HomeUrl");
-    map.put("Image", "Image");
-    map.put("InstanceId", "InstanceId");
-    map.put("Interval", "Interval");
-    map.put("InvitedInstances", "InvitedInstances");
-    map.put("IsAccepting", "IsAccepting");
-    map.put("IsConnected", "IsConnected");
-    map.put("IsLooping", "IsLooping");
-    map.put("IsPlaying", "IsPlaying");
-    map.put("JoinedInstances", "JoinedInstances");
-    map.put("Language", "Language");
-    map.put("Latitude", "Latitude");
-    map.put("Leader", "Leader");
-    map.put("LineWidth", "LineWidth");
-    map.put("Longitude", "Longitude");
-    map.put("Magnitude", "Magnitude");
-    map.put("Mentions", "Mentions");
-    map.put("Message", "Message");
-    map.put("MinimumInterval", "MinimumInterval");
-    map.put("MultiLine", "MultiLine");
-    map.put("NumbersOnly", "NumbersOnly");
-    map.put("PaintColor", "PaintColor");
-    map.put("PhoneNumber", "PhoneNumber");
-    map.put("Picture", "Picture");
-    map.put("Pitch", "Pitch");
-    map.put("Players", "Players");
-    map.put("PressedEventEnabled", "PressedEventEnabled");
-    map.put("PromptforPermission", "PromptforPermission");
-    map.put("ProviderLocked", "ProviderLocked");
-    map.put("ProviderName", "ProviderName");
-    map.put("PublicInstances", "PublicInstances");
-    map.put("Query", "Query");
-    map.put("Radius", "Radius");
-    map.put("ReceivingEnabled", "ReceivingEnabled");
-    map.put("ReleasedEventEnabled", "ReleasedEventEnabled");
-    map.put("RequestHeaders", "RequestHeaders");
-    map.put("ResponseFileName", "ResponseFileName");
-    map.put("Result", "Result");
-    map.put("ResultName", "ResultName");
-    map.put("ResultType", "ResultType");
-    map.put("ResultUri", "ResultUri");
-    map.put("Roll", "Roll");
-    map.put("Rotates", "Rotates");
-    map.put("SaveResponse", "SaveResponse");
-    map.put("ScreenOrientation", "ScreenOrientation");
-    map.put("Scrollable", "Scrollable");
-    map.put("SearchResults", "SearchResults");
-    map.put("Secure", "Secure");
-    map.put("ServiceUrl", "ServiceUrl");
-    map.put("ServiceURL", "ServiceURL");
-    map.put("Selection", "Selection");
-    map.put("SelectionIndex", "SelectionIndex");
-    map.put("Source", "Source");
-    map.put("Speed", "Speed");
-    map.put("StopBeforeDisconnect", "StopBeforeDisconnect");
-    map.put("Text", "Text");
-    map.put("TextColor", "TextColor");
-    map.put("TimeInterval", "TimeInterval");
-    map.put("TimerAlwaysFires", "TimerAlwaysFires");
-    map.put("TimerEnabled", "TimerEnabled");
-    map.put("TimerInterval", "TimerInterval");
-    map.put("Title", "Title");
-    map.put("TopOfRange", "TopOfRange");
-    map.put("Url", "Url");
-    map.put("UserChoice", "UserChoice");
-    map.put("UserEmailAddress", "UserEmailAddress");
-    map.put("UserId", "UserId");
-    map.put("Username", "Username");
-    map.put("Visible", "Visible");
-    map.put("Volume", "Volume");
-    map.put("WithinRangeEventEnabled", "WithinRangeEventEnabled");
-    map.put("X", "X");
-    map.put("XAccel", "XAccel");
-    map.put("Y", "Y");
-    map.put("YAccel", "YAccel");
-    map.put("Z", "Z");
-    map.put("ZAccel", "ZAccel");
-    map.put("Width", "Width");
-    map.put("ShowFilterBar", "ShowFilterBar");
-    map.put("NotifierLength", "NotifierLength");
-    map.put("Loop", "Loop");
-    map.put("Pitch", "Pitch");
-    map.put("SpeechRate", "SpeechRate");
-    map.put("Sensitivity", "Sensitivity");
-    map.put("TwitPic_API_Key", "TwitPic_API_Key");
-    map.put("Prompt", "Prompt");
-    map.put("ColorLeft", "ColorLeft");
-    map.put("ColorRight", "ColorRight");
-    map.put("MaxValue", "MaxValue");
-    map.put("MinValue", "MinValue");
-    map.put("ThumbPosition", "ThumbPosition");
-    map.put("FontBold", "FontBold");
-    map.put("FontItalic", "FontItalic");
-    map.put("ShowFeedback", "ShowFeedback");
-    map.put("WebViewString", "WebViewString");
-    map.put("UseFront", "UseFront");
-    map.put("Day", "Day");
-    map.put("Month", "Month");
-    map.put("MonthInText", "MonthInText");
-    map.put("Year", "Year");
-    map.put("AboutScreen", "AboutScreen");
-    map.put("CloseScreenAnimation", "CloseScreenAnimation");
-    map.put("OpenScreenAnimation", "OpenScreenAnimation");
-    map.put("LastMessage", "LastMessage");
-    map.put("ReadMode", "ReadMode");
-    map.put("TextToWrite", "TextToWrite");
-    map.put("WriteType", "WriteType");
-    map.put("CalibrateStrideLength", "CalibrateStrideLength");
-    map.put("Distance", "Distance");
-    map.put("ElapsedTime", "ElapsedTime");
-    map.put("Moving", "Moving");
-    map.put("StopDetectionTimeout", "StopDetectionTimeout");
-    map.put("StrideLength", "StrideLength");
-    map.put("UseGPS", "UseGPS");
-    map.put("Hour", "Hour");
-    map.put("Minute", "Minute");
-    return map;
-  }
+    map.put("DirectMessages", MESSAGES.DirectMessagesProperties());
+    map.put("ContactName", MESSAGES.ContactNameProperties());
+    map.put("CurrentAddress", MESSAGES.CurrentAddressProperties());
+    map.put("CurrentPageTitle", MESSAGES.CurrentPageTitleProperties());
+    map.put("CurrentUrl", MESSAGES.CurrentUrlProperties());
+    map.put("Accuracy", MESSAGES.AccuracyProperties());
+    map.put("AddressesAndNames", MESSAGES.AddressesAndNamesProperties());
+    map.put("Altitude", MESSAGES.AltitudeProperties());
+    map.put("Angle", MESSAGES.AngleProperties());
+    map.put("Animation", MESSAGES.AnimationProperties());
+    map.put("Available", MESSAGES.AvailableProperties());
+    map.put("AvailableProviders", MESSAGES.AvailableProvidersProperties());
+    map.put("Azimuth", MESSAGES.AzimuthProperties());
+    map.put("BallotOptions", MESSAGES.BallotOptionsProperties());
+    map.put("BallotQuestion", MESSAGES.BallotQuestionProperties());
+    map.put("EmailAddress", MESSAGES.EmailAddressProperties());
+    map.put("Elements", MESSAGES.ElementsProperties());
+    map.put("Followers", MESSAGES.FollowersProperties());
+    map.put("FriendTimeline", MESSAGES.FriendTimelineProperties());
+    map.put("FullScreen", MESSAGES.FullScreenProperties());
+    map.put("HasAccuracy", MESSAGES.HasAccuracyProperties());
+    map.put("HasAltitude", MESSAGES.HasAltitudeProperties());
+    map.put("HasLongitudeLatitude", MESSAGES.HasLongitudeLatitudeProperties());
+    map.put("Height", MESSAGES.HeightProperties());
+    map.put("InstanceId", MESSAGES.InstanceIdProperties());
+    map.put("InvitedInstances", MESSAGES.InvitedInstancesProperties());
+    map.put("IsAccepting", MESSAGES.IsAcceptingProperties());
+    map.put("IsConnected", MESSAGES.IsConnectedProperties());
+    map.put("IsPlaying", MESSAGES.IsPlayingProperties());
+    map.put("JoinedInstances", MESSAGES.JoinedInstancesProperties());
+    map.put("Latitude", MESSAGES.LatitudeProperties());
+    map.put("Leader", MESSAGES.LeaderProperties());
+    map.put("Longitude", MESSAGES.LongitudeProperties());
+    map.put("Magnitude", MESSAGES.MagnitudeProperties());
+    map.put("Mentions", MESSAGES.MentionsProperties());
+    map.put("ProviderLocked", MESSAGES.ProviderLockedProperties());
+    map.put("ProviderName", MESSAGES.ProviderNameProperties());
+    map.put("PublicInstances", MESSAGES.PublicInstancesProperties());
+    map.put("Players", MESSAGES.PlayersProperties());
+    map.put("RequestHeaders", MESSAGES.RequestHeadersProperties());
+    map.put("Result", MESSAGES.ResultProperties());
+    map.put("ResultType", MESSAGES.ResultTypeProperties());
+    map.put("ResultUri", MESSAGES.ResultUriProperties());
+    map.put("Roll", MESSAGES.RollProperties());
+    map.put("SearchResults", MESSAGES.SearchResultsProperties());
+    map.put("ServiceUrl", MESSAGES.ServiceUrlProperties());
+    map.put("SelectionIndex", MESSAGES.SelectionIndexProperties());
+    map.put("UserChoice", MESSAGES.UserChoiceProperties());
+    map.put("UserEmailAddress", MESSAGES.UserEmailAddressProperties());
+    map.put("UserId", MESSAGES.UserIdProperties());
+    map.put("Username", MESSAGES.UsernameProperties());
+    map.put("XAccel", MESSAGES.XAccelProperties());
+    map.put("YAccel", MESSAGES.YAccelProperties());
+    map.put("ZAccel", MESSAGES.ZAccelProperties());
+    map.put("Width", MESSAGES.WidthProperties());
+    map.put("WebViewString", MESSAGES.WebViewStringProperties());
+    map.put("AboveRangeEventEnabled", MESSAGES.AboveRangeEventEnabledProperties());
+    map.put("Action", MESSAGES.ActionProperties());
+    map.put("ActivityClass", MESSAGES.ActivityClassProperties());
+    map.put("ActivityPackage", MESSAGES.ActivityPackageProperties());
+    map.put("AlignHorizontal", MESSAGES.AlignHorizontalProperties());
+    map.put("AlignVertical", MESSAGES.AlignVerticalProperties());
+    map.put("AllowCookies", MESSAGES.AllowCookiesProperties());
+    map.put("ApiKey", MESSAGES.ApiKeyProperties());
+    map.put("BackgroundColor", MESSAGES.BackgroundColorProperties());
+    map.put("BackgroundImage", MESSAGES.BackgroundImageProperties());
+    map.put("BelowRangeEventEnabled", MESSAGES.BelowRangeEventEnabledProperties());
+    map.put("BottomOfRange", MESSAGES.BottomOfRangeProperties());
+    map.put("CharacterEncoding", MESSAGES.CharacterEncodingProperties());
+    map.put("Checked", MESSAGES.CheckedProperties());
+    map.put("ColorChangedEventEnabled", MESSAGES.ColorChangedEventEnabledProperties());
+    map.put("Country", MESSAGES.CountryProperties());
+    map.put("ConsumerKey", MESSAGES.ConsumerKeyProperties());
+    map.put("ConsumerSecret", MESSAGES.ConsumerSecretProperties());
+    map.put("DataType", MESSAGES.DataTypeProperties());
+    map.put("DataUri", MESSAGES.DataUriProperties());
+    map.put("DelimiterByte", MESSAGES.DelimiterByteProperties());
+    map.put("DetectColor", MESSAGES.DetectColorProperties());
+    map.put("DistanceInterval", MESSAGES.DistanceIntervalProperties());
+    map.put("ElementsFromString", MESSAGES.ElementsFromStringProperties());
+    map.put("Enabled", MESSAGES.EnabledProperties());
+    map.put("ExtraKey", MESSAGES.ExtraKeyProperties());
+    map.put("ExtraValue", MESSAGES.ExtraValueProperties());
+    map.put("FollowLinks", MESSAGES.FollowLinksProperties());
+    map.put("FontSize", MESSAGES.FontSizeProperties());
+    map.put("GameId", MESSAGES.GameIdProperties());
+    map.put("GenerateColor", MESSAGES.GenerateColorProperties());
+    map.put("GenerateLight", MESSAGES.GenerateLightProperties());
+    map.put("GoogleVoiceEnabled", MESSAGES.GoogleVoiceEnabledProperties());
+    map.put("Heading", MESSAGES.HeadingProperties());
+    map.put("HighByteFirst", MESSAGES.HighByteFirstProperties());
+    map.put("Hint", MESSAGES.HintProperties());
+    map.put("HomeUrl", MESSAGES.HomeUrlProperties());
+    map.put("Image", MESSAGES.ImageProperties());
+    map.put("Interval", MESSAGES.IntervalProperties());
+    map.put("Language", MESSAGES.LanguageProperties());
+    map.put("LineWidth", MESSAGES.LineWidthProperties());
+    map.put("IsLooping", MESSAGES.IsLoopingProperties());
+    map.put("Message", MESSAGES.MessageProperties());
+    map.put("MinimumInterval", MESSAGES.MinimumIntervalProperties());
+    map.put("MultiLine", MESSAGES.MultiLineProperties());
+    map.put("NumbersOnly", MESSAGES.NumbersOnlyProperties());
+    map.put("PaintColor", MESSAGES.PaintColorProperties());
+    map.put("PhoneNumber", MESSAGES.PhoneNumberProperties());
+    map.put("Picture", MESSAGES.PictureProperties());
+    map.put("Pitch", MESSAGES.PitchProperties());
+    map.put("PressedEventEnabled", MESSAGES.PressedEventEnabledProperties());
+    map.put("PromptforPermission", MESSAGES.PromptforPermissionProperties());
+    map.put("Query", MESSAGES.QueryProperties());
+    map.put("Radius", MESSAGES.RadiusProperties());
+    map.put("ReceivingEnabled", MESSAGES.ReceivingEnabledProperties());
+    map.put("ReleasedEventEnabled", MESSAGES.ReleasedEventEnabledProperties());
+    map.put("ResponseFileName", MESSAGES.ResponseFileNameProperties());
+    map.put("ResultName", MESSAGES.ResultNameProperties());
+    map.put("Rotates", MESSAGES.RotatesProperties());
+    map.put("SaveResponse", MESSAGES.SaveResponseProperties());
+    map.put("ScreenOrientation", MESSAGES.ScreenOrientationProperties());
+    map.put("Scrollable", MESSAGES.ScrollableProperties());
+    map.put("Secure", MESSAGES.SecureProperties());
+    map.put("ServiceURL", MESSAGES.ServiceURLProperties());
+    map.put("Selection", MESSAGES.SelectionProperties());
+    map.put("Source", MESSAGES.SourceProperties());
+    map.put("Speed", MESSAGES.SpeedProperties());
+    map.put("StopBeforeDisconnect", MESSAGES.StopBeforeDisconnectProperties());
+    map.put("Text", MESSAGES.TextProperties());
+    map.put("TextColor", MESSAGES.TextColorProperties());
+    map.put("TimeInterval", MESSAGES.TimeIntervalProperties());
+    map.put("TimerAlwaysFires", MESSAGES.TimerAlwaysFiresProperties());
+    map.put("TimerEnabled", MESSAGES.TimerEnabledProperties());
+    map.put("TimerInterval", MESSAGES.TimerIntervalProperties());
+    map.put("Title", MESSAGES.TitleProperties());
+    map.put("TopOfRange", MESSAGES.TopOfRangeProperties());
+    map.put("Url", MESSAGES.UrlProperties());
+    map.put("Visible", MESSAGES.VisibleProperties());
+    map.put("Volume", MESSAGES.VolumeProperties());
+    map.put("WithinRangeEventEnabled", MESSAGES.WithinRangeEventEnabledProperties());
+    map.put("X", MESSAGES.XProperties());
+    map.put("Y", MESSAGES.YProperties());
+    map.put("Z", MESSAGES.ZProperties());
+    map.put("ShowFilterBar", MESSAGES.ShowFilterBarProperties());
+    map.put("NotifierLength", MESSAGES.NotifierLengthProperties());
+    map.put("Loop", MESSAGES.LoopProperties());
+    map.put("Pitch", MESSAGES.PitchProperties());
+    map.put("SpeechRate", MESSAGES.SpeechRateProperties());
+    map.put("Sensitivity", MESSAGES.SensitivityProperties());
+    map.put("TwitPic_API_Key", MESSAGES.TwitPic_API_KeyProperties());
+    map.put("Prompt", MESSAGES.PromptProperties());
+    map.put("ColorLeft", MESSAGES.ColorLeftProperties());
+    map.put("ColorRight", MESSAGES.ColorRightProperties());
+    map.put("MaxValue", MESSAGES.MaxValueProperties());
+    map.put("MinValue", MESSAGES.MinValueProperties());
+    map.put("ThumbPosition", MESSAGES.ThumbPositionProperties());
+    map.put("FontBold", MESSAGES.FontBoldProperties());
+    map.put("FontItalic", MESSAGES.FontItalicProperties());
+    map.put("ShowFeedback", MESSAGES.ShowFeedbackProperties());
+    map.put("UseFront", MESSAGES.UseFrontProperties());
+    map.put("Day", MESSAGES.DayProperties());
+    map.put("Month", MESSAGES.MonthProperties());
+    map.put("MonthInText", MESSAGES.MonthInTextProperties());
+    map.put("Year", MESSAGES.YearProperties());
+    map.put("AboutScreen", MESSAGES.AboutScreenProperties());
+    map.put("CloseScreenAnimation", MESSAGES.CloseScreenAnimationProperties());
+    map.put("OpenScreenAnimation", MESSAGES.OpenScreenAnimationProperties());
+    map.put("LastMessage", MESSAGES.LastMessageProperties());
+    map.put("ReadMode", MESSAGES.ReadModeProperties());
+    map.put("TextToWrite", MESSAGES.TextToWriteProperties());
+    map.put("WriteType", MESSAGES.WriteTypeProperties());
+    map.put("CalibrateStrideLength", MESSAGES.CalibrateStrideLengthProperties());
+    map.put("Distance", MESSAGES.DistanceProperties());
+    map.put("ElapsedTime", MESSAGES.ElapsedTimeProperties());
+    map.put("Moving", MESSAGES.MovingProperties());
+    map.put("StopDetectionTimeout", MESSAGES.StopDetectionTimeoutProperties());
+    map.put("StrideLength", MESSAGES.StrideLengthProperties());
+    map.put("UseGPS", MESSAGES.UseGPSProperties());
+    map.put("Hour", MESSAGES.HourProperties());
+    map.put("Minute", MESSAGES.MinuteProperties());
 
-  /**
-   * Get a Chinese translation map.
-   * 
-   * The output map has the following format: Map = {propertyKey1:
-   * {propertyKey1, propertyValue1}, ...}
-   * 
-   * @return map
-   */
-  public static HashMap<String, String> chineseMap() {
-    HashMap<String, String> map = new HashMap<String, String>();
-
-    map.put("AboveRangeEventEnabled", "上述范围事件已启用");
-    map.put("Action", "行动");
-    map.put("ActivityClass", "活动类");
-    map.put("ActivityPackage", "活动套餐");
-    map.put("Accuracy", "准确性");
-    map.put("AddressesAndNames", "地址和名称");
-    map.put("AlignHorizontal", "水平对齐");
-    map.put("AlignVertical", "垂直对齐");
-    map.put("AllowCookies", "允许Cookies");
-    map.put("Altitude", "海拔");
-    map.put("Angle", "角");
-    map.put("Animation", "动画");
-    map.put("ApiKey", "API密钥");
-    map.put("Available", "可用的");
-    map.put("AvailableProviders", "可用提供商");
-    map.put("Azimuth", "方位角");
-    map.put("BackgroundColor", "背景颜色");
-    map.put("BackgroundImage", "背景图片");
-    map.put("BallotOptions", "选票选项");
-    map.put("BallotQuestion", "选票问题");
-    map.put("BelowRangeEventEnabled", "下面范围事件启用");
-    map.put("BottomOfRange", "范围的底部");
-    map.put("CharacterEncoding", "字符编码");
-    map.put("Checked", "经过");
-    map.put("ColorChangedEventEnabled", "颜色改变事件已启用");
-    map.put("ConsumerKey", "消费者的关键");
-    map.put("ConsumerSecret", "消费者揭秘");
-    map.put("ContactName", "站点名称");
-    map.put("Country", "国家");
-    map.put("CurrentAddress", "当前地址");
-    map.put("CurrentPageTitle", "当前页标题");
-    map.put("CurrentUrl", "当前URL");
-    map.put("DataType", "数据类型");
-    map.put("DataUri", "数据乌里");
-    map.put("DelimiterByte", "分隔字节");
-    map.put("DetectColor", "检测颜色");
-    map.put("DirectMessages", "直接消息");
-    map.put("DistanceInterval", "距离间隔");
-    map.put("Elements", "分子");
-    map.put("ElementsFromString", "从字符串的元素");
-    map.put("EmailAddress", "电子邮件地址");
-    map.put("Enabled", "启用");
-    map.put("ExtraKey", "额外的关键");
-    map.put("ExtraValue", "额外的价值");
-    map.put("Followers", "追随者");
-    map.put("FollowLinks", "按照链接");
-    map.put("FontSize", "字体大小");
-    map.put("FriendTimeline", "好友时间轴");
-    map.put("FullScreen", "全屏");
-    map.put("GameId", "游戏ID");
-    map.put("GenerateColor", "生成颜色");
-    map.put("GenerateLight", "产生光");
-    map.put("GoogleVoiceEnabled", "谷歌语音启用");
-    map.put("HasAccuracy", "具有精度");
-    map.put("HasAltitude", "有海拔");
-    map.put("HasLongitudeLatitude", "有经度纬度");
-    map.put("Heading", "标题");
-    map.put("Height", "高度");
-    map.put("HighByteFirst", "首先是高字节");
-    map.put("Hint", "暗示");
-    map.put("HomeUrl", "首页网址");
-    map.put("Image", "首页网址");
-    map.put("InstanceId", "实例ID");
-    map.put("Interval", "间隔");
-    map.put("InvitedInstances", "邀请实例");
-    map.put("IsAccepting", "正在接受");
-    map.put("IsConnected", "连接");
-    map.put("IsLooping", "是循环");
-    map.put("IsPlaying", "正在播放");
-    map.put("JoinedInstances", "注册实例");
-    map.put("Language", "语");
-    map.put("Latitude", "纬度");
-    map.put("Leader", "领导者");
-    map.put("LineWidth", "线宽");
-    map.put("Longitude", "经度");
-    map.put("Magnitude", "大小");
-    map.put("Mentions", "提到");
-    map.put("Message", "信息");
-    map.put("MinimumInterval", "最小间隔");
-    map.put("MultiLine", "多行");
-    map.put("NumbersOnly", "仅数字");
-    map.put("PaintColor", "涂料颜色");
-    map.put("PhoneNumber", "电话号码");
-    map.put("Picture", "图片");
-    map.put("Pitch", "沥青");
-    map.put("Players", "玩家");
-    map.put("PressedEventEnabled", "按下事件已启用");
-    map.put("PromptforPermission", "提示权限");
-    map.put("ProviderLocked", "供应商锁定");
-    map.put("ProviderName", "供应商名称");
-    map.put("PublicInstances", "公共实例");
-    map.put("Query", "询问");
-    map.put("Radius", "半径");
-    map.put("ReceivingEnabled", "接收启用");
-    map.put("ReleasedEventEnabled", "发布事件已启用");
-    map.put("RequestHeaders", "请求头");
-    map.put("ResponseFileName", "响应文件名");
-    map.put("Result", "导致");
-    map.put("ResultName", "结果名称");
-    map.put("ResultType", "结果类型");
-    map.put("ResultUri", "结果URI");
-    map.put("Roll", "滚");
-    map.put("Rotates", "旋转");
-    map.put("SaveResponse", "保存响应");
-    map.put("ScreenOrientation", "屏幕方向");
-    map.put("Scrollable", "可滚动");
-    map.put("SearchResults", "搜索结果");
-    map.put("Secure", "安全");
-    map.put("Selection", "选择");
-    map.put("SelectionIndex", "选择指数");
-    map.put("ServiceUrl", "服务URL");
-    map.put("ServiceURL", "服务URL");
-    map.put("Source", "源");
-    map.put("Speed", "速度");
-    map.put("StopBeforeDisconnect", "断开前停止");
-    map.put("Text", "文本");
-    map.put("TextColor", "文字颜色");
-    map.put("TimeInterval", "时间间隔");
-    map.put("TimerAlwaysFires", "定时器始终闪光");
-    map.put("TimerEnabled", "启用定时器");
-    map.put("TimerInterval", "定时器的时间间隔");
-    map.put("Title", "标题");
-    map.put("TopOfRange", "顶部的范围");
-    map.put("Url", "网址");
-    map.put("UserChoice", "用户选择");
-    map.put("UserEmailAddress", "用户电子邮件地址");
-    map.put("UserId", "用户ID");
-    map.put("Username", "用户名");
-    map.put("Visible", "可见");
-    map.put("Volume", "量");
-    map.put("WithinRangeEventEnabled", "范围内事件启用");
-    map.put("X", "X");
-    map.put("XAccel", "X加速");
-    map.put("Y", "Y");
-    map.put("YAccel", "Y加速");
-    map.put("Z", "Z");
-    map.put("ZAccel", "Z加速");
-    map.put("Width", "宽度");
-    map.put("ShowFilterBar", "加过滤条");
-    map.put("NotifierLength", "通知器长度");
-    map.put("Loop", "环");
-    map.put("Pitch", "音调");
-    map.put("SpeechRate", "语速");
-    map.put("Sensitivity", "敏感度");
-    map.put("TwitPic_API_Key", "TwitPic_API_Key");
-    map.put("Prompt", "提示");
-    map.put("ColorLeft", "左方颜色");
-    map.put("ColorRight", "右方颜色");
-    map.put("MaxValue", "最大数");
-    map.put("MinValue", "最小数");
-    map.put("ThumbPosition", "大拇指位置");
-    map.put("FontBold", "粗体字");
-    map.put("FontItalic", "斜体字");
-    map.put("ShowFeedback", "显示回馈");
-    map.put("WebViewString", "网站试图穿");
-    map.put("UseFront", "用前面");
-    map.put("Day", "日");
-    map.put("Month", "月");
-    map.put("MonthInText", "字的月份");
-    map.put("Year", "年");
-    map.put("AboutScreen", "关于屏幕");
-    map.put("CloseScreenAnimation", "关闭屏幕动画");
-    map.put("OpenScreenAnimation", "打开屏幕动画");
-    map.put("LastMessage", "最后的信");
-    map.put("ReadMode", "可读状态");
-    map.put("TextToWrite", "字到写");
-    map.put("WriteType", "写得");
-    map.put("CalibrateStrideLength", "校准步子长度");
-    map.put("Distance", "距离");
-    map.put("ElapsedTime", "消逝的时间");
-    map.put("Moving", "动的");
-    map.put("StopDetectionTimeout", "停止检测暂停");
-    map.put("StrideLength", "步子长度");
-    map.put("UseGPS", "用GPS");
-    map.put("Hour", "小时");
-    map.put("Minute", "分钟");
     return map;
   }
 }

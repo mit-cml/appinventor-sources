@@ -8,6 +8,8 @@ package com.google.appinventor.client.editor.youngandroid.properties;
 
 import com.google.appinventor.client.widgets.properties.ChoicePropertyEditor;
 
+import static com.google.appinventor.client.Ode.MESSAGES;
+
 
 /**
  * Property editor for visibility: selects showing or hidden
@@ -21,8 +23,8 @@ public class YoungAndroidVisibilityChoicePropertyEditor extends ChoicePropertyEd
   // Figure out why not and explain in a comment.
   
   private static final Choice[] visibility = new Choice[] {
-    new Choice("showing", "True"),
-    new Choice("hidden", "False"),
+    new Choice(MESSAGES.VisibilityShowingProperties(), "True"),
+    new Choice(MESSAGES.VisibilityHiddenProperties(), "False"),
   };
 
   public YoungAndroidVisibilityChoicePropertyEditor() {

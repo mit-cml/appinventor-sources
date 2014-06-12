@@ -10,9 +10,7 @@ import com.google.appinventor.client.ErrorReporter;
 import com.google.appinventor.client.Ode;
 import com.google.appinventor.client.TopToolbar;
 import com.google.appinventor.client.TranslationComponentEvents;
-import com.google.appinventor.client.TranslationComponentEvents.EventPair;
 import com.google.appinventor.client.TranslationComponentMethods;
-import com.google.appinventor.client.TranslationComponentMethods.MethodPair;
 import com.google.appinventor.client.TranslationComponentParams;
 import com.google.appinventor.client.TranslationComponentProperty;
 import com.google.appinventor.client.editor.simple.SimpleComponentDatabase;
@@ -132,8 +130,6 @@ public class BlocklyPanel extends HTMLPanel {
     // note: using Maps.newHashMap() gives a type error in Eclipse in the following line
     currentComponents.put(formName, new HashMap<String, ComponentOp>());
     initJS();
-    // Switch to current language setting as defined in BlocklyPanel.languageSetting
-    //updateLanguage();
     OdeLog.log("Created BlocklyPanel for " + formName);
   }
 
@@ -709,7 +705,7 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public void switchLanguage(String newLanguage) {
     languageSetting = newLanguage;
-    updateLanguage(formName);
+    doSwitchLanguage(formName, languageSetting);
   }
 
   /**
@@ -722,137 +718,24 @@ public class BlocklyPanel extends HTMLPanel {
    */
   public static void switchLanguage(String formName, String newLanguage) {
     languageSetting = newLanguage;
-    updateLanguage(formName);
-  }
-
-  /**
-   * Update displayed language on the screen to reflect current language setting
-   * within BlocklyPanel.java
-   */
-  public static void updateLanguage(String formName) {
-	/*
-    TranslationComponentProperty.updateMap(languageSetting);
-    TranslationComponentEvents.updateMap(languageSetting);
-    TranslationComponentMethods.updateMap(languageSetting);
-    TranslationComponentParams.updateMap(languageSetting);
-    
-    Map<String, ComponentOp> components = currentComponents.get(formName);
-    Map<String, List<String>> map = new HashMap<String, List<String>>();
-    List<String> eventList = new ArrayList<String>();
-    List<String> methodList = new ArrayList<String>();
-    Set<String> paramSet = new HashSet<String>();
-
-    for (ComponentOp component : components.values()) {
-      // Iterate over block properties
-      List<String> propertyList = new ArrayList<String>();
-      OdeLog.log(component.typeName);
-      List<BlockPropertyDefinition> properties = COMPONENT_DATABASE.getBlockPropertyDefinitions(component.typeName);
-      for (BlockPropertyDefinition property : properties) {
-        propertyList.add(property.getName());
-      }
-      map.put(component.typeName, propertyList);
-
-      // Iterate over events
-      List<EventDefinition> events = COMPONENT_DATABASE.getEventDefinitions(component.typeName);
-      for (EventDefinition event : events) {
-        eventList.add(event.getName());
-        // Iterate over method's parameters
-        for (ParameterDefinition param: event.getParam()) {
-          paramSet.add(param.getName());
-          OdeLog.log("Event Param name: " + param.getName());
-        }
-        //OdeLog.log("Event name: " + event.getName());
-      }
-
-      // Iterate over methods
-      List<MethodDefinition> methods = COMPONENT_DATABASE.getMethodDefinitions(component.typeName);
-      for (MethodDefinition method : methods) {
-        methodList.add(method.getName());
-        // Iterate over method's parameters
-        for (ParameterDefinition param: method.getParam()) {
-          paramSet.add(param.getName());
-          OdeLog.log("Method Param name: " + param.getName());
-        }
-        //OdeLog.log("Method name: " + method.getName());
-      }
-    }
-
-    List<String> paramList = new ArrayList<String>(paramSet);
-    
-
-    doUpdateTranslationPropertiesMap(formName, TranslationComponentProperty.getMapJSON(map));
-    doUpdateTranslationEventsMap(formName, TranslationComponentEvents.getMapJSON(eventList));
-    doUpdateTranslationMethodsMap(formName, TranslationComponentMethods.getMapJSON(methodList));
-    doUpdateTranslationParamsMap(formName, TranslationComponentParams.getMapJSON(paramList));
-    */
-    
     doSwitchLanguage(formName, languageSetting);
   }
-  
-  /**
-   * Returns Events map in JSON format
-   */
-  public static String getEventJSON(String language){
-	  Map<String, EventPair> map = TranslationComponentEvents.createMap(language);
-	  Map<String, String> newMap = new HashMap<String, String>();
-	  for (String key : map.keySet()){
-		  newMap.put(key, map.get(key).getValue());
-	  }
-	  String mapStr = getMapToJSON(newMap);
-	  return mapStr;
-  }
-  
-  /**
-   * Returns Methods map in JSON format
-   */
-  public static String getMethodJSON(String language){
-	  Map<String, MethodPair> map = TranslationComponentMethods.createMap(language);
-	  Map<String, String> newMap = new HashMap<String, String>();
-	  for (String key : map.keySet()){
-		  newMap.put(key, map.get(key).getValue());
-	  }
-	  String mapStr = getMapToJSON(newMap);
-	  return mapStr;
-  }
-  
-  /**
-   * Returns Properties map in JSON format
-   */
-  public static String getPropertyJSON(String language){
-	  Map<String, String> map = TranslationComponentProperty.createMap(language);
-	  return getMapToJSON(map);  
-  }
-  
-  /**
-   * Returns Parameters map in JSON format
-   */
-  public static String getParamJSON(String language){
-	  Map<String, String> map = TranslationComponentParams.createMap(language);
-	  return getMapToJSON(map);  
-  }
-  
-  /**
-   * Outputs map as String of form "{"key": "value", ...}"
-   *
-   * @param map
-   *          Map<String, String> object of form {english_word: chinese_word, ...}
-   */
-  public static String getMapToJSON(Map<String, String> map){
-	  String mapStr = "{";
-	  String quote = "\"";
-	  for (String key : map.keySet()){
-		  mapStr = mapStr.concat(quote).concat(key).concat(quote);
-		  mapStr = mapStr.concat(":");
-		  mapStr = mapStr.concat(quote).concat(map.get(key)).concat(quote);
-		  mapStr = mapStr.concat(",");
-	  }
-	  mapStr = mapStr.substring(0, mapStr.length() - 1);
-	  mapStr = mapStr.concat("}");
-	  return mapStr;
-  }
-  
-  
 
+  public static String getLocalizedPropertyName(String key){
+	return TranslationComponentProperty.getName(key);
+  }
+  
+  public static String getLocalizedParameterName(String key){
+	return TranslationComponentParams.getName(key);
+  }
+  
+  public static String getLocalizedMethodName(String key){
+	return TranslationComponentMethods.getName(key);
+  }
+  
+  public static String getLocalizedEventName(String key){
+	return TranslationComponentEvents.getName(key);
+  }
   // ------------ Native methods ------------
 
   /**
@@ -869,8 +752,6 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::initBlocksArea(Ljava/lang/String;));
     $wnd.BlocklyPanel_blocklyWorkspaceChanged =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::blocklyWorkspaceChanged(Ljava/lang/String;));
-    $wnd.BlocklyPanel_updateLanguage =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::updateLanguage(Ljava/lang/String;));
     $wnd.BlocklyPanel_switchLanguage =
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::switchLanguage(Ljava/lang/String;Ljava/lang/String;));
     $wnd.BlocklyPanel_checkWarningState =
@@ -902,14 +783,14 @@ public class BlocklyPanel extends HTMLPanel {
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getYaVersion());
     $wnd.BlocklyPanel_getBlocksLanguageVersion=
       $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getBlocksLanguageVersion());
-    $wnd.BlocklyPanel_getEventJSON =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getEventJSON(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getMethodJSON =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getMethodJSON(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getPropertyJSON =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getPropertyJSON(Ljava/lang/String;));
-    $wnd.BlocklyPanel_getParamJSON =
-      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getParamJSON(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getLocalizedPropertyName =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedPropertyName(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getLocalizedParameterName =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedParameterName(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getLocalizedMethodName =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedMethodName(Ljava/lang/String;));
+    $wnd.BlocklyPanel_getLocalizedEventName =
+      $entry(@com.google.appinventor.client.editor.youngandroid.BlocklyPanel::getLocalizedEventName(Ljava/lang/String;));
   }-*/;
 
   private native void initJS() /*-{

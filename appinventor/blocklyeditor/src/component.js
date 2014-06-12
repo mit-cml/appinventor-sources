@@ -221,13 +221,6 @@ Blockly.ComponentTypes.haveType = function(typeName) {
  *
  */
 Blockly.ComponentTypes.populateTypes = function() {
-
-  //fetches language maps for current languageSetting
-  var language = window.parent.__gwt_Locale;
-  var eventMap = JSON.parse(window.parent.BlocklyPanel_getEventJSON(language));
-  var methodMap = JSON.parse(window.parent.BlocklyPanel_getMethodJSON(language));
-  var propertyMap = JSON.parse(window.parent.BlocklyPanel_getPropertyJSON(language));
-  var paramMap = JSON.parse(window.parent.BlocklyPanel_getParamJSON(language));
   
   var componentInfoArray = JSON.parse(window.parent.BlocklyPanel_getComponentsJSONString());
   for(var i=0;i<componentInfoArray.length;i++) {
@@ -243,36 +236,18 @@ Blockly.ComponentTypes.populateTypes = function() {
 
     //parse type description and fill in all of the fields
     for(var k=0;k<componentInfo.events.length;k++) {
-      var oldName = componentInfo.events[k].name;
-      var newName = eventMap[oldName];
-      componentInfo.events[k]['translatedName'] = newName
-      for(var j=0;j<componentInfo.events[k].params.length;j++){
-    	var oldParamName = componentInfo.events[k].params[j].name;
-    	var newParamName = paramMap[oldParamName];
-    	componentInfo.events[k].params[j]['translatedName'] = newParamName;
-      }
-      Blockly.ComponentTypes[typeName].eventDictionary[oldName] = componentInfo.events[k];
+      Blockly.ComponentTypes[typeName].eventDictionary[componentInfo.events[k].name] = componentInfo.events[k];
     }
     for(var k=0;k<componentInfo.methods.length;k++) {
-      var oldName = componentInfo.methods[k].name;
-      var newName = methodMap[oldName];
-      componentInfo.methods[k]['translatedName'] = newName
-      for(var j=0;j<componentInfo.methods[k].params.length;j++){
-      	var oldParamName = componentInfo.methods[k].params[j].name;
-      	var newParamName = paramMap[oldParamName];
-      	componentInfo.methods[k].params[j]['translatedName'] = newParamName;
-      }
-      Blockly.ComponentTypes[typeName].methodDictionary[oldName] = componentInfo.methods[k];
+      Blockly.ComponentTypes[typeName].methodDictionary[componentInfo.methods[k].name] = componentInfo.methods[k];
     }
     for(var k=0;k<componentInfo.blockProperties.length;k++) {
       Blockly.ComponentTypes[typeName].properties[componentInfo.blockProperties[k].name] = componentInfo.blockProperties[k];
-      var oldName = componentInfo.blockProperties[k].name;
-  	  var newName = propertyMap[oldName];
       if(componentInfo.blockProperties[k].rw == "read-write" || componentInfo.blockProperties[k].rw == "read-only") {
-        Blockly.ComponentTypes[typeName].getPropertyList.push({'english': oldName, 'translated': (newName ? newName : oldName)});
+        Blockly.ComponentTypes[typeName].getPropertyList.push(componentInfo.blockProperties[k].name);
       }
       if(componentInfo.blockProperties[k].rw == "read-write" || componentInfo.blockProperties[k].rw == "write-only") {
-        Blockly.ComponentTypes[typeName].setPropertyList.push({'english': oldName, 'translated': (newName ? newName : oldName)});
+        Blockly.ComponentTypes[typeName].setPropertyList.push(componentInfo.blockProperties[k].name);
       }
 
     }
