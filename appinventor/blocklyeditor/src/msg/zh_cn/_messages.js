@@ -1234,6 +1234,57 @@ Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
     
 //Misc
     Blockly.Msg.SHOW_WARNINGS = "显示警告";
+    
+//Replmgr.js messages
+    Blockly.Msg.REPL_ERROR_FROM_COMPANION ="从同伴的错误";
+    Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR ="网络连接错误";
+    Blockly.Msg.REPL_NETWORK_ERROR ="网络错误";
+    Blockly.Msg.REPL_NETWORK_ERROR_RESTART ="网络错误传播与同伴。 < br / > 请尝试重新启动的同伴，然后重新连接";
+    Blockly.Msg.REPL_OK ="OK";
+    Blockly.Msg.REPL_COMPANION_VERSION_CHECK ="伴侣版本检查";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = ' 您的同伴 App 是过时。单击"确定"开始更新。手表你 ';
+    Blockly.Msg.REPL_EMULATORS ="模拟器";
+    Blockly.Msg.REPL_DEVICES ="设备";
+    Blockly.Msg.REPL_APPROVE_UPDATE ="屏幕因为你将被要求批准更新";
+    Blockly.Msg.REPL_NOT_NOW ="不是现在";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 ="您正在使用的伴侣是过时。 <br/> <br/>此版本的应用程序发明家应使用与同伴版本";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE ="您正在使用一个过期的同伴。你不需要立即更新的同伴，但应考虑更新很快.";
+    Blockly.Msg.REPL_DISMISS ="解雇";
+    Blockly.Msg.REPL_SOFTWARE_UPDATE ="软件更新";
+    Blockly.Msg.REPL_OK_LOWER ="Ok";
+    Blockly.Msg.REPL_GOT_IT ="得到了它";
+    Blockly.Msg.REPL_UPDATE_INFO = ' 现在正在您的设备上安装更新。观看您的设备 （或仿真程序） 屏幕和批准软件安装提示时。 < br / > < br / > 重要提示： 当更新完成后时，选择"DONE" (不要不要单击"打开")。然后转到应用程序发明家在您的 web 浏览器中，单击"连接"菜单，然后选择"重置连接"';
+
+    Blockly.Msg.REPL_UNABLE_TO_UPDATE ="无法将更新发送到设备/模拟器";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD ="无法从应用程序发明家服务器加载更新";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND ="无法从应用程序发明家服务器 （服务器没有响应） 加载更新";
+    Blockly.Msg.REPL_NOW_DOWNLOADING ="我们现正从应用程序发明家服务器，下载更新请待机状态";
+    Blockly.Msg.REPL_RUNTIME_ERROR ="运行时错误";
+    Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES ="<br/> <i>注：</i> 你不会看到另一个错误报告 5 秒钟.";
+    Blockly.Msg.REPL_CONNECTING_USB_CABLE ="通过 USB 电缆连接";
+    Blockly.Msg.REPL_STARTING_EMULATOR ="启动 Android 模拟器 <br/> 请等待： 这可能要花一、 两分钟.";
+    Blockly.Msg.REPL_CONNECTING ="连接......";
+    Blockly.Msg.REPL_CANCEL ="取消";
+    Blockly.Msg.REPL_GIVE_UP ="放弃";
+    Blockly.Msg.REPL_KEEP_TRYING ="继续努力";
+    Blockly.Msg.REPL_CONNECTION_FAILURE1 ="连接失败";
+    Blockly.Msg.REPL_NO_START_EMULATOR ="我们不能开始仿真程序内的麻省理工 AI 同伴";
+    Blockly.Msg.REPL_PLUGGED_IN_Q ="插入吗?";
+    Blockly.Msg.REPL_AI_NO_SEE_DEVICE ="AI2 并没有看到您的设备，请确保插入电缆和驱动程序是否正确";
+    Blockly.Msg.REPL_HELPER_Q ="帮手吗?";
+    Blockly.Msg.REPL_HELPER_NOT_RUNNING = ' aiStarter 帮手似乎并不会运行 < br / > <a href="http://appinventor.mit.edu"target="_blank"> 需要帮助吗?</a>' ;
+    Blockly.Msg.REPL_USB_CONNECTED_WAIT ="USB 已连接，正在等待";
+    Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING ="秒，以确保所有正在运行";
+    Blockly.Msg.REPL_EMULATOR_STARTED ="仿真程序开始，在等待";
+    Blockly.Msg.REPL_STARTING_COMPANION_ON_PHONE ="开始的伴侣应用程序上连接的电话";
+    Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR ="开始的伴侣应用程序在仿真器中";
+    Blockly.Msg.REPL_COMPANION_STARTED_WAITING ="同伴开始，等";
+    Blockly.Msg.REPL_VERIFYING_COMPANION ="验证，同伴开始......";
+    Blockly.Msg.REPL_CONNECT_TO_COMPANION ="连接到同伴";
+    Blockly.Msg.REPL_TRY_AGAIN1 ="未能连接到麻省理工学院 AI2 同伴，再试一次";
+    Blockly.Msg.REPL_YOUR_CODE_IS ="您的代码是";
+    Blockly.Msg.REPL_DO_YOU_REALLY_Q ="真的吗?";
+    Blockly.Msg.REPL_FACTORY_RESET = "这将会尝试将仿真程序重置为其\"工厂\"状态。如果你以前已经更新安装在模拟器中的同伴，你可能会再一次做到这一点.";
   }
 };
 

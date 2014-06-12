@@ -18,15 +18,15 @@ public interface OdeMessages extends Messages {
   // Used in multiple files
 
   @DefaultMessage("Cancel")
-  @Description("Text on 'Cancel' button.")
+  @Description("Text on \"Cancel\" button.")
   String cancelButton();
 
   @DefaultMessage("OK")
-  @Description("Text on 'OK' button.")
+  @Description("Text on \"OK\" button.")
   String okButton();
 
   @DefaultMessage("Dismiss")
-  @Description("Text on 'Dismiss' button.")
+  @Description("Text on \"Dismiss\" button.")
   String dismissButton();
 
   @DefaultMessage("Old name:")
@@ -42,11 +42,11 @@ public interface OdeMessages extends Messages {
   String noneCaption();
 
   @DefaultMessage("Delete")
-  @Description("Text on 'Delete' button")
+  @Description("Text on \"Delete\" button")
   String deleteButton();
 
   @DefaultMessage("Delete Project")
-  @Description("Text on 'Delete Project' button")
+  @Description("Text on \"Delete Project\" button")
   String deleteProjectButton();
 
   @DefaultMessage("Show Warnings")
@@ -58,7 +58,7 @@ public interface OdeMessages extends Messages {
   String hideWarnings();
 
   @DefaultMessage("Upload File ...")
-  @Description("Text on 'Add...' button")
+  @Description("Text on \"Add...\" button")
   String addButton();
 
   @DefaultMessage("Name")
@@ -177,7 +177,7 @@ public interface OdeMessages extends Messages {
   @Description("Alert after an internal error")
   String internalErrorSeeDebuggingView();
 
-  @DefaultMessage("An internal error has occurred. Click 'ok' for more information.")
+  @DefaultMessage("An internal error has occurred. Click \"ok\" for more information.")
   @Description("Confirm alert after an internal error")
   String internalErrorClickOkDebuggingView();
 
@@ -4451,7 +4451,151 @@ public interface OdeMessages extends Messages {
   @DefaultMessage("Use this component to translate words and sentences between different languages. This component needs Internet access, as it will request translations to the Yandex.Translate service. Specify the source and target language in the form source-target using two letter language codes. So\"en-es\" will translate from English to Spanish while \"es-ru\" will translate from Spanish to Russian. If you leave out the source language, the service will attempt to detect the source language. So providing just \"es\" will attempt to detect the source language and translate it to Spanish.<p /> This component is powered by the Yandex translation service.  See http://api.yandex.com/translate/ for more information, including the list of available languages and the meanings of the language codes and status codes. <p />Note: Translation happens asynchronously in the background. When the translation is complete, the \"GotTranslation\" event is triggered.")
   @Description("")
   String YandexTranslateHelpStringComponentPallette();
+  
+  
+  //Ode.java messages
+  @DefaultMessage("Welcome to App Inventor 2!")
+  @Description("")
+  String createNoProjectsDialogText();
+  
+  @DefaultMessage("<p>You don\"t have any projects in App Inventor 2 yet. " +
+      "To learn how to use App Inventor, click the \"Guide\" " +
+      "link at the upper right of the window; or to start your first project, " +
+      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
+      "<strong>Where did my projects go?</strong> " +
+      "If you had projects but now they\"re missing, " +
+      "you are probably looking for App Inventor version 1. " +
+      "It\"s still available here: " +
+      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n")
+  @Description("")
+  String createNoProjectsDialogMessage1();
+  
+  @DefaultMessage("Happy Inventing!")
+  @Description("")
+  String createNoprojectsDialogMessage2();
 
+  @DefaultMessage("Welcome to App Inventor!")
+  @Description("")
+  String createWelcomeDialogText(); 
   
+  @DefaultMessage("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>")
+  @Description("")
+  String createWelcomeDialogMessage(); 
   
+  @DefaultMessage("Continue")
+  @Description("")
+  String createWelcomeDialogButton(); 
+  
+  @DefaultMessage("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>")
+  @Description("")
+  String showSurveySplashMessage(); 
+  
+  @DefaultMessage("Take Survey Now")
+  @Description("")
+  String showSurveySplashButtonNow(); 
+  
+  @DefaultMessage("Take Survey Later")
+  @Description("")
+  String showSurveySplashButtonLater(); 
+  
+  @DefaultMessage("Never Take Survey")
+  @Description("")
+  String showSurveySplashButtonNever(); 
+  
+  @DefaultMessage("This Session Is Out of Date")
+  @Description("")
+  String invalidSessionDialogText(); 
+  
+  @DefaultMessage("<p><font color=red>Warning:</font> This session is out of date.</p>" +
+	        "<p>This App Inventor account has been opened from another location. " +
+	        "Using a single account from more than one location at the same time " +
+	        "can damage your projects.</p>" +
+	        "<p>Choose one of the buttons below to:" +
+	        "<ul>" +
+	        "<li>End this session here.</li>" +
+	        "<li>Make this the current session and make the other sessions out of date.</li>" +
+	        "<li>Continue with both sessions.</li>" +
+	        "</ul>" +
+	        "</p>")
+  @Description("")
+  String invalidSessionDialogMessage(); 
+  
+  @DefaultMessage("End This Session")
+  @Description("")
+  String invalidSessionDialogButtonEnd(); 
+  
+  @DefaultMessage("Make this the current session")
+  @Description("")
+  String invalidSessionDialogButtonCurrent(); 
+  
+  @DefaultMessage("Continue with Both Sessions")
+  @Description("")
+  String invalidSessionDialogButtonContinue(); 
+  
+  @DefaultMessage("Do you want to continue with multiple sessions?")
+  @Description("")
+  String bashWarningDialogText(); 
+  
+  @DefaultMessage("<p><font color=red>WARNING:</font> A second App " +
+	        "Inventor session has been opened for this account. You may choose to " +
+	        "continue with both sessions, but working with App Inventor from more " +
+	        "than one session simultaneously can cause blocks to be lost in ways " +
+	        "that cannot be recovered from the App Inventor server.</p><p>" +
+	        "We recommend that people not open multiple sessions on the same " +
+	        "account. But if you do need to work in this way, then you should " +
+	        "regularly export your project to your local computer, so you will " +
+	        "have a backup copy independent of the App Inventor server. Use " +
+	        "\"Export\" from the Projects menu to export the project.</p>")
+  @Description("")
+  String bashWarningDialogMessage(); 
+  
+  @DefaultMessage("Continue with Multiple Sessions")
+  @Description("")
+  String bashWarningDialogButtonContinue(); 
+  
+  @DefaultMessage("Do not use multiple Sessions")
+  @Description("")
+  String bashWarningDialogButtonNo(); 
+  
+  @DefaultMessage("Your Session is Finished")
+  @Description("")
+  String finalDialogText(); 
+  
+  @DefaultMessage("<p><b>Your Session is now ended, you may close this window</b></p>")
+  @Description("")
+  String finalDialogMessage(); 
+  
+  @DefaultMessage("Project Read Error")
+  @Description("")
+  String corruptionDialogText(); 
+  
+  @DefaultMessage("<p><b>We detected errors while reading in your project</b></p>" +
+	        "<p>To protect your project from damage, we have ended this session. You may close this " +
+	        "window.</p>")
+  @Description("")
+  String corruptionDialogMessage(); 
+  
+  @DefaultMessage("Blocks Workspace is Empty")
+  @Description("")
+  String blocksTruncatedDialogText(); 
+  
+  @DefaultMessage("<p>It appears that <b>" + "%1" +
+	        "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
+	        "the result of a bug in our system.</p><p>" +
+	        "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
+	        "<li>Select \"No, Don\"t Save\" below to restore the previously saved version</li></ul></p>")
+  @Description("")
+  String blocksTruncatedDialogMessage(); 
+  
+  @DefaultMessage("OK, save the empty screen")
+  @Description("")
+  String blocksTruncatedDialogButtonSave(); 
+  
+  @DefaultMessage("No, Don\"t Save")
+  @Description("")
+  String blocksTruncatedDialogButtonNoSave();
+  
+  @DefaultMessage("Please wait " + "%1" + " seconds...")
+  @Description("")
+  String blocksTruncatedDialogButtonHTML();
 }

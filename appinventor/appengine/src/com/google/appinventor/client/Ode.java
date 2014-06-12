@@ -977,7 +977,7 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(true);
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Welcome to App Inventor 2!");
+    dialogBox.setText(MESSAGES.createNoProjectsDialogText());
 
     Grid mainGrid = new Grid(2, 2);
     mainGrid.getCellFormatter().setAlignment(0,
@@ -1005,19 +1005,10 @@ public class Ode implements EntryPoint {
         HasHorizontalAlignment.ALIGN_LEFT,
         HasVerticalAlignment.ALIGN_MIDDLE);
 
-    Label messageChunk1 = new HTML("<p>You don't have any projects in App Inventor 2 yet. " +
-      "To learn how to use App Inventor, click the \"Guide\" " +
-      "link at the upper right of the window; or to start your first project, " +
-      "click the \"New\" button at the upper left of the window.</p>\n<p>" +
-      "<strong>Where did my projects go?</strong> " +
-      "If you had projects but now they're missing, " +
-      "you are probably looking for App Inventor version 1. " +
-      "It's still available here: " +
-      "<a href=\"http://beta.appinventor.mit.edu\" target=\"_blank\">beta.appinventor.mit.edu</a></p>\n");
-
-
+    Label messageChunk1 = new HTML(MESSAGES.createNoProjectsDialogMessage1());
+    
     messageChunk1.setWidth("23em");
-    Label messageChunk2 = new Label("Happy Inventing!");
+    Label messageChunk2 = new Label(MESSAGES.createNoprojectsDialogMessage2());
 
     // Add the elements to the grids and DialogBox.
     messageGrid.setWidget(0, 0, messageChunk1);
@@ -1046,17 +1037,17 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setText(MESSAGES.createWelcomeDialogText());
     dialogBox.setHeight("400px");
     dialogBox.setWidth("400px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<h2>This is the Splash Screen. Make this an iframe to your splash screen.</h2>");
+    HTML message = new HTML(MESSAGES.createWelcomeDialogMessage());
     message.setStyleName("DialogBox-message");
     SimplePanel holder = new SimplePanel();
-    Button ok = new Button("Continue");
+    Button ok = new Button(MESSAGES.createWelcomeDialogButton());
     ok.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1093,17 +1084,17 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Welcome to App Inventor!");
+    dialogBox.setText(MESSAGES.createWelcomeDialogText());
     dialogBox.setHeight("200px");
     dialogBox.setWidth("600px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<h2>Please fill out a short voluntary survey so that we can learn more about our users and improve MIT App Inventor.</h2>");
+    HTML message = new HTML(MESSAGES.showSurveySplashMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    Button takesurvey = new Button("Take Survey Now");
+    Button takesurvey = new Button(MESSAGES.showSurveySplashButtonNow());
     takesurvey.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1117,7 +1108,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(takesurvey);
-    Button latersurvey = new Button("Take Survey Later");
+    Button latersurvey = new Button(MESSAGES.showSurveySplashButtonLater());
     latersurvey.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1125,7 +1116,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(latersurvey);
-    Button neversurvey = new Button("Never Take Survey");
+    Button neversurvey = new Button(MESSAGES.showSurveySplashButtonNever());
     neversurvey.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1210,27 +1201,17 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("This Session Is Out of Date");
+    dialogBox.setText(MESSAGES.invalidSessionDialogText());
     dialogBox.setHeight("200px");
     dialogBox.setWidth("800px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p><font color=red>Warning:</font> This session is out of date.</p>" +
-        "<p>This App Inventor account has been opened from another location. " +
-        "Using a single account from more than one location at the same time " +
-        "can damage your projects.</p>" +
-        "<p>Choose one of the buttons below to:" +
-        "<ul>" +
-        "<li>End this session here.</li>" +
-        "<li>Make this the current session and make the other sessions out of date.</li>" +
-        "<li>Continue with both sessions.</li>" +
-        "</ul>" +
-        "</p>");
+    HTML message = new HTML(MESSAGES.invalidSessionDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    Button closeSession = new Button("End This Session");
+    Button closeSession = new Button(MESSAGES.invalidSessionDialogButtonEnd());
     closeSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1238,7 +1219,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(closeSession);
-    Button reloadSession = new Button("Make this the current session");
+    Button reloadSession = new Button(MESSAGES.invalidSessionDialogButtonCurrent());
     reloadSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1246,7 +1227,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(reloadSession);
-    Button continueSession = new Button("Continue with Both Sessions");
+    Button continueSession = new Button(MESSAGES.invalidSessionDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1280,26 +1261,17 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Do you want to continue with multiple sessions?");
+    dialogBox.setText(MESSAGES.bashWarningDialogText());
     dialogBox.setHeight("200px");
     dialogBox.setWidth("800px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p><font color=red>WARNING:</font> A second App " +
-        "Inventor session has been opened for this account. You may choose to " +
-        "continue with both sessions, but working with App Inventor from more " +
-        "than one session simultaneously can cause blocks to be lost in ways " +
-        "that cannot be recovered from the App Inventor server.</p><p>" +
-        "We recommend that people not open multiple sessions on the same " +
-        "account. But if you do need to work in this way, then you should " +
-        "regularly export your project to your local computer, so you will " +
-        "have a backup copy independent of the App Inventor server. Use " +
-        "\"Export\" from the Projects menu to export the project.</p>");
+    HTML message = new HTML(MESSAGES.bashWarningDialogMessage());
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    Button continueSession = new Button("Continue with Multiple Sessions");
+    Button continueSession = new Button(MESSAGES.bashWarningDialogButtonContinue());
     continueSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1311,7 +1283,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(continueSession);
-    Button cancelSession = new Button("Do not use multiple Sessions");
+    Button cancelSession = new Button(MESSAGES.bashWarningDialogButtonNo());
     cancelSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1340,14 +1312,14 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Your Session is Finished");
+    dialogBox.setText(MESSAGES.finalDialogText());
     dialogBox.setHeight("100px");
     dialogBox.setWidth("400px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p><b>Your Session is now ended, you may close this window</b></p>");
+    HTML message = new HTML(MESSAGES.finalDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
@@ -1363,16 +1335,14 @@ public class Ode implements EntryPoint {
     // Create the UI elements of the DialogBox
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Project Read Error");
+    dialogBox.setText(MESSAGES.corruptionDialogText());
     dialogBox.setHeight("100px");
     dialogBox.setWidth("400px");
     dialogBox.setGlassEnabled(true);
     dialogBox.setAnimationEnabled(true);
     dialogBox.center();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p><b>We detected errors while reading in your project</b></p>" +
-        "<p>To protect your project from damage, we have ended this session. You may close this " +
-        "window.</p>");
+    HTML message = new HTML(MESSAGES.corruptionDialogMessage());
     message.setStyleName("DialogBox-message");
     DialogBoxContents.add(message);
     dialogBox.setWidget(DialogBoxContents);
@@ -1382,7 +1352,7 @@ public class Ode implements EntryPoint {
   public void blocksTruncatedDialog(final long projectId, final String fileId, final String content, final OdeAsyncCallback callback) {
     final DialogBox dialogBox = new DialogBox(false, true); // DialogBox(autohide, modal)
     dialogBox.setStylePrimaryName("ode-DialogBox");
-    dialogBox.setText("Blocks Workspace is Empty");
+    dialogBox.setText(MESSAGES.blocksTruncatedDialogText());
     dialogBox.setHeight("150px");
     dialogBox.setWidth("600px");
     dialogBox.setGlassEnabled(true);
@@ -1393,14 +1363,10 @@ public class Ode implements EntryPoint {
     final String screenName = screenNameParts.split("\\.")[0]; // Get rid of the .bky part
     final String userEmail = user.getUserEmail();
     VerticalPanel DialogBoxContents = new VerticalPanel();
-    HTML message = new HTML("<p>It appears that <b>" + screenName +
-        "</b> has had all blocks removed. Either you removed them intentionally, or this is " +
-        "the result of a bug in our system.</p><p>" +
-        "<ul><li>Select \"OK, save the empty screen\" to continue to save the empty screen</li>" +
-        "<li>Select \"No, Don't Save\" below to restore the previously saved version</li></ul></p>");
+    HTML message = new HTML(MESSAGES.blocksTruncatedDialogMessage().replace("%1", screenName));
     message.setStyleName("DialogBox-message");
     FlowPanel holder = new FlowPanel();
-    final Button continueSession = new Button("OK, save the empty screen");
+    final Button continueSession = new Button(MESSAGES.blocksTruncatedDialogButtonSave());
     continueSession.addClickListener(new ClickListener() {
         public void onClick(Widget sender) {
           dialogBox.hide();
@@ -1409,7 +1375,7 @@ public class Ode implements EntryPoint {
         }
       });
     holder.add(continueSession);
-    final Button cancelSession = new Button("No, Don't Save");
+    final Button cancelSession = new Button(MESSAGES.blocksTruncatedDialogButtonNoSave());
     final OdeAsyncCallback<Void> logReturn = new OdeAsyncCallback<Void> () {
       @Override
       public void onSuccess(Void result) {
@@ -1428,7 +1394,7 @@ public class Ode implements EntryPoint {
               public void run() {
                 if (count > 0) {
                   HTML html = (HTML) ((VerticalPanel)dialogBox.getWidget()).getWidget(0);
-                  html.setHTML("Please wait " + count + " seconds...");
+                  html.setHTML(MESSAGES.blocksTruncatedDialogButtonHTML().replace("%1", "" + count));
                   count -= 1;
                 } else {
                   this.cancel();

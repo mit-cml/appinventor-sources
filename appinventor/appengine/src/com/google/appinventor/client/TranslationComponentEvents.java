@@ -130,6 +130,38 @@ public class TranslationComponentEvents {
 	map.put("GotTranslation", MESSAGES.GotTranslationEvents());
 	map.put("Shaking", MESSAGES.ShakingEvents());
 
+	/*
+	//event helpstrings
+	map.put("AccelerationChanged-helpstring", MESSAGES.AccelerationChangedHelpStringEvents());
+	map.put("AfterActivity-helpstring", MESSAGES.AfterActivityHelpStringEvents());
+	map.put("NoLongerCollidingWith-helpstring", MESSAGES.NoLongerCollidingWithHelpStringEvents());
+	map.put("ConnectionAccepted-helpstring", MESSAGES.ConnectionAcceptedHelpStringEvents());
+	map.put("Click-helpstring", MESSAGES.ClickHelpStringEvents());
+	map.put("GotFocus-helpstring", MESSAGES.GotFocusHelpStringEvents());
+	map.put("LongClick-helpstring", MESSAGES.LongClickHelpStringEvents());
+	map.put("LostFocus-helpstring", MESSAGES.LostFocusHelpStringEvents());
+	map.put("Changed-helpstring", MESSAGES.ChangedHelpStringEvents());
+	map.put("Timer-helpstring", MESSAGES.TimerHelpStringEvents());
+	map.put("BackPressed-helpstring", MESSAGES.BackPressedHelpStringEvents());
+	map.put("OtherScreenClosed-helpstring", MESSAGES.OtherScreenClosedHelpStringEvents());
+	map.put("FunctionCompleted-helpstring", MESSAGES.FunctionCompletedHelpStringEvents());
+	map.put("GotMessage-helpstring", MESSAGES.GotMessageHelpStringEvents());
+	map.put("Info-helpstring", MESSAGES.InfoHelpStringEvents());
+	map.put("InstanceIdChanged-helpstring", MESSAGES.InstanceIdChangedHelpStringEvents());
+	map.put("Invited-helpstring", MESSAGES.InvitedHelpStringEvents());
+	map.put("NewInstanceMade-helpstring", MESSAGES.NewInstanceMadeHelpStringEvents());
+	map.put("PlayerJoined-helpstring", MESSAGES.PlayerJoinedHelpStringEvents());
+	map.put("PlayerLeft-helpstring", MESSAGES.PlayerLeftHelpStringEvents());
+	map.put("ServerCommandFailure-helpstring", MESSAGES.ServerCommandFailureHelpStringEvents());
+	map.put("ServerCommandSuccess-helpstring", MESSAGES.ServerCommandSuccessHelpStringEvents());
+	map.put("UserEmailAddressSet-helpstring", MESSAGES.UserEmailAddressSetHelpStringEvents());
+	map.put("WebServiceError-helpstring", MESSAGES.WebServiceErrorHelpStringEvents());
+	map.put("LocationChanged-helpstring", MESSAGES.LocationChangedHelpStringEvents());
+	map.put("StatusChanged-helpstring", MESSAGES.StatusChangedHelpStringEvents());
+	map.put("AfterChoosing-helpstring", MESSAGES.AfterChoosingHelpStringEvents());
+	map.put("AfterTextInput-helpstring", MESSAGES.AfterTextInputHelpStringEvents());
+	*/
+
     return map;
   }
 }
