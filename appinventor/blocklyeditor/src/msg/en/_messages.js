@@ -1234,9 +1234,61 @@ Blockly.Msg.en.switch_language_to_english = {
     Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL = '/reference/components/internal.html#votingproperties';
     Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL = '/reference/components/internal.html#votingevents';
     Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL = '/reference/components/internal.html#votingmethods';
-    
+
 //Misc
     Blockly.Msg.SHOW_WARNINGS = "Show Warnings";
+
+// Messages from replmgr.js
+    Blockly.Msg.REPL_ERROR_FROM_COMPANION = "Error from Companion";
+    Blockly.Msg.REPL_NETWORK_CONNECTION_ERROR = "Network Connection Error";
+    Blockly.Msg.REPL_NETWORK_ERROR = "Network Error";
+    Blockly.Msg.REPL_NETWORK_ERROR_RESTART = "Network Error Communicating with Companion.<br />Try restarting the Companion and reconnecting";
+    Blockly.Msg.REPL_OK = "OK";
+    Blockly.Msg.REPL_COMPANION_VERSION_CHECK = "Companion Version Check";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE = 'Your Companion App is out of date. Click "OK" to start the update. Watch your ';
+    Blockly.Msg.REPL_EMULATORS = "emulator's";
+    Blockly.Msg.REPL_DEVICES = "device's";
+    Blockly.Msg.REPL_APPROVE_UPDATE = " screen because you will be asked to approve the update.";
+    Blockly.Msg.REPL_NOT_NOW = "Not Now";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE1 = "The Companion you are using is out of date.<br/><br/>This Version of App Inventor should be used with Companion version";
+    Blockly.Msg.REPL_COMPANION_OUT_OF_DATE_IMMEDIATE = "You are using an out-of-date Companion. You need not update the Companion immediately but should consider updating soon.";
+    Blockly.Msg.REPL_DISMISS = "Dismiss";
+    Blockly.Msg.REPL_SOFTWARE_UPDATE = "Software Update";
+    Blockly.Msg.REPL_OK_LOWER = "Ok";
+    Blockly.Msg.REPL_GOT_IT = "Got It";
+    Blockly.Msg.REPL_UPDATE_INFO = 'The update is now being installed on your device. Watch your device (or emulator) screen and approve the software installation when prompted.<br /><br />IMPORTANT: When the update finishes, choose "DONE" (don\'t click "open"). Then go to App Inventor in your web browser, click the "Connect" menu and choose "Reset Connection".';
+
+    Blockly.Msg.REPL_UNABLE_TO_UPDATE = "Unable to send update to device/emulator";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD = "Unable to load update from App Inventor server";
+    Blockly.Msg.REPL_UNABLE_TO_LOAD_NO_RESPOND = "Unable to load update from App Inventor server (server not responding)";
+    Blockly.Msg.REPL_NOW_DOWNLOADING = "We are now downloading update from the App Inventor Server, please standby";
+    Blockly.Msg.REPL_RUNTIME_ERROR = "Runtime Error";
+    Blockly.Msg.REPL_NO_ERROR_FIVE_MINUTES = "<br/><i>Note:</i>&nbsp;You will not see another error reported for 5 seconds.";
+    Blockly.Msg.REPL_CONNECTING_USB_CABLE = "Connecting via USB Cable";
+    Blockly.Msg.REPL_STARTING_EMULATOR = "Starting the Android Emulator<br/>Please wait: This might take a minute or two.";
+    Blockly.Msg.REPL_CONNECTING = "Connecting...";
+    Blockly.Msg.REPL_CANCEL = "Cancel";
+    Blockly.Msg.REPL_GIVE_UP = "Give Up";
+    Blockly.Msg.REPL_KEEP_TRYING = "Keep Trying";
+    Blockly.Msg.REPL_CONNECTION_FAILURE1 = "Connection Failure";
+    Blockly.Msg.REPL_NO_START_EMULATOR = "We could not start the MIT AI Companion within the Emulator";
+    Blockly.Msg.REPL_PLUGGED_IN_Q = "Plugged In?";
+    Blockly.Msg.REPL_AI_NO_SEE_DEVICE = "AI2 does not see your device, make sure the cable is plugged in and drivers are correct.";
+    Blockly.Msg.REPL_HELPER_Q = "Helper?";
+    Blockly.Msg.REPL_HELPER_NOT_RUNNING = 'The aiStarter helper does not appear to be running<br /><a href="http://appinventor.mit.edu" target="_blank">Need Help?</a>';
+    Blockly.Msg.REPL_USB_CONNECTED_WAIT = "USB Connected, waiting ";
+    Blockly.Msg.REPL_SECONDS_ENSURE_RUNNING = " seconds to ensure all is running.";
+    Blockly.Msg.REPL_EMULATOR_STARTED = "Emulator started, waiting ";
+    Blockly.Msg.REPL_STARTING_COMPANION_ON_PHONE = "Starting the Companion App on the connected phone.";
+    Blockly.Msg.REPL_STARTING_COMPANION_IN_EMULATOR = "Starting the Companion App in the emulator.";
+    Blockly.Msg.REPL_COMPANION_STARTED_WAITING = "Companion starting, waiting ";
+    Blockly.Msg.REPL_VERIFYING_COMPANION = "Verifying that the Companion Started....";
+    Blockly.Msg.REPL_CONNECT_TO_COMPANION = "Connect to Companion";
+    Blockly.Msg.REPL_TRY_AGAIN1 = "Failed to Connect to the MIT AI2 Companion, try again.";
+    Blockly.Msg.REPL_YOUR_CODE_IS = "Your code is";
+    Blockly.Msg.REPL_DO_YOU_REALLY_Q = "Do You Really?";
+    Blockly.Msg.REPL_FACTORY_RESET = 'This will attempt to reset your Emulator to its "factory" state. If you had previously updated the Companion installed in the Emulator, you will likely have to do this again.';
+
   }
 };
 
