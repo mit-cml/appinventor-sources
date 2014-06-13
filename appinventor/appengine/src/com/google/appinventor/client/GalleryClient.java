@@ -19,13 +19,13 @@ import com.google.appinventor.client.youngandroid.TextValidators;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
 import com.google.appinventor.shared.rpc.project.GalleryComment;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.client.explorer.youngandroid.GalleryList;
 
 import java.io.IOException;
 
 import com.google.appinventor.client.explorer.project.Project;
 
-import com.google.appinventor.shared.rpc.project.GallerySettings;
 
 /**
  * Gallery Client is a facade for the ui to talk to the gallery server side.
@@ -37,7 +37,7 @@ import com.google.appinventor.shared.rpc.project.GallerySettings;
 public class GalleryClient {
 
   private List<GalleryRequestListener> listeners;
-  private GallerySettings settings;
+  //private GallerySettings settings;
 
   public static final int REQUEST_FEATURED = 1;
   public static final int REQUEST_RECENT = 2;
@@ -53,7 +53,7 @@ public class GalleryClient {
   private static volatile GalleryClient  instance= null;
   private GalleryClient () {
     listeners = new ArrayList<GalleryRequestListener>();
-    loadGallerySettings();
+    //loadGallerySettings();
   }
   public static GalleryClient getInstance () {
     if (instance == null) {
@@ -74,34 +74,8 @@ public class GalleryClient {
    * @return  gallery settings
    */
   public GallerySettings getGallerySettings() {
-    return settings;
-  }
-  /**
-   * sets the gallery settings.
-   *
-   */
-  public void setGallerySettings(GallerySettings settings) {
-    this.settings=settings;
-  }
-
-  /**
-   * loads the gallery settings from server
-   *
-   */
-  public void  loadGallerySettings() {
-     // Callback for when the server returns us the apps
     final Ode ode = Ode.getInstance();
-    final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
-    // failure message
-    MESSAGES.gallerySettingsError()) {
-      @Override
-      public void onSuccess(GallerySettings settings) {
-        // the server has returned us something
-        setGallerySettings(settings);
-      }
-    };
-    //this is below the call back, but of course it is done first
-    ode.getGalleryService().loadGallerySettings(callback);
+    return ode.getGallerySettings();
   }
   
  /**
@@ -262,7 +236,7 @@ public class GalleryClient {
   */
   public boolean loadSourceFile(GalleryApp gApp, String newProjectName) {
     final String projectName = newProjectName;
-    final String sourceURL = settings.getSourceURL(gApp.getGalleryAppId());
+    final String sourceURL = getGallerySettings().getSourceURL(gApp.getGalleryAppId());
     final long galleryId = gApp.getGalleryAppId();
     
     // first check name to see if valid and unique...
@@ -344,17 +318,17 @@ public class GalleryClient {
   */
 
   public String getBucket() {
-    return settings.getBucket();
+    return getGallerySettings().getBucket();
   }
 
   public String getCloudImageURL(long galleryId) {
-    return settings.getCloudImageURL(galleryId);
+    return getGallerySettings().getCloudImageURL(galleryId);
   }
   public String getProjectImageURL(long projectId) {
-    return settings.getProjectImageURL(projectId);
+    return getGallerySettings().getProjectImageURL(projectId);
   }
   public String getUserImageURL(String userId) {
-    return settings.getUserImageURL(userId);
+    return getGallerySettings().getUserImageURL(userId);
   }
 
 }

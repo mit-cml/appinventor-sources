@@ -13,6 +13,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectComparators;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventListener;
 import com.google.appinventor.shared.rpc.project.GalleryApp;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.client.GalleryClient;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -249,9 +250,7 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       Date dateModified = new Date(project.getDateModified());
       dateModifiedLabel = new Label(dateTimeFormat.format(dateModified));
       
-      editButton = new Label("---");
-      editButton.addStyleName("ode-ProjectGalleryLink");
-     
+      editButton = new Label();
    
     }
   }
@@ -300,7 +299,10 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
       table.setWidget(row, 2, pw.dateCreatedLabel);
       table.setWidget(row, 3, pw.dateModifiedLabel);
       table.setWidget(row, 4, pw.editButton);
-      preparePublishApp(project, pw);
+      if(Ode.getGallerySettings().galleryEnabled()){
+        preparePublishApp(project, pw);
+      }
+
       row++;
     }
 
@@ -312,7 +314,8 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
    * been published, we create a gallery app with default title
    * If it has been published, we get the gallery app and send it
    */
-  private void preparePublishApp(final Project p, final ProjectWidgets pw) {    
+  private void preparePublishApp(final Project p, final ProjectWidgets pw) {
+    pw.editButton.addStyleName("ode-ProjectGalleryLink");
     if (p.isPublished()) {
       pw.editButton.setText(UPDATEBUTTONTEXT);
       pw.editButton.setTitle(UPDATEBUTTONTITLE);
@@ -401,4 +404,5 @@ public class ProjectList extends Composite implements ProjectManagerEventListene
   public void onProjectPublishedOrUnpublished() {
     refreshTable(false);
   }
+
 }

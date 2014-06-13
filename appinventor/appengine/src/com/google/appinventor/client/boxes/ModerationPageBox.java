@@ -22,7 +22,7 @@ public final class ModerationPageBox extends TabPanel {
   private static final ModerationPageBox INSTANCE = new ModerationPageBox();
 
   // moderation list
-  private final ReportList reports;
+  private ReportList reports;
 
   /**
    * Returns the singleton moderations list box.
@@ -33,22 +33,28 @@ public final class ModerationPageBox extends TabPanel {
     return INSTANCE;
   }
 
+  public static void loadModerationPage() {
+
+    INSTANCE.reports = new ReportList();
+
+    FlowPanel reportsContainer = new FlowPanel();
+    reportsContainer.add(INSTANCE.reports);
+
+    INSTANCE.add(reportsContainer, MESSAGES.moderationPageBoxCaption());
+    INSTANCE.selectTab(0);
+
+    // Styling options
+    INSTANCE.addStyleName("gallery");
+  }
+
+
   /**
    * Creates new moderation list box.
    */
   private ModerationPageBox() {
 
-    reports = new ReportList();
+    reports = null;
 
-    FlowPanel reportsContainer = new FlowPanel();
-    reportsContainer.add(reports);
-
-    this.add(reportsContainer, MESSAGES.moderationPageBoxCaption());
-    this.selectTab(0);
-
-    // Styling options
-    this.addStyleName("gallery");
-//    this.addStyleName("ode-MyTabs");
   }
 
   /**

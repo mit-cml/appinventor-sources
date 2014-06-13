@@ -23,7 +23,7 @@ public final class GalleryListBox extends FlowPanel {
   private static final GalleryListBox INSTANCE = new GalleryListBox();
 
   // Gallery list for young android
-  private final GalleryList plist;
+  private GalleryList plist;
 
   /**
    * Returns the singleton Gallerys list box.
@@ -44,10 +44,17 @@ public final class GalleryListBox extends FlowPanel {
         false,  // minimizable
         false); // removable
      */
-    plist = new GalleryList();
+    plist = null;
+  }
+
+  /**
+   * Load GalleryList
+   */
+  public static void loadGalleryList(){
+    INSTANCE.plist = new GalleryList();
     FlowPanel pContainer = new FlowPanel();
-    pContainer.add(plist);
-    this.add(pContainer);
+    pContainer.add(INSTANCE.plist);
+    INSTANCE.add(pContainer);
   }
 
   /**

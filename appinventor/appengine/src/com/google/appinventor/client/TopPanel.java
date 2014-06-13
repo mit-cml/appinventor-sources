@@ -39,6 +39,7 @@ public class TopPanel extends Composite {
   // Strings for links and dropdown menus:
   private final DropDownButton accountButton;
   private final String WIDGET_NAME_MESSAGES = "Messages";
+  private final TextButton gallery;
   private final TextButton moderation;
   private final String WIDGET_NAME_SIGN_OUT = "Signout";
   private final String WIDGET_NAME_USER = "User";
@@ -132,7 +133,7 @@ public class TopPanel extends Composite {
 
     // Code on gallerydev branch
     // Gallery Link
-    TextButton gallery = new TextButton(MESSAGES.tabNameGallery());
+    gallery = new TextButton(MESSAGES.tabNameGallery());
     gallery.setStyleName("ode-TopPanelButton");
     gallery.addClickHandler(new ClickHandler() {
       @Override
@@ -244,8 +245,15 @@ public class TopPanel extends Composite {
   /**
    * Updates the UI to show the moderation's link.
    */
-  public void showModerationLink() {
-    moderation.setVisible(true);
+  public void showModerationLink(boolean b) {
+    moderation.setVisible(b);
+  }
+
+  /**
+   * Updates the UI to show the moderation's link.
+   */
+  public void showGalleryLink(boolean b) {
+    gallery.setVisible(b);
   }
 
   /**

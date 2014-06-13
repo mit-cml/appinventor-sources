@@ -56,6 +56,7 @@ import com.google.appinventor.shared.rpc.launch.LaunchService;
 import com.google.appinventor.shared.rpc.launch.LaunchServiceAsync;
 import com.google.appinventor.shared.rpc.project.FileNode;
 import com.google.appinventor.shared.rpc.project.GalleryAppListResult;
+import com.google.appinventor.shared.rpc.project.GallerySettings;
 import com.google.appinventor.shared.rpc.project.ProjectRootNode;
 import com.google.appinventor.shared.rpc.project.ProjectService;
 import com.google.appinventor.shared.rpc.project.ProjectServiceAsync;
@@ -136,6 +137,9 @@ public class Ode implements EntryPoint {
 
   // User settings
   private static UserSettings userSettings;
+
+  // Gallery settings
+  private static GallerySettings gallerySettings;
 
   private MotdFetcher motdFetcher;
 
@@ -275,6 +279,44 @@ public class Ode implements EntryPoint {
     return userSettings;
   }
 
+  /**
+   * Returns the gallery settings.
+   *
+   * @return  gallery settings
+   */
+  public static GallerySettings getGallerySettings() {
+    return gallerySettings;
+  }
+
+  /**
+   * loads the gallery settings from server
+   *
+   */
+  public void  loadGallerySettings() {
+     // Callback for when the server returns us the apps
+    final Ode ode = Ode.getInstance();
+    final OdeAsyncCallback<GallerySettings> callback = new OdeAsyncCallback<GallerySettings>(
+    // failure message
+    MESSAGES.gallerySettingsError()) {
+      @Override
+      public void onSuccess(GallerySettings settings) {
+        gallerySettings = settings;
+        if(gallerySettings.galleryEnabled() == true){
+          GalleryListBox.loadGalleryList();
+          topPanel.showGalleryLink(true);
+          if(user.isModerator()){
+            ModerationPageBox.loadModerationPage();
+            topPanel.showModerationLink(true);
+          }
+        }else{
+          topPanel.showModerationLink(false);
+          topPanel.showGalleryLink(false);
+        }
+      }
+    };
+    //this is below the call back, but of course it is done first
+    ode.getGalleryService().loadGallerySettings(callback);
+  }
 
   /**
    * Returns the asset manager.
@@ -483,7 +525,7 @@ public class Ode implements EntryPoint {
             Window.open(BugReport.getBugReportLink(e), "_blank", "");
           }
         } else {
-          // Display a confirm dialog with error msg and if 'ok' open the debugging view	
+          // Display a confirm dialog with error msg and if 'ok' open the debugging view
           if (Window.confirm(MESSAGES.internalErrorClickOkDebuggingView())) {
             Ode.getInstance().switchToDebuggingView();
           }
@@ -518,6 +560,11 @@ public class Ode implements EntryPoint {
         // asynchronously, so this loadSettings call will return before they are loaded.
         // After the user settings have been loaded, openPreviousProject will be called.
         userSettings.loadSettings();
+
+        // Gallery settings
+        gallerySettings = new GallerySettings();
+        //gallerySettings.loadGallerySettings();
+        loadGallerySettings();
 
         final String userInfo = user.getUserName();
         // Get the message count to display right next to user
@@ -554,10 +601,6 @@ public class Ode implements EntryPoint {
 
         // Initialize UI
         initializeUi();
-//        topPanel.showUserEmail(user.getUserEmail());
-        if(user.isModerator()){
-          topPanel.showModerationLink();
-        }
       }
 
       @Override
