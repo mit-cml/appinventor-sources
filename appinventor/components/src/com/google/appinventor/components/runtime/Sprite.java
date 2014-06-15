@@ -417,7 +417,12 @@ public abstract class Sprite extends VisibleComponent
    * If Bounce is then called with that edge, the sprite will appear to
    * bounce off of the edge it reached.
    */
-  @SimpleEvent
+  @SimpleEvent(
+      description = "Event handler called when the sprite reaches an edge of the screen. " +
+        "If Bounce is then called with that edge, the sprite will appear to " +
+        "bounce off of the edge it reached.  Edge here is represented as an integer that " +
+        "indicates one of eight directions north(1), northeast(2), east(3), southeast(4), " +
+        "south (-1), southwest(-2), west(-3), and northwest(-4).")
   public void EdgeReached(int edge) {
     if (edge == Component.DIRECTION_NONE
         || edge < Component.DIRECTION_MIN
@@ -529,7 +534,7 @@ public abstract class Sprite extends VisibleComponent
    */
   @SimpleFunction(description = "Makes this sprite bounce, as if off a wall.  " +
       "For normal bouncing, the edge argument should be the one returned by EdgeReached.")
-  public void Bounce(int edge) {
+  public void Bounce (int edge) {
     MoveIntoBounds();
 
     // Normalize heading to [0, 360)
