@@ -140,9 +140,9 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for switching language to English")
   String switchLanguageEnglishButton();
 
-  @DefaultMessage("Chinese TW")
-  @Description("Label of the button for switching language to Chinese TW")
-  String switchLanguageChineseTWButton();
+  @DefaultMessage("Chinese CN")
+  @Description("Label of the button for switching language to Chinese CN")
+  String switchLanguageChineseCNButton();
 
   @DefaultMessage("German")
   @Description("Label of the button for switching language to German")

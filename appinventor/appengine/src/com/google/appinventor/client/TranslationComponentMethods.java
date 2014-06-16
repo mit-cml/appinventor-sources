@@ -13,7 +13,7 @@ public class TranslationComponentMethods {
   public static Map<String, String> myMap = map();
 
   public static enum Language {
-    zh_TW, en_US
+    zh_CN, en_US
   }
 
 

@@ -7,13 +7,8 @@
     '../lib/blockly/src/core/blockly.js',
 
     //msg/js/*.js has to come next (for constants)
-    //'./src/msg/_messages.js',
-
-  //'./src/msg/de/_messages.js',
-  //'./src/msg/vn/_messages.js',
-  './src/msg/zh_tw/_messages.js',
-  './src/msg/en/_messages.js',
-
+    './src/msg/zh_cn/_messages.js',
+    './src/msg/en/_messages.js',
 
     // Lyn's instrumentation code
     "./src/instrument.js",

@@ -103,7 +103,7 @@ public class DesignToolbar extends Toolbar {
   // Switch language
   private static final String WIDGET_NAME_SWITCH_LANGUAGE = "Language";
   private static final String WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH = "English";
-  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_TW = "Chinese-Taiwan";
+  private static final String WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN = "Chinese-Taiwan";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_GERMAN = "German";
   //private static final String WIDGET_NAME_SWITCH_LANGUAGE_VIETNAMESE = "Vietnamese";
 
@@ -169,8 +169,8 @@ public class DesignToolbar extends Toolbar {
     List<DropDownItem> languageItems = Lists.newArrayList();
     languageItems.add(new DropDownItem(WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH,
         MESSAGES.switchLanguageEnglishButton(), new SwitchLanguageToEnglishAction()));
-    languageItems.add(new DropDownItem(WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_TW,
-        MESSAGES.switchLanguageChineseTWButton(), new SwitchLanguageToChineseTwAction()));
+    languageItems.add(new DropDownItem(WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN,
+        MESSAGES.switchLanguageChineseCNButton(), new SwitchLanguageToChineseCNAction()));
     addDropDownButton(WIDGET_NAME_SWITCH_LANGUAGE, MESSAGES.switchLanguageButton(), languageItems, true);
   }
 
@@ -181,10 +181,10 @@ public class DesignToolbar extends Toolbar {
     }
   }
 
-  private class SwitchLanguageToChineseTwAction implements Command {
+  private class SwitchLanguageToChineseCNAction implements Command {
     @Override
     public void execute() {
-      switchLanguage("zh_TW");
+      switchLanguage("zh_CN");
     }
   }
 

@@ -105,6 +105,6 @@
   <extend-property name="locale" values="en"/>
 
   <!-- Chinese in Taiwan -->
-  <extend-property name="locale" values="zh_TW"/>
+  <extend-property name="locale" values="zh_CN"/>
 
 </module>

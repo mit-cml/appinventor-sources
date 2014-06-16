@@ -11,7 +11,7 @@ public class TranslationComponentProperty {
   public static Map<String, String> myMap = map();
 
   public static enum Language {
-    zh_TW, en_US
+    zh_CN, en_US
   }
 
   public static String getName(String key) {

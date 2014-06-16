@@ -23,14 +23,14 @@
  */
 'use strict';
 
-goog.provide('Blockly.Msg.zh_tw');
+goog.provide('Blockly.Msg.zh_cn');
 
 /**
  * Due to the frequency of long strings, the 80-column wrap rule need not apply
  * to message files.
  */
 
-Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
+Blockly.Msg.zh_cn.switch_language_to_chinese_cn = {
   // Switch language to Chinese (Taiwan).
   category: '',
   helpUrl: '',
@@ -1238,4 +1238,4 @@ Blockly.Msg.zh_tw.switch_language_to_chinese_tw = {
 };
 
 // Initalize language definition to English
-Blockly.Msg.zh_tw.switch_language_to_chinese_tw.init();
+Blockly.Msg.zh_cn.switch_language_to_chinese_cn.init();

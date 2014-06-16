@@ -8,12 +8,12 @@ import java.util.List;
 import java.util.Map;
 
 public class TranslationComponentEvents {
-	
+
   public static String languageSetting;
   public static Map<String, String> myMap = map();
 
   public static enum Language {
-    zh_TW, en_US
+    zh_CN, en_US
   }
 
 
