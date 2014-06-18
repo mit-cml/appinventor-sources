@@ -1358,8 +1358,8 @@ public class Form extends Activity
 
   private void showAboutApplicationNotification() {
     String title = "About This App";
-    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small>";
-    String message = aboutScreen + tagline + yandexTranslateTagline;
+    String tagline = "<p><small><em>Invented with MIT App Inventor<br>appinventor.mit.edu</em></small></p>";
+    String message = yandexTranslateTagline + aboutScreen + tagline;
     String buttonText ="Got it";
     Notifier.oneButtonAlert(this, message, title, buttonText);
   }
