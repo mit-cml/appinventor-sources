@@ -503,10 +503,10 @@
                   from the prior call.  Note that the Sprite won't actually move
                   anywhere in response to the Dragged event unless MoveTo is
                   specifically called.</dd>
-                   <dt><code>EdgeReached(number edge)</code></dt>
-                   <dd>Event handler called when the sprite reaches an edge of the screen.
-                  If Bounce is then called with that edge, the sprite will appear to
-                  bounce off of the edge it reached.</dd>
+
+<dt><code>EdgeReached(number edge)</code></dt>
+<dd>Event handler called when the sprite reaches an edge of the screen. If Bounce is then called with that edge, the sprite will appear to bounce off of the edge it reached.  Edge here is represented as an integer that indicates one of eight directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3), and northwest(-4).</dd>
+<dt>
                    <dt><code>Flung(number x, number y, number speed, number heading, number xvel, number yvel)</code></dt>
                    <dd>When a fling gesture (quick swipe) is made on the sprite: provides
                   the (x,y) position of the start of the fling, relative to the upper
@@ -721,10 +721,9 @@
                   from the prior call.  Note that the Sprite won't actually move
                   anywhere in response to the Dragged event unless MoveTo is
                   specifically called.</dd>
-                   <dt><code>EdgeReached(number edge)</code></dt>
-                   <dd>Event handler called when the sprite reaches an edge of the screen.
-                  If Bounce is then called with that edge, the sprite will appear to
-                  bounce off of the edge it reached.</dd>
+<dt><code>EdgeReached(number edge)</code></dt>
+  <dd>Event handler called when the sprite reaches an edge of the screen. If Bounce is then called with that edge, the sprite will appear to bounce off of the edge it reached.  Edge here is represented as an integer that indicates one of eight directions north(1), northeast(2), east(3), southeast(4), south (-1), southwest(-2), west(-3), and northwest(-4).</dd>
+<dt>
                    <dt><code>Flung(number x, number y, number speed, number heading, number xvel, number yvel)</code></dt>
                    <dd>When a fling gesture (quick swipe) is made on the sprite: provides
                   the (x,y) position of the start of the fling, relative to the upper
