@@ -262,8 +262,11 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 95:
   // - BUTTON_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 96:
+  // - AUTOCOMPLETE_COMPONENT_VERSION as added
+  // - AUTOCOMPLETEMULTI_COMPONENT_VERSION as added
 
-  public static final int YOUNG_ANDROID_VERSION = 95;
+    public static final int YOUNG_ANDROID_VERSION = 96;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -352,6 +355,10 @@ public class YaVersion {
   // - The ActivityStarter.StartActivity was edited to use the parent Form's open screen
   //   animation to transition to next activity.
   public static final int ACTIVITYSTARTER_COMPONENT_VERSION = 4;
+
+  public static final int AUTOCOMPLETE_COMPONENT_VERSION = 1;
+
+  public static final int AUTOCOMPLETEMULTI_COMPONENT_VERSION = 1;
 
   // For BALL_COMPONENT_VERSION 2:
   // - The PointTowards method was added (for all sprites)
