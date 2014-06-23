@@ -164,11 +164,10 @@ public final class ErrorMessages {
   public static final int ERROR_ILLEGAL_MINUTE = 2302;
 
   // DatePicker errors
-  public static final int ERROR_ILLEGAL_MONTH = 2401;
-  public static final int ERROR_ILLEGAL_DAY = 2402;
-  public static final int ERROR_ILLEGAL_YEAR = 2403;
+  public static final int ERROR_ILLEGAL_DATE = 2401;
 
   // Please start the next group of error numbers at 2501.
+
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -424,6 +423,8 @@ public final class ErrorMessages {
     //TimePicker errors
     errorMessages.put(ERROR_ILLEGAL_HOUR, "The hour must be set to a value between 0 and 23.");
     errorMessages.put(ERROR_ILLEGAL_MINUTE, "The minute must be set to a value between 0 and 59.");
+    //DatePicker errors
+    errorMessages.put(ERROR_ILLEGAL_DATE, "The date you entered is invalid.");
   }
 
   private ErrorMessages() {

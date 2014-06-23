@@ -270,8 +270,10 @@ public class YaVersion {
   // - PHONECALL_COMPONENT_VERSION was incremented to 2.
   // For YOUNG_ANDROID_VERSION 99:
   // - CONTACTPICKER_COMPONENT_VERSION was incremented to 5
+  // For YOUNG_ANDROID_VERSION 100:
+  // - DATEPICKER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 99;
+  public static final int YOUNG_ANDROID_VERSION = 100;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -451,7 +453,13 @@ public class YaVersion {
   // - The Alignment property was renamed to TextAlignment.
   public static final int EMAILPICKER_COMPONENT_VERSION = 2;
 
-  public static final int DATEPICKER_COMPONENT_VERSION = 1;
+  // For DATEPICKER_COMPONENT_VERSION 2:
+  // The datepicker dialog was updated to show the current date
+  // instead of the last set date by default.
+  // The SetDateToDisplay and LaunchPicker methods were added to
+  // give the user more control of what time is displayed in the
+  // datepicker dialog.
+  public static final int DATEPICKER_COMPONENT_VERSION = 2;
 
   // For FILE_COMPONENT_VERSION 1:
   public static final int FILE_COMPONENT_VERSION = 1;

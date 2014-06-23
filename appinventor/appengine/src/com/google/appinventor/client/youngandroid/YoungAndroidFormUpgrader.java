@@ -234,6 +234,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("ContactPicker")) {
         srcCompVersion = upgradeContactPickerProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("DatePicker")) {
+        srcCompVersion = upgradeDatePickerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("EmailPicker")) {
         srcCompVersion = upgradeEmailPickerProperties(componentProperties, srcCompVersion);
 
@@ -602,6 +605,16 @@ public final class YoungAndroidFormUpgrader {
       // The PhoneNumber, PhoneNumberList, and EmailAddressList properties were added.
       // For Eclair and up, we now use ContactsContract instead of the deprecated Contacts.
       srcCompVersion = 5;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeDatePickerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SetDateToDisplay and LaunchPicker methods were added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }
