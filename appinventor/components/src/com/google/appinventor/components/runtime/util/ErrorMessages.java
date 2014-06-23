@@ -158,7 +158,16 @@ public final class ErrorMessages {
   public static final int ERROR_TRANSLATE_SERVICE_NOT_AVAILABLE = 2202;
   public static final int ERROR_TRANSLATE_JSON_RESPONSE = 2203;
 
-  // Please start the next group of error numbers at 2301.
+  // TimePicker errors
+  public static final int ERROR_ILLEGAL_HOUR = 2301;
+  public static final int ERROR_ILLEGAL_MINUTE = 2302;
+
+  // DatePicker errors
+  public static final int ERROR_ILLEGAL_MONTH = 2401;
+  public static final int ERROR_ILLEGAL_DAY = 2402;
+  public static final int ERROR_ILLEGAL_YEAR = 2403;
+
+  // Please start the next group of error numbers at 2501.
 
   // Mapping of error numbers to error message format strings.
   private static final Map<Integer, String> errorMessages;
@@ -409,6 +418,9 @@ public final class ErrorMessages {
         "available; Please try again later.");
     errorMessages.put(ERROR_TRANSLATE_JSON_RESPONSE, "The response from the Yandex.Translate " +
         "service cannot be parsed; Please try again later.");
+    //TimePicker errors
+    errorMessages.put(ERROR_ILLEGAL_HOUR, "The hour must be set to a value between 0 and 23.");
+    errorMessages.put(ERROR_ILLEGAL_MINUTE, "The minute must be set to a value between 0 and 59.");
   }
 
   private ErrorMessages() {

@@ -276,6 +276,9 @@ public final class YoungAndroidFormUpgrader {
       } else if (componentType.equals("Sound")) {
         srcCompVersion = upgradeSoundProperties(componentProperties, srcCompVersion);
 
+      } else if (componentType.equals("TimePicker")) {
+        srcCompVersion = upgradeTimePickerProperties(componentProperties, srcCompVersion);
+
       } else if (componentType.equals("TinyWebDB")) {
         srcCompVersion = upgradeTinyWebDBProperties(componentProperties, srcCompVersion);
 
@@ -901,6 +904,16 @@ public final class YoungAndroidFormUpgrader {
       // The Sound.SoundError event was marked userVisible false and is no longer used.
       // No properties need to be modified to upgrade to version 3.
       srcCompVersion = 3;
+    }
+    return srcCompVersion;
+  }
+
+  private static int upgradeTimePickerProperties(Map<String, JSONValue> componentProperties,
+      int srcCompVersion) {
+    if (srcCompVersion < 2) {
+      // The SetTimeToDisplay and LaunchPicker methods were added.
+      // No properties need to be modified to upgrade to version 2.
+      srcCompVersion = 2;
     }
     return srcCompVersion;
   }

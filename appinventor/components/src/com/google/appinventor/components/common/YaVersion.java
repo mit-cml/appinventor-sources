@@ -262,8 +262,10 @@ public class YaVersion {
   // - YANDEX_COMPONENT_VERSION was incremented to 1.
   // For YOUNG_ANDROID_VERSION 95:
   // - BUTTON_COMPONENT_VERSION was incremented to 6.
+  // For YOUNG_ANDROID_VERSION 96:
+  // - TIMEPICKER_COMPONENT_VERSION was incremented to 2.
 
-  public static final int YOUNG_ANDROID_VERSION = 95;
+  public static final int YOUNG_ANDROID_VERSION = 96;
 
   // ............................... Blocks Language Version Number ...............................
 
@@ -633,7 +635,13 @@ public class YaVersion {
   //   instead of a boolean
   public static final int TEXTING_COMPONENT_VERSION = 3;
 
-  public static final int TIMEPICKER_COMPONENT_VERSION = 1;
+  // For TIMEPICKER_COMPONENT_VERSION 2:
+  // After feedback from the forum, the timepicker dialog was updated
+  // to show the current time instead of the last set time by default.
+  // The SetTimeToDisplay and LaunchPicker methods were added to
+  // give the user more control of what time is displayed in the
+  // timepicker dialog.
+  public static final int TIMEPICKER_COMPONENT_VERSION = 2;
 
   public static final int TINYDB_COMPONENT_VERSION = 1;
 
