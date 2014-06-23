@@ -164,28 +164,6 @@ public class DesignToolbar extends Toolbar {
     // Gray out the Designer button and enable the blocks button
     toggleEditor(false);
     Ode.getInstance().getTopToolbar().updateFileMenuButtons(0);
-
-    // Add button to switch language
-    List<DropDownItem> languageItems = Lists.newArrayList();
-    languageItems.add(new DropDownItem(WIDGET_NAME_SWITCH_LANGUAGE_ENGLISH,
-        MESSAGES.switchLanguageEnglishButton(), new SwitchLanguageToEnglishAction()));
-    languageItems.add(new DropDownItem(WIDGET_NAME_SWITCH_LANGUAGE_CHINESE_CN,
-        MESSAGES.switchLanguageChineseCNButton(), new SwitchLanguageToChineseCNAction()));
-    addDropDownButton(WIDGET_NAME_SWITCH_LANGUAGE, MESSAGES.switchLanguageButton(), languageItems, true);
-  }
-
-  private class SwitchLanguageToEnglishAction implements Command {
-    @Override
-    public void execute() {
-      switchLanguage("en_US");
-    }
-  }
-
-  private class SwitchLanguageToChineseCNAction implements Command {
-    @Override
-    public void execute() {
-      switchLanguage("zh_CN");
-    }
   }
 
   private class AddFormAction implements Command {
@@ -483,14 +461,5 @@ public class DesignToolbar extends Toolbar {
 
   public DesignProject getCurrentProject() {
     return currentProject;
-  }
-
-  /*
-   * Switch the language displayed on all screens in the project
-   */
-  private void switchLanguage(String newLanguage) {
-    for (Screen screen : currentProject.screens.values()) {
-      screen.blocksEditor.switchLanguage(newLanguage);
-    }
   }
 }

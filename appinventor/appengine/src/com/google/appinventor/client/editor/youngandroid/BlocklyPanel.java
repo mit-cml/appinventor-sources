@@ -932,41 +932,41 @@ public class BlocklyPanel extends HTMLPanel {
     $wnd.Blocklies[formName].language_switch.switchLanguage(language);
     }-*/;
 
-  /*
-   * Update the blockly's translation map for custom components' properties.
-   * Important: This method has to be called before calling
-   *            doSwitchLanguage(String formName, String language)
-   */
-  public static native void doUpdateTranslationPropertiesMap(String formName, String typeDescription) /*-{
-    $wnd.Blocklies[formName].TranslationProperties.updateMap(typeDescription);
-  }-*/;
-
-  /*
-   * Update the blockly's translation map for custom components' events.
-   * Important: This method has to be called before calling
-   *            doSwitchLanguage(String formName, String language)
-   */
-  public static native void doUpdateTranslationEventsMap(String formName, String typeDescription) /*-{
-    $wnd.Blocklies[formName].TranslationEvents.updateMap(typeDescription);
-  }-*/;
-
-  /*
-   * Update the blockly's translation map for custom components' methods.
-   * Important: This method has to be called before calling
-   *            doSwitchLanguage(String formName, String language)
-   */
-  public static native void doUpdateTranslationMethodsMap(String formName, String typeDescription) /*-{
-    $wnd.Blocklies[formName].TranslationMethods.updateMap(typeDescription);
-  }-*/;
-
-  /*
-   * Update the blockly's translation map for custom components' parameters.
-   * Important: This method has to be called before calling
-   *            doSwitchLanguage(String formName, String language)
-   */
-  public static native void doUpdateTranslationParamsMap(String formName, String typeDescription) /*-{
-    $wnd.Blocklies[formName].TranslationParams.updateMap(typeDescription);
-  }-*/;
+//  /*
+//   * Update the blockly's translation map for custom components' properties.
+//   * Important: This method has to be called before calling
+//   *            doSwitchLanguage(String formName, String language)
+//   */
+//  public static native void doUpdateTranslationPropertiesMap(String formName, String typeDescription) /*-{
+//    $wnd.Blocklies[formName].TranslationProperties.updateMap(typeDescription);
+//  }-*/;
+//
+//  /*
+//   * Update the blockly's translation map for custom components' events.
+//   * Important: This method has to be called before calling
+//   *            doSwitchLanguage(String formName, String language)
+//   */
+//  public static native void doUpdateTranslationEventsMap(String formName, String typeDescription) /*-{
+//    $wnd.Blocklies[formName].TranslationEvents.updateMap(typeDescription);
+//  }-*/;
+//
+//  /*
+//   * Update the blockly's translation map for custom components' methods.
+//   * Important: This method has to be called before calling
+//   *            doSwitchLanguage(String formName, String language)
+//   */
+//  public static native void doUpdateTranslationMethodsMap(String formName, String typeDescription) /*-{
+//    $wnd.Blocklies[formName].TranslationMethods.updateMap(typeDescription);
+//  }-*/;
+//
+//  /*
+//   * Update the blockly's translation map for custom components' parameters.
+//   * Important: This method has to be called before calling
+//   *            doSwitchLanguage(String formName, String language)
+//   */
+//  public static native void doUpdateTranslationParamsMap(String formName, String typeDescription) /*-{
+//    $wnd.Blocklies[formName].TranslationParams.updateMap(typeDescription);
+//  }-*/;
 
   public static native String getURL() /*-{
     return $wnd.location.href;

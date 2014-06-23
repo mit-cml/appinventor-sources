@@ -12,7 +12,7 @@ import com.google.gwt.i18n.client.Messages;
  *
  */
 //@LocalizableResource.Generate(format = "com.google.gwt.i18n.rebind.format.PropertiesFormat")
-//@LocalizableResource.DefaultLocale("en_US")
+//@LocalizableResource.DefaultLocale("en")
 
 public interface OdeMessages extends Messages {
   // Used in multiple files
@@ -131,26 +131,29 @@ public interface OdeMessages extends Messages {
   @Description("Label of the button for opening the blocks editor when the it is already open")
   String blocksEditorIsOpenButton();
 
-  // Switch Language Buttons
+  // Switch Language Buttons (Internationalization)
   @DefaultMessage("Language")
   @Description("Label of the button for switching language")
   String switchLanguageButton();
 
-  @DefaultMessage("English")
-  @Description("Label of the button for switching language to English")
-  String switchLanguageEnglishButton();
+  // Not used anymore it is now dynamically created and translated at compile time depending on what
+  //languages are translated and available.
 
-  @DefaultMessage("Chinese CN")
-  @Description("Label of the button for switching language to Chinese CN")
-  String switchLanguageChineseCNButton();
-
-  @DefaultMessage("German")
-  @Description("Label of the button for switching language to German")
-  String switchLanguageGermanButton();
-
-  @DefaultMessage("Vietnamese")
-  @Description("Label of the button for switching language to Vietnamese")
-  String switchLanguageVietnameseButton();
+//  @DefaultMessage("English")
+//  @Description("Label of the button for switching language to English")
+//  String switchLanguageEnglishButton();
+//
+//  @DefaultMessage("Chinese CN")
+//  @Description("Label of the button for switching language to Chinese CN")
+//  String switchLanguageChineseCNButton();
+//
+//  @DefaultMessage("German")
+//  @Description("Label of the button for switching language to German")
+//  String switchLanguageGermanButton();
+//
+//  @DefaultMessage("Vietnamese")
+//  @Description("Label of the button for switching language to Vietnamese")
+//  String switchLanguageVietnameseButton();
 
   // Used in MotdFetcher.java
 
