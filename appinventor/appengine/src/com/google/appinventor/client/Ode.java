@@ -35,6 +35,7 @@ import com.google.appinventor.client.explorer.project.Project;
 import com.google.appinventor.client.explorer.project.ProjectChangeAdapter;
 import com.google.appinventor.client.explorer.project.ProjectManager;
 import com.google.appinventor.client.explorer.project.ProjectManagerEventAdapter;
+import com.google.appinventor.client.explorer.youngandroid.GalleryToolbar;
 import com.google.appinventor.client.explorer.youngandroid.ProjectToolbar;
 import com.google.appinventor.client.jsonp.JsonpConnection;
 import com.google.appinventor.client.output.OdeLog;
@@ -206,6 +207,8 @@ public class Ode implements EntryPoint {
   private HorizontalPanel workColumns;
   private VerticalPanel structureAndAssets;
   private ProjectToolbar projectToolbar;
+  private GalleryToolbar galleryListToolbar;
+  private GalleryToolbar galleryPageToolbar;
   private DesignToolbar designToolbar;
   private TopToolbar topToolbar;
   // Popup that indicates that an asynchronous request is pending. It is visible
@@ -773,6 +776,8 @@ public class Ode implements EntryPoint {
     VerticalPanel gVertPanel = new VerticalPanel();
     gVertPanel.setWidth("100%");
     gVertPanel.setSpacing(0);
+    galleryListToolbar = new GalleryToolbar();
+    gVertPanel.add(galleryListToolbar);
     HorizontalPanel appListPanel = new HorizontalPanel();
     appListPanel.setWidth("100%");
     appListPanel.add(GalleryListBox.getGalleryListBox());
@@ -785,6 +790,8 @@ public class Ode implements EntryPoint {
     VerticalPanel aVertPanel = new VerticalPanel();
     aVertPanel.setWidth("100%");
     aVertPanel.setSpacing(0);
+    galleryPageToolbar = new GalleryToolbar();
+    aVertPanel.add(galleryPageToolbar);
     HorizontalPanel appPanel = new HorizontalPanel();
     appPanel.setWidth("100%");
     appPanel.add(GalleryAppBox.getGalleryAppBox());

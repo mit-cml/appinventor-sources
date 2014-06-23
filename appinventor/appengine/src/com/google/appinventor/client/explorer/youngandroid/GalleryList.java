@@ -197,6 +197,8 @@ public class GalleryList extends Composite implements GalleryRequestListener {
   private class GalleryAppTab{
     Label buttonNext;
     Label noResultsFound;
+    Label keywordTotalResultsLabel;
+    Label generalTotalResultsLabel;
 
     GalleryAppTab(FlowPanel container, FlowPanel content, final int request){
       addGalleryAppTab(container, content, request);
@@ -206,6 +208,22 @@ public class GalleryList extends Composite implements GalleryRequestListener {
     }
     public Label getNoResultsFound(){
       return noResultsFound;
+    }
+
+    public Label getKeywordTotalResultsLabel(){
+      return keywordTotalResultsLabel;
+    }
+
+    public void setKeywordTotalResultsLabel(String keyword, int num){
+       keywordTotalResultsLabel.setText("search for \"" + keyword + "\" returned " + num + " results");;
+    }
+
+    public Label getGeneralTotalResultsLabel(){
+      return generalTotalResultsLabel;
+    }
+
+    public void setGeneralTotalResultsLabel(int num){
+      generalTotalResultsLabel.setText(num + " results");;
     }
 
     /**
@@ -229,9 +247,11 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         searchPanel.add(searchText);
         searchPanel.add(sb);
         searchPanel.addStyleName("gallery-search-panel");
-        container.add(searchPanel);
+//        container.add(searchPanel);
         appSearchContent.addStyleName("gallery-search-results");
         container.add(appSearchContent);
+        keywordTotalResultsLabel = new Label();
+        container.add(keywordTotalResultsLabel);
         noResultsFound = new Label(MESSAGES.noResultsFound());
         noResultsFound.setVisible(false);
         container.add(noResultsFound);
@@ -253,8 +273,12 @@ public class GalleryList extends Composite implements GalleryRequestListener {
           }
         });
       } else if (request == REQUEST_RECENT) {
+        generalTotalResultsLabel = new Label();
+        container.add(generalTotalResultsLabel);
         gallery.GetMostRecent(appRecentCounter, NUMAPPSTOSHOW);
       } else if (request == REQUEST_MOSTDOWNLOADED) {
+        generalTotalResultsLabel = new Label();
+        container.add(generalTotalResultsLabel);
         gallery.GetMostDownloaded(appPopularCounter, NUMAPPSTOSHOW);
       }
       container.add(content);
@@ -363,6 +387,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(appsResult.getApps(), appFeaturedContent, false);
         break;
       case REQUEST_RECENT:
+        appRecentTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
         if(appRecentCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appRecentTab.getButtonNext().setVisible(false);
         }else{
@@ -378,6 +403,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(appsResult.getApps(), appRecentContent, false);
         break;
       case REQUEST_SEARCH:
+        appSearchTab.setKeywordTotalResultsLabel(appsResult.getKeyword(), appsResult.getTotalCount());
         if(appsResult.getTotalCount() == 0){
           appSearchTab.getNoResultsFound().setVisible(true);
         }else{
@@ -397,6 +423,7 @@ public class GalleryList extends Composite implements GalleryRequestListener {
         galleryGF.generateHorizontalAppList(appsResult.getApps(), appSearchContent, true);
         break;
       case REQUEST_MOSTDOWNLOADED:
+        appPopularTab.setGeneralTotalResultsLabel(appsResult.getTotalCount());
         if(appPopularCounter + NUMAPPSTOSHOW >= appsResult.getTotalCount()){
           appPopularTab.getButtonNext().setVisible(false);
         }else{
@@ -438,6 +465,10 @@ public class GalleryList extends Composite implements GalleryRequestListener {
    */
   public List<GalleryApp> getSelectedApps() {
     return selectedApps;
+  }
+
+  public void setSelectTabIndex(int index){
+    appTabs.selectTab(index);
   }
 
   public void onAppListRequestCompleted(GalleryAppListResult appsResult, int requestId)

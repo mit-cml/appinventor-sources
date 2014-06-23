@@ -123,7 +123,7 @@ public class GallerySearchIndex {
       }
 
     }
-    return new GalleryAppListResult(apps, apps.size());
+    return new GalleryAppListResult(apps, apps.size(), searchWords);
   }
 
   private Index getIndex() {

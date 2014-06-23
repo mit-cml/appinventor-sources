@@ -1314,6 +1314,11 @@ public interface OdeMessages extends Messages {
   @Description("Caption for project upload wizard.")
   String projectUploadWizardCaption();
 
+  // Used in GalleryToolBar.java
+  @DefaultMessage("Search")
+  @Description("Text for gallery search button")
+  String gallerySearch();
+
   // Used in GalleryPage.java
 
   @DefaultMessage("Tutorial/Video: ")

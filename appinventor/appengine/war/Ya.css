@@ -1390,6 +1390,16 @@ textarea::-webkit-input-placeholder {
   margin-left: 10px;
 }
 
+/* Gallery Toolbar*/
+.ya-GalleryToolbar {
+  background-color: #8fc202;
+  margin-bottom: 4px;
+  clear: both;
+}
+
+.search-compontent {
+  margin:5px 0 5px 0;
+}
 
 /* Gallery-specific styles */
 .ode-UserProfileWrapper,
