@@ -4,8 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import kawa.standard.Scheme;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -171,7 +169,10 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
           dataset = api.uploadDataSet(ProjectID, jData, DataSetName);
           // login with contribution key
         } else if (LoginType == iSENSE_LOGIN_TYPE_KEY) {
-          dataset = api.uploadDataSet(ProjectID, DataSetName, jData, ContributorKey, YourName);
+          Calendar cal = Calendar.getInstance();
+          SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss aaa");
+          dataset = api.uploadDataSet(ProjectID, DataSetName + " - "
+              + sdf.format(cal.getTime()).toString(), jData, ContributorKey, YourName);
         }
         Log.i("iSENSE", "JSON Upload: " + jData.toString());
         Log.i("iSENSE", "Dataset ID: " + dataset);
@@ -277,15 +278,17 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   // fraction gets converted to a number
   // string gets returned
   private String SanitizeString(final String str) {
-    Log.i("test", "test:" + str);
-    Scheme scheme = new Scheme();
-    String scheme_str = "(if (number? " + str + ") (exact->inexact " + str + ") \"" + str + "\")";
-    try {
-      return scheme.eval(scheme_str).toString();
-    } catch (Throwable e) {
-      e.printStackTrace();
-    }
-    return null;
+    return str;
+    // Log.i("test", "test:" + str);
+    // Scheme scheme = new Scheme();
+    // String scheme_str = "(if (number? " + str + ") (exact->inexact " + str + ") \"" + str +
+    // "\")";
+    // try {
+    // return scheme.eval(scheme_str).toString();
+    // } catch (Throwable e) {
+    // e.printStackTrace();
+    // }
+    // return null;
+    // }
   }
-
 }
