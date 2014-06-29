@@ -1,40 +1,23 @@
-/**
- * Visual Blocks Language
- *
- * Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
 
 /**
- * @fileoverview Generating Yail for text blocks.
- * @author andrew.f.mckinney@gmail.com (Andrew F. McKinney)
+ * @license
+ * @fileoverview Color blocks yail generators for Blockly, modified for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  */
 
-// TODO(andrew): Change value.to.code to a function that checks if the slot is
-// empty and signals an error if necessary.
+'use strict';
 
-Blockly.Yail = Blockly.Generator.get('Yail');
+goog.provide('Blockly.Yail.text');
 
-//Text Blocks
-
-Blockly.Yail.text = function() {
+Blockly.Yail['text'] = function() {
   // Text value.
-  var code = Blockly.Yail.quote_(this.getTitleValue('TEXT'));
+  var code = Blockly.Yail.quote_(this.getFieldValue('TEXT'));
   return [code, Blockly.Yail.ORDER_ATOMIC];
 };
 
-Blockly.Yail.text_join = function() {
+Blockly.Yail['text_join'] = function() {
   // Create a string made up of elements of any type..
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-append"
       + Blockly.Yail.YAIL_SPACER;
@@ -57,7 +40,7 @@ Blockly.Yail.text_join = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_length = function() {
+Blockly.Yail['text_length'] = function() {
   // // String length
   var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-length"
@@ -73,7 +56,7 @@ Blockly.Yail.text_length = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_isEmpty = function() {
+Blockly.Yail['text_isEmpty'] = function() {
   // Is the string null?
   var argument = Blockly.Yail.valueToCode(this, 'VALUE', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-empty?"
@@ -89,9 +72,9 @@ Blockly.Yail.text_isEmpty = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_compare = function() {
+Blockly.Yail['text_compare'] = function() {
   // Basic compare operators
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var prim = Blockly.Yail.text_compare.OPERATORS[mode];
   var operator1 = prim[0];
   var operator2 = prim[1];
@@ -112,13 +95,13 @@ Blockly.Yail.text_compare = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_compare.OPERATORS = {
+Blockly.Yail['text_compare'].OPERATORS = {
   LT: ['string<?', 'text<', Blockly.Yail.ORDER_NONE],
   GT: ['string>?', 'text>', Blockly.Yail.ORDER_NONE],
   EQUAL: ['string=?', 'text=', Blockly.Yail.ORDER_NONE]
 };
 
-Blockly.Yail.text_trim = function() {
+Blockly.Yail['text_trim'] = function() {
   // String trim
   var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-trim"
@@ -134,9 +117,9 @@ Blockly.Yail.text_trim = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_changeCase = function() {
+Blockly.Yail['text_changeCase'] = function() {
   // String change case.
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.text_changeCase.OPERATORS[mode];
   var operator1 = tuple[0];
   var operator2 = tuple[1];
@@ -155,7 +138,7 @@ Blockly.Yail.text_changeCase = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_changeCase.OPERATORS = {
+Blockly.Yail['text_changeCase'].OPERATORS = {
   UPCASE: ['string-to-upper-case', 'upcase', Blockly.Yail.ORDER_NONE],
   DOWNCASE: ['string-to-lower-case', 'downcase', Blockly.Yail.ORDER_NONE]
 };
@@ -178,7 +161,7 @@ Blockly.Yail.text_starts_at = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_contains = function() {
+Blockly.Yail['text_contains'] = function() {
   // String contains.
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'PIECE', Blockly.Yail.ORDER_NONE) || "\"\"";
@@ -196,10 +179,10 @@ Blockly.Yail.text_contains = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_split = function() {
+Blockly.Yail['text_split'] = function() {
   // String split operations.
   // Note that the type of arg2 might be text or list, depending on the dropdown selection
-  var mode = this.getTitleValue('OP');
+  var mode = this.getFieldValue('OP');
   var tuple = Blockly.Yail.text_split.OPERATORS[mode];
   var operator1 = tuple[0];
   var operator2 = tuple[1];
@@ -221,7 +204,7 @@ Blockly.Yail.text_split = function() {
   return [ code, order ];
 };
 
-Blockly.Yail.text_split.OPERATORS = {
+Blockly.Yail['text_split'].OPERATORS = {
   SPLITATFIRST : [ 'string-split-at-first', 'split at first',
       Blockly.Yail.ORDER_ATOMIC, 'text' ],
   SPLITATFIRSTOFANY : [ 'string-split-at-first-of-any',
@@ -230,7 +213,7 @@ Blockly.Yail.text_split.OPERATORS = {
   SPLITATANY : [ 'string-split-at-any', 'split at any', Blockly.Yail.ORDER_ATOMIC, 'list' ]
 };
 
-Blockly.Yail.text_split_at_spaces = function() {
+Blockly.Yail['text_split_at_spaces'] = function() {
   // split at spaces
   var argument = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var code = Blockly.Yail.YAIL_CALL_YAIL_PRIMITIVE + "string-split-at-spaces"
@@ -246,7 +229,7 @@ Blockly.Yail.text_split_at_spaces = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_segment = function() {
+Blockly.Yail['text_segment'] = function() {
   // Create string segment
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'START', Blockly.Yail.ORDER_NONE) || 1;
@@ -266,7 +249,7 @@ Blockly.Yail.text_segment = function() {
   return [ code, Blockly.Yail.ORDER_ATOMIC ];
 };
 
-Blockly.Yail.text_replace_all = function() {
+Blockly.Yail['text_replace_all'] = function() {
   // String replace with segment
   var argument0 = Blockly.Yail.valueToCode(this, 'TEXT', Blockly.Yail.ORDER_NONE) || "\"\"";
   var argument1 = Blockly.Yail.valueToCode(this, 'SEGMENT', Blockly.Yail.ORDER_NONE) || "\"\"";

@@ -507,7 +507,8 @@ none
 <h2 id="LocationSensor">LocationSensor</h2>
 
 <p>Non-visible component providing location information, including longitude, latitude, altitude (if supported by the device), and address.  This can also perform "geocoding", converting a given address (not necessarily the current one) to a latitude (with the <code>LatitudeFromAddress</code> method) and a longitude (with the <code>LongitudeFromAddress</code> method).</p>
-<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through either wireless networks or GPS satellites (if outside).</p>
+<p>In order to function, the component must have its <code>Enabled</code> property set to True, and the device must have location sensing enabled through wireless networks or GPS satellites (if outdoors).</p>
+Location information might not be immediately available when an app starts.  You'll have to wait a short time for a location provider to be found and used, or wait for the OnLocationChanged event</p>
 
 <h3>Properties</h3>
 <dl>
@@ -546,7 +547,8 @@ none
   <dt><code>LocationChanged(number latitude, number longitude, number altitude)</code></dt>
   <dd>Indicates that a new location has been detected.</dd>
   <dt><code>StatusChanged(text provider, text status)</code></dt>
-  <dd>Indicates that the status of the provider has changed.</dd>
+  <dd>Indicates that the status of the location provider service has changed, such as when a
+ provider is lost or a new provider starts being used.</dd>
 </dl>
 
 <h3>Methods</h3>

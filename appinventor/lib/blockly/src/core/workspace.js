@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +25,8 @@
 'use strict';
 
 goog.provide('Blockly.Workspace');
+
+goog.require('Blockly.Instrument'); // lyn's instrumentation code
 
 // TODO(scr): Fix circular dependencies
 // goog.require('Blockly.Block');
@@ -198,6 +201,9 @@ Blockly.Workspace.prototype.addTopBlock = function(block) {
   if (block.workspace == Blockly.mainWorkspace) //Do not reset arrangements for the flyout
     Blockly.resetWorkspaceArrangements();
   this.topBlocks_.push(block);
+  if (Blockly.Realtime.isEnabled() && this == Blockly.mainWorkspace) {
+    Blockly.Realtime.addTopBlock(block);
+  }
   this.fireChangeEvent();
 };
 
@@ -219,6 +225,9 @@ Blockly.Workspace.prototype.removeTopBlock = function(block) {
   if (!found) {
     throw 'Block not present in workspace\'s list of top-most blocks.';
   }
+  if (Blockly.Realtime.isEnabled() && this == Blockly.mainWorkspace) {
+    Blockly.Realtime.removeTopBlock(block);
+  }
   this.fireChangeEvent();
 };
 
@@ -229,6 +238,7 @@ Blockly.Workspace.prototype.removeTopBlock = function(block) {
  * @return {!Array.<!Blockly.Block>} The top-level block objects.
  */
 Blockly.Workspace.prototype.getTopBlocks = function(ordered) {
+  var start = new Date().getTime(); //*** lyn instrumentation
   // Copy the topBlocks_ list.
   var blocks = [].concat(this.topBlocks_);
   if (ordered && blocks.length > 1) {
@@ -242,6 +252,10 @@ Blockly.Workspace.prototype.getTopBlocks = function(ordered) {
       return (aXY.y + offset * aXY.x) - (bXY.y + offset * bXY.x);
     });
   }
+  var stop = new Date().getTime(); //*** lyn instrumentation
+  var timeDiff = stop - start; //*** lyn instrumentation
+  Blockly.Instrument.stats.getTopBlocksCalls++;
+  Blockly.Instrument.stats.getTopBlocksTime += timeDiff;
   return blocks;
 };
 
@@ -250,10 +264,31 @@ Blockly.Workspace.prototype.getTopBlocks = function(ordered) {
  * @return {!Array.<!Blockly.Block>} Array of blocks.
  */
 Blockly.Workspace.prototype.getAllBlocks = function() {
+  var start = new Date().getTime(); //*** lyn instrumentation
   var blocks = this.getTopBlocks(false);
-  for (var x = 0; x < blocks.length; x++) {
-    blocks = blocks.concat(blocks[x].getChildren());
+  Blockly.Instrument.stats.getAllBlocksAllocationCalls++;
+  if (Blockly.Instrument.useLynGetAllBlocksFix) {
+    // Lyn's version of getAllBlocks that avoids quadratic times for large numbers of blocks
+    // by mutating existing blocks array rather than creating new ones
+    for (var x = 0; x < blocks.length; x++) {
+      var children = blocks[x].getChildren();
+      blocks.push.apply(blocks, children);
+      Blockly.Instrument.stats.getAllBlocksAllocationSpace += children.length;
+    }
+  } else {
+    // Neil's version that has quadratic time for large number of blocks
+    // because each call to concat creates *new* array, and so this code does a *lot* of heap
+    // allocation when there are a large number of blocks.
+    for (var x = 0; x < blocks.length; x++) {
+    blocks.push.apply(blocks, blocks[x].getChildren());
+      Blockly.Instrument.stats.getAllBlocksAllocationCalls++;
+      Blockly.Instrument.stats.getAllBlocksAllocationSpace += blocks.length;
+    }
   }
+  var stop = new Date().getTime(); //*** lyn instrumentation
+  var timeDiff = stop - start; //*** lyn instrumentation
+  Blockly.Instrument.stats.getAllBlocksCalls++;
+  Blockly.Instrument.stats.getAllBlocksTime += timeDiff;
   return blocks;
 };
 
@@ -271,12 +306,33 @@ Blockly.Workspace.prototype.clear = function() {
  * Render all blocks in workspace.
  */
 Blockly.Workspace.prototype.render = function() {
-  var renderList = this.getAllBlocks();
-  for (var x = 0, block; block = renderList[x]; x++) {
-    if (!block.getChildren().length) {
-      block.render();
+  var start = new Date().getTime();
+  // [lyn, 04/08/14] Get both top and all blocks for stats
+  var topBlocks = this.getTopBlocks();
+  var allBlocks = this.getAllBlocks();
+  if (Blockly.Instrument.useRenderDown) {
+    for (var t = 0, topBlock; topBlock = topBlocks[t]; t++) {
+      Blockly.Instrument.timer(
+          function () { topBlock.renderDown(); },
+          function (result, timeDiffInner) {
+            Blockly.Instrument.stats.renderDownTime += timeDiffInner;
+          }
+      );
+    }
+  } else {
+    var renderList = allBlocks;
+    for (var x = 0, block; block = renderList[x]; x++) {
+      if (!block.getChildren().length) {
+        block.render();
+      }
     }
   }
+  var stop = new Date().getTime();
+  var timeDiffOuter = stop - start;
+  Blockly.Instrument.stats.blockCount = allBlocks.length;
+  Blockly.Instrument.stats.topBlockCount = topBlocks.length;
+  Blockly.Instrument.stats.workspaceRenderCalls++;
+  Blockly.Instrument.stats.workspaceRenderTime += timeDiffOuter;
 };
 
 /**
@@ -335,8 +391,9 @@ Blockly.Workspace.prototype.highlightBlock = function(id) {
   } else if (Blockly.selected) {
     Blockly.selected.unselect();
   }
-  // Restore the monitor for user activity.
-  this.traceOn(true);
+  // Restore the monitor for user activity after the selection event has fired.
+  var thisWorkspace = this;
+  setTimeout(function() {thisWorkspace.traceOn(true);}, 1);
 };
 
 /**
@@ -367,7 +424,7 @@ Blockly.Workspace.prototype.paste = function(xmlBlock) {
       this.remainingCapacity()) {
     return;
   }
-  var block = Blockly.Xml.domToBlock_(this, xmlBlock);
+  var block = Blockly.Xml.domToBlock(this, xmlBlock);
   // Move the duplicate to original position.
   var blockX = parseInt(xmlBlock.getAttribute('x'), 10);
   var blockY = parseInt(xmlBlock.getAttribute('y'), 10);
@@ -409,3 +466,6 @@ Blockly.Workspace.prototype.remainingCapacity = function() {
   }
   return this.maxBlocks - this.getAllBlocks().length;
 };
+
+// Export symbols that would otherwise be renamed by Closure compiler.
+Blockly.Workspace.prototype['clear'] = Blockly.Workspace.prototype.clear;

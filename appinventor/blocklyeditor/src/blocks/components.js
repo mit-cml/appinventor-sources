@@ -1,13 +1,19 @@
-//Copyright 2012 Massachusetts Institute of Technology. All rights reserved.
-
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
 /**
- * @fileoverview Methods for creating the different kinds of blocks for App Inventor
- * components: events, methods, property getters and setters, component
- *
+ * @license
+ * @fileoverview Component blocks for Blockly, modified for MIT App Inventor.
+ * @author mckinney@mit.edu (Andrew F. McKinney)
  * @author sharon@google.com (Sharon Perl)
  */
 
-Blockly.ComponentBlock = {};
+'use strict';
+
+goog.provide('Blockly.Blocks.components');
+goog.provide('Blockly.ComponentBlock');
+
+goog.require('Blockly.TypeBlock');
 
 /*
  * All component blocks have category=='Component'. In addition to the standard blocks fields,
@@ -34,7 +40,7 @@ Blockly.ComponentBlock.COLOUR_COMPONENT = [67, 153, 112];
  * instance name. eventType is one of the "events" objects in a typeJsonString
  * passed to Blockly.Component.add.
  */
-Blockly.Language.component_event = {
+Blockly.Blocks.component_event = {
   category : 'Component',
   blockType : 'event',
 
@@ -65,17 +71,12 @@ Blockly.Language.component_event = {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput('WHENTITLE').appendTitle('when ')
-        .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
-        .appendTitle('.' + this.eventName);
+    this.appendDummyInput('WHENTITLE').appendField('when ')
+        .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
+        .appendField('.' + this.eventName);
     this.componentDropDown.setValue(this.instanceName);
-
     this.setParameterOrientation(horizParams);
-
-    Blockly.Language.setTooltip(this, this.getEventTypeObject().description);
-
-    this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getEventTypeObject().name, 'COLLAPSED_TEXT');
-
+    this.setTooltip(this.getEventTypeObject().description);
     this.setPreviousStatement(false);
     this.setNextStatement(false);
 
@@ -96,7 +97,7 @@ Blockly.Language.component_event = {
 
       var bodyConnection = null;
       if (oldDoInput) {
-        var bodyConnection = oldDoInput.connection.targetConnection; // Remember any body connection
+        bodyConnection = oldDoInput.connection.targetConnection; // Remember any body connection
       }
       if (this.horizontalParameters) { // Replace vertical by horizontal parameters
 
@@ -111,16 +112,16 @@ Blockly.Language.component_event = {
         // .. and insert new ones:
         if (params.length > 0) {
           var paramInput = this.appendDummyInput('PARAMETERS')
-                               .appendTitle(" ")
+                               .appendField(" ")
                                .setAlign(Blockly.ALIGN_LEFT);
           for (var i = 0, param; param = params[i]; i++) {
-            paramInput.appendTitle(new Blockly.FieldParameterFlydown(param.name, false), // false means not editable
+            paramInput.appendField(new Blockly.FieldParameterFlydown(param.name, false), // false means not editable
                                    'VAR' + i)
-                      .appendTitle(" ");
+                      .appendField(" ");
           }
         }
 
-        var newDoInput = this.appendStatementInput("DO").appendTitle('do'); // Hey, I like your new do!
+        var newDoInput = this.appendStatementInput("DO").appendField('do'); // Hey, I like your new do!
         if (bodyConnection) {
           newDoInput.connection.connect(bodyConnection);
         }
@@ -138,11 +139,11 @@ Blockly.Language.component_event = {
         // Vertically aligned parameters
         for (var i = 0, param; param = params[i]; i++) {
           this.appendDummyInput('VAR' + i)
-              .appendTitle(new Blockly.FieldParameterFlydown(param.name, false),
+              .appendField(new Blockly.FieldParameterFlydown(param.name, false),
                            'VAR' + i)
               .setAlign(Blockly.ALIGN_RIGHT);
         }
-        var newDoInput = this.appendStatementInput("DO").appendTitle('do');
+        var newDoInput = this.appendStatementInput("DO").appendField('do');
         if (bodyConnection) {
           newDoInput.connection.connect(bodyConnection);
         }
@@ -158,15 +159,14 @@ Blockly.Language.component_event = {
     if (this.instanceName == oldname) {
       this.instanceName = newname;
       this.componentDropDown.setValue(this.instanceName);
-      this.prepareCollapsedText();
     }
   },
   renameVar: function(oldName, newName) {
     for (var i = 0, param = 'VAR' + i, input
-        ; input = this.getTitleValue(param)
+        ; input = this.getFieldValue(param)
         ; i++, param = 'VAR' + i) {
       if (Blockly.Names.equals(oldName, input)) {
-        this.setTitleValue(param, newName);
+        this.setFieldValue(param, newName);
       }
     }
   },
@@ -177,7 +177,7 @@ Blockly.Language.component_event = {
 
   getVars: function() {
     var varList = [];
-    for (var i = 0, input; input = this.getTitleValue('VAR' + i); i++) {
+    for (var i = 0, input; input = this.getFieldValue('VAR' + i); i++) {
       varList.push(input);
     }
     return varList;
@@ -185,7 +185,7 @@ Blockly.Language.component_event = {
 
   getVarString: function() {
     var varString = "";
-    for (var i = 0, param; param = this.getTitleValue('VAR' + i); i++) {
+    for (var i = 0, param; param = this.getFieldValue('VAR' + i); i++) {
       // [lyn, 10/13/13] get current name from block, not from underlying event (may have changed)
       if(i != 0){
         varString += " ";
@@ -236,9 +236,6 @@ Blockly.Language.component_event = {
 
     return tb;
   },
-  prepareCollapsedText : function(){
-    this.getTitle_('COLLAPSED_TEXT').setText(this.instanceName + '.' + this.getEventTypeObject().name);
-  },
   customContextMenu: function (options) {
     Blockly.FieldParameterFlydown.addHorizontalVerticalOption(this, options);
   },
@@ -251,7 +248,7 @@ Blockly.Language.component_event = {
  * Create a method block of the given type for a component with the given instance name. methodType
  * is one of the "methods" objects in a typeJsonString passed to Blockly.Component.add.
  */
-Blockly.Language.component_method = {
+Blockly.Blocks.component_method = {
   category : 'Component',
   helpUrl : function() {
       var mode = this.typeName;
@@ -293,36 +290,29 @@ Blockly.Language.component_method = {
     }
 
     if(!this.isGeneric) {
-      this.appendDummyInput().appendTitle('call ')
-        .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
-        .appendTitle('.' + this.getMethodTypeObject().name);
+      this.appendDummyInput().appendField('call ')
+        .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
+        .appendField('.' + this.getMethodTypeObject().name);
       this.componentDropDown.setValue(this.instanceName);
     } else {
-      this.appendDummyInput().appendTitle('call ' + this.typeName + '.' + this.getMethodTypeObject().name);
-      var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendTitle('for component').setAlign(Blockly.ALIGN_RIGHT);;
+      this.appendDummyInput().appendField('call ' + this.typeName + '.' + this.getMethodTypeObject().name);
+      var compInput = this.appendValueInput("COMPONENT").setCheck(this.typeName).appendField('for component').setAlign(Blockly.ALIGN_RIGHT);;
     }
-    Blockly.Language.setTooltip(this, this.getMethodTypeObject().description);
+    this.setTooltip(this.getMethodTypeObject().description);
     for (var i = 0, param; param = this.getMethodTypeObject().params[i]; i++) {
-      var newInput = this.appendValueInput("ARG" + i).appendTitle(param.name);
+      var newInput = this.appendValueInput("ARG" + i).appendField(param.name);
       newInput.setAlign(Blockly.ALIGN_RIGHT);
-      var blockyType = Blockly.Language.YailTypeToBlocklyType(param.type,Blockly.Language.INPUT)
+      var blockyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(param.type,Blockly.Blocks.Utilities.INPUT)
       newInput.connection.setCheck(blockyType);
     }
     // methodType.returnType is a Yail type
     if (this.getMethodTypeObject().returnType) {
-      this.setOutput(true, Blockly.Language.YailTypeToBlocklyType(this.getMethodTypeObject().returnType,Blockly.Language.OUTPUT));
+      this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType(this.getMethodTypeObject().returnType,Blockly.Blocks.Utilities.OUTPUT));
     } else {
       this.setPreviousStatement(true);
       this.setNextStatement(true);
     }
     this.errors = [{name:"checkIsInDefinition"}];
-
-    if(!this.isGeneric) {
-      this.appendCollapsedInput().appendTitle(this.instanceName + '.' + this.getMethodTypeObject().name, 'COLLAPSED_TEXT');
-    } else {
-      this.appendCollapsedInput().appendTitle(this.typeName + '.' + this.getMethodTypeObject().name, 'COLLAPSED_TEXT');
-    }
-
   },
   // Rename the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -331,7 +321,6 @@ Blockly.Language.component_method = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText('call ' + this.instanceName + '.' + this.methodType.name);
       this.componentDropDown.setValue(this.instanceName);
-      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.methodName);
       if (this.type.indexOf(oldname) != -1) {
         this.type = this.type.replace(oldname, newname);
       }
@@ -379,12 +368,6 @@ Blockly.Language.component_method = {
       }
     }
     return tb;
-  },
-  prepareCollapsedText : function(){
-    //If the block was copy+pasted from another block, instanaceName is set to the original block
-    if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName)
-      this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
-    this.getTitle_('COLLAPSED_TEXT').setText(this.typeName + '.' + this.methodName);
   }
 };
 
@@ -395,7 +378,7 @@ Blockly.Language.component_method = {
  * values of the attribute in the mutators.
  */
 
-Blockly.Language.component_set_get = {
+Blockly.Blocks.component_set_get = {
   category : 'Component',
   //this.blockType = 'getter',
   helpUrl : function() {
@@ -446,7 +429,7 @@ Blockly.Language.component_set_get = {
         thisBlock.propertyName = selection;
         thisBlock.setTypeCheck();
 
-        Blockly.Language.setTooltip(
+        this.setTooltip(
           thisBlock,
           thisBlock.getPropertyObject(thisBlock.propertyName).description);
       }
@@ -461,18 +444,18 @@ Blockly.Language.component_set_get = {
       if(!this.isGeneric) {
         //non-generic get
         this.appendDummyInput()
-          .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
-          .appendTitle('.')
-          .appendTitle(dropdown, "PROP");
+          .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
+          .appendField('.')
+          .appendField(dropdown, "PROP");
       } else {
         //generic get
         this.appendDummyInput()
-          .appendTitle(this.typeName + '.')
-          .appendTitle(dropdown, "PROP");
+          .appendField(this.typeName + '.')
+          .appendField(dropdown, "PROP");
 
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
-          .appendTitle('of component')
+          .appendField('of component')
           .setAlign(Blockly.ALIGN_RIGHT);
       }
     } else { //this.setOrGet == "set"
@@ -481,24 +464,24 @@ Blockly.Language.component_set_get = {
       this.setNextStatement(true);
       if(!this.isGeneric) {
         this.appendValueInput("VALUE")
-          .appendTitle('set ')
-          .appendTitle(this.componentDropDown, "COMPONENT_SELECTOR")
-          .appendTitle('.')
-          .appendTitle(dropdown, "PROP")
-          .appendTitle(' to');
+          .appendField('set ')
+          .appendField(this.componentDropDown, "COMPONENT_SELECTOR")
+          .appendField('.')
+          .appendField(dropdown, "PROP")
+          .appendField(' to');
       } else {
         //generic set
         this.appendDummyInput()
-          .appendTitle('set ' +  this.typeName + '.')
-          .appendTitle(dropdown, "PROP");
+          .appendField('set ' +  this.typeName + '.')
+          .appendField(dropdown, "PROP");
 
         this.appendValueInput("COMPONENT")
           .setCheck(this.typeName)
-          .appendTitle('of component')
+          .appendField('of component')
           .setAlign(Blockly.ALIGN_RIGHT);
 
         this.appendValueInput("VALUE")
-          .appendTitle('to')
+          .appendField('to')
           .setAlign(Blockly.ALIGN_RIGHT);
       }
     }
@@ -508,27 +491,22 @@ Blockly.Language.component_set_get = {
       this.componentDropDown.setValue(this.instanceName);
     }
     //set value of property drop down
-    this.setTitleValue(this.propertyName,"PROP");
+    this.setFieldValue(this.propertyName,"PROP");
 
     //add appropriate type checking to block
     this.setTypeCheck();
 
-    Blockly.Language.setTooltip(
-        this,
-        this.getPropertyObject(this.propertyName).description);
+    this.setTooltip(this.getPropertyObject(this.propertyName).description);
 
     this.errors = [{name:"checkIsInDefinition"}];
-
-    this.appendCollapsedInput().appendTitle( (this.isGeneric ? this.typeName : this.instanceName) + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
-
     //this.typeblock = this.createTypeBlock();
   },
 
   setTypeCheck : function() {
 
-    var inputOrOutput = Blockly.Language.OUTPUT;
+    var inputOrOutput = Blockly.Blocks.Utilities.OUTPUT;
     if(this.setOrGet == "set") {
-      inputOrOutput = Blockly.Language.INPUT;
+      inputOrOutput = Blockly.Blocks.Utilities.INPUT;
     }
 
     var newType = this.getPropertyBlocklyType(this.propertyName,inputOrOutput)
@@ -543,7 +521,7 @@ Blockly.Language.component_set_get = {
 
   getPropertyBlocklyType : function(propertyName,inputOrOutput) {
     var yailType = this.getPropertyObject(propertyName).type;
-    var blocklyType = Blockly.Language.YailTypeToBlocklyType(yailType,inputOrOutput);
+    var blocklyType = Blockly.Blocks.Utilities.YailTypeToBlocklyType(yailType,inputOrOutput);
     return blocklyType;
   },
   getPropertyDropDownList : function() {
@@ -570,7 +548,6 @@ Blockly.Language.component_set_get = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName + '.');
       this.componentDropDown.setValue(this.instanceName);
-      this.getTitle_('COLLAPSED_TEXT').setText(newname + '.' + this.getTitleValue('PROP'));
       if (this.type.indexOf(oldname) != -1) {
         this.type = this.type.replace(oldname, newname);
       }
@@ -642,13 +619,6 @@ Blockly.Language.component_set_get = {
     }
 
     return tb;
-  },
-  prepareCollapsedText : function(){
-    //If the block was copy+pasted from another block, instanaceName is set to the original block
-    if (this.getTitleValue('COMPONENT_SELECTOR') !== this.instanceName) {
-      this.instanceName = this.getTitleValue('COMPONENT_SELECTOR');
-    }
-    this.setTitleValue( (this.isGeneric ? this.typeName : this.instanceName) + '.' + this.getTitleValue('PROP'), 'COLLAPSED_TEXT');
   }
 };
 
@@ -656,7 +626,7 @@ Blockly.Language.component_set_get = {
  * Create a component (object) block for a component with the given
  * instance name.
  */
-Blockly.Language.component_component_block = {
+Blockly.Blocks.component_component_block = {
   category : 'Component',
 
   helpUrl : function() {
@@ -680,12 +650,10 @@ Blockly.Language.component_component_block = {
     this.componentDropDown = Blockly.ComponentBlock.createComponentDropDown(this);
     this.componentDropDown.setValue(this.instanceName);
 
-    this.appendDummyInput().appendTitle(this.componentDropDown, "COMPONENT_SELECTOR");
+    this.appendDummyInput().appendField(this.componentDropDown, "COMPONENT_SELECTOR");
     //this.componentDropDown.setValue(this.instanceName);
     this.setOutput(true, [this.typeName,"COMPONENT"]);
     this.errors = [{name:"checkIsInDefinition"}];
-
-    this.appendCollapsedInput().appendTitle(this.instanceName, 'COLLAPSED_TEXT');
   },
   // Renames the block's instanceName, type, and reset its title
   rename : function(oldname, newname) {
@@ -694,7 +662,6 @@ Blockly.Language.component_component_block = {
       //var title = this.inputList[0].titleRow[0];
       //title.setText(this.instanceName);
       this.componentDropDown.setValue(this.instanceName);
-      this.setTitleValue(this.instanceName, 'COLLAPSED_TEXT');
       if (this.type.indexOf(oldname) != -1) {
         this.type = this.type.replace(oldname, newname);
       }
@@ -716,13 +683,8 @@ Blockly.Language.component_component_block = {
           instance_name: instanceNames[i]
         }
       });
-
     }
-
     return tb;
-  },
-  prepareCollapsedText : function(){
-    this.setTitleValue(this.instanceName, 'COLLAPSED_TEXT');
   }
 };
 
@@ -740,215 +702,215 @@ Blockly.ComponentBlock.createComponentDropDown = function(block){
 }
 
 Blockly.ComponentBlock.HELPURLS = {
-  "Button": Blockly.LANG_COMPONENT_BLOCK_BUTTON_HELPURL,
-  "Canvas": Blockly.LANG_COMPONENT_BLOCK_CANVAS_HELPURL,
-  "CheckBox": Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL,
-  "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_HELPURL,
-  "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_HELPURL,
-  "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_HELPURL,
-  "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL,
-  "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_HELPURL,
-  "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_HELPURL,
-  "TextBox": Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL,
-  "TinyDB": Blockly.LANG_COMPONENT_BLOCK_TINYDB_HELPURL,
-  "Camcorder": Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL,
-  "Camera": Blockly.LANG_COMPONENT_BLOCK_CAMERA_HELPURL,
-  "ImagePicker": Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL,
-  "Player": Blockly.LANG_COMPONENT_BLOCK_PLAYER_HELPURL,
-  "Sound": Blockly.LANG_COMPONENT_BLOCK_SOUND_HELPURL,
-  "VideoPlayer": Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL,
-  "Ball": Blockly.LANG_COMPONENT_BLOCK_BALL_HELPURL,
-  "ImageSprite": Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_HELPURL,
-  "ContactPicker": Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
-  "EmailPicker": Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL,
-  "PhoneCall": Blockly.LANG_COMPONENT_BLOCK_PHONECALL_HELPURL,
-  "PhoneNumberPicker": Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_HELPURL,
-  "Texting": Blockly.LANG_COMPONENT_BLOCK_TEXTING_HELPURL,
-  "Twitter": Blockly.LANG_COMPONENT_BLOCK_TWITTER_HELPURL,
-  "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL,
-  "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL,
-  "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL,
-  "HorizontalArrangment": Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL,
-  "TableArrangement": Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL,
-  "VerticalArrangement": Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL,
-  "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_HELPURL,
-  "NxtDirectCommands": Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_HELPURL,
-  "NxtDrive": Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_HELPURL,
-  "NxtLightSensor": Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_HELPURL,
-  "NxtSoundSensor": Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_HELPURL,
-  "NxtTouchSensor": Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_HELPURL,
-  "NxtUltrasonicSensor": Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_HELPURL,
-  "ActivityStarter": Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL,
-  "BarcodeScanner": Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL,
-  "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL,
-  "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL,
-  "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL,
-  "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL,
-  "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL,
-  "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_HELPURL,
-  "FusiontablesControl": Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL,
-  "GameClient": Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL,
-  "SoundRecorder": Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL,
-  "Voting": Blockly.LANG_COMPONENT_BLOCK_VOTING_HELPURL,
-  "WebViewer": Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL
+  "Button": Blockly.Msg.LANG_COMPONENT_BLOCK_BUTTON_HELPURL,
+  "Canvas": Blockly.Msg.LANG_COMPONENT_BLOCK_CANVAS_HELPURL,
+  "CheckBox": Blockly.Msg.LANG_COMPONENT_BLOCK_CHECKBOX_HELPURL,
+  "Clock": Blockly.Msg.LANG_COMPONENT_BLOCK_CLOCK_HELPURL,
+  "Image": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGE_HELPURL,
+  "Label": Blockly.Msg.LANG_COMPONENT_BLOCK_LABEL_HELPURL,
+  "ListPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_HELPURL,
+  "PasswordTextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_HELPURL,
+  "Screen": Blockly.Msg.LANG_COMPONENT_BLOCK_SCREEN_HELPURL,
+  "Slider": Blockly.Msg.LANG_COMPONENT_BLOCK_SLIDER_HELPURL,
+  "TextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTBOX_HELPURL,
+  "TinyDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYDB_HELPURL,
+  "Camcorder": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMCORDER_HELPURL,
+  "Camera": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMERA_HELPURL,
+  "ImagePicker": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGEPICKER_HELPURL,
+  "Player": Blockly.Msg.LANG_COMPONENT_BLOCK_PLAYER_HELPURL,
+  "Sound": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUND_HELPURL,
+  "VideoPlayer": Blockly.Msg.LANG_COMPONENT_BLOCK_VIDEOPLAYER_HELPURL,
+  "Ball": Blockly.Msg.LANG_COMPONENT_BLOCK_BALL_HELPURL,
+  "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_HELPURL,
+  "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_HELPURL,
+  "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_HELPURL,
+  "PhoneCall": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONECALL_HELPURL,
+  "PhoneNumberPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_HELPURL,
+  "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_HELPURL,
+  "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_HELPURL,
+  "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_HELPURL,
+  "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_HELPURL,
+  "HorizontalArrangment": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_HELPURL,
+  "TableArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_TABLEARRANGE_HELPURL,
+  "VerticalArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_VERTARRANGE_HELPURL,
+  "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_HELPURL,
+  "NxtDirectCommands": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDIRECT_HELPURL,
+  "NxtDrive": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDRIVE_HELPURL,
+  "NxtLightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTLIGHT_HELPURL,
+  "NxtSoundSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTSOUND_HELPURL,
+  "NxtTouchSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTTOUCH_HELPURL,
+  "NxtUltrasonicSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTULTRASONIC_HELPURL,
+  "ActivityStarter": Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_HELPURL,
+  "BarcodeScanner": Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_HELPURL,
+  "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_HELPURL,
+  "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_HELPURL,
+  "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_HELPURL,
+  "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_HELPURL,
+  "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_HELPURL,
+  "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_HELPURL,
+  "Web": Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_HELPURL,
+  "FusiontablesControl": Blockly.Msg.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_HELPURL,
+  "GameClient": Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_HELPURL,
+  "SoundRecorder": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUNDRECORDER_HELPURL,
+  "Voting": Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_HELPURL,
+  "WebViewer": Blockly.Msg.LANG_COMPONENT_BLOCK_WEBVIEWER_HELPURL
 };
 
 Blockly.ComponentBlock.PROPERTIES_HELPURLS = {
-  "Button": Blockly.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL,
-  "Canvas": Blockly.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL,
-  "CheckBox": Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL,
-  "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL,
-  "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL,
-  "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL,
-  "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL,
-  "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL,
-  "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL,
-  "TextBox": Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL,
-  "TinyDB": Blockly.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL,
-  "Camcorder": Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL,
-  "Camera": Blockly.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL,
-  "ImagePicker": Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL,
-  "Player": Blockly.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL,
-  "Sound": Blockly.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL,
-  "VideoPlayer": Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL,
-  "Ball": Blockly.LANG_COMPONENT_BLOCK_BALL_PROPERTIES_HELPURL,
-  "ImageSprite": Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL,
-  "ContactPicker": Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL,
-  "EmailPicker": Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_PROPERTIES_HELPURL,
-  "PhoneCall": Blockly.LANG_COMPONENT_BLOCK_PHONECALL_PROPERTIES_HELPURL,
-  "PhoneNumberPicker": Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_PROPERTIES_HELPURL,
-  "Texting": Blockly.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL,
-  "Twitter": Blockly.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL,
-  "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL,
-  "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL,
-  "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL,
-  "HorizontalArrangment": Blockly.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL,
-  "TableArrangement": Blockly.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL,
-  "VerticalArrangement": Blockly.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL,
-  "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_PROPERTIES_HELPURL,
-  "NxtDirectCommands": Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_PROPERTIES_HELPURL,
-  "NxtDrive": Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_PROPERTIES_HELPURL,
-  "NxtLightSensor": Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_PROPERTIES_HELPURL,
-  "NxtSoundSensor": Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_PROPERTIES_HELPURL,
-  "NxtTouchSensor": Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_PROPERTIES_HELPURL,
-  "NxtUltrasonicSensor": Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_PROPERTIES_HELPURL,
-  "ActivityStarter": Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL,
-  "BarcodeScanner": Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL,
-  "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL,
-  "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL,
-  "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL,
-  "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL,
-  "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL,
-  "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL,
-  "FusiontablesControl": Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL,
-  "GameClient": Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL,
-  "SoundRecorder": Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL,
-  "Voting": Blockly.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL,
-  "WebViewer": Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL
+  "Button": Blockly.Msg.LANG_COMPONENT_BLOCK_BUTTON_PROPERTIES_HELPURL,
+  "Canvas": Blockly.Msg.LANG_COMPONENT_BLOCK_CANVAS_PROPERTIES_HELPURL,
+  "CheckBox": Blockly.Msg.LANG_COMPONENT_BLOCK_CHECKBOX_PROPERTIES_HELPURL,
+  "Clock": Blockly.Msg.LANG_COMPONENT_BLOCK_CLOCK_PROPERTIES_HELPURL,
+  "Image": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGE_PROPERTIES_HELPURL,
+  "Label": Blockly.Msg.LANG_COMPONENT_BLOCK_LABEL_PROPERTIES_HELPURL,
+  "ListPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_PROPERTIES_HELPURL,
+  "PasswordTextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_PROPERTIES_HELPURL,
+  "Screen": Blockly.Msg.LANG_COMPONENT_BLOCK_SCREEN_PROPERTIES_HELPURL,
+  "Slider": Blockly.Msg.LANG_COMPONENT_BLOCK_SLIDER_PROPERTIES_HELPURL,
+  "TextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTBOX_PROPERTIES_HELPURL,
+  "TinyDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYDB_PROPERTIES_HELPURL,
+  "Camcorder": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMCORDER_PROPERTIES_HELPURL,
+  "Camera": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMERA_PROPERTIES_HELPURL,
+  "ImagePicker": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGEPICKER_PROPERTIES_HELPURL,
+  "Player": Blockly.Msg.LANG_COMPONENT_BLOCK_PLAYER_PROPERTIES_HELPURL,
+  "Sound": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUND_PROPERTIES_HELPURL,
+  "VideoPlayer": Blockly.Msg.LANG_COMPONENT_BLOCK_VIDEOPLAYER_PROPERTIES_HELPURL,
+  "Ball": Blockly.Msg.LANG_COMPONENT_BLOCK_BALL_PROPERTIES_HELPURL,
+  "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_PROPERTIES_HELPURL,
+  "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_PROPERTIES_HELPURL,
+  "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_PROPERTIES_HELPURL,
+  "PhoneCall": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONECALL_PROPERTIES_HELPURL,
+  "PhoneNumberPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_PROPERTIES_HELPURL,
+  "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_PROPERTIES_HELPURL,
+  "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_PROPERTIES_HELPURL,
+  "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_PROPERTIES_HELPURL,
+  "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_PROPERTIES_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_PROPERTIES_HELPURL,
+  "HorizontalArrangment": Blockly.Msg.LANG_COMPONENT_BLOCK_HORIZARRANGE_PROPERTIES_HELPURL,
+  "TableArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_TABLEARRANGE_PROPERTIES_HELPURL,
+  "VerticalArrangement": Blockly.Msg.LANG_COMPONENT_BLOCK_VERTARRANGE_PROPERTIES_HELPURL,
+  "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_PROPERTIES_HELPURL,
+  "NxtDirectCommands": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDIRECT_PROPERTIES_HELPURL,
+  "NxtDrive": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDRIVE_PROPERTIES_HELPURL,
+  "NxtLightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTLIGHT_PROPERTIES_HELPURL,
+  "NxtSoundSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTSOUND_PROPERTIES_HELPURL,
+  "NxtTouchSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTTOUCH_PROPERTIES_HELPURL,
+  "NxtUltrasonicSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTULTRASONIC_PROPERTIES_HELPURL,
+  "ActivityStarter": Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_PROPERTIES_HELPURL,
+  "BarcodeScanner": Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_PROPERTIES_HELPURL,
+  "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_PROPERTIES_HELPURL,
+  "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_PROPERTIES_HELPURL,
+  "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_PROPERTIES_HELPURL,
+  "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_PROPERTIES_HELPURL,
+  "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_PROPERTIES_HELPURL,
+  "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_PROPERTIES_HELPURL,
+  "Web": Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_PROPERTIES_HELPURL,
+  "FusiontablesControl": Blockly.Msg.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_PROPERTIES_HELPURL,
+  "GameClient": Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_PROPERTIES_HELPURL,
+  "SoundRecorder": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUNDRECORDER_PROPERTIES_HELPURL,
+  "Voting": Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_PROPERTIES_HELPURL,
+  "WebViewer": Blockly.Msg.LANG_COMPONENT_BLOCK_WEBVIEWER_PROPERTIES_HELPURL
 };
 
 Blockly.ComponentBlock.EVENTS_HELPURLS = {
-  "Button": Blockly.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL,
-  "Canvas": Blockly.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL,
-  "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL,
-  "CheckBox": Blockly.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL,
-  "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL,
-  "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL,
-  "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL,
-  "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL,
-  "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL,
-  "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL,
-  "TextBox": Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL,
-  "TinyDB": Blockly.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL,
-  "Camcorder": Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL,
-  "Camera": Blockly.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL,
-  "ImagePicker": Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL,
-  "Player": Blockly.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL,
-  "Sound": Blockly.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL,
-  "VideoPlayer": Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL,
-  "Ball": Blockly.LANG_COMPONENT_BLOCK_BALL_EVENTS_HELPURL,
-  "ImageSprite": Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL,
-  "ContactPicker": Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL,
-  "EmailPicker": Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_EVENTS_HELPURL,
-  "PhoneCall": Blockly.LANG_COMPONENT_BLOCK_PHONECALL_EVENTS_HELPURL,
-  "PhoneNumberPicker": Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_EVENTS_HELPURL,
-  "Texting": Blockly.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL,
-  "Twitter": Blockly.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL,
-  "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL,
-  "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL,
-  "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
-  "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL,
-  "NxtLightSensor": Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL,
-  "NxtSoundSensor": Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL,
-  "NxtTouchSensor": Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_EVENTS_HELPURL,
-  "NxtUltrasonicSensor": Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_EVENTS_HELPURL,
-  "ActivityStarter": Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL,
-  "BarcodeScanner": Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL,
-  "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL,
-  "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL,
-  "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL,
-  "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL,
-  "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL,
-  "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL,
-  "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL,
-  "FusiontablesControl": Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL,
-  "GameClient": Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL,
-  "SoundRecorder": Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL,
-  "Voting": Blockly.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL,
-  "WebViewer": Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL
+  "Button": Blockly.Msg.LANG_COMPONENT_BLOCK_BUTTON_EVENTS_HELPURL,
+  "Canvas": Blockly.Msg.LANG_COMPONENT_BLOCK_CANVAS_EVENTS_HELPURL,
+  "Clock": Blockly.Msg.LANG_COMPONENT_BLOCK_CLOCK_EVENTS_HELPURL,
+  "CheckBox": Blockly.Msg.LANG_COMPONENT_BLOCK_CHECKBOX_EVENTS_HELPURL,
+  "Image": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGE_EVENTS_HELPURL,
+  "Label": Blockly.Msg.LANG_COMPONENT_BLOCK_LABEL_EVENTS_HELPURL,
+  "ListPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_EVENTS_HELPURL,
+  "PasswordTextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_EVENTS_HELPURL,
+  "Screen": Blockly.Msg.LANG_COMPONENT_BLOCK_SCREEN_EVENTS_HELPURL,
+  "Slider": Blockly.Msg.LANG_COMPONENT_BLOCK_SLIDER_EVENTS_HELPURL,
+  "TextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTBOX_EVENTS_HELPURL,
+  "TinyDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYDB_EVENTS_HELPURL,
+  "Camcorder": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMCORDER_EVENTS_HELPURL,
+  "Camera": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMERA_EVENTS_HELPURL,
+  "ImagePicker": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGEPICKER_EVENTS_HELPURL,
+  "Player": Blockly.Msg.LANG_COMPONENT_BLOCK_PLAYER_EVENTS_HELPURL,
+  "Sound": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUND_EVENTS_HELPURL,
+  "VideoPlayer": Blockly.Msg.LANG_COMPONENT_BLOCK_VIDEOPLAYER_EVENTS_HELPURL,
+  "Ball": Blockly.Msg.LANG_COMPONENT_BLOCK_BALL_EVENTS_HELPURL,
+  "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_EVENTS_HELPURL,
+  "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_EVENTS_HELPURL,
+  "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_EVENTS_HELPURL,
+  "PhoneCall": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONECALL_EVENTS_HELPURL,
+  "PhoneNumberPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_EVENTS_HELPURL,
+  "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_EVENTS_HELPURL,
+  "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_EVENTS_HELPURL,
+  "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_EVENTS_HELPURL,
+  "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_EVENTS_HELPURL,
+  "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_EVENTS_HELPURL,
+  "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_EVENTS_HELPURL,
+  "NxtLightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTLIGHT_EVENTS_HELPURL,
+  "NxtSoundSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTSOUND_EVENTS_HELPURL,
+  "NxtTouchSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTTOUCH_EVENTS_HELPURL,
+  "NxtUltrasonicSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTULTRASONIC_EVENTS_HELPURL,
+  "ActivityStarter": Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_EVENTS_HELPURL,
+  "BarcodeScanner": Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_EVENTS_HELPURL,
+  "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_EVENTS_HELPURL,
+  "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_EVENTS_HELPURL,
+  "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_EVENTS_HELPURL,
+  "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_EVENTS_HELPURL,
+  "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_EVENTS_HELPURL,
+  "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_EVENTS_HELPURL,
+  "Web": Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_EVENTS_HELPURL,
+  "FusiontablesControl": Blockly.Msg.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_EVENTS_HELPURL,
+  "GameClient": Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_EVENTS_HELPURL,
+  "SoundRecorder": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUNDRECORDER_EVENTS_HELPURL,
+  "Voting": Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_EVENTS_HELPURL,
+  "WebViewer": Blockly.Msg.LANG_COMPONENT_BLOCK_WEBVIEWER_EVENTS_HELPURL
 };
 
 Blockly.ComponentBlock.METHODS_HELPURLS = {
-   "Canvas": Blockly.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL,
-   "Clock": Blockly.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL,
-   "Image": Blockly.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL,
-   "Label": Blockly.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL,
-   "ListPicker": Blockly.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL,
-   "PasswordTextBox": Blockly.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_METHODS_HELPURL,
-   "Screen": Blockly.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL,
-   "Slider": Blockly.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL,
-   "TextBox": Blockly.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL,
-   "TinyDB": Blockly.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL,
-   "Camcorder": Blockly.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL,
-   "Camera": Blockly.LANG_COMPONENT_BLOCK_CAMERA_METHODS_HELPURL,
-   "ImagePicker": Blockly.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL,
-   "Player": Blockly.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL,
-   "Sound": Blockly.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL,
-   "VideoPlayer": Blockly.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL,
-   "Ball": Blockly.LANG_COMPONENT_BLOCK_BALL_METHODS_HELPURL,
-   "ImageSprite": Blockly.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL,
-   "ContactPicker": Blockly.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL,
-   "EmailPicker": Blockly.LANG_COMPONENT_BLOCK_EMAILPICKER_METHODS_HELPURL,
-   "PhoneCall": Blockly.LANG_COMPONENT_BLOCK_PHONECALL_METHODS_HELPURL,
-   "PhoneNumberPicker": Blockly.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_METHODS_HELPURL,
-   "Texting": Blockly.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL,
-   "Twitter": Blockly.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL,
-   "AccelerometerSensor": Blockly.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL,
-   "LocationSensor": Blockly.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL,
-   "OrientationSensor": Blockly.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
-   "NxtColorSensor": Blockly.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL,
-   "NxtDirectCommands": Blockly.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL,
-   "NxtDrive": Blockly.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL,
-   "NxtLightSensor": Blockly.LANG_COMPONENT_BLOCK_NXTLIGHT_METHODS_HELPURL,
-   "NxtSoundSensor": Blockly.LANG_COMPONENT_BLOCK_NXTSOUND_METHODS_HELPURL,
-   "NxtTouchSensor": Blockly.LANG_COMPONENT_BLOCK_NXTTOUCH_METHODS_HELPURL,
-   "NxtUltrasonicSensor": Blockly.LANG_COMPONENT_BLOCK_NXTULTRASONIC_METHODS_HELPURL,
-   "ActivityStarter": Blockly.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL,
-   "BarcodeScanner": Blockly.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL,
-   "BluetoothClient": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL,
-   "BluetoothServer": Blockly.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL,
-   "Notifier": Blockly.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL,
-   "SpeechRecognizer": Blockly.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL,
-   "TextToSpeech": Blockly.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL,
-   "TinyWebDB": Blockly.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL,
-   "Web": Blockly.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL,
-   "FusiontablesControl": Blockly.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL,
-   "GameClient": Blockly.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL,
-   "SoundRecorder": Blockly.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL,
-   "Voting": Blockly.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL,
-   "WebViewer": Blockly.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL
+   "Canvas": Blockly.Msg.LANG_COMPONENT_BLOCK_CANVAS_METHODS_HELPURL,
+   "Clock": Blockly.Msg.LANG_COMPONENT_BLOCK_CLOCK_METHODS_HELPURL,
+   "Image": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGE_METHODS_HELPURL,
+   "Label": Blockly.Msg.LANG_COMPONENT_BLOCK_LABEL_METHODS_HELPURL,
+   "ListPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_LISTPICKER_METHODS_HELPURL,
+   "PasswordTextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_PASSWORDTEXTBOX_METHODS_HELPURL,
+   "Screen": Blockly.Msg.LANG_COMPONENT_BLOCK_SCREEN_METHODS_HELPURL,
+   "Slider": Blockly.Msg.LANG_COMPONENT_BLOCK_SLIDER_METHODS_HELPURL,
+   "TextBox": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTBOX_METHODS_HELPURL,
+   "TinyDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYDB_METHODS_HELPURL,
+   "Camcorder": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMCORDER_METHODS_HELPURL,
+   "Camera": Blockly.Msg.LANG_COMPONENT_BLOCK_CAMERA_METHODS_HELPURL,
+   "ImagePicker": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGEPICKER_METHODS_HELPURL,
+   "Player": Blockly.Msg.LANG_COMPONENT_BLOCK_PLAYER_METHODS_HELPURL,
+   "Sound": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUND_METHODS_HELPURL,
+   "VideoPlayer": Blockly.Msg.LANG_COMPONENT_BLOCK_VIDEOPLAYER_METHODS_HELPURL,
+   "Ball": Blockly.Msg.LANG_COMPONENT_BLOCK_BALL_METHODS_HELPURL,
+   "ImageSprite": Blockly.Msg.LANG_COMPONENT_BLOCK_IMAGESPRITE_METHODS_HELPURL,
+   "ContactPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_CONTACTPICKER_METHODS_HELPURL,
+   "EmailPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_EMAILPICKER_METHODS_HELPURL,
+   "PhoneCall": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONECALL_METHODS_HELPURL,
+   "PhoneNumberPicker": Blockly.Msg.LANG_COMPONENT_BLOCK_PHONENUMBERPICKER_METHODS_HELPURL,
+   "Texting": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTING_METHODS_HELPURL,
+   "Twitter": Blockly.Msg.LANG_COMPONENT_BLOCK_TWITTER_METHODS_HELPURL,
+   "AccelerometerSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ACCELEROMETERSENSOR_METHODS_HELPURL,
+   "LocationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_LOCATIONSENSOR_METHODS_HELPURL,
+   "OrientationSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_ORIENTATIONSENSOR_METHODS_HELPURL,
+   "NxtColorSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTCOLOR_METHODS_HELPURL,
+   "NxtDirectCommands": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDIRECT_METHODS_HELPURL,
+   "NxtDrive": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTDRIVE_METHODS_HELPURL,
+   "NxtLightSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTLIGHT_METHODS_HELPURL,
+   "NxtSoundSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTSOUND_METHODS_HELPURL,
+   "NxtTouchSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTTOUCH_METHODS_HELPURL,
+   "NxtUltrasonicSensor": Blockly.Msg.LANG_COMPONENT_BLOCK_NXTULTRASONIC_METHODS_HELPURL,
+   "ActivityStarter": Blockly.Msg.LANG_COMPONENT_BLOCK_ACTIVITYSTARTER_METHODS_HELPURL,
+   "BarcodeScanner": Blockly.Msg.LANG_COMPONENT_BLOCK_BARCODESCANNER_METHODS_HELPURL,
+   "BluetoothClient": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHCLIENT_METHODS_HELPURL,
+   "BluetoothServer": Blockly.Msg.LANG_COMPONENT_BLOCK_BLUETOOTHSERVER_METHODS_HELPURL,
+   "Notifier": Blockly.Msg.LANG_COMPONENT_BLOCK_NOTIFIER_METHODS_HELPURL,
+   "SpeechRecognizer": Blockly.Msg.LANG_COMPONENT_BLOCK_SPEECHRECOGNIZER_METHODS_HELPURL,
+   "TextToSpeech": Blockly.Msg.LANG_COMPONENT_BLOCK_TEXTTOSPEECH_METHODS_HELPURL,
+   "TinyWebDB": Blockly.Msg.LANG_COMPONENT_BLOCK_TINYWEBDB_METHODS_HELPURL,
+   "Web": Blockly.Msg.LANG_COMPONENT_BLOCK_WEB_METHODS_HELPURL,
+   "FusiontablesControl": Blockly.Msg.LANG_COMPONENT_BLOCK_FUSIONTABLESCONTROL_METHODS_HELPURL,
+   "GameClient": Blockly.Msg.LANG_COMPONENT_BLOCK_GAMECLIENT_METHODS_HELPURL,
+   "SoundRecorder": Blockly.Msg.LANG_COMPONENT_BLOCK_SOUNDRECORDER_METHODS_HELPURL,
+   "Voting": Blockly.Msg.LANG_COMPONENT_BLOCK_VOTING_METHODS_HELPURL,
+   "WebViewer": Blockly.Msg.LANG_COMPONENT_BLOCK_WEBVIEWER_METHODS_HELPURL
 };

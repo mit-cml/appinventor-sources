@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2012 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,6 +81,20 @@ Blockly.Mutator.prototype.createIcon = function() {
        'x': Blockly.Icon.RADIUS,
        'y': 2 * Blockly.Icon.RADIUS - 4}, this.iconGroup_);
   this.iconMark_.appendChild(document.createTextNode('\u2699'));
+  //this.iconMark_.appendChild(document.createTextNode('\u2605'));
+};
+
+/**
+ * Clicking on the icon toggles if the mutator bubble is visible.
+ * Disable if block is uneditable.
+ * @param {!Event} e Mouse click event.
+ * @private
+ * @override
+ */
+Blockly.Mutator.prototype.iconClick_ = function(e) {
+  if (this.block_.isEditable()) {
+    Blockly.Icon.prototype.iconClick_.call(this, e);
+  }
 };
 
 /**
@@ -98,10 +113,9 @@ Blockly.Mutator.prototype.createEditor_ = function() {
   this.svgDialog_ = Blockly.createSvgElement('svg',
       {'x': Blockly.Bubble.BORDER_WIDTH, 'y': Blockly.Bubble.BORDER_WIDTH},
       null);
-  this.svgBackground_ = Blockly.createSvgElement('rect',
+  Blockly.createSvgElement('rect',
       {'class': 'blocklyMutatorBackground',
        'height': '100%', 'width': '100%'}, this.svgDialog_);
-
   var mutator = this;
   this.workspace_ = new Blockly.Workspace(
       function() {return mutator.getFlyoutMetrics_();}, null);
@@ -121,20 +135,33 @@ Blockly.Mutator.prototype.createEditor_ = function() {
 };
 
 /**
+ * Add or remove the UI indicating if this icon may be clicked or not.
+ */
+Blockly.Mutator.prototype.updateEditable = function() {
+  if (this.block_.isEditable()) {
+    // Default behaviour for an icon.
+    Blockly.Icon.prototype.updateEditable.call(this);
+  } else {
+    // Close any mutator bubble.  Icon is not clickable.
+    this.setVisible(false);
+    Blockly.removeClass_(/** @type {!Element} */ (this.iconGroup_),
+                         'blocklyIconGroup');
+  }
+};
+
+/**
  * Callback function triggered when the bubble has resized.
  * Resize the workspace accordingly.
  * @private
  */
 Blockly.Mutator.prototype.resizeBubble_ = function() {
   var doubleBorderWidth = 2 * Blockly.Bubble.BORDER_WIDTH;
-
   try {
     var workspaceSize = this.workspace_.getCanvas().getBBox();
   } catch (e) {
     // Firefox has trouble with hidden elements (Bug 528969).
     return;
   }
-
   var flyoutMetrics = this.flyout_.getMetrics_();
   var width;
   if (Blockly.RTL) {
@@ -177,7 +204,7 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
   if (visible) {
     // Create the bubble.
     this.bubble_ = new Blockly.Bubble(this.block_.workspace,
-        this.createEditor_(), this.block_.svg_.svgGroup_,
+        this.createEditor_(), this.block_.svg_.svgPath_,
         this.iconX_, this.iconY_, null, null);
     var thisObj = this;
     this.flyout_.init(this.workspace_, false);
@@ -213,7 +240,6 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
   } else {
     // Dispose of the bubble.
     this.svgDialog_ = null;
-    this.svgBackground_ = null;
     this.flyout_.dispose();
     this.flyout_ = null;
     this.workspace_.dispose();
@@ -237,9 +263,6 @@ Blockly.Mutator.prototype.setVisible = function(visible) {
  * @private
  */
 Blockly.Mutator.prototype.workspaceChanged_ = function() {
-  if(this.workspace_==null) {
-    return null;
-  }
   if (Blockly.Block.dragMode_ == 0) {
     var blocks = this.workspace_.getTopBlocks(false);
     var MARGIN = 20;
@@ -272,11 +295,6 @@ Blockly.Mutator.prototype.workspaceChanged_ = function() {
     this.resizeBubble_();
     // The source block may have changed, notify its workspace.
     this.block_.workspace.fireChangeEvent();
-  }
-  
-  if(this.shouldHide){
-    this.setVisible(false);
-    this.shouldHide = false;
   }
 };
 

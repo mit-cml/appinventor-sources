@@ -42,7 +42,7 @@ page.open('blocklyeditor/src/demos/yail/yail_testing_index.html', function(statu
     //block, and that is not supported outside the browser. So these tests are limited to creating
     //generic blocks with no arguments.
     var yailForBlock = Blockly.Yail.lists_create_with.call(
-        new Blockly.Block(Blockly.mainWorkspace, 'lists_create_with'));
+        new Blockly.Block.obtain(Blockly.mainWorkspace, 'lists_create_with'));
 
     if (yailForBlock.length !== 2)
       return false;

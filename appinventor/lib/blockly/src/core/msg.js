@@ -1,8 +1,9 @@
 /**
+ * @license
  * Visual Blocks Editor
  *
  * Copyright 2013 Google Inc.
- * http://blockly.googlecode.com/
+ * https://blockly.googlecode.com/
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +25,7 @@
 'use strict';
 
 /**
- * Name space for the Language singleton.
- * Language gets populated in the language files.
+ * Name space for the Msg singleton.
+ * Msg gets populated in the message files.
  */
-goog.provide('Blockly.Language');
+goog.provide('Blockly.Msg');

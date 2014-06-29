@@ -1,3 +1,18 @@
+// -*- mode: java; c-basic-offset: 2; -*-
+// Copyright 2013-2014 MIT, All rights reserved
+// Released under the MIT License https://raw.github.com/mit-cml/app-inventor/master/mitlicense.txt
+/**
+ * @license
+ * @fileoverview Visual blocks editor for App Inventor
+ * FieldTextBlockInput is a subclass of FieldTextInput
+ *
+ * @author mckinney@mit.edu (Andrew F. McKinney)
+ */
+
+'use strict';
+
+goog.provide('Blockly.FieldTextBlockInput');
+
 Blockly.FieldTextBlockInput = function(text, opt_changeHandler) {
  // Call parent's constructor.
   Blockly.FieldTextInput.call(this, text);
