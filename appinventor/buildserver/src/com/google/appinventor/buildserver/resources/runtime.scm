@@ -2304,6 +2304,10 @@ list, use the make-yail-list constructor with no arguments.
     (com.google.appinventor.components.runtime.EventDispatcher:unregisterAllEventsForDelegation)
     (*:clear *this-form*)))
 
+;; Used by the repl to set the name of the form
+(define (set-form-name form-name)
+  (*:setFormName *this-form* form-name))
+
 (define (remove-component component-name)
   (let* ((component-symbol (string->symbol component-name))
          (component-object (lookup-in-current-form-environment component-symbol)))

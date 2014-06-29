@@ -106,6 +106,8 @@ Blockly.ReplMgr.buildYail = function() {
             needinitialize = true;
             phoneState.blockYail = {}; // Sorry, have to send the blocks again.
             this.putYail(Blockly.Yail.YAIL_CLEAR_FORM);
+            // Tell the Companion the current form name
+            this.putYail(Blockly.Yail.YAIL_SET_FORM_NAME_BEGIN + formName + Blockly.Yail.YAIL_SET_FORM_NAME_END);
             this.putYail(code);
             this.putYail(Blockly.Yail.YAIL_INIT_RUNTIME);
             phoneState.componentYail = code;
