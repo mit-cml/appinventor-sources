@@ -50,8 +50,6 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   private int LoginType = -1;
   private Handler handler;
 
-  private boolean InProgress;
-
   public iSENSE(ComponentContainer container) {
     super(container.$form());
     Log.i("iSENSE", "Starting? " + container.toString());
@@ -137,6 +135,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   }
 
   // Block Functions
+  // Upload Data Set
   @SimpleFunction(description = "Upload Data Set to iSENSE")
   public void UploadDataSet(final String DataSetName, final YailList Fields, final YailList Data) {
     AsynchUtil.runAsynchronously(new Runnable() {
@@ -171,8 +170,12 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
         } else if (LoginType == iSENSE_LOGIN_TYPE_KEY) {
           Calendar cal = Calendar.getInstance();
           SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd, yyyy HH:mm:ss aaa");
-          dataset = api.uploadDataSet(ProjectID, DataSetName + " - "
-              + sdf.format(cal.getTime()).toString(), jData, ContributorKey, YourName);
+          String date = " - " + sdf.format(cal.getTime()).toString();
+          dataset = api.uploadDataSet(ProjectID,
+              DataSetName + date,
+              jData,
+              ContributorKey,
+              YourName);
         }
         Log.i("iSENSE", "JSON Upload: " + jData.toString());
         Log.i("iSENSE", "Dataset ID: " + dataset);
@@ -181,6 +184,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     });
   }
 
+  // Upload Dataset Result (calls events in UI thread)
   private void UploadDataSetResult(int dataset) {
     AsyncCallbackPair<Integer> myCallback = new AsyncCallbackPair<Integer>() {
       public void onSuccess(final Integer result) {
@@ -206,6 +210,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     }
   }
 
+  // Get Dataset By Field
   @SimpleFunction(description = "Get the Data Sets for the current project")
   public YailList GetDataSetsByField(final String Field) {
     String FieldID = null;
@@ -236,11 +241,17 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     return YailList.makeList(fdata);
   }
 
+  // Get Time (formatted for iSENSE Upload)
   @SimpleFunction(description = "Gets the current time. It is formated correctly for iSENSE")
   public String GetTime() {
     Calendar cal = Calendar.getInstance();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     return sdf.format(cal.getTime()).toString();
+  }
+
+  @SimpleFunction(description = "Uploads a photo to a dataset")
+  public void UploadPhotoToDataSet(int DataSetID, String Photo) {
+
   }
 
   // Block Events
