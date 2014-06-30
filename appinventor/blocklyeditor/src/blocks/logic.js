@@ -149,7 +149,7 @@ Blockly.Blocks.logic_compare.OPERATORS = function() {
 
 Blockly.Blocks['logic_operation'] = {
   // Logical operations: 'and', 'or'.
-  category: Blockly.Msg.LANG_CATEGORY_LOGIC,
+  category: 'Logic',
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));
@@ -207,7 +207,7 @@ Blockly.Blocks.logic_operation.TOOLTIPS = function() {
 
 Blockly.Blocks['logic_or'] = {
   // Logical operations: 'and', 'or'.
-  category: Blockly.Msg.LANG_CATEGORY_LOGIC,
+  category: 'Logic',
   init: function() {
     this.setColour(Blockly.LOGIC_CATEGORY_HUE);
     this.setOutput(true, Blockly.Blocks.Utilities.YailTypeToBlocklyType("boolean",Blockly.Blocks.Utilities.OUTPUT));

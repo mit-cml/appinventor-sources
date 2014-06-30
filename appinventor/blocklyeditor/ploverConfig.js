@@ -79,6 +79,8 @@
     "./src/field_parameter_flydown.js",
     "./src/field_global_flydown.js",
     "./src/field_procedure_flydown.js",
+    "./src/nameSet.js",
+    "./src/substitution.js",
     "./src/language_switch.js",
 
     //blocks files

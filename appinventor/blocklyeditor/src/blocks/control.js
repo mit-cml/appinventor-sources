@@ -11,6 +11,7 @@
 
 /**
  * Lyn's History:
+ * [lyn, written 11/16-17/13, added 07/01/14] Added freeVariables, renameFree, and renameBound to forRange and forEach loops
  * [lyn, 10/27/13] Specify direction of flydowns
  * [lyn, 10/25/13] Made collapsed block labels more sensible.
  * [lyn, 10/10-14/13]
@@ -235,7 +236,7 @@ Blockly.Blocks['controls_if_else'] = {
 
 Blockly.Blocks['controls_forRange'] = {
   // For range.
-  category : 'Control',
+  category: 'Control',
   helpUrl : Blockly.Msg.LANG_CONTROLS_FORRANGE_HELPURL,
   init : function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -285,6 +286,51 @@ Blockly.Blocks['controls_forRange'] = {
       this.setFieldValue(newName, 'VAR');
     }
   },
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('START'), freeSubstitution);
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('END'), freeSubstitution);
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('STEP'), freeSubstitution);
+    var oldIndexVar = this.getFieldValue('VAR');
+    var newIndexVar = boundSubstitution.apply(oldIndexVar);
+    if (newIndexVar !== oldIndexVar) {
+      this.renameVar(oldIndexVar, newIndexVar);
+      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
+      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    } else {
+      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+    }
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function (freeSubstitution) {
+    var indexVar = this.getFieldValue('VAR');
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    bodyFreeVars.delete(indexVar);
+    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
+      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
+      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
+      this.renameBound(boundSubstitution, freeSubstitution);
+    } else {
+      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+    }
+  },
+  freeVariables: function() { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    result.delete(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('START')));
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('END')));
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('STEP')));
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+    return result;
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_FORRANGE_INPUT_ITEM }]
 };
 
@@ -331,6 +377,47 @@ Blockly.Blocks['controls_forEach'] = {
       this.setFieldValue(newName, 'VAR');
     }
   },
+  renameBound: function (boundSubstitution, freeSubstitution) {
+    Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('LIST'), freeSubstitution);
+    var oldIndexVar = this.getFieldValue('VAR');
+    var newIndexVar = boundSubstitution.apply(oldIndexVar);
+    if (newIndexVar !== oldIndexVar) {
+      this.renameVar(oldIndexVar, newIndexVar);
+      var indexSubstitution = Blockly.Substitution.simpleSubstitution(oldIndexVar, newIndexVar);
+      var extendedFreeSubstitution = freeSubstitution.extend(indexSubstitution);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), extendedFreeSubstitution);
+    } else {
+      var removedFreeSubstitution = freeSubstitution.remove([oldIndexVar]);
+      Blockly.LexicalVariable.renameFree(this.getInputTargetBlock('DO'), removedFreeSubstitution);
+    }
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      Blockly.LexicalVariable.renameFree(nextBlock, freeSubstitution);
+    }
+  },
+  renameFree: function (freeSubstitution) {
+    var indexVar = this.getFieldValue('VAR');
+    var bodyFreeVars = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    bodyFreeVars.delete(indexVar);
+    var renamedBodyFreeVars = bodyFreeVars.renamed(freeSubstitution);
+    if (renamedBodyFreeVars.isMember(indexVar)) { // Variable capture!
+      var newIndexVar = Blockly.FieldLexicalVariable.nameNotIn(indexVar, renamedBodyFreeVars.toList());
+      var boundSubstitution = Blockly.Substitution.simpleSubstitution(indexVar, newIndexVar);
+      this.renameBound(boundSubstitution, freeSubstitution);
+    } else {
+      this.renameBound(new Blockly.Substitution(), freeSubstitution);
+    }
+  },
+  freeVariables: function() { // return the free variables of this block
+    var result = Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('DO'));
+    result.delete(this.getFieldValue('VAR')); // Remove bound index variable from body free vars
+    result.unite(Blockly.LexicalVariable.freeVariables(this.getInputTargetBlock('LIST')));
+    if (this.nextConnection) {
+      var nextBlock = this.nextConnection.targetBlock();
+      result.unite(Blockly.LexicalVariable.freeVariables(nextBlock));
+    }
+    return result;
+  },
   typeblock: [{ translatedName: Blockly.Msg.LANG_CONTROLS_FOREACH_INPUT_ITEM }]
 };
 
@@ -338,7 +425,7 @@ Blockly.Blocks['controls_forEach'] = {
 * I don't think a special GET block in the Control drawer is necesssary
 Blockly.Blocks.for_lexical_variable_get = {
   // Variable getter.
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_GET_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);
@@ -482,7 +569,7 @@ Blockly.Blocks['controls_eval_but_ignore'] = {
 // [lyn, 01/15/2013] Added
 Blockly.Blocks.controls_nothing = {
   // Expression for the nothing value
-  category: Blockly.Msg.LANG_CATEGORY_CONTROLS,
+  category: 'Control',
   helpUrl: Blockly.Msg.LANG_CONTROLS_NOTHING_HELPURL,
   init: function() {
     this.setColour(Blockly.CONTROL_CATEGORY_HUE);

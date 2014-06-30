@@ -24,17 +24,17 @@ Blockly.language_switch = {
     switch (language) {
       case 'zh_CN':
         Blockly.Msg.zh_cn.switch_language_to_chinese_cn.init();
-        console.log('zh_CN');
+        // console.log('zh_CN');
         break;
       case 'en_US':
         Blockly.Msg.en.switch_language_to_english.init();
-        console.log('en_US');
+        // console.log('en_US');
         break;
       case 'en':
-        console.log('en');
+        // console.log('en');
       default:
         Blockly.Msg.en.switch_language_to_english.init();
-        console.log('default');
+        // console.log('default');
         break;
     }
     if (Blockly.mainWorkspace) {
@@ -45,5 +45,5 @@ Blockly.language_switch = {
 
 //switch language before blocks are generated
 var language = window.parent.__gwt_Locale;
-console.log("Language = " + language);
+// console.log("Language = " + language);
 Blockly.language_switch.switchLanguage(language);
