@@ -148,7 +148,7 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
           for (int j = 0; j < projectFields.size(); j++) {
             if (Fields.get(i + 1).equals(projectFields.get(j).name)) {
               try {
-                String sdata = SanitizeString(Data.get(i + 1).toString());
+                String sdata = Data.get(i + 1).toString();
                 jData.put("" + projectFields.get(j).field_id, new JSONArray().put(sdata));
               } catch (JSONException e) {
                 UploadDataSetResult(-1);
@@ -254,16 +254,6 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     EventDispatcher.dispatchEvent(this, "UploadDataSetFailed");
   }
 
-  // @SimpleEvent(description = "iSENSE Append DataSet Succeeded")
-  // public void AppendDataSetSucceeded(int DataSetID) {
-  // EventDispatcher.dispatchEvent(this, "AppendDataSetSucceeded", DataSetID);
-  // }
-  //
-  // @SimpleEvent(description = "iSENSE Append DataSet Failed")
-  // public void AppendDataSetFailed() {
-  // EventDispatcher.dispatchEvent(this, "AppendDataSetFailed");
-  // }
-
   @SimpleEvent(description = "iSENSE Upload Photo To DataSet Succeeded")
   public void UploadPhotoToDataSetSucceeded(int PhotoID) {
     EventDispatcher.dispatchEvent(this, "UploadPhotoToDataSetSucceeded", PhotoID);
@@ -272,23 +262,5 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
   @SimpleEvent(description = "iSENSE Upload Photo To DataSet Failed")
   public void UploadPhotoToDataSetFailed() {
     EventDispatcher.dispatchEvent(this, "UploadPhotoToDataSetFailed");
-  }
-
-  // Sanitize a string
-  // fraction gets converted to a number
-  // string gets returned
-  private String SanitizeString(final String str) {
-    return str;
-    // Log.i("test", "test:" + str);
-    // Scheme scheme = new Scheme();
-    // String scheme_str = "(if (number? " + str + ") (exact->inexact " + str + ") \"" + str +
-    // "\")";
-    // try {
-    // return scheme.eval(scheme_str).toString();
-    // } catch (Throwable e) {
-    // e.printStackTrace();
-    // }
-    // return null;
-    // }
   }
 }
