@@ -441,8 +441,8 @@ public final class Compiler {
         out.write("    </activity>\n");
       }
 
-      // Add WebViewActivity to the manifest only if a WebViewer component is used in the app
-      if (componentTypes.contains("WebViewer")){
+      // Add WebViewActivity to the manifest only if a Twitter component is used in the app
+      if (componentTypes.contains("Twitter")){
         out.write("    <activity android:name=\"" + WEBVIEW_ACTIVITY_CLASS + "\" " +
             "android:configChanges=\"orientation|keyboardHidden\" " +
             "android:screenOrientation=\"behind\">\n");
