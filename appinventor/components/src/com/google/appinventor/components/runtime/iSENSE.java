@@ -249,9 +249,69 @@ public class iSENSE extends AndroidNonvisibleComponent implements Component {
     return sdf.format(cal.getTime()).toString();
   }
 
+  // Upload Photo To Dataset
   @SimpleFunction(description = "Uploads a photo to a dataset")
-  public void UploadPhotoToDataSet(int DataSetID, String Photo) {
+  public void UploadPhotoToDataSet(final int DataSetID, final String Photo) {
+    AsynchUtil.runAsynchronously(new Runnable() {
+      public void run() {
+        java.io.File pic = new java.io.File(android.net.Uri.parse(Photo).getPath());
+        if (!pic.exists()) {
+          UploadPhotoToDataSetResult(-1);
+          return;
+        }
+        // if !exists return with error
+        int mediaid = -1;
+        // login with email
+        if (LoginType == iSENSE_LOGIN_TYPE_EMAIL) {
+          RPerson user = api.createSession(Email, Password);
+          if (user == null) {
+            UploadPhotoToDataSetResult(-1);
+            return;
+          }
+          mediaid = api.uploadMedia(DataSetID, pic, API.TargetType.DATA_SET);
+          // login with contribution key
+        } else if (LoginType == iSENSE_LOGIN_TYPE_KEY) {
+          mediaid = api.uploadMedia(DataSetID,
+              pic,
+              API.TargetType.DATA_SET,
+              ContributorKey,
+              YourName);
+        }
+        Log.i("iSENSE", "MediaID: " + mediaid);
+        UploadPhotoToDataSetResult(mediaid);
+      }
+    });
+  }
 
+  // Upload Photo to Dataset Result (calls events in UI thread)
+  private void UploadPhotoToDataSetResult(int mediaid) {
+    AsyncCallbackPair<Integer> myCallback = new AsyncCallbackPair<Integer>() {
+      public void onSuccess(final Integer result) {
+        handler.post(new Runnable() {
+          public void run() {
+            UploadPhotoToDataSetSucceeded(result);
+          }
+        });
+      }
+
+      public void onFailure(final String message) {
+        handler.post(new Runnable() {
+          public void run() {
+            UploadPhotoToDataSetFailed();
+          }
+        });
+      }
+    };
+    if (mediaid == -1) {
+      myCallback.onFailure("");
+    } else {
+      myCallback.onSuccess(mediaid);
+    }
+  }
+
+  @SimpleFunction(description = "logcat")
+  public void LogToCat(String catify) {
+    Log.i("iSENSE", catify);
   }
 
   // Block Events
